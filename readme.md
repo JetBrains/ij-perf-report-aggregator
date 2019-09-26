@@ -18,8 +18,8 @@ Tool to aggregate IntelliJ Platform performance reports.
 
 `aggregatedStats` visualizer page and this tool in an alpha stage. Aggregator throws error if anything is unclear to ensure that stats is representative.
 
-Chart legend allows you to disable unneded metrics to make chart more clear.
-
+Chart legend allows you to disable unneeded metrics to make chart more clear.
+ 
 ```
 usage: report-aggregator [<flags>] <command> [<args> ...]
 

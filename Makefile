@@ -2,7 +2,8 @@
 
 # https://github.com/bvinc/go-sqlite-lite/issues/10#issuecomment-498539630
 
-build:
+build: lint
+	go mod tidy
 	make build-mac
 	make build-linux
 	make build-windows
@@ -15,3 +16,6 @@ build-linux:
 
 build-windows:
 	env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=/usr/local/bin/x86_64-w64-mingw32-gcc CXX=/usr/local/bin/x86_64-w64-mingw32-g++ go build -ldflags='-s -w' -o dist/windows/report-aggregator.exe ./
+
+lint:
+	golangci-lint run

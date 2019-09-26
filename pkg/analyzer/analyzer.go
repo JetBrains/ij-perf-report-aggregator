@@ -174,7 +174,7 @@ func (t *ReportAnalyzer) Close() error {
 	insertStatement := t.insertStatement
 	if insertStatement != nil {
 		util.Close(insertStatement, t.logger)
-		insertStatement = nil
+		t.insertStatement = nil
 	}
 
 	db := t.db
@@ -200,7 +200,10 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 	defer t.waitGroup.Done()
 
 	t.hash.Reset()
-	t.hash.Write(report.RawData)
+	_, err := t.hash.Write(report.RawData)
+	if err != nil {
+		return errors.WithStack(err)
+	}
 
 	id := base64.RawURLEncoding.EncodeToString(t.hash.Sum(nil))
 

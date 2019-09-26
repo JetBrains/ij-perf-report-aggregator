@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+// sqlite can be used as document DB, index can be created for JSON (see https://news.ycombinator.com/item?id=19278019)
+
 func prepareDatabaseFile(filePath string, logger *zap.Logger) error {
 	dir := filepath.Dir(filePath)
 
@@ -72,19 +74,18 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
 	db.BusyTimeout(5 * time.Second)
 
 	err = db.Exec(`
-create table if not exists report
+create table report
 (
-	id string not null
-		constraint reports_pk
-			primary key,
-  generated_time int,
-  metrics_version int,
-	metrics string,
-	raw_report string
+	id string not null primary key,
+  machine string not null,
+  generated_time int not null,
+  metrics_version int not null,
+	metrics string not null,
+	raw_report string not null
 );
 
-create unique index if not exists reports_id_uindex
-	on report (id);
+create index machine_index on report(machine)
+
 `)
 
 	if err != nil {

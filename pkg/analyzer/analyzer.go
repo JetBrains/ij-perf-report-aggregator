@@ -7,7 +7,6 @@ import (
 	"github.com/bvinc/go-sqlite-lite/sqlite3"
 	"github.com/develar/errors"
 	"github.com/json-iterator/go"
-	"github.com/mcuadros/go-version"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/json"
 	"go.uber.org/zap"
@@ -33,10 +32,12 @@ type ReportAnalyzer struct {
 	insertStatement *sqlite3.Stmt
 	hash            hash.Hash
 
+	machine string
+
 	logger *zap.Logger
 }
 
-func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger *zap.Logger) (*ReportAnalyzer, error) {
+func CreateReportAnalyzer(dbPath string, machine string, analyzeContext context.Context, logger *zap.Logger) (*ReportAnalyzer, error) {
 	err := prepareDatabaseFile(dbPath, logger)
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -61,9 +62,11 @@ func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger 
 		hash:     sha1.New(),
 
 		logger: logger,
+
+		machine: machine,
 	}
 
-	analyzer.insertStatement, err = db.Prepare(`INSERT INTO report (id, generated_time, metrics_version, metrics, raw_report) VALUES (?, ?, ?, ?, ?)`)
+	analyzer.insertStatement, err = db.Prepare(`INSERT INTO report (id, machine, generated_time, metrics_version, metrics, raw_report) VALUES (?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		util.Close(db, logger)
 		return nil, err
@@ -222,95 +225,13 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 		return errors.WithStack(err)
 	}
 
-	err = t.insertStatement.Exec(id, report.GeneratedTime, metricsVersion, serializedMetrics, report.RawData)
+	err = t.insertStatement.Exec(id, t.machine, report.GeneratedTime, metricsVersion, serializedMetrics, report.RawData)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	logger.Info("new report added")
 	return nil
-}
-
-func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger) *model.Metrics {
-	metrics := &model.Metrics{
-		Bootstrap: -1,
-		Splash:    -1,
-
-		AppInitPreparation:       -1,
-		AppInit:                  -1,
-		PluginDescriptorsLoading: -1,
-
-		AppComponentCreation:     -1,
-		ProjectComponentCreation: -1,
-		ModuleLoading:            -1,
-	}
-
-	if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
-		logger.Warn("invalid report (due to opening second project?), report will be skipped")
-		return nil
-	}
-
-	// v < 12: PluginDescriptorsLoading can be or in MainActivities, or in PrepareAppInitActivities
-
-	for _, activity := range report.MainActivities {
-		switch activity.Name {
-		case "bootstrap":
-			metrics.Bootstrap = activity.Duration
-
-		case "app initialization preparation":
-			metrics.AppInitPreparation = activity.Duration
-		case "app initialization":
-			metrics.AppInit = activity.Duration
-		case "plugin descriptors loading":
-			metrics.PluginDescriptorsLoading = activity.Duration
-
-		case "app component creation":
-			metrics.AppComponentCreation = activity.Duration
-		case "project component creation":
-			metrics.ProjectComponentCreation = activity.Duration
-		case "module loading":
-			metrics.ModuleLoading = activity.Duration
-		}
-	}
-
-	if version.Compare(report.Version, "11", "<") {
-		for _, activity := range report.PrepareAppInitActivities {
-			switch activity.Name {
-			case "plugin descriptors loading":
-				metrics.PluginDescriptorsLoading = activity.Start
-			case "splash initialization":
-				metrics.Splash = activity.Start
-			}
-		}
-	} else {
-		for _, activity := range report.TraceEvents {
-			if activity.Phase == "i" && (activity.Name == "splash" || activity.Name == "splash shown") {
-				metrics.Splash = activity.Timestamp / 1000
-			}
-		}
-	}
-
-	if metrics.Bootstrap == -1 {
-		logRequiredMetricNotFound(logger, "bootstrap")
-		return nil
-	}
-	if metrics.PluginDescriptorsLoading == -1 {
-		logRequiredMetricNotFound(logger, "pluginDescriptorsLoading")
-		return nil
-	}
-	if metrics.AppComponentCreation == -1 {
-		logRequiredMetricNotFound(logger, "AppComponentCreation")
-		return nil
-	}
-	if metrics.ModuleLoading == -1 {
-		logRequiredMetricNotFound(logger, "ModuleLoading")
-		return nil
-	}
-	return metrics
-}
-
-func logRequiredMetricNotFound(logger *zap.Logger, metricName string) {
-	logger.Error("metric is required, but not found, report will be skipped", zap.String("metric", metricName))
 }
 
 func (t *ReportAnalyzer) isReportAlreadyProcessed(id string) (bool, error) {

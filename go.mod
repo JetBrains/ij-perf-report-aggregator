@@ -8,11 +8,15 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/bvinc/go-sqlite-lite v0.6.1
 	github.com/develar/errors v0.9.0
+	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/json-iterator/go v1.1.7
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pkg/errors v0.8.1 // indirect
+	github.com/rs/cors v1.7.0
 	github.com/tdewolff/minify/v2 v2.5.2
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
+	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0 // indirect
 )

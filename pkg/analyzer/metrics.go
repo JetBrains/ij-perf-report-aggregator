@@ -11,9 +11,9 @@ func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger
 		Bootstrap: -1,
 		Splash:    -1,
 
-		AppInitPreparation:       -1,
-		AppInit:                  -1,
-		PluginDescriptorsLoading: -1,
+		AppInitPreparation:      -1,
+		AppInit:                 -1,
+		PluginDescriptorLoading: -1,
 
 		AppComponentCreation:     -1,
 		ProjectComponentCreation: -1,
@@ -25,7 +25,7 @@ func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger
 		return nil
 	}
 
-	// v < 12: PluginDescriptorsLoading can be or in MainActivities, or in PrepareAppInitActivities
+	// v < 12: PluginDescriptorLoading can be or in MainActivities, or in PrepareAppInitActivities
 
 	for _, activity := range report.MainActivities {
 		switch activity.Name {
@@ -36,13 +36,22 @@ func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger
 			metrics.AppInitPreparation = activity.Duration
 		case "app initialization":
 			metrics.AppInit = activity.Duration
+
+		case "plugin descriptor loading":
+			metrics.PluginDescriptorLoading = activity.Duration
 		case "plugin descriptors loading":
-			metrics.PluginDescriptorsLoading = activity.Duration
+			metrics.PluginDescriptorLoading = activity.Duration
 
 		case "app component creation":
 			metrics.AppComponentCreation = activity.Duration
+		case "app components creation":
+			metrics.AppComponentCreation = activity.Duration
+
 		case "project component creation":
 			metrics.ProjectComponentCreation = activity.Duration
+		case "project components creation":
+			metrics.ProjectComponentCreation = activity.Duration
+
 		case "module loading":
 			metrics.ModuleLoading = activity.Duration
 		}
@@ -52,7 +61,7 @@ func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger
 		for _, activity := range report.PrepareAppInitActivities {
 			switch activity.Name {
 			case "plugin descriptors loading":
-				metrics.PluginDescriptorsLoading = activity.Start
+				metrics.PluginDescriptorLoading = activity.Start
 			case "splash initialization":
 				metrics.Splash = activity.Start
 			}
@@ -65,11 +74,16 @@ func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger
 		}
 	}
 
-	if metrics.Bootstrap == -1 {
-		logRequiredMetricNotFound(logger, "bootstrap")
-		return nil
+	if metrics.Splash == -1 && version.Compare(report.Version, "6", ">=") {
+		logger.Info("metric 'splash' not found")
 	}
-	if metrics.PluginDescriptorsLoading == -1 {
+
+	if metrics.Bootstrap == -1 {
+		if version.Compare(report.Version, "6", ">=") {
+			logRequiredMetricNotFound(logger, "bootstrap")
+		}
+	}
+	if metrics.PluginDescriptorLoading == -1 {
 		logRequiredMetricNotFound(logger, "pluginDescriptorsLoading")
 		return nil
 	}

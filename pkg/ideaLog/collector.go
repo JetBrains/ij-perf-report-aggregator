@@ -18,11 +18,11 @@ import (
 
 func ConfigureCollectFromDirCommand(app *kingpin.Application, log *zap.Logger) {
 	command := app.Command("collect", "Collect reports from idea.log files.")
-	dir := command.Flag("dir", "The input directory.").Short('i').Required().String()
+	dirs := command.Flag("dir", "The input directory.").Short('i').Required().Strings()
 	dbPath := command.Flag("db", "The output SQLite database file.").Short('o').Required().String()
 	machine := command.Flag("machine", "The name of machine to associate report with.").Short('m').Required().String()
 	command.Action(func(context *kingpin.ParseContext) error {
-		err := collectFromDir(*dir, *dbPath, *machine, log)
+		err := collectFromDirs(*dirs, *dbPath, *machine, log)
 		if err != nil {
 			return err
 		}
@@ -31,7 +31,7 @@ func ConfigureCollectFromDirCommand(app *kingpin.Application, log *zap.Logger) {
 	})
 }
 
-func collectFromDir(dir string, dbPath string, machine string, logger *zap.Logger) error {
+func collectFromDirs(dirs []string, dbPath string, machine string, logger *zap.Logger) error {
 	taskContext, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -41,11 +41,6 @@ func collectFromDir(dir string, dbPath string, machine string, logger *zap.Logge
 		<-signals
 		cancel()
 	}()
-
-	files, err := filepath.Glob(dir + "/idea*.log*")
-	if err != nil {
-		return errors.WithStack(err)
-	}
 
 	reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, machine, taskContext, logger)
 	if err != nil {
@@ -63,12 +58,8 @@ func collectFromDir(dir string, dbPath string, machine string, logger *zap.Logge
 
 	defer util.Close(reportAnalyzer, logger)
 
-	for _, file := range files {
-		if taskContext.Err() != nil {
-			return nil
-		}
-
-		err := collectFromLogFile(file, logger, reportAnalyzer, taskContext)
+	for _, dir := range dirs {
+		err = collectFromDir(dir, taskContext, logger, reportAnalyzer)
 		if err != nil {
 			return err
 		}
@@ -86,6 +77,25 @@ func collectFromDir(dir string, dbPath string, machine string, logger *zap.Logge
 	case <-taskContext.Done():
 		return nil
 	}
+}
+
+func collectFromDir(dir string, taskContext context.Context, logger *zap.Logger, reportAnalyzer *analyzer.ReportAnalyzer) error {
+	files, err := filepath.Glob(dir + "/idea*.log*")
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	for _, file := range files {
+		if taskContext.Err() != nil {
+			return nil
+		}
+
+		err := collectFromLogFile(file, logger, reportAnalyzer, taskContext)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func collectFromLogFile(filePath string, log *zap.Logger, reportAnalyzer *analyzer.ReportAnalyzer, taskContext context.Context) error {

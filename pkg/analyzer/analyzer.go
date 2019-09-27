@@ -27,10 +27,10 @@ type ReportAnalyzer struct {
 	waitGroup sync.WaitGroup
 	closeOnce sync.Once
 
-	minifier        *minify.M
-	db              *sqlite3.Conn
-	insertStatement *sqlite3.Stmt
-	hash            hash.Hash
+	minifier     *minify.M
+	db           *sqlite3.Conn
+	putStatement *sqlite3.Stmt
+	hash         hash.Hash
 
 	machine string
 
@@ -64,12 +64,6 @@ func CreateReportAnalyzer(dbPath string, machine string, analyzeContext context.
 		logger: logger,
 
 		machine: machine,
-	}
-
-	analyzer.insertStatement, err = db.Prepare(`INSERT INTO report (id, machine, generated_time, metrics_version, metrics, raw_report) VALUES (?, ?, ?, ?, ?, ?)`)
-	if err != nil {
-		util.Close(db, logger)
-		return nil, err
 	}
 
 	go func() {
@@ -156,12 +150,18 @@ func parseTime(report *model.Report) (*time.Time, error) {
 	parsedTime, err := time.Parse(time.RFC1123Z, report.Generated)
 	if err != nil {
 		parsedTime, err = time.Parse(time.RFC1123, report.Generated)
-		if err != nil {
-			parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", report.Generated)
-			if err != nil {
-				return nil, errors.WithStack(err)
-			}
-		}
+	}
+
+	if err != nil {
+		parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", report.Generated)
+	}
+
+	if err != nil {
+		parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", report.Generated)
+	}
+
+	if err != nil {
+		return nil, errors.WithStack(err)
 	}
 	return &parsedTime, nil
 }
@@ -171,10 +171,10 @@ func (t *ReportAnalyzer) Close() error {
 		close(t.input)
 	})
 
-	insertStatement := t.insertStatement
-	if insertStatement != nil {
-		util.Close(insertStatement, t.logger)
-		t.insertStatement = nil
+	putStatement := t.putStatement
+	if putStatement != nil {
+		util.Close(putStatement, t.logger)
+		t.putStatement = nil
 	}
 
 	db := t.db
@@ -193,7 +193,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
 	return t.waitChannel
 }
 
-const metricsVersion = 1
+const metricsVersion = 2
 
 func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 	t.waitGroup.Add(1)
@@ -207,13 +207,13 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 
 	id := base64.RawURLEncoding.EncodeToString(t.hash.Sum(nil))
 
-	isAlreadyProcessed, err := t.isReportAlreadyProcessed(id)
+	currentMetricsVersion, err := t.getMetricsVersion(id)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	logger := t.logger.With(zap.String("id", id), zap.String("generatedTime", time.Unix(report.GeneratedTime, 0).Format(time.RFC1123)))
-	if isAlreadyProcessed {
+	if currentMetricsVersion == metricsVersion {
 		logger.Info("report already processed")
 		return nil
 	}
@@ -228,26 +228,46 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 		return errors.WithStack(err)
 	}
 
-	err = t.insertStatement.Exec(id, t.machine, report.GeneratedTime, metricsVersion, serializedMetrics, report.RawData)
+	statement := t.putStatement
+	if statement == nil {
+		statement, err = t.db.Prepare(`REPLACE INTO report (id, machine, generated_time, metrics_version, metrics, raw_report) VALUES (?, ?, ?, ?, ?, ?)`)
+		if err != nil {
+			return err
+		}
+
+		t.putStatement = statement
+	}
+
+	err = statement.Exec(id, t.machine, report.GeneratedTime, metricsVersion, serializedMetrics, report.RawData)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	logger.Info("new report added")
+	if currentMetricsVersion >= 0 && currentMetricsVersion == metricsVersion {
+		logger.Info("report metrics updated", zap.Int("oldMetricsVersion", currentMetricsVersion), zap.Int("newMetricsVersion", metricsVersion))
+	} else {
+		logger.Info("new report added")
+	}
 	return nil
 }
 
-func (t *ReportAnalyzer) isReportAlreadyProcessed(id string) (bool, error) {
+func (t *ReportAnalyzer) getMetricsVersion(id string) (int, error) {
 	stmt, err := t.db.Prepare(`SELECT metrics_version FROM report WHERE id = ?`, id)
 	if err != nil {
-		return false, errors.WithStack(err)
+		return 1, errors.WithStack(err)
 	}
 
 	defer util.Close(stmt, t.logger)
 
 	hasRow, err := stmt.Step()
 	if err != nil {
-		return false, errors.WithStack(err)
+		return -1, errors.WithStack(err)
 	}
-	return hasRow, nil
+
+	if hasRow {
+		result, _, err := stmt.ColumnInt(0)
+		return result, errors.WithStack(err)
+	}
+
+	return -1, nil
 }

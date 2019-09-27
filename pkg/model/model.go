@@ -25,7 +25,8 @@ type TraceEvent struct {
 	// in microseconds
 	Timestamp int `json:"ts"`
 
-	Thread   string `json:"tid"`
+	// in old reports (v10) can be int instead of string
+	//Thread   string `json:"tid"`
 	Category string `json:"cat"`
 }
 
@@ -40,14 +41,15 @@ type Activity struct {
 }
 
 // computed metrics
+// prefix i_ is used for instant events
 type Metrics struct {
 	// value - not duration, but start, because it is instant event and not duration event
-	Splash int `json:"splash"`
+	Splash int `json:"i_splash"`
 
-	Bootstrap                int `json:"bootstrap"`
-	AppInitPreparation       int `json:"appInitPreparation"`
-	AppInit                  int `json:"appInit"`
-	PluginDescriptorsLoading int `json:"pluginDescriptorsLoading"`
+	Bootstrap               int `json:"bootstrap"`
+	AppInitPreparation      int `json:"appInitPreparation"`
+	AppInit                 int `json:"appInit"`
+	PluginDescriptorLoading int `json:"pluginDescriptorLoading"`
 
 	ProjectComponentCreation int `json:"projectComponentCreation"`
 	AppComponentCreation     int `json:"appComponentCreation"`

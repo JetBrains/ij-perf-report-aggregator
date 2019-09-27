@@ -15,11 +15,11 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="db [2]" uuid="f0e6879b-a07c-4041-99ba-3cdcd5d23c41">
+    <data-source source="LOCAL" name="db [3]" uuid="aaab947f-8e0a-4b81-a264-71fa76ecc9cd">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$USER_HOME$/ij-perf-report-db/db.sqlite</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$USER_HOME$/ij-perf-db/db.sqlite</jdbc-url>
       <libraries>
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>

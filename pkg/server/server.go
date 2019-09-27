@@ -125,7 +125,13 @@ type StatsServer struct {
 }
 
 func (t *StatsServer) handleStatsRequest(w http.ResponseWriter, r *http.Request) {
-	statement, err := t.db.Prepare("select machine, generated_time, metrics from report order by machine, generated_time")
+	//noinspection SqlResolve
+	statement, err := t.db.Prepare(`
+select machine, generated_time, metrics, 
+       json_extract(raw_report, '$.productCode') as productCode,
+       json_extract(raw_report, '$.build') as build
+from report order by machine, generated_time
+	`)
 	if err != nil {
 		t.logger.Error("cannot query", zap.Error(err))
 		http.Error(w, err.Error(), 503)
@@ -156,7 +162,9 @@ func (t *StatsServer) handleStatsRequest(w http.ResponseWriter, r *http.Request)
 		var machine sqlite3.RawString
 		var generatedTime int64
 		var metrics sqlite3.RawString
-		err = statement.Scan(&machine, &generatedTime, &metrics)
+		var productCode string
+		var build string
+		err = statement.Scan(&machine, &generatedTime, &metrics, &productCode, &build)
 		if err != nil {
 			t.logger.Error("cannot query", zap.Error(err))
 			http.Error(w, err.Error(), 503)
@@ -194,6 +202,17 @@ func (t *StatsServer) handleStatsRequest(w http.ResponseWriter, r *http.Request)
 		// seconds to milliseconds
 		jsonWriter.WriteInt64(generatedTime * 1000)
 		jsonWriter.WriteMore()
+
+		if len(productCode) != 0 {
+			jsonWriter.WriteObjectField("_p")
+			jsonWriter.WriteString(productCode)
+			jsonWriter.WriteMore()
+
+			jsonWriter.WriteObjectField("_v")
+			jsonWriter.WriteString(build)
+			jsonWriter.WriteMore()
+		}
+
 		// skip first '{'
 		jsonWriter.WriteRaw(string(metrics[1:]))
 	}

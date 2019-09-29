@@ -1,19 +1,21 @@
 package ideaLog
 
 import (
-	"bufio"
-	"bytes"
-	"context"
-	"github.com/alecthomas/kingpin"
-	"github.com/develar/errors"
-	"go.uber.org/zap"
-	"os"
-	"os/signal"
-	"path/filepath"
-	"report-aggregator/pkg/analyzer"
-	"report-aggregator/pkg/util"
-	"strings"
-	"time"
+  "bufio"
+  "bytes"
+  "context"
+  "facette.io/natsort"
+  "github.com/alecthomas/kingpin"
+  "github.com/develar/errors"
+  "go.uber.org/zap"
+  "os"
+  "os/signal"
+  "path/filepath"
+  "regexp"
+  "report-aggregator/pkg/analyzer"
+  "report-aggregator/pkg/util"
+  "strings"
+  "time"
 )
 
 func ConfigureCollectFromDirCommand(app *kingpin.Application, log *zap.Logger) {
@@ -85,26 +87,44 @@ func collectFromDir(dir string, taskContext context.Context, logger *zap.Logger,
 		return errors.WithStack(err)
 	}
 
-	for _, file := range files {
-		if taskContext.Err() != nil {
-			return nil
-		}
+  logCollector := &LogCollector{
+    reportAnalyzer: reportAnalyzer,
+    log:            logger,
+    productAndBuildInfoRe: regexp.MustCompile("#([A-Z]{2})-([\\d.]+)"),
+  }
 
-		err := collectFromLogFile(file, logger, reportAnalyzer, taskContext)
-		if err != nil {
+  // product code and build are not specified in old report versions, so, it is inferred from log files.
+  // but ide started log statement can be in another file (because log chunked across files), so, sort it and process from biggest to lesser (idea.log - latest, idea.8 - oldest).
+  natsort.Sort(files)
+  for i := len(files) - 1; i >= 0; i-- {
+    if taskContext.Err() != nil {
+      return nil
+    }
+
+    err := logCollector.collectFromLogFile(files[i], taskContext)
+    if err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func collectFromLogFile(filePath string, log *zap.Logger, reportAnalyzer *analyzer.ReportAnalyzer, taskContext context.Context) error {
+type LogCollector struct {
+  reportAnalyzer *analyzer.ReportAnalyzer
+  extraData      *analyzer.ExtraData
+
+  productAndBuildInfoRe *regexp.Regexp
+
+  log *zap.Logger
+}
+
+func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.Context) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	defer util.Close(file, log)
+	defer util.Close(file, t.log)
 
 	scanner := bufio.NewScanner(file)
 	var jsonData bytes.Buffer
@@ -112,8 +132,8 @@ func collectFromLogFile(filePath string, log *zap.Logger, reportAnalyzer *analyz
 
 	startSuffix := []byte("=== Start: StartUp Measurement ===")
 	endSuffix := []byte("=== Stop: StartUp Measurement ===")
+	versionSlice := []byte("#com.intellij.idea.Main - IDE:")
 
-	lastGeneratedTime := int64(-1)
 	for scanner.Scan() {
 		line := scanner.Bytes()
 		if state == 1 {
@@ -123,16 +143,37 @@ func collectFromLogFile(filePath string, log *zap.Logger, reportAnalyzer *analyz
 					return nil
 				}
 
-				err = reportAnalyzer.Analyze(jsonData.Bytes(), lastGeneratedTime)
+				if t.extraData == nil {
+					return errors.New("extraData not computed")
+				}
+
+        if len(t.extraData.ProductCode) == 0 {
+          return errors.New("ProductCode not computed")
+        }
+        if len(t.extraData.BuildNumber) == 0 {
+          return errors.New("BuildNumber not computed")
+        }
+
+				err = t.reportAnalyzer.Analyze(jsonData.Bytes(), *t.extraData)
 				if err != nil {
 					return err
 				}
 
 				state = 0
-				lastGeneratedTime = -1
+        t.extraData.LastGeneratedTime = -1
 				jsonData.Reset()
 			} else {
 				jsonData.Write(line)
+			}
+		} else if bytes.Contains(line, versionSlice) {
+			result := t.productAndBuildInfoRe.FindStringSubmatch(string(line))
+			if result == nil {
+				return errors.New("cannot find product and build number info")
+			}
+
+      t.extraData = &analyzer.ExtraData{
+				ProductCode: result[1],
+				BuildNumber: result[2],
 			}
 		} else if bytes.HasSuffix(line, startSuffix) {
 			lineString := scanner.Text()
@@ -143,7 +184,10 @@ func collectFromLogFile(filePath string, log *zap.Logger, reportAnalyzer *analyz
 			}
 
 			state = 1
-			lastGeneratedTime = parsedTime.Unix()
+			if t.extraData == nil {
+				return errors.New("cannot find product and build number info")
+			}
+      t.extraData.LastGeneratedTime = parsedTime.Unix()
 		}
 	}
 

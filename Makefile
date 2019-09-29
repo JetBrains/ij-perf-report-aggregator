@@ -25,3 +25,7 @@ build-windows:
 
 lint:
 	golangci-lint run
+
+update-deps:
+	GOPROXY=https://proxy.golang.org go get -u
+	go mod tidy

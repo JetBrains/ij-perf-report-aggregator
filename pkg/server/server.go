@@ -1,9 +1,9 @@
 package server
 
-import "C"
 import (
 	"context"
 	"crypto/tls"
+	"github.com/NYTimes/gziphandler"
 	"github.com/alecthomas/kingpin"
 	"github.com/bvinc/go-sqlite-lite/sqlite3"
 	"github.com/develar/errors"
@@ -41,8 +41,6 @@ func serve(dbPath string, logger *zap.Logger) error {
 
 	defer util.Close(db, logger)
 
-
-
 	statsServer := &StatsServer{
 		logger: logger,
 		db:     db,
@@ -52,7 +50,8 @@ func serve(dbPath string, logger *zap.Logger) error {
 	requestLimit.SetBurst(10)
 
 	mux := http.NewServeMux()
-	mux.Handle("/stats", tollbooth.LimitFuncHandler(requestLimit, statsServer.handleStatsRequest))
+	mux.Handle("/info", gziphandler.GzipHandler(tollbooth.LimitFuncHandler(requestLimit, statsServer.handleInfoRequest)))
+	mux.Handle("/stats", gziphandler.GzipHandler(tollbooth.LimitFuncHandler(requestLimit, statsServer.handleStatsRequest)))
 
 	server := listenAndServe("9044", mux, logger)
 
@@ -126,7 +125,82 @@ type StatsServer struct {
 	logger *zap.Logger
 }
 
-func (t *StatsServer) handleStatsRequest(w http.ResponseWriter, r *http.Request) {
+func (t *StatsServer) httpError(err error, w http.ResponseWriter) {
+	t.logger.Error("internal error", zap.Error(err))
+	http.Error(w, err.Error(), 503)
+}
+
+func (t *StatsServer) handleInfoRequest(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, w, 64*1024)
+
+	jsonWriter.WriteObjectStart()
+	jsonWriter.WriteObjectField("productNames")
+
+	productNames, err := t.getProductNames()
+	if err != nil {
+		t.httpError(err, w)
+		return
+	}
+
+	jsonWriter.WriteArrayStart()
+	isFirst := true
+	for _, product := range productNames {
+		if isFirst {
+			isFirst = false
+		} else {
+			jsonWriter.WriteMore()
+		}
+		jsonWriter.WriteString(product)
+	}
+	jsonWriter.WriteArrayEnd()
+
+	jsonWriter.WriteMore()
+	jsonWriter.WriteObjectField("productToMachineNames")
+	jsonWriter.WriteObjectStart()
+
+	statement, err := t.db.Prepare("select distinct machine from report where product = ? order by machine")
+	if err != nil {
+		t.httpError(err, w)
+		return
+	}
+
+	isFirst = true
+	for _, product := range productNames {
+		err = statement.Bind(product)
+		if err != nil {
+			t.httpError(err, w)
+			return
+		}
+
+		if isFirst {
+			isFirst = false
+		} else {
+			jsonWriter.WriteMore()
+		}
+		jsonWriter.WriteObjectField(product)
+
+		jsonWriter.WriteArrayStart()
+		err = writeStringList(jsonWriter, statement)
+		if err != nil {
+			t.httpError(err, w)
+			return
+		}
+		jsonWriter.WriteArrayEnd()
+	}
+
+	jsonWriter.WriteObjectEnd()
+
+	jsonWriter.WriteObjectEnd()
+
+	err = jsonWriter.Flush()
+	if err != nil {
+		t.httpError(err, w)
+		return
+	}
+}
+
+func (t *StatsServer) handleStatsRequest(w http.ResponseWriter, _ *http.Request) {
 	//noinspection SqlResolve
 	statement, err := t.db.Prepare(`
 select machine, generated_time, metrics, 
@@ -136,7 +210,7 @@ from report order by machine, generated_time
 	`)
 	if err != nil {
 		t.logger.Error("cannot query", zap.Error(err))
-		http.Error(w, err.Error(), 503)
+		t.httpError(err, w)
 		return
 	}
 
@@ -152,8 +226,7 @@ from report order by machine, generated_time
 	for {
 		hasRow, err := statement.Step()
 		if err != nil {
-			t.logger.Error("cannot query", zap.Error(err))
-			http.Error(w, err.Error(), 503)
+			t.httpError(err, w)
 			return
 		}
 
@@ -168,8 +241,7 @@ from report order by machine, generated_time
 		var build string
 		err = statement.Scan(&machine, &generatedTime, &metrics, &productCode, &build)
 		if err != nil {
-			t.logger.Error("cannot query", zap.Error(err))
-			http.Error(w, err.Error(), 503)
+			t.httpError(err, w)
 			return
 		}
 

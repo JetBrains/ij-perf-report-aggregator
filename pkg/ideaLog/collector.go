@@ -1,21 +1,21 @@
 package ideaLog
 
 import (
-  "bufio"
-  "bytes"
-  "context"
-  "facette.io/natsort"
-  "github.com/alecthomas/kingpin"
-  "github.com/develar/errors"
-  "go.uber.org/zap"
-  "os"
-  "os/signal"
-  "path/filepath"
-  "regexp"
-  "report-aggregator/pkg/analyzer"
-  "report-aggregator/pkg/util"
-  "strings"
-  "time"
+	"bufio"
+	"bytes"
+	"context"
+	"facette.io/natsort"
+	"github.com/alecthomas/kingpin"
+	"github.com/develar/errors"
+	"go.uber.org/zap"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"regexp"
+	"report-aggregator/pkg/analyzer"
+	"report-aggregator/pkg/util"
+	"strings"
+	"time"
 )
 
 func ConfigureCollectFromDirCommand(app *kingpin.Application, log *zap.Logger) {
@@ -82,27 +82,35 @@ func collectFromDirs(dirs []string, dbPath string, machine string, logger *zap.L
 }
 
 func collectFromDir(dir string, taskContext context.Context, logger *zap.Logger, reportAnalyzer *analyzer.ReportAnalyzer) error {
+	dirInfo, err := os.Stat(dir)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	if !dirInfo.IsDir() {
+		return errors.New("file " + dir + " is not a dir")
+	}
+
 	files, err := filepath.Glob(dir + "/idea*.log*")
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-  logCollector := &LogCollector{
-    reportAnalyzer: reportAnalyzer,
-    log:            logger,
-    productAndBuildInfoRe: regexp.MustCompile(`#([A-Z]{2})-([\d.]+)`),
-  }
+	logCollector := &LogCollector{
+		reportAnalyzer:        reportAnalyzer,
+		log:                   logger,
+		productAndBuildInfoRe: regexp.MustCompile(`#([A-Z]{2})-([\d.]+)`),
+	}
 
-  // product code and build are not specified in old report versions, so, it is inferred from log files.
-  // but ide started log statement can be in another file (because log chunked across files), so, sort it and process from biggest to lesser (idea.log - latest, idea.8 - oldest).
-  natsort.Sort(files)
-  for i := len(files) - 1; i >= 0; i-- {
-    if taskContext.Err() != nil {
-      return nil
-    }
+	// product code and build are not specified in old report versions, so, it is inferred from log files.
+	// but ide started log statement can be in another file (because log chunked across files), so, sort it and process from biggest to lesser (idea.log - latest, idea.8 - oldest).
+	natsort.Sort(files)
+	for i := len(files) - 1; i >= 0; i-- {
+		if taskContext.Err() != nil {
+			return nil
+		}
 
-    err := logCollector.collectFromLogFile(files[i], taskContext)
-    if err != nil {
+		err := logCollector.collectFromLogFile(files[i], taskContext)
+		if err != nil {
 			return err
 		}
 	}
@@ -110,12 +118,12 @@ func collectFromDir(dir string, taskContext context.Context, logger *zap.Logger,
 }
 
 type LogCollector struct {
-  reportAnalyzer *analyzer.ReportAnalyzer
-  extraData      *analyzer.ExtraData
+	reportAnalyzer *analyzer.ReportAnalyzer
+	extraData      *analyzer.ExtraData
 
-  productAndBuildInfoRe *regexp.Regexp
+	productAndBuildInfoRe *regexp.Regexp
 
-  log *zap.Logger
+	log *zap.Logger
 }
 
 func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.Context) error {
@@ -147,12 +155,12 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
 					return errors.New("extraData not computed")
 				}
 
-        if len(t.extraData.ProductCode) == 0 {
-          return errors.New("ProductCode not computed")
-        }
-        if len(t.extraData.BuildNumber) == 0 {
-          return errors.New("BuildNumber not computed")
-        }
+				if len(t.extraData.ProductCode) == 0 {
+					return errors.New("ProductCode not computed")
+				}
+				if len(t.extraData.BuildNumber) == 0 {
+					return errors.New("BuildNumber not computed")
+				}
 
 				err = t.reportAnalyzer.Analyze(jsonData.Bytes(), *t.extraData)
 				if err != nil {
@@ -160,7 +168,7 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
 				}
 
 				state = 0
-        t.extraData.LastGeneratedTime = -1
+				t.extraData.LastGeneratedTime = -1
 				jsonData.Reset()
 			} else {
 				jsonData.Write(line)
@@ -171,7 +179,7 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
 				return errors.New("cannot find product and build number info")
 			}
 
-      t.extraData = &analyzer.ExtraData{
+			t.extraData = &analyzer.ExtraData{
 				ProductCode: result[1],
 				BuildNumber: result[2],
 			}
@@ -187,7 +195,7 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
 			if t.extraData == nil {
 				return errors.New("cannot find product and build number info")
 			}
-      t.extraData.LastGeneratedTime = parsedTime.Unix()
+			t.extraData.LastGeneratedTime = parsedTime.Unix()
 		}
 	}
 

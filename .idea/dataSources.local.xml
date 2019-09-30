@@ -13,7 +13,7 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="db [2]" uuid="eb79878d-96da-4450-9e82-259ec83514ba">
+    <data-source name="db [2]" uuid="95c0a30c-ca6e-447a-90ae-b836daf6535f">
       <database-info product="SQLite" version="3.25.1" jdbc-version="2.1" driver-name="SQLite JDBC" driver-version="3.25.1" dbms="SQLITE" exact-version="3.25.1" exact-driver-version="3.25">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>

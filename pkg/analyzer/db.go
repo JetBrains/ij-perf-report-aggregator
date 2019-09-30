@@ -106,7 +106,7 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
       return nil, err
     }
   } else if dbVersion == 1 {
-    return nil, errors.Errorf("Migration from db version 1 is not possible (product code and build number cannot be inferred from old reports)", dbVersion)
+    return nil, errors.New("Migration from db version 1 is not possible (product code and build number cannot be inferred from old reports)")
   } else if dbVersion > toolDbVersion {
     return nil, errors.Errorf("Database version %d is not supported (tool is outdated)", dbVersion)
   }

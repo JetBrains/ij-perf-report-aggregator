@@ -1,57 +1,57 @@
 package model
 
 type Report struct {
-	Version string `json:"version"`
+  Version string `json:"version"`
 
-	Generated   string `json:"generated"`
-	Build       string `json:"build"`
-	Os          string `json:"os"`
-	ProductCode string `json:"productCode"`
-	Runtime     string `json:"runtime"`
+  Generated   string `json:"generated"`
+  Build       string `json:"build"`
+  Os          string `json:"os"`
+  ProductCode string `json:"productCode"`
+  Runtime     string `json:"runtime"`
 
-	// not used yet
-	TraceEvents []TraceEvent `json:"traceEvents"`
+  // not used yet
+  TraceEvents []TraceEvent `json:"traceEvents"`
 
-	MainActivities           []Activity `json:"items"`
-	PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
+  MainActivities           []Activity `json:"items"`
+  PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
 
-	RawData       []byte `json:"-"`
-	GeneratedTime int64  `json:"-"`
+  RawData       []byte `json:"-"`
+  GeneratedTime int64  `json:"-"`
 }
 
 type TraceEvent struct {
-	Name  string `json:"name"`
-	Phase string `json:"ph"`
-	// in microseconds
-	Timestamp int `json:"ts"`
+  Name  string `json:"name"`
+  Phase string `json:"ph"`
+  // in microseconds
+  Timestamp int `json:"ts"`
 
-	// in old reports (v10) can be int instead of string
-	//Thread   string `json:"tid"`
-	Category string `json:"cat"`
+  // in old reports (v10) can be int instead of string
+  //Thread   string `json:"tid"`
+  Category string `json:"cat"`
 }
 
 type Activity struct {
-	Name   string `json:"name"`
-	Thread string `json:"thread"`
+  Name   string `json:"name"`
+  Thread string `json:"thread"`
 
-	// in milliseconds
-	Start    int `json:"start"`
-	End      int `json:"end"`
-	Duration int `json:"duration"`
+  // in milliseconds
+  Start    int `json:"start"`
+  End      int `json:"end"`
+  Duration int `json:"duration"`
 }
 
 // computed metrics
 // prefix i_ is used for instant events
 type Metrics struct {
-	// value - not duration, but start, because it is instant event and not duration event
-	Splash int `json:"i_splash"`
+  // value - not duration, but start, because it is instant event and not duration event
+  Splash int `json:"i_splash"`
 
-	Bootstrap               int `json:"bootstrap"`
-	AppInitPreparation      int `json:"appInitPreparation"`
-	AppInit                 int `json:"appInit"`
-	PluginDescriptorLoading int `json:"pluginDescriptorLoading"`
+  Bootstrap               int `json:"bootstrap"`
+  AppInitPreparation      int `json:"appInitPreparation"`
+  AppInit                 int `json:"appInit"`
+  PluginDescriptorLoading int `json:"pluginDescriptorLoading"`
 
-	ProjectComponentCreation int `json:"projectComponentCreation"`
-	AppComponentCreation     int `json:"appComponentCreation"`
-	ModuleLoading            int `json:"moduleLoading"`
+  ProjectComponentCreation int `json:"projectComponentCreation"`
+  AppComponentCreation     int `json:"appComponentCreation"`
+  ModuleLoading            int `json:"moduleLoading"`
 }

@@ -6,7 +6,8 @@ import (
 	"go.uber.org/zap"
 	"log"
 	"os"
-	"report-aggregator/pkg/ideaLog"
+  "report-aggregator/pkg/filling"
+  "report-aggregator/pkg/ideaLog"
 	"report-aggregator/pkg/server"
 )
 
@@ -31,6 +32,7 @@ func main() {
 
 	ideaLog.ConfigureCollectFromDirCommand(app, logger)
 	server.ConfigureServeCommand(app, logger)
+	filling.ConfigureFillCommand(app, logger)
 
 	_, err := app.Parse(os.Args[1:])
 	if err != nil {

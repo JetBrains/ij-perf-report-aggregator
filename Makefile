@@ -15,6 +15,7 @@ build: lint
 
 build-mac:
 	GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -ldflags='-s -w' -o dist/mac/report-aggregator ./
+	XZ_OPT=-9 tar -cJf dist/mac-report-aggregator.tar.xz dist/mac/report-aggregator
 
 build-linux:
 	env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ go build -ldflags='-s -w' -o dist/linux/report-aggregator ./
@@ -29,3 +30,10 @@ lint:
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u
 	go mod tidy
+
+# https://medium.com/@valyala/promql-tutorial-for-beginners-9ab455142085
+
+#   -influxSkipSingleField {measurement}
+#    	Uses {measurement} instead of `{measurement}{separator}{field_name}` for metic name if Influx line contains only a single field
+
+# docker run -it --rm -v ~/ij-perf-db/victoria-metrics-data:/victoria-metrics-data -p 8428:8428 victoriametrics/victoria-metrics -retentionPeriod 120

@@ -41,6 +41,8 @@ func serve(dbPath string, logger *zap.Logger) error {
 
 	defer util.Close(db, logger)
 
+
+
 	statsServer := &StatsServer{
 		logger: logger,
 		db:     db,

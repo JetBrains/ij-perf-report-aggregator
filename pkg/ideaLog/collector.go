@@ -90,7 +90,7 @@ func collectFromDir(dir string, taskContext context.Context, logger *zap.Logger,
   logCollector := &LogCollector{
     reportAnalyzer: reportAnalyzer,
     log:            logger,
-    productAndBuildInfoRe: regexp.MustCompile("#([A-Z]{2})-([\\d.]+)"),
+    productAndBuildInfoRe: regexp.MustCompile(`#([A-Z]{2})-([\d.]+)`),
   }
 
   // product code and build are not specified in old report versions, so, it is inferred from log files.

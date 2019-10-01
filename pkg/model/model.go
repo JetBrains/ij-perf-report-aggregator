@@ -41,17 +41,17 @@ type Activity struct {
 }
 
 // computed metrics
-// prefix i_ is used for instant events
 type Metrics struct {
   // value - not duration, but start, because it is instant event and not duration event
-  Splash int `json:"i_splash"`
+  Splash int `json:"splash"`
 
   Bootstrap               int `json:"bootstrap"`
   AppInitPreparation      int `json:"appInitPreparation"`
   AppInit                 int `json:"appInit"`
   PluginDescriptorLoading int `json:"pluginDescriptorLoading"`
 
-  ProjectComponentCreation int `json:"projectComponentCreation"`
   AppComponentCreation     int `json:"appComponentCreation"`
-  ModuleLoading            int `json:"moduleLoading"`
+  ProjectComponentCreation int `json:"projectComponentCreation"`
+
+  ModuleLoading int `json:"moduleLoading"`
 }

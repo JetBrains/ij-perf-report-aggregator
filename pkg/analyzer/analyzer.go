@@ -209,7 +209,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
 	return t.waitChannel
 }
 
-const metricsVersion = 2
+const metricsVersion = 3
 
 func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 	t.waitGroup.Add(1)

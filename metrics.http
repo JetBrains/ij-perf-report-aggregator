@@ -3,7 +3,17 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8428/api/v1/query?query=median(bootstrap_d[5y]) by (buildC1)
+GET http://localhost:8428/api/v1/query?query=bootstrap_d{buildC1="192"}[5y]
+Accept: application/json
+
+###
+
+GET http://localhost:8428/api/v1/query?query=median(bootstrap_d{product="IU",machine="zlata"}[5y]) by (buildC1)
+Accept: application/json
+
+###
+
+GET http://localhost:8428/api/v1/query?query=median_over_time(bootstrap_d[5y])
 Accept: application/json
 
 ###
@@ -16,5 +26,11 @@ GET http://localhost:8428/api/v1/export?match[]={__name__!=""}
 
 ###
 GET http://localhost:9044/info
+
+###
+GET http://localhost:9044/metrics?product=IU&machine=zlata
+
+###
+GET http://127.0.0.1:9044/groupedMetrics?product=IU&machine=zlata
 
 ###

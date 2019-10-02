@@ -5,6 +5,7 @@
 # go get -u github.com/go-bindata/go-bindata/...
 
 assets:
+	qtc -dir pkg/server
 	go-bindata -o ./pkg/analyzer/sqlScript.go -pkg analyzer -prefix ./pkg/analyzer/sql ./pkg/analyzer/sql
 
 build: lint
@@ -36,4 +37,4 @@ update-deps:
 #   -influxSkipSingleField {measurement}
 #    	Uses {measurement} instead of `{measurement}{separator}{field_name}` for metic name if Influx line contains only a single field
 
-# docker run -it --rm -v ~/ij-perf-db/victoria-metrics-data:/victoria-metrics-data -p 8428:8428 victoriametrics/victoria-metrics -retentionPeriod 120
+# docker run -it --rm -v ~/ij-perf-db/victoria-metrics-data:/victoria-metrics-data -p 8428:8428 victoriametrics/victoria-metrics:v1.28.0-beta5 -retentionPeriod 120

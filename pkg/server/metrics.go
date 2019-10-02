@@ -24,8 +24,11 @@ func (t *StatsServer) handleMetricsRequest(w http.ResponseWriter, request *http.
     return
   }
 
-	//noinspection SqlResolve
-	statement, err := t.db.Prepare(`select generated_time, build_c1, build_c2, build_c3, metrics from report where product = ? and machine = ? order by build_c1, build_c2, build_c3, generated_time`, product, machine)
+	statement, err := t.db.Prepare(`
+select generated_time, build_c1, build_c2, build_c3, duration_metrics, instant_metrics 
+from report 
+where product = ? and machine = ? 
+order by build_c1, build_c2, build_c3, generated_time`, product, machine)
 	if err != nil {
 		t.logger.Error("cannot query", zap.Error(err))
 		t.httpError(err, w)
@@ -58,8 +61,9 @@ func (t *StatsServer) handleMetricsRequest(w http.ResponseWriter, request *http.
 		var buildC1 int
 		var buildC2 int
 		var buildC3 int
-		var metrics sqlite3.RawString
-		err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &metrics)
+		var durationMetrics sqlite3.RawString
+		var instantMetrics sqlite3.RawString
+		err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &durationMetrics, &instantMetrics)
 		if err != nil {
 			t.httpError(err, w)
 			return
@@ -107,7 +111,9 @@ func (t *StatsServer) handleMetricsRequest(w http.ResponseWriter, request *http.
     jsonWriter.WriteMore()
 
 		// skip first '{'
-		jsonWriter.WriteRaw(string(metrics[1:]))
+    jsonWriter.WriteRaw(string(durationMetrics[1 : len(durationMetrics)-1]))
+    jsonWriter.WriteMore()
+    jsonWriter.WriteRaw(string(instantMetrics[1:]))
 	}
 
 	jsonWriter.WriteArrayEnd()

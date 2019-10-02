@@ -234,12 +234,18 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 		return nil
 	}
 
-	metrics := t.computeMetrics(report, logger)
-	if metrics == nil {
+	durationMetrics, instantMetrics := t.computeMetrics(report, logger)
+	// or both null, or not - no need to check each one
+	if durationMetrics == nil || instantMetrics == nil {
 		return nil
 	}
 
-	serializedMetrics, err := jsoniter.ConfigFastest.Marshal(metrics)
+	serializedDurationMetrics, err := jsoniter.ConfigFastest.Marshal(durationMetrics)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	serializedInstantMetrics, err := jsoniter.ConfigFastest.Marshal(instantMetrics)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -275,7 +281,7 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 	err = statement.Exec(id, t.machine, report.GeneratedTime,
 		report.ProductCode,
 		buildC1, buildC2, buildC3,
-		metricsVersion, serializedMetrics,
+		metricsVersion, serializedDurationMetrics, serializedInstantMetrics,
 		report.RawData)
 	if err != nil {
 		return errors.WithStack(err)

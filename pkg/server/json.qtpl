@@ -1,0 +1,57 @@
+{% stripspace %}
+{% func GroupedMetricList(list []*MedianResult) %}
+{
+  "groupNames": [
+    {% if len(list) > 0 %}
+      {% for i, value := range list[0].buildToValue %}
+        {% if i != 0 %},{% endif %}
+        "{%d value.buildC1 %}"
+      {% endfor %}
+    {% endif %}
+  ],
+  "data": [
+    {% for i, item := range list %}
+      {% if i != 0 %},{% endif %}
+      {
+        {% for _, value := range item.buildToValue %}
+        "{%d value.buildC1 %}": {%d value.value %},
+        {% endfor %}
+        {% comment %}
+          metric as last to avoid using any logic "should we print last comma or not"
+        {% endcomment %}
+        "metric": {%q= item.metricName %}
+      }
+    {% endfor %}
+  ]
+}
+{% endfunc %}
+
+{% func Info(productNames []string, essentialMetricNames []string) %}
+{
+  "productNames": {%= safeStringList(productNames) %},
+  {%= metricNames(essentialMetricNames) %}
+  ,
+{% endfunc %}
+
+{% func metricNames(essentialMetricNames []string) %}
+"durationMetricsNames": [
+  {% for _, name := range essentialMetricNames %}
+    "{%s= name %}",
+  {% endfor %}
+  "moduleLoading"
+],
+"instantMetricsNames": [
+  "splash"
+]
+{% endfunc %}
+
+
+{% func safeStringList(list []string) %}
+[
+  {% for i, v := range list %}
+    {% if i != 0 %},{% endif %}
+    "{%s= v %}"
+  {% endfor %}
+]
+{% endfunc %}
+{% endstripspace %}

@@ -41,10 +41,7 @@ type Activity struct {
 }
 
 // computed metrics
-type Metrics struct {
-  // value - not duration, but start, because it is instant event and not duration event
-  Splash int `json:"splash"`
-
+type DurationEventMetrics struct {
   Bootstrap               int `json:"bootstrap"`
   AppInitPreparation      int `json:"appInitPreparation"`
   AppInit                 int `json:"appInit"`
@@ -54,4 +51,9 @@ type Metrics struct {
   ProjectComponentCreation int `json:"projectComponentCreation"`
 
   ModuleLoading int `json:"moduleLoading"`
+}
+
+type InstantEventMetrics struct {
+  // value - not duration, but start, because it is instant event and not duration event
+  Splash int `json:"splash"`
 }

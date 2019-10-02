@@ -1,17 +1,16 @@
 package filling
 
 import (
-	"bytes"
-	"github.com/alecthomas/kingpin"
-	"github.com/bvinc/go-sqlite-lite/sqlite3"
-	"github.com/develar/errors"
-	"github.com/json-iterator/go"
-	"go.uber.org/zap"
-	"io"
-	"net/http"
-	"report-aggregator/pkg/util"
-	"strconv"
-	"strings"
+  "bytes"
+  "github.com/alecthomas/kingpin"
+  "github.com/bvinc/go-sqlite-lite/sqlite3"
+  "github.com/develar/errors"
+  "github.com/json-iterator/go"
+  "go.uber.org/zap"
+  "io"
+  "net/http"
+  "report-aggregator/pkg/util"
+  "strconv"
 )
 
 func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
@@ -31,13 +30,7 @@ func fill(dbPath string, promServer string, logger *zap.Logger) error {
 
 	defer util.Close(db, logger)
 
-	statement, err := db.Prepare(`
- select id, machine, generated_time, metrics, 
-        product,
-        build_c1, build_c2, build_c3
- from report order by generated_time
- 	`)
-
+	statement, err := createMetricsQuery(db)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -66,6 +59,7 @@ func fill(dbPath string, promServer string, logger *zap.Logger) error {
 }
 
 func writeReports(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger) error {
+  row := &MetricResult{}
 	for {
 		hasRow, err := statement.Step()
 		if !hasRow {
@@ -77,99 +71,109 @@ func writeReports(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger
 			return err
 		}
 
-		err = writeMetrics(statement, pw, logger)
+		err = writeMetrics(statement, row, pw, logger)
 		if err != nil {
 			return err
 		}
 	}
 }
 
-func writeMetrics(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger) error {
-	var id sqlite3.RawString
-	var machine sqlite3.RawString
-	var generatedTime int64
-	var metricsJson sqlite3.RawString
-	var productCode sqlite3.RawString
-	var buildC1 int
-	var buildC2 int
-	var buildC3 int
-	err := statement.Scan(&id, &machine, &generatedTime, &metricsJson, &productCode, &buildC1, &buildC2, &buildC3)
+func writeMetrics(statement *sqlite3.Stmt, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
+	err := scanMetricResult(statement, row)
 	if err != nil {
 		logger.Error("cannot scan", zap.Error(err))
 		return err
 	}
 
-	var metrics map[string]int
-	err = jsoniter.ConfigFastest.Unmarshal([]byte(metricsJson), &metrics)
+	var instantMetricsJson map[string]int
+	err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetricsJson)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	var buf bytes.Buffer
-	for key, value := range metrics {
-		isInstant := strings.HasPrefix(key, "i_")
+  err = doWriteMetrics(row.durationMetricsJson, false, &buf, row, pw, logger)
+  if err != nil {
+    return err
+  }
 
-		if isInstant {
-			buf.WriteString(key[2:])
-		} else {
-			buf.WriteString(key)
-		}
+  err = doWriteMetrics(row.instantMetricsJson, true, &buf, row, pw, logger)
+  if err != nil {
+    return err
+  }
 
-		buf.WriteByte(',')
+  return nil
+}
 
-		// write tags
+func doWriteMetrics(metricsJson sqlite3.RawString, isInstant bool, buf *bytes.Buffer, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
+  var metrics map[string]int
+ 	err := jsoniter.ConfigFastest.Unmarshal([]byte(metricsJson), &metrics)
+ 	if err != nil {
+ 		return errors.WithStack(err)
+ 	}
 
-		buf.WriteString("id=")
-		buf.WriteString(string(id))
-		buf.WriteByte(',')
+  for key, value := range metrics {
+    // skip missing values (-1 means null (undefined))
+    if value == -1 {
+      continue
+    }
 
-		buf.WriteString("machine=")
-		buf.WriteString(string(machine))
-		buf.WriteByte(',')
+    buf.Reset()
 
-		buf.WriteString("product=")
-		buf.WriteString(string(productCode))
-		buf.WriteByte(',')
+    buf.WriteString(key)
 
-		buf.WriteString("buildC1=")
-		buf.WriteString(strconv.Itoa(buildC1))
-		buf.WriteByte(',')
+    buf.WriteByte(',')
 
-		buf.WriteString("buildC2=")
-		buf.WriteString(strconv.Itoa(buildC2))
-		buf.WriteByte(',')
+    // write tags
 
-		buf.WriteString("buildC3=")
-		buf.WriteString(strconv.Itoa(buildC3))
+    buf.WriteString("id=")
+    buf.WriteString(string(row.id))
+    buf.WriteByte(',')
 
-		// write fields
-		buf.WriteByte(' ')
-		if isInstant {
-			buf.WriteByte('i')
-		} else {
-			buf.WriteByte('d')
-		}
-		buf.WriteByte('=')
-		buf.WriteString(strconv.Itoa(value))
-		// https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#data-types
-		// integer type
-		buf.WriteByte('i')
-		buf.WriteByte(' ')
+    buf.WriteString("machine=")
+    buf.WriteString(string(row.machine))
+    buf.WriteByte(',')
 
-		buf.WriteString(strconv.FormatInt(generatedTime, 10))
+    buf.WriteString("product=")
+    buf.WriteString(string(row.productCode))
+    buf.WriteByte(',')
 
-		logger.Info(buf.String())
+    buf.WriteString("buildC1=")
+    buf.WriteString(strconv.Itoa(row.buildC1))
+    buf.WriteByte(',')
 
-		buf.WriteByte('\n')
+    buf.WriteString("buildC2=")
+    buf.WriteString(strconv.Itoa(row.buildC2))
+    buf.WriteByte(',')
 
-		_, err := buf.WriteTo(pw)
-		if err != nil {
-			logger.Error("cannot write", zap.Error(err))
-			return err
-		}
+    buf.WriteString("buildC3=")
+    buf.WriteString(strconv.Itoa(row.buildC3))
 
-		buf.Reset()
-	}
+    // write fields
+    buf.WriteByte(' ')
+    if isInstant {
+      buf.WriteByte('i')
+    } else {
+      buf.WriteByte('d')
+    }
+    buf.WriteByte('=')
+    buf.WriteString(strconv.Itoa(value))
+    // https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#data-types
+    // integer type
+    buf.WriteByte('i')
+    buf.WriteByte(' ')
 
-	return nil
+    buf.WriteString(strconv.FormatInt(row.generatedTime, 10))
+
+    logger.Info(buf.String())
+
+    buf.WriteByte('\n')
+
+    _, err := buf.WriteTo(pw)
+    if err != nil {
+      logger.Error("cannot write", zap.Error(err))
+      return err
+    }
+  }
+  return nil
 }

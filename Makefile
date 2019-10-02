@@ -2,6 +2,8 @@
 
 # https://github.com/bvinc/go-sqlite-lite/issues/10#issuecomment-498539630
 
+# https://github.com/valyala/quicktemplate
+# go get -u github.com/valyala/quicktemplate/qtc
 # go get -u github.com/go-bindata/go-bindata/...
 
 assets:

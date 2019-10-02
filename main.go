@@ -6,8 +6,8 @@ import (
 	"go.uber.org/zap"
 	"log"
 	"os"
-  "report-aggregator/pkg/filling"
-  "report-aggregator/pkg/ideaLog"
+	"report-aggregator/pkg/filling"
+	"report-aggregator/pkg/ideaLog"
 	"report-aggregator/pkg/server"
 )
 

@@ -1,3 +1,5 @@
+{% import "github.com/bvinc/go-sqlite-lite/sqlite3" %}
+
 {% stripspace %}
 {% func GroupedMetricList(list []*MedianResult) %}
 {
@@ -26,11 +28,24 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, essentialMetricNames []string) %}
+{% func Info(productNames []string, essentialMetricNames []string, statement *sqlite3.Stmt, errRef *error) %}
 {
   "productNames": {%= safeStringList(productNames) %},
-  {%= metricNames(essentialMetricNames) %}
-  ,
+  {%= metricNames(essentialMetricNames) %},
+  "productToMachineNames": {
+    {% for i, product := range productNames %}
+      {% code
+        *errRef = statement.Bind(product)
+        if *errRef != nil {
+          return
+        }
+      %}
+
+      {% if i != 0 %},{% endif %}
+      "{%s= product %}": {%= getAndWriteStringList(statement, errRef) %}
+    {% endfor %}
+  }
+}
 {% endfunc %}
 
 {% func metricNames(essentialMetricNames []string) %}
@@ -51,6 +66,38 @@
   {% for i, v := range list %}
     {% if i != 0 %},{% endif %}
     "{%s= v %}"
+  {% endfor %}
+]
+{% endfunc %}
+
+{% func getAndWriteStringList(statement *sqlite3.Stmt, errRef *error) %}
+[
+  {% code isFirstRow := true %}
+  {% for %}
+    {% code
+      hasRow, err := statement.Step()
+      if err != nil {
+        *errRef = err
+        return
+      }
+
+      if !hasRow {
+        break
+      }
+
+      value, _, err := statement.ColumnRawString(0)
+      if err != nil {
+        *errRef = err
+        return
+      }
+    %}
+
+    {% if isFirstRow %}
+      {% code isFirstRow = false %}
+    {% else %}
+      ,
+    {% endif %}
+    {%q= string(value) %}
   {% endfor %}
 ]
 {% endfunc %}

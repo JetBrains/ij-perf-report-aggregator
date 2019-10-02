@@ -34,3 +34,22 @@ GET http://localhost:9044/metrics?product=IU&machine=zlata
 GET http://127.0.0.1:9044/groupedMetrics?product=IU&machine=zlata
 
 ###
+
+GET https://buildserver.labs.intellij.net/app/rest/builds/id:54846099/artifacts/content/run/startup/startup-stats-startup.json
+Authorization: Bearer {{token}}
+Accept: application/json
+###
+
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=buildType:(id:ijplatform_master_UltimateStartupPerfTestMac)&fields=count,href,nextHref,build(number,id)
+Authorization: Bearer {{token}}
+Accept: application/json
+###
+
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54846099&fields=build(agent(name))
+Authorization: Bearer {{token}}
+Accept: application/json
+###
+
+GET https://buildserver.labs.intellij.net/app/rest/buildTypes/id:ijplatform_master_UltimateStartupPerfTestMac
+Authorization: Bearer {{token}}
+###

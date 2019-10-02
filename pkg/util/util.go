@@ -1,9 +1,11 @@
 package util
 
 import (
-	"go.uber.org/zap"
+  "context"
+  "go.uber.org/zap"
 	"io"
 	"os"
+  "os/signal"
 )
 
 func Close(c io.Closer, log *zap.Logger) {
@@ -14,4 +16,15 @@ func Close(c io.Closer, log *zap.Logger) {
 		}
 		log.Error("cannot close", zap.Error(err))
 	}
+}
+
+func CreateCommandContext() (context.Context, context.CancelFunc) {
+  taskContext, cancel := context.WithCancel(context.Background())
+  signals := make(chan os.Signal, 1)
+  signal.Notify(signals, os.Interrupt, os.Kill)
+  go func() {
+    <-signals
+    cancel()
+  }()
+  return taskContext, cancel
 }

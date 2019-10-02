@@ -17,6 +17,7 @@ type Report struct {
 
   RawData       []byte `json:"-"`
   GeneratedTime int64  `json:"-"`
+  Machine       string `json:"-"`
 }
 
 type TraceEvent struct {

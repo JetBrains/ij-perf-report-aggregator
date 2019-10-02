@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"github.com/alecthomas/kingpin"
-	"go.uber.org/zap"
-	"log"
-	"os"
-	"report-aggregator/pkg/filling"
-	"report-aggregator/pkg/ideaLog"
-	"report-aggregator/pkg/server"
+  "fmt"
+  "github.com/alecthomas/kingpin"
+  "go.uber.org/zap"
+  "log"
+  "os"
+  "report-aggregator/pkg/filling"
+  "report-aggregator/pkg/ideaLog"
+  "report-aggregator/pkg/server"
+  "report-aggregator/pkg/teamcity"
 )
 
 func createLogger() *zap.Logger {
@@ -31,6 +32,8 @@ func main() {
 	var app = kingpin.New("report-aggregator", "report-aggregator").Version("0.0.1")
 
 	ideaLog.ConfigureCollectFromDirCommand(app, logger)
+  teamcity.ConfigureCollectFromTeamCity(app, logger)
+
 	server.ConfigureServeCommand(app, logger)
 	filling.ConfigureFillCommand(app, logger)
 

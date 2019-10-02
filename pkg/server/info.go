@@ -15,7 +15,7 @@ func (t *StatsServer) handleInfoRequest(w http.ResponseWriter, _ *http.Request) 
 		return
 	}
 
-	statement, err := t.db.Prepare("select distinct machine from report where product = ? order by machine")
+	statement, err := t.db.Prepare("select rowid as id, name from machine where rowid in (select distinct machine from report where product = ?) order by name")
 	if err != nil {
 		t.httpError(err, w)
 		return

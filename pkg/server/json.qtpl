@@ -32,7 +32,7 @@
 {
   "productNames": {%= safeStringList(productNames) %},
   {%= metricNames(essentialMetricNames) %},
-  "productToMachineNames": {
+  "productToMachine": {
     {% for i, product := range productNames %}
       {% code
         *errRef = statement.Bind(product)
@@ -42,7 +42,7 @@
       %}
 
       {% if i != 0 %},{% endif %}
-      "{%s= product %}": {%= getAndWriteStringList(statement, errRef) %}
+      "{%s= product %}": {%= writeMachineInfoList(statement, errRef) %}
     {% endfor %}
   }
 }
@@ -70,7 +70,7 @@
 ]
 {% endfunc %}
 
-{% func getAndWriteStringList(statement *sqlite3.Stmt, errRef *error) %}
+{% func writeMachineInfoList(statement *sqlite3.Stmt, errRef *error) %}
 [
   {% code isFirstRow := true %}
   {% for %}
@@ -85,7 +85,13 @@
         break
       }
 
-      value, _, err := statement.ColumnRawString(0)
+      id, _, err := statement.ColumnInt(0)
+      if err != nil {
+        *errRef = err
+        return
+      }
+
+      name, _, err := statement.ColumnRawString(1)
       if err != nil {
         *errRef = err
         return
@@ -97,7 +103,10 @@
     {% else %}
       ,
     {% endif %}
-    {%q= string(value) %}
+    {
+      "id": {%d id %},
+      "name": {%q= string(name) %}
+    }
   {% endfor %}
 ]
 {% endfunc %}

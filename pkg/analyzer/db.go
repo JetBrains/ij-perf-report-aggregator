@@ -77,7 +77,7 @@ func createBackup(filePath string, dirPath string, logger *zap.Logger) error {
 	return nil
 }
 
-const toolDbVersion = 3
+const toolDbVersion = 4
 
 func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
 	db, err := sqlite3.Open(dbPath)

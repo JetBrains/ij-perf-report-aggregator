@@ -1,3 +1,4 @@
 .idea/workspace.xml
 .idea/httpRequests/
 /dist/
+/http-client.env.json

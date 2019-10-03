@@ -10,15 +10,17 @@ create table report
   id               string not null primary key,
   machine          int    not null,
   generated_time   int    not null,
-  metrics_version  int    not null,
+  tc_build_id      int,
 
   product          string not null,
   build_c1         int    not null,
   build_c2         int    not null,
   build_c3         int    not null,
 
+  metrics_version  int    not null,
   duration_metrics string not null,
   instant_metrics  string not null,
+
   raw_report       string not null,
 
   foreign key (machine) references machine (ROWID) on delete restrict

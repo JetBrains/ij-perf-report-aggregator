@@ -9,7 +9,6 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/bvinc/go-sqlite-lite v0.6.1
-	github.com/cvbarros/go-teamcity v0.5.0
 	github.com/develar/errors v0.9.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/json-iterator/go v1.1.7

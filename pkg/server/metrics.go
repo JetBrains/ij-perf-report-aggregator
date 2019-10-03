@@ -24,70 +24,69 @@ func (t *StatsServer) handleMetricsRequest(w http.ResponseWriter, request *http.
     return
   }
 
-	statement, err := t.db.Prepare(`
+  statement, err := t.db.Prepare(`
 select generated_time, build_c1, build_c2, build_c3, duration_metrics, instant_metrics 
 from report 
 where product = ? and machine = ? 
 order by build_c1, build_c2, build_c3, generated_time`, product, machine)
-	if err != nil {
-		t.logger.Error("cannot query", zap.Error(err))
-		t.httpError(err, w)
-		return
-	}
+  if err != nil {
+    t.httpError(err, w)
+    return
+  }
 
-	defer util.Close(statement, t.logger)
+  defer util.Close(statement, t.logger)
 
-	w.Header().Set("Content-Type", "application/json")
-	jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, w, 64*1024)
+  w.Header().Set("Content-Type", "application/json")
+  jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, w, 64*1024)
 
-	jsonWriter.WriteArrayStart()
+  jsonWriter.WriteArrayStart()
 
   var stringBuilder strings.Builder
 
-	isFirst := true
-	lastBuildWithoutUniqueSuffix := ""
-	for {
-		hasRow, err := statement.Step()
-		if err != nil {
-			t.httpError(err, w)
-			return
-		}
+  isFirst := true
+  lastBuildWithoutUniqueSuffix := ""
+  for {
+    hasRow, err := statement.Step()
+    if err != nil {
+      t.httpError(err, w)
+      return
+    }
 
-		if !hasRow {
-			break
-		}
+    if !hasRow {
+      break
+    }
 
-		var generatedTime int64
-		var buildC1 int
-		var buildC2 int
-		var buildC3 int
-		var durationMetrics sqlite3.RawString
-		var instantMetrics sqlite3.RawString
-		err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &durationMetrics, &instantMetrics)
-		if err != nil {
-			t.httpError(err, w)
-			return
-		}
+    var generatedTime int64
+    var buildC1 int
+    var buildC2 int
+    var buildC3 int
+    var durationMetrics sqlite3.RawString
+    var instantMetrics sqlite3.RawString
+    err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &durationMetrics, &instantMetrics)
+    if err != nil {
+      t.httpError(err, w)
+      return
+    }
 
-		if isFirst {
-			isFirst = false
-		} else {
-			jsonWriter.WriteMore()
-		}
+    if isFirst {
+      isFirst = false
+    } else {
+      jsonWriter.WriteMore()
+    }
 
-		jsonWriter.WriteObjectStart()
-		// timestamp
-		jsonWriter.WriteObjectField("t")
-		// seconds to milliseconds
-		jsonWriter.WriteInt64(generatedTime * 1000)
-		jsonWriter.WriteMore()
+    jsonWriter.WriteObjectStart()
+    // timestamp
+    jsonWriter.WriteObjectField("t")
+    // seconds to milliseconds
+    jsonWriter.WriteInt64(generatedTime * 1000)
+    jsonWriter.WriteMore()
 
-		// build number with addition if not unique (build as x coordinate)
+    // build number with addition if not unique (build as x coordinate)
     stringBuilder.Reset()
     stringBuilder.WriteString(strconv.Itoa(buildC1))
     stringBuilder.WriteRune('.')
     stringBuilder.WriteString(strconv.Itoa(buildC2))
-		if buildC3 != 0 {
+    if buildC3 != 0 {
       stringBuilder.WriteRune('.')
       stringBuilder.WriteString(strconv.Itoa(buildC3))
     }
@@ -110,18 +109,17 @@ order by build_c1, build_c2, build_c3, generated_time`, product, machine)
     jsonWriter.WriteString(buildAsString)
     jsonWriter.WriteMore()
 
-		// skip first '{'
+    // skip first '{'
     jsonWriter.WriteRaw(string(durationMetrics[1 : len(durationMetrics)-1]))
     jsonWriter.WriteMore()
     jsonWriter.WriteRaw(string(instantMetrics[1:]))
-	}
+  }
 
-	jsonWriter.WriteArrayEnd()
+  jsonWriter.WriteArrayEnd()
 
-	err = jsonWriter.Flush()
-	if err != nil {
-		t.logger.Error("cannot flush", zap.Error(err))
-		return
-	}
+  err = jsonWriter.Flush()
+  if err != nil {
+    t.logger.Error("cannot flush", zap.Error(err))
+    return
+  }
 }
-

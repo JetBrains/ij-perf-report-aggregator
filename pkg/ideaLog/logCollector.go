@@ -13,6 +13,7 @@ import (
   "path/filepath"
   "regexp"
   "report-aggregator/pkg/analyzer"
+  "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
   "strings"
   "time"
@@ -110,7 +111,7 @@ func (t *LogCollector) collectFromDir(dir string, taskContext context.Context) e
 
 type LogCollector struct {
   reportAnalyzer *analyzer.ReportAnalyzer
-  extraData      *analyzer.ExtraData
+  extraData      *model.ExtraData
 
   productAndBuildInfoRe *regexp.Regexp
 
@@ -172,7 +173,7 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
         return errors.New("cannot find product and build number info")
       }
 
-      t.extraData = &analyzer.ExtraData{
+      t.extraData = &model.ExtraData{
         ProductCode: result[1],
         BuildNumber: result[2],
         Machine:     t.machine,

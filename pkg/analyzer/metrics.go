@@ -1,31 +1,34 @@
 package analyzer
 
 import (
+  "github.com/develar/errors"
+  jsoniter "github.com/json-iterator/go"
   "github.com/mcuadros/go-version"
   "go.uber.org/zap"
   "report-aggregator/pkg/model"
 )
 
-//type MetricDescriptor struct {
-//  name string
-//
-//  valueChecker func(value int)
-//}
-//
-//var metricDescriptors []MetricDescriptor
-//
-//func init() {
-//  metricDescriptors = []MetricDescriptor{
-//    {
-//      name: "bootstrap",
-//    },
-//    {
-//      name: "appInitPreparation",
-//    },
-//  }
-//}
+func computeAndSerializeMetrics(report *model.Report, logger *zap.Logger) ([]byte, []byte, error) {
+  durationMetrics, instantMetrics := computeMetrics(report, logger)
+  // or both null, or not - no need to check each one
+  if durationMetrics == nil || instantMetrics == nil {
+    return nil, nil, nil
+  }
 
-func (t *ReportAnalyzer) computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {
+  serializedDurationMetrics, err := jsoniter.ConfigFastest.Marshal(durationMetrics)
+  if err != nil {
+    return nil, nil, errors.WithStack(err)
+  }
+
+  serializedInstantMetrics, err := jsoniter.ConfigFastest.Marshal(instantMetrics)
+  if err != nil {
+    return nil, nil, errors.WithStack(err)
+  }
+
+  return serializedDurationMetrics, serializedInstantMetrics, nil
+}
+
+func computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {
   durationMetrics := &model.DurationEventMetrics{
     Bootstrap: -1,
 

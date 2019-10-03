@@ -18,15 +18,6 @@ type MetricResult struct {
 	buildC3 int
 }
 
-func createMetricsQuery(db *sqlite3.Conn) (*sqlite3.Stmt, error) {
-	return db.Prepare(`
-   select id, product, machine, generated_time, 
-          duration_metrics, instant_metrics, 
-          build_c1, build_c2, build_c3
-   from report order by generated_time
-   	`)
-}
-
 func scanMetricResult(statement *sqlite3.Stmt, row *MetricResult) error {
 	var err error
 	i := 0

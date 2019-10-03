@@ -15,9 +15,19 @@ type Report struct {
   MainActivities           []Activity `json:"items"`
   PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
 
-  RawData       []byte `json:"-"`
-  GeneratedTime int64  `json:"-"`
-  Machine       string `json:"-"`
+  RawData       []byte    `json:"-"`
+  GeneratedTime int64     `json:"-"`
+  ExtraData     ExtraData `json:"-"`
+}
+
+type ExtraData struct {
+  LastGeneratedTime int64
+
+  ProductCode string
+  BuildNumber string
+
+  Machine   string
+  TcBuildId int
 }
 
 type TraceEvent struct {

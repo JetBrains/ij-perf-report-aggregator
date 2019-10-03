@@ -12,14 +12,23 @@ import (
   "net/url"
   "os"
   "report-aggregator/pkg/analyzer"
+  "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
   "strconv"
   "time"
 )
 
+/*
+collect-tc -c ijplatform_master_UltimateStartupPerfTestMac -c ijplatform_master_UltimateStartupPerfTestWindows -c ijplatform_master_UltimateStartupPerfTestLinux \
+-c ijplatform_master_WebStormStartupPerfTestMac -c ijplatform_master_WebStormStartupPerfTestWindows -c ijplatform_master_WebStormStartupPerfTestLinux \
+--db /Volumes/data/ij-perf-db/db.sqlite
+ */
+
+// TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
+// so, no need to explicitly specify filter
 func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("collect-tc", "Collect reports from TeamCity.")
-  buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Required().Strings()
+  buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
   dbPath := command.Flag("db", "The output SQLite database file.").Short('o').Required().String()
   command.Action(func(context *kingpin.ParseContext) error {
     return collectFromTeamCity(*dbPath, *buildTypeIds, log)
@@ -135,7 +144,10 @@ func (t *Collector) loadReports(builds []Build) error {
         return err
       }
 
-      return t.reportAnalyzer.Analyze(data, analyzer.ExtraData{Machine: build.Agent.Name})
+      return t.reportAnalyzer.Analyze(data, model.ExtraData{
+        Machine:   build.Agent.Name,
+        TcBuildId: build.Id,
+      })
     }, nil
   })
 
@@ -187,7 +199,6 @@ func (t *Collector) createRequest(url string) (*http.Request, error) {
     request.AddCookie(&http.Cookie{Name: "TCSESSIONID", Value: sessionId})
   }
   request.Header.Add("Authorization", "Bearer "+os.Getenv("TC_TOKEN"))
-
 
   request.Header.Add("Accept", "application/json")
   return request, nil

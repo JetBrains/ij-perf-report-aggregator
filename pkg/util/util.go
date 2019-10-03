@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
   "os/signal"
+  "syscall"
 )
 
 func Close(c io.Closer, log *zap.Logger) {
@@ -21,7 +22,7 @@ func Close(c io.Closer, log *zap.Logger) {
 func CreateCommandContext() (context.Context, context.CancelFunc) {
   taskContext, cancel := context.WithCancel(context.Background())
   signals := make(chan os.Signal, 1)
-  signal.Notify(signals, os.Interrupt, os.Kill)
+  signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
   go func() {
     <-signals
     cancel()

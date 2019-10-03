@@ -1,5 +1,6 @@
 package filling
 
+import "C"
 import (
   "bytes"
   "github.com/alecthomas/kingpin"
@@ -9,89 +10,104 @@ import (
   "go.uber.org/zap"
   "io"
   "net/http"
+  "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/util"
   "strconv"
 )
 
 func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
-	command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
-	dbPath := command.Flag("db", "The SQLite database file.").Required().String()
-	promServer := command.Flag("prom", "The VictoriaMetrics/Influx server.").Required().String()
-	command.Action(func(context *kingpin.ParseContext) error {
-		return fill(*dbPath, *promServer, logger)
-	})
+  command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
+  dbPath := command.Flag("db", "The SQLite database file.").Required().String()
+  promServer := command.Flag("prom", "The VictoriaMetrics/Influx server.").Required().String()
+  updateMetrics := command.Flag("update-metrics", "Whether to update computed metrics if outdated. Think about backup.").Required().Bool()
+  command.Action(func(context *kingpin.ParseContext) error {
+    return fill(*dbPath, *updateMetrics, *promServer, logger)
+  })
 }
 
-func fill(dbPath string, promServer string, logger *zap.Logger) error {
-	db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+func fill(dbPath string, updateMetrics bool, promServer string, logger *zap.Logger) error {
+  if updateMetrics {
+    err := analyzer.UpdateMetrics(dbPath, logger)
+    if err != nil {
+      return err
+    }
+  }
 
-	defer util.Close(db, logger)
+  db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
-	statement, err := createMetricsQuery(db)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+  defer util.Close(db, logger)
 
-	defer util.Close(statement, logger)
+  statement, err := db.Prepare(`
+	   select id, product, machine, generated_time, 
+	          duration_metrics, instant_metrics, 
+	          build_c1, build_c2, build_c3
+	   from report order by generated_time
+	   	`)
 
-	pr, pw := io.Pipe()
-	go func() {
-		_ = pw.CloseWithError(writeReports(statement, pw, logger))
-	}()
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
-	// it is not data (e.g. duration or start) precision, but timestamp (report generated time)
-	response, err := http.Post(promServer+"/write?precision=s", "text/plain", pr)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+  defer util.Close(statement, logger)
 
-	if response != nil {
-		defer util.Close(response.Body, logger)
-	}
+  pr, pw := io.Pipe()
+  go func() {
+    _ = pw.CloseWithError(writeReports(statement, pw, logger))
+  }()
 
-	if response.StatusCode >= 300 {
-		return errors.New("Failed to send: " + response.Status)
-	}
-	return nil
+  // it is not data (e.g. duration or start) precision, but timestamp (report generated time)
+  response, err := http.Post(promServer+"/write?precision=s", "text/plain", pr)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  if response != nil {
+    defer util.Close(response.Body, logger)
+  }
+
+  if response.StatusCode >= 300 {
+    return errors.New("Failed to send: " + response.Status)
+  }
+  return nil
 }
 
 func writeReports(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger) error {
   row := &MetricResult{}
-	for {
-		hasRow, err := statement.Step()
-		if !hasRow {
-			return nil
-		}
+  for {
+    hasRow, err := statement.Step()
+    if !hasRow {
+      return nil
+    }
 
-		if err != nil {
-			logger.Error("cannot step", zap.Error(err))
-			return err
-		}
+    if err != nil {
+      logger.Error("cannot step", zap.Error(err))
+      return err
+    }
 
-		err = writeMetrics(statement, row, pw, logger)
-		if err != nil {
-			return err
-		}
-	}
+    err = writeMetrics(statement, row, pw, logger)
+    if err != nil {
+      return err
+    }
+  }
 }
 
 func writeMetrics(statement *sqlite3.Stmt, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
-	err := scanMetricResult(statement, row)
-	if err != nil {
-		logger.Error("cannot scan", zap.Error(err))
-		return err
-	}
+  err := scanMetricResult(statement, row)
+  if err != nil {
+    logger.Error("cannot scan", zap.Error(err))
+    return err
+  }
 
-	var instantMetricsJson map[string]int
-	err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetricsJson)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+  var instantMetricsJson map[string]int
+  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetricsJson)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
-	var buf bytes.Buffer
+  var buf bytes.Buffer
   err = doWriteMetrics(row.durationMetricsJson, false, &buf, row, pw, logger)
   if err != nil {
     return err
@@ -107,10 +123,10 @@ func writeMetrics(statement *sqlite3.Stmt, row *MetricResult, pw *io.PipeWriter,
 
 func doWriteMetrics(metricsJson sqlite3.RawString, isInstant bool, buf *bytes.Buffer, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
   var metrics map[string]int
- 	err := jsoniter.ConfigFastest.Unmarshal([]byte(metricsJson), &metrics)
- 	if err != nil {
- 		return errors.WithStack(err)
- 	}
+  err := jsoniter.ConfigFastest.Unmarshal([]byte(metricsJson), &metrics)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
   for key, value := range metrics {
     // skip missing values (-1 means null (undefined))
@@ -165,7 +181,7 @@ func doWriteMetrics(metricsJson sqlite3.RawString, isInstant bool, buf *bytes.Bu
 
     buf.WriteString(strconv.FormatInt(row.generatedTime, 10))
 
-    logger.Info(buf.String())
+    logger.Debug( buf.String())
 
     buf.WriteByte('\n')
 

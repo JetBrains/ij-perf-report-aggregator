@@ -50,6 +50,11 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54880237
+Authorization: Bearer {{token}}
+Accept: application/json
+###
+
 GET https://buildserver.labs.intellij.net/app/rest/buildTypes/id:ijplatform_master_UltimateStartupPerfTestMac
 Authorization: Bearer {{token}}
 ###

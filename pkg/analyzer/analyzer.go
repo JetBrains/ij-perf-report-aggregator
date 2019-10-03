@@ -98,16 +98,7 @@ func readReport(data []byte) (*model.Report, error) {
   return &report, nil
 }
 
-type ExtraData struct {
-  LastGeneratedTime int64
-
-  ProductCode string
-  BuildNumber string
-
-  Machine string
-}
-
-func (t *ReportAnalyzer) Analyze(data []byte, extraData ExtraData) error {
+func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   if t.analyzeContext.Err() != nil {
     return nil
   }
@@ -127,7 +118,8 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData ExtraData) error {
   if len(extraData.Machine) == 0 {
     return errors.New("machine is not specified")
   }
-  report.Machine = extraData.Machine
+
+  report.ExtraData = extraData
 
   if t.analyzeContext.Err() != nil {
     return nil
@@ -152,10 +144,10 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData ExtraData) error {
   return nil
 }
 
-func computeGeneratedTime(report *model.Report, extraData ExtraData) error {
+func computeGeneratedTime(report *model.Report, extraData model.ExtraData) error {
   if report.Generated == "" {
     if extraData.LastGeneratedTime <= 0 {
-      return errors.New("Generated time not in report and not provided explicitly")
+      return errors.New("generated time not in report and not provided explicitly")
     }
     report.GeneratedTime = extraData.LastGeneratedTime
   } else {
@@ -246,20 +238,15 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
     return nil
   }
 
-  durationMetrics, instantMetrics := t.computeMetrics(report, logger)
+  serializedDurationMetrics, serializedInstantMetrics, err := computeAndSerializeMetrics(report, logger)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
   // or both null, or not - no need to check each one
-  if durationMetrics == nil || instantMetrics == nil {
+  if serializedDurationMetrics == nil || serializedInstantMetrics == nil {
+    logger.Warn("report skipped (metrics cannot be computed)")
     return nil
-  }
-
-  serializedDurationMetrics, err := jsoniter.ConfigFastest.Marshal(durationMetrics)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  serializedInstantMetrics, err := jsoniter.ConfigFastest.Marshal(instantMetrics)
-  if err != nil {
-    return errors.WithStack(err)
   }
 
   buildComponents := strings.Split(report.Build, ".")
@@ -267,17 +254,9 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
     buildComponents = append(buildComponents, "0")
   }
 
-  buildC1, err := strconv.Atoi(buildComponents[0])
+  buildC1, buildC2, buildC3, err := splitBuildNumber(buildComponents)
   if err != nil {
-    return errors.WithStack(err)
-  }
-  buildC2, err := strconv.Atoi(buildComponents[1])
-  if err != nil {
-    return errors.WithStack(err)
-  }
-  buildC3, err := strconv.Atoi(buildComponents[2])
-  if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   statement := t.insertReportStatement
@@ -290,13 +269,20 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
     t.insertReportStatement = statement
   }
 
-  machineId, err := t.getMachineId(report.Machine)
+  machineId, err := t.getMachineId(report.ExtraData.Machine)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  err = statement.Exec(id, machineId, report.GeneratedTime,
-    report.ProductCode,
+  var buildId interface{}
+  if report.ExtraData.TcBuildId == 0 {
+    buildId = nil
+  } else {
+    buildId = report.ExtraData.TcBuildId
+  }
+
+  err = statement.Exec(id, machineId, report.ProductCode,
+    report.GeneratedTime, buildId,
     buildC1, buildC2, buildC3,
     metricsVersion, serializedDurationMetrics, serializedInstantMetrics,
     report.RawData)
@@ -304,12 +290,28 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
     return errors.WithStack(err)
   }
 
-  if currentMetricsVersion >= 0 && currentMetricsVersion == metricsVersion {
+  if currentMetricsVersion >= 0 {
     logger.Info("report metrics updated", zap.Int("oldMetricsVersion", currentMetricsVersion), zap.Int("newMetricsVersion", metricsVersion))
   } else {
     logger.Info("new report added")
   }
   return nil
+}
+
+func splitBuildNumber(buildComponents []string) (int, int, int, error) {
+  buildC1, err := strconv.Atoi(buildComponents[0])
+  if err != nil {
+    return 0, 0, 0, errors.WithStack(err)
+  }
+  buildC2, err := strconv.Atoi(buildComponents[1])
+  if err != nil {
+    return 0, 0, 0, errors.WithStack(err)
+  }
+  buildC3, err := strconv.Atoi(buildComponents[2])
+  if err != nil {
+    return 0, 0, 0, errors.WithStack(err)
+  }
+  return buildC1, buildC2, buildC3, nil
 }
 
 // https://stackoverflow.com/questions/13244393/sqlite-insert-or-ignore-and-return-original-rowid

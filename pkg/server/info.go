@@ -9,47 +9,32 @@ import (
 )
 
 var essentialMetricNames = []string{"bootstrap", "appInitPreparation", "appInit", "pluginDescriptorLoading", "appComponentCreation", "projectComponentCreation"}
+var instantMetricNames = []string{"splash", "startUpCompleted"}
 
-func (t *StatsServer) handleInfoRequest(w http.ResponseWriter, _ *http.Request) {
-  var errRef error
-  t.infoResponseCacheOnce.Do(func() {
-    productNames, err := t.getProductNames()
-    if err != nil {
-      errRef = err
-      return
-    }
-
-    statement, err := t.db.Prepare("select rowid as id, name from machine where rowid in (select distinct machine from report where product = ?) order by name")
-    if err != nil {
-      errRef = err
-      return
-    }
-
-    defer util.Close(statement, t.logger)
-
-    buffer := quicktemplate.AcquireByteBuffer()
-    defer quicktemplate.ReleaseByteBuffer(buffer)
-    WriteInfo(buffer, productNames, essentialMetricNames, statement, &errRef)
-    if errRef != nil {
-      return
-    }
-
-    result := make([]byte, len(buffer.B))
-    copy(result, buffer.B)
-    t.infoResponseCache = result
-  })
-
-  if errRef != nil {
-    t.httpError(errRef, w)
-    return
-  }
-
-  w.Header().Set("Content-Type", "application/json")
-  _, err := w.Write(t.infoResponseCache)
+func (t *StatsServer) handleInfoRequest(_ *http.Request) ([]byte, error) {
+  productNames, err := t.getProductNames()
   if err != nil {
-    t.httpError(err, w)
-    return
+    return nil, err
   }
+
+  statement, err := t.db.Prepare("select rowid as id, name from machine where rowid in (select distinct machine from report where product = ?) order by name")
+  if err != nil {
+    return nil, err
+  }
+
+  defer util.Close(statement, t.logger)
+
+  var errRef error
+  buffer := quicktemplate.AcquireByteBuffer()
+  defer quicktemplate.ReleaseByteBuffer(buffer)
+  WriteInfo(buffer, productNames, essentialMetricNames, statement, &errRef)
+  if errRef != nil {
+    return nil, errRef
+  }
+
+  result := make([]byte, len(buffer.B))
+  copy(result, buffer.B)
+  return result, nil
 }
 
 func (t *StatsServer) getProductNames() ([]string, error) {

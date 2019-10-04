@@ -3,41 +3,51 @@ package server
 import (
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/json-iterator/go"
-  "go.uber.org/zap"
+  "github.com/pkg/errors"
+  "github.com/valyala/quicktemplate"
+  "io"
   "net/http"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
 )
 
-func (t *StatsServer) handleMetricsRequest(w http.ResponseWriter, request *http.Request) {
+func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
   query := request.URL.Query()
   product := query.Get("product")
   if len(product) == 0 {
-    http.Error(w, `{"error": "product parameter is required"}`, 400)
-    return
+    return nil, NewHttpError(400, "product parameter is required")
   }
 
   machine := query.Get("machine")
   if len(product) == 0 {
-    http.Error(w, `{"error": "machine parameter is required"}`, 400)
-    return
+    return nil, NewHttpError(400, "machine parameter is required")
   }
 
+  buffer := quicktemplate.AcquireByteBuffer()
+  defer quicktemplate.ReleaseByteBuffer(buffer)
+  err := t.computeMetricsResponse(product, machine, buffer)
+  if err != nil {
+    return nil, err
+  }
+  result := make([]byte, len(buffer.B))
+  copy(result, buffer.B)
+  return result, nil
+}
+
+func (t *StatsServer) computeMetricsResponse(product string, machine string, writer io.Writer) error {
   statement, err := t.db.Prepare(`
 select generated_time, build_c1, build_c2, build_c3, duration_metrics, instant_metrics 
 from report 
 where product = ? and machine = ? 
 order by build_c1, build_c2, build_c3, generated_time`, product, machine)
   if err != nil {
-    t.httpError(err, w)
-    return
+    return errors.WithStack(err)
   }
 
   defer util.Close(statement, t.logger)
 
-  w.Header().Set("Content-Type", "application/json")
-  jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, w, 64*1024)
+  jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, writer, 8*1024)
 
   jsonWriter.WriteArrayStart()
 
@@ -48,8 +58,7 @@ order by build_c1, build_c2, build_c3, generated_time`, product, machine)
   for {
     hasRow, err := statement.Step()
     if err != nil {
-      t.httpError(err, w)
-      return
+      return errors.WithStack(err)
     }
 
     if !hasRow {
@@ -64,8 +73,7 @@ order by build_c1, build_c2, build_c3, generated_time`, product, machine)
     var instantMetrics sqlite3.RawString
     err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &durationMetrics, &instantMetrics)
     if err != nil {
-      t.httpError(err, w)
-      return
+      return errors.WithStack(err)
     }
 
     if isFirst {
@@ -117,9 +125,5 @@ order by build_c1, build_c2, build_c3, generated_time`, product, machine)
 
   jsonWriter.WriteArrayEnd()
 
-  err = jsonWriter.Flush()
-  if err != nil {
-    t.logger.Error("cannot flush", zap.Error(err))
-    return
-  }
+  return jsonWriter.Flush()
 }

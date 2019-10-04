@@ -3,6 +3,7 @@ package server
 import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
+  "github.com/valyala/quicktemplate"
   "net/http"
   "net/url"
   "report-aggregator/pkg/util"
@@ -12,25 +13,34 @@ import (
 
 var httpClient = &http.Client{Timeout: 30 * time.Second}
 
-func (t *StatsServer) handleGroupedMetricsRequest(w http.ResponseWriter, request *http.Request) {
+func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
   query := request.URL.Query()
   product := query.Get("product")
   if len(product) == 0 {
-    http.Error(w, `{"error": "product parameter is required"}`, 400)
-    return
+    return nil, NewHttpError(400, "product parameter is required")
   }
 
   machine := query.Get("machine")
   if len(product) == 0 {
-    http.Error(w, `{"error": "machine parameter is required"}`, 400)
-    return
+    return nil, NewHttpError(400, "machine parameter is required")
   }
 
-  metricNames := essentialMetricNames
+  eventType := query.Get("eventType")
+  if len(eventType) == 0 {
+    eventType = "duration"
+  }
+
+  var metricNames []string
+  if eventType == "d" {
+    metricNames = essentialMetricNames
+  } else {
+    metricNames = instantMetricNames
+  }
+
   results := make([]*MedianResult, len(metricNames))
   err := util.MapAsyncConcurrency(len(metricNames), 4, func(taskIndex int) (f func() error, err error) {
     return func() error {
-      result, err := t.computeMedian(metricNames[taskIndex], product, machine, httpClient)
+      result, err := t.computeMedian(metricNames[taskIndex], product, machine, eventType, httpClient)
       if err != nil {
         return err
       }
@@ -39,15 +49,18 @@ func (t *StatsServer) handleGroupedMetricsRequest(w http.ResponseWriter, request
     }, nil
   })
   if err != nil {
-    t.httpError(err, w)
-    return
+    return nil, err
   }
 
-  w.Header().Set("Content-Type", "application/json")
-  WriteGroupedMetricList(w, results)
+  buffer := quicktemplate.AcquireByteBuffer()
+  defer quicktemplate.ReleaseByteBuffer(buffer)
+  WriteGroupedMetricList(buffer, results)
+  result := make([]byte, len(buffer.B))
+  copy(result, buffer.B)
+  return result, nil
 }
 
-func (t *StatsServer) computeMedian(metricName string, product string, machine string, httpClient *http.Client) (*MedianResult, error) {
+func (t *StatsServer) computeMedian(metricName string, product string, machine string, eventType string, httpClient *http.Client) (*MedianResult, error) {
   result := &MedianResult{
     metricName: metricName,
   }
@@ -58,7 +71,8 @@ func (t *StatsServer) computeMedian(metricName string, product string, machine s
   }
 
   q := u.Query()
-  q.Set("query", `median(`+metricName+`_d{product="`+product+`",machine="`+machine+`"}[5y]) by (buildC1)`)
+
+  q.Set("query", `median(`+metricName+`_`+eventType+`{product="`+product+`",machine="`+machine+`"}[2y]) by (buildC1)`)
   u.RawQuery = q.Encode()
 
   err = t.getJson(u.String(), httpClient, result)

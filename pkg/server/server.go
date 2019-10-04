@@ -1,22 +1,17 @@
 package server
 
 import (
-  "compress/gzip"
   "context"
   "crypto/tls"
-  "github.com/NYTimes/gziphandler"
   "github.com/alecthomas/kingpin"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
-  "github.com/didip/tollbooth"
-  "github.com/didip/tollbooth/limiter"
   "github.com/rs/cors"
   "go.uber.org/zap"
   "net/http"
   "os"
   "os/signal"
   "report-aggregator/pkg/util"
-  "sync"
   "syscall"
   "time"
 )
@@ -47,16 +42,13 @@ func serve(dbPath string, logger *zap.Logger) error {
     db:     db,
   }
 
-  requestLimit := tollbooth.NewLimiter(2, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
-  requestLimit.SetBurst(10)
+  cacheManager := NewResponseCacheManager()
 
   mux := http.NewServeMux()
 
-  gzipWrapper, _ := gziphandler.NewGzipLevelHandler(gzip.DefaultCompression)
-
-  mux.Handle("/info", tollbooth.LimitHandler(requestLimit, gzipWrapper(http.HandlerFunc(statsServer.handleInfoRequest))))
-  mux.Handle("/metrics", tollbooth.LimitHandler(requestLimit, gzipWrapper(http.HandlerFunc(statsServer.handleMetricsRequest))))
-  mux.Handle("/groupedMetrics", tollbooth.LimitHandler(requestLimit, gzipWrapper(http.HandlerFunc(statsServer.handleGroupedMetricsRequest))))
+  mux.Handle("/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
+  mux.Handle("/metrics", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
+  mux.Handle("/groupedMetrics", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
 
   serverPort := os.Getenv("SERVER_PORT")
   if len(serverPort) == 0 {
@@ -64,9 +56,7 @@ func serve(dbPath string, logger *zap.Logger) error {
   }
   server := listenAndServe(serverPort, mux, logger)
 
-  logger.Info("started",
-    zap.String("address", server.Addr),
-  )
+  logger.Info("started", zap.String("address", server.Addr))
 
   waitUntilTerminated(server, 1*time.Minute, logger)
 
@@ -83,7 +73,6 @@ func listenAndServe(port string, mux *http.ServeMux, logger *zap.Logger) *http.S
     Addr:    ":" + port,
     Handler: cors.Default().Handler(mux),
 
-    // https://medium.com/@simonfrey/go-as-in-golang-standard-net-http-config-will-break-your-production-environment-1360871cb72b
     ReadTimeout:  4 * time.Second,
     WriteTimeout: 60 * time.Second,
 
@@ -93,12 +82,7 @@ func listenAndServe(port string, mux *http.ServeMux, logger *zap.Logger) *http.S
   }
 
   go func() {
-    var err error
-    if os.Getenv("USE_SSL") == "true" {
-      err = server.ListenAndServeTLS("/etc/secrets/tls.cert", "/etc/secrets/tls.key")
-    } else {
-      err = server.ListenAndServe()
-    }
+    err := server.ListenAndServe()
     if err == http.ErrServerClosed {
       logger.Debug("server closed")
     } else {
@@ -138,9 +122,6 @@ func shutdownHttpServer(server *http.Server, shutdownTimeout time.Duration, logg
 type StatsServer struct {
   db     *sqlite3.Conn
   logger *zap.Logger
-
-  infoResponseCacheOnce sync.Once
-  infoResponseCache     []byte
 }
 
 func (t *StatsServer) httpError(err error, w http.ResponseWriter) {

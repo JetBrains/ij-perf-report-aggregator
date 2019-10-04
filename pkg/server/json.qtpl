@@ -61,7 +61,7 @@
   "moduleLoading"
 ],
 "instantMetricsNames": [
-  "splash"
+  "splash", "startUpCompleted"
 ]
 {% endfunc %}
 

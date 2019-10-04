@@ -15,6 +15,8 @@ type Report struct {
   MainActivities           []Activity `json:"items"`
   PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
 
+  TotalDurationActual int `json:"totalDurationActual"`
+
   RawData       []byte    `json:"-"`
   GeneratedTime int64     `json:"-"`
   ExtraData     ExtraData `json:"-"`
@@ -53,18 +55,20 @@ type Activity struct {
 
 // computed metrics
 type DurationEventMetrics struct {
-  Bootstrap               int `json:"bootstrap"`
-  AppInitPreparation      int `json:"appInitPreparation"`
-  AppInit                 int `json:"appInit"`
-  PluginDescriptorLoading int `json:"pluginDescriptorLoading"`
+  Bootstrap               int
+  AppInitPreparation      int
+  AppInit                 int
+  PluginDescriptorLoading int
 
-  AppComponentCreation     int `json:"appComponentCreation"`
-  ProjectComponentCreation int `json:"projectComponentCreation"`
+  AppComponentCreation     int
+  ProjectComponentCreation int
 
-  ModuleLoading int `json:"moduleLoading"`
+  ModuleLoading int
 }
 
 type InstantEventMetrics struct {
   // value - not duration, but start, because it is instant event and not duration event
-  Splash int `json:"splash"`
+  Splash int
+
+  StartUpCompleted int
 }

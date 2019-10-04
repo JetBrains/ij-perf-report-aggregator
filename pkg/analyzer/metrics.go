@@ -1,31 +1,18 @@
 package analyzer
 
 import (
-  "github.com/develar/errors"
-  jsoniter "github.com/json-iterator/go"
   "github.com/mcuadros/go-version"
   "go.uber.org/zap"
   "report-aggregator/pkg/model"
 )
 
-func computeAndSerializeMetrics(report *model.Report, logger *zap.Logger) ([]byte, []byte, error) {
+func computeAndSerializeMetrics(report *model.Report, logger *zap.Logger) (string, string, error) {
   durationMetrics, instantMetrics := computeMetrics(report, logger)
   // or both null, or not - no need to check each one
   if durationMetrics == nil || instantMetrics == nil {
-    return nil, nil, nil
+    return "", "", nil
   }
-
-  serializedDurationMetrics, err := jsoniter.ConfigFastest.Marshal(durationMetrics)
-  if err != nil {
-    return nil, nil, errors.WithStack(err)
-  }
-
-  serializedInstantMetrics, err := jsoniter.ConfigFastest.Marshal(instantMetrics)
-  if err != nil {
-    return nil, nil, errors.WithStack(err)
-  }
-
-  return serializedDurationMetrics, serializedInstantMetrics, nil
+  return DurationMetrics(durationMetrics), InstantEventMetrics(instantMetrics), nil
 }
 
 func computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {
@@ -42,7 +29,8 @@ func computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
   }
 
   instantMetrics := &model.InstantEventMetrics{
-    Splash: -1,
+    Splash:           -1,
+    StartUpCompleted: report.TotalDurationActual,
   }
 
   if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
@@ -99,6 +87,9 @@ func computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
     }
   }
 
+  if instantMetrics.StartUpCompleted == -1 {
+    logRequiredMetricNotFound(logger, "startUpCompleted")
+  }
   if instantMetrics.Splash == -1 && version.Compare(report.Version, "6", ">=") {
     logger.Info("metric 'splash' not found")
   }

@@ -213,7 +213,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
   return t.waitChannel
 }
 
-const metricsVersion = 3
+const metricsVersion = 4
 
 func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
   t.waitGroup.Add(1)
@@ -244,7 +244,7 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
   }
 
   // or both null, or not - no need to check each one
-  if serializedDurationMetrics == nil || serializedInstantMetrics == nil {
+  if len(serializedDurationMetrics) == 0 || len(serializedInstantMetrics) == 0 {
     logger.Warn("report skipped (metrics cannot be computed)")
     return nil
   }

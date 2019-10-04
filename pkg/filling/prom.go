@@ -19,7 +19,7 @@ func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
   command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()
   promServer := command.Flag("prom", "The VictoriaMetrics/Influx server.").Required().String()
-  updateMetrics := command.Flag("update-metrics", "Whether to update computed metrics if outdated. Think about backup.").Required().Bool()
+  updateMetrics := command.Flag("update-metrics", "Whether to update computed metrics if outdated. Think about backup.").Bool()
   command.Action(func(context *kingpin.ParseContext) error {
     return fill(*dbPath, *updateMetrics, *promServer, logger)
   })

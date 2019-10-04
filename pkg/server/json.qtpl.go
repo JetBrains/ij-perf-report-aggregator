@@ -197,7 +197,7 @@ func streammetricNames(qw422016 *qt422016.Writer, essentialMetricNames []string)
 //line pkg/server/json.qtpl:60
 	}
 //line pkg/server/json.qtpl:60
-	qw422016.N().S(`"moduleLoading"],"instantMetricsNames": ["splash"]`)
+	qw422016.N().S(`"moduleLoading"],"instantMetricsNames": ["splash", "startUpCompleted"]`)
 //line pkg/server/json.qtpl:66
 }
 

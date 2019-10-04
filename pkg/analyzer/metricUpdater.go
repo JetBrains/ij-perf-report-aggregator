@@ -54,6 +54,11 @@ func UpdateMetrics(dbPath string, logger *zap.Logger) error {
       break
     }
 
+    id, _, err := selectStatement.ColumnRawString(0)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
     rawJson, err := selectStatement.ColumnRawBytes(1)
     if err != nil {
       return errors.WithStack(err)
@@ -61,20 +66,20 @@ func UpdateMetrics(dbPath string, logger *zap.Logger) error {
 
     report, err := readReport(rawJson)
     if err != nil {
-      return errors.WithStack(err)
+      return err
     }
 
     serializedDurationMetrics, serializedInstantMetrics, err := computeAndSerializeMetrics(report, logger)
     if err != nil {
-      return errors.WithStack(err)
+      return err
     }
 
-    if serializedDurationMetrics == nil || serializedInstantMetrics == nil {
+    if len(serializedDurationMetrics) == 0 || len(serializedInstantMetrics) == 0 {
       // it is not warn for metric updater because on update metrics must be computed
       return errors.New("metrics cannot be computed")
     }
 
-    err = updateStatement.Exec(metricsVersion, serializedDurationMetrics, serializedInstantMetrics)
+    err = updateStatement.Exec(metricsVersion, serializedDurationMetrics, serializedInstantMetrics, id)
     if err != nil {
       return errors.WithStack(err)
     }

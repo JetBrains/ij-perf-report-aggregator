@@ -1,0 +1,9 @@
+.idea/
+.git/
+*.iml
+*.md
+.gitignore
+dist/
+
+Makefile
+.golangci.yml

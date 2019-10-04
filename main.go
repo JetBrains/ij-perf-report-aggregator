@@ -6,6 +6,7 @@ import (
   "go.uber.org/zap"
   "log"
   "os"
+  "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/filling"
   "report-aggregator/pkg/ideaLog"
   "report-aggregator/pkg/server"
@@ -36,6 +37,7 @@ func main() {
 
 	server.ConfigureServeCommand(app, logger)
 	filling.ConfigureFillCommand(app, logger)
+	analyzer.ConfigureUpdateMetricsCommand(app, logger)
 
 	_, err := app.Parse(os.Args[1:])
 	if err != nil {

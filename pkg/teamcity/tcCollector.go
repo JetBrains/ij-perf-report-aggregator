@@ -22,7 +22,7 @@ import (
 collect-tc -c ijplatform_master_UltimateStartupPerfTestMac -c ijplatform_master_UltimateStartupPerfTestWindows -c ijplatform_master_UltimateStartupPerfTestLinux \
 -c ijplatform_master_WebStormStartupPerfTestMac -c ijplatform_master_WebStormStartupPerfTestWindows -c ijplatform_master_WebStormStartupPerfTestLinux \
 --db /Volumes/data/ij-perf-db/db.sqlite
- */
+*/
 
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
@@ -76,9 +76,18 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, logger *zap.Logge
     return err
   }
 
+  lastGeneratedTime, err := reportAnalyzer.GetLastGeneratedTime()
+  if err != nil {
+    return err
+  }
+
   for _, buildTypeId := range buildTypeIds {
     q := serverUrl.Query()
-    q.Set("locator", "buildType:(id:"+buildTypeId+"),status:SUCCESS,count:500")
+    locator := "buildType:(id:" + buildTypeId + "),status:SUCCESS,count:500"
+    if lastGeneratedTime > 0 {
+      locator += ",sinceDate:" + time.Unix(lastGeneratedTime, -1).Format("20060102T150405-0700")
+    }
+    q.Set("locator", locator)
     q.Set("fields", "count,href,nextHref,build(id,agent(name))")
     serverUrl.RawQuery = q.Encode()
 

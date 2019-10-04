@@ -373,3 +373,24 @@ func (t *ReportAnalyzer) getMetricsVersion(id string) (int, error) {
 
   return -1, nil
 }
+
+func (t *ReportAnalyzer) GetLastGeneratedTime() (int64, error) {
+  statement, err := t.db.Prepare(`select max(generated_time) from report`)
+  if err != nil {
+    return 1, errors.WithStack(err)
+  }
+
+  defer util.Close(statement, t.logger)
+
+  hasRow, err := statement.Step()
+  if err != nil {
+    return -1, errors.WithStack(err)
+  }
+
+  if hasRow {
+    result, _, err := statement.ColumnInt64(0)
+    return result, errors.WithStack(err)
+  }
+
+  return -1, nil
+}

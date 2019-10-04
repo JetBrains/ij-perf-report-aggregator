@@ -1,11 +1,20 @@
 package analyzer
 
 import (
+  "github.com/alecthomas/kingpin"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
   "go.uber.org/zap"
   "report-aggregator/pkg/util"
 )
+
+func ConfigureUpdateMetricsCommand(app *kingpin.Application, logger *zap.Logger) {
+  command := app.Command("update-computed-metrics", "Update computed metrics.")
+  dbPath := command.Flag("db", "The SQLite database file.").Required().String()
+  command.Action(func(context *kingpin.ParseContext) error {
+    return UpdateMetrics(*dbPath, logger)
+  })
+}
 
 func UpdateMetrics(dbPath string, logger *zap.Logger) error {
   db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READWRITE)

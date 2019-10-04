@@ -58,7 +58,11 @@ func serve(dbPath string, logger *zap.Logger) error {
   mux.Handle("/metrics", tollbooth.LimitHandler(requestLimit, gzipWrapper(http.HandlerFunc(statsServer.handleMetricsRequest))))
   mux.Handle("/groupedMetrics", tollbooth.LimitHandler(requestLimit, gzipWrapper(http.HandlerFunc(statsServer.handleGroupedMetricsRequest))))
 
-  server := listenAndServe("9044", mux, logger)
+  serverPort := os.Getenv("SERVER_PORT")
+  if len(serverPort) == 0 {
+    serverPort = "9044"
+  }
+  server := listenAndServe(serverPort, mux, logger)
 
   logger.Info("started",
     zap.String("address", server.Addr),

@@ -40,12 +40,12 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=buildType:(id:ijplatform_master_UltimateStartupPerfTestMac)&fields=count,href,nextHref,build(number,id)
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=buildType:(id:ijplatform_master_UltimateStartupPerfTestMac),status:SUCCESS,count:500,sinceDate:1570093455&fields=count,href,nextHref,build(id,agent(name))
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54846099&fields=build(agent(name))
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54846099&fields=build(*)
 Authorization: Bearer {{token}}
 Accept: application/json
 ###

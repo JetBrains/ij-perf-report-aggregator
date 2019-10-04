@@ -2,3 +2,5 @@
 .idea/httpRequests/
 /dist/
 /http-client.env.json
+
+db/

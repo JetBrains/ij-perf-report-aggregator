@@ -31,9 +31,25 @@ build-windows:
 lint:
 	golangci-lint run
 
+docker:
+	mkdir -p db/ij-perf-db
+	cp ~/ij-perf-db/db.sqlite db/ij-perf-db
+	docker build -t docker-registry.labs.intellij.net/idea/report-aggregator:latest .
+	# docker run -it --rm -p 9044:80 docker-registry.labs.intellij.net/idea/report-aggregator:latest
+	# docker push docker-registry.labs.intellij.net/idea/report-aggregator:latest
+
+	# kubectl config set-context --current --namespace=idea
+	# kubectl apply -f deployment.yaml
+	# kubectl apply -f ingress.yaml
+	# zstd -19 --long /Volumes/data/ij-perf-db/db.sqlite  -o ff.zstd
+
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u
 	go mod tidy
+
+update-computed-metrics:
+	go build -ldflags='-s -w' -o dist/report-aggregator
+	./dist/report-aggregator update-computed-metrics --db /Volumes/data/ij-perf-db/db.sqlite
 
 # https://medium.com/@valyala/promql-tutorial-for-beginners-9ab455142085
 

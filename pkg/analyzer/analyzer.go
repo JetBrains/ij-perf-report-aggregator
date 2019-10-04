@@ -339,7 +339,7 @@ func (t *ReportAnalyzer) getMachineId(machineName string) (int, error) {
     return -1, errors.WithStack(err)
   }
 
-  err = statement.Bind(machineName)
+  err = statement.BindString(machineName, 0)
   if err != nil {
     return -1, errors.WithStack(err)
   }

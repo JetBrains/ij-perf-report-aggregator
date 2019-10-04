@@ -16,6 +16,7 @@ import (
   "os"
   "os/signal"
   "report-aggregator/pkg/util"
+  "sync"
   "syscall"
   "time"
 )
@@ -133,6 +134,9 @@ func shutdownHttpServer(server *http.Server, shutdownTimeout time.Duration, logg
 type StatsServer struct {
   db     *sqlite3.Conn
   logger *zap.Logger
+
+  infoResponseCacheOnce sync.Once
+  infoResponseCache     []byte
 }
 
 func (t *StatsServer) httpError(err error, w http.ResponseWriter) {

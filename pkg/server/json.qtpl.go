@@ -7,284 +7,290 @@ package server
 //line pkg/server/json.qtpl:1
 import "github.com/bvinc/go-sqlite-lite/sqlite3"
 
-//line pkg/server/json.qtpl:4
+//line pkg/server/json.qtpl:2
+import "github.com/develar/errors"
+
+//line pkg/server/json.qtpl:5
 import (
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
 )
 
-//line pkg/server/json.qtpl:4
+//line pkg/server/json.qtpl:5
 var (
 	_ = qtio422016.Copy
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line pkg/server/json.qtpl:4
+//line pkg/server/json.qtpl:5
 func StreamGroupedMetricList(qw422016 *qt422016.Writer, list []*MedianResult) {
-//line pkg/server/json.qtpl:4
+//line pkg/server/json.qtpl:5
 	qw422016.N().S(`{"groupNames": [`)
-//line pkg/server/json.qtpl:7
-	if len(list) > 0 {
 //line pkg/server/json.qtpl:8
+	if len(list) > 0 {
+//line pkg/server/json.qtpl:9
 		for i, value := range list[0].buildToValue {
-//line pkg/server/json.qtpl:9
-			if i != 0 {
-//line pkg/server/json.qtpl:9
-				qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:9
-			}
-//line pkg/server/json.qtpl:9
-			qw422016.N().S(`"`)
 //line pkg/server/json.qtpl:10
-			qw422016.N().D(value.buildC1)
+			if i != 0 {
+//line pkg/server/json.qtpl:10
+				qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:10
+			}
 //line pkg/server/json.qtpl:10
 			qw422016.N().S(`"`)
 //line pkg/server/json.qtpl:11
-		}
-//line pkg/server/json.qtpl:12
-	}
-//line pkg/server/json.qtpl:12
-	qw422016.N().S(`],"data": [`)
-//line pkg/server/json.qtpl:15
-	for i, item := range list {
-//line pkg/server/json.qtpl:16
-		if i != 0 {
-//line pkg/server/json.qtpl:16
-			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:16
-		}
-//line pkg/server/json.qtpl:16
-		qw422016.N().S(`{`)
-//line pkg/server/json.qtpl:18
-		for _, value := range item.buildToValue {
-//line pkg/server/json.qtpl:18
-			qw422016.N().S(`"`)
-//line pkg/server/json.qtpl:19
 			qw422016.N().D(value.buildC1)
-//line pkg/server/json.qtpl:19
-			qw422016.N().S(`":`)
-//line pkg/server/json.qtpl:19
-			qw422016.N().D(value.value)
-//line pkg/server/json.qtpl:19
-			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:20
+//line pkg/server/json.qtpl:11
+			qw422016.N().S(`"`)
+//line pkg/server/json.qtpl:12
 		}
-//line pkg/server/json.qtpl:23
-		qw422016.N().S(`"metric":`)
-//line pkg/server/json.qtpl:24
-		qw422016.N().Q(item.metricName)
-//line pkg/server/json.qtpl:24
-		qw422016.N().S(`}`)
-//line pkg/server/json.qtpl:26
+//line pkg/server/json.qtpl:13
 	}
-//line pkg/server/json.qtpl:26
+//line pkg/server/json.qtpl:13
+	qw422016.N().S(`],"data": [`)
+//line pkg/server/json.qtpl:16
+	for i, item := range list {
+//line pkg/server/json.qtpl:17
+		if i != 0 {
+//line pkg/server/json.qtpl:17
+			qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:17
+		}
+//line pkg/server/json.qtpl:17
+		qw422016.N().S(`{`)
+//line pkg/server/json.qtpl:19
+		for _, value := range item.buildToValue {
+//line pkg/server/json.qtpl:19
+			qw422016.N().S(`"`)
+//line pkg/server/json.qtpl:20
+			qw422016.N().D(value.buildC1)
+//line pkg/server/json.qtpl:20
+			qw422016.N().S(`":`)
+//line pkg/server/json.qtpl:20
+			qw422016.N().D(value.value)
+//line pkg/server/json.qtpl:20
+			qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:21
+		}
+//line pkg/server/json.qtpl:24
+		qw422016.N().S(`"metric":`)
+//line pkg/server/json.qtpl:25
+		qw422016.N().Q(item.metricName)
+//line pkg/server/json.qtpl:25
+		qw422016.N().S(`}`)
+//line pkg/server/json.qtpl:27
+	}
+//line pkg/server/json.qtpl:27
 	qw422016.N().S(`]}`)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 }
 
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 func WriteGroupedMetricList(qq422016 qtio422016.Writer, list []*MedianResult) {
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	StreamGroupedMetricList(qw422016, list)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 }
 
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 func GroupedMetricList(list []*MedianResult) string {
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	WriteGroupedMetricList(qb422016, list)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 	return qs422016
-//line pkg/server/json.qtpl:29
+//line pkg/server/json.qtpl:30
 }
 
-//line pkg/server/json.qtpl:31
+//line pkg/server/json.qtpl:32
 func StreamInfo(qw422016 *qt422016.Writer, productNames []string, essentialMetricNames []string, statement *sqlite3.Stmt, errRef *error) {
-//line pkg/server/json.qtpl:31
+//line pkg/server/json.qtpl:32
 	qw422016.N().S(`{"productNames":`)
-//line pkg/server/json.qtpl:33
+//line pkg/server/json.qtpl:34
 	streamsafeStringList(qw422016, productNames)
-//line pkg/server/json.qtpl:33
+//line pkg/server/json.qtpl:34
 	qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:34
+//line pkg/server/json.qtpl:35
 	streammetricNames(qw422016, essentialMetricNames)
-//line pkg/server/json.qtpl:34
+//line pkg/server/json.qtpl:35
 	qw422016.N().S(`,"productToMachine": {`)
-//line pkg/server/json.qtpl:36
+//line pkg/server/json.qtpl:37
 	for i, product := range productNames {
 //line pkg/server/json.qtpl:38
-		*errRef = statement.Bind(product)
+		if i != 0 {
+//line pkg/server/json.qtpl:38
+			qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:40
+			statement.Reset()
+
+//line pkg/server/json.qtpl:41
+		}
+//line pkg/server/json.qtpl:44
+		*errRef = errors.WithStack(statement.BindString(product, 0))
 		if *errRef != nil {
 			return
 		}
 
-//line pkg/server/json.qtpl:44
-		if i != 0 {
-//line pkg/server/json.qtpl:44
-			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:44
-		}
-//line pkg/server/json.qtpl:44
+//line pkg/server/json.qtpl:48
 		qw422016.N().S(`"`)
-//line pkg/server/json.qtpl:45
+//line pkg/server/json.qtpl:50
 		qw422016.N().S(product)
-//line pkg/server/json.qtpl:45
+//line pkg/server/json.qtpl:50
 		qw422016.N().S(`":`)
-//line pkg/server/json.qtpl:45
+//line pkg/server/json.qtpl:50
 		streamwriteMachineInfoList(qw422016, statement, errRef)
-//line pkg/server/json.qtpl:46
+//line pkg/server/json.qtpl:51
 	}
-//line pkg/server/json.qtpl:46
+//line pkg/server/json.qtpl:51
 	qw422016.N().S(`}}`)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 }
 
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 func WriteInfo(qq422016 qtio422016.Writer, productNames []string, essentialMetricNames []string, statement *sqlite3.Stmt, errRef *error) {
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	StreamInfo(qw422016, productNames, essentialMetricNames, statement, errRef)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 }
 
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 func Info(productNames []string, essentialMetricNames []string, statement *sqlite3.Stmt, errRef *error) string {
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	WriteInfo(qb422016, productNames, essentialMetricNames, statement, errRef)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 	return qs422016
-//line pkg/server/json.qtpl:49
+//line pkg/server/json.qtpl:54
 }
 
-//line pkg/server/json.qtpl:51
+//line pkg/server/json.qtpl:56
 func streammetricNames(qw422016 *qt422016.Writer, essentialMetricNames []string) {
-//line pkg/server/json.qtpl:51
+//line pkg/server/json.qtpl:56
 	qw422016.N().S(`"durationMetricsNames": [`)
-//line pkg/server/json.qtpl:53
+//line pkg/server/json.qtpl:58
 	for _, name := range essentialMetricNames {
-//line pkg/server/json.qtpl:53
+//line pkg/server/json.qtpl:58
 		qw422016.N().S(`"`)
-//line pkg/server/json.qtpl:54
+//line pkg/server/json.qtpl:59
 		qw422016.N().S(name)
-//line pkg/server/json.qtpl:54
+//line pkg/server/json.qtpl:59
 		qw422016.N().S(`",`)
-//line pkg/server/json.qtpl:55
+//line pkg/server/json.qtpl:60
 	}
-//line pkg/server/json.qtpl:55
+//line pkg/server/json.qtpl:60
 	qw422016.N().S(`"moduleLoading"],"instantMetricsNames": ["splash"]`)
-//line pkg/server/json.qtpl:61
-}
-
-//line pkg/server/json.qtpl:61
-func writemetricNames(qq422016 qtio422016.Writer, essentialMetricNames []string) {
-//line pkg/server/json.qtpl:61
-	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:61
-	streammetricNames(qw422016, essentialMetricNames)
-//line pkg/server/json.qtpl:61
-	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:61
-}
-
-//line pkg/server/json.qtpl:61
-func metricNames(essentialMetricNames []string) string {
-//line pkg/server/json.qtpl:61
-	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:61
-	writemetricNames(qb422016, essentialMetricNames)
-//line pkg/server/json.qtpl:61
-	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:61
-	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:61
-	return qs422016
-//line pkg/server/json.qtpl:61
-}
-
-//line pkg/server/json.qtpl:64
-func streamsafeStringList(qw422016 *qt422016.Writer, list []string) {
-//line pkg/server/json.qtpl:64
-	qw422016.N().S(`[`)
 //line pkg/server/json.qtpl:66
-	for i, v := range list {
-//line pkg/server/json.qtpl:67
-		if i != 0 {
-//line pkg/server/json.qtpl:67
-			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:67
-		}
-//line pkg/server/json.qtpl:67
-		qw422016.N().S(`"`)
-//line pkg/server/json.qtpl:68
-		qw422016.N().S(v)
-//line pkg/server/json.qtpl:68
-		qw422016.N().S(`"`)
-//line pkg/server/json.qtpl:69
-	}
-//line pkg/server/json.qtpl:69
-	qw422016.N().S(`]`)
-//line pkg/server/json.qtpl:71
 }
 
-//line pkg/server/json.qtpl:71
-func writesafeStringList(qq422016 qtio422016.Writer, list []string) {
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
+func writemetricNames(qq422016 qtio422016.Writer, essentialMetricNames []string) {
+//line pkg/server/json.qtpl:66
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:71
-	streamsafeStringList(qw422016, list)
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
+	streammetricNames(qw422016, essentialMetricNames)
+//line pkg/server/json.qtpl:66
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
 }
 
-//line pkg/server/json.qtpl:71
-func safeStringList(list []string) string {
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
+func metricNames(essentialMetricNames []string) string {
+//line pkg/server/json.qtpl:66
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:71
-	writesafeStringList(qb422016, list)
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
+	writemetricNames(qb422016, essentialMetricNames)
+//line pkg/server/json.qtpl:66
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
 	return qs422016
-//line pkg/server/json.qtpl:71
+//line pkg/server/json.qtpl:66
 }
 
-//line pkg/server/json.qtpl:73
-func streamwriteMachineInfoList(qw422016 *qt422016.Writer, statement *sqlite3.Stmt, errRef *error) {
-//line pkg/server/json.qtpl:73
+//line pkg/server/json.qtpl:69
+func streamsafeStringList(qw422016 *qt422016.Writer, list []string) {
+//line pkg/server/json.qtpl:69
 	qw422016.N().S(`[`)
-//line pkg/server/json.qtpl:75
-	isFirstRow := true
+//line pkg/server/json.qtpl:71
+	for i, v := range list {
+//line pkg/server/json.qtpl:72
+		if i != 0 {
+//line pkg/server/json.qtpl:72
+			qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:72
+		}
+//line pkg/server/json.qtpl:72
+		qw422016.N().S(`"`)
+//line pkg/server/json.qtpl:73
+		qw422016.N().S(v)
+//line pkg/server/json.qtpl:73
+		qw422016.N().S(`"`)
+//line pkg/server/json.qtpl:74
+	}
+//line pkg/server/json.qtpl:74
+	qw422016.N().S(`]`)
+//line pkg/server/json.qtpl:76
+}
 
 //line pkg/server/json.qtpl:76
-	for {
+func writesafeStringList(qq422016 qtio422016.Writer, list []string) {
+//line pkg/server/json.qtpl:76
+	qw422016 := qt422016.AcquireWriter(qq422016)
+//line pkg/server/json.qtpl:76
+	streamsafeStringList(qw422016, list)
+//line pkg/server/json.qtpl:76
+	qt422016.ReleaseWriter(qw422016)
+//line pkg/server/json.qtpl:76
+}
+
+//line pkg/server/json.qtpl:76
+func safeStringList(list []string) string {
+//line pkg/server/json.qtpl:76
+	qb422016 := qt422016.AcquireByteBuffer()
+//line pkg/server/json.qtpl:76
+	writesafeStringList(qb422016, list)
+//line pkg/server/json.qtpl:76
+	qs422016 := string(qb422016.B)
+//line pkg/server/json.qtpl:76
+	qt422016.ReleaseByteBuffer(qb422016)
+//line pkg/server/json.qtpl:76
+	return qs422016
+//line pkg/server/json.qtpl:76
+}
+
 //line pkg/server/json.qtpl:78
+func streamwriteMachineInfoList(qw422016 *qt422016.Writer, statement *sqlite3.Stmt, errRef *error) {
+//line pkg/server/json.qtpl:78
+	qw422016.N().S(`[`)
+//line pkg/server/json.qtpl:80
+	isFirstRow := true
+
+//line pkg/server/json.qtpl:81
+	for {
+//line pkg/server/json.qtpl:83
 		hasRow, err := statement.Step()
 		if err != nil {
-			*errRef = err
+			*errRef = errors.WithStack(err)
 			return
 		}
 
@@ -294,66 +300,66 @@ func streamwriteMachineInfoList(qw422016 *qt422016.Writer, statement *sqlite3.St
 
 		id, _, err := statement.ColumnInt(0)
 		if err != nil {
-			*errRef = err
+			*errRef = errors.WithStack(err)
 			return
 		}
 
 		name, _, err := statement.ColumnRawString(1)
 		if err != nil {
-			*errRef = err
+			*errRef = errors.WithStack(err)
 			return
 		}
 
-//line pkg/server/json.qtpl:101
+//line pkg/server/json.qtpl:106
 		if isFirstRow {
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:107
 			isFirstRow = false
 
-//line pkg/server/json.qtpl:103
+//line pkg/server/json.qtpl:108
 		} else {
-//line pkg/server/json.qtpl:103
+//line pkg/server/json.qtpl:108
 			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:105
+//line pkg/server/json.qtpl:110
 		}
-//line pkg/server/json.qtpl:105
+//line pkg/server/json.qtpl:110
 		qw422016.N().S(`{"id":`)
-//line pkg/server/json.qtpl:107
+//line pkg/server/json.qtpl:112
 		qw422016.N().D(id)
-//line pkg/server/json.qtpl:107
+//line pkg/server/json.qtpl:112
 		qw422016.N().S(`,"name":`)
-//line pkg/server/json.qtpl:108
+//line pkg/server/json.qtpl:113
 		qw422016.N().Q(string(name))
-//line pkg/server/json.qtpl:108
+//line pkg/server/json.qtpl:113
 		qw422016.N().S(`}`)
-//line pkg/server/json.qtpl:110
+//line pkg/server/json.qtpl:115
 	}
-//line pkg/server/json.qtpl:110
+//line pkg/server/json.qtpl:115
 	qw422016.N().S(`]`)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 }
 
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 func writewriteMachineInfoList(qq422016 qtio422016.Writer, statement *sqlite3.Stmt, errRef *error) {
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	streamwriteMachineInfoList(qw422016, statement, errRef)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 }
 
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 func writeMachineInfoList(statement *sqlite3.Stmt, errRef *error) string {
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	writewriteMachineInfoList(qb422016, statement, errRef)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 	return qs422016
-//line pkg/server/json.qtpl:112
+//line pkg/server/json.qtpl:117
 }

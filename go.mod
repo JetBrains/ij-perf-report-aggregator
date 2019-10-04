@@ -27,3 +27,5 @@ require (
 	golang.org/x/time v0.0.0-20190921001708-c4c64cad1fd0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
+
+replace github.com/bvinc/go-sqlite-lite => github.com/develar/go-sqlite-lite v0.6.2-0.20191004054224-45b503c7be7f

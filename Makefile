@@ -32,11 +32,8 @@ lint:
 	golangci-lint run
 
 docker:
-	mkdir -p db/ij-perf-db
-	cp ~/ij-perf-db/db.sqlite db/ij-perf-db
 	docker build -t docker-registry.labs.intellij.net/idea/report-aggregator:latest .
 	# docker run -it --rm -p 9044:80 docker-registry.labs.intellij.net/idea/report-aggregator:latest
-	# docker push docker-registry.labs.intellij.net/idea/report-aggregator:latest
 
 	# kubectl config set-context --current --namespace=idea
 	# kubectl apply -f deployment.yaml

@@ -16,11 +16,24 @@ import (
   "time"
 )
 
+type StatsServer struct {
+  db                       *sqlite3.Conn
+  victoriaMetricsServerUrl string
+
+  logger *zap.Logger
+}
+
+func (t *StatsServer) httpError(err error, w http.ResponseWriter) {
+  t.logger.Error("internal error", zap.Error(err))
+  http.Error(w, err.Error(), 503)
+}
+
 func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("serve", "Serve SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()
+  victoriaMetricsServerUrl := command.Flag("victoria-metrics-server-url", "The victoriaMetricsServerUrl").String()
   command.Action(func(context *kingpin.ParseContext) error {
-    err := serve(*dbPath, log)
+    err := serve(*dbPath, *victoriaMetricsServerUrl, log)
     if err != nil {
       return err
     }
@@ -29,7 +42,7 @@ func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
   })
 }
 
-func serve(dbPath string, logger *zap.Logger) error {
+func serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) error {
   db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
   if err != nil {
     return errors.WithStack(err)
@@ -37,9 +50,15 @@ func serve(dbPath string, logger *zap.Logger) error {
 
   defer util.Close(db, logger)
 
+  if len(victoriaMetricsServerUrl) == 0 {
+    victoriaMetricsServerUrl = "http://localhost:8428"
+  }
+
   statsServer := &StatsServer{
+    db:                       db,
+    victoriaMetricsServerUrl: victoriaMetricsServerUrl,
+
     logger: logger,
-    db:     db,
   }
 
   cacheManager := NewResponseCacheManager(logger)
@@ -49,6 +68,10 @@ func serve(dbPath string, logger *zap.Logger) error {
   mux.Handle("/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
   mux.Handle("/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
+
+  mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
+    writer.WriteHeader(200)
+  })
 
   serverPort := os.Getenv("SERVER_PORT")
   if len(serverPort) == 0 {
@@ -64,10 +87,6 @@ func serve(dbPath string, logger *zap.Logger) error {
 }
 
 func listenAndServe(port string, mux *http.ServeMux, logger *zap.Logger) *http.Server {
-  http.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
-    writer.WriteHeader(200)
-  })
-
   // buffer size is 4096 https://github.com/golang/go/issues/13870
   server := &http.Server{
     Addr:    ":" + port,
@@ -117,14 +136,4 @@ func shutdownHttpServer(server *http.Server, shutdownTimeout time.Duration, logg
   }
 
   logger.Info("server is shutdown", zap.Duration("duration", time.Since(start)))
-}
-
-type StatsServer struct {
-  db     *sqlite3.Conn
-  logger *zap.Logger
-}
-
-func (t *StatsServer) httpError(err error, w http.ResponseWriter) {
-  t.logger.Error("internal error", zap.Error(err))
-  http.Error(w, err.Error(), 503)
 }

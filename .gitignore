@@ -4,3 +4,5 @@
 /http-client.env.json
 
 db/
+
+/deployment/overlays/

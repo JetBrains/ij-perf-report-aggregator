@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: report-aggregator
+  labels: &LABELS
+    app: report-aggregator
+spec:
+  selector:
+    matchLabels: *LABELS
+  template:
+    metadata:
+      labels: *LABELS
+    spec:
+      containers:
+        - name: report-aggregator
+          image: docker-registry.labs.intellij.net/idea/report-aggregator@sha256:d4fb15211a67dc1d9cb3ffefa8ec2f1132826455bf77ca6ec96b88e74d0161b4
+          args: ["--victoria-metrics-server-url", "http://victoria-metrics:8428"]
+          ports:
+            - containerPort: 80
+
+          readinessProbe:
+            httpGet:
+              path: /health-check
+              port: 80
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 80

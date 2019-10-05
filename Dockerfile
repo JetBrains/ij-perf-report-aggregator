@@ -20,6 +20,5 @@ FROM alpine:3.10
 
 ENV SERVER_PORT=80
 
-COPY db/ij-perf-db ./ij-perf-db
 COPY --from=builder /report-aggregator .
-CMD ["/report-aggregator", "serve", "--db", "/ij-perf-db/db.sqlite"]
+ENTRYPOINT ["/report-aggregator", "serve", "--db", "/ij-perf-db/db.sqlite"]

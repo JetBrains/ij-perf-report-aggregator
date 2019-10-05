@@ -73,7 +73,7 @@ func (t *StatsServer) computeMedian(metricName string, product string, machine s
     metricName: metricName,
   }
 
-  u, err := url.Parse("http://localhost:8428/api/v1/query")
+  u, err := url.Parse(t.victoriaMetricsServerUrl + "/api/v1/query")
   if err != nil {
     return nil, err
   }

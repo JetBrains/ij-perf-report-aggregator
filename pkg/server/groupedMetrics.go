@@ -14,20 +14,30 @@ import (
 var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
-  query := request.URL.Query()
-  product := query.Get("product")
-  if len(product) == 0 {
-    return nil, NewHttpError(400, "product parameter is required")
+  query, err := parseQuery(request)
+  if err != nil {
+    return nil, err
   }
 
-  machine := query.Get("machine")
-  if len(product) == 0 {
-    return nil, NewHttpError(400, "machine parameter is required")
+  product, machine, err := getProductAndMachine(query)
+  if err != nil {
+    return nil, err
   }
 
   eventType := query.Get("eventType")
   if len(eventType) == 0 {
-    eventType = "duration"
+    eventType = "d"
+  } else if len(eventType) != 1 {
+    // prevent misuse of parameter
+    return nil, NewHttpError(400, "eventType is not supported")
+  }
+
+  operator := query.Get("operator")
+  if len(operator) == 0 {
+    operator = "median"
+  } else if len(operator) > 6 {
+    // prevent misuse of parameter
+    return nil, NewHttpError(400, "operator is not supported")
   }
 
   var metricNames []string
@@ -38,9 +48,9 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   }
 
   results := make([]*MedianResult, len(metricNames))
-  err := util.MapAsyncConcurrency(len(metricNames), 4, func(taskIndex int) (f func() error, err error) {
+  err = util.MapAsyncConcurrency(len(metricNames), 4, func(taskIndex int) (f func() error, err error) {
     return func() error {
-      result, err := t.computeMedian(metricNames[taskIndex], product, machine, eventType, httpClient)
+      result, err := t.computeMedian(metricNames[taskIndex], product, machine, eventType, operator, httpClient)
       if err != nil {
         return err
       }
@@ -55,12 +65,10 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   buffer := quicktemplate.AcquireByteBuffer()
   defer quicktemplate.ReleaseByteBuffer(buffer)
   WriteGroupedMetricList(buffer, results)
-  result := make([]byte, len(buffer.B))
-  copy(result, buffer.B)
-  return result, nil
+  return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMedian(metricName string, product string, machine string, eventType string, httpClient *http.Client) (*MedianResult, error) {
+func (t *StatsServer) computeMedian(metricName string, product string, machine string, eventType string, operator string, httpClient *http.Client) (*MedianResult, error) {
   result := &MedianResult{
     metricName: metricName,
   }
@@ -72,7 +80,7 @@ func (t *StatsServer) computeMedian(metricName string, product string, machine s
 
   q := u.Query()
 
-  q.Set("query", `median(`+metricName+`_`+eventType+`{product="`+product+`",machine="`+machine+`"}[2y]) by (buildC1)`)
+  q.Set("query", operator+`(`+metricName+`_`+eventType+`{product="`+product+`",machine="`+machine+`"}[2y]) by (buildC1)`)
   u.RawQuery = q.Encode()
 
   err = t.getJson(u.String(), httpClient, result)

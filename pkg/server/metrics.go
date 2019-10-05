@@ -13,26 +13,23 @@ import (
 )
 
 func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
-  query := request.URL.Query()
-  product := query.Get("product")
-  if len(product) == 0 {
-    return nil, NewHttpError(400, "product parameter is required")
+  query, err := parseQuery(request)
+  if err != nil {
+    return nil, err
   }
 
-  machine := query.Get("machine")
-  if len(product) == 0 {
-    return nil, NewHttpError(400, "machine parameter is required")
+  product, machine, err := getProductAndMachine(query)
+  if err != nil {
+    return nil, err
   }
 
   buffer := quicktemplate.AcquireByteBuffer()
   defer quicktemplate.ReleaseByteBuffer(buffer)
-  err := t.computeMetricsResponse(product, machine, buffer)
+  err = t.computeMetricsResponse(product, machine, buffer)
   if err != nil {
     return nil, err
   }
-  result := make([]byte, len(buffer.B))
-  copy(result, buffer.B)
-  return result, nil
+  return CopyBuffer(buffer), nil
 }
 
 func (t *StatsServer) computeMetricsResponse(product string, machine string, writer io.Writer) error {

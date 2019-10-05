@@ -42,13 +42,13 @@ func serve(dbPath string, logger *zap.Logger) error {
     db:     db,
   }
 
-  cacheManager := NewResponseCacheManager()
+  cacheManager := NewResponseCacheManager(logger)
 
   mux := http.NewServeMux()
 
   mux.Handle("/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
-  mux.Handle("/metrics", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
-  mux.Handle("/groupedMetrics", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
+  mux.Handle("/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
+  mux.Handle("/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
 
   serverPort := os.Getenv("SERVER_PORT")
   if len(serverPort) == 0 {

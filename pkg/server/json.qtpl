@@ -2,6 +2,12 @@
 {% import "github.com/develar/errors" %}
 
 {% stripspace %}
+{% func httpError(error *HttpError) %}
+{
+  "error": {%q= error.Message %}
+}
+{% endfunc %}
+
 {% func GroupedMetricList(list []*MedianResult) %}
 {
   "groupNames": [
@@ -64,7 +70,6 @@
   "splash", "startUpCompleted"
 ]
 {% endfunc %}
-
 
 {% func safeStringList(list []string) %}
 [

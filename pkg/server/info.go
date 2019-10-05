@@ -31,10 +31,7 @@ func (t *StatsServer) handleInfoRequest(_ *http.Request) ([]byte, error) {
   if errRef != nil {
     return nil, errRef
   }
-
-  result := make([]byte, len(buffer.B))
-  copy(result, buffer.B)
-  return result, nil
+  return CopyBuffer(buffer), nil
 }
 
 func (t *StatsServer) getProductNames() ([]string, error) {

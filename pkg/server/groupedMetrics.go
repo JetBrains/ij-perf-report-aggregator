@@ -3,7 +3,6 @@ package server
 import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
-  "github.com/valyala/quicktemplate"
   "net/http"
   "net/url"
   "report-aggregator/pkg/util"
@@ -62,8 +61,8 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
     return nil, err
   }
 
-  buffer := quicktemplate.AcquireByteBuffer()
-  defer quicktemplate.ReleaseByteBuffer(buffer)
+  buffer := byteBufferPool.Get()
+  defer byteBufferPool.Put(buffer)
   WriteGroupedMetricList(buffer, results)
   return CopyBuffer(buffer), nil
 }

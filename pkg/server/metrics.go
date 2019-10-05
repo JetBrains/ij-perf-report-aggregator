@@ -4,7 +4,6 @@ import (
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/json-iterator/go"
   "github.com/pkg/errors"
-  "github.com/valyala/quicktemplate"
   "io"
   "net/http"
   "report-aggregator/pkg/util"
@@ -23,8 +22,8 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
     return nil, err
   }
 
-  buffer := quicktemplate.AcquireByteBuffer()
-  defer quicktemplate.ReleaseByteBuffer(buffer)
+  buffer := byteBufferPool.Get()
+  defer byteBufferPool.Put(buffer)
   err = t.computeMetricsResponse(product, machine, buffer)
   if err != nil {
     return nil, err

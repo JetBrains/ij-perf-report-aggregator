@@ -1,7 +1,6 @@
 FROM golang:1.13-alpine3.10 AS builder
 
 ENV GOPROXY=https://proxy.golang.org
-ENV GO111MODULE=on
 
 WORKDIR /project
 
@@ -9,16 +8,17 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-RUN apk update && apk add gcc libc-dev make
+RUN apk add --update gcc libc-dev
 
-COPY main.go .
+COPY cmd/server ./cmd/server
 COPY pkg ./pkg
 
-RUN go build -ldflags='-s -w' -o /report-aggregator ./
+RUN go build -ldflags="-s -w -extldflags '-static'" -o /report-aggregator ./cmd/server
 
-FROM alpine:3.10
+FROM scratch
 
 ENV SERVER_PORT=80
 
 COPY --from=builder /report-aggregator .
+EXPOSE 80
 ENTRYPOINT ["/report-aggregator", "serve", "--db", "/ij-perf-db/db.sqlite"]

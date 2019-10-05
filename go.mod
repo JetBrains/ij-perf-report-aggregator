@@ -8,6 +8,7 @@ require (
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
+	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bvinc/go-sqlite-lite v0.6.1
 	github.com/cespare/xxhash v1.1.0
 	github.com/cespare/xxhash/v2 v2.1.0 // indirect
@@ -20,6 +21,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rs/cors v1.7.0
 	github.com/tdewolff/minify/v2 v2.5.2
+	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/quicktemplate v1.2.0
 	go.uber.org/atomic v1.4.0
 	go.uber.org/multierr v1.2.0 // indirect

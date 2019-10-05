@@ -6,6 +6,7 @@ import (
   "github.com/VictoriaMetrics/fastcache"
   "github.com/cespare/xxhash"
   "github.com/develar/errors"
+  "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "go.uber.org/zap"
   "io"
@@ -16,6 +17,8 @@ import (
   "strings"
   "time"
 )
+
+var byteBufferPool bytebufferpool.Pool
 
 type HttpError struct {
   Code    int
@@ -98,15 +101,7 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
     var err error
     result, err = handler(request)
     if err != nil {
-      switch exception := errors.Cause(err).(type) {
-      case *HttpError:
-        w.WriteHeader(exception.Code)
-        writehttpError(w, exception)
-
-      default:
-        t.logger.Error("cannot handle http request", zap.Error(err))
-        http.Error(w, err.Error(), 503)
-      }
+      t.handleError(err, w)
       return
     }
 
@@ -142,7 +137,18 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
     t.logger.Error("cannot write cached result", zap.Error(err))
     http.Error(w, err.Error(), 503)
   }
-  return
+}
+
+func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
+  switch exception := errors.Cause(err).(type) {
+  case *HttpError:
+    w.WriteHeader(exception.Code)
+    writehttpError(w, exception)
+
+  default:
+    t.logger.Error("cannot handle http request", zap.Error(err))
+    http.Error(w, err.Error(), 503)
+  }
 }
 
 func computeEtag(result []byte) string {
@@ -151,8 +157,8 @@ func computeEtag(result []byte) string {
 }
 
 func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {
-  buffer := quicktemplate.AcquireByteBuffer()
-  defer quicktemplate.ReleaseByteBuffer(buffer)
+  buffer := bytebufferpool.Get()
+  defer bytebufferpool.Put(buffer)
   gzipWriter, err := gzip.NewWriterLevel(buffer, 5)
   if err != nil {
     return nil, err
@@ -169,8 +175,7 @@ func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {
   return CopyBuffer(buffer), nil
 }
 
-//noinspection GoDeprecation
-func CopyBuffer(buffer *quicktemplate.ByteBuffer) []byte {
+func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {
   result := make([]byte, len(buffer.B))
   copy(result, buffer.B)
   return result

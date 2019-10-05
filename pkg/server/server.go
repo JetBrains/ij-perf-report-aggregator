@@ -23,11 +23,6 @@ type StatsServer struct {
   logger *zap.Logger
 }
 
-func (t *StatsServer) httpError(err error, w http.ResponseWriter) {
-  t.logger.Error("internal error", zap.Error(err))
-  http.Error(w, err.Error(), 503)
-}
-
 func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("serve", "Serve SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()

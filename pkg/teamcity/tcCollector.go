@@ -3,6 +3,7 @@ package teamcity
 import (
   "context"
   "github.com/alecthomas/kingpin"
+  "github.com/araddon/dateparse"
   "github.com/develar/errors"
   "go.uber.org/atomic"
   "go.uber.org/zap"
@@ -30,12 +31,22 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("collect-tc", "Collect reports from TeamCity.")
   buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
   dbPath := command.Flag("db", "The output SQLite database file.").Short('o').Required().String()
+  sinceDate := command.Flag("since", "The date to force collecting since").String()
+
   command.Action(func(context *kingpin.ParseContext) error {
-    return collectFromTeamCity(*dbPath, *buildTypeIds, log)
+    var since time.Time
+    if len(*sinceDate) > 0 {
+      var err error
+      since, err = dateparse.ParseStrict(*sinceDate)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+    }
+    return collectFromTeamCity(*dbPath, *buildTypeIds, since, log)
   })
 }
 
-func collectFromTeamCity(dbPath string, buildTypeIds []string, logger *zap.Logger) error {
+func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
@@ -76,16 +87,22 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, logger *zap.Logge
     return err
   }
 
-  lastGeneratedTime, err := reportAnalyzer.GetLastGeneratedTime()
-  if err != nil {
-    return err
+  if since.IsZero() {
+    lastGeneratedTime, err := reportAnalyzer.GetLastGeneratedTime()
+    if err != nil {
+      return err
+    }
+
+    if lastGeneratedTime > 0 {
+      since = time.Unix(lastGeneratedTime, -1)
+    }
   }
 
   for _, buildTypeId := range buildTypeIds {
     q := serverUrl.Query()
     locator := "buildType:(id:" + buildTypeId + "),status:SUCCESS,count:500"
-    if lastGeneratedTime > 0 {
-      locator += ",sinceDate:" + time.Unix(lastGeneratedTime, -1).Format("20060102T150405-0700")
+    if !since.IsZero() {
+      locator += ",sinceDate:" + since.Format("20060102T150405-0700")
     }
     q.Set("locator", locator)
     q.Set("fields", "count,href,nextHref,build(id,agent(name))")

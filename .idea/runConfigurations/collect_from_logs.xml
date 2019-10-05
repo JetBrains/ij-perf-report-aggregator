@@ -3,10 +3,10 @@
     <module name="report-aggregator" />
     <working_directory value="$PROJECT_DIR$" />
     <parameters value="collect --dir $USER_HOME$/Downloads/zlata/IntelliJIdea2019.2 --dir $USER_HOME$/Downloads/zlata/IntelliJIdea2019.3 --machine zlata --db $USER_HOME$/ij-perf-db/db.sqlite" />
-    <kind value="PACKAGE" />
+    <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/main.go" />
-    <package value="report-aggregator" />
-    <directory value="$PROJECT_DIR$" />
+    <package value="$PROJECT_DIR$/cmd/report-aggregator" />
+    <directory value="$PROJECT_DIR$/cmd/report-aggregator" />
     <method v="2" />
   </configuration>
 </component>

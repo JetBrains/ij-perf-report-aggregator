@@ -3,7 +3,6 @@ package server
 import (
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
-  "github.com/valyala/quicktemplate"
   "net/http"
   "report-aggregator/pkg/util"
 )
@@ -25,8 +24,8 @@ func (t *StatsServer) handleInfoRequest(_ *http.Request) ([]byte, error) {
   defer util.Close(statement, t.logger)
 
   var errRef error
-  buffer := quicktemplate.AcquireByteBuffer()
-  defer quicktemplate.ReleaseByteBuffer(buffer)
+  buffer := byteBufferPool.Get()
+  defer byteBufferPool.Put(buffer)
   WriteInfo(buffer, productNames, essentialMetricNames, statement, &errRef)
   if errRef != nil {
     return nil, errRef

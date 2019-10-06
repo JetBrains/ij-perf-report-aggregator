@@ -34,9 +34,6 @@ lint:
 build-server:
 	go build -ldflags='-s -w' -o dist/server ./cmd/server
 
-docker:
-	docker build -t docker-registry.labs.intellij.net/idea/report-aggregator:latest .
-
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/report-aggregator
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/server

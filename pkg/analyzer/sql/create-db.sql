@@ -26,12 +26,13 @@ create table report
   foreign key (machine) references machine (ROWID) on delete restrict
 );
 
+create index generated_time on report (generated_time);
 create index machine_index on report (machine);
 create index product_index on report (product);
 create index build_major_index on report (build_c1);
 create index build_minor_index on report (build_c2);
 create index build_patch_index on report (build_c3);
 
-pragma user_version=4;
+pragma user_version=5;
 
 commit;

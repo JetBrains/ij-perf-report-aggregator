@@ -21,4 +21,4 @@ ENV SERVER_PORT=80
 
 COPY --from=builder /report-aggregator .
 EXPOSE 80
-ENTRYPOINT ["/report-aggregator", "serve", "--db", "/ij-perf-db/db.sqlite"]
+ENTRYPOINT ["/report-aggregator", "--db", "/ij-perf-db/db.sqlite"]

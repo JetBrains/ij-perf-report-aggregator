@@ -8,12 +8,27 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8428/api/v1/query?query=median(bootstrap_d{product="IU",machine="zlata"}[5y]) by (buildC1)
+GET http://localhost:8428/api/v1/query?query=quantile(0.5, bootstrap_d{product="IU",machine="1"}[5y]) by (buildC1)
 Accept: application/json
 
 ###
 
-GET http://localhost:8428/api/v1/query?query=median_over_time(bootstrap_d[5y])
+GET http://localhost:8428/api/v1/query?query=day_of_week(bootstrap_d{product="IU",machine="1"}[5y])
+Accept: application/json
+
+###
+
+GET http://localhost:8428/api/v1/query?query=count(count(bootstrap_d{product="IU",machine="1"}[5y]) by (buildC1))
+Accept: application/json
+
+###
+
+GET http://localhost:8428/api/v1/query?query=bootstrap_d{product="IU",machine="1"}[5y]
+Accept: application/json
+
+###
+
+GET http://localhost:8428/api/v1/query?query=bootstrap_d[5y]
 Accept: application/json
 
 ###

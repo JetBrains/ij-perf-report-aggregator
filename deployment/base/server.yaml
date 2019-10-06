@@ -5,6 +5,7 @@ metadata:
   labels: &LABELS
     app: report-aggregator
 spec:
+  replicas: 2
   selector:
     matchLabels: *LABELS
   template:

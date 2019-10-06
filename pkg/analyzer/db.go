@@ -7,7 +7,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"report-aggregator/pkg/util"
+  "report-aggregator/pkg/sql"
+  "report-aggregator/pkg/util"
 	"strings"
 	"time"
 )
@@ -95,7 +96,7 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
 
 	db.BusyTimeout(5 * time.Second)
 
-	dbVersion, err := readDbVersion(db, logger)
+	dbVersion, err := sql.GetInt(db, "PRAGMA user_version", logger)
 	if err != nil {
 		return nil, err
 	}
@@ -107,29 +108,19 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
     }
   } else if dbVersion == 1 {
     return nil, errors.New("Migration from db version 1 is not possible (product code and build number cannot be inferred from old reports)")
-  } else if dbVersion < toolDbVersion {
+  } else if dbVersion < 4 {
     return nil, errors.Errorf("Migration from db version %d is not implemented", dbVersion)
   } else if dbVersion > toolDbVersion {
     return nil, errors.Errorf("Database version %d is not supported (tool is outdated)", dbVersion)
   }
 
+  if dbVersion <= 4 {
+    err := db.Exec("create index generated_time on report (generated_time)")
+    if err != nil {
+      return nil, errors.WithStack(err)
+    }
+  }
+
 	isPrepared = true
 	return db, nil
-}
-
-func readDbVersion(db *sqlite3.Conn, logger *zap.Logger) (int, error) {
-	statement, err := db.Prepare("PRAGMA user_version")
-	if err != nil {
-		return -1, errors.WithStack(err)
-	}
-
-	defer util.Close(statement, logger)
-
-	_, err = statement.Step()
-	if err != nil {
-		return -1, errors.WithStack(err)
-	}
-
-	dbVersion, _, err := statement.ColumnInt(0)
-	return dbVersion, errors.WithStack(err)
 }

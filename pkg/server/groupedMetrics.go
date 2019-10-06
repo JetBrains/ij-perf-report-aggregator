@@ -4,43 +4,52 @@ import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "net/http"
-  "net/url"
   "report-aggregator/pkg/util"
   "strconv"
-  "time"
+  "strings"
 )
 
-var httpClient = &http.Client{Timeout: 30 * time.Second}
-
 func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
-  query, err := parseQuery(request)
+  urlQuery, err := parseQuery(request)
   if err != nil {
     return nil, err
   }
 
-  product, machine, err := getProductAndMachine(query)
+  var query Query
+
+  query.product, query.machine, err = getProductAndMachine(urlQuery)
   if err != nil {
     return nil, err
   }
 
-  eventType := query.Get("eventType")
-  if len(eventType) == 0 {
-    eventType = "d"
-  } else if len(eventType) != 1 {
+  query.eventType = urlQuery.Get("eventType")
+  if len(query.eventType) == 0 {
+    query.eventType = "d"
+  } else if len(query.eventType) != 1 {
     // prevent misuse of parameter
     return nil, NewHttpError(400, "eventType is not supported")
   }
 
-  operator := query.Get("operator")
-  if len(operator) == 0 {
-    operator = "median"
-  } else if len(operator) > 6 {
-    // prevent misuse of parameter
-    return nil, NewHttpError(400, "operator is not supported")
+  query.operator = urlQuery.Get("operator")
+  if len(query.operator) == 0 {
+    query.operator = "median"
+  }
+
+  operatorArg := urlQuery.Get("operatorArg")
+  if query.operator == "quantile" {
+    if len(operatorArg) == 0 {
+      return nil, NewHttpError(400, "operatorArg parameter is required")
+    }
+
+    v, err := strconv.ParseInt(operatorArg, 10, 8)
+    if err != nil {
+      return nil, NewHttpError(400, "quantile is not correct")
+    }
+    query.quantile = float64(v) / 100
   }
 
   var metricNames []string
-  if eventType == "d" {
+  if query.eventType == "d" {
     metricNames = essentialMetricNames
   } else {
     metricNames = instantMetricNames
@@ -49,7 +58,7 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   results := make([]*MedianResult, len(metricNames))
   err = util.MapAsyncConcurrency(len(metricNames), 4, func(taskIndex int) (f func() error, err error) {
     return func() error {
-      result, err := t.computeMedian(metricNames[taskIndex], product, machine, eventType, operator, httpClient)
+      result, err := t.computeMedian(metricNames[taskIndex], query)
       if err != nil {
         return err
       }
@@ -67,22 +76,42 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMedian(metricName string, product string, machine string, eventType string, operator string, httpClient *http.Client) (*MedianResult, error) {
+type Query struct {
+  product   string
+  machine   string
+  eventType string
+
+  operator string
+  quantile float64
+}
+
+func (t *StatsServer) computeMedian(metricName string, query Query) (*MedianResult, error) {
   result := &MedianResult{
     metricName: metricName,
   }
 
-  u, err := url.Parse(t.victoriaMetricsServerUrl + "/api/v1/query")
+  var s strings.Builder
+  s.WriteString(query.operator)
+  s.WriteRune('(')
+  if query.operator == "quantile" {
+    s.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
+    s.WriteString(", ")
+  }
+  s.WriteString(metricName)
+  s.WriteRune('_')
+  s.WriteString(query.eventType)
+  s.WriteString(`{product="` + query.product + `",machine="` + query.machine + `"}`)
+  s.WriteString("[2y]")
+  s.WriteRune(')')
+  s.WriteString(` by (buildC1)`)
+
+  response, err := t.performRequest(s.String())
   if err != nil {
     return nil, err
   }
 
-  q := u.Query()
-
-  q.Set("query", operator+`(`+metricName+`_`+eventType+`{product="`+product+`",machine="`+machine+`"}[2y]) by (buildC1)`)
-  u.RawQuery = q.Encode()
-
-  err = t.getJson(u.String(), httpClient, result)
+  defer util.Close(response.Body, t.logger)
+  err = t.readJson(response, result)
   if err != nil {
     return nil, err
   }
@@ -90,19 +119,8 @@ func (t *StatsServer) computeMedian(metricName string, product string, machine s
   return result, nil
 }
 
-func (t *StatsServer) getJson(url string, httpClient *http.Client, result *MedianResult) error {
-  r, err := httpClient.Get(url)
-  if err != nil {
-    return err
-  }
-
-  defer util.Close(r.Body, t.logger)
-
-  if r.StatusCode >= 400 {
-    return errors.Errorf("Request failed: %s", r.Status)
-  }
-
-  iterator := jsoniter.Parse(jsoniter.ConfigFastest, r.Body, 64*1024)
+func (t *StatsServer) readJson(response *http.Response, result *MedianResult) error {
+  iterator := jsoniter.Parse(jsoniter.ConfigFastest, response.Body, 64*1024)
   for {
     field := iterator.ReadObject()
     switch field {
@@ -113,7 +131,7 @@ func (t *StatsServer) getJson(url string, httpClient *http.Client, result *Media
       }
 
     case "data":
-      err = readData(iterator, result)
+      err := readData(iterator, result)
       if err != nil {
         return err
       }

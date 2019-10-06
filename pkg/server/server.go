@@ -3,12 +3,12 @@ package server
 import (
   "context"
   "crypto/tls"
-  "github.com/alecthomas/kingpin"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
   "github.com/rs/cors"
   "go.uber.org/zap"
   "net/http"
+  "net/url"
   "os"
   "os/signal"
   "report-aggregator/pkg/util"
@@ -18,26 +18,12 @@ import (
 
 type StatsServer struct {
   db                       *sqlite3.Conn
-  victoriaMetricsServerUrl string
+  victoriaMetricsServerUrl *url.URL
 
   logger *zap.Logger
 }
 
-func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
-  command := app.Command("serve", "Serve SQLite database.")
-  dbPath := command.Flag("db", "The SQLite database file.").Required().String()
-  victoriaMetricsServerUrl := command.Flag("victoria-metrics-server-url", "The victoriaMetricsServerUrl").String()
-  command.Action(func(context *kingpin.ParseContext) error {
-    err := serve(*dbPath, *victoriaMetricsServerUrl, log)
-    if err != nil {
-      return err
-    }
-
-    return nil
-  })
-}
-
-func serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) error {
+func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) error {
   db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
   if err != nil {
     return errors.WithStack(err)
@@ -49,9 +35,14 @@ func serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) e
     victoriaMetricsServerUrl = "http://localhost:8428"
   }
 
+  parsedPromServerUrl, err := url.Parse(victoriaMetricsServerUrl + "/api/v1/query")
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
   statsServer := &StatsServer{
     db:                       db,
-    victoriaMetricsServerUrl: victoriaMetricsServerUrl,
+    victoriaMetricsServerUrl: parsedPromServerUrl,
 
     logger: logger,
   }

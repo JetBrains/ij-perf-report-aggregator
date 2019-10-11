@@ -58,7 +58,7 @@ func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.L
   defer util.Close(selectStatement, logger)
 
   // ZSTD 22 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sql.Open("clickhouse", "tcp://"+clickHouseUrl+"?compress=1")
+  db, err := sql.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }

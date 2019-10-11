@@ -13,7 +13,7 @@ RUN apk add --update gcc libc-dev
 COPY cmd/server ./cmd/server
 COPY pkg ./pkg
 
-RUN go build -ldflags="-s -w -extldflags '-static'" -o /report-aggregator ./cmd/server
+RUN go build -tags clz4 -ldflags="-s -w -extldflags '-static'" -o /report-aggregator ./cmd/server
 
 FROM scratch
 

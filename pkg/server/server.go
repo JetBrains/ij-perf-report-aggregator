@@ -10,7 +10,6 @@ import (
   "github.com/rs/cors"
   "go.uber.org/zap"
   "net/http"
-  "net/url"
   "os"
   "os/signal"
   "report-aggregator/pkg/util"
@@ -22,12 +21,10 @@ type StatsServer struct {
   db   *sqlite3.Conn
   chDb *sql.DB
 
-  victoriaMetricsServerUrl *url.URL
-
   logger *zap.Logger
 }
 
-func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) error {
+func Serve(dbPath string, dbUrl string, logger *zap.Logger) error {
   db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
   if err != nil {
     return errors.WithStack(err)
@@ -35,26 +32,20 @@ func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) e
 
   defer util.Close(db, logger)
 
-  if len(victoriaMetricsServerUrl) == 0 {
-    victoriaMetricsServerUrl = "http://localhost:8428"
+  if len(dbUrl) == 0 {
+    dbUrl = "127.0.0.1:9000"
   }
 
-  chDb, err := sql.Open("clickhouse", "tcp://127.0.0.1:9000?read_timeout=10&write_timeout=20")
+  chDb, err := sql.Open("clickhouse", "tcp://" + dbUrl + "?read_timeout=30&write_timeout=30&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
 
   defer util.Close(chDb, logger)
 
-  parsedPromServerUrl, err := url.Parse(victoriaMetricsServerUrl + "/api/v1/query")
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
   statsServer := &StatsServer{
     db:                       db,
     chDb:                     chDb,
-    victoriaMetricsServerUrl: parsedPromServerUrl,
 
     logger: logger,
   }

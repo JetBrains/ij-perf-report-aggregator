@@ -2,7 +2,7 @@
   <configuration default="false" name="fill" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
     <module name="report-aggregator" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="fill --db $USER_HOME$/ij-perf-db/db.sqlite --prom http://localhost:8428" />
+    <parameters value="fill --db $USER_HOME$/ij-perf-db/db.sqlite --clickHouse 127.0.0.1:9000" />
     <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <package value="$PROJECT_DIR$/cmd/report-aggregator" />

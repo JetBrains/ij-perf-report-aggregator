@@ -23,7 +23,7 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8428/api/v1/query?query=bootstrap_d{product="IU",machine="1"}[5y]
+GET http://localhost:8428/api/v1/query?query=bootstrap_d{product="IU",machine="1"}[5y] start()
 Accept: application/json
 
 ###

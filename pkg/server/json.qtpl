@@ -8,7 +8,7 @@
 }
 {% endfunc %}
 
-{% func GroupedMetricList(list []*MedianResult) %}
+{% func GroupedMetricList(list []MedianResult) %}
 {
   "groupNames": [
     {% if len(list) > 0 %}
@@ -35,10 +35,21 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, essentialMetricNames []string, statement *sqlite3.Stmt, errRef *error) %}
+{% func Info(productNames []string, essentialMetricNames []string, instantMetricNames []string, statement *sqlite3.Stmt, errRef *error) %}
 {
   "productNames": {%= safeStringList(productNames) %},
-  {%= metricNames(essentialMetricNames) %},
+  "durationMetricNames": [
+    {% for _, name := range essentialMetricNames %}
+      "{%s= name %}",
+    {% endfor %}
+    "moduleLoading"
+  ],
+  "instantMetricNames": [
+    {% for i, name := range instantMetricNames %}
+      {% if i != 0 %},{% endif %}
+      "{%s= name %}"
+    {% endfor %}
+  ],
   "productToMachine": {
     {% for i, product := range productNames %}
       {% if i != 0 %}
@@ -57,18 +68,6 @@
     {% endfor %}
   }
 }
-{% endfunc %}
-
-{% func metricNames(essentialMetricNames []string) %}
-"durationMetricsNames": [
-  {% for _, name := range essentialMetricNames %}
-    "{%s= name %}",
-  {% endfor %}
-  "moduleLoading"
-],
-"instantMetricsNames": [
-  "splash", "startUpCompleted"
-]
 {% endfunc %}
 
 {% func safeStringList(list []string) %}

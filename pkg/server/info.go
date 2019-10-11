@@ -7,8 +7,8 @@ import (
   "report-aggregator/pkg/util"
 )
 
-var essentialMetricNames = []string{"bootstrap", "appInitPreparation", "appInit", "pluginDescriptorLoading", "appComponentCreation", "projectComponentCreation"}
-var instantMetricNames = []string{"splash", "startUpCompleted"}
+var EssentialDurationMetricNames = []string{"bootstrap", "appInitPreparation", "appInit", "pluginDescriptorLoading", "appComponentCreation", "projectComponentCreation"}
+var InstantMetricNames = []string{"splash", "startUpCompleted"}
 
 func (t *StatsServer) handleInfoRequest(_ *http.Request) ([]byte, error) {
   productNames, err := t.getProductNames()
@@ -26,7 +26,7 @@ func (t *StatsServer) handleInfoRequest(_ *http.Request) ([]byte, error) {
   var errRef error
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  WriteInfo(buffer, productNames, essentialMetricNames, statement, &errRef)
+  WriteInfo(buffer, productNames, EssentialDurationMetricNames, InstantMetricNames, statement, &errRef)
   if errRef != nil {
     return nil, errRef
   }

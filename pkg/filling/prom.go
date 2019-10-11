@@ -1,31 +1,31 @@
 package filling
 
-import "C"
 import (
-  "bytes"
+  "database/sql"
   "github.com/alecthomas/kingpin"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
-  "io"
-  "net/http"
   "report-aggregator/pkg/analyzer"
+  "report-aggregator/pkg/server"
   "report-aggregator/pkg/util"
-  "strconv"
+  "strings"
+
+  _ "github.com/kshvakov/clickhouse"
 )
 
 func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
   command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()
-  promServer := command.Flag("prom", "The VictoriaMetrics/Influx server.").Required().String()
+  clickHouseUrl := command.Flag("clickHouse", "The ClickHouse server URL.").Required().String()
   updateMetrics := command.Flag("update-metrics", "Whether to update computed metrics if outdated. Think about backup.").Bool()
   command.Action(func(context *kingpin.ParseContext) error {
-    return fill(*dbPath, *updateMetrics, *promServer, logger)
+    return fill(*dbPath, *updateMetrics, *clickHouseUrl, logger)
   })
 }
 
-func fill(dbPath string, updateMetrics bool, promServer string, logger *zap.Logger) error {
+func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.Logger) error {
   if updateMetrics {
     err := analyzer.UpdateMetrics(dbPath, logger)
     if err != nil {
@@ -33,51 +33,111 @@ func fill(dbPath string, updateMetrics bool, promServer string, logger *zap.Logg
     }
   }
 
-  db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
+  mainDb, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  defer util.Close(mainDb, logger)
+
+  selectStatement, err := mainDb.Prepare(`
+    select 
+      id, product, machine.name as machine, generated_time, 
+      duration_metrics, instant_metrics, 
+      raw_report,
+      build_c1, build_c2, build_c3
+    from report 
+    inner join machine on machine.rowid = report.machine 
+    order by generated_time
+  `)
+
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  defer util.Close(selectStatement, logger)
+
+  // ZSTD 22 is used, read/write timeout should be quite large (10 minutes)
+  db, err := sql.Open("clickhouse", "tcp://"+clickHouseUrl+"?compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
 
   defer util.Close(db, logger)
 
-  statement, err := db.Prepare(`
-	   select id, product, machine, generated_time, 
-	          duration_metrics, instant_metrics, 
-	          build_c1, build_c2, build_c3
-	   from report order by generated_time
-	   	`)
-
+  tx, err := db.Begin()
   if err != nil {
     return errors.WithStack(err)
   }
 
-  defer util.Close(statement, logger)
+  // https://www.altinity.com/blog/2019/7/new-encodings-to-improve-clickhouse
+  var sb strings.Builder
+  sb.WriteString(`
+    CREATE TABLE report (
+      id FixedString(27) Codec(ZSTD(22)),
+      product FixedString(2) Codec(ZSTD(22)),
+      machine String Codec(ZSTD(22)),
+      generated_time DateTime Codec(Delta, ZSTD(22)),
+      
+      raw_report String Codec(ZSTD(22)),
+      
+      build_c1 UInt8 Codec(DoubleDelta, ZSTD(22)),
+      build_c2 UInt16 Codec(DoubleDelta, ZSTD(22)),
+      build_c3 UInt16 Codec(DoubleDelta, ZSTD(22))`)
+  processMetricName(func(name string, isInstant bool) {
+    sb.WriteRune(',')
+    sb.WriteRune(' ')
+    sb.WriteString(name)
+    sb.WriteRune('_')
+    if isInstant {
+      sb.WriteRune('i')
+    } else {
+      sb.WriteRune('d')
+    }
+    sb.WriteString(" Int32 Codec(Gorilla, ZSTD(22))")
+  })
+  sb.WriteString(") engine MergeTree partition by toYYYYMM(generated_time) order by (generated_time, product, machine, build_c1, build_c2, build_c3)")
 
-  pr, pw := io.Pipe()
-  go func() {
-    _ = pw.CloseWithError(writeReports(statement, pw, logger))
-  }()
-
-  // it is not data (e.g. duration or start) precision, but timestamp (report generated time)
-  response, err := http.Post(promServer+"/write?precision=s", "text/plain", pr)
+  _, err = db.Exec(sb.String())
   if err != nil {
     return errors.WithStack(err)
   }
 
-  if response != nil {
-    defer util.Close(response.Body, logger)
+  sb.Reset()
+  sb.WriteString(`INSERT INTO report VALUES (`)
+  for i := 0; i < 8; i++ {
+    if i != 0 {
+      sb.WriteRune(',')
+    }
+    sb.WriteRune('?')
+  }
+  processMetricName(func(name string, isInstant bool) {
+    sb.WriteString(", ?")
+  })
+  sb.WriteRune(')')
+  insertStatement, err := tx.Prepare(sb.String())
+  if err != nil {
+    return err
   }
 
-  if response.StatusCode >= 300 {
-    return errors.New("Failed to send: " + response.Status)
+  defer util.Close(insertStatement, logger)
+
+  err = writeReports(selectStatement, insertStatement, logger)
+  if err != nil {
+    return err
+  }
+
+  err = tx.Commit()
+  if err != nil {
+    return err
   }
   return nil
 }
 
-func writeReports(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger) error {
+func writeReports(selectStatement *sqlite3.Stmt, insertStatement *sql.Stmt, logger *zap.Logger) error {
   row := &MetricResult{}
   for {
-    hasRow, err := statement.Step()
+    hasRow, err := selectStatement.Step()
     if !hasRow {
       return nil
     }
@@ -87,109 +147,50 @@ func writeReports(statement *sqlite3.Stmt, pw *io.PipeWriter, logger *zap.Logger
       return err
     }
 
-    err = writeMetrics(statement, row, pw, logger)
+    err = writeMetrics(selectStatement, row, insertStatement, logger)
     if err != nil {
       return err
     }
   }
 }
 
-func writeMetrics(statement *sqlite3.Stmt, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
-  err := scanMetricResult(statement, row)
+func writeMetrics(selectStatement *sqlite3.Stmt, row *MetricResult, insertStatement *sql.Stmt, logger *zap.Logger) error {
+  err := scanMetricResult(selectStatement, row)
   if err != nil {
     logger.Error("cannot scan", zap.Error(err))
     return err
   }
 
-  var instantMetricsJson map[string]int
-  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetricsJson)
+  var durationMetrics map[string]int
+  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.durationMetricsJson), &durationMetrics)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  var buf bytes.Buffer
-  err = doWriteMetrics(row.durationMetricsJson, false, &buf, row, pw, logger)
+  var instantMetrics map[string]int
+  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetrics)
   if err != nil {
-    return err
+    return errors.WithStack(err)
   }
 
-  err = doWriteMetrics(row.instantMetricsJson, true, &buf, row, pw, logger)
-  if err != nil {
-    return err
-  }
-
-  return nil
+  args := []interface{}{row.id, row.productCode, row.machine, row.generatedTime, row.rawReport, row.buildC1, row.buildC2, row.buildC3}
+  processMetricName(func(name string, isInstant bool) {
+    if isInstant {
+      args = append(args, instantMetrics[name])
+    } else {
+      args = append(args, durationMetrics[name])
+    }
+  })
+  _, err = insertStatement.Exec(args...)
+  return err
 }
 
-func doWriteMetrics(metricsJson sqlite3.RawString, isInstant bool, buf *bytes.Buffer, row *MetricResult, pw *io.PipeWriter, logger *zap.Logger) error {
-  var metrics map[string]int
-  err := jsoniter.ConfigFastest.Unmarshal([]byte(metricsJson), &metrics)
-  if err != nil {
-    return errors.WithStack(err)
+func processMetricName(handler func(string, bool)) {
+  for _, name := range server.EssentialDurationMetricNames {
+    handler(name, false)
   }
-
-  for key, value := range metrics {
-    // skip missing values (-1 means null (undefined))
-    if value == -1 {
-      continue
-    }
-
-    buf.Reset()
-
-    buf.WriteString(key)
-
-    buf.WriteByte(',')
-
-    // write tags
-
-    buf.WriteString("id=")
-    buf.WriteString(string(row.id))
-    buf.WriteByte(',')
-
-    buf.WriteString("machine=")
-    buf.WriteString(string(row.machine))
-    buf.WriteByte(',')
-
-    buf.WriteString("product=")
-    buf.WriteString(string(row.productCode))
-    buf.WriteByte(',')
-
-    buf.WriteString("buildC1=")
-    buf.WriteString(strconv.Itoa(row.buildC1))
-    buf.WriteByte(',')
-
-    buf.WriteString("buildC2=")
-    buf.WriteString(strconv.Itoa(row.buildC2))
-    buf.WriteByte(',')
-
-    buf.WriteString("buildC3=")
-    buf.WriteString(strconv.Itoa(row.buildC3))
-
-    // write fields
-    buf.WriteByte(' ')
-    if isInstant {
-      buf.WriteByte('i')
-    } else {
-      buf.WriteByte('d')
-    }
-    buf.WriteByte('=')
-    buf.WriteString(strconv.Itoa(value))
-    // https://docs.influxdata.com/influxdb/v1.7/write_protocols/line_protocol_tutorial/#data-types
-    // integer type
-    buf.WriteByte('i')
-    buf.WriteByte(' ')
-
-    buf.WriteString(strconv.FormatInt(row.generatedTime, 10))
-
-    logger.Debug( buf.String())
-
-    buf.WriteByte('\n')
-
-    _, err := buf.WriteTo(pw)
-    if err != nil {
-      logger.Error("cannot write", zap.Error(err))
-      return err
-    }
+  handler("moduleLoading", false)
+  for _, name := range server.InstantMetricNames {
+    handler(name, true)
   }
-  return nil
 }

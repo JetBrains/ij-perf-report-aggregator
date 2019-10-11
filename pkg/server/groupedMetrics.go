@@ -1,9 +1,12 @@
 package server
 
 import (
+  "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
-  "github.com/json-iterator/go"
+  "go.uber.org/zap"
+  "math"
   "net/http"
+  "net/url"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
@@ -22,50 +25,30 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
     return nil, err
   }
 
-  query.eventType = urlQuery.Get("eventType")
-  if len(query.eventType) == 0 {
-    query.eventType = "d"
-  } else if len(query.eventType) != 1 {
-    // prevent misuse of parameter
-    return nil, NewHttpError(400, "eventType is not supported")
+  eventType := urlQuery.Get("eventType")
+  if len(eventType) == 0 {
+    query.eventType = 'd'
+  } else {
+    if len(eventType) != 1 {
+      // prevent misuse of parameter
+      return nil, NewHttpError(400, "eventType is not supported")
+    }
+    query.eventType = rune(eventType[0])
   }
 
-  query.operator = urlQuery.Get("operator")
-  if len(query.operator) == 0 {
-    query.operator = "median"
-  }
-
-  operatorArg := urlQuery.Get("operatorArg")
-  if query.operator == "quantile" {
-    if len(operatorArg) == 0 {
-      return nil, NewHttpError(400, "operatorArg parameter is required")
-    }
-
-    v, err := strconv.ParseInt(operatorArg, 10, 8)
-    if err != nil {
-      return nil, NewHttpError(400, "quantile is not correct")
-    }
-    query.quantile = float64(v) / 100
+  bytes, err := validateAndConfigureOperator(&query, urlQuery)
+  if err != nil {
+    return bytes, err
   }
 
   var metricNames []string
-  if query.eventType == "d" {
-    metricNames = essentialMetricNames
+  if query.eventType == 'd' {
+    metricNames = EssentialDurationMetricNames
   } else {
-    metricNames = instantMetricNames
+    metricNames = InstantMetricNames
   }
 
-  results := make([]*MedianResult, len(metricNames))
-  err = util.MapAsyncConcurrency(len(metricNames), 4, func(taskIndex int) (f func() error, err error) {
-    return func() error {
-      result, err := t.computeMedian(metricNames[taskIndex], query)
-      if err != nil {
-        return err
-      }
-      results[taskIndex] = result
-      return nil
-    }, nil
-  })
+  results, err := t.getAggregatedResults(metricNames, query)
   if err != nil {
     return nil, err
   }
@@ -76,187 +59,121 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   return CopyBuffer(buffer), nil
 }
 
+func validateAndConfigureOperator(query *Query, urlQuery url.Values) ([]byte, error) {
+  query.operator = urlQuery.Get("operator")
+  if len(query.operator) == 0 {
+    query.operator = "quantile"
+  } else if !govalidator.IsAlpha(query.operator) {
+    return nil, NewHttpError(400, "The operator parameter must contain only letters a-zA-Z")
+  }
+
+  operatorArg := urlQuery.Get("operatorArg")
+  if query.operator == "quantile" {
+    if len(operatorArg) == 0 {
+      return nil, NewHttpError(400, "The operatorArg parameter is required")
+    } else if !govalidator.IsNumeric(operatorArg) {
+      return nil, NewHttpError(400, "The operatorArg parameter must be numeric")
+    }
+
+    v, err := strconv.ParseInt(operatorArg, 10, 8)
+    if err != nil {
+      return nil, NewHttpError(400, "quantile is not correct")
+    }
+    query.quantile = float64(v) / 100
+  }
+  return nil, nil
+}
+
 type Query struct {
   product   string
   machine   string
-  eventType string
+  eventType rune
 
   operator string
   quantile float64
 }
 
-func (t *StatsServer) computeMedian(metricName string, query Query) (*MedianResult, error) {
-  result := &MedianResult{
-    metricName: metricName,
-  }
+func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([]MedianResult, error) {
+  var sb strings.Builder
+  sb.WriteString("select ")
+  sb.WriteString("build_c1")
 
-  var s strings.Builder
-  s.WriteString(query.operator)
-  s.WriteRune('(')
-  if query.operator == "quantile" {
-    s.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
-    s.WriteString(", ")
+  operator := query.operator
+  if operator == "quantile" {
+    operator = "quantileTiming"
   }
-  s.WriteString(metricName)
-  s.WriteRune('_')
-  s.WriteString(query.eventType)
-  s.WriteString(`{product="` + query.product + `",machine="` + query.machine + `"}`)
-  s.WriteString("[2y]")
-  s.WriteRune(')')
-  s.WriteString(` by (buildC1)`)
+  metricNameToValues := make(map[string][]Value)
+  for _, name := range metricNames {
+    sb.WriteString(", ")
+    sb.WriteString(operator)
+    if operator == "quantileTiming" {
+      sb.WriteRune('(')
+      sb.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
+      sb.WriteRune(')')
+    }
+    sb.WriteRune('(')
+    sb.WriteString(name)
+    sb.WriteRune('_')
+    sb.WriteRune(query.eventType)
+    sb.WriteRune(')')
+    sb.WriteString(" as ")
+    sb.WriteString(name)
+  }
+  sb.WriteString(" from report group by build_c1 order by build_c1")
 
-  response, err := t.performRequest(s.String())
+  rows, err := t.chDb.Query(sb.String())
   if err != nil {
-    return nil, err
+    t.logger.Error("cannot execute SQL", zap.String("query", sb.String()))
+    return nil, errors.WithStack(err)
+  }
+  defer util.Close(rows, t.logger)
+
+  columnPointers := make([]interface{}, 1+len(metricNames))
+  for rows.Next() {
+    for i := range columnPointers {
+      columnPointers[i] = new(interface{})
+    }
+
+    err := rows.Scan(columnPointers...)
+    if err != nil {
+      return nil, err
+    }
+
+    groupName := int((*(columnPointers[0].(*interface{}))).(uint8))
+
+    for index, name := range metricNames {
+      values, ok := metricNameToValues[name]
+      var v int
+      switch untypedValue := (*(columnPointers[index+1].(*interface{}))).(type) {
+      case float64:
+        v = int(math.Round(untypedValue))
+      case float32:
+        v = int(math.Round(float64(untypedValue)))
+      case int32:
+        v = int(untypedValue)
+      }
+
+      value := Value{buildC1: groupName, value: v}
+      if ok {
+        metricNameToValues[name] = append(values, value)
+      } else {
+        metricNameToValues[name] = []Value{value}
+      }
+    }
   }
 
-  defer util.Close(response.Body, t.logger)
-  err = t.readJson(response, result)
-  if err != nil {
-    return nil, err
+  result := make([]MedianResult, 0, len(metricNameToValues))
+  for _, name := range metricNames {
+    values, ok := metricNameToValues[name]
+    if !ok {
+      continue
+    }
+
+    result = append(result, MedianResult{
+      metricName:   name,
+      buildToValue: values,
+    })
   }
 
   return result, nil
-}
-
-func (t *StatsServer) readJson(response *http.Response, result *MedianResult) error {
-  iterator := jsoniter.Parse(jsoniter.ConfigFastest, response.Body, 64*1024)
-  for {
-    field := iterator.ReadObject()
-    switch field {
-    case "status":
-      status := iterator.ReadString()
-      if status != "success" {
-        return errors.Errorf("query status: %s", status)
-      }
-
-    case "data":
-      err := readData(iterator, result)
-      if err != nil {
-        return err
-      }
-
-    case "":
-      return nil
-
-    default:
-      iterator.Skip()
-    }
-  }
-}
-
-func readData(iterator *jsoniter.Iterator, result *MedianResult) error {
-  for {
-    field := iterator.ReadObject()
-    switch field {
-    case "resultType":
-      resultType := iterator.ReadString()
-      if resultType != "vector" {
-        return errors.Errorf("unexpected resultType: %s", resultType)
-      }
-
-    case "result":
-      for iterator.ReadArray() {
-        err := readResultItem(iterator, result)
-        if err != nil {
-          return err
-        }
-      }
-
-    case "":
-      return nil
-
-    default:
-      iterator.Skip()
-    }
-  }
-}
-
-func readResultItem(iterator *jsoniter.Iterator, result *MedianResult) error {
-  var err error
-
-  // use -2 as null because sometimes value -1 is a valid value
-  v := Value{
-    buildC1: -2,
-    value:   -2,
-  }
-
-readResultItem:
-  for {
-    field := iterator.ReadObject()
-    switch field {
-    case "metric":
-      v.buildC1, err = readMetric(iterator)
-      if err != nil {
-        return err
-      }
-
-    case "value":
-      v.value, err = readValue(iterator)
-      if err != nil {
-        return err
-      }
-
-    case "":
-      break readResultItem
-
-    default:
-      iterator.Skip()
-    }
-  }
-
-  if v.buildC1 == -2 {
-    return errors.New("buildC1 not found")
-  }
-  if v.value == -2 {
-    return errors.New("value not found")
-  }
-
-  result.buildToValue = append(result.buildToValue, v)
-
-  return nil
-}
-
-func readMetric(iterator *jsoniter.Iterator) (int, error) {
-  var err error
-
-  buildC1 := -2
-
-readMetric:
-  for {
-    field := iterator.ReadObject()
-    switch field {
-    case "buildC1":
-      buildC1, err = strconv.Atoi(iterator.ReadString())
-      if err != nil {
-        return -1, err
-      }
-
-    case "":
-      break readMetric
-
-    default:
-      iterator.Skip()
-    }
-  }
-  return buildC1, nil
-}
-
-func readValue(iterator *jsoniter.Iterator) (int, error) {
-  if !iterator.ReadArray() {
-    return -1, errors.New("2 values are expected")
-  }
-
-  // skip timestamp
-  iterator.Skip()
-
-  if !iterator.ReadArray() {
-    return -1, errors.New("2 values are expected")
-  }
-
-  value, err := strconv.Atoi(iterator.ReadString())
-  if iterator.ReadArray() {
-    return -1, errors.New("only 2 values are expected")
-  }
-  return value, err
 }

@@ -3,8 +3,10 @@ package server
 import (
   "context"
   "crypto/tls"
+  "database/sql"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
+  _ "github.com/kshvakov/clickhouse"
   "github.com/rs/cors"
   "go.uber.org/zap"
   "net/http"
@@ -17,7 +19,9 @@ import (
 )
 
 type StatsServer struct {
-  db                       *sqlite3.Conn
+  db   *sqlite3.Conn
+  chDb *sql.DB
+
   victoriaMetricsServerUrl *url.URL
 
   logger *zap.Logger
@@ -35,6 +39,13 @@ func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) e
     victoriaMetricsServerUrl = "http://localhost:8428"
   }
 
+  chDb, err := sql.Open("clickhouse", "tcp://127.0.0.1:9000?read_timeout=10&write_timeout=20")
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  defer util.Close(chDb, logger)
+
   parsedPromServerUrl, err := url.Parse(victoriaMetricsServerUrl + "/api/v1/query")
   if err != nil {
     return errors.WithStack(err)
@@ -42,6 +53,7 @@ func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) e
 
   statsServer := &StatsServer{
     db:                       db,
+    chDb:                     chDb,
     victoriaMetricsServerUrl: parsedPromServerUrl,
 
     logger: logger,
@@ -51,9 +63,9 @@ func Serve(dbPath string, victoriaMetricsServerUrl string, logger *zap.Logger) e
 
   mux := http.NewServeMux()
 
-  mux.Handle("/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
-  mux.Handle("/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
-  mux.Handle("/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
+  mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
+  mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
+  mux.Handle("/api/v1/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
     writer.WriteHeader(200)

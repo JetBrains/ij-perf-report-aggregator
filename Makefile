@@ -49,3 +49,4 @@ update-computed-metrics:
 #    	Uses {measurement} instead of `{measurement}{separator}{field_name}` for metic name if Influx line contains only a single field
 
 # docker run -it --rm -v ~/ij-perf-db/victoria-metrics-data:/victoria-metrics-data -p 8428:8428 victoriametrics/victoria-metrics:v1.28.0-beta5 -retentionPeriod 120
+# docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse yandex/clickhouse-server

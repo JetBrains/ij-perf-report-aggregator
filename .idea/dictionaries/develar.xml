@@ -9,6 +9,8 @@
       <w>sqlite</w>
       <w>tcsessionid</w>
       <w>uindex</w>
+      <w>yyyymm</w>
+      <w>zstd</w>
     </words>
   </dictionary>
 </component>

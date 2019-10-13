@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse
+  labels: &LABELS
+    app: clickhouse
+spec:
+  selector:
+    matchLabels: *LABELS
+  template:
+    metadata:
+      labels: *LABELS
+    spec:
+      containers:
+        - name: clickhouse
+          image: yandex/clickhouse-server:19.15.2.2
+          ports:
+            - containerPort: 9000
+              name: tcp
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  labels:
+    app: clickhouse
+spec:
+  ports:
+  - port: 9000
+    protocol: TCP
+  selector:
+    app: clickhouse

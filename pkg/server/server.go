@@ -4,7 +4,6 @@ import (
   "context"
   "crypto/tls"
   "database/sql"
-  "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
   _ "github.com/kshvakov/clickhouse"
   "github.com/rs/cors"
@@ -18,25 +17,17 @@ import (
 )
 
 type StatsServer struct {
-  db   *sqlite3.Conn
-  chDb *sql.DB
+  db *sql.DB
 
   logger *zap.Logger
 }
 
-func Serve(dbPath string, dbUrl string, logger *zap.Logger) error {
-  db, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  defer util.Close(db, logger)
-
+func Serve(dbUrl string, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
     dbUrl = "127.0.0.1:9000"
   }
 
-  chDb, err := sql.Open("clickhouse", "tcp://" + dbUrl + "?read_timeout=30&write_timeout=30&compress=1")
+  chDb, err := sql.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
@@ -44,8 +35,7 @@ func Serve(dbPath string, dbUrl string, logger *zap.Logger) error {
   defer util.Close(chDb, logger)
 
   statsServer := &StatsServer{
-    db:                       db,
-    chDb:                     chDb,
+    db: chDb,
 
     logger: logger,
   }

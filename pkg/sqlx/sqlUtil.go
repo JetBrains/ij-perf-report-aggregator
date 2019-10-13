@@ -1,4 +1,4 @@
-package sql
+package sqlx
 
 import (
   "github.com/bvinc/go-sqlite-lite/sqlite3"

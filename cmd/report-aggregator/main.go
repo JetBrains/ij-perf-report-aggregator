@@ -37,11 +37,10 @@ func main() {
 
 
 func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
-  command := app.Command("serve", "Serve SQLite database.")
-  dbPath := command.Flag("db", "The SQLite database file.").Required().String()
-  victoriaMetricsServerUrl := command.Flag("victoria-metrics-server-url", "The victoriaMetricsServerUrl").String()
+  command := app.Command("serve", "Start aggregated stats server.")
+  dbUrl := command.Flag("db", "The ClickHouse database URL.").Required().String()
   command.Action(func(context *kingpin.ParseContext) error {
-    err := server.Serve(*dbPath, *victoriaMetricsServerUrl, log)
+    err := server.Serve(*dbUrl, log)
     if err != nil {
       return err
     }

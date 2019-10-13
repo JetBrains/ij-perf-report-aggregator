@@ -15,10 +15,8 @@ spec:
       containers:
         - name: report-aggregator
           image: report-aggregator
-          args: ["--victoria-metrics-server-url", "http://victoria-metrics:8428"]
           ports:
             - containerPort: 80
-
           readinessProbe:
             httpGet:
               path: /health-check

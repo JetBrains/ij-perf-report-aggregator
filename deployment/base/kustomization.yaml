@@ -1,4 +1,4 @@
 resources:
   - server.yaml
   - service.yaml
-  - victoria-metrics.yaml
+  - clickhouse.yaml

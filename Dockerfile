@@ -8,7 +8,8 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-RUN apk add --update gcc libc-dev
+# tzdata is required for clickhouse client
+RUN apk add --update --no-cache gcc libc-dev tzdata
 
 COPY cmd/server ./cmd/server
 COPY pkg ./pkg
@@ -19,6 +20,7 @@ FROM scratch
 
 ENV SERVER_PORT=80
 
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /report-aggregator .
 EXPOSE 80
-ENTRYPOINT ["/report-aggregator", "--db", "/ij-perf-db/db.sqlite"]
+ENTRYPOINT ["/report-aggregator", "--db", "clickhouse:9000"]

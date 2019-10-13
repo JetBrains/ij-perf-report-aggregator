@@ -1,6 +1,3 @@
-{% import "github.com/bvinc/go-sqlite-lite/sqlite3" %}
-{% import "github.com/develar/errors" %}
-
 {% stripspace %}
 {% func httpError(error *HttpError) %}
 {
@@ -35,14 +32,14 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, essentialMetricNames []string, instantMetricNames []string, statement *sqlite3.Stmt, errRef *error) %}
+{% func Info(productNames []string, essentialMetricNames []string, instantMetricNames []string, productNameToMachineNames map[string][]string) %}
 {
   "productNames": {%= safeStringList(productNames) %},
   "durationMetricNames": [
-    {% for _, name := range essentialMetricNames %}
-      "{%s= name %}",
+    {% for i, name := range essentialMetricNames %}
+      {% if i != 0 %},{% endif %}
+      "{%s= name %}"
     {% endfor %}
-    "moduleLoading"
   ],
   "instantMetricNames": [
     {% for i, name := range instantMetricNames %}
@@ -52,19 +49,8 @@
   ],
   "productToMachine": {
     {% for i, product := range productNames %}
-      {% if i != 0 %}
-      ,
-        {% code statement.Reset() %}
-      {% endif %}
-
-      {% code
-        *errRef = errors.WithStack(statement.BindString(product, 0))
-        if *errRef != nil {
-          return
-        }
-      %}
-
-      "{%s= product %}": {%= writeMachineInfoList(statement, errRef) %}
+      {% if i != 0 %},{% endif %}
+      "{%s= product %}": {%= writeMachineInfoList(productNameToMachineNames[product]) %}
     {% endfor %}
   }
 }
@@ -79,43 +65,11 @@
 ]
 {% endfunc %}
 
-{% func writeMachineInfoList(statement *sqlite3.Stmt, errRef *error) %}
+{% func writeMachineInfoList(machines []string) %}
 [
-  {% code isFirstRow := true %}
-  {% for %}
-    {% code
-      hasRow, err := statement.Step()
-      if err != nil {
-        *errRef = errors.WithStack(err)
-        return
-      }
-
-      if !hasRow {
-        break
-      }
-
-      id, _, err := statement.ColumnInt(0)
-      if err != nil {
-        *errRef = errors.WithStack(err)
-        return
-      }
-
-      name, _, err := statement.ColumnRawString(1)
-      if err != nil {
-        *errRef = errors.WithStack(err)
-        return
-      }
-    %}
-
-    {% if isFirstRow %}
-      {% code isFirstRow = false %}
-    {% else %}
-      ,
-    {% endif %}
-    {
-      "id": {%d id %},
-      "name": {%q= string(name) %}
-    }
+  {% for i, machine := range machines %}
+    {% if i != 0 %},{% endif %}
+    {%q= machine %}
   {% endfor %}
 ]
 {% endfunc %}

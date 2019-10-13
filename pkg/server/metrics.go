@@ -1,14 +1,16 @@
 package server
 
 import (
-  "github.com/bvinc/go-sqlite-lite/sqlite3"
-  "github.com/json-iterator/go"
+  "context"
   "github.com/pkg/errors"
+  "github.com/valyala/quicktemplate"
   "io"
+  "math"
   "net/http"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
+  "time"
 )
 
 func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
@@ -17,109 +19,135 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
     return nil, err
   }
 
-  product, machine, err := getProductAndMachine(query)
+  product, machine, eventType, err := getProductAndMachine(query)
   if err != nil {
     return nil, err
   }
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  err = t.computeMetricsResponse(product, machine, buffer)
+  err = t.computeMetricsResponse(product, machine, eventType, buffer, request.Context())
   if err != nil {
     return nil, err
   }
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMetricsResponse(product string, machine string, writer io.Writer) error {
-  statement, err := t.db.Prepare(`
-select generated_time, build_c1, build_c2, build_c3, duration_metrics, instant_metrics 
-from report 
-where product = ? and machine = ? 
-order by build_c1, build_c2, build_c3, generated_time`, product, machine)
+func (t *StatsServer) computeMetricsResponse(product string, machine string, eventType rune, writer io.Writer, context context.Context) error {
+  var metricNames []string
+  if eventType == 'd' {
+    metricNames = DurationMetricNames
+  } else {
+    metricNames = InstantMetricNames
+  }
+
+  var sb strings.Builder
+  sb.WriteString("select generated_time, build_c1, build_c2, build_c3")
+  for _, name := range metricNames {
+    sb.WriteString(", ")
+    sb.WriteString(name)
+    sb.WriteRune('_')
+    sb.WriteRune(eventType)
+  }
+
+  sb.WriteString(" from report where product = ? and machine = ? order by build_c1, build_c2, build_c3, generated_time")
+
+  rows, err := t.db.QueryContext(context, sb.String(), product, machine)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  defer util.Close(statement, t.logger)
+  defer util.Close(rows, t.logger)
 
-  jsonWriter := jsoniter.NewStream(jsoniter.ConfigFastest, writer, 8*1024)
+  templateWriter := quicktemplate.AcquireWriter(writer)
+  defer quicktemplate.ReleaseWriter(templateWriter)
+  jsonWriter := templateWriter.N()
+  jsonWriter.S("[")
 
-  jsonWriter.WriteArrayStart()
+  offset := 4
 
-  var stringBuilder strings.Builder
+  columnPointers := make([]interface{}, offset+len(metricNames))
+  for i := range columnPointers {
+    columnPointers[i] = new(interface{})
+  }
 
   isFirst := true
   lastBuildWithoutUniqueSuffix := ""
-  for {
-    hasRow, err := statement.Step()
+  for rows.Next() {
+    err := rows.Scan(columnPointers...)
+    if err != nil {
+      return err
+    }
+
+    err = rows.Scan(columnPointers...)
     if err != nil {
       return errors.WithStack(err)
     }
 
-    if !hasRow {
-      break
-    }
-
-    var generatedTime int64
-    var buildC1 int
-    var buildC2 int
-    var buildC3 int
-    var durationMetrics sqlite3.RawString
-    var instantMetrics sqlite3.RawString
-    err = statement.Scan(&generatedTime, &buildC1, &buildC2, &buildC3, &durationMetrics, &instantMetrics)
-    if err != nil {
-      return errors.WithStack(err)
-    }
+    generatedTime := ((*(columnPointers[0].(*interface{}))).(time.Time)).Unix()
 
     if isFirst {
       isFirst = false
     } else {
-      jsonWriter.WriteMore()
+      jsonWriter.S(",")
     }
 
-    jsonWriter.WriteObjectStart()
     // timestamp
-    jsonWriter.WriteObjectField("t")
+    jsonWriter.S(`{"t":`)
     // seconds to milliseconds
-    jsonWriter.WriteInt64(generatedTime * 1000)
-    jsonWriter.WriteMore()
+    jsonWriter.D(int(generatedTime * 1000))
+    jsonWriter.S(",")
 
     // build number with addition if not unique (build as x coordinate)
-    stringBuilder.Reset()
-    stringBuilder.WriteString(strconv.Itoa(buildC1))
-    stringBuilder.WriteRune('.')
-    stringBuilder.WriteString(strconv.Itoa(buildC2))
+    sb.Reset()
+    sb.WriteString(strconv.Itoa(int((*(columnPointers[1].(*interface{}))).(uint8))))
+    sb.WriteRune('.')
+    sb.WriteString(strconv.Itoa(int((*(columnPointers[2].(*interface{}))).(uint16))))
+    buildC3 := int((*(columnPointers[3].(*interface{}))).(uint16))
     if buildC3 != 0 {
-      stringBuilder.WriteRune('.')
-      stringBuilder.WriteString(strconv.Itoa(buildC3))
+      sb.WriteRune('.')
+      sb.WriteString(strconv.Itoa(buildC3))
     }
 
-    buildAsString := stringBuilder.String()
+    buildAsString := sb.String()
     // https://www.amcharts.com/docs/v4/tutorials/handling-repeating-categories-on-category-axis/
     if lastBuildWithoutUniqueSuffix == buildAsString {
       // not unique - add time
-      stringBuilder.WriteRune(' ')
-      stringBuilder.WriteRune('(')
-      //stringBuilder.WriteString(time.Unix(generatedTime, 0).Format(time.UnixDate))
-      stringBuilder.WriteString(strconv.FormatInt(generatedTime, 10))
-      stringBuilder.WriteRune(')')
-      buildAsString = stringBuilder.String()
+      sb.WriteRune(' ')
+      sb.WriteRune('(')
+      sb.WriteString(strconv.FormatInt(generatedTime, 10))
+      sb.WriteRune(')')
+      buildAsString = sb.String()
     } else {
       lastBuildWithoutUniqueSuffix = buildAsString
     }
 
-    jsonWriter.WriteObjectField("build")
-    jsonWriter.WriteString(buildAsString)
-    jsonWriter.WriteMore()
+    jsonWriter.S(`"build":`)
+    jsonWriter.Q(buildAsString)
 
-    // skip first '{'
-    jsonWriter.WriteRaw(string(durationMetrics[1 : len(durationMetrics)-1]))
-    jsonWriter.WriteMore()
-    jsonWriter.WriteRaw(string(instantMetrics[1:]))
+    for index, name := range metricNames {
+      jsonWriter.S(`,"`)
+      jsonWriter.S(name)
+      jsonWriter.S(`":`)
+
+      switch untypedValue := (*(columnPointers[index+offset].(*interface{}))).(type) {
+      case float64:
+        jsonWriter.F(math.Round(untypedValue))
+      case float32:
+        jsonWriter.F(float64(untypedValue))
+      case int32:
+        jsonWriter.D(int(untypedValue))
+      case uint8:
+        jsonWriter.D(int(untypedValue))
+      default:
+        return errors.Errorf("unknown type: %v", untypedValue)
+      }
+    }
+
+    jsonWriter.S("}")
   }
 
-  jsonWriter.WriteArrayEnd()
+  jsonWriter.S("]")
 
-  return jsonWriter.Flush()
+  return nil
 }

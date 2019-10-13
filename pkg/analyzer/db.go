@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-  "report-aggregator/pkg/sql"
+  "report-aggregator/pkg/sqlx"
   "report-aggregator/pkg/util"
 	"strings"
 	"time"
@@ -96,7 +96,7 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
 
 	db.BusyTimeout(5 * time.Second)
 
-	dbVersion, err := sql.GetInt(db, "PRAGMA user_version", logger)
+	dbVersion, err := sqlx.GetInt(db, "PRAGMA user_version", logger)
 	if err != nil {
 		return nil, err
 	}

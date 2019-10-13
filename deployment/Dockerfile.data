@@ -1,9 +1,6 @@
 FROM alpine:3.10
 
-RUN apk --update --no-cache add p7zip && rm -rf /var/cache/apk/* /tmp/*
-
 WORKDIR /
-COPY db.7z .
-COPY victoria-metrics-data ./victoria-metrics-data
+COPY ./ /clickhouse-data
 
-CMD ["mustbeOverridden"]
+CMD ["cp", "-a", "/clickhouse-data/.", "/volume-data/"]

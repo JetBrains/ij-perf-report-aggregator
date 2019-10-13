@@ -1,6 +1,7 @@
 package server
 
 import (
+  "github.com/asaskevich/govalidator"
   "net/http"
   "net/url"
   "strings"
@@ -16,26 +17,35 @@ type Value struct {
   value   int
 }
 
-func getProductAndMachine(query url.Values) (string, string, error) {
+func getProductAndMachine(query url.Values) (string, string, rune, error) {
   product := query.Get("product")
   if len(product) == 0 {
-    return "", "", NewHttpError(400, "product parameter is required")
+    return "", "", 0, NewHttpError(400, "product parameter is required")
   } else if len(product) > 2 {
     // prevent misuse of parameter
-    return "", "", NewHttpError(400, "product code is not correct")
+    return "", "", 0, NewHttpError(400, "product code is not correct")
+  } else if !govalidator.IsAlpha(product) {
+    return "", "", 0, NewHttpError(400, "The product code parameter must contain only letters a-zA-Z")
   }
 
   machine := query.Get("machine")
   if len(machine) == 0 {
-    return "", "", NewHttpError(400, "machine parameter is required")
+    return "", "", 0, NewHttpError(400, "machine parameter is required")
   }
 
-  for _, c := range machine {
-    if c < '0' || c > '9' {
-      return "", "", NewHttpError(400, "machine id is not numeric")
+  var normalizedEventTypeValue rune
+  eventType := query.Get("eventType")
+  if len(eventType) == 0 {
+    normalizedEventTypeValue = 'd'
+  } else {
+    if len(eventType) != 1 {
+      // prevent misuse of parameter
+      return "", "", 0, NewHttpError(400, "eventType is not supported")
     }
+    normalizedEventTypeValue = rune(eventType[0])
   }
-  return product, machine, nil
+
+  return product, machine, normalizedEventTypeValue, nil
 }
 
 func parseQuery(request *http.Request) (url.Values, error) {

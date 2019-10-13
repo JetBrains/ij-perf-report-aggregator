@@ -20,20 +20,9 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
 
   var query Query
 
-  query.product, query.machine, err = getProductAndMachine(urlQuery)
+  query.product, query.machine, query.eventType, err = getProductAndMachine(urlQuery)
   if err != nil {
     return nil, err
-  }
-
-  eventType := urlQuery.Get("eventType")
-  if len(eventType) == 0 {
-    query.eventType = 'd'
-  } else {
-    if len(eventType) != 1 {
-      // prevent misuse of parameter
-      return nil, NewHttpError(400, "eventType is not supported")
-    }
-    query.eventType = rune(eventType[0])
   }
 
   bytes, err := validateAndConfigureOperator(&query, urlQuery)
@@ -100,13 +89,13 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
 
   operator := query.operator
   if operator == "quantile" {
-    operator = "quantileTiming"
+    operator = "quantileTDigest"
   }
   metricNameToValues := make(map[string][]Value)
   for _, name := range metricNames {
     sb.WriteString(", ")
     sb.WriteString(operator)
-    if operator == "quantileTiming" {
+    if operator == "quantileTDigest" {
       sb.WriteRune('(')
       sb.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
       sb.WriteRune(')')
@@ -121,7 +110,7 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
   }
   sb.WriteString(" from report group by build_c1 order by build_c1")
 
-  rows, err := t.chDb.Query(sb.String())
+  rows, err := t.db.Query(sb.String())
   if err != nil {
     t.logger.Error("cannot execute SQL", zap.String("query", sb.String()))
     return nil, errors.WithStack(err)
@@ -129,11 +118,12 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
   defer util.Close(rows, t.logger)
 
   columnPointers := make([]interface{}, 1+len(metricNames))
-  for rows.Next() {
-    for i := range columnPointers {
-      columnPointers[i] = new(interface{})
-    }
 
+  for i := range columnPointers {
+    columnPointers[i] = new(interface{})
+  }
+
+  for rows.Next() {
     err := rows.Scan(columnPointers...)
     if err != nil {
       return nil, err

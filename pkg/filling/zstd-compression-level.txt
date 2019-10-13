@@ -1,0 +1,64 @@
+http://www.onlineconversion.com/days_between_advanced.htm
+
+17:
+72.526.092 bytes (81,6 MB on disk) for 571 items
+0 days, 0 hours, 1 minute, 54 seconds
+
+2019-10-12T19:39:42.318+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:39:57.989+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:40:13.677+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:40:29.453+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:40:47.391+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:40:57.823+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:41:07.435+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:41:16.973+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:41:26.956+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T19:41:36.393+0200	INFO	items were inserted	{"count": 924}
+
+18:
+67.536.286 bytes (75,3 MB on disk) for 571 items
+0 days, 0 hours, 2 minutes, 18 seconds
+
+2019-10-12T10:10:59.817+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:11:18.600+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:11:38.596+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:11:58.936+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:12:19.246+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:12:32.157+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:12:43.931+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:12:55.516+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:13:07.358+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T10:13:18.413+0200	INFO	items were inserted	{"count": 924}
+
+19:
+64.649.983 bytes (73,2 MB on disk) for 571 items
+0 days, 0 hours, 2 minutes, 35 seconds
+
+2019-10-12T09:48:26.703+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:48:49.521+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:49:11.155+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:49:33.356+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:49:56.347+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:50:10.038+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:50:23.379+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:50:36.445+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:50:49.874+0200	INFO	items were inserted	{"count": 1001}
+2019-10-12T09:51:02.243+0200	INFO	items were inserted	{"count": 915}
+
+22:
+64.740.797 bytes (73,2 MB on disk) for 571 items
+
+0 days, 0 hours, 3 minutes, 58 seconds
+
+2019-10-12T09:54:27.897+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:55:01.683+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:55:35.806+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:56:10.213+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:56:44.029+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:57:04.899+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:57:25.830+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:57:46.260+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:58:06.845+0200	INFO	items were inserted	{"count": 1000}
+2019-10-12T09:58:26.071+0200	INFO	items were inserted	{"count": 924}
+
+So, ZSTD 19 provides the same compression ratio, but faster than 22.

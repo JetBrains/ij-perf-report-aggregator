@@ -46,7 +46,7 @@ func UpdateMetrics(dbPath string, logger *zap.Logger) error {
 
   defer util.Close(updateStatement, logger)
 
-  err = selectStatement.Bind(metricsVersion)
+  err = selectStatement.Bind(MetricsVersion)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -88,7 +88,7 @@ func UpdateMetrics(dbPath string, logger *zap.Logger) error {
       return errors.New("metrics cannot be computed")
     }
 
-    err = updateStatement.Exec(metricsVersion, serializedDurationMetrics, serializedInstantMetrics, id)
+    err = updateStatement.Exec(MetricsVersion, serializedDurationMetrics, serializedInstantMetrics, id)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -97,9 +97,9 @@ func UpdateMetrics(dbPath string, logger *zap.Logger) error {
   }
 
   if updatedCount == 0 {
-    logger.Info("all metrics up to date, nothing to update", zap.Int("currentVersion", metricsVersion))
+    logger.Info("all metrics up to date, nothing to update", zap.Int("currentVersion", MetricsVersion))
   } else {
-    logger.Info("metrics updated", zap.Int("count", updatedCount), zap.Int("currentVersion", metricsVersion))
+    logger.Info("metrics updated", zap.Int("count", updatedCount), zap.Int("currentVersion", MetricsVersion))
   }
   return nil
 }

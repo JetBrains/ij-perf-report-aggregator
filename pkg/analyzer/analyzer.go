@@ -213,7 +213,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
   return t.waitChannel
 }
 
-const metricsVersion = 4
+const MetricsVersion = 4
 
 func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
   t.waitGroup.Add(1)
@@ -233,7 +233,7 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
   }
 
   logger := t.logger.With(zap.String("id", id), zap.String("generatedTime", time.Unix(report.GeneratedTime, 0).Format(time.RFC1123)))
-  if currentMetricsVersion == metricsVersion {
+  if currentMetricsVersion == MetricsVersion {
     logger.Info("report already processed")
     return nil
   }
@@ -284,14 +284,14 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
   err = statement.Exec(id, machineId, report.ProductCode,
     report.GeneratedTime, buildId,
     buildC1, buildC2, buildC3,
-    metricsVersion, serializedDurationMetrics, serializedInstantMetrics,
+    MetricsVersion, serializedDurationMetrics, serializedInstantMetrics,
     report.RawData)
   if err != nil {
     return errors.WithStack(err)
   }
 
   if currentMetricsVersion >= 0 {
-    logger.Info("report metrics updated", zap.Int("oldMetricsVersion", currentMetricsVersion), zap.Int("newMetricsVersion", metricsVersion))
+    logger.Info("report metrics updated", zap.Int("oldMetricsVersion", currentMetricsVersion), zap.Int("newMetricsVersion", MetricsVersion))
   } else {
     logger.Info("new report added")
   }

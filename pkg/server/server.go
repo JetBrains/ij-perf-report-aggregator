@@ -47,6 +47,7 @@ func Serve(dbUrl string, logger *zap.Logger) error {
   mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
   mux.Handle("/api/v1/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
+  mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
     writer.WriteHeader(200)

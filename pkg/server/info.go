@@ -2,21 +2,9 @@ package server
 
 import (
   "net/http"
+  "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
 )
-
-var EssentialDurationMetricNames = []string{"bootstrap", "appInitPreparation", "appInit", "pluginDescriptorLoading", "appComponentCreation", "projectComponentCreation"}
-var DurationMetricNames = append(EssentialDurationMetricNames, "moduleLoading")
-var InstantMetricNames = []string{"splash", "startUpCompleted"}
-
-func ProcessMetricName(handler func(name string, isInstant bool)) {
-  for _, name := range DurationMetricNames {
-    handler(name, false)
-  }
-  for _, name := range InstantMetricNames {
-    handler(name, true)
-  }
-}
 
 func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
   var productNames []string
@@ -47,6 +35,6 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  WriteInfo(buffer, productNames, DurationMetricNames, InstantMetricNames, productNameToMachineNames)
+  WriteInfo(buffer, productNames, model.DurationMetricNames, model.InstantMetricNames, productNameToMachineNames)
   return CopyBuffer(buffer), nil
 }

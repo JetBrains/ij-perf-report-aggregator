@@ -51,3 +51,6 @@ update-computed-metrics:
 # docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse yandex/clickhouse-server:19.15.2.2
 
 # docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client --host clickhouse-server
+# optimize table report
+
+# SELECT partition, name, active FROM system.parts WHERE table = 'report'

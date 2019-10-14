@@ -41,7 +41,8 @@ func (t *BulkInsertManager) Commit() error {
 }
 
 func (t *BulkInsertManager) PrepareForInsert() error {
-  if t.queuedItems >= 1000 {
+  // large inserts leads to large memory usage, so, insert by 2000 items
+  if t.queuedItems >= 2000 {
     if t.transaction != nil {
       err := t.Commit()
       if err != nil {

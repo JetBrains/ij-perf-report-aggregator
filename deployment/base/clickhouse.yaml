@@ -32,7 +32,11 @@ metadata:
     app: clickhouse
 spec:
   ports:
-  - port: 9000
-    protocol: TCP
+    - name: tcp
+      port: 9000
+      protocol: TCP
+    - name: http
+      port: 8123
+      protocol: TCP
   selector:
     app: clickhouse

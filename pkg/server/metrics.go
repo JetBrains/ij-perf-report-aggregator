@@ -7,6 +7,7 @@ import (
   "io"
   "math"
   "net/http"
+  "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
@@ -36,9 +37,9 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
 func (t *StatsServer) computeMetricsResponse(product string, machine string, eventType rune, writer io.Writer, context context.Context) error {
   var metricNames []string
   if eventType == 'd' {
-    metricNames = DurationMetricNames
+    metricNames = model.DurationMetricNames
   } else {
-    metricNames = InstantMetricNames
+    metricNames = model.InstantMetricNames
   }
 
   var sb strings.Builder
@@ -138,6 +139,8 @@ func (t *StatsServer) computeMetricsResponse(product string, machine string, eve
       case int32:
         jsonWriter.D(int(untypedValue))
       case uint8:
+        jsonWriter.D(int(untypedValue))
+      case uint16:
         jsonWriter.D(int(untypedValue))
       default:
         return errors.Errorf("unknown type: %v", untypedValue)

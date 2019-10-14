@@ -7,6 +7,7 @@ import (
   "math"
   "net/http"
   "net/url"
+  "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
@@ -32,9 +33,9 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
 
   var metricNames []string
   if query.eventType == 'd' {
-    metricNames = EssentialDurationMetricNames
+    metricNames = model.EssentialDurationMetricNames
   } else {
-    metricNames = InstantMetricNames
+    metricNames = model.InstantMetricNames
   }
 
   results, err := t.getAggregatedResults(metricNames, query)

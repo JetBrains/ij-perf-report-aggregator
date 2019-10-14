@@ -108,13 +108,13 @@ func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlite3.Conn, error) {
     }
   } else if dbVersion == 1 {
     return nil, errors.New("Migration from db version 1 is not possible (product code and build number cannot be inferred from old reports)")
-  } else if dbVersion < 4 {
+  } else if dbVersion < 3 {
     return nil, errors.Errorf("Migration from db version %d is not implemented", dbVersion)
   } else if dbVersion > toolDbVersion {
     return nil, errors.Errorf("Database version %d is not supported (tool is outdated)", dbVersion)
   }
 
-  if dbVersion <= 4 {
+  if dbVersion == 3 {
     err := db.Exec("create index generated_time on report (generated_time)")
     if err != nil {
       return nil, errors.WithStack(err)

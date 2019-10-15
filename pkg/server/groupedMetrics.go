@@ -11,6 +11,7 @@ import (
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
+  "time"
 )
 
 func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
@@ -20,11 +21,6 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   }
 
   var query Query
-
-  query.product, query.machine, query.eventType, err = getProductAndMachine(urlQuery)
-  if err != nil {
-    return nil, err
-  }
 
   bytes, err := validateAndConfigureOperator(&query, urlQuery)
   if err != nil {
@@ -50,6 +46,13 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
 }
 
 func validateAndConfigureOperator(query *Query, urlQuery url.Values) ([]byte, error) {
+  var err error
+
+  query.product, query.machine, query.eventType, err = getProductAndMachine(urlQuery)
+  if err != nil {
+    return nil, err
+  }
+
   query.operator = urlQuery.Get("operator")
   if len(query.operator) == 0 {
     query.operator = "quantile"
@@ -84,9 +87,26 @@ type Query struct {
 }
 
 func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([]MedianResult, error) {
+  var uniqueBuildC1 int
+  err := t.db.QueryRow("select uniq(build_c1) from report").Scan(&uniqueBuildC1)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
+  groupByMonth := uniqueBuildC1 == 1
+
   var sb strings.Builder
   sb.WriteString("select ")
-  sb.WriteString("build_c1")
+
+  var groupField string
+  if groupByMonth {
+    groupField = "yearAndMonth"
+    sb.WriteString("toStartOfMonth(generated_time) as ")
+    sb.WriteString(groupField)
+  } else {
+    groupField = "build_c1"
+    sb.WriteString(groupField)
+  }
 
   operator := query.operator
   if operator == "quantile" {
@@ -109,11 +129,15 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
     sb.WriteString(" as ")
     sb.WriteString(name)
   }
-  sb.WriteString(" from report group by build_c1 order by build_c1")
+  sb.WriteString(" from report group by ")
+  sb.WriteString(groupField)
+  sb.WriteString(" order by ")
+  sb.WriteString(groupField)
 
-  rows, err := t.db.Query(sb.String())
+  sql := sb.String()
+  rows, err := t.db.Query(sql)
   if err != nil {
-    t.logger.Error("cannot execute SQL", zap.String("query", sb.String()))
+    t.logger.Error("cannot execute", zap.String("query", sql))
     return nil, errors.WithStack(err)
   }
   defer util.Close(rows, t.logger)
@@ -130,7 +154,12 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
       return nil, err
     }
 
-    groupName := int((*(columnPointers[0].(*interface{}))).(uint8))
+    var groupName string
+    if strings.HasPrefix(groupField, "build_") {
+      groupName = strconv.FormatInt(int64((*(columnPointers[0].(*interface{}))).(uint8)), 10)
+    } else {
+      groupName = ((*(columnPointers[0].(*interface{}))).(time.Time)).Format("Jan 06")
+    }
 
     for index, name := range metricNames {
       values, ok := metricNameToValues[name]
@@ -142,9 +171,15 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
         v = int(math.Round(float64(untypedValue)))
       case int32:
         v = int(untypedValue)
+      case uint16:
+        v = int(untypedValue)
+      case int:
+        v = untypedValue
+      default:
+        return nil, errors.Errorf("unknown type: %v", untypedValue)
       }
 
-      value := Value{buildC1: groupName, value: v}
+      value := Value{group: groupName, value: v}
       if ok {
         metricNameToValues[name] = append(values, value)
       } else {
@@ -161,8 +196,8 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
     }
 
     result = append(result, MedianResult{
-      metricName:   name,
-      buildToValue: values,
+      metricName:    name,
+      groupedValues: values,
     })
   }
 

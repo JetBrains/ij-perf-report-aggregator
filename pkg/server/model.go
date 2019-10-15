@@ -8,13 +8,13 @@ import (
 )
 
 type MedianResult struct {
-  metricName   string
-  buildToValue []Value
+  metricName    string
+  groupedValues []Value
 }
 
 type Value struct {
-  buildC1 int
-  value   int
+  group string
+  value int
 }
 
 func getProductAndMachine(query url.Values) (string, string, rune, error) {

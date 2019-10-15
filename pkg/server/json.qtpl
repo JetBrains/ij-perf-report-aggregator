@@ -9,9 +9,9 @@
 {
   "groupNames": [
     {% if len(list) > 0 %}
-      {% for i, value := range list[0].buildToValue %}
+      {% for i, value := range list[0].groupedValues %}
         {% if i != 0 %},{% endif %}
-        "{%d value.buildC1 %}"
+        "{%s= value.group %}"
       {% endfor %}
     {% endif %}
   ],
@@ -19,8 +19,8 @@
     {% for i, item := range list %}
       {% if i != 0 %},{% endif %}
       {
-        {% for _, value := range item.buildToValue %}
-        "{%d value.buildC1 %}": {%d value.value %},
+        {% for _, value := range item.groupedValues %}
+        "{%s= value.group %}": {%d value.value %},
         {% endfor %}
         {% comment %}
           metric as last to avoid using any logic "should we print last comma or not"

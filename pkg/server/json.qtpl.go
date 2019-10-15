@@ -61,7 +61,7 @@ func StreamGroupedMetricList(qw422016 *qt422016.Writer, list []MedianResult) {
 //line pkg/server/json.qtpl:11
 	if len(list) > 0 {
 //line pkg/server/json.qtpl:12
-		for i, value := range list[0].buildToValue {
+		for i, value := range list[0].groupedValues {
 //line pkg/server/json.qtpl:13
 			if i != 0 {
 //line pkg/server/json.qtpl:13
@@ -71,7 +71,7 @@ func StreamGroupedMetricList(qw422016 *qt422016.Writer, list []MedianResult) {
 //line pkg/server/json.qtpl:13
 			qw422016.N().S(`"`)
 //line pkg/server/json.qtpl:14
-			qw422016.N().D(value.buildC1)
+			qw422016.N().S(value.group)
 //line pkg/server/json.qtpl:14
 			qw422016.N().S(`"`)
 //line pkg/server/json.qtpl:15
@@ -91,11 +91,11 @@ func StreamGroupedMetricList(qw422016 *qt422016.Writer, list []MedianResult) {
 //line pkg/server/json.qtpl:20
 		qw422016.N().S(`{`)
 //line pkg/server/json.qtpl:22
-		for _, value := range item.buildToValue {
+		for _, value := range item.groupedValues {
 //line pkg/server/json.qtpl:22
 			qw422016.N().S(`"`)
 //line pkg/server/json.qtpl:23
-			qw422016.N().D(value.buildC1)
+			qw422016.N().S(value.group)
 //line pkg/server/json.qtpl:23
 			qw422016.N().S(`":`)
 //line pkg/server/json.qtpl:23

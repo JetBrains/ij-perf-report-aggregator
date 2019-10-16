@@ -15,7 +15,6 @@ import (
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
-  "time"
 )
 
 var byteBufferPool bytebufferpool.Pool
@@ -39,8 +38,6 @@ func NewHttpError(code int, message string) error {
 type ResponseCacheManager struct {
   cache  *fastcache.Cache
   logger *zap.Logger
-
-  lastModified time.Time
 }
 
 type CachingHandler struct {
@@ -55,7 +52,6 @@ func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func NewResponseCacheManager(logger *zap.Logger) *ResponseCacheManager {
   return &ResponseCacheManager{
     cache:        fastcache.New(512 * 1000 * 1000 /* 512 MB */),
-    lastModified: time.Now(),
     logger:       logger,
   }
 }
@@ -117,7 +113,6 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
   }
 
   w.Header().Set("ETag", eTag)
-  //w.Header().Set("Last-Modified", t.lastModified.Format(http.TimeFormat))
 
   if len(result) > 8192 && strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
     w.Header().Set("Content-Encoding", "gzip")
@@ -151,6 +146,8 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
   }
 }
 
+// we don't add here salt like "when server was started" to reflect changes in a new server logic,
+// because if no data in cache (server restarted), in any case data will be recomputed
 func computeEtag(result []byte) string {
   // add length to reduce chance of collision
   return strconv.FormatUint(xxhash.Sum64(result), 36) + "-" + strconv.FormatInt(int64(len(result)), 36)

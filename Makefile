@@ -54,3 +54,5 @@ update-computed-metrics:
 # optimize table report
 
 # SELECT partition, name, active FROM system.parts WHERE table = 'report'
+
+# kubectl port-forward svc/clickhouse 2000:8123

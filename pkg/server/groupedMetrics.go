@@ -87,55 +87,18 @@ type Query struct {
 }
 
 func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([]MedianResult, error) {
+  whereStatement := "where product = ? and machine = ?"
+
   var uniqueBuildC1 int
-  err := t.db.QueryRow("select uniq(build_c1) from report").Scan(&uniqueBuildC1)
+  err := t.db.QueryRow("select uniq(build_c1) from report " + whereStatement, query.product, query.machine).Scan(&uniqueBuildC1)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
   groupByMonth := uniqueBuildC1 == 1
+  sql := buildSql(query, whereStatement, metricNames, groupByMonth)
 
-  var sb strings.Builder
-  sb.WriteString("select ")
-
-  var groupField string
-  if groupByMonth {
-    groupField = "yearAndMonth"
-    sb.WriteString("toStartOfMonth(generated_time) as ")
-    sb.WriteString(groupField)
-  } else {
-    groupField = "build_c1"
-    sb.WriteString(groupField)
-  }
-
-  operator := query.operator
-  if operator == "quantile" {
-    operator = "quantileTDigest"
-  }
-  metricNameToValues := make(map[string][]Value)
-  for _, name := range metricNames {
-    sb.WriteString(", ")
-    sb.WriteString(operator)
-    if operator == "quantileTDigest" {
-      sb.WriteRune('(')
-      sb.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
-      sb.WriteRune(')')
-    }
-    sb.WriteRune('(')
-    sb.WriteString(name)
-    sb.WriteRune('_')
-    sb.WriteRune(query.eventType)
-    sb.WriteRune(')')
-    sb.WriteString(" as ")
-    sb.WriteString(name)
-  }
-  sb.WriteString(" from report group by ")
-  sb.WriteString(groupField)
-  sb.WriteString(" order by ")
-  sb.WriteString(groupField)
-
-  sql := sb.String()
-  rows, err := t.db.Query(sql)
+  rows, err := t.db.Query(sql, query.product, query.machine)
   if err != nil {
     t.logger.Error("cannot execute", zap.String("query", sql))
     return nil, errors.WithStack(err)
@@ -148,6 +111,8 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
     columnPointers[i] = new(interface{})
   }
 
+  metricNameToValues := make(map[string][]Value)
+
   for rows.Next() {
     err := rows.Scan(columnPointers...)
     if err != nil {
@@ -155,10 +120,11 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
     }
 
     var groupName string
-    if strings.HasPrefix(groupField, "build_") {
-      groupName = strconv.FormatInt(int64((*(columnPointers[0].(*interface{}))).(uint8)), 10)
+    if groupByMonth {
+      // do not use "Jan 06" because not clear - 06 here it is month or year
+      groupName = ((*(columnPointers[0].(*interface{}))).(time.Time)).Format("Jan")
     } else {
-      groupName = ((*(columnPointers[0].(*interface{}))).(time.Time)).Format("Jan 06")
+      groupName = strconv.FormatInt(int64((*(columnPointers[0].(*interface{}))).(uint8)), 10)
     }
 
     for index, name := range metricNames {
@@ -202,4 +168,49 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
   }
 
   return result, nil
+}
+
+func buildSql(query Query, whereStatement string, metricNames []string, groupByMonth bool) string {
+  var sb strings.Builder
+  sb.WriteString("select ")
+
+  var groupField string
+  if groupByMonth {
+    groupField = "yearAndMonth"
+    sb.WriteString("toStartOfMonth(generated_time) as ")
+    sb.WriteString(groupField)
+  } else {
+    groupField = "build_c1"
+    sb.WriteString(groupField)
+  }
+
+  operator := query.operator
+  if operator == "quantile" {
+    operator = "quantileTDigest"
+  }
+  for _, name := range metricNames {
+    sb.WriteString(", ")
+    sb.WriteString(operator)
+    if operator == "quantileTDigest" {
+      sb.WriteRune('(')
+      sb.WriteString(strconv.FormatFloat(query.quantile, 'f', 1, 32))
+      sb.WriteRune(')')
+    }
+    sb.WriteRune('(')
+    sb.WriteString(name)
+    sb.WriteRune('_')
+    sb.WriteRune(query.eventType)
+    sb.WriteRune(')')
+    sb.WriteString(" as ")
+    sb.WriteString(name)
+  }
+  sb.WriteString(" from report ")
+  sb.WriteString(whereStatement)
+  sb.WriteString(" group by ")
+  sb.WriteString(groupField)
+  sb.WriteString(" order by ")
+  sb.WriteString(groupField)
+
+  sql := sb.String()
+  return sql
 }

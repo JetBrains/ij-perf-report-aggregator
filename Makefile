@@ -8,7 +8,6 @@
 
 assets:
 	qtc -dir pkg/server
-	qtc -dir pkg/analyzer
 	go-bindata -o ./pkg/analyzer/sqlScript.go -pkg analyzer -prefix ./pkg/analyzer/sql ./pkg/analyzer/sql
 
 build: lint

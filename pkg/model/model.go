@@ -3,8 +3,11 @@ package model
 type Report struct {
   Version string `json:"version"`
 
-  Generated   string `json:"generated"`
-  Build       string `json:"build"`
+  Generated string `json:"generated"`
+
+  Build     string `json:"build"`
+  BuildDate string `json:"buildDate"`
+
   Os          string `json:"os"`
   ProductCode string `json:"productCode"`
   Runtime     string `json:"runtime"`
@@ -16,10 +19,14 @@ type Report struct {
   PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
 
   TotalDurationActual int `json:"totalDurationActual"`
+}
 
-  RawData       []byte    `json:"-"`
-  GeneratedTime int64     `json:"-"`
-  ExtraData     ExtraData `json:"-"`
+type ReportInfo struct {
+  Report *Report
+
+  RawData       []byte
+  GeneratedTime int64
+  ExtraData     ExtraData
 }
 
 type ExtraData struct {

@@ -3,8 +3,11 @@ package sqlx
 import (
   "database/sql"
   "github.com/develar/errors"
+  "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
   "report-aggregator/pkg/util"
+  "runtime"
+  "sync"
 )
 
 type BulkInsertManager struct {
@@ -17,25 +20,72 @@ type BulkInsertManager struct {
   queuedItems int
 
   logger *zap.Logger
+
+  WaitGroup sync.WaitGroup
+  pool      *ants.Pool
+  Error     error
 }
 
-func NewBulkInsertManager(db *sql.DB, insertSql string, logger *zap.Logger) *BulkInsertManager {
-  return &BulkInsertManager{queuedItems: 0, Db: db, insertSql: insertSql, logger: logger}
+func NewBulkInsertManager(db *sql.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
+  poolCapacity := runtime.NumCPU() - 2
+  if poolCapacity < 2 {
+    poolCapacity = 2
+  }
+
+  pool, err := ants.NewPool(poolCapacity)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
+  return &BulkInsertManager{
+    queuedItems: 0,
+    Db:          db,
+    insertSql:   insertSql,
+    logger:      logger,
+
+    pool: pool,
+  }, nil
+}
+
+func (t *BulkInsertManager) GetUncommittedTransactionCount() int {
+  return t.pool.Running()
 }
 
 func (t *BulkInsertManager) Commit() error {
-  if t.transaction != nil {
-    defer util.Close(t.InsertStatement, t.logger)
+  transaction := t.transaction
+  if transaction == nil {
+    return nil
+  }
 
-    err := t.transaction.Commit()
-    if err != nil {
-      return errors.WithStack(err)
+  insertStatement := t.InsertStatement
+
+  t.transaction = nil
+  t.InsertStatement = nil
+  queuedItems := t.queuedItems
+  t.queuedItems = 0
+
+  t.logger.Info("add committing of insert transaction to queue", zap.Int("count", queuedItems))
+  t.WaitGroup.Add(1)
+  err := t.pool.Submit(func() {
+    defer t.WaitGroup.Done()
+
+    defer util.Close(insertStatement, t.logger)
+
+    if t.Error != nil {
+      t.rollbackTransaction(transaction)
+      return
     }
 
-    t.logger.Info("items were inserted", zap.Int("count", t.queuedItems))
-    t.transaction = nil
-    t.InsertStatement = nil
-    t.queuedItems = 0
+    err := transaction.Commit()
+    if err != nil {
+      t.Error = errors.WithStack(err)
+    }
+    t.logger.Info("items were inserted", zap.Int("count", queuedItems))
+  })
+
+  if err != nil {
+    t.WaitGroup.Done()
+    return errors.WithStack(err)
   }
   return nil
 }
@@ -69,15 +119,24 @@ func (t *BulkInsertManager) PrepareForInsert() error {
 }
 
 func (t *BulkInsertManager) Close() error {
+  t.pool.Release()
+
   if t.InsertStatement != nil {
     util.Close(t.InsertStatement, t.logger)
   }
-  if t.transaction != nil {
-    err := t.transaction.Rollback()
-    if err != nil {
-      t.logger.Error("cannot rollback", zap.Error(err))
-    }
+
+  transaction := t.transaction
+  if transaction != nil {
+    t.transaction = nil
+    t.rollbackTransaction(transaction)
   }
 
   return nil
+}
+
+func (t *BulkInsertManager) rollbackTransaction(transaction *sql.Tx) {
+  err := transaction.Rollback()
+  if err != nil {
+    t.logger.Error("cannot rollback", zap.Error(err))
+  }
 }

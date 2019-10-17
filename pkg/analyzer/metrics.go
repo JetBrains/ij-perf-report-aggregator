@@ -6,16 +6,7 @@ import (
   "report-aggregator/pkg/model"
 )
 
-func computeAndSerializeMetrics(report *model.Report, logger *zap.Logger) (string, string, error) {
-  durationMetrics, instantMetrics := computeMetrics(report, logger)
-  // or both null, or not - no need to check each one
-  if durationMetrics == nil || instantMetrics == nil {
-    return "", "", nil
-  }
-  return DurationMetrics(durationMetrics), InstantEventMetrics(instantMetrics), nil
-}
-
-func computeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {
+func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {
   durationMetrics := &model.DurationEventMetrics{
     Bootstrap: -1,
 

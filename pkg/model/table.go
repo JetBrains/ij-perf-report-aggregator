@@ -10,7 +10,9 @@ var EssentialDurationMetricNames = []string{"bootstrap", "appInitPreparation", "
 var DurationMetricNames = append(EssentialDurationMetricNames, "moduleLoading")
 var InstantMetricNames = []string{"splash", "startUpCompleted"}
 
-//var MetricToUint16DataType = map[string]bool{"pluginDescriptorLoading": true, "appComponentCreation": true, "projectComponentCreation": true}
+// https://clickhouse.yandex/docs/en/query_language/alter/#manipulations-with-key-expressions
+// To keep the property that data part rows are ordered by the sorting key expression
+// you cannot add expressions containing existing columns to the sorting key (only columns added by the ADD COLUMN command in the same ALTER query).
 
 func ProcessMetricName(handler func(name string, isInstant bool)) {
   for _, name := range DurationMetricNames {
@@ -34,9 +36,11 @@ func CreateTable(db *sql.DB) error {
   create table if not exists report (
     product FixedString(2) Codec(ZSTD(19)),
     machine String Codec(ZSTD(19)),
+
+    build_time DateTime Codec(Delta, ZSTD(19)),
     generated_time DateTime Codec(Delta, ZSTD(19)),
     
-    tc_build_id UInt32,
+    tc_build_id UInt32 Codec(DoubleDelta, ZSTD(19)),
     
     raw_report String Codec(ZSTD(19)),
     
@@ -66,7 +70,7 @@ func CreateTable(db *sql.DB) error {
   })
 
   // https://github.com/ClickHouse/ClickHouse/issues/3758#issuecomment-444490724
-  sb.WriteString(") engine MergeTree partition by (product, toYYYYMM(generated_time)) order by (product, machine, build_c1, build_c2, build_c3, generated_time) SETTINGS old_parts_lifetime = 10")
+  sb.WriteString(") engine MergeTree partition by (product, toYYYYMM(generated_time)) order by (product, machine, build_c1, build_c2, build_c3, build_time, generated_time) SETTINGS old_parts_lifetime = 10")
 
   _, err = db.Exec(sb.String())
   if err != nil {

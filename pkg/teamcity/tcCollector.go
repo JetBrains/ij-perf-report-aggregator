@@ -100,12 +100,12 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, 
 
   for _, buildTypeId := range buildTypeIds {
     q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),status:SUCCESS,count:500"
+    locator := "buildType:(id:" + buildTypeId + "),count:500"
     if !since.IsZero() {
       locator += ",sinceDate:" + since.Format("20060102T150405-0700")
     }
     q.Set("locator", locator)
-    q.Set("fields", "count,href,nextHref,build(id,agent(name))")
+    q.Set("fields", "count,href,nextHref,build(id,status,agent(name))")
     serverUrl.RawQuery = q.Encode()
 
     nextHref, err := collector.processBuilds(serverUrl.String())
@@ -158,6 +158,10 @@ func (t *Collector) loadReports(builds []Build) error {
       defer util.Close(response.Body, t.logger)
 
       if response.StatusCode > 300 {
+        if response.StatusCode == 404 && build.Status == "FAILURE" {
+          t.logger.Warn("no report", zap.Int("id", build.Id), zap.String("status", build.Status))
+          return nil
+        }
         responseBody, _ := ioutil.ReadAll(response.Body)
         return errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
       }

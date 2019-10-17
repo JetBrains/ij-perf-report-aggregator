@@ -20,7 +20,7 @@ import (
 )
 
 type ReportAnalyzer struct {
-  input        chan *model.Report
+  input        chan *model.ReportInfo
   waitChannel  chan struct{}
   ErrorChannel chan error
 
@@ -55,7 +55,7 @@ func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger 
   m.AddFunc("json", json.Minify)
 
   analyzer := &ReportAnalyzer{
-    input:          make(chan *model.Report),
+    input:          make(chan *model.ReportInfo),
     analyzeContext: analyzeContext,
     waitChannel:    make(chan struct{}),
     ErrorChannel:   make(chan error),
@@ -89,7 +89,7 @@ func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger 
   return analyzer, nil
 }
 
-func readReport(data []byte) (*model.Report, error) {
+func ReadReport(data []byte) (*model.Report, error) {
   var report model.Report
   err := jsoniter.ConfigFastest.Unmarshal(data, &report)
   if err != nil {
@@ -103,30 +103,30 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return nil
   }
 
-  report, err := readReport(data)
+  report, err := ReadReport(data)
   if err != nil {
     return err
   }
 
-  if len(report.ProductCode) == 0 {
-    report.ProductCode = extraData.ProductCode
+  if len(extraData.ProductCode) == 0 {
+    extraData.ProductCode = report.ProductCode
   }
-  if len(report.Build) == 0 {
-    report.Build = extraData.BuildNumber
+  if len(extraData.BuildNumber) == 0 {
+    extraData.BuildNumber = report.Build
   }
 
   if len(extraData.Machine) == 0 {
     return errors.New("machine is not specified")
   }
 
-  report.ExtraData = extraData
+  reportInfo := &model.ReportInfo{Report:report, ExtraData:extraData}
 
   if t.analyzeContext.Err() != nil {
     return nil
   }
 
   // normalize to compute consistent unique id
-  report.RawData, err = t.minifier.Bytes("json", data)
+  reportInfo.RawData, err = t.minifier.Bytes("json", data)
   if err != nil {
     return err
   }
@@ -135,43 +135,43 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return nil
   }
 
-  err = computeGeneratedTime(report, extraData)
+  err = computeGeneratedTime(reportInfo, extraData)
   if err != nil {
     return err
   }
 
-  t.input <- report
+  t.input <- reportInfo
   return nil
 }
 
-func computeGeneratedTime(report *model.Report, extraData model.ExtraData) error {
-  if report.Generated == "" {
+func computeGeneratedTime(reportInfo *model.ReportInfo, extraData model.ExtraData) error {
+  if reportInfo.Report.Generated == "" {
     if extraData.LastGeneratedTime <= 0 {
       return errors.New("generated time not in report and not provided explicitly")
     }
-    report.GeneratedTime = extraData.LastGeneratedTime
+    reportInfo.GeneratedTime = extraData.LastGeneratedTime
   } else {
-    parsedTime, err := parseTime(report)
+    parsedTime, err := ParseTime(reportInfo.Report.Generated)
     if err != nil {
       return err
     }
-    report.GeneratedTime = parsedTime.Unix()
+    reportInfo.GeneratedTime = parsedTime.Unix()
   }
   return nil
 }
 
-func parseTime(report *model.Report) (*time.Time, error) {
-  parsedTime, err := time.Parse(time.RFC1123Z, report.Generated)
+func ParseTime(s string) (*time.Time, error) {
+  parsedTime, err := time.Parse(time.RFC1123Z, s)
   if err != nil {
-    parsedTime, err = time.Parse(time.RFC1123, report.Generated)
+    parsedTime, err = time.Parse(time.RFC1123, s)
   }
 
   if err != nil {
-    parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", report.Generated)
+    parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", s)
   }
 
   if err != nil {
-    parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", report.Generated)
+    parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", s)
   }
 
   if err != nil {
@@ -213,9 +213,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
   return t.waitChannel
 }
 
-const MetricsVersion = 4
-
-func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
+func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
   t.waitGroup.Add(1)
   defer t.waitGroup.Done()
 
@@ -227,29 +225,25 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
 
   id := base64.RawURLEncoding.EncodeToString(t.hash.Sum(nil))
 
-  currentMetricsVersion, err := t.getMetricsVersion(id)
+  isReportAlreadyAdded, err := t.isReportAlreadyAdded(id)
   if err != nil {
     return errors.WithStack(err)
   }
 
   logger := t.logger.With(zap.String("id", id), zap.String("generatedTime", time.Unix(report.GeneratedTime, 0).Format(time.RFC1123)))
-  if currentMetricsVersion == MetricsVersion {
+  if isReportAlreadyAdded {
     logger.Info("report already processed")
     return nil
   }
 
-  serializedDurationMetrics, serializedInstantMetrics, err := computeAndSerializeMetrics(report, logger)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
+  durationMetrics, instantMetrics := ComputeMetrics(report.Report, logger)
   // or both null, or not - no need to check each one
-  if len(serializedDurationMetrics) == 0 || len(serializedInstantMetrics) == 0 {
+  if durationMetrics == nil || instantMetrics == nil {
     logger.Warn("report skipped (metrics cannot be computed)")
     return nil
   }
 
-  buildComponents := strings.Split(report.Build, ".")
+  buildComponents := strings.Split(report.ExtraData.BuildNumber, ".")
   if len(buildComponents) == 2 {
     buildComponents = append(buildComponents, "0")
   }
@@ -281,20 +275,15 @@ func (t *ReportAnalyzer) doAnalyze(report *model.Report) error {
     buildId = report.ExtraData.TcBuildId
   }
 
-  err = statement.Exec(id, machineId, report.ProductCode,
+  err = statement.Exec(id, machineId, report.ExtraData.ProductCode,
     report.GeneratedTime, buildId,
     buildC1, buildC2, buildC3,
-    MetricsVersion, serializedDurationMetrics, serializedInstantMetrics,
     report.RawData)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  if currentMetricsVersion >= 0 {
-    logger.Info("report metrics updated", zap.Int("oldMetricsVersion", currentMetricsVersion), zap.Int("newMetricsVersion", MetricsVersion))
-  } else {
-    logger.Info("new report added")
-  }
+  logger.Info("new report added")
   return nil
 }
 
@@ -353,25 +342,25 @@ func (t *ReportAnalyzer) getMachineId(machineName string) (int, error) {
   return id, err
 }
 
-func (t *ReportAnalyzer) getMetricsVersion(id string) (int, error) {
-  statement, err := t.db.Prepare(`SELECT metrics_version FROM report WHERE id = ?`, id)
+func (t *ReportAnalyzer) isReportAlreadyAdded(id string) (bool, error) {
+  statement, err := t.db.Prepare(`select count() from report where id = ? limit 1`, id)
   if err != nil {
-    return 1, errors.WithStack(err)
+    return false, errors.WithStack(err)
   }
 
   defer util.Close(statement, t.logger)
 
   hasRow, err := statement.Step()
   if err != nil {
-    return -1, errors.WithStack(err)
+    return false, errors.WithStack(err)
   }
 
   if hasRow {
     result, _, err := statement.ColumnInt(0)
-    return result, errors.WithStack(err)
+    return result == 1, errors.WithStack(err)
   }
 
-  return -1, nil
+  return false, nil
 }
 
 func (t *ReportAnalyzer) GetLastGeneratedTime() (int64, error) {

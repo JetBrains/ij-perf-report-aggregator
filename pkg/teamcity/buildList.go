@@ -17,8 +17,9 @@ type BuildList struct {
 }
 
 type Build struct {
-  Id    int   `json:"id"`
-  Agent Agent `json:"agent"`
+  Id     int    `json:"id"`
+  Status string `json:"status"`
+  Agent  Agent  `json:"agent"`
 }
 
 type Agent struct {
@@ -29,9 +30,9 @@ func (t *Collector) processBuilds(url string) (string, error) {
   t.logger.Info("request", zap.String("url", url))
 
   request, err := t.createRequest(url)
-   if err != nil {
-     return "", err
-   }
+  if err != nil {
+    return "", err
+  }
 
   response, err := t.httpClient.Do(request)
   if err != nil {

@@ -9,9 +9,6 @@ type MetricResult struct {
   generatedTime int64
   tcBuildId     int
 
-  durationMetricsJson string
-  instantMetricsJson  string
-
   rawReport string
 
   buildC1 int
@@ -41,17 +38,6 @@ func scanMetricResult(statement *sqlite3.Stmt, row *MetricResult) error {
   }
 
   row.tcBuildId, _, err = statement.ColumnInt(i)
-  i++
-  if err != nil {
-    return err
-  }
-
-  row.durationMetricsJson, _, err = statement.ColumnText(i)
-  i++
-  if err != nil {
-    return err
-  }
-  row.instantMetricsJson, _, err = statement.ColumnText(i)
   i++
   if err != nil {
     return err

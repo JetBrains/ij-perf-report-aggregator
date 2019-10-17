@@ -5,7 +5,7 @@ import (
   "github.com/alecthomas/kingpin"
   "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
-  "github.com/json-iterator/go"
+  "github.com/mcuadros/go-version"
   "go.uber.org/zap"
   "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/model"
@@ -22,20 +22,12 @@ func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
   command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()
   clickHouseUrl := command.Flag("clickHouse", "The ClickHouse server URL.").Required().String()
-  updateMetrics := command.Flag("update-metrics", "Whether to update computed metrics if outdated. Think about backup.").Bool()
   command.Action(func(context *kingpin.ParseContext) error {
-    return fill(*dbPath, *updateMetrics, *clickHouseUrl, logger)
+    return fill(*dbPath, *clickHouseUrl, logger)
   })
 }
 
-func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.Logger) error {
-  if updateMetrics {
-    err := analyzer.UpdateMetrics(dbPath, logger)
-    if err != nil {
-      return err
-    }
-  }
-
+func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   mainDb, err := sqlite3.Open(dbPath, sqlite3.OPEN_READONLY)
   if err != nil {
     return errors.WithStack(err)
@@ -51,6 +43,11 @@ func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.L
 
   defer util.Close(db, logger)
 
+  err = model.CreateTable(db)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
   var lastMaxGeneratedTime time.Time
   err = db.QueryRow("select max(generated_time) from report").Scan(&lastMaxGeneratedTime)
   if err != nil {
@@ -60,7 +57,6 @@ func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.L
   selectStatement, err := mainDb.Prepare(`
     select 
       product, machine.name as machine, generated_time, tc_build_id,
-      duration_metrics, instant_metrics, 
       raw_report,
       build_c1, build_c2, build_c3
     from report 
@@ -73,11 +69,6 @@ func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.L
   }
 
   defer util.Close(selectStatement, logger)
-
-  err = model.CreateTable(db)
-  if err != nil {
-    return errors.WithStack(err)
-  }
 
   var sb strings.Builder
   sb.WriteString(`insert into report values (`)
@@ -93,13 +84,20 @@ func fill(dbPath string, updateMetrics bool, clickHouseUrl string, logger *zap.L
   })
   sb.WriteRune(')')
 
-  insertManager := sqlx.NewBulkInsertManager(db, sb.String(), logger)
+  insertManager, err := sqlx.NewBulkInsertManager(db, sb.String(), logger)
+  if err != nil {
+    return err
+  }
+
   defer util.Close(insertManager, logger)
   err = writeReports(insertManager, selectStatement, lastMaxGeneratedTime.Unix(), logger)
   if err != nil {
     return err
   }
-  return nil
+
+  logger.Info("waiting inserting", zap.Int("transactions", insertManager.GetUncommittedTransactionCount()))
+  insertManager.WaitGroup.Wait()
+  return insertManager.Error
 }
 
 func writeReports(insertManager *sqlx.BulkInsertManager, selectFromOldStatement *sqlite3.Stmt, lastMaxGeneratedTime int64, logger *zap.Logger) error {
@@ -138,7 +136,13 @@ func writeReports(insertManager *sqlx.BulkInsertManager, selectFromOldStatement 
       return err
     }
 
-    err = writeMetrics(selectFromOldStatement, row, insertManager.InsertStatement, logger)
+    err = scanMetricResult(selectFromOldStatement, row)
+    if err != nil {
+      logger.Error("cannot scan", zap.Error(err))
+      return err
+    }
+
+    err = writeMetrics(row, insertManager.InsertStatement, logger)
     if err != nil {
       return err
     }
@@ -146,45 +150,73 @@ func writeReports(insertManager *sqlx.BulkInsertManager, selectFromOldStatement 
   return insertManager.Commit()
 }
 
-func writeMetrics(selectStatement *sqlite3.Stmt, row *MetricResult, insertStatement *sql.Stmt, logger *zap.Logger) error {
-  err := scanMetricResult(selectStatement, row)
-  if err != nil {
-    logger.Error("cannot scan", zap.Error(err))
-    return err
-  }
-
-  var durationMetrics map[string]int
-  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.durationMetricsJson), &durationMetrics)
+func writeMetrics(row *MetricResult, insertStatement *sql.Stmt, logger *zap.Logger) error {
+  report, err := analyzer.ReadReport([]byte(row.rawReport))
   if err != nil {
     return errors.WithStack(err)
   }
 
-  var instantMetrics map[string]int
-  err = jsoniter.ConfigFastest.Unmarshal([]byte(row.instantMetricsJson), &instantMetrics)
-  if err != nil {
-    return errors.WithStack(err)
+  durationMetrics, instantMetrics := analyzer.ComputeMetrics(report, logger)
+  // or both null, or not - no need to check each one
+  if durationMetrics == nil || instantMetrics == nil {
+    return errors.New("metrics cannot be computed")
   }
 
-  args := []interface{}{row.productCode, row.machine, row.generatedTime, row.tcBuildId, row.rawReport, row.buildC1, row.buildC2, row.buildC3}
-  model.ProcessMetricName(func(name string, isInstant bool) {
+  var buildTimeUnix int64
+  if version.Compare(report.Version, "13", ">=") {
+    buildTime, err := analyzer.ParseTime(report.BuildDate)
+    if err != nil {
+      return err
+    }
+    buildTimeUnix = buildTime.Unix()
+  } else {
+    buildTimeUnix = 0
+  }
+
+  args := []interface{}{row.productCode, row.machine, buildTimeUnix, row.generatedTime, row.tcBuildId, row.rawReport, row.buildC1, row.buildC2, row.buildC3}
+  for _, name := range model.DurationMetricNames {
     var v int
-    if isInstant {
-      v = instantMetrics[name]
-    } else {
-      v = durationMetrics[name]
+    switch name {
+    case "bootstrap":
+      v = durationMetrics.Bootstrap
+    case "appInitPreparation":
+      v = durationMetrics.AppInitPreparation
+    case "appInit":
+      v = durationMetrics.AppInit
+    case "pluginDescriptorLoading":
+      v = durationMetrics.PluginDescriptorLoading
+    case "appComponentCreation":
+      v = durationMetrics.AppComponentCreation
+    case "projectComponentCreation":
+      v = durationMetrics.ProjectComponentCreation
+    case "moduleLoading":
+      v = durationMetrics.ModuleLoading
+    default:
+      return errors.New("unknown metric " + name)
     }
 
-    if !isInstant && v > 65535 {
-      //if _, ok := model.MetricToUint16DataType[name]; ok {
-      //if _, ok := model.MetricToUint16DataType[name]; ok {
-        err = errors.Errorf("value outside of uint16 range (generatedTime: %d, value: %d)", row.generatedTime, v)
-      //}
+    if v > 65535 {
+      return errors.Errorf("value outside of uint16 range (generatedTime: %d, value: %d)", row.generatedTime, v)
     }
+
     args = append(args, v)
-  })
+  }
 
-  if err != nil {
-    return err
+  for _, name := range model.InstantMetricNames {
+    var v int
+    switch name {
+    case "splash":
+      v = instantMetrics.Splash
+      if v < 0 {
+        continue
+      }
+    case "startUpCompleted":
+      v = instantMetrics.StartUpCompleted
+    default:
+      return errors.New("unknown metric " + name)
+    }
+
+    args = append(args, v)
   }
 
   _, err = insertStatement.Exec(args...)

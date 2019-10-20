@@ -4,9 +4,9 @@ import (
   "context"
   "crypto/sha1"
   "encoding/base64"
-  "github.com/bvinc/go-sqlite-lite/sqlite3"
   "github.com/develar/errors"
-  "github.com/json-iterator/go"
+  "github.com/jmoiron/sqlx"
+  _ "github.com/mattn/go-sqlite3"
   "github.com/tdewolff/minify/v2"
   "github.com/tdewolff/minify/v2/json"
   "go.uber.org/zap"
@@ -30,10 +30,10 @@ type ReportAnalyzer struct {
   closeOnce sync.Once
 
   minifier *minify.M
-  db       *sqlite3.Conn
+  db       *sqlx.DB
 
-  insertReportStatement  *sqlite3.Stmt
-  insertMachineStatement *sqlite3.Stmt
+  insertReportStatement  *sqlx.Stmt
+  insertMachineStatement *sqlx.Stmt
 
   hash hash.Hash
 
@@ -41,7 +41,7 @@ type ReportAnalyzer struct {
 }
 
 func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger *zap.Logger) (*ReportAnalyzer, error) {
-  err := prepareDatabaseFile(dbPath, logger)
+  err := prepareDatabaseFile(dbPath)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -89,15 +89,6 @@ func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger 
   return analyzer, nil
 }
 
-func ReadReport(data []byte) (*model.Report, error) {
-  var report model.Report
-  err := jsoniter.ConfigFastest.Unmarshal(data, &report)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  return &report, nil
-}
-
 func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   if t.analyzeContext.Err() != nil {
     return nil
@@ -119,7 +110,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return errors.New("machine is not specified")
   }
 
-  reportInfo := &model.ReportInfo{Report:report, ExtraData:extraData}
+  reportInfo := &model.ReportInfo{Report: report, ExtraData: extraData}
 
   if t.analyzeContext.Err() != nil {
     return nil
@@ -151,7 +142,7 @@ func computeGeneratedTime(reportInfo *model.ReportInfo, extraData model.ExtraDat
     }
     reportInfo.GeneratedTime = extraData.LastGeneratedTime
   } else {
-    parsedTime, err := ParseTime(reportInfo.Report.Generated)
+    parsedTime, err := parseTime(reportInfo.Report.Generated)
     if err != nil {
       return err
     }
@@ -160,7 +151,7 @@ func computeGeneratedTime(reportInfo *model.ReportInfo, extraData model.ExtraDat
   return nil
 }
 
-func ParseTime(s string) (*time.Time, error) {
+func parseTime(s string) (*time.Time, error) {
   parsedTime, err := time.Parse(time.RFC1123Z, s)
   if err != nil {
     parsedTime, err = time.Parse(time.RFC1123, s)
@@ -233,6 +224,10 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
   logger := t.logger.With(zap.String("id", id), zap.String("generatedTime", time.Unix(report.GeneratedTime, 0).Format(time.RFC1123)))
   if isReportAlreadyAdded {
     logger.Info("report already processed")
+    //err = t.db.Exec("delete from report where id = ?", id)
+    //if err != nil {
+    //  return errors.WithStack(err)
+    //}
     return nil
   }
 
@@ -255,7 +250,7 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
 
   statement := t.insertReportStatement
   if statement == nil {
-    statement, err = t.db.Prepare(string(MustAsset("insert-report.sql")))
+    statement, err = t.db.Preparex(string(MustAsset("insert-report.sql")))
     if err != nil {
       return errors.WithStack(err)
     }
@@ -268,15 +263,14 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
     return errors.WithStack(err)
   }
 
-  var buildId interface{}
-  if report.ExtraData.TcBuildId == 0 {
-    buildId = nil
-  } else {
-    buildId = report.ExtraData.TcBuildId
+  buildTimeFromReport, err := GetBuildTimeFromReport(report.Report)
+  if err != nil {
+    return errors.WithStack(err)
   }
 
-  err = statement.Exec(id, machineId, report.ExtraData.ProductCode,
-    report.GeneratedTime, buildId,
+  _, err = statement.ExecContext(t.analyzeContext, id, machineId, report.ExtraData.ProductCode,
+    report.GeneratedTime, chooseNotEmpty(buildTimeFromReport, report.ExtraData.BuildTime),
+    getNullIfEmpty(report.ExtraData.TcBuildId), getNullIfEmpty(report.ExtraData.TcInstallerBuildId), report.ExtraData.TcBuildProperties,
     buildC1, buildC2, buildC3,
     report.RawData)
   if err != nil {
@@ -285,6 +279,22 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
 
   logger.Info("new report added")
   return nil
+}
+
+func chooseNotEmpty(v1 int64, v2 int64) int64 {
+  if v1 <= 0 {
+    return v2
+  } else {
+    return v1
+  }
+}
+
+func getNullIfEmpty(v int) interface{} {
+  if v <= 0 {
+    return nil
+  } else {
+    return v
+  }
 }
 
 func splitBuildNumber(buildComponents []string) (int, int, int, error) {
@@ -305,81 +315,51 @@ func splitBuildNumber(buildComponents []string) (int, int, int, error) {
 
 // https://stackoverflow.com/questions/13244393/sqlite-insert-or-ignore-and-return-original-rowid
 func (t *ReportAnalyzer) getMachineId(machineName string) (int, error) {
-  statement := t.insertMachineStatement
+  insertMachineStatement := t.insertMachineStatement
   var err error
-  if statement == nil {
-    statement, err = t.db.Prepare("insert or ignore into machine(name) values(?)")
+  if insertMachineStatement == nil {
+    insertMachineStatement, err = t.db.Preparex("insert or ignore into machine(name) values(?)")
     if err != nil {
       return -1, errors.WithStack(err)
     }
 
-    t.insertMachineStatement = statement
+    t.insertMachineStatement = insertMachineStatement
   }
 
-  err = statement.Exec(machineName)
+  _, err = insertMachineStatement.Exec(machineName)
   if err != nil {
     return -1, errors.WithStack(err)
   }
 
-  statement, err = t.db.Prepare("select ROWID from machine where name = ?")
+  statement, err := t.db.Preparex("select ROWID from machine where name = ?")
   defer util.Close(statement, t.logger)
 
   if err != nil {
     return -1, errors.WithStack(err)
   }
 
-  err = statement.BindString(machineName, 0)
+  var id int
+  err = statement.Get(&id, machineName)
   if err != nil {
     return -1, errors.WithStack(err)
   }
-
-  _, err = statement.Step()
-  if err != nil {
-    return -1, errors.WithStack(err)
-  }
-
-  id, _, err := statement.ColumnInt(0)
   return id, err
 }
 
 func (t *ReportAnalyzer) isReportAlreadyAdded(id string) (bool, error) {
-  statement, err := t.db.Prepare(`select count() from report where id = ? limit 1`, id)
+  var result int
+  err := t.db.Get(&result, `select count() from report where id = ?`, id)
   if err != nil {
     return false, errors.WithStack(err)
   }
-
-  defer util.Close(statement, t.logger)
-
-  hasRow, err := statement.Step()
-  if err != nil {
-    return false, errors.WithStack(err)
-  }
-
-  if hasRow {
-    result, _, err := statement.ColumnInt(0)
-    return result == 1, errors.WithStack(err)
-  }
-
-  return false, nil
+  return result == 1, nil
 }
 
 func (t *ReportAnalyzer) GetLastGeneratedTime() (int64, error) {
-  statement, err := t.db.Prepare(`select max(generated_time) from report`)
-  if err != nil {
-    return 1, errors.WithStack(err)
-  }
-
-  defer util.Close(statement, t.logger)
-
-  hasRow, err := statement.Step()
+  var result int64
+  err := t.db.Get(&result, `select max(generated_time) from report`)
   if err != nil {
     return -1, errors.WithStack(err)
   }
-
-  if hasRow {
-    result, _, err := statement.ColumnInt64(0)
-    return result, errors.WithStack(err)
-  }
-
-  return -1, nil
+  return result, nil
 }

@@ -27,7 +27,8 @@ type BulkInsertManager struct {
 }
 
 func NewBulkInsertManager(db *sql.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
-  poolCapacity := runtime.NumCPU() - 2
+  // not enough RAM (if docker has access to 4 GB on machine where there is only 16 GB)
+  poolCapacity := runtime.NumCPU() - 4
   if poolCapacity < 2 {
     poolCapacity = 2
   }

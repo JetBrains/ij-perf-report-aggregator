@@ -7,17 +7,22 @@ create table machine
 
 create table report
 (
-  id               string not null primary key,
-  machine          int    not null,
-  generated_time   int    not null,
-  tc_build_id      int,
+  id                    string not null primary key,
+  machine               int    not null,
 
-  product          string not null,
-  build_c1         int    not null,
-  build_c2         int    not null,
-  build_c3         int    not null,
+  generated_time        int    not null,
+  build_time            int default 0 not null,
 
-  raw_report       string not null,
+  tc_build_id           int default 0 not null,
+  tc_installer_build_id int default 0 not null,
+  tc_build_properties   string,
+
+  product               string not null,
+  build_c1              int    not null,
+  build_c2              int    not null,
+  build_c3              int    not null,
+
+  raw_report            string not null,
 
   foreign key (machine) references machine (ROWID) on delete restrict
 );

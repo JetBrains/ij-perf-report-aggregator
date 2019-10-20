@@ -3,8 +3,8 @@ package server
 import (
   "context"
   "crypto/tls"
-  "database/sql"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
   _ "github.com/kshvakov/clickhouse"
   "github.com/rs/cors"
   "go.uber.org/zap"
@@ -17,7 +17,9 @@ import (
 )
 
 type StatsServer struct {
-  db *sql.DB
+  db *sqlx.DB
+
+  machineToGroupName map[string]string
 
   logger *zap.Logger
 }
@@ -27,7 +29,7 @@ func Serve(dbUrl string, logger *zap.Logger) error {
     dbUrl = "127.0.0.1:9000"
   }
 
-  chDb, err := sql.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
+  chDb, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
@@ -38,6 +40,27 @@ func Serve(dbUrl string, logger *zap.Logger) error {
     db: chDb,
 
     logger: logger,
+
+    machineToGroupName: map[string]string{
+      "intellij-macos-hw-unit-1550": macMini,
+      "intellij-macos-hw-unit-1551": macMini,
+
+      "intellij-windows-hw-unit-498": win,
+      "intellij-windows-hw-unit-499": win,
+
+      "intellij-linux-hw-unit-449": linux,
+      "intellij-linux-hw-unit-450": linux,
+      "intellij-linux-hw-unit-463": linux2,
+      "intellij-linux-hw-unit-484": linux,
+
+      "intellij-linux-hw-unit-493": linux32gb,
+
+      "intellij-linux-hw-unit-504": linux,
+      "intellij-linux-hw-unit-531": linux,
+      "intellij-linux-hw-unit-534": linux,
+      "intellij-linux-hw-unit-556": linux,
+      "intellij-linux-hw-unit-558": linux,
+    },
   }
 
   cacheManager := NewResponseCacheManager(logger)
@@ -66,7 +89,7 @@ func Serve(dbUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func listenAndServe(port string, mux *http.ServeMux, logger *zap.Logger) *http.Server {
+func listenAndServe(port string, mux http.Handler, logger *zap.Logger) *http.Server {
   // buffer size is 4096 https://github.com/golang/go/issues/13870
   server := &http.Server{
     Addr:    ":" + port,

@@ -1,7 +1,7 @@
 .idea/workspace.xml
 .idea/httpRequests/
 /dist/
-/http-client.env.json
+http-client.env.json
 
 db/
 

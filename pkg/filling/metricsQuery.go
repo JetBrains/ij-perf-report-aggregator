@@ -1,68 +1,19 @@
 package filling
 
-import "github.com/bvinc/go-sqlite-lite/sqlite3"
-
 type MetricResult struct {
-  productCode string
-  machine     string
+  Product string
+  Machine uint8
 
-  generatedTime int64
-  tcBuildId     int
+  GeneratedTime int64
+  BuildTime     int64
 
-  rawReport string
+  TcBuildId          int
+  TcInstallerBuildId int
+  TcBuildProperties  []byte
 
-  buildC1 int
-  buildC2 int
-  buildC3 int
-}
+  RawReport string
 
-func scanMetricResult(statement *sqlite3.Stmt, row *MetricResult) error {
-  var err error
-  i := 0
-
-  row.productCode, _, err = statement.ColumnText(i)
-  i++
-  if err != nil {
-    return err
-  }
-  row.machine, _, err = statement.ColumnText(i)
-  i++
-  if err != nil {
-    return err
-  }
-
-  row.generatedTime, _, err = statement.ColumnInt64(i)
-  i++
-  if err != nil {
-    return err
-  }
-
-  row.tcBuildId, _, err = statement.ColumnInt(i)
-  i++
-  if err != nil {
-    return err
-  }
-
-  row.rawReport, _, err = statement.ColumnText(i)
-  i++
-  if err != nil {
-    return err
-  }
-
-  row.buildC1, _, err = statement.ColumnInt(i)
-  i++
-  if err != nil {
-    return err
-  }
-  row.buildC2, _, err = statement.ColumnInt(i)
-  i++
-  if err != nil {
-    return err
-  }
-  row.buildC3, _, err = statement.ColumnInt(i)
-  if err != nil {
-    return err
-  }
-
-  return nil
+  BuildC1 int `db:"build_c1"`
+  BuildC2 int `db:"build_c2"`
+  BuildC3 int `db:"build_c3"`
 }

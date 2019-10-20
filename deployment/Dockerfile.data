@@ -1,6 +1,0 @@
-FROM alpine:3.10
-
-WORKDIR /
-COPY ./ /clickhouse-data
-
-CMD ["cp", "-a", "/clickhouse-data/.", "/volume-data/"]

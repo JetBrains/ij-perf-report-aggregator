@@ -2,6 +2,8 @@ package server
 
 import (
   "context"
+  "database/sql"
+  "github.com/jmoiron/sqlx"
   "github.com/pkg/errors"
   "github.com/valyala/quicktemplate"
   "io"
@@ -20,21 +22,21 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
     return nil, err
   }
 
-  product, machine, eventType, err := getProductAndMachine(query)
+  product, machines, eventType, err := getProductAndMachine(query)
   if err != nil {
     return nil, err
   }
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  err = t.computeMetricsResponse(product, machine, eventType, buffer, request.Context())
+  err = t.computeMetricsResponse(product, machines, eventType, buffer, request.Context())
   if err != nil {
     return nil, err
   }
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMetricsResponse(product string, machine string, eventType rune, writer io.Writer, context context.Context) error {
+func (t *StatsServer) computeMetricsResponse(product string, machines []string, eventType rune, writer io.Writer, context context.Context) error {
   var metricNames []string
   if eventType == 'd' {
     metricNames = model.DurationMetricNames
@@ -42,20 +44,9 @@ func (t *StatsServer) computeMetricsResponse(product string, machine string, eve
     metricNames = model.InstantMetricNames
   }
 
-  var sb strings.Builder
-  sb.WriteString("select generated_time, build_c1, build_c2, build_c3")
-  for _, name := range metricNames {
-    sb.WriteString(", ")
-    sb.WriteString(name)
-    sb.WriteRune('_')
-    sb.WriteRune(eventType)
-  }
-
-  sb.WriteString(" from report where product = ? and machine = ? order by build_c1, build_c2, build_c3, generated_time")
-
-  rows, err := t.db.QueryContext(context, sb.String(), product, machine)
+  rows, err := t.selectData(metricNames, eventType, product, machines, context)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   defer util.Close(rows, t.logger)
@@ -71,6 +62,8 @@ func (t *StatsServer) computeMetricsResponse(product string, machine string, eve
   for i := range columnPointers {
     columnPointers[i] = new(interface{})
   }
+
+  var sb strings.Builder
 
   isFirst := true
   lastBuildWithoutUniqueSuffix := ""
@@ -153,4 +146,23 @@ func (t *StatsServer) computeMetricsResponse(product string, machine string, eve
   jsonWriter.S("]")
 
   return nil
+}
+
+func (t *StatsServer) selectData(metricNames []string, eventType rune, product string, machines []string, context context.Context) (*sql.Rows, error) {
+  var sb strings.Builder
+  sb.WriteString("select generated_time, build_c1, build_c2, build_c3")
+  for _, name := range metricNames {
+    sb.WriteString(", ")
+    sb.WriteString(name)
+    sb.WriteRune('_')
+    sb.WriteRune(eventType)
+  }
+
+  sb.WriteString(" from report where product = ? and machine in (?) order by build_c1, build_c2, build_c3, generated_time")
+
+  query, queryArgs, err := sqlx.In(sb.String(), product, machines)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+  return t.db.QueryContext(context, query, queryArgs...)
 }

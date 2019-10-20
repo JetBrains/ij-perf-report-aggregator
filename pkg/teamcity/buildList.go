@@ -20,6 +20,18 @@ type Build struct {
   Id     int    `json:"id"`
   Status string `json:"status"`
   Agent  Agent  `json:"agent"`
+
+  ArtifactDependencies ArtifactDependencies `json:"artifact-dependencies"`
+}
+
+type ArtifactDependencies struct {
+  Builds []ArtifactDependencyBuild `json:"build"`
+}
+
+type ArtifactDependencyBuild struct {
+  Id          int    `json:"id"`
+  BuildTypeId string `json:"buildTypeId"`
+  FinishDate  string `json:"finishDate"`
 }
 
 type Agent struct {

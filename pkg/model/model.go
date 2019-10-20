@@ -31,12 +31,15 @@ type ReportInfo struct {
 
 type ExtraData struct {
   LastGeneratedTime int64
+  BuildTime         int64
 
   ProductCode string
   BuildNumber string
 
-  Machine   string
-  TcBuildId int
+  Machine            string
+  TcBuildId          int
+  TcInstallerBuildId int
+  TcBuildProperties  []byte
 }
 
 type TraceEvent struct {

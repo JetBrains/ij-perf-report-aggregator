@@ -17,20 +17,23 @@ type Value struct {
   value int
 }
 
-func getProductAndMachine(query url.Values) (string, string, rune, error) {
+func getProductAndMachine(query url.Values) (string, []string, rune, error) {
   product := query.Get("product")
-  if len(product) == 0 {
-    return "", "", 0, NewHttpError(400, "The product parameter is required")
-  } else if len(product) > 2 {
+  switch {
+  case len(product) == 0:
+    return "", nil, 0, NewHttpError(400, "The product parameter is required")
+
+  case len(product) > 2:
     // prevent misuse of parameter
-    return "", "", 0, NewHttpError(400, "The product parameter is not correct")
-  } else if !govalidator.IsAlpha(product) {
-    return "", "", 0, NewHttpError(400, "The product parameter must contain only letters a-zA-Z")
+    return "", nil, 0, NewHttpError(400, "The product parameter is not correct")
+
+  case !govalidator.IsAlpha(product):
+    return "", nil, 0, NewHttpError(400, "The product parameter must contain only letters a-zA-Z")
   }
 
   machine := query.Get("machine")
   if len(machine) == 0 {
-    return "", "", 0, NewHttpError(400, "The machine parameter is required")
+    return "", nil, 0, NewHttpError(400, "The machine parameter is required")
   }
 
   var normalizedEventTypeValue rune
@@ -40,12 +43,12 @@ func getProductAndMachine(query url.Values) (string, string, rune, error) {
   } else {
     if len(eventType) != 1 {
       // prevent misuse of parameter
-      return "", "", 0, NewHttpError(400, "The eventType parameter must be one char")
+      return "", nil, 0, NewHttpError(400, "The eventType parameter must be one char")
     }
     normalizedEventTypeValue = rune(eventType[0])
   }
 
-  return product, machine, normalizedEventTypeValue, nil
+  return product, strings.Split(machine, ","), normalizedEventTypeValue, nil
 }
 
 func parseQuery(request *http.Request) (url.Values, error) {

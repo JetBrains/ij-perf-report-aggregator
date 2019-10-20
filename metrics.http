@@ -60,12 +60,17 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54846099&fields=build(*)
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=artifactDependency:(to:(id:54117831),recursive:false)&fields=build(*)
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:54880237
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*,artifact-dependencies(build(id,buildTypeId,finishDate)))
+Authorization: Bearer {{token}}
+Accept: application/json
+###
+
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*)
 Authorization: Bearer {{token}}
 Accept: application/json
 ###

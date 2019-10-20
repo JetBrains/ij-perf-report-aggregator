@@ -3,6 +3,7 @@ package model
 import (
   "database/sql"
   "github.com/develar/errors"
+  "strconv"
   "strings"
 )
 
@@ -14,6 +15,11 @@ var InstantMetricNames = []string{"splash", "startUpCompleted"}
 // To keep the property that data part rows are ordered by the sorting key expression
 // you cannot add expressions containing existing columns to the sorting key (only columns added by the ADD COLUMN command in the same ALTER query).
 
+type IdAndName struct {
+  Id   int
+  Name string
+}
+
 func ProcessMetricName(handler func(name string, isInstant bool)) {
   for _, name := range DurationMetricNames {
     handler(name, false)
@@ -23,24 +29,31 @@ func ProcessMetricName(handler func(name string, isInstant bool)) {
   }
 }
 
-func CreateTable(db *sql.DB) error {
+func CreateTable(db *sql.DB, machines []IdAndName, products []IdAndName) error {
   _, err := db.Exec("set allow_experimental_data_skipping_indices = 1")
   if err != nil {
     return errors.WithStack(err)
   }
 
+  if len(products) > 256 {
+    return errors.New("product count should be < 256")
+  }
+  if len(machines) > 256 {
+    return errors.New("machine count should be < 256")
+  }
+
+  var sb strings.Builder
   // https://www.altinity.com/blog/2019/7/new-encodings-to-improve-clickhouse
   // see zstd-compression-level.txt
-  var sb strings.Builder
-  sb.WriteString(`
-  create table if not exists report (
-    product FixedString(2) Codec(ZSTD(19)),
-    machine String Codec(ZSTD(19)),
-
-    build_time DateTime Codec(Delta, ZSTD(19)),
+  sb.WriteString(`create table if not exists report (`)
+  writeEnumDeclaration("product", &sb, products)
+  writeEnumDeclaration("machine", &sb, machines)
+  sb.WriteString(`build_time DateTime Codec(Delta, ZSTD(19)),
     generated_time DateTime Codec(Delta, ZSTD(19)),
     
     tc_build_id UInt32 Codec(DoubleDelta, ZSTD(19)),
+    tc_installer_build_id UInt32 Codec(DoubleDelta, ZSTD(19)),
+    tc_build_properties String Codec(ZSTD(19)),
     
     raw_report String Codec(ZSTD(19)),
     
@@ -78,4 +91,22 @@ func CreateTable(db *sql.DB) error {
   }
 
   return nil
+}
+
+func writeEnumDeclaration(name string, sb *strings.Builder, list []IdAndName) {
+  sb.WriteString(name)
+  sb.WriteString(" Enum(")
+  for index, item := range list {
+    if index != 0 {
+      sb.WriteRune(',')
+      sb.WriteRune(' ')
+    }
+
+    sb.WriteRune('\'')
+    sb.WriteString(item.Name)
+    sb.WriteString("' = ")
+    id := item.Id
+    sb.WriteString(strconv.Itoa(id))
+  }
+  sb.WriteString(") Codec(ZSTD(19)),")
 }

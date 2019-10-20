@@ -3,6 +3,7 @@ package server
 import (
   "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
   "math"
   "net/http"
@@ -22,9 +23,9 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
 
   var query Query
 
-  bytes, err := validateAndConfigureOperator(&query, urlQuery)
+  err = validateAndConfigureOperator(&query, urlQuery)
   if err != nil {
-    return bytes, err
+    return nil, err
   }
 
   var metricNames []string
@@ -45,41 +46,41 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   return CopyBuffer(buffer), nil
 }
 
-func validateAndConfigureOperator(query *Query, urlQuery url.Values) ([]byte, error) {
+func validateAndConfigureOperator(query *Query, urlQuery url.Values) error {
   var err error
 
-  query.product, query.machine, query.eventType, err = getProductAndMachine(urlQuery)
+  query.product, query.machines, query.eventType, err = getProductAndMachine(urlQuery)
   if err != nil {
-    return nil, err
+    return err
   }
 
   query.operator = urlQuery.Get("operator")
   if len(query.operator) == 0 {
     query.operator = "quantile"
   } else if !govalidator.IsAlpha(query.operator) {
-    return nil, NewHttpError(400, "The operator parameter must contain only letters a-zA-Z")
+    return NewHttpError(400, "The operator parameter must contain only letters a-zA-Z")
   }
 
   operatorArg := urlQuery.Get("operatorArg")
   if query.operator == "quantile" {
     if len(operatorArg) == 0 {
-      return nil, NewHttpError(400, "The operatorArg parameter is required")
+      return NewHttpError(400, "The operatorArg parameter is required")
     } else if !govalidator.IsNumeric(operatorArg) {
-      return nil, NewHttpError(400, "The operatorArg parameter must be numeric")
+      return NewHttpError(400, "The operatorArg parameter must be numeric")
     }
 
     v, err := strconv.ParseInt(operatorArg, 10, 8)
     if err != nil {
-      return nil, NewHttpError(400, "quantile is not correct")
+      return NewHttpError(400, "quantile is not correct")
     }
     query.quantile = float64(v) / 100
   }
-  return nil, nil
+  return nil
 }
 
 type Query struct {
   product   string
-  machine   string
+  machines  []string
   eventType rune
 
   operator string
@@ -87,10 +88,13 @@ type Query struct {
 }
 
 func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([]MedianResult, error) {
-  whereStatement := "where product = ? and machine = ?"
+  whereStatement, whereArgs, err := sqlx.In(" where product = ? and machine in(?)", query.product, query.machines)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
 
   var uniqueBuildC1 int
-  err := t.db.QueryRow("select uniq(build_c1) from report " + whereStatement, query.product, query.machine).Scan(&uniqueBuildC1)
+  err = t.db.QueryRow("select uniq(build_c1) from report "+whereStatement, whereArgs...).Scan(&uniqueBuildC1)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -98,7 +102,7 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
   groupByMonth := uniqueBuildC1 == 1
   sql := buildSql(query, whereStatement, metricNames, groupByMonth)
 
-  rows, err := t.db.Query(sql, query.product, query.machine)
+  rows, err := t.db.Query(sql, whereArgs...)
   if err != nil {
     t.logger.Error("cannot execute", zap.String("query", sql))
     return nil, errors.WithStack(err)

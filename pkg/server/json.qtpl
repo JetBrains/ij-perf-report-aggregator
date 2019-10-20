@@ -32,7 +32,7 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, essentialMetricNames []string, instantMetricNames []string, productNameToMachineNames map[string][]string) %}
+{% func Info(productNames []string, groupNames []string, essentialMetricNames []string, instantMetricNames []string, productNameToMachineNames map[string]map[string]*MachineGroup) %}
 {
   "productNames": {%= safeStringList(productNames) %},
   "durationMetricNames": [
@@ -50,7 +50,7 @@
   "productToMachine": {
     {% for i, product := range productNames %}
       {% if i != 0 %},{% endif %}
-      "{%s= product %}": {%= writeMachineInfoList(productNameToMachineNames[product]) %}
+      "{%s= product %}": {%= writeMachineGroups(groupNames, productNameToMachineNames[product]) %}
     {% endfor %}
   }
 }
@@ -65,11 +65,38 @@
 ]
 {% endfunc %}
 
+{% func writeMachineGroups(groupNames []string, groups map[string]*MachineGroup) %}
+[
+  {% code
+    isFirst := true
+  %}
+  {% for _, groupName := range groupNames %}
+    {% if !isFirst %},{% endif %}
+
+    {% code
+      machineGroup, ok := groups[groupName]
+      if !ok {
+        continue
+      }
+
+      isFirst = false
+    %}
+
+    {
+      "name": {%q= groupName %},
+      "children": {%= writeMachineInfoList(machineGroup.machines) %}
+    }
+  {% endfor %}
+]
+{% endfunc %}
+
 {% func writeMachineInfoList(machines []string) %}
 [
   {% for i, machine := range machines %}
     {% if i != 0 %},{% endif %}
-    {%q= machine %}
+    {
+      "name": {%q= machine %}
+    }
   {% endfor %}
 ]
 {% endfunc %}

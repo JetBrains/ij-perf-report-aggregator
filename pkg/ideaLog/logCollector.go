@@ -138,7 +138,8 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
 
   for scanner.Scan() {
     line := scanner.Bytes()
-    if state == 1 {
+    switch {
+    case state == 1:
       // idea start-up performance writer bug - end suffix has extra trailing space, so, HasSuffix cannot be used
       if bytes.HasPrefix(line, endSuffix) {
         if taskContext.Err() != nil {
@@ -167,7 +168,8 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
       } else {
         jsonData.Write(line)
       }
-    } else if bytes.Contains(line, versionSlice) {
+
+    case bytes.Contains(line, versionSlice):
       result := t.productAndBuildInfoRe.FindStringSubmatch(string(line))
       if result == nil {
         return errors.New("cannot find product and build number info")
@@ -178,7 +180,8 @@ func (t *LogCollector) collectFromLogFile(filePath string, taskContext context.C
         BuildNumber: result[2],
         Machine:     t.machine,
       }
-    } else if bytes.HasSuffix(line, startSuffix) {
+
+    case bytes.HasSuffix(line, startSuffix):
       lineString := scanner.Text()
       // UTC, but it is ok, modern reports contain correct generated time
       parsedTime, err := time.Parse("2006-01-02 15:04:05", lineString[0:strings.IndexRune(lineString, ',')])

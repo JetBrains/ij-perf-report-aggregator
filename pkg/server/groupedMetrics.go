@@ -93,13 +93,14 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
     return nil, errors.WithStack(err)
   }
 
-  var uniqueBuildC1 int
-  err = t.db.QueryRow("select uniq(build_c1) from report "+whereStatement, whereArgs...).Scan(&uniqueBuildC1)
+  // assume that for one branch reports generated in sequence (later, when reports from logs will be supported again, some settings can be added)
+  var countOfBranches int
+  err = t.db.QueryRow("select uniq(branch) from report "+whereStatement, whereArgs...).Scan(&countOfBranches)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  groupByMonth := uniqueBuildC1 == 1
+  groupByMonth := countOfBranches == 1
   sql := buildSql(query, whereStatement, metricNames, groupByMonth)
 
   rows, err := t.db.Query(sql, whereArgs...)

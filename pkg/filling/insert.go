@@ -30,6 +30,8 @@ type MetricResult struct {
   TcInstallerBuildId int
   TcBuildProperties  []byte
 
+  Branch sql.RawBytes
+
   RawReport string
 
   BuildC1 int `db:"build_c1"`
@@ -96,6 +98,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
     select 
       product, machine, generated_time, build_time,
       tc_build_id, tc_installer_build_id, tc_build_properties,
+      json_extract(tc_build_properties, '$."vcsroot.branch"') as branch,
       raw_report,
       build_c1, build_c2, build_c3
     from report 
@@ -110,7 +113,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   var sb strings.Builder
   sb.WriteString(`insert into report values (`)
 
-  for i := 0; i < 10; i++ {
+  for i := 0; i < 11; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
@@ -256,8 +259,16 @@ func writeMetrics(row *MetricResult, insertStatement *sql.Stmt, logger *zap.Logg
     buildTimeUnix = row.BuildTime
   }
 
+  var branch string
+  if len(row.Branch) == 0 {
+    branch = "master"
+  } else {
+    branch = string(row.Branch)
+  }
+
   args := []interface{}{row.Product, row.Machine, buildTimeUnix, row.GeneratedTime,
     row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+    branch,
     row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3}
   for _, name := range model.DurationMetricNames {
     var v int

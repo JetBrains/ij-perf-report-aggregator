@@ -54,6 +54,8 @@ func CreateTable(db *sql.DB, machines []IdAndName, products []IdAndName) error {
     tc_build_id UInt32 Codec(DoubleDelta, ZSTD(19)),
     tc_installer_build_id UInt32 Codec(DoubleDelta, ZSTD(19)),
     tc_build_properties String Codec(ZSTD(19)),
+
+    branch Enum('master' = 0, '193' = 1) Codec(ZSTD(19)),
     
     raw_report String Codec(ZSTD(19)),
     
@@ -82,7 +84,7 @@ func CreateTable(db *sql.DB, machines []IdAndName, products []IdAndName) error {
   })
 
   // https://github.com/ClickHouse/ClickHouse/issues/3758#issuecomment-444490724
-  sb.WriteString(") engine MergeTree partition by (product, toYYYYMM(generated_time)) order by (product, machine, build_c1, build_c2, build_c3, build_time, generated_time) SETTINGS old_parts_lifetime = 10")
+  sb.WriteString(") engine MergeTree partition by (product, toYYYYMM(generated_time)) order by (product, machine, branch, build_c1, build_c2, build_c3, build_time, generated_time) SETTINGS old_parts_lifetime = 10")
 
   _, err = db.Exec(sb.String())
   if err != nil {

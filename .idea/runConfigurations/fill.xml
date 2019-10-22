@@ -2,6 +2,7 @@
   <configuration default="false" name="fill" type="GoApplicationRunConfiguration" factoryName="Go Application" singleton="true">
     <module name="report-aggregator" />
     <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-tags &quot;clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys&quot;" />
     <parameters value="fill --db $USER_HOME$/ij-perf-db/db.sqlite --clickHouse 127.0.0.1:9000" />
     <kind value="FILE" />
     <filePath value="$PROJECT_DIR$/cmd/report-aggregator/main.go" />

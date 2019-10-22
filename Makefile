@@ -18,30 +18,26 @@ build: lint
 	make build-windows
 
 build-mac:
-	GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -tags clz4 -ldflags='-s -w' -o dist/mac/report-aggregator ./cmd/report-aggregator
+	GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -tags "clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/mac/report-aggregator ./cmd/report-aggregator
 	XZ_OPT=-9 tar -cJf dist/mac-report-aggregator.tar.xz dist/mac/report-aggregator
 
 build-linux:
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ go build -tags clz4 -ldflags='-s -w' -o dist/linux/report-aggregator ./cmd/report-aggregator
+	env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ go build -tags "clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/linux/report-aggregator ./cmd/report-aggregator
 	XZ_OPT=-9 tar -cJf dist/linux-report-aggregator.tar.xz dist/linux/report-aggregator
 
 build-windows:
-	env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=/usr/local/bin/x86_64-w64-mingw32-gcc CXX=/usr/local/bin/x86_64-w64-mingw32-g++ go build -tags clz4 -ldflags='-s -w' -o dist/windows/report-aggregator.exe ./cmd/report-aggregator
+	env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=/usr/local/bin/x86_64-w64-mingw32-gcc CXX=/usr/local/bin/x86_64-w64-mingw32-g++ go build -tags "clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/windows/report-aggregator.exe ./cmd/report-aggregator
 
 lint:
 	golangci-lint run
 
 build-server:
-	go build -tags clz4 -ldflags='-s -w' -o dist/server ./cmd/server
+	go build -tags "clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/server ./cmd/server
 
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/report-aggregator
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/server
 	go mod tidy
-
-update-computed-metrics:
-	go build -tags clz4 -ldflags='-s -w' -o dist/report-aggregator
-	./dist/report-aggregator update-computed-metrics --db /Volumes/data/ij-perf-db/db.sqlite
 
 # https://medium.com/@valyala/promql-tutorial-for-beginners-9ab455142085
 

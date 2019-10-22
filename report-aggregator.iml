@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="WEB_MODULE" version="4">
-  <component name="Go" enabled="true" />
+  <component name="Go" enabled="true">
+    <buildTags>
+      <option name="cgo" value="YES" />
+      <option name="customFlags">
+        <array>
+          <option value="clz4" />
+          <option value="sqlite_json" />
+          <option value="sqlite_stat4" />
+          <option value="sqlite_foreign_keys" />
+        </array>
+      </option>
+    </buildTags>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">

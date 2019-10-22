@@ -19,8 +19,26 @@ import (
   _ "github.com/mattn/go-sqlite3"
 )
 
+type MetricResult struct {
+  Product string
+  Machine uint8
+
+  GeneratedTime int64
+  BuildTime     int64
+
+  TcBuildId          int
+  TcInstallerBuildId int
+  TcBuildProperties  []byte
+
+  RawReport string
+
+  BuildC1 int `db:"build_c1"`
+  BuildC2 int `db:"build_c2"`
+  BuildC3 int `db:"build_c3"`
+}
+
 func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
-  command := app.Command("fill", "Fill VictoriaMetrics database using SQLite database.")
+  command := app.Command("fill", "Fill ClickHouse database using SQLite database.")
   dbPath := command.Flag("db", "The SQLite database file.").Required().String()
   clickHouseUrl := command.Flag("clickHouse", "The ClickHouse server URL.").Required().String()
   command.Action(func(context *kingpin.ParseContext) error {

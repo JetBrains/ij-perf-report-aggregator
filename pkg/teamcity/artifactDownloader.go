@@ -3,7 +3,6 @@ package teamcity
 import (
   "compress/gzip"
   "github.com/develar/errors"
-  "github.com/json-iterator/go"
   "github.com/magiconair/properties"
   "go.uber.org/zap"
   "io/ioutil"
@@ -89,10 +88,6 @@ func (t *Collector) downloadBuildProperties(build Build) ([]byte, error) {
     return nil, err
   }
 
-  json, err := jsoniter.ConfigFastest.Marshal(p.Map())
-  if err != nil {
-    return nil, err
-  }
-
-  return json, nil
+  json := PropertiesToJson(p)
+  return []byte(json), nil
 }

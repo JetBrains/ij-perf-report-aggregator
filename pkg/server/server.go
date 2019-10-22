@@ -19,7 +19,7 @@ import (
 type StatsServer struct {
   db *sqlx.DB
 
-  machineToGroupName map[string]string
+  machineInfo MachineInfo
 
   logger *zap.Logger
 }
@@ -41,26 +41,7 @@ func Serve(dbUrl string, logger *zap.Logger) error {
 
     logger: logger,
 
-    machineToGroupName: map[string]string{
-      "intellij-macos-hw-unit-1550": macMini,
-      "intellij-macos-hw-unit-1551": macMini,
-
-      "intellij-windows-hw-unit-498": win,
-      "intellij-windows-hw-unit-499": win,
-
-      "intellij-linux-hw-unit-449": linux,
-      "intellij-linux-hw-unit-450": linux,
-      "intellij-linux-hw-unit-463": linux2,
-      "intellij-linux-hw-unit-484": linux,
-
-      "intellij-linux-hw-unit-493": linux32gb,
-
-      "intellij-linux-hw-unit-504": linux,
-      "intellij-linux-hw-unit-531": linux,
-      "intellij-linux-hw-unit-534": linux,
-      "intellij-linux-hw-unit-556": linux,
-      "intellij-linux-hw-unit-558": linux,
-    },
+    machineInfo: getMachineInfo(),
   }
 
   cacheManager := NewResponseCacheManager(logger)

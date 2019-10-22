@@ -31,7 +31,7 @@ require (
 	github.com/valyala/quicktemplate v1.3.1
 	go.uber.org/atomic v1.4.0
 	go.uber.org/multierr v1.2.0 // indirect
-	go.uber.org/zap v1.10.0
+	go.uber.org/zap v1.11.0
 	google.golang.org/appengine v1.6.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )

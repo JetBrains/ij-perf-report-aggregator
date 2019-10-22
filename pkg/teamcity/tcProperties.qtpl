@@ -1,0 +1,34 @@
+{% import "github.com/magiconair/properties" %}
+{% import "github.com/asaskevich/govalidator" %}
+{% import "sort" %}
+
+{% stripspace %}
+{% func PropertiesToJson(p *properties.Properties) %}
+{
+  {% code
+  keys := p.Keys()
+  sort.Strings(keys)
+  %}
+  {% for i, key := range keys %}
+    {% code
+    if isExcludedProperty(key) {
+      continue
+    }
+    v := p.GetString(key, "")
+    if len(v) == 0 {
+      continue
+    }
+    %}
+
+    {% if i != 0 %},{% endif %}
+
+    "{%s= key %}":
+    {% if v == "true" || v == "false" || govalidator.IsInt(v) %}
+      {%s= v %}
+    {% else %}
+       {%q= v %}
+    {% endif %}
+  {% endfor %}
+}
+{% endfunc %}
+{% endstripspace %}

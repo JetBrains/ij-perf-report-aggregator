@@ -24,7 +24,8 @@ create table report
 
   raw_report            string not null,
 
-  foreign key (machine) references machine (ROWID) on delete restrict
+  foreign key (machine) references machine (ROWID) on delete restrict,
+  foreign key (tc_installer_build_id) references installer (id) on delete restrict
 );
 
 create index generated_time on report (generated_time);
@@ -34,6 +35,12 @@ create index build_major_index on report (build_c1);
 create index build_minor_index on report (build_c2);
 create index build_patch_index on report (build_c3);
 
-pragma user_version=6;
+create table installer
+(
+  id      int    not null primary key,
+  changes string not null
+);
+
+pragma user_version=7;
 
 commit;

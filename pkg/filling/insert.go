@@ -76,6 +76,11 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
+  err = copyInstallers(mainDb, db, logger)
+  if err != nil {
+    return err
+  }
+
   err = model.CreateTable(db, machines, products)
   if err != nil {
     return errors.WithStack(err)
@@ -134,6 +139,57 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   return insertManager.Error
 }
 
+func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
+  _, err := db.Exec(`create table if not exists installer (
+    id UInt32 Codec(DoubleDelta, ZSTD(19)),
+    changes String Codec(ZSTD(19))
+  ) engine MergeTree order by id SETTINGS old_parts_lifetime = 10`)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  rows, err := sourceDb.Query("select id, changes from installer order by id")
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  insertManager, err := sqlUtil.NewBulkInsertManager(db, "insert into installer values (?, ?)", logger)
+  if err != nil {
+    return err
+  }
+  defer util.Close(insertManager, logger)
+
+  for rows.Next() {
+    var id int
+    var changes sql.RawBytes
+    err = rows.Scan(&id, &changes)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    insertStatement, err := insertManager.PrepareForInsert()
+    if err != nil {
+      return err
+    }
+
+    _, err = insertStatement.Exec(id, string(changes))
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
+  err = rows.Err()
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  err = insertManager.Commit()
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return nil
+}
+
 func writeReports(insertManager *sqlUtil.BulkInsertManager, sourceRows *sqlx.Rows, lastMaxGeneratedTime int64, logger *zap.Logger) error {
   selectStatement, err := insertManager.Db.Prepare("select 1 from report where product = ? and machine = ? and generated_time = ? limit 1")
   if err != nil {
@@ -161,12 +217,12 @@ func writeReports(insertManager *sqlUtil.BulkInsertManager, sourceRows *sqlx.Row
       }
     }
 
-    err = insertManager.PrepareForInsert()
+    insertStatement, err := insertManager.PrepareForInsert()
     if err != nil {
       return err
     }
 
-    err = writeMetrics(row, insertManager.InsertStatement, logger)
+    err = writeMetrics(row, insertStatement, logger)
     if err != nil {
       return err
     }

@@ -2,11 +2,15 @@ package teamcity
 
 import (
   "context"
+  "encoding/base64"
+  "encoding/hex"
   "github.com/alecthomas/kingpin"
   "github.com/araddon/dateparse"
   "github.com/develar/errors"
+  "github.com/json-iterator/go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
+  "io/ioutil"
   "log"
   "net/http"
   "net/url"
@@ -14,7 +18,9 @@ import (
   "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/model"
   "report-aggregator/pkg/util"
+  "strconv"
   "strings"
+  "sync"
   "time"
 )
 
@@ -80,6 +86,9 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, 
     httpClient:  httpClient,
     taskContext: taskContext,
 
+    rwLock:                  &sync.RWMutex{},
+    installerBuildToChanges: make(map[int]string),
+
     logger: logger,
   }
 
@@ -136,6 +145,65 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, 
   }
 }
 
+func (t *Collector) loadInstallerChanges(installerBuildId int) (string, error) {
+  t.rwLock.RLock()
+  result := t.installerBuildToChanges[installerBuildId]
+  t.rwLock.RUnlock()
+
+  if len(result) != 0 {
+    return result, nil
+  }
+
+  t.rwLock.Lock()
+  defer t.rwLock.Unlock()
+
+  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
+  if err != nil {
+    return "", err
+  }
+
+  response, err := t.get(artifactUrl.String())
+  if err != nil {
+    return "", err
+  }
+
+  defer util.Close(response.Body, t.logger)
+
+  if response.StatusCode > 300 {
+    responseBody, _ := ioutil.ReadAll(response.Body)
+    return "", errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+  }
+
+  t.storeSessionIdCookie(response)
+
+  var changeList ChangeList
+  err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&changeList)
+  if err != nil {
+    return "", err
+  }
+
+  var sb strings.Builder
+  for index, change := range changeList.List {
+    if index != 0 {
+      sb.WriteRune('\n')
+    }
+
+    bytes, err := hex.DecodeString(change.Version)
+    if err != nil {
+      return "", err
+    }
+
+    encoder := base64.RawStdEncoding
+    buf := make([]byte, encoder.EncodedLen(len(bytes)))
+    encoder.Encode(buf, bytes)
+    sb.Write(buf)
+  }
+
+  result = sb.String()
+  t.installerBuildToChanges[installerBuildId] = result
+  return result, nil
+}
+
 func (t *Collector) loadReports(builds []Build) error {
   err := util.MapAsync(len(builds), func(taskIndex int) (f func() error, err error) {
     return func() error {
@@ -160,16 +228,21 @@ func (t *Collector) loadReports(builds []Build) error {
         return err
       }
 
+      changes, err := t.loadInstallerChanges(installerBuildId)
+      if err != nil {
+        return err
+      }
+
       return t.reportAnalyzer.Analyze(data, model.ExtraData{
         Machine:            build.Agent.Name,
         TcBuildId:          build.Id,
         TcInstallerBuildId: installerBuildId,
         BuildTime:          buildTime,
         TcBuildProperties:  tcBuildProperties,
+        Changes:            changes,
       })
     }, nil
   })
-
   if err != nil {
     return err
   }
@@ -202,6 +275,9 @@ type Collector struct {
   logger *zap.Logger
 
   tcSessionId atomic.String
+
+  rwLock                  *sync.RWMutex
+  installerBuildToChanges map[int]string
 }
 
 func getTcSessionIdCookie(cookies []*http.Cookie) string {
@@ -219,6 +295,15 @@ func (t *Collector) storeSessionIdCookie(response *http.Response) {
   if len(cookie) > 0 {
     t.tcSessionId.Store(cookie)
   }
+}
+
+func (t *Collector) get(url string) (*http.Response, error) {
+  request, err := t.createRequest(url)
+  if err != nil {
+    return nil, err
+  }
+
+  return t.httpClient.Do(request)
 }
 
 func (t *Collector) createRequest(url string) (*http.Request, error) {

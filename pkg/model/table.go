@@ -72,7 +72,6 @@ func CreateTable(db *sql.DB, machines []IdAndName, products []IdAndName) error {
       sb.WriteRune('d')
     }
     sb.WriteRune(' ')
-    //if _, ok := MetricToUint16DataType[name]; ok  {
     if !isInstant {
       sb.WriteString("UInt16")
     } else {

@@ -12,7 +12,7 @@ import (
 
 type BulkInsertManager struct {
   transaction     *sql.Tx
-  InsertStatement *sql.Stmt
+  insertStatement *sql.Stmt
   Db              *sql.DB
 
   insertSql string
@@ -58,10 +58,10 @@ func (t *BulkInsertManager) Commit() error {
     return nil
   }
 
-  insertStatement := t.InsertStatement
+  insertStatement := t.insertStatement
 
   t.transaction = nil
-  t.InsertStatement = nil
+  t.insertStatement = nil
   queuedItems := t.queuedItems
   t.queuedItems = 0
 
@@ -91,39 +91,39 @@ func (t *BulkInsertManager) Commit() error {
   return nil
 }
 
-func (t *BulkInsertManager) PrepareForInsert() error {
+func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
   // large inserts leads to large memory usage, so, insert by 2000 items
   if t.queuedItems >= 2000 {
     if t.transaction != nil {
       err := t.Commit()
       if err != nil {
-        return err
+        return nil, err
       }
     }
   } else {
     t.queuedItems++
   }
 
-  if t.InsertStatement == nil {
+  if t.insertStatement == nil {
     var err error
     t.transaction, err = t.Db.Begin()
     if err != nil {
-      return errors.WithStack(err)
+      return nil, errors.WithStack(err)
     }
 
-    t.InsertStatement, err = t.transaction.Prepare(t.insertSql)
+    t.insertStatement, err = t.transaction.Prepare(t.insertSql)
     if err != nil {
-      return errors.WithStack(err)
+      return nil, errors.WithStack(err)
     }
   }
-  return nil
+  return t.insertStatement, nil
 }
 
 func (t *BulkInsertManager) Close() error {
   t.pool.Release()
 
-  if t.InsertStatement != nil {
-    util.Close(t.InsertStatement, t.logger)
+  if t.insertStatement != nil {
+    util.Close(t.insertStatement, t.logger)
   }
 
   transaction := t.transaction

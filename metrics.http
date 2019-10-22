@@ -46,7 +46,9 @@ GET http://localhost:9044/info
 GET http://localhost:9044/metrics?product=IU&machine=zlata
 
 ###
-GET http://127.0.0.1:9044/groupedMetrics?product=IU&machine=zlata
+GET https://buildserver.labs.intellij.net/app/rest/changes?locator=build:(id:56072828)&fields=change(version)
+Authorization: Bearer {{token}}
+Accept: application/json
 
 ###
 

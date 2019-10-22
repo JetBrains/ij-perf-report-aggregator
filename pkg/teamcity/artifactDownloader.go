@@ -14,17 +14,12 @@ import (
 func (t *Collector) downloadStartUpReport(build Build) ([]byte, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/builds/id:" + strconv.Itoa(build.Id) + "/artifacts/content/run/startup/startup-stats-startup.json")
   if err != nil {
-    return nil, err
+    return nil, errors.WithStack(err)
   }
 
-  request, err := t.createRequest(artifactUrl.String())
+  response, err := t.get(artifactUrl.String())
   if err != nil {
-    return nil, err
-  }
-
-  response, err := t.httpClient.Do(request)
-  if err != nil {
-    return nil, err
+    return nil, errors.WithStack(err)
   }
 
   defer util.Close(response.Body, t.logger)
@@ -54,12 +49,7 @@ func (t *Collector) downloadBuildProperties(build Build) ([]byte, error) {
     return nil, err
   }
 
-  request, err := t.createRequest(artifactUrl.String())
-  if err != nil {
-    return nil, err
-  }
-
-  response, err := t.httpClient.Do(request)
+  response, err := t.get(artifactUrl.String())
   if err != nil {
     return nil, err
   }

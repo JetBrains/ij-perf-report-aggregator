@@ -151,26 +151,6 @@ func computeGeneratedTime(reportInfo *model.ReportInfo, extraData model.ExtraDat
   return nil
 }
 
-func parseTime(s string) (*time.Time, error) {
-  parsedTime, err := time.Parse(time.RFC1123Z, s)
-  if err != nil {
-    parsedTime, err = time.Parse(time.RFC1123, s)
-  }
-
-  if err != nil {
-    parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", s)
-  }
-
-  if err != nil {
-    parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", s)
-  }
-
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  return &parsedTime, nil
-}
-
 func (t *ReportAnalyzer) Close() error {
   t.closeOnce.Do(func() {
     close(t.input)
@@ -268,6 +248,13 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
     return errors.WithStack(err)
   }
 
+  if report.ExtraData.TcInstallerBuildId > 0 {
+    err = t.insertInstallerIdIfMissed(&report.ExtraData)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
   _, err = statement.ExecContext(t.analyzeContext, id, machineId, report.ExtraData.ProductCode,
     report.GeneratedTime, chooseNotEmpty(buildTimeFromReport, report.ExtraData.BuildTime),
     getNullIfEmpty(report.ExtraData.TcBuildId), getNullIfEmpty(report.ExtraData.TcInstallerBuildId), report.ExtraData.TcBuildProperties,
@@ -344,6 +331,14 @@ func (t *ReportAnalyzer) getMachineId(machineName string) (int, error) {
     return -1, errors.WithStack(err)
   }
   return id, err
+}
+
+func (t *ReportAnalyzer) insertInstallerIdIfMissed(extraData *model.ExtraData) error {
+  _, err := t.db.Exec("insert or ignore into installer(id, changes) values(?, ?)", extraData.TcInstallerBuildId, extraData.Changes)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return nil
 }
 
 func (t *ReportAnalyzer) isReportAlreadyAdded(id string) (bool, error) {

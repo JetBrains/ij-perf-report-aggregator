@@ -5,6 +5,7 @@ import (
   "github.com/json-iterator/go"
   "github.com/mcuadros/go-version"
   "report-aggregator/pkg/model"
+  "time"
 )
 
 func ReadReport(data []byte) (*model.Report, error) {
@@ -28,4 +29,24 @@ func GetBuildTimeFromReport(report *model.Report) (int64, error) {
     buildTimeUnix = 0
   }
   return buildTimeUnix, nil
+}
+
+func parseTime(s string) (*time.Time, error) {
+  parsedTime, err := time.Parse(time.RFC1123Z, s)
+  if err != nil {
+    parsedTime, err = time.Parse(time.RFC1123, s)
+  }
+
+  if err != nil {
+    parsedTime, err = time.Parse("Jan 2, 2006, 3:04:05 PM MST", s)
+  }
+
+  if err != nil {
+    parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 -0700", s)
+  }
+
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+  return &parsedTime, nil
 }

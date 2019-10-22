@@ -33,7 +33,7 @@ func prepareDatabaseFile(filePath string) error {
   return nil
 }
 
-const toolDbVersion = 5
+const toolDbVersion = 7
 
 func prepareDatabase(dbPath string, logger *zap.Logger) (*sqlx.DB, error) {
   db, err := sqlx.Open("sqlite3", "file:"+dbPath)

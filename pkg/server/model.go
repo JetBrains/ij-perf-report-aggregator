@@ -27,7 +27,7 @@ func getProductAndMachine(query url.Values) (string, []string, rune, error) {
     // prevent misuse of parameter
     return "", nil, 0, NewHttpError(400, "The product parameter is not correct")
 
-  case !govalidator.IsNumeric(product):
+  case !govalidator.IsAlpha(product):
     return "", nil, 0, NewHttpError(400, "The product parameter must contain only letters a-zA-Z")
   }
 

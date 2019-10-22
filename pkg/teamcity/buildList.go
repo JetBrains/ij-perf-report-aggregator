@@ -72,3 +72,11 @@ func (t *Collector) processBuilds(url string) (string, error) {
   }
   return result.NextHref, nil
 }
+
+type ChangeList struct {
+  List []Change `json:"change"`
+}
+
+type Change struct {
+  Version string `json:"version"`
+}

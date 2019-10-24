@@ -3,6 +3,7 @@ package sql_util
 import (
   "database/sql"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
   "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
   "report-aggregator/pkg/util"
@@ -13,7 +14,7 @@ import (
 type BulkInsertManager struct {
   transaction     *sql.Tx
   insertStatement *sql.Stmt
-  Db              *sql.DB
+  Db              *sqlx.DB
 
   insertSql string
 
@@ -26,8 +27,8 @@ type BulkInsertManager struct {
   Error     error
 }
 
-func NewBulkInsertManager(db *sql.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
-  // not enough RAM (if docker has access to 4 GB on machine where there is only 16 GB)
+func NewBulkInsertManager(db *sqlx.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
+  // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
   poolCapacity := runtime.NumCPU() - 4
   if poolCapacity < 2 {
     poolCapacity = 2

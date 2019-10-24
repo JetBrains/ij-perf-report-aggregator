@@ -59,7 +59,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   defer util.Close(mainDb, logger)
 
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sql.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&compress=1")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
@@ -142,22 +142,19 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   return insertManager.Error
 }
 
-// todo check that not inserted existing
-func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
-  _, err := db.Exec(`create table if not exists installer (
-    id UInt32 Codec(DoubleDelta, ZSTD(19)),
-    changes String Codec(ZSTD(19))
-  ) engine MergeTree order by id SETTINGS old_parts_lifetime = 10`)
+func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
+  err := model.CreateInstallerTable(db)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
+  //noinspection SqlResolve
   rows, err := sourceDb.Query("select id, changes from installer order by id")
   if err != nil {
     return errors.WithStack(err)
   }
 
-  insertManager, err := sql_util.NewBulkInsertManager(db, "insert into installer values (?, ?)", logger)
+  insertManager, err := sql_util.NewInstallerManager(db, logger)
   if err != nil {
     return err
   }
@@ -171,14 +168,9 @@ func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
       return errors.WithStack(err)
     }
 
-    insertStatement, err := insertManager.PrepareForInsert()
+    err = insertManager.Insert(id, string(changes))
     if err != nil {
       return err
-    }
-
-    _, err = insertStatement.Exec(id, string(changes))
-    if err != nil {
-      return errors.WithStack(err)
     }
   }
 

@@ -12,6 +12,7 @@ import (
   "go.uber.org/zap"
   "hash"
   "report-aggregator/pkg/model"
+  "report-aggregator/pkg/sql-util"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
@@ -35,6 +36,8 @@ type ReportAnalyzer struct {
   insertReportStatement  *sqlx.Stmt
   insertMachineStatement *sqlx.Stmt
 
+  installerManager *sql_util.InstallerManager
+
   hash hash.Hash
 
   logger *zap.Logger
@@ -54,11 +57,18 @@ func CreateReportAnalyzer(dbPath string, analyzeContext context.Context, logger 
   m := minify.New()
   m.AddFunc("json", json.Minify)
 
+  installerManager, err := sql_util.NewInstallerManager(sqlx.MustConnect("sqlite3", "file:"+dbPath), logger)
+  if err != nil {
+    return nil, err
+  }
+
   analyzer := &ReportAnalyzer{
     input:          make(chan *model.ReportInfo),
     analyzeContext: analyzeContext,
     waitChannel:    make(chan struct{}),
     ErrorChannel:   make(chan error),
+
+    installerManager: installerManager,
 
     minifier: m,
     db:       db,
@@ -168,6 +178,8 @@ func (t *ReportAnalyzer) Close() error {
     util.Close(statement, t.logger)
   }
 
+  util.Close(t.installerManager, t.logger)
+
   db := t.db
   t.db = nil
   if db == nil {
@@ -249,7 +261,7 @@ func (t *ReportAnalyzer) doAnalyze(report *model.ReportInfo) error {
   }
 
   if report.ExtraData.TcInstallerBuildId > 0 {
-    err = t.insertInstallerIdIfMissed(&report.ExtraData)
+    err = t.installerManager.Insert(report.ExtraData.TcInstallerBuildId, report.ExtraData.Changes)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -331,14 +343,6 @@ func (t *ReportAnalyzer) getMachineId(machineName string) (int, error) {
     return -1, errors.WithStack(err)
   }
   return id, err
-}
-
-func (t *ReportAnalyzer) insertInstallerIdIfMissed(extraData *model.ExtraData) error {
-  _, err := t.db.Exec("insert or ignore into installer(id, changes) values(?, ?)", extraData.TcInstallerBuildId, extraData.Changes)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-  return nil
 }
 
 func (t *ReportAnalyzer) isReportAlreadyAdded(id string) (bool, error) {

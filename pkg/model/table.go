@@ -1,8 +1,8 @@
 package model
 
 import (
-  "database/sql"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
   "strconv"
   "strings"
 )
@@ -29,7 +29,18 @@ func ProcessMetricName(handler func(name string, isInstant bool)) {
   }
 }
 
-func CreateTable(db *sql.DB, machines []IdAndName, products []IdAndName) error {
+func CreateInstallerTable(db *sqlx.DB) error {
+  _, err := db.Exec(`create table if not exists installer (
+    id UInt32 Codec(DoubleDelta, ZSTD(19)),
+    changes String Codec(ZSTD(19))
+  ) engine MergeTree order by id SETTINGS old_parts_lifetime = 10`)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return nil
+}
+
+func CreateTable(db *sqlx.DB, machines []IdAndName, products []IdAndName) error {
   _, err := db.Exec("set allow_experimental_data_skipping_indices = 1")
   if err != nil {
     return errors.WithStack(err)

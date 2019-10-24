@@ -21,7 +21,7 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
     return nil, err
   }
 
-  var query Query
+  var query GroupedMetricQuery
 
   err = validateAndConfigureOperator(&query, urlQuery)
   if err != nil {
@@ -46,7 +46,7 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   return CopyBuffer(buffer), nil
 }
 
-func validateAndConfigureOperator(query *Query, urlQuery url.Values) error {
+func validateAndConfigureOperator(query *GroupedMetricQuery, urlQuery url.Values) error {
   var err error
 
   query.product, query.machines, query.eventType, err = getProductAndMachine(urlQuery)
@@ -78,16 +78,14 @@ func validateAndConfigureOperator(query *Query, urlQuery url.Values) error {
   return nil
 }
 
-type Query struct {
-  product   string
-  machines  []string
-  eventType rune
+type GroupedMetricQuery struct {
+  BaseMetricQuery
 
   operator string
   quantile float64
 }
 
-func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([]MedianResult, error) {
+func (t *StatsServer) getAggregatedResults(metricNames []string, query GroupedMetricQuery) ([]MedianResult, error) {
   whereStatement, whereArgs, err := sqlx.In(" where product = ? and machine in(?)", query.product, query.machines)
   if err != nil {
     return nil, errors.WithStack(err)
@@ -175,7 +173,7 @@ func (t *StatsServer) getAggregatedResults(metricNames []string, query Query) ([
   return result, nil
 }
 
-func buildSql(query Query, whereStatement string, metricNames []string, groupByMonth bool) string {
+func buildSql(query GroupedMetricQuery, whereStatement string, metricNames []string, groupByMonth bool) string {
   var sb strings.Builder
   sb.WriteString("select ")
 

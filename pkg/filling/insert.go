@@ -9,7 +9,7 @@ import (
   "go.uber.org/zap"
   "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/model"
-  sqlUtil "report-aggregator/pkg/sqlx"
+  "report-aggregator/pkg/sql-util"
   "report-aggregator/pkg/util"
   "strconv"
   "strings"
@@ -124,7 +124,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   })
   sb.WriteRune(')')
 
-  insertManager, err := sqlUtil.NewBulkInsertManager(db, sb.String(), logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, sb.String(), logger)
   if err != nil {
     return err
   }
@@ -142,6 +142,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   return insertManager.Error
 }
 
+// todo check that not inserted existing
 func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
   _, err := db.Exec(`create table if not exists installer (
     id UInt32 Codec(DoubleDelta, ZSTD(19)),
@@ -156,7 +157,7 @@ func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  insertManager, err := sqlUtil.NewBulkInsertManager(db, "insert into installer values (?, ?)", logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, "insert into installer values (?, ?)", logger)
   if err != nil {
     return err
   }
@@ -193,7 +194,7 @@ func copyInstallers(sourceDb *sqlx.DB, db *sql.DB, logger *zap.Logger) error {
   return nil
 }
 
-func writeReports(insertManager *sqlUtil.BulkInsertManager, sourceRows *sqlx.Rows, lastMaxGeneratedTime int64, logger *zap.Logger) error {
+func writeReports(insertManager *sql_util.BulkInsertManager, sourceRows *sqlx.Rows, lastMaxGeneratedTime int64, logger *zap.Logger) error {
   selectStatement, err := insertManager.Db.Prepare("select 1 from report where product = ? and machine = ? and generated_time = ? limit 1")
   if err != nil {
     return errors.WithStack(err)

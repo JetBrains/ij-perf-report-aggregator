@@ -9,3 +9,5 @@ linters:
     - scopelint
     - unconvert
     - unparam
+  disable:
+    - structcheck

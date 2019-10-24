@@ -17,6 +17,12 @@ type Value struct {
   value int
 }
 
+type BaseMetricQuery struct {
+  product   string
+  machines  []string
+  eventType rune
+}
+
 func getProductAndMachine(query url.Values) (string, []string, rune, error) {
   product := query.Get("product")
   switch {

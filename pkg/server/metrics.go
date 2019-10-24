@@ -3,6 +3,7 @@ package server
 import (
   "context"
   "database/sql"
+  "github.com/asaskevich/govalidator"
   "github.com/jmoiron/sqlx"
   "github.com/pkg/errors"
   "github.com/valyala/quicktemplate"
@@ -17,34 +18,51 @@ import (
 )
 
 func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
-  query, err := parseQuery(request)
+  urlQuery, err := parseQuery(request)
   if err != nil {
     return nil, err
   }
 
-  product, machines, eventType, err := getProductAndMachine(query)
+  var query MetricQuery
+  query.product, query.machines, query.eventType, err = getProductAndMachine(urlQuery)
   if err != nil {
     return nil, err
+  }
+
+  order := urlQuery.Get("operator")
+  switch {
+  case len(order) == 0:
+    query.order = 'b'
+  case !govalidator.IsAlpha(order):
+    return nil, NewHttpError(400, "The order parameter must contain only letters a-zA-Z")
+  default:
+    query.order = rune(order[0])
   }
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  err = t.computeMetricsResponse(product, machines, eventType, buffer, request.Context())
+  err = t.computeMetricsResponse(query, buffer, request.Context())
   if err != nil {
     return nil, err
   }
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMetricsResponse(product string, machines []string, eventType rune, writer io.Writer, context context.Context) error {
+type MetricQuery struct {
+  BaseMetricQuery
+
+  order rune
+}
+
+func (t *StatsServer) computeMetricsResponse(query MetricQuery, writer io.Writer, context context.Context) error {
   var metricNames []string
-  if eventType == 'd' {
+  if query.eventType == 'd' {
     metricNames = model.DurationMetricNames
   } else {
     metricNames = model.InstantMetricNames
   }
 
-  rows, err := t.selectData(metricNames, eventType, product, machines, context)
+  rows, err := t.selectData(metricNames, query, context)
   if err != nil {
     return err
   }
@@ -104,16 +122,18 @@ func (t *StatsServer) computeMetricsResponse(product string, machines []string, 
     }
 
     buildAsString := sb.String()
-    // https://www.amcharts.com/docs/v4/tutorials/handling-repeating-categories-on-category-axis/
-    if lastBuildWithoutUniqueSuffix == buildAsString {
-      // not unique - add time
-      sb.WriteRune(' ')
-      sb.WriteRune('(')
-      sb.WriteString(strconv.FormatInt(generatedTime, 10))
-      sb.WriteRune(')')
-      buildAsString = sb.String()
-    } else {
-      lastBuildWithoutUniqueSuffix = buildAsString
+    if query.order == 'b' {
+      // https://www.amcharts.com/docs/v4/tutorials/handling-repeating-categories-on-category-axis/
+      if lastBuildWithoutUniqueSuffix == buildAsString {
+        // not unique - add time
+        sb.WriteRune(' ')
+        sb.WriteRune('(')
+        sb.WriteString(strconv.FormatInt(generatedTime, 10))
+        sb.WriteRune(')')
+        buildAsString = sb.String()
+      } else {
+        lastBuildWithoutUniqueSuffix = buildAsString
+      }
     }
 
     jsonWriter.S(`"build":`)
@@ -148,21 +168,26 @@ func (t *StatsServer) computeMetricsResponse(product string, machines []string, 
   return nil
 }
 
-func (t *StatsServer) selectData(metricNames []string, eventType rune, product string, machines []string, context context.Context) (*sql.Rows, error) {
+func (t *StatsServer) selectData(metricNames []string, query MetricQuery, context context.Context) (*sql.Rows, error) {
   var sb strings.Builder
   sb.WriteString("select generated_time, build_c1, build_c2, build_c3")
   for _, name := range metricNames {
     sb.WriteString(", ")
     sb.WriteString(name)
     sb.WriteRune('_')
-    sb.WriteRune(eventType)
+    sb.WriteRune(query.eventType)
   }
 
-  sb.WriteString(" from report where product = ? and machine in (?) order by build_c1, build_c2, build_c3, generated_time")
+  sb.WriteString(" from report where product = ? and machine in (?) ")
+  if query.order == 'b' {
+    sb.WriteString("order by build_c1, build_c2, build_c3, generated_time")
+  } else {
+    sb.WriteString("order by generated_time")
+  }
 
-  query, queryArgs, err := sqlx.In(sb.String(), product, machines)
+  sqlQuery, queryArgs, err := sqlx.In(sb.String(), query.product, query.machines)
   if err != nil {
     return nil, errors.WithStack(err)
   }
-  return t.db.QueryContext(context, query, queryArgs...)
+  return t.db.QueryContext(context, sqlQuery, queryArgs...)
 }

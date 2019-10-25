@@ -8,6 +8,7 @@ import (
   "github.com/araddon/dateparse"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
+  "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
   "io/ioutil"
@@ -57,12 +58,16 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
 
     if *notifyServer {
       log.Info("ask report aggregator server to clear cache")
-      response, err := httpClient.Get("http://report-aggregator/internalApi/clearCache")
+      nc, err := nats.Connect("nats://nats:4222")
       if err != nil {
-        return err
-      }
-      if response.StatusCode != 200 {
         log.Error("cannot notify server")
+        return nil
+      }
+
+      err = nc.Publish("server.clearCache", nil)
+      if err != nil {
+        log.Error("cannot notify server")
+        return nil
       }
     }
 

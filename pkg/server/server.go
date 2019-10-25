@@ -6,6 +6,7 @@ import (
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   _ "github.com/kshvakov/clickhouse"
+  "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "go.uber.org/zap"
   "net/http"
@@ -24,7 +25,7 @@ type StatsServer struct {
   logger *zap.Logger
 }
 
-func Serve(dbUrl string, logger *zap.Logger) error {
+func Serve(dbUrl string, useNats bool, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
     dbUrl = "127.0.0.1:9000"
   }
@@ -48,11 +49,24 @@ func Serve(dbUrl string, logger *zap.Logger) error {
 
   mux := http.NewServeMux()
 
-  mux.Handle("/internalApi/clearCache", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
-    cacheManager.Clear()
-    logger.Info("cache cleared")
-    writer.WriteHeader(200)
-  }))
+  if useNats {
+    nc, err := nats.Connect("nats://nats:4222")
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    ncSubscription, err := nc.Subscribe("server.clearCache", func(m *nats.Msg) {
+      cacheManager.Clear()
+      logger.Info("cache cleared")
+    })
+
+    defer func() {
+      err := ncSubscription.Unsubscribe()
+      if err != nil {
+        logger.Error("cannot unsubscribe", zap.Error(err))
+      }
+    }()
+  }
 
   mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))

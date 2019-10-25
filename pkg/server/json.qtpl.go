@@ -296,110 +296,111 @@ func streamwriteMachineGroups(qw422016 *qt422016.Writer, groupNames []string, gr
 
 //line pkg/server/json.qtpl:73
 	for _, groupName := range groupNames {
-//line pkg/server/json.qtpl:74
-		if !isFirst {
-//line pkg/server/json.qtpl:74
-			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:74
-		}
-//line pkg/server/json.qtpl:77
+//line pkg/server/json.qtpl:75
 		machineGroup, ok := groups[groupName]
 		if !ok {
 			continue
 		}
 
+//line pkg/server/json.qtpl:81
+		if !isFirst {
+//line pkg/server/json.qtpl:81
+			qw422016.N().S(`,`)
+//line pkg/server/json.qtpl:81
+		}
+//line pkg/server/json.qtpl:83
 		isFirst = false
 
-//line pkg/server/json.qtpl:83
+//line pkg/server/json.qtpl:84
 		qw422016.N().S(`{"name":`)
-//line pkg/server/json.qtpl:86
+//line pkg/server/json.qtpl:87
 		qw422016.N().Q(groupName)
-//line pkg/server/json.qtpl:86
+//line pkg/server/json.qtpl:87
 		qw422016.N().S(`,"children":`)
-//line pkg/server/json.qtpl:87
+//line pkg/server/json.qtpl:88
 		streamwriteMachineInfoList(qw422016, machineGroup.machines)
-//line pkg/server/json.qtpl:87
+//line pkg/server/json.qtpl:88
 		qw422016.N().S(`}`)
-//line pkg/server/json.qtpl:89
+//line pkg/server/json.qtpl:90
 	}
-//line pkg/server/json.qtpl:89
+//line pkg/server/json.qtpl:90
 	qw422016.N().S(`]`)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 }
 
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 func writewriteMachineGroups(qq422016 qtio422016.Writer, groupNames []string, groups map[string]*MachineGroup) {
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	streamwriteMachineGroups(qw422016, groupNames, groups)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 }
 
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 func writeMachineGroups(groupNames []string, groups map[string]*MachineGroup) string {
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	writewriteMachineGroups(qb422016, groupNames, groups)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 	return qs422016
-//line pkg/server/json.qtpl:91
+//line pkg/server/json.qtpl:92
 }
 
-//line pkg/server/json.qtpl:93
+//line pkg/server/json.qtpl:94
 func streamwriteMachineInfoList(qw422016 *qt422016.Writer, machines []string) {
-//line pkg/server/json.qtpl:93
+//line pkg/server/json.qtpl:94
 	qw422016.N().S(`[`)
-//line pkg/server/json.qtpl:95
+//line pkg/server/json.qtpl:96
 	for i, machine := range machines {
-//line pkg/server/json.qtpl:96
+//line pkg/server/json.qtpl:97
 		if i != 0 {
-//line pkg/server/json.qtpl:96
+//line pkg/server/json.qtpl:97
 			qw422016.N().S(`,`)
-//line pkg/server/json.qtpl:96
+//line pkg/server/json.qtpl:97
 		}
-//line pkg/server/json.qtpl:96
+//line pkg/server/json.qtpl:97
 		qw422016.N().S(`{"name":`)
-//line pkg/server/json.qtpl:98
+//line pkg/server/json.qtpl:99
 		qw422016.N().Q(machine)
-//line pkg/server/json.qtpl:98
+//line pkg/server/json.qtpl:99
 		qw422016.N().S(`}`)
-//line pkg/server/json.qtpl:100
+//line pkg/server/json.qtpl:101
 	}
-//line pkg/server/json.qtpl:100
+//line pkg/server/json.qtpl:101
 	qw422016.N().S(`]`)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 }
 
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 func writewriteMachineInfoList(qq422016 qtio422016.Writer, machines []string) {
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	streamwriteMachineInfoList(qw422016, machines)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 }
 
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 func writeMachineInfoList(machines []string) string {
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	writewriteMachineInfoList(qb422016, machines)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	qs422016 := string(qb422016.B)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 	return qs422016
-//line pkg/server/json.qtpl:102
+//line pkg/server/json.qtpl:103
 }

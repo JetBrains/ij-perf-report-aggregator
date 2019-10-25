@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats
+  labels: &LABELS
+    app: nats
+spec:
+  selector:
+    matchLabels: *LABELS
+  template:
+    metadata:
+      labels: *LABELS
+    spec:
+      containers:
+        - name: nats
+          image: nats:2.1-alpine
+          readinessProbe:
+            tcpSocket:
+              port: 4222
+          livenessProbe:
+            tcpSocket:
+              port: 4222
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  labels:
+    app: nats
+spec:
+  ports:
+    - name: tcp
+      port: 4222
+      protocol: TCP
+    - name: http
+      port: 8222
+      protocol: TCP
+  selector:
+    app: nats

@@ -1,3 +1,5 @@
+{% package main %}
+
 {% import "github.com/magiconair/properties" %}
 {% import "github.com/asaskevich/govalidator" %}
 {% import "sort" %}

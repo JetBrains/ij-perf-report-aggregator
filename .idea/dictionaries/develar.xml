@@ -6,11 +6,13 @@
       <w>intelli</w>
       <w>macos</w>
       <w>minifier</w>
+      <w>nats</w>
       <w>quantile</w>
       <w>rowid</w>
       <w>sqlite</w>
       <w>tcsessionid</w>
       <w>uindex</w>
+      <w>yandex</w>
       <w>yyyymm</w>
       <w>zstd</w>
     </words>

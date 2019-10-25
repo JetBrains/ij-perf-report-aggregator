@@ -71,14 +71,15 @@
     isFirst := true
   %}
   {% for _, groupName := range groupNames %}
-    {% if !isFirst %},{% endif %}
-
     {% code
       machineGroup, ok := groups[groupName]
       if !ok {
         continue
       }
+    %}
 
+    {% if !isFirst %},{% endif %}
+    {% code
       isFirst = false
     %}
 

@@ -24,7 +24,6 @@ func main() {
 
 	ConfigureServeCommand(app, logger)
 	filling.ConfigureFillCommand(app, logger)
-	filling.ConfigureTransformCommand(app, logger)
 
 	_, err := app.Parse(os.Args[1:])
 	if err != nil {

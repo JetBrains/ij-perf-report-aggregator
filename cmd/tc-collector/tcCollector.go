@@ -64,7 +64,7 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
         return nil
       }
 
-      err = nc.Publish("server.clearCache", nil)
+      err = nc.Publish("server.clearCache", []byte("tcCollector"))
       if err != nil {
         log.Error("cannot notify server")
         return nil

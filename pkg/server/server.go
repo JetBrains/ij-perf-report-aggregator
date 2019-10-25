@@ -57,8 +57,12 @@ func Serve(dbUrl string, useNats bool, logger *zap.Logger) error {
 
     ncSubscription, err := nc.Subscribe("server.clearCache", func(m *nats.Msg) {
       cacheManager.Clear()
-      logger.Info("cache cleared")
+      logger.Info("cache cleared", zap.ByteString("sender", m.Data))
     })
+
+    if err != nil {
+      return errors.WithStack(err)
+    }
 
     defer func() {
       err := ncSubscription.Unsubscribe()

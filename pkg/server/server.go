@@ -48,6 +48,12 @@ func Serve(dbUrl string, logger *zap.Logger) error {
 
   mux := http.NewServeMux()
 
+  mux.Handle("/internalApi/clearCache", http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+    cacheManager.Clear()
+    logger.Info("cache cleared")
+    writer.WriteHeader(200)
+  }))
+
   mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
   mux.Handle("/api/v1/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))

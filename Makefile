@@ -4,11 +4,10 @@
 
 # https://github.com/valyala/quicktemplate
 # go get -u github.com/valyala/quicktemplate/qtc
-# go get -u github.com/go-bindata/go-bindata/...
 
 assets:
 	qtc -dir pkg/server
-	qtc -dir pkg/teamcity
+	qtc -dir cmd/tc-collector
 
 build: lint
 	go mod tidy

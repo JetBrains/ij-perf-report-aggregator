@@ -2,7 +2,7 @@
 // See https://github.com/valyala/quicktemplate for details.
 
 //line pkg/teamcity/tcProperties.qtpl:1
-package teamcity
+package main
 
 //line pkg/teamcity/tcProperties.qtpl:1
 import "github.com/magiconair/properties"

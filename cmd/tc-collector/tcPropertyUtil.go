@@ -1,4 +1,4 @@
-package teamcity
+package main
 
 import "strings"
 

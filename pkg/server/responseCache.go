@@ -172,6 +172,10 @@ func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {
   return CopyBuffer(buffer), nil
 }
 
+func (t *ResponseCacheManager) Clear() {
+  t.cache.Reset()
+}
+
 func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {
   result := make([]byte, len(buffer.B))
   copy(result, buffer.B)

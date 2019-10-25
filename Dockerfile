@@ -12,15 +12,19 @@ RUN go mod download
 RUN apk add --update --no-cache gcc libc-dev tzdata
 
 COPY cmd/server ./cmd/server
+COPY cmd/tc-collector ./cmd/tc-collector
 COPY pkg ./pkg
 
-RUN go build -tags clz4 -ldflags="-s -w -extldflags '-static'" -o /report-aggregator ./cmd/server
+RUN go build -tags clz4 -ldflags="-s -w -extldflags '-static'" -o /server ./cmd/server
+RUN go build -tags clz4 -ldflags="-s -w -extldflags '-static'" -o /tc-collector ./cmd/tc-collector
 
 FROM scratch
 
 ENV SERVER_PORT=80
 
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
-COPY --from=builder /report-aggregator .
+COPY --from=builder /server .
+COPY --from=builder /tc-collector .
+
 EXPOSE 80
-ENTRYPOINT ["/report-aggregator", "--db", "clickhouse:9000"]
+ENTRYPOINT ["/server", "--db", "clickhouse:9000"]

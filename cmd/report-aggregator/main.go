@@ -9,7 +9,6 @@ import (
   "report-aggregator/pkg/filling"
   "report-aggregator/pkg/ideaLog"
   "report-aggregator/pkg/server"
-  "report-aggregator/pkg/teamcity"
   "report-aggregator/pkg/util"
 )
 
@@ -22,7 +21,6 @@ func main() {
 	var app = kingpin.New("report-aggregator", "report-aggregator").Version("0.0.1")
 
 	ideaLog.ConfigureCollectFromDirCommand(app, logger)
-  teamcity.ConfigureCollectFromTeamCity(app, logger)
 
 	ConfigureServeCommand(app, logger)
 	filling.ConfigureFillCommand(app, logger)

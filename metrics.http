@@ -52,7 +52,7 @@ Accept: application/json
 
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/id:54846099/artifacts/content/run/startup/startup-stats-startup.json
+GET http://buildserver.labs.intellij.net/app/rest/builds/id:54846099/artifacts/content/run/startup/startup-stats-startup.json
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
@@ -62,12 +62,12 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=artifactDependency:(to:(id:54117831),recursive:false)&fields=build(*)
+GET http://buildserver.labs.intellij.net/app/rest/builds/?locator=artifactDependency:(to:(id:54117831),recursive:false)&fields=build(*)
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*,artifact-dependencies(build(id,buildTypeId,finishDate)))
+GET http://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*,artifact-dependencies(build(id,buildTypeId,finishDate)))
 Authorization: Bearer {{token}}
 Accept: application/json
 ###

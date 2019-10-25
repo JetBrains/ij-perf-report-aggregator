@@ -1,4 +1,4 @@
-package teamcity
+package main
 
 import (
   "context"
@@ -29,10 +29,12 @@ const tcTimeFormat = "20060102T150405-0700"
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
 func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
-  command := app.Command("collect-tc", "Collect reports from TeamCity.")
+  command := app
   buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
-  clickHouseUrl := command.Flag("clickHouse", "The ClickHouse server URL.").Default("localhost:9000").String()
+  clickHouseUrl := command.Flag("clickhouse", "The ClickHouse server URL.").Default("localhost:9000").String()
+  tcUrl := command.Flag("tc", "The TeamCity server URL.").Required().String()
   sinceDate := command.Flag("since", "The date to force collecting since").String()
+  notifyServer := command.Flag("notify-server", "").Bool()
 
   command.Action(func(context *kingpin.ParseContext) error {
     var since time.Time
@@ -43,11 +45,32 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
         return errors.WithStack(err)
       }
     }
-    return collectFromTeamCity(*clickHouseUrl, *buildTypeIds, since, log)
+
+    var httpClient = &http.Client{
+      Timeout: 30 * time.Second,
+    }
+
+    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, *buildTypeIds, since, httpClient, log)
+    if err != nil {
+      return err
+    }
+
+    if *notifyServer {
+      log.Info("ask report aggregator server to clear cache")
+      response, err := httpClient.Get("http://report-aggregator/internalApi/clearCache")
+      if err != nil {
+        return err
+      }
+      if response.StatusCode != 200 {
+        log.Error("cannot notify server")
+      }
+    }
+
+    return nil
   })
 }
 
-func collectFromTeamCity(clickHouseUrl string, buildTypeIds []string, since time.Time, logger *zap.Logger) error {
+func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, since time.Time, httpClient *http.Client, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
@@ -67,11 +90,7 @@ func collectFromTeamCity(clickHouseUrl string, buildTypeIds []string, since time
     }
   }()
 
-  var httpClient = &http.Client{
-    Timeout: 30 * time.Second,
-  }
-
-  serverHost := "https://buildserver.labs.intellij.net"
+  serverHost := tcUrl
   collector := &Collector{
     serverUrl: serverHost + "/app/rest",
 

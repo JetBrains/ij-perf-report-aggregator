@@ -10,7 +10,6 @@ import (
   "go.uber.org/zap"
   "report-aggregator/pkg/analyzer"
   "report-aggregator/pkg/model"
-  "report-aggregator/pkg/sql-util"
   "report-aggregator/pkg/util"
 
   _ "github.com/kshvakov/clickhouse"
@@ -45,6 +44,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   defer util.Close(db, logger)
 
   var products []model.IdAndName
+  //noinspection SqlResolve
   err = mainDb.Select(&products, "select row_number() over (order by product) AS id, product as name from report group by product")
   if err != nil {
     return errors.WithStack(err)
@@ -116,7 +116,7 @@ func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  insertManager, err := sql_util.NewInstallerManager(db, logger)
+  insertManager, err := analyzer.NewInstallerInsertManager(db, logger)
   if err != nil {
     return err
   }

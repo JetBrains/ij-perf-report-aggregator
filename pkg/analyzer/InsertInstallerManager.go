@@ -1,32 +1,33 @@
-package sql_util
+package analyzer
 
 import (
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
+  "report-aggregator/pkg/sql-util"
 )
 
-type InstallerManager struct {
-  InsertDataManager
+type InsertInstallerManager struct {
+  sql_util.InsertDataManager
 
   maxId       int
   insertedIds map[int]bool
 }
 
-func NewInstallerManager(db *sqlx.DB, logger *zap.Logger) (*InstallerManager, error) {
+func NewInstallerInsertManager(db *sqlx.DB, logger *zap.Logger) (*InsertInstallerManager, error) {
   selectStatement, err := db.Prepare("select 1 from installer where id = ? limit 1")
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
   //noinspection GrazieInspection
-  insertManager, err := NewBulkInsertManager(db, "insert into installer(id, changes) values(?, ?)", logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, "insert into installer(id, changes) values(?, ?)", logger)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  manager := &InstallerManager{
-    InsertDataManager: InsertDataManager{
+  manager := &InsertInstallerManager{
+    InsertDataManager: sql_util.InsertDataManager{
       Db: db,
 
       SelectStatement: selectStatement,
@@ -47,7 +48,7 @@ func NewInstallerManager(db *sqlx.DB, logger *zap.Logger) (*InstallerManager, er
   return manager, nil
 }
 
-func (t *InstallerManager) Insert(id int, changes string) error {
+func (t *InsertInstallerManager) Insert(id int, changes string) error {
   if t.insertedIds[id] {
     return nil
   }

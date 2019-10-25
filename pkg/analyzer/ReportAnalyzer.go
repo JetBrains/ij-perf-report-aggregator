@@ -11,7 +11,6 @@ import (
   "go.uber.org/multierr"
   "go.uber.org/zap"
   "report-aggregator/pkg/model"
-  "report-aggregator/pkg/sql-util"
   "strconv"
   "strings"
   "sync"
@@ -31,7 +30,7 @@ type ReportAnalyzer struct {
   minifier *minify.M
   db       *sqlx.DB
 
-  insertInstallerManager *sql_util.InstallerManager
+  insertInstallerManager *InsertInstallerManager
   insertReportManager    *InsertReportManager
 
   logger *zap.Logger
@@ -47,7 +46,7 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
     return nil, errors.WithStack(err)
   }
 
-  installerManager, err := sql_util.NewInstallerManager(db, logger)
+  installerManager, err := NewInstallerInsertManager(db, logger)
   if err != nil {
     return nil, err
   }

@@ -123,8 +123,9 @@ func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
 func (t *BulkInsertManager) Close() error {
   t.pool.Release()
 
+  var err error
   if t.insertStatement != nil {
-    util.Close(t.insertStatement, t.logger)
+    err = t.insertStatement.Close()
   }
 
   transaction := t.transaction
@@ -133,7 +134,7 @@ func (t *BulkInsertManager) Close() error {
     t.rollbackTransaction(transaction)
   }
 
-  return nil
+  return err
 }
 
 func (t *BulkInsertManager) rollbackTransaction(transaction *sql.Tx) {

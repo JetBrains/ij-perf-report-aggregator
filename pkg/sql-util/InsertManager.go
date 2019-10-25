@@ -1,23 +1,16 @@
 package sql_util
 
 import (
-  "database/sql"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  "go.uber.org/multierr"
   "go.uber.org/zap"
 )
 
 type InstallerManager struct {
-  maxId int
-  db    *sqlx.DB
+  InsertDataManager
 
-  insertManager   *BulkInsertManager
-  selectStatement *sql.Stmt
-
+  maxId       int
   insertedIds map[int]bool
-
-  logger *zap.Logger
 }
 
 func NewInstallerManager(db *sqlx.DB, logger *zap.Logger) (*InstallerManager, error) {
@@ -33,14 +26,16 @@ func NewInstallerManager(db *sqlx.DB, logger *zap.Logger) (*InstallerManager, er
   }
 
   manager := &InstallerManager{
-    db: db,
+    InsertDataManager: InsertDataManager{
+      Db: db,
 
-    selectStatement: selectStatement,
-    insertManager:   insertManager,
+      SelectStatement: selectStatement,
+      InsertManager:   insertManager,
+
+      Logger: logger,
+    },
 
     insertedIds: make(map[int]bool),
-
-    logger: logger,
   }
 
   //noinspection SqlResolve
@@ -52,30 +47,23 @@ func NewInstallerManager(db *sqlx.DB, logger *zap.Logger) (*InstallerManager, er
   return manager, nil
 }
 
-func (t *InstallerManager) Commit() error {
-  return t.insertManager.Commit()
-}
-
-func (t *InstallerManager) Close() error {
-  return errors.WithStack(multierr.Combine(t.insertManager.Close(), t.selectStatement.Close()))
-}
-
 func (t *InstallerManager) Insert(id int, changes string) error {
   if t.insertedIds[id] {
     return nil
   }
 
   if id <= t.maxId {
-    fakeResult := -1
-    err := t.selectStatement.QueryRow(id).Scan(&fakeResult)
-    if err == nil {
+    exists, err := t.CheckExists(t.SelectStatement.QueryRow(id))
+    if err != nil {
+      return err
+    }
+
+    if exists {
       return nil
-    } else if err != sql.ErrNoRows {
-      return errors.WithStack(err)
     }
   }
 
-  statement, err := t.insertManager.PrepareForInsert()
+  statement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return errors.WithStack(err)
   }

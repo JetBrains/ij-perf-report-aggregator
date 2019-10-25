@@ -28,6 +28,7 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/tdewolff/minify/v2 v2.5.2
 	github.com/valyala/bytebufferpool v1.0.0
+	github.com/valyala/fastjson v1.4.1
 	github.com/valyala/quicktemplate v1.3.1
 	go.uber.org/atomic v1.4.0
 	go.uber.org/multierr v1.2.0

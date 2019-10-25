@@ -24,12 +24,6 @@ import (
   "time"
 )
 
-/*
-collect-tc -c ijplatform_master_UltimateStartupPerfTestMac -c ijplatform_master_UltimateStartupPerfTestWindows -c ijplatform_master_UltimateStartupPerfTestLinux \
--c ijplatform_master_WebStormStartupPerfTestMac -c ijplatform_master_WebStormStartupPerfTestWindows -c ijplatform_master_WebStormStartupPerfTestLinux \
---db /Volumes/data/ij-perf-db/db.sqlite
-*/
-
 const tcTimeFormat = "20060102T150405-0700"
 
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
@@ -37,7 +31,7 @@ const tcTimeFormat = "20060102T150405-0700"
 func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("collect-tc", "Collect reports from TeamCity.")
   buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
-  dbPath := command.Flag("db", "The output SQLite database file.").Short('o').Required().String()
+  clickHouseUrl := command.Flag("clickHouse", "The ClickHouse server URL.").Default("localhost:9000").String()
   sinceDate := command.Flag("since", "The date to force collecting since").String()
 
   command.Action(func(context *kingpin.ParseContext) error {
@@ -49,15 +43,15 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
         return errors.WithStack(err)
       }
     }
-    return collectFromTeamCity(*dbPath, *buildTypeIds, since, log)
+    return collectFromTeamCity(*clickHouseUrl, *buildTypeIds, since, log)
   })
 }
 
-func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, logger *zap.Logger) error {
+func collectFromTeamCity(clickHouseUrl string, buildTypeIds []string, since time.Time, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, taskContext, logger)
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, taskContext, logger)
   if err != nil {
     return err
   }
@@ -98,11 +92,7 @@ func collectFromTeamCity(dbPath string, buildTypeIds []string, since time.Time, 
   }
 
   if since.IsZero() {
-    lastGeneratedTime, err := reportAnalyzer.GetLastGeneratedTime()
-    if err != nil {
-      return err
-    }
-
+    lastGeneratedTime := reportAnalyzer.GetLastGeneratedTime()
     if lastGeneratedTime > 0 {
       since = time.Unix(lastGeneratedTime, -1)
     }

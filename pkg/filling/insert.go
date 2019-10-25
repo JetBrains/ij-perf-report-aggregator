@@ -1,6 +1,7 @@
 package filling
 
 import (
+  "context"
   "database/sql"
   "github.com/alecthomas/kingpin"
   "github.com/develar/errors"
@@ -11,33 +12,10 @@ import (
   "report-aggregator/pkg/model"
   "report-aggregator/pkg/sql-util"
   "report-aggregator/pkg/util"
-  "strconv"
-  "strings"
-  "time"
 
   _ "github.com/kshvakov/clickhouse"
   _ "github.com/mattn/go-sqlite3"
 )
-
-type MetricResult struct {
-  Product string
-  Machine uint8
-
-  GeneratedTime int64
-  BuildTime     int64
-
-  TcBuildId          int
-  TcInstallerBuildId int
-  TcBuildProperties  []byte
-
-  Branch sql.RawBytes
-
-  RawReport string
-
-  BuildC1 int `db:"build_c1"`
-  BuildC2 int `db:"build_c2"`
-  BuildC3 int `db:"build_c3"`
-}
 
 func ConfigureFillCommand(app *kingpin.Application, logger *zap.Logger) {
   command := app.Command("fill", "Fill ClickHouse database using SQLite database.")
@@ -73,6 +51,7 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
   }
 
   var machines []model.IdAndName
+  //noinspection SqlResolve
   err = mainDb.Select(&machines, "select ROWID as id, name from machine order by id")
   if err != nil {
     return errors.WithStack(err)
@@ -88,10 +67,9 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  var lastMaxGeneratedTime time.Time
-  err = db.QueryRow("select max(generated_time) from report").Scan(&lastMaxGeneratedTime)
+  insertManager, err := analyzer.NewInsertReportManager(db, context.Background(), logger)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   sourceRows, err := mainDb.Queryx(`
@@ -103,43 +81,27 @@ func fill(dbPath string, clickHouseUrl string, logger *zap.Logger) error {
       build_c1, build_c2, build_c3
     from report 
     where generated_time > ?
-    order by product, machine, build_c1, build_c2, build_c3, generated_time`, strconv.FormatInt(lastMaxGeneratedTime.Unix(), 10))
+    order by product, machine, build_c1, build_c2, build_c3, generated_time`, insertManager.MaxGeneratedTime)
   if err != nil {
     return errors.WithStack(err)
   }
 
   defer util.Close(sourceRows, logger)
 
-  var sb strings.Builder
-  sb.WriteString(`insert into report values (`)
-
-  for i := 0; i < 11; i++ {
-    if i != 0 {
-      sb.WriteRune(',')
-    }
-    sb.WriteRune('?')
-  }
-  model.ProcessMetricName(func(name string, isInstant bool) {
-    sb.WriteString(", ?")
-  })
-  sb.WriteRune(')')
-
-  insertManager, err := sql_util.NewBulkInsertManager(db, sb.String(), logger)
-  if err != nil {
-    return err
-  }
-
   logger.Info("start inserting", zap.String("clickHouseUrl", clickHouseUrl))
 
   defer util.Close(insertManager, logger)
-  err = writeReports(insertManager, sourceRows, lastMaxGeneratedTime.Unix(), logger)
+  err = writeReports(insertManager, sourceRows)
   if err != nil {
     return err
   }
 
   logger.Info("waiting inserting", zap.Int("transactions", insertManager.GetUncommittedTransactionCount()))
-  insertManager.WaitGroup.Wait()
-  return insertManager.Error
+  err = insertManager.CommitAndWait()
+  if err != nil {
+    return err
+  }
+  return nil
 }
 
 func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
@@ -179,135 +141,46 @@ func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  err = insertManager.Commit()
+  err = insertManager.CommitAndWait()
   if err != nil {
     return errors.WithStack(err)
   }
   return nil
 }
 
-func writeReports(insertManager *sql_util.BulkInsertManager, sourceRows *sqlx.Rows, lastMaxGeneratedTime int64, logger *zap.Logger) error {
-  selectStatement, err := insertManager.Db.Prepare("select 1 from report where product = ? and machine = ? and generated_time = ? limit 1")
-  if err != nil {
-    return errors.WithStack(err)
-  }
+type metricResultFromDb struct {
+  analyzer.MetricResult
 
-  row := &MetricResult{}
-  for sourceRows.Next() {
-    err = sourceRows.StructScan(row)
-    if err != nil {
-      logger.Error("cannot scan", zap.Error(err))
-      return err
-    }
-
-    if row.GeneratedTime <= lastMaxGeneratedTime {
-      fakeResult := -1
-      err = selectStatement.QueryRow(row.Product, row.Machine, row.GeneratedTime).Scan(&fakeResult)
-      if err != nil && err != sql.ErrNoRows {
-        return errors.WithStack(err)
-      }
-
-      if err != sql.ErrNoRows {
-        logger.Debug("report already processed", zap.Int64("generatedTime", row.GeneratedTime))
-        continue
-      }
-    }
-
-    insertStatement, err := insertManager.PrepareForInsert()
-    if err != nil {
-      return err
-    }
-
-    err = writeMetrics(row, insertStatement, logger)
-    if err != nil {
-      return err
-    }
-  }
-
-  err = sourceRows.Err()
-  if err != nil {
-    return errors.WithStack(err)
-  }
-  return insertManager.Commit()
+  Branch sql.NullString
 }
 
-func writeMetrics(row *MetricResult, insertStatement *sql.Stmt, logger *zap.Logger) error {
-  report, err := analyzer.ReadReport([]byte(row.RawReport))
+func writeReports(insertManager *analyzer.InsertReportManager, sourceRows *sqlx.Rows) error {
+  row := &metricResultFromDb{}
+  for sourceRows.Next() {
+    err := sourceRows.StructScan(row)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+
+    row.Machine = uint8((row.Machine.(interface{})).(int64))
+
+    var branch string
+    if row.Branch.Valid {
+      branch = row.Branch.String
+    } else {
+      branch = "master"
+    }
+
+    err = insertManager.Insert(&row.MetricResult, branch)
+    if err != nil {
+      return err
+    }
+  }
+
+  err := sourceRows.Err()
   if err != nil {
     return errors.WithStack(err)
   }
-
-  durationMetrics, instantMetrics := analyzer.ComputeMetrics(report, logger)
-  // or both null, or not - no need to check each one
-  if durationMetrics == nil || instantMetrics == nil {
-    return errors.New("metrics cannot be computed")
-  }
-
-  buildTimeUnix, err := analyzer.GetBuildTimeFromReport(report)
-  if err != nil {
-    return err
-  }
-
-  if buildTimeUnix <= 0 {
-    buildTimeUnix = row.BuildTime
-  }
-
-  var branch string
-  if len(row.Branch) == 0 {
-    branch = "master"
-  } else {
-    branch = string(row.Branch)
-  }
-
-  args := []interface{}{row.Product, row.Machine, buildTimeUnix, row.GeneratedTime,
-    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-    branch,
-    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3}
-  for _, name := range model.DurationMetricNames {
-    var v int
-    switch name {
-    case "bootstrap":
-      v = durationMetrics.Bootstrap
-    case "appInitPreparation":
-      v = durationMetrics.AppInitPreparation
-    case "appInit":
-      v = durationMetrics.AppInit
-    case "pluginDescriptorLoading":
-      v = durationMetrics.PluginDescriptorLoading
-    case "appComponentCreation":
-      v = durationMetrics.AppComponentCreation
-    case "projectComponentCreation":
-      v = durationMetrics.ProjectComponentCreation
-    case "moduleLoading":
-      v = durationMetrics.ModuleLoading
-    default:
-      return errors.New("unknown metric " + name)
-    }
-
-    if v > 65535 {
-      return errors.Errorf("value outside of uint16 range (generatedTime: %d, value: %d)", row.GeneratedTime, v)
-    }
-
-    args = append(args, v)
-  }
-
-  for _, name := range model.InstantMetricNames {
-    var v int
-    switch name {
-    case "splash":
-      v = instantMetrics.Splash
-      if v < 0 {
-        continue
-      }
-    case "startUpCompleted":
-      v = instantMetrics.StartUpCompleted
-    default:
-      return errors.New("unknown metric " + name)
-    }
-
-    args = append(args, v)
-  }
-
-  _, err = insertStatement.Exec(args...)
-  return errors.WithStack(err)
+  return nil
 }

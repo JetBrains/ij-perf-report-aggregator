@@ -36,7 +36,7 @@ func ConfigureServeCommand(app *kingpin.Application, log *zap.Logger) {
   command := app.Command("serve", "Start aggregated stats server.")
   dbUrl := command.Flag("db", "The ClickHouse database URL.").Required().String()
   command.Action(func(context *kingpin.ParseContext) error {
-    err := server.Serve(*dbUrl, false, log)
+    err := server.Serve(*dbUrl, "", log)
     if err != nil {
       return err
     }

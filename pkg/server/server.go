@@ -25,7 +25,7 @@ type StatsServer struct {
   logger *zap.Logger
 }
 
-func Serve(dbUrl string, useNats bool, logger *zap.Logger) error {
+func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
     dbUrl = "127.0.0.1:9000"
   }
@@ -49,27 +49,13 @@ func Serve(dbUrl string, useNats bool, logger *zap.Logger) error {
 
   mux := http.NewServeMux()
 
-  if useNats {
-    nc, err := nats.Connect("nats://nats:4222")
+  disposer := util.NewDisposer()
+ 	defer disposer.Dispose()
+  if len(natsUrl) > 0 {
+    err = listenNats(cacheManager, natsUrl, disposer, logger)
     if err != nil {
-      return errors.WithStack(err)
+      return err
     }
-
-    ncSubscription, err := nc.Subscribe("server.clearCache", func(m *nats.Msg) {
-      cacheManager.Clear()
-      logger.Info("cache cleared", zap.ByteString("sender", m.Data))
-    })
-
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    defer func() {
-      err := ncSubscription.Unsubscribe()
-      if err != nil {
-        logger.Error("cannot unsubscribe", zap.Error(err))
-      }
-    }()
   }
 
   mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
@@ -87,10 +73,33 @@ func Serve(dbUrl string, useNats bool, logger *zap.Logger) error {
   }
   server := listenAndServe(serverPort, mux, logger)
 
-  logger.Info("started", zap.String("address", server.Addr))
+  logger.Info("started", zap.String("address", server.Addr), zap.String("clickhouse", dbUrl), zap.String("nats", natsUrl))
 
   waitUntilTerminated(server, 1*time.Minute, logger)
+  return nil
+}
 
+func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {
+  nc, err := nats.Connect(natsUrl)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  ncSubscription, err := nc.Subscribe("server.clearCache", func(m *nats.Msg) {
+    cacheManager.Clear()
+    logger.Info("cache cleared", zap.ByteString("sender", m.Data))
+  })
+
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  disposer.Add(func() {
+    err := ncSubscription.Unsubscribe()
+    if err != nil {
+      logger.Error("cannot unsubscribe", zap.Error(err))
+    }
+  })
   return nil
 }
 

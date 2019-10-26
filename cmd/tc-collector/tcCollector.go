@@ -29,7 +29,7 @@ const tcTimeFormat = "20060102T150405-0700"
 
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
-func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
+func ConfigureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) {
   command := app
   buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
   clickHouseUrl := command.Flag("clickhouse", "The ClickHouse server URL.").Default("localhost:9000").String()
@@ -51,28 +51,40 @@ func ConfigureCollectFromTeamCity(app *kingpin.Application, log *zap.Logger) {
       Timeout: 30 * time.Second,
     }
 
-    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, *buildTypeIds, since, httpClient, log)
+    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, *buildTypeIds, since, httpClient, logger)
     if err != nil {
       return err
     }
 
     if *notifyServer {
-      log.Info("ask report aggregator server to clear cache")
-      nc, err := nats.Connect("nats://nats:4222")
+      err = doNotifyServer(logger)
       if err != nil {
-        log.Error("cannot notify server")
-        return nil
-      }
-
-      err = nc.Publish("server.clearCache", []byte("tcCollector"))
-      if err != nil {
-        log.Error("cannot notify server")
-        return nil
+        return err
       }
     }
 
     return nil
   })
+}
+
+func doNotifyServer(logger *zap.Logger) error {
+  logger.Info("ask report aggregator server to clear cache")
+  nc, err := nats.Connect("nats://nats:4222")
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  err = nc.Publish("server.clearCache", []byte("tcCollector"))
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  // ensure that message is delivered, because app will be exited very soon
+  err = nc.Flush()
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return err
 }
 
 func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, since time.Time, httpClient *http.Client, logger *zap.Logger) error {

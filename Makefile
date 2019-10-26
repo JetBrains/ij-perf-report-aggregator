@@ -30,11 +30,12 @@ lint:
 	golangci-lint run
 
 build-server:
-	go build -tags "clz4 sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/server ./cmd/server
+	go build -tags clz4 -ldflags='-s -w' -o dist/server ./cmd/server
 
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/report-aggregator
 	GOPROXY=https://proxy.golang.org go get -u ./cmd/server
+	GOPROXY=https://proxy.golang.org go get -u ./cmd/tc-collector
 	go mod tidy
 
 # https://medium.com/@valyala/promql-tutorial-for-beginners-9ab455142085

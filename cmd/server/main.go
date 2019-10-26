@@ -27,10 +27,10 @@ func main() {
 }
 
 func configureServeCommand(app *kingpin.Application, log *zap.Logger) {
-  command := app
-  dbUrl := command.Flag("db", "The ClickHouse database URL.").Required().String()
-  command.Action(func(context *kingpin.ParseContext) error {
-    err := server.Serve(*dbUrl, true, log)
+  dbUrl := app.Flag("db", "The ClickHouse database URL.").Required().String()
+  natsUrl := app.Flag("db", "The NATS URL.").String()
+  app.Action(func(context *kingpin.ParseContext) error {
+    err := server.Serve(*dbUrl, *natsUrl, log)
     if err != nil {
       return err
     }

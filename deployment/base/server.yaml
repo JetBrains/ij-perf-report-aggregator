@@ -15,6 +15,7 @@ spec:
       containers:
         - name: report-aggregator
           image: report-aggregator
+          args: ["--nats", "nats://nats:4222"]
           ports:
             - containerPort: 80
           readinessProbe:

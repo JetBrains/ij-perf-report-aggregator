@@ -12,7 +12,7 @@ import (
   "io"
   "net/http"
   "net/url"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "strconv"
   "strings"
 )

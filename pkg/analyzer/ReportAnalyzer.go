@@ -10,7 +10,7 @@ import (
   "github.com/valyala/fastjson"
   "go.uber.org/multierr"
   "go.uber.org/zap"
-  "report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
   "strconv"
   "strings"
   "sync"

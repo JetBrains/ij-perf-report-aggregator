@@ -2,10 +2,10 @@ package main
 
 import (
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "github.com/alecthomas/kingpin"
   "log"
   "os"
-  "report-aggregator/pkg/util"
 )
 
 func main() {

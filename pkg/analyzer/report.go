@@ -4,7 +4,7 @@ import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "github.com/mcuadros/go-version"
-  "report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
   "time"
 )
 

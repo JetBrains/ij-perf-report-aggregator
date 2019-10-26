@@ -3,7 +3,7 @@ package analyzer
 import (
   "github.com/mcuadros/go-version"
   "go.uber.org/zap"
-  "report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
 )
 
 func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEventMetrics, *model.InstantEventMetrics) {

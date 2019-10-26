@@ -33,15 +33,7 @@ build-server:
 	go build -tags clz4 -ldflags='-s -w' -o dist/server ./cmd/server
 
 update-deps:
-	GOPROXY=https://proxy.golang.org go get -u ./cmd/report-aggregator
-	GOPROXY=https://proxy.golang.org go get -u ./cmd/server
-	GOPROXY=https://proxy.golang.org go get -u ./cmd/tc-collector
-	go mod tidy
-
-# https://medium.com/@valyala/promql-tutorial-for-beginners-9ab455142085
-
-#   -influxSkipSingleField {measurement}
-#    	Uses {measurement} instead of `{measurement}{separator}{field_name}` for metic name if Influx line contains only a single field
+	./update-deps.sh
 
 # docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:19.15.2.2
 

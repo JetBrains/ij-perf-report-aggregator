@@ -1,11 +1,11 @@
 package main
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
   "io/ioutil"
-  "report-aggregator/pkg/util"
 )
 
 type BuildList struct {

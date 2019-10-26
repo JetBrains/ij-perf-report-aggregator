@@ -4,7 +4,7 @@ import (
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
-  "report-aggregator/pkg/sql-util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/sql-util"
 )
 
 type InsertInstallerManager struct {

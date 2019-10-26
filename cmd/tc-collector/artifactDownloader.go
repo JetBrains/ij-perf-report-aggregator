@@ -2,12 +2,12 @@ package main
 
 import (
   "compress/gzip"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "github.com/develar/errors"
   "github.com/magiconair/properties"
   "go.uber.org/zap"
   "io/ioutil"
   "net/url"
-  "report-aggregator/pkg/util"
   "strconv"
 )
 

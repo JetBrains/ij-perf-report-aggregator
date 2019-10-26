@@ -2,14 +2,14 @@ package main
 
 import (
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/filling"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/ideaLog"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/server"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "github.com/alecthomas/kingpin"
   "go.uber.org/zap"
   "log"
   "os"
-  "report-aggregator/pkg/filling"
-  "report-aggregator/pkg/ideaLog"
-  "report-aggregator/pkg/server"
-  "report-aggregator/pkg/util"
 )
 
 func main() {

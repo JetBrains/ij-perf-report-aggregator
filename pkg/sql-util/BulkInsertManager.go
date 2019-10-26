@@ -6,7 +6,7 @@ import (
   "github.com/jmoiron/sqlx"
   "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "runtime"
   "sync"
 )

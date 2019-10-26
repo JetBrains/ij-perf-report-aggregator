@@ -3,11 +3,11 @@ package main
 import (
   "flag"
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "github.com/robfig/cron/v3"
   "go.uber.org/zap"
   "os"
   "os/exec"
-  "report-aggregator/pkg/util"
   "time"
 )
 

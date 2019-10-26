@@ -12,9 +12,9 @@ import (
   "os"
   "path/filepath"
   "regexp"
-  "report-aggregator/pkg/analyzer"
-  "report-aggregator/pkg/model"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "strings"
   "time"
 )

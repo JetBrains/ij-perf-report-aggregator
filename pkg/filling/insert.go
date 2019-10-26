@@ -8,9 +8,9 @@ import (
   "github.com/iancoleman/strcase"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
-  "report-aggregator/pkg/analyzer"
-  "report-aggregator/pkg/model"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
 
   _ "github.com/kshvakov/clickhouse"
   _ "github.com/mattn/go-sqlite3"

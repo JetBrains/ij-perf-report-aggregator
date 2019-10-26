@@ -3,8 +3,8 @@ package server
 import (
   "errors"
   "net/http"
-  "report-aggregator/pkg/model"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
 )
 
 func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {

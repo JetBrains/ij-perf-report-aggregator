@@ -12,7 +12,7 @@ import (
   "net/http"
   "os"
   "os/signal"
-  "report-aggregator/pkg/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "syscall"
   "time"
 )

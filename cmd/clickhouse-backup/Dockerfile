@@ -8,13 +8,11 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-COPY cmd/clickhouse-backup ./cmd/clickhouse-backup
-COPY pkg ./pkg
-
-RUN go build -ldflags="-s -w -extldflags '-static'" -o /app ./cmd/clickhouse-backup
+COPY cmd/clickhouse-backup ./cmd/app
+COPY pkg/util ./pkg/util
+RUN go build -ldflags="-s -w -extldflags '-static'" -o /app ./cmd/app
 
 FROM scratch
 
 COPY --from=builder /app .
-
 ENTRYPOINT ["/app"]

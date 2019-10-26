@@ -2,11 +2,12 @@ package sql_util
 
 import (
   "database/sql"
+  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
+  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "runtime"
   "sync"
 )
@@ -18,6 +19,7 @@ type BulkInsertManager struct {
 
   insertSql string
 
+  batchSize   int
   queuedItems int
 
   logger *zap.Logger
@@ -29,10 +31,17 @@ type BulkInsertManager struct {
 
 func NewBulkInsertManager(db *sqlx.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
   // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
-  poolCapacity := runtime.NumCPU() - 4
-  if poolCapacity < 2 {
-    poolCapacity = 2
+  poolCapacity := env.GetInt("INSERT_WORKER_COUNT")
+  if poolCapacity == 0 {
+    poolCapacity = runtime.NumCPU() - 4
+    if poolCapacity < 2 {
+      poolCapacity = 2
+    }
+  } else if poolCapacity > 99 {
+    poolCapacity = 99
   }
+
+  logger.Info("insert pool capacity", zap.Int("count", poolCapacity))
 
   pool, err := ants.NewPool(poolCapacity)
   if err != nil {
@@ -44,6 +53,8 @@ func NewBulkInsertManager(db *sqlx.DB, insertSql string, logger *zap.Logger) (*B
     Db:          db,
     insertSql:   insertSql,
     logger:      logger,
+
+    batchSize: env.GetInt("INSERT_BATCH_SIZE", 2000),
 
     pool: pool,
   }, nil
@@ -94,7 +105,7 @@ func (t *BulkInsertManager) Commit() error {
 
 func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
   // large inserts leads to large memory usage, so, insert by 2000 items
-  if t.queuedItems >= 2000 {
+  if t.queuedItems >= t.batchSize {
     if t.transaction != nil {
       err := t.Commit()
       if err != nil {

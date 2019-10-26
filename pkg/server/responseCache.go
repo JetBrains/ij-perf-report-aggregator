@@ -51,7 +51,7 @@ func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func NewResponseCacheManager(logger *zap.Logger) *ResponseCacheManager {
   return &ResponseCacheManager{
-    cache:        fastcache.New(512 * 1000 * 1000 /* 512 MB */),
+    cache:        fastcache.New(128 * 1000 * 1000 /* 128 MB */),
     logger:       logger,
   }
 }

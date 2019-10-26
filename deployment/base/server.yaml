@@ -16,6 +16,9 @@ spec:
         - name: report-aggregator
           image: report-aggregator
           args: ["--nats", "nats://nats:4222"]
+          resources:
+            requests:
+              memory: 256Mi
           ports:
             - containerPort: 80
           readinessProbe:

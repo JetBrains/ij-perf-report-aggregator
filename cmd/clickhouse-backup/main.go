@@ -3,11 +3,12 @@ package main
 import (
   "flag"
   "fmt"
+  "github.com/AlexAkulov/clickhouse-backup/pkg/chbackup"
   "github.com/JetBrains/ij-perf-report-aggregator/common/util"
+  "github.com/develar/errors"
+  "github.com/kelseyhightower/envconfig"
   "github.com/robfig/cron/v3"
   "go.uber.org/zap"
-  "os"
-  "os/exec"
   "time"
 )
 
@@ -46,27 +47,22 @@ func schedule(spec string, logger *zap.Logger) error {
 func backup() error {
   backupName := time.Now().Format("2006-01-02T15:04:05")
 
-  err := executeClickhouseBackup("create", backupName)
+  config := chbackup.DefaultConfig()
+  err := envconfig.Process("", config)
   if err != nil {
-    return err
+    return errors.WithStack(err)
   }
 
-  err = executeClickhouseBackup("upload", backupName)
+  err = chbackup.CreateBackup(*config, backupName, "")
   if err != nil {
-    return err
+    return errors.WithStack(err)
   }
 
-  return nil
-}
-
-func executeClickhouseBackup(commandName string, backupName string) error {
-  command := exec.Command("clickhouse-backup", commandName, backupName)
-  command.Stdout = os.Stdout
-  command.Stderr = os.Stderr
-  err := command.Run()
+  err = chbackup.Upload(*config, backupName, "")
   if err != nil {
-    return err
+    return errors.WithStack(err)
   }
+
   return nil
 }
 

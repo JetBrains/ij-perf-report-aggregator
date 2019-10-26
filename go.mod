@@ -27,6 +27,7 @@ require (
 	github.com/nats-io/nats.go v1.8.1
 	github.com/panjf2000/ants/v2 v2.2.2
 	github.com/pkg/errors v0.8.1
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/cors v1.7.0
 	github.com/tdewolff/minify/v2 v2.5.2
 	github.com/valyala/bytebufferpool v1.0.0

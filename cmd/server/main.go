@@ -28,7 +28,7 @@ func main() {
 
 func configureServeCommand(app *kingpin.Application, log *zap.Logger) {
   dbUrl := app.Flag("db", "The ClickHouse database URL.").Required().String()
-  natsUrl := app.Flag("db", "The NATS URL.").String()
+  natsUrl := app.Flag("nats", "The NATS URL.").String()
   app.Action(func(context *kingpin.ParseContext) error {
     err := server.Serve(*dbUrl, *natsUrl, log)
     if err != nil {

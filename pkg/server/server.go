@@ -3,6 +3,7 @@ package server
 import (
   "context"
   "crypto/tls"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   _ "github.com/kshvakov/clickhouse"
@@ -12,7 +13,6 @@ import (
   "net/http"
   "os"
   "os/signal"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "syscall"
   "time"
 )

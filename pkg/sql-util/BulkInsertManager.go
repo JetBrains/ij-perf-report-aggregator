@@ -2,7 +2,7 @@ package sql_util
 
 import (
   "database/sql"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"

@@ -1,6 +1,8 @@
 package server
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -8,8 +10,6 @@ import (
   "math"
   "net/http"
   "net/url"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "strconv"
   "strings"
   "time"

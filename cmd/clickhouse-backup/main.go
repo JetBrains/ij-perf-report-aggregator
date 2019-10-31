@@ -4,13 +4,16 @@ import (
   "flag"
   "fmt"
   "github.com/AlexAkulov/clickhouse-backup/pkg/chbackup"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/kelseyhightower/envconfig"
   "github.com/robfig/cron/v3"
   "go.uber.org/zap"
   "time"
 )
+
+var lastLocalBackup string
+var lastRemoteBackups []string
 
 func main() {
   logger := util.CreateLogger()
@@ -31,7 +34,7 @@ func main() {
 func schedule(spec string, logger *zap.Logger) error {
   scheduler := cron.New(cron.WithLogger(&ZapLoggerAdapter{logger: logger}))
   _, err := scheduler.AddFunc(spec, func() {
-    err := backup()
+    err := backup(logger)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     }
@@ -44,7 +47,7 @@ func schedule(spec string, logger *zap.Logger) error {
   return nil
 }
 
-func backup() error {
+func backup(logger *zap.Logger) error {
   backupName := time.Now().Format("2006-01-02T15:04:05")
 
   config := chbackup.DefaultConfig()
@@ -61,6 +64,28 @@ func backup() error {
   err = chbackup.Upload(*config, backupName, "")
   if err != nil {
     return errors.WithStack(err)
+  }
+
+  lastRemoteBackups = append(lastRemoteBackups, backupName)
+
+  if len(lastLocalBackup) != 0 {
+    logger.Info("remove local backup", zap.String("name", lastLocalBackup))
+    err := chbackup.RemoveBackupLocal(*config, lastLocalBackup)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+    lastLocalBackup = backupName
+  }
+
+  if len(lastRemoteBackups) > 3 {
+    outdatedBackupName := lastRemoteBackups[0]
+    logger.Info("remove remote backup", zap.String("name", outdatedBackupName))
+    err := chbackup.RemoveBackupRemote(*config, outdatedBackupName)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    lastRemoteBackups = append(lastRemoteBackups[1:], backupName)
   }
 
   return nil

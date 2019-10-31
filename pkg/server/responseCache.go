@@ -3,6 +3,7 @@ package server
 import (
   "compress/gzip"
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/VictoriaMetrics/fastcache"
   "github.com/cespare/xxhash"
   "github.com/develar/errors"
@@ -12,7 +13,6 @@ import (
   "io"
   "net/http"
   "net/url"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
   "strconv"
   "strings"
 )

@@ -2,6 +2,7 @@ package analyzer
 
 import (
   "context"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   _ "github.com/kshvakov/clickhouse"
@@ -10,7 +11,6 @@ import (
   "github.com/valyala/fastjson"
   "go.uber.org/multierr"
   "go.uber.org/zap"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
   "strconv"
   "strings"
   "sync"

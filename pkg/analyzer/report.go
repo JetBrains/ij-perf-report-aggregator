@@ -1,10 +1,10 @@
 package analyzer
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "github.com/mcuadros/go-version"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
   "time"
 )
 

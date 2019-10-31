@@ -2,8 +2,8 @@ package analyzer
 
 import (
   "context"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/sql-util"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"

@@ -3,14 +3,14 @@ package filling
 import (
   "context"
   "database/sql"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/alecthomas/kingpin"
   "github.com/develar/errors"
   "github.com/iancoleman/strcase"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/analyzer"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/model"
-  "github.com/JetBrains/ij-perf-report-aggregator/common/util"
 
   _ "github.com/kshvakov/clickhouse"
   _ "github.com/mattn/go-sqlite3"

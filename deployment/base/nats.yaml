@@ -17,6 +17,7 @@ spec:
           resources:
             requests:
               memory: 128Mi
+              cpu: 0.2
           readinessProbe:
             tcpSocket:
               port: 4222

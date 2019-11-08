@@ -51,6 +51,7 @@ func backup(logger *zap.Logger) error {
   backupName := time.Now().Format("2006-01-02T15:04:05")
 
   config := chbackup.DefaultConfig()
+  config.General.DisableProgressBar = true
   err := envconfig.Process("", config)
   if err != nil {
     return errors.WithStack(err)

@@ -5,6 +5,8 @@
 # https://github.com/valyala/quicktemplate
 # go get -u github.com/valyala/quicktemplate/qtc
 
+# kubectl rollout status deployment.apps/clickhouse
+
 assets:
 	qtc -dir pkg/server
 	qtc -dir cmd/tc-collector

@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+  "context"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -14,14 +15,14 @@ type InsertInstallerManager struct {
   insertedIds map[int]bool
 }
 
-func NewInstallerInsertManager(db *sqlx.DB, logger *zap.Logger) (*InsertInstallerManager, error) {
+func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logger *zap.Logger) (*InsertInstallerManager, error) {
   selectStatement, err := db.Prepare("select 1 from installer where id = ? limit 1")
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBulkInsertManager(db, "insert into installer(id, changes) values(?, ?)", logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer(id, changes) values(?, ?)", logger)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -48,7 +49,7 @@ func NewInstallerInsertManager(db *sqlx.DB, logger *zap.Logger) (*InsertInstalle
   return manager, nil
 }
 
-func (t *InsertInstallerManager) Insert(id int, changes string) error {
+func (t *InsertInstallerManager) Insert(id int, changes []byte) error {
   if t.insertedIds[id] {
     return nil
   }
@@ -69,7 +70,7 @@ func (t *InsertInstallerManager) Insert(id int, changes string) error {
     return errors.WithStack(err)
   }
 
-  _, err = statement.Exec(id, changes)
+  _, err = statement.ExecContext(t.InsertManager.InsertContext, id, changes)
   if err != nil {
     return errors.WithStack(err)
   }

@@ -1,14 +1,13 @@
 package main
 
 import (
+  "bytes"
   "context"
   "encoding/base64"
   "encoding/hex"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/alecthomas/kingpin"
-  "github.com/araddon/dateparse"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "github.com/nats-io/nats.go"
@@ -19,6 +18,8 @@ import (
   "net/http"
   "net/url"
   "os"
+  "runtime"
+  "sort"
   "strconv"
   "strings"
   "sync"
@@ -26,46 +27,6 @@ import (
 )
 
 const tcTimeFormat = "20060102T150405-0700"
-
-// TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
-// so, no need to explicitly specify filter
-func ConfigureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) {
-  command := app
-  buildTypeIds := command.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
-  clickHouseUrl := command.Flag("clickhouse", "The ClickHouse server URL.").Default("localhost:9000").String()
-  tcUrl := command.Flag("tc", "The TeamCity server URL.").Required().String()
-  sinceDate := command.Flag("since", "The date to force collecting since").String()
-  notifyServer := command.Flag("notify-server", "").Bool()
-
-  command.Action(func(context *kingpin.ParseContext) error {
-    var since time.Time
-    if len(*sinceDate) > 0 {
-      var err error
-      since, err = dateparse.ParseStrict(*sinceDate)
-      if err != nil {
-        return errors.WithStack(err)
-      }
-    }
-
-    var httpClient = &http.Client{
-      Timeout: 30 * time.Second,
-    }
-
-    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, *buildTypeIds, since, httpClient, logger)
-    if err != nil {
-      return err
-    }
-
-    if *notifyServer {
-      err = doNotifyServer(logger)
-      if err != nil {
-        return err
-      }
-    }
-
-    return nil
-  })
-}
 
 func doNotifyServer(logger *zap.Logger) error {
   logger.Info("ask report aggregator server to clear cache")
@@ -88,6 +49,11 @@ func doNotifyServer(logger *zap.Logger) error {
 }
 
 func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, since time.Time, httpClient *http.Client, logger *zap.Logger) error {
+  //memProfiler := profile.Start(profile.MemProfile)
+  //defer func() {
+  //  memProfiler.Stop()
+  //}()
+
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
@@ -117,7 +83,7 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     taskContext: taskContext,
 
     rwLock:                  &sync.RWMutex{},
-    installerBuildToChanges: make(map[int]string),
+    installerBuildToChanges: make(map[int][]byte),
 
     logger: logger,
   }
@@ -136,10 +102,12 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
 
   for _, buildTypeId := range buildTypeIds {
     q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),count:500"
+    locator := "buildType:(id:" + buildTypeId + "),count:1000"
+
     if !since.IsZero() {
       locator += ",sinceDate:" + since.Format(tcTimeFormat)
     }
+
     q.Set("locator", locator)
     q.Set("fields", "count,href,nextHref,build(id,status,agent(name),artifact-dependencies(build(id,buildTypeId,finishDate)))")
     serverUrl.RawQuery = q.Encode()
@@ -148,6 +116,12 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     if err != nil {
       return err
     }
+
+    // to reduce memory pressure, do not process until collected reports are not inserted
+    reportAnalyzer.Wait()
+
+    //memProfiler.Stop()
+    //os.Exit(0)
 
     for len(nextHref) != 0 {
       nextHref, err = collector.processBuilds(serverHost + nextHref)
@@ -171,7 +145,7 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
   }
 }
 
-func (t *Collector) loadInstallerChanges(installerBuildId int) (string, error) {
+func (t *Collector) loadInstallerChanges(installerBuildId int) ([]byte, error) {
   t.rwLock.RLock()
   result := t.installerBuildToChanges[installerBuildId]
   t.rwLock.RUnlock()
@@ -185,19 +159,19 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) (string, error) {
 
   artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
   if err != nil {
-    return "", err
+    return nil, err
   }
 
   response, err := t.get(artifactUrl.String())
   if err != nil {
-    return "", err
+    return nil, err
   }
 
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
     responseBody, _ := ioutil.ReadAll(response.Body)
-    return "", errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)
@@ -205,33 +179,48 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) (string, error) {
   var changeList ChangeList
   err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&changeList)
   if err != nil {
-    return "", err
+    return nil, err
   }
 
-  var sb strings.Builder
+  var b bytes.Buffer
   for index, change := range changeList.List {
     if index != 0 {
-      sb.WriteRune('\n')
+      b.WriteByte('\n')
     }
 
-    bytes, err := hex.DecodeString(change.Version)
+    data, err := hex.DecodeString(change.Version)
     if err != nil {
-      return "", err
+      return nil, errors.WithStack(err)
     }
 
-    encoder := base64.RawStdEncoding
-    buf := make([]byte, encoder.EncodedLen(len(bytes)))
-    encoder.Encode(buf, bytes)
-    sb.Write(buf)
+    base64Encoder := base64.NewEncoder(base64.RawStdEncoding, &b)
+    _, err = base64Encoder.Write(data)
+    if err != nil {
+      return nil, errors.WithStack(err)
+    }
+
+    err = base64Encoder.Close()
+    if err != nil {
+      return nil, errors.WithStack(err)
+    }
   }
 
-  result = sb.String()
+  result = b.Bytes()
   t.installerBuildToChanges[installerBuildId] = result
   return result, nil
 }
 
 func (t *Collector) loadReports(builds []Build) error {
-  err := util.MapAsync(len(builds), func(taskIndex int) (f func() error, err error) {
+  sort.Slice(builds, func(i, j int) bool {
+    return builds[i].Id < builds[j].Id
+  })
+
+  networkRequestCount := runtime.NumCPU() + 1
+  if networkRequestCount > 4 {
+    networkRequestCount = 4
+  }
+
+  err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
     return func() error {
       build := builds[taskIndex]
 
@@ -303,7 +292,7 @@ type Collector struct {
   tcSessionId atomic.String
 
   rwLock                  *sync.RWMutex
-  installerBuildToChanges map[int]string
+  installerBuildToChanges map[int][]byte
 }
 
 func getTcSessionIdCookie(cookies []*http.Cookie) string {

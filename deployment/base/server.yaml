@@ -12,6 +12,8 @@ spec:
     metadata:
       labels: *LABELS
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: report-aggregator
           image: github.com/JetBrains/ij-perf-report-aggregator/cmd/server
@@ -23,6 +25,8 @@ spec:
             requests:
               memory: 256Mi
               cpu: 0.4
+            limits:
+              cpu: 1.5
           ports:
             - containerPort: 80
           readinessProbe:

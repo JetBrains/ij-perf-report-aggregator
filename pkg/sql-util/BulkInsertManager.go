@@ -1,6 +1,7 @@
 package sql_util
 
 import (
+  "context"
   "database/sql"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/deanishe/go-env"
@@ -27,9 +28,11 @@ type BulkInsertManager struct {
   WaitGroup sync.WaitGroup
   pool      *ants.Pool
   Error     error
+
+  InsertContext context.Context
 }
 
-func NewBulkInsertManager(db *sqlx.DB, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
+func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
   // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
   poolCapacity := env.GetInt("INSERT_WORKER_COUNT")
   if poolCapacity == 0 {
@@ -49,11 +52,13 @@ func NewBulkInsertManager(db *sqlx.DB, insertSql string, logger *zap.Logger) (*B
   }
 
   return &BulkInsertManager{
-    queuedItems: 0,
-    Db:          db,
-    insertSql:   insertSql,
-    logger:      logger,
+    queuedItems:   0,
+    Db:            db,
+    InsertContext: insertContext,
+    insertSql:     insertSql,
+    logger:        logger,
 
+    // large inserts leads to large memory usage, so, insert by 2000 items
     batchSize: env.GetInt("INSERT_BATCH_SIZE", 2000),
 
     pool: pool,
@@ -104,7 +109,6 @@ func (t *BulkInsertManager) Commit() error {
 }
 
 func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
-  // large inserts leads to large memory usage, so, insert by 2000 items
   if t.queuedItems >= t.batchSize {
     if t.transaction != nil {
       err := t.Commit()

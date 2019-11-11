@@ -14,6 +14,7 @@ import (
 
 var lastLocalBackup string
 var lastRemoteBackups []string
+const backupSuffix = ".tar"
 
 func main() {
   logger := util.CreateLogger()
@@ -22,7 +23,6 @@ func main() {
   }()
 
   spec := flag.String("spec", "", "")
-
   flag.Parse()
 
   err := schedule(*spec, logger)
@@ -33,8 +33,16 @@ func main() {
 
 func schedule(spec string, logger *zap.Logger) error {
   scheduler := cron.New(cron.WithLogger(&ZapLoggerAdapter{logger: logger}))
-  _, err := scheduler.AddFunc(spec, func() {
-    err := backup(logger)
+
+  config := chbackup.DefaultConfig()
+  config.General.DisableProgressBar = true
+  err := envconfig.Process("", config)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  _, err = scheduler.AddFunc(spec, func() {
+    err := backup(config, logger)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     }
@@ -47,17 +55,10 @@ func schedule(spec string, logger *zap.Logger) error {
   return nil
 }
 
-func backup(logger *zap.Logger) error {
-  backupName := time.Now().Format("2006-01-02T15:04:05")
+func backup(config *chbackup.Config, logger *zap.Logger) error {
+  backupName := time.Now().Format(chbackup.BackupTimeFormat)
 
-  config := chbackup.DefaultConfig()
-  config.General.DisableProgressBar = true
-  err := envconfig.Process("", config)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  err = chbackup.CreateBackup(*config, backupName, "")
+  err := chbackup.CreateBackup(*config, backupName, "")
   if err != nil {
     return errors.WithStack(err)
   }
@@ -67,7 +68,6 @@ func backup(logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  lastRemoteBackups = append(lastRemoteBackups, backupName)
 
   if len(lastLocalBackup) != 0 {
     logger.Info("remove local backup", zap.String("name", lastLocalBackup))
@@ -75,8 +75,8 @@ func backup(logger *zap.Logger) error {
     if err != nil {
       return errors.WithStack(err)
     }
-    lastLocalBackup = backupName
   }
+  lastLocalBackup = backupName + backupSuffix
 
   if len(lastRemoteBackups) > 3 {
     outdatedBackupName := lastRemoteBackups[0]
@@ -86,7 +86,9 @@ func backup(logger *zap.Logger) error {
       return errors.WithStack(err)
     }
 
-    lastRemoteBackups = append(lastRemoteBackups[1:], backupName)
+    lastRemoteBackups = append(lastRemoteBackups[1:], backupName + backupSuffix)
+  } else {
+    lastRemoteBackups = append(lastRemoteBackups, backupName + backupSuffix)
   }
 
   return nil

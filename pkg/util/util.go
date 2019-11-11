@@ -41,3 +41,14 @@ func CreateLogger() *zap.Logger {
 	}
 	return logger
 }
+
+func CreateProductionLogger() *zap.Logger {
+	config := zap.NewProductionConfig()
+	config.DisableCaller = true
+	config.DisableStacktrace = true
+	logger, err := config.Build()
+	if err != nil {
+		log.Fatal(err)
+	}
+	return logger
+}

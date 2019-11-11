@@ -61,7 +61,7 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, logger *zap.Lo
   })
   sb.WriteRune(')')
 
-  insertManager, err := sql_util.NewBulkInsertManager(db, sb.String(), logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, context, sb.String(), logger)
   if err != nil {
     return nil, errors.WithStack(err)
   }

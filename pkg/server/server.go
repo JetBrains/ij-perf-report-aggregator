@@ -3,10 +3,10 @@ package server
 import (
   "context"
   "crypto/tls"
+  _ "github.com/ClickHouse/clickhouse-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  _ "github.com/kshvakov/clickhouse"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "go.uber.org/zap"

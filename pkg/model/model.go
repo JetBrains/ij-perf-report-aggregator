@@ -40,7 +40,7 @@ type ExtraData struct {
   TcBuildId          int
   TcInstallerBuildId int
   TcBuildProperties  []byte
-  Changes            string
+  Changes            []byte
 }
 
 type TraceEvent struct {

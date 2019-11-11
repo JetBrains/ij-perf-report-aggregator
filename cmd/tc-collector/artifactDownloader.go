@@ -4,7 +4,6 @@ import (
   "compress/gzip"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/magiconair/properties"
   "go.uber.org/zap"
   "io/ioutil"
   "net/url"
@@ -73,11 +72,5 @@ func (t *Collector) downloadBuildProperties(build Build) ([]byte, error) {
     return nil, err
   }
 
-  p, err := properties.LoadString(string(data))
-  if err != nil {
-    return nil, err
-  }
-
-  json := PropertiesToJson(p)
-  return []byte(json), nil
+  return readProperties(data)
 }

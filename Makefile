@@ -34,11 +34,14 @@ lint:
 build-server:
 	go build -tags clz4 -ldflags='-s -w' -o dist/server ./cmd/server
 
+build-tc-collector:
+	go build -tags clz4 -ldflags='-s -w' -o dist/tc-collector ./cmd/tc-collector
+
 update-deps:
 	GOPROXY=https://proxy.golang.org go get -u ./...
 	go mod tidy
 
-# docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:19.15.2.2
+# docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:19.16.2.2
 
 # docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client --host clickhouse-server
 # optimize table report

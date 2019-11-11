@@ -2,10 +2,10 @@ package analyzer
 
 import (
   "context"
+  _ "github.com/ClickHouse/clickhouse-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  _ "github.com/kshvakov/clickhouse"
   "github.com/tdewolff/minify/v2"
   "github.com/tdewolff/minify/v2/json"
   "github.com/valyala/fastjson"
@@ -28,7 +28,7 @@ type ReportAnalyzer struct {
   closeOnce sync.Once
 
   minifier *minify.M
-  db       *sqlx.DB
+  Db       *sqlx.DB
 
   insertInstallerManager *InsertInstallerManager
   insertReportManager    *InsertReportManager
@@ -46,7 +46,7 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
     return nil, errors.WithStack(err)
   }
 
-  installerManager, err := NewInstallerInsertManager(db, logger)
+  installerManager, err := NewInstallerInsertManager(db, analyzeContext, logger)
   if err != nil {
     return nil, err
   }
@@ -57,7 +57,7 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
   }
 
   analyzer := &ReportAnalyzer{
-    input:          make(chan *model.ReportInfo),
+    input:          make(chan *model.ReportInfo, 4),
     analyzeContext: analyzeContext,
     waitChannel:    make(chan struct{}),
     ErrorChannel:   make(chan error),
@@ -66,7 +66,7 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
     insertReportManager:    insertReportManager,
 
     minifier: m,
-    db:       db,
+    Db:       db,
 
     logger: logger,
   }
@@ -165,7 +165,11 @@ func (t *ReportAnalyzer) Close() error {
   t.closeOnce.Do(func() {
     close(t.input)
   })
-  return errors.WithStack(multierr.Combine(t.insertInstallerManager.Close(), t.insertReportManager.Close(), t.db.Close()))
+  return errors.WithStack(multierr.Combine(t.insertInstallerManager.Close(), t.insertReportManager.Close(), t.Db.Close()))
+}
+
+func (t *ReportAnalyzer) Wait() {
+  t.waitGroup.Wait()
 }
 
 func (t *ReportAnalyzer) Done() <-chan struct{} {

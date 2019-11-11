@@ -12,7 +12,7 @@ import (
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
 
-  _ "github.com/kshvakov/clickhouse"
+  _ "github.com/ClickHouse/clickhouse-go"
   _ "github.com/mattn/go-sqlite3"
 )
 
@@ -116,7 +116,7 @@ func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  insertManager, err := analyzer.NewInstallerInsertManager(db, logger)
+  insertManager, err := analyzer.NewInstallerInsertManager(db, context.Background(), logger)
   if err != nil {
     return err
   }
@@ -130,7 +130,7 @@ func copyInstallers(sourceDb *sqlx.DB, db *sqlx.DB, logger *zap.Logger) error {
       return errors.WithStack(err)
     }
 
-    err = insertManager.Insert(id, string(changes))
+    err = insertManager.Insert(id, changes)
     if err != nil {
       return err
     }

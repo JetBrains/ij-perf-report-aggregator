@@ -1,2 +1,0 @@
-# LZ4 native for clickhouse
-defaultBaseImage: gcr.io/distroless/base:latest

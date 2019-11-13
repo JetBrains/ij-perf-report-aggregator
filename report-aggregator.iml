@@ -3,14 +3,6 @@
   <component name="Go" enabled="true">
     <buildTags>
       <option name="cgo" value="YES" />
-      <option name="customFlags">
-        <array>
-          <option value="clz4" />
-          <option value="sqlite_json" />
-          <option value="sqlite_stat4" />
-          <option value="sqlite_foreign_keys" />
-        </array>
-      </option>
     </buildTags>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">

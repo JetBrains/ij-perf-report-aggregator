@@ -17,20 +17,6 @@ type InsertDataManager struct {
   Logger *zap.Logger
 }
 
-func (t *InsertDataManager) GetUncommittedTransactionCount() int {
-  return t.InsertManager.GetUncommittedTransactionCount()
-}
-
-func (t *InsertDataManager) CommitAndWait() error {
-  err := t.InsertManager.Commit()
-  if err != nil {
-    return err
-  }
-
-  t.InsertManager.WaitGroup.Wait()
-  return t.InsertManager.Error
-}
-
 func (t *InsertDataManager) Close() error {
   return errors.WithStack(multierr.Combine(t.InsertManager.Close(), t.SelectStatement.Close()))
 }

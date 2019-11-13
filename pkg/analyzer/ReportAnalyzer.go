@@ -30,8 +30,7 @@ type ReportAnalyzer struct {
   minifier *minify.M
   Db       *sqlx.DB
 
-  insertInstallerManager *InsertInstallerManager
-  insertReportManager    *InsertReportManager
+  insertReportManager *InsertReportManager
 
   logger *zap.Logger
 }
@@ -41,14 +40,9 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
   m.AddFunc("json", json.Minify)
 
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&compress=1")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=1")
   if err != nil {
     return nil, errors.WithStack(err)
-  }
-
-  installerManager, err := NewInstallerInsertManager(db, analyzeContext, logger)
-  if err != nil {
-    return nil, err
   }
 
   insertReportManager, err := NewInsertReportManager(db, analyzeContext, logger)
@@ -57,12 +51,11 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
   }
 
   analyzer := &ReportAnalyzer{
-    input:          make(chan *model.ReportInfo, 4),
+    input:          make(chan *model.ReportInfo, 32),
     analyzeContext: analyzeContext,
     waitChannel:    make(chan struct{}),
     ErrorChannel:   make(chan error),
 
-    insertInstallerManager: installerManager,
     insertReportManager:    insertReportManager,
 
     minifier: m,
@@ -85,12 +78,6 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
 
         err := analyzer.insert(report)
         if err != nil {
-          // commit installer ids to ensure that correctly added reports have corresponding installer ids
-          err2 := analyzer.insertInstallerManager.CommitAndWait()
-          if err2 != nil {
-            logger.Error("cannot commit installers", zap.Error(err2))
-          }
-
           analyzer.ErrorChannel <- err
         }
       }
@@ -165,7 +152,7 @@ func (t *ReportAnalyzer) Close() error {
   t.closeOnce.Do(func() {
     close(t.input)
   })
-  return errors.WithStack(multierr.Combine(t.insertInstallerManager.Close(), t.insertReportManager.Close(), t.Db.Close()))
+  return errors.WithStack(multierr.Combine(t.insertReportManager.insertInstallerManager.Close(), t.insertReportManager.Close(), t.Db.Close()))
 }
 
 func (t *ReportAnalyzer) Wait() {
@@ -176,7 +163,7 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
   go func() {
     t.waitGroup.Wait()
 
-    err := multierr.Combine(t.insertInstallerManager.CommitAndWait(), t.insertReportManager.CommitAndWait())
+    err := t.insertReportManager.InsertManager.CommitAndWait()
     if err != nil {
       t.ErrorChannel <- err
     }
@@ -243,7 +230,7 @@ func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
   }
 
   if report.ExtraData.TcInstallerBuildId > 0 {
-    err = t.insertInstallerManager.Insert(report.ExtraData.TcInstallerBuildId, report.ExtraData.Changes)
+    err = t.insertReportManager.insertInstallerManager.Insert(report.ExtraData.TcInstallerBuildId, report.ExtraData.Changes)
     if err != nil {
       return err
     }
@@ -251,7 +238,7 @@ func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
 
   err = t.insertReportManager.Insert(reportRow, branch)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
   return nil
 }

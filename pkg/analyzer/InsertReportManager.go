@@ -39,6 +39,8 @@ type InsertReportManager struct {
 
   context          context.Context
   MaxGeneratedTime int64
+
+  insertInstallerManager *InsertInstallerManager
 }
 
 func NewInsertReportManager(db *sqlx.DB, context context.Context, logger *zap.Logger) (*InsertReportManager, error) {
@@ -61,9 +63,14 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, logger *zap.Lo
   })
   sb.WriteRune(')')
 
-  insertManager, err := sql_util.NewBulkInsertManager(db, context, sb.String(), logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, context, sb.String(), logger.Named("report"))
   if err != nil {
     return nil, errors.WithStack(err)
+  }
+
+  installerManager, err := NewInstallerInsertManager(db, context, logger)
+  if err != nil {
+    return nil, err
   }
 
   manager := &InsertReportManager{
@@ -76,8 +83,11 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, logger *zap.Lo
       Logger: logger,
     },
 
-    context: context,
+    context:                context,
+    insertInstallerManager: installerManager,
   }
+
+  insertManager.AddDependency(installerManager.InsertManager)
 
   //noinspection SqlResolve
   var maxGeneratedTime time.Time
@@ -110,14 +120,14 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
     return err
   }
 
-  logger.Debug("new report added")
+  //logger.Debug("new report added")
   return nil
 }
 
 func (t *InsertReportManager) writeMetrics(row *MetricResult, branch string, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   report, err := ReadReport(row.RawReport)

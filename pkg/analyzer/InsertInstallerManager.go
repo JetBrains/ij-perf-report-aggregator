@@ -22,7 +22,7 @@ func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logge
   }
 
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer(id, changes) values(?, ?)", logger)
+  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer(id, changes) values(?, ?)", logger.Named("installer"))
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -67,7 +67,7 @@ func (t *InsertInstallerManager) Insert(id int, changes []byte) error {
 
   statement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   _, err = statement.ExecContext(t.InsertManager.InsertContext, id, changes)

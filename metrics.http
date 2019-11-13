@@ -46,13 +46,13 @@ GET http://localhost:9044/info
 GET http://localhost:9044/metrics?product=IU&machine=zlata
 
 ###
-GET https://buildserver.labs.intellij.net/app/rest/changes?locator=build:(id:56072828)&fields=change(version)
+GET https://buildserver.labs.intellij.net/guestAuth/app/rest/changes?locator=build:(id:57684587)
 Authorization: Bearer {{token}}
 Accept: application/json
 
 ###
 
-GET http://buildserver.labs.intellij.net/app/rest/builds/id:54846099/artifacts/content/run/startup/startup-stats-startup.json
+GET http://buildserver.labs.intellij.net/app/rest/builds/id:57684587
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
@@ -67,7 +67,7 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET http://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*,artifact-dependencies(build(id,buildTypeId,finishDate)))
+GET http://buildserver.labs.intellij.net/guestAuth/app/rest/builds/?locator=id:57684587&fields=build(*,revisions(*,revision(*,vcs-root-instance(*))))
 Authorization: Bearer {{token}}
 Accept: application/json
 ###

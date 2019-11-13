@@ -25,20 +25,22 @@ type BulkInsertManager struct {
 
   logger *zap.Logger
 
-  WaitGroup sync.WaitGroup
+  waitGroup sync.WaitGroup
   pool      *ants.Pool
   Error     error
 
   InsertContext context.Context
+
+  dependencies []*BulkInsertManager
 }
 
 func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
-  // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
   poolCapacity := env.GetInt("INSERT_WORKER_COUNT")
   if poolCapacity == 0 {
+    // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
     poolCapacity = runtime.NumCPU() - 4
     if poolCapacity < 2 {
-      poolCapacity = 2
+      poolCapacity = 1
     }
   } else if poolCapacity > 99 {
     poolCapacity = 99
@@ -65,8 +67,24 @@ func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql 
   }, nil
 }
 
+func (t *BulkInsertManager) AddDependency(dependency *BulkInsertManager) {
+  t.dependencies = append(t.dependencies, dependency)
+}
+
 func (t *BulkInsertManager) GetUncommittedTransactionCount() int {
   return t.pool.Running()
+}
+
+func (t *BulkInsertManager) CommitAndWait() error {
+  t.logger.Info("waiting inserting", zap.Int("transactions", t.GetUncommittedTransactionCount()))
+
+  err := t.Commit()
+  if err != nil {
+    return err
+  }
+
+  t.waitGroup.Wait()
+  return t.Error
 }
 
 func (t *BulkInsertManager) Commit() error {
@@ -83,26 +101,38 @@ func (t *BulkInsertManager) Commit() error {
   t.queuedItems = 0
 
   t.logger.Info("add committing of insert transaction to queue", zap.Int("count", queuedItems))
-  t.WaitGroup.Add(1)
+  t.waitGroup.Add(1)
   err := t.pool.Submit(func() {
-    defer t.WaitGroup.Done()
+    defer t.waitGroup.Done()
 
     defer util.Close(insertStatement, t.logger)
 
     if t.Error != nil {
+      t.logger.Error("rollback transaction", zap.String("reason", "previous transaction failed to be committed"), zap.NamedError("prevError", t.Error))
       t.rollbackTransaction(transaction)
       return
+    }
+
+    for _, dependency := range t.dependencies {
+      err := dependency.CommitAndWait()
+      if err != nil {
+        t.Error = err
+        t.logger.Info("cannot commit dependency", zap.Error(err))
+        return
+      }
     }
 
     err := transaction.Commit()
     if err != nil {
       t.Error = errors.WithStack(err)
+      t.logger.Info("cannot commit", zap.Error(err))
+      return
     }
     t.logger.Info("items were inserted", zap.Int("count", queuedItems))
   })
 
   if err != nil {
-    t.WaitGroup.Done()
+    t.waitGroup.Done()
     return errors.WithStack(err)
   }
   return nil
@@ -145,6 +175,7 @@ func (t *BulkInsertManager) Close() error {
 
   transaction := t.transaction
   if transaction != nil {
+    t.logger.Error("rollback transaction", zap.String("reason", "was not committed, but close is called"))
     t.transaction = nil
     t.rollbackTransaction(transaction)
   }

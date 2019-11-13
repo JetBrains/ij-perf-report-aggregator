@@ -117,9 +117,6 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
       return err
     }
 
-    // to reduce memory pressure, do not process until collected reports are not inserted
-    reportAnalyzer.Wait()
-
     //memProfiler.Stop()
     //os.Exit(0)
 
@@ -216,8 +213,8 @@ func (t *Collector) loadReports(builds []Build) error {
   })
 
   networkRequestCount := runtime.NumCPU() + 1
-  if networkRequestCount > 4 {
-    networkRequestCount = 4
+  if networkRequestCount > 8 {
+    networkRequestCount = 8
   }
 
   err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {

@@ -9,12 +9,15 @@ import (
   "github.com/kelseyhightower/envconfig"
   "github.com/robfig/cron/v3"
   "go.uber.org/zap"
+  "strings"
   "time"
 )
 
-var lastLocalBackup string
+var lastLocalBackups []string
 var lastRemoteBackups []string
 const backupSuffix = ".tar"
+
+var incrementalBackupCounter = 0
 
 func main() {
   logger := util.CreateLogger()
@@ -63,20 +66,34 @@ func backup(config *chbackup.Config, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  err = chbackup.Upload(*config, backupName, "")
+  var diffFrom string
+  // first or each 4 backup is full
+  if len(lastLocalBackups) < 1 || incrementalBackupCounter > 4 {
+    incrementalBackupCounter = 0
+    diffFrom = ""
+  } else {
+    diffFrom = strings.TrimSuffix(lastLocalBackups[len(lastLocalBackups) - 1], backupSuffix)
+  }
+
+  err = chbackup.Upload(*config, backupName, diffFrom)
   if err != nil {
     return errors.WithStack(err)
   }
 
+  incrementalBackupCounter++
 
-  if len(lastLocalBackup) != 0 {
-    logger.Info("remove local backup", zap.String("name", lastLocalBackup))
-    err := chbackup.RemoveBackupLocal(*config, lastLocalBackup)
+  if len(lastLocalBackups) > 2 {
+    outdatedBackupName := lastLocalBackups[0]
+    logger.Info("remove local backup", zap.String("name", outdatedBackupName))
+    err := chbackup.RemoveBackupLocal(*config, outdatedBackupName)
     if err != nil {
       return errors.WithStack(err)
     }
+
+    lastLocalBackups = append(lastLocalBackups[1:], backupName+backupSuffix)
+  } else {
+    lastLocalBackups = append(lastLocalBackups, backupName+backupSuffix)
   }
-  lastLocalBackup = backupName + backupSuffix
 
   if len(lastRemoteBackups) > 3 {
     outdatedBackupName := lastRemoteBackups[0]

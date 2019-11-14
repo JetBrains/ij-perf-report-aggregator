@@ -9,7 +9,7 @@ import (
 
 func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
   var productNames []string
-  groupNames := t.machineInfo.groupNames
+  groupNames := t.machineInfo.GroupNames
   rows, err := t.db.QueryContext(request.Context(), "select distinct product, machine from report where machine != 'Dead agent' group by product, machine order by product, machine")
   if err != nil {
     return nil, err
@@ -26,7 +26,7 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
       return nil, err
     }
 
-    groupName, ok := t.machineInfo.machineToGroupName[machine]
+    groupName, ok := t.machineInfo.MachineToGroupName[machine]
     if !ok {
       return nil, errors.New("Group is unknown machine: " + machine)
     }

@@ -30,19 +30,19 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     dbUrl = "127.0.0.1:9000"
   }
 
-  chDb, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
+  db, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
   if err != nil {
     return errors.WithStack(err)
   }
 
-  defer util.Close(chDb, logger)
+  defer util.Close(db, logger)
 
   statsServer := &StatsServer{
-    db: chDb,
+    db: db,
 
     logger: logger,
 
-    machineInfo: getMachineInfo(),
+    machineInfo: GetMachineInfo(),
   }
 
   cacheManager := NewResponseCacheManager(logger)
@@ -61,6 +61,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
   mux.Handle("/api/v1/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
+  mux.Handle("/api/v1/compareMetrics", cacheManager.CreateHandler(statsServer.handleStatusRequest))
   mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {

@@ -1,12 +1,12 @@
 package server
 
 type MachineInfo struct {
-  groupNames []string
+  GroupNames []string
 
-  machineToGroupName map[string]string
+  MachineToGroupName map[string]string
 }
 
-func getMachineInfo() MachineInfo {
+func GetMachineInfo() MachineInfo {
   // Mac mini Space Gray/3.0 GHz 6C/8GB/256GB; Model No. A1993; Part No. MRTT2RU/A; Serial No. C07XX9PFJYVX; Prod.12/2018, for code-sign (ADM-32069) -> ADM-35488
   const macMini = "macMini 2018"
 
@@ -22,8 +22,8 @@ func getMachineInfo() MachineInfo {
   const linux2 = "Linux: i7-3770, 16Gb (10600 1333MHz), SSD"
 
   return MachineInfo{
-    groupNames: []string{macMini, linux, linux2, win},
-    machineToGroupName: map[string]string{
+    GroupNames: []string{macMini, linux, linux2, win},
+    MachineToGroupName: map[string]string{
       "intellij-macos-hw-unit-1550": macMini,
       "intellij-macos-hw-unit-1551": macMini,
 

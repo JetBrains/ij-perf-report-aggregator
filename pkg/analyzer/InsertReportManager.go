@@ -120,7 +120,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
     return err
   }
 
-  //logger.Debug("new report added")
+  logger.Debug("new report added")
   return nil
 }
 

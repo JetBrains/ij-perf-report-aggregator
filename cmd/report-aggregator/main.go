@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/filling"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/ideaLog"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -23,7 +22,6 @@ func main() {
 	ideaLog.ConfigureCollectFromDirCommand(app, logger)
 
 	ConfigureServeCommand(app, logger)
-	filling.ConfigureFillCommand(app, logger)
 
 	_, err := app.Parse(os.Args[1:])
 	if err != nil {

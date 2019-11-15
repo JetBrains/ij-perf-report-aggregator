@@ -4,85 +4,76 @@ import (
   "flag"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
+  "go.uber.org/zap"
+  "io/ioutil"
   "log"
   "net/http"
-  "os"
+  "net/url"
+  "strings"
 )
 
 // kubectl port-forward svc/clickhouse 9900:9000
 
 func main() {
+  logger := util.CreateLogger()
+  defer func() {
+    _ = logger.Sync()
+  }()
+
   serverUrl := flag.String("server", "http://localhost:9044", "The server URL.")
 
-  err := analyzeTotal(*serverUrl)
+  flag.Parse()
+
+  err := analyzeTotal(*serverUrl, logger)
   if err != nil {
     log.Fatal(fmt.Sprintf("%+v", err))
   }
 }
 
-type TeamCityActivity struct {
-  value string
-
-  startMarker string
-  endMarker   string
-}
-
-func (t *TeamCityActivity) Start(value string) {
-  if len(t.value) == 0 || t.value != value {
-    t.End()
-    t.value = value
-    _, _ = fmt.Fprintf(os.Stdout, "##teamcity[%s name='%s']\n", t.startMarker, t.value)
-  }
-}
-
-func (t *TeamCityActivity) End() {
-  if len(t.value) != 0 {
-    _, _ = fmt.Fprintf(os.Stdout, "##teamcity[%s name='%s']\n", t.endMarker, t.value)
-  }
-}
-
-func analyzeTotal(serverUrl string) error {
-  result, err := getResult(serverUrl, "2019-11-04")
+func analyzeTotal(serverUrl string, logger *zap.Logger) error {
+  result, err := getResult(serverUrl, "2019-11-04", logger)
   if err != nil {
     return errors.WithStack(err)
   }
 
   product := TeamCityActivity{
     startMarker: "testSuiteStarted",
-    endMarker: "testSuiteFinished",
+    endMarker:   "testSuiteFinished",
   }
-  machineGroup := TeamCityActivity{
-    startMarker: "testStarted",
-    endMarker:   "testFinished",
+  machineGroup := TeamCityTest{
+    TeamCityActivity: TeamCityActivity{
+      startMarker: "testStarted",
+      endMarker:   "testFinished",
+    },
   }
 
   for _, item := range result.GoldItems {
     product.Start(item.Product)
-    testName := item.MachineGroup
-    machineGroup.Start(testName)
+    machineGroup.Start(item.MachineGroup)
 
     actualItems, ok := result.CurrentItems[item.MachineGroup]
     if !ok {
-      _, _ = fmt.Fprintf(os.Stdout, "##teamcity[testStdErr name='%s' out='error text']\n", "no actual data")
+      machineGroup.Failed("no actual data")
       continue
     }
 
     actualItem := actualItems[item.Product]
     if len(actualItem) == 0 {
-      _, _ = fmt.Fprintf(os.Stdout, "##teamcity[testStdErr name='%s' out='error text']\n", "no actual data")
+      machineGroup.Failed("no actual data")
       continue
     }
 
     diff := actualItem[0].Bootstrap - item.Bootstrap
     // 4 ms
     if diff < 4 {
-      _, _ = fmt.Fprintf(os.Stdout, "##teamcity[testStdOut name='%s' out='gold: %.1f, actual: %.1f']\n", testName, item.Bootstrap, actualItem[0].Bootstrap)
+      machineGroup.Output(fmt.Sprintf("gold: %.1f, actual: %.1f", item.Bootstrap, actualItem[0].Bootstrap))
       continue
     }
 
-    _, _ = fmt.Fprintf(os.Stdout, "##teamcity[testFailed type='comparisonFailure' name='%s' message='Diff > 4 ms' expected='%.1f' actual='%.1f']\n", testName, item.Bootstrap, actualItem[0].Bootstrap)
+    machineGroup.CompareFailed("Diff > 4 ms", actualItem[0].Bootstrap, item.Bootstrap)
   }
 
   machineGroup.End()
@@ -91,8 +82,18 @@ func analyzeTotal(serverUrl string) error {
   return nil
 }
 
-func getResult(host string, goldWeekStart string) (*server.AnalyzeResult, error) {
-  request, err := http.NewRequest("get", host+"/api/v1/compareMetrics?goldWeekStart="+goldWeekStart, nil)
+func getResult(host string, goldWeekStart string, logger *zap.Logger) (*server.AnalyzeResult, error) {
+  serverUrl, err := url.Parse(strings.TrimSuffix(host, "/") + "/api/v1/compareMetrics")
+  if err != nil {
+    return nil, err
+  }
+
+  q := serverUrl.Query()
+  q.Set("goldWeekStart", goldWeekStart)
+  serverUrl.RawQuery = q.Encode()
+  urlString := serverUrl.String()
+  logger.Info("get data", zap.String("url", urlString))
+  request, err := http.NewRequest("GET", urlString, nil)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -106,6 +107,11 @@ func getResult(host string, goldWeekStart string) (*server.AnalyzeResult, error)
   defer func() {
     _ = response.Body.Close()
   }()
+
+  if response.StatusCode >= 400 {
+    responseBytes, _ := ioutil.ReadAll(response.Body)
+    return nil, errors.Errorf("status: %s, response: %s", response.Status, responseBytes)
+  }
 
   var result server.AnalyzeResult
   err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&result)

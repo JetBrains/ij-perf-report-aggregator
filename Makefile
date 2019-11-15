@@ -34,6 +34,9 @@ lint:
 build-server:
 	go build -tags -ldflags='-s -w' -o dist/server ./cmd/server
 
+build-monitor:
+	go build -tags -ldflags='-s -w' -o dist/monitor ./cmd/monitor
+
 build-tc-collector:
 	go build -tags -ldflags='-s -w' -o dist/tc-collector ./cmd/tc-collector
 

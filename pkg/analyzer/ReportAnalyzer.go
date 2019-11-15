@@ -39,8 +39,9 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
   m := minify.New()
   m.AddFunc("json", json.Minify)
 
+  // https://github.com/ClickHouse/ClickHouse/issues/2833
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=1&compress=1")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=1&compress=1&send_timeout=30000&receive_timeout=3000")
   if err != nil {
     return nil, errors.WithStack(err)
   }

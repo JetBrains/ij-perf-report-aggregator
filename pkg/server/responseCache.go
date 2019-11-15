@@ -12,7 +12,6 @@ import (
   "go.uber.org/zap"
   "io"
   "net/http"
-  "net/url"
   "strconv"
   "strings"
 )
@@ -63,14 +62,22 @@ func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request)
   }
 }
 
-func generateKey(url *url.URL) []byte {
+var jsonMarker = []byte("json:")
+
+func generateKey(request *http.Request) []byte {
   buffer := quicktemplate.AcquireByteBuffer()
   defer quicktemplate.ReleaseByteBuffer(buffer)
 
-  _, _ = io.WriteString(buffer, url.Path)
+  // if json requested, it means that handler can return data in several formats
+  if request.Header.Get("Accept") == "application/json" {
+    _, _ = buffer.Write(jsonMarker)
+  }
+
+  u := request.URL
+  _, _ = io.WriteString(buffer, u.Path)
   // do not complicate, use RawQuery as is without sorting
-  if len(url.RawQuery) > 0 {
-    _, _ = io.WriteString(buffer, url.RawQuery)
+  if len(u.RawQuery) > 0 {
+    _, _ = io.WriteString(buffer, u.RawQuery)
   }
 
   result := make([]byte, len(buffer.B))
@@ -78,8 +85,8 @@ func generateKey(url *url.URL) []byte {
   return result
 }
 
-func (t *ResponseCacheManager) get(url *url.URL) ([]byte, []byte) {
-  key := generateKey(url)
+func (t *ResponseCacheManager) get(request *http.Request) ([]byte, []byte) {
+  key := generateKey(request)
   var value []byte
   value = t.cache.GetBig(value, key)
   if len(value) == 0 {
@@ -91,7 +98,7 @@ func (t *ResponseCacheManager) get(url *url.URL) ([]byte, []byte) {
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
   w.Header().Set("Content-Type", "application/json")
 
-  cacheKey, result := t.get(request.URL)
+  cacheKey, result := t.get(request)
   var eTag string
   if result == nil {
     var err error

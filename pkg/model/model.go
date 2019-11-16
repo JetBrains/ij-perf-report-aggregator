@@ -4,6 +4,7 @@ type Report struct {
   Version string `json:"version"`
 
   Generated string `json:"generated"`
+  Project   string `json:"project"`
 
   Build     string `json:"build"`
   BuildDate string `json:"buildDate"`
@@ -36,11 +37,12 @@ type ExtraData struct {
   ProductCode string
   BuildNumber string
 
-  Machine            string
+  Machine string
+
   TcBuildId          int
   TcInstallerBuildId int
   TcBuildProperties  []byte
-  Changes            []byte
+  Changes            [][]byte
 }
 
 type TraceEvent struct {
@@ -74,7 +76,8 @@ type DurationEventMetrics struct {
   AppComponentCreation     int
   ProjectComponentCreation int
 
-  ModuleLoading int
+  ModuleLoading   int
+  EditorRestoring int
 }
 
 type InstantEventMetrics struct {

@@ -17,6 +17,7 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
     AppComponentCreation:     -1,
     ProjectComponentCreation: -1,
     ModuleLoading:            -1,
+    EditorRestoring:          -1,
   }
 
   instantMetrics := &model.InstantEventMetrics{
@@ -43,6 +44,7 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
 
     case "plugin descriptor loading":
       durationMetrics.PluginDescriptorLoading = activity.Duration
+    // old name
     case "plugin descriptors loading":
       durationMetrics.PluginDescriptorLoading = activity.Duration
 
@@ -58,6 +60,12 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
 
     case "module loading":
       durationMetrics.ModuleLoading = activity.Duration
+
+    case "editor restoring":
+      durationMetrics.EditorRestoring = activity.Duration
+    // old name
+    case "restoring editors":
+      durationMetrics.EditorRestoring = activity.Duration
     }
   }
 
@@ -101,6 +109,10 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
   if durationMetrics.ModuleLoading == -1 {
     logRequiredMetricNotFound(logger, "ModuleLoading")
     return nil, nil
+  }
+  if durationMetrics.EditorRestoring == -1 {
+    // not reported because ended too late?
+    logger.Info("metric 'EditorRestoring' not found")
   }
   return durationMetrics, instantMetrics
 }

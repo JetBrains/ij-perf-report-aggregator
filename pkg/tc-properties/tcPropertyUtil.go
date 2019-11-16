@@ -1,4 +1,4 @@
-package main
+package tc_properties
 
 import (
   "github.com/magiconair/properties"
@@ -19,7 +19,7 @@ var excludedTcProperties = map[string]bool{
   "jetbrains.sign.service.secret":                      true,
 }
 
-func readProperties(data []byte) ([]byte, error) {
+func ReadProperties(data []byte) ([]byte, error) {
   p, err := propertyParserLoader.LoadBytes(data)
   if err != nil {
     return nil, err

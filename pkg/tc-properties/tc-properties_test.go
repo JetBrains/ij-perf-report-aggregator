@@ -1,4 +1,4 @@
-package main
+package tc_properties
 
 import (
   "io/ioutil"
@@ -17,7 +17,7 @@ func TestFilter(t *testing.T) {
   if err != nil {
     t.Error(err)
   }
-  properties, err := readProperties(data)
+  properties, err := ReadProperties(data)
   if err != nil {
     t.Error(err)
   }

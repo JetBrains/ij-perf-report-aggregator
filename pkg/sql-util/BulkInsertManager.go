@@ -4,7 +4,6 @@ import (
   "context"
   "database/sql"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "github.com/panjf2000/ants/v2"
@@ -20,7 +19,7 @@ type BulkInsertManager struct {
 
   insertSql string
 
-  batchSize   int
+  BatchSize   int
   queuedItems int
 
   logger *zap.Logger
@@ -34,9 +33,9 @@ type BulkInsertManager struct {
   dependencies []*BulkInsertManager
 }
 
-func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql string, logger *zap.Logger) (*BulkInsertManager, error) {
-  poolCapacity := env.GetInt("INSERT_WORKER_COUNT")
-  if poolCapacity == 0 {
+func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql string, insertWorkerCount int, logger *zap.Logger) (*BulkInsertManager, error) {
+  poolCapacity := insertWorkerCount
+  if insertWorkerCount == -1 {
     // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
     poolCapacity = runtime.NumCPU() - 4
     if poolCapacity < 2 {
@@ -61,7 +60,7 @@ func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql 
     logger:        logger,
 
     // large inserts leads to large memory usage, so, insert by 2000 items
-    batchSize: env.GetInt("INSERT_BATCH_SIZE", 2000),
+    BatchSize: 2000,
 
     pool: pool,
   }, nil
@@ -76,7 +75,10 @@ func (t *BulkInsertManager) GetUncommittedTransactionCount() int {
 }
 
 func (t *BulkInsertManager) CommitAndWait() error {
-  t.logger.Info("waiting inserting", zap.Int("transactions", t.GetUncommittedTransactionCount()))
+  uncommittedTransactionCount := t.GetUncommittedTransactionCount()
+  if uncommittedTransactionCount > 0 {
+    t.logger.Info("waiting inserting", zap.Int("transactions", uncommittedTransactionCount))
+  }
 
   err := t.Commit()
   if err != nil {
@@ -100,46 +102,62 @@ func (t *BulkInsertManager) Commit() error {
   queuedItems := t.queuedItems
   t.queuedItems = 0
 
-  t.logger.Info("add committing of insert transaction to queue", zap.Int("count", queuedItems))
-  t.waitGroup.Add(1)
-  err := t.pool.Submit(func() {
-    defer t.waitGroup.Done()
-
-    defer util.Close(insertStatement, t.logger)
-
-    if t.Error != nil {
-      t.logger.Error("rollback transaction", zap.String("reason", "previous transaction failed to be committed"), zap.NamedError("prevError", t.Error))
-      t.rollbackTransaction(transaction)
-      return
+  var err error
+  if t.pool.Cap() == 1 {
+    t.logger.Info("commit", zap.Int("count", queuedItems))
+    err = t.doInsert(insertStatement, transaction, queuedItems)
+    if err != nil {
+      return err
     }
-
-    for _, dependency := range t.dependencies {
-      err := dependency.CommitAndWait()
+  } else {
+    t.logger.Info("add committing of insert transaction to queue", zap.Int("count", queuedItems))
+    t.waitGroup.Add(1)
+    err = t.pool.Submit(func() {
+      defer t.waitGroup.Done()
+      err := t.doInsert(insertStatement, transaction, queuedItems)
       if err != nil {
         t.Error = err
-        t.logger.Info("cannot commit dependency", zap.Error(err))
-        return
       }
-    }
+    })
 
-    err := transaction.Commit()
     if err != nil {
-      t.Error = errors.WithStack(err)
-      t.logger.Info("cannot commit", zap.Error(err))
-      return
+      t.waitGroup.Done()
+      return err
     }
-    t.logger.Info("items were inserted", zap.Int("count", queuedItems))
-  })
-
-  if err != nil {
-    t.waitGroup.Done()
-    return errors.WithStack(err)
   }
   return nil
 }
 
+func (t *BulkInsertManager) doInsert(insertStatement *sql.Stmt, transaction *sql.Tx, queuedItems int) error {
+  defer util.Close(insertStatement, t.logger)
+
+  if t.Error != nil {
+    t.logger.Error("rollback transaction", zap.String("reason", "previous transaction failed to be committed"), zap.NamedError("prevError", t.Error))
+    t.rollbackTransaction(transaction)
+    return nil
+  }
+
+  for _, dependency := range t.dependencies {
+    err := dependency.CommitAndWait()
+    if err != nil {
+      t.Error = err
+      t.logger.Info("cannot commit dependency", zap.Error(err))
+      return nil
+    }
+  }
+
+  err := transaction.Commit()
+  if err != nil {
+    t.logger.Info("cannot commit", zap.Error(err))
+    return errors.WithStack(err)
+  }
+
+  t.logger.Info("items were inserted", zap.Int("count", queuedItems))
+  return nil
+}
+
 func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
-  if t.queuedItems >= t.batchSize {
+  if t.queuedItems >= t.BatchSize {
     if t.transaction != nil {
       err := t.Commit()
       if err != nil {

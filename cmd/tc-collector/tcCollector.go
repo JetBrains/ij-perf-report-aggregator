@@ -83,7 +83,7 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     taskContext: taskContext,
 
     rwLock:                  &sync.RWMutex{},
-    installerBuildToChanges: make(map[int][]byte),
+    installerBuildToChanges: make(map[int][][]byte),
 
     logger: logger,
   }
@@ -142,7 +142,7 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
   }
 }
 
-func (t *Collector) loadInstallerChanges(installerBuildId int) ([]byte, error) {
+func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error) {
   t.rwLock.RLock()
   result := t.installerBuildToChanges[installerBuildId]
   t.rwLock.RUnlock()
@@ -180,29 +180,22 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([]byte, error) {
   }
 
   var b bytes.Buffer
+  result = make([][]byte, len(changeList.List))
   for index, change := range changeList.List {
-    if index != 0 {
-      b.WriteByte('\n')
-    }
-
     data, err := hex.DecodeString(change.Version)
     if err != nil {
       return nil, errors.WithStack(err)
     }
 
-    base64Encoder := base64.NewEncoder(base64.RawStdEncoding, &b)
-    _, err = base64Encoder.Write(data)
-    if err != nil {
-      return nil, errors.WithStack(err)
-    }
+    b.Reset()
 
-    err = base64Encoder.Close()
-    if err != nil {
-      return nil, errors.WithStack(err)
-    }
+    encoding := base64.RawStdEncoding
+    buf := make([]byte, encoding.EncodedLen(len(data)))
+    encoding.Encode(buf, data)
+    result[index] = buf
   }
 
-  result = b.Bytes()
+
   t.installerBuildToChanges[installerBuildId] = result
   return result, nil
 }
@@ -289,7 +282,7 @@ type Collector struct {
   tcSessionId atomic.String
 
   rwLock                  *sync.RWMutex
-  installerBuildToChanges map[int][]byte
+  installerBuildToChanges map[int][][]byte
 }
 
 func getTcSessionIdCookie(cookies []*http.Cookie) string {

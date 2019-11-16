@@ -4,6 +4,7 @@ import (
   "context"
   _ "github.com/ClickHouse/clickhouse-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "github.com/tdewolff/minify/v2"
@@ -14,7 +15,6 @@ import (
   "strconv"
   "strings"
   "sync"
-  "time"
 )
 
 type ReportAnalyzer struct {
@@ -41,12 +41,12 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
 
   // https://github.com/ClickHouse/ClickHouse/issues/2833
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=1&compress=1&send_timeout=30000&receive_timeout=3000")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0  &compress=1&send_timeout=30000&receive_timeout=3000")
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  insertReportManager, err := NewInsertReportManager(db, analyzeContext, logger)
+  insertReportManager, err := NewInsertReportManager(db, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
@@ -177,15 +177,6 @@ func (t *ReportAnalyzer) Done() <-chan struct{} {
 func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
   t.waitGroup.Add(1)
   defer t.waitGroup.Done()
-
-  logger := t.logger.With(zap.String("generatedTime", time.Unix(report.GeneratedTime, 0).Format(time.RFC1123)))
-
-  durationMetrics, instantMetrics := ComputeMetrics(report.Report, logger)
-  // or both null, or not - no need to check each one
-  if durationMetrics == nil || instantMetrics == nil {
-    logger.Warn("report skipped (metrics cannot be computed)")
-    return nil
-  }
 
   reportRow := &MetricResult{
     Product: report.ExtraData.ProductCode,

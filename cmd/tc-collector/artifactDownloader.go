@@ -2,6 +2,7 @@ package main
 
 import (
   "compress/gzip"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.uber.org/zap"
@@ -72,5 +73,5 @@ func (t *Collector) downloadBuildProperties(build Build) ([]byte, error) {
     return nil, err
   }
 
-  return readProperties(data)
+  return tc_properties.ReadProperties(data)
 }

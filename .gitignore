@@ -6,3 +6,5 @@ http-client.env.json
 db/
 
 /deployment/overlays/
+
+metabase.db.*

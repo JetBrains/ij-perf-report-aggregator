@@ -30,7 +30,8 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     dbUrl = "127.0.0.1:9000"
   }
 
-  db, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1")
+  // limit max memory to use - 3GB
+  db, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_memory_usage=3221225472")
   if err != nil {
     return errors.WithStack(err)
   }

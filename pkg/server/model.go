@@ -2,7 +2,6 @@ package server
 
 import (
   "github.com/asaskevich/govalidator"
-  "net/http"
   "net/url"
   "strings"
 )
@@ -55,18 +54,4 @@ func getProductAndMachine(query url.Values) (string, []string, rune, error) {
   }
 
   return product, strings.Split(machine, ","), normalizedEventTypeValue, nil
-}
-
-func parseQuery(request *http.Request) (url.Values, error) {
-  path := request.URL.Path
-  index := strings.LastIndexByte(path, '/')
-  var values url.Values
-  if index != -1 {
-    var err error
-    values, err = url.ParseQuery(path[index+1:])
-    if err != nil {
-      return nil, err
-    }
-  }
-  return values, nil
 }

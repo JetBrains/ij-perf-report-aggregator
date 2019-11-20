@@ -4,7 +4,9 @@ import (
   "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
   "net/http"
+  "net/url"
   "strconv"
+  "strings"
 )
 
 func (t *StatsServer) handleReportRequest(request *http.Request) ([]byte, error) {
@@ -36,4 +38,18 @@ func (t *StatsServer) handleReportRequest(request *http.Request) ([]byte, error)
     return nil, errors.WithStack(err)
   }
   return rawReport, nil
+}
+
+func parseQuery(request *http.Request) (url.Values, error) {
+  path := request.URL.Path
+  index := strings.LastIndexByte(path, '/')
+  var values url.Values
+  if index != -1 {
+    var err error
+    values, err = url.ParseQuery(path[index+1:])
+    if err != nil {
+      return nil, err
+    }
+  }
+  return values, nil
 }

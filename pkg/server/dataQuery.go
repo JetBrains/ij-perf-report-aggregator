@@ -8,6 +8,7 @@ import (
   "github.com/pkg/errors"
   "math"
   "net/http"
+  "net/url"
   "regexp"
   "strings"
 )
@@ -16,6 +17,8 @@ type DataQuery struct {
   Fields  []DataQueryDimension `json:"fields"`
   Filters []DataQueryFilter    `json:"filters"`
   Order   []string             `json:"order"`
+
+  Limit int `json:"limit"`
 
   // used only for grouped query
   Aggregator          string               `json:"aggregator"`
@@ -26,6 +29,7 @@ type DataQuery struct {
 type DataQueryFilter struct {
   Field    string      `json:"field"`
   Value    interface{} `json:"value"`
+  Sql      string      `json:"sql"`
   Operator string      `json:"operator"`
 }
 
@@ -66,14 +70,24 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
 }
 
 func ReadQuery(request *http.Request) (DataQuery, error) {
-  path := request.URL.Path
+  path := request.URL.RawPath
   index := strings.LastIndexByte(path, '/')
+  if index == -1 {
+    return DataQuery{}, errors.New("query not found")
+  }
+  decoded, err := url.PathUnescape(path[index+1:])
+  if err != nil {
+    return DataQuery{}, errors.WithStack(err)
+  }
+  return readQuery(decoded)
+}
+
+func readQuery(s string) (DataQuery, error) {
   var result DataQuery
-  if index != -1 {
-    err := jsoniter.ConfigFastest.UnmarshalFromString(path[index+1:], &result)
-    if err != nil {
-      return result, errors.WithStack(err)
-    }
+  jsonConfig := jsoniter.ConfigFastest
+  err := jsonConfig.UnmarshalFromString(s, &result)
+  if err != nil {
+    return result, errors.WithStack(err)
   }
   return result, nil
 }
@@ -82,14 +96,23 @@ func ReadQuery(request *http.Request) (DataQuery, error) {
 var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
 
 // add ().space,'*
-var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*]*$")
+var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
 
 func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Rows, error) {
+  sqlQuery, args, err := buildSql(query, table)
+  if err != nil {
+    return nil, err
+  }
+  return db.QueryContext(context, sqlQuery, args...)
+}
+
+func buildSql(query DataQuery, table string) (string, []interface{}, error) {
   var sb strings.Builder
+  var args []interface{}
 
   aggregator := query.Aggregator
   if len(aggregator) != 0 && !reAggregator.MatchString(aggregator) {
-    return nil, errors.Errorf("Aggregator %s contains illegal chars", aggregator)
+    return "", args, errors.Errorf("Aggregator %s contains illegal chars", aggregator)
   }
 
   sb.WriteString("select")
@@ -97,7 +120,7 @@ func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Cont
   if len(query.Dimensions) != 0 {
     err := writeDimensions(query, &sb)
     if err != nil {
-      return nil, err
+      return "", args, err
     }
   }
 
@@ -126,11 +149,10 @@ func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Cont
   sb.WriteString(" from ")
   sb.WriteString(table)
 
-  var args []interface{}
   if len(query.Filters) != 0 {
     err := writeWhereClause(&sb, query, &args)
     if err != nil {
-      return nil, err
+      return "", args, err
     }
   }
 
@@ -149,7 +171,7 @@ func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Cont
     sb.WriteString(" order by")
     for i, field := range query.Order {
       if !reFieldName.MatchString(field) {
-        return nil, errors.Errorf("Name %s is not a valid field name", field)
+        return "", args, errors.Errorf("Name %s is not a valid field name", field)
       }
 
       if i != 0 {
@@ -160,8 +182,7 @@ func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Cont
     }
   }
 
-  generatedSql := sb.String()
-  return db.QueryContext(context, generatedSql, args...)
+  return sb.String(), args, nil
 }
 
 func writeDimensions(query DataQuery, sb *strings.Builder) error {
@@ -185,7 +206,7 @@ func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
 
 func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{}) error {
   sb.WriteString(" where")
-  loop:
+loop:
   for i, filter := range query.Filters {
     if !reFieldName.MatchString(filter.Field) {
       return errors.Errorf("Name %s is not a valid field name", filter.Field)
@@ -196,6 +217,19 @@ func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{})
     }
     sb.WriteRune(' ')
     sb.WriteString(filter.Field)
+
+    if len(filter.Sql) != 0 {
+      if len(filter.Operator) != 0 {
+        return errors.Errorf("sql and operator are mutually exclusive")
+      }
+      if filter.Value != nil {
+        return errors.Errorf("sql and value are mutually exclusive")
+      }
+
+      sb.WriteRune(' ')
+      sb.WriteString(filter.Sql)
+      continue loop
+    }
 
     operator := filter.Operator
     if len(operator) == 0 {

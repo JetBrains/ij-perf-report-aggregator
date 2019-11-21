@@ -55,3 +55,4 @@ update-deps:
 # SELECT partition, name, active FROM system.parts WHERE table = 'report'
 
 # kubectl port-forward svc/clickhouse 2000:8123
+# kubectl port-forward svc/clickhouse 9900:9000

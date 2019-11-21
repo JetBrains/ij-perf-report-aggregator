@@ -12,6 +12,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
+	github.com/aws/aws-sdk-go v1.25.39 // indirect
 	github.com/cespare/xxhash v1.1.0
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/deanishe/go-env v0.4.0
@@ -27,13 +28,14 @@ require (
 	github.com/nats-io/jwt v0.3.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.0 // indirect
 	github.com/nats-io/nats.go v1.9.1
-	github.com/olekukonko/tablewriter v0.0.2
+	github.com/olekukonko/tablewriter v0.0.3
 	github.com/panjf2000/ants/v2 v2.2.2
 	github.com/pkg/errors v0.8.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/cors v1.7.0
+	github.com/stretchr/testify v1.4.0
 	github.com/tdewolff/minify/v2 v2.5.2
-	github.com/tdewolff/parse/v2 v2.3.10 // indirect
+	github.com/tdewolff/parse/v2 v2.3.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.4.1
 	github.com/valyala/quicktemplate v1.4.1
@@ -42,7 +44,7 @@ require (
 	go.uber.org/zap v1.13.0
 	golang.org/x/crypto v0.0.0-20191119213627-4f8c1d86b1ba // indirect
 	golang.org/x/sys v0.0.0-20191120155948-bd437916bb0e // indirect
-	golang.org/x/tools v0.0.0-20191120181412-0a33398bd99d // indirect
+	golang.org/x/tools v0.0.0-20191121172411-96ad48e4b060 // indirect
 	gopkg.in/yaml.v2 v2.2.7 // indirect
 )
 

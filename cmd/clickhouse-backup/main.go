@@ -14,10 +14,10 @@ import (
 )
 
 var lastLocalBackups []string
-var lastRemoteBackups []string
 const backupSuffix = ".tar"
 
 var incrementalBackupCounter = 0
+const maxIncrementalBackupCount = 4
 
 func main() {
   logger := util.CreateLogger()
@@ -39,13 +39,15 @@ func schedule(spec string, logger *zap.Logger) error {
 
   config := chbackup.DefaultConfig()
   config.General.DisableProgressBar = true
+  config.General.BackupsToKeepLocal = maxIncrementalBackupCount + 1
+  config.General.BackupsToKeepRemote = 10
   err := envconfig.Process("", config)
   if err != nil {
     return errors.WithStack(err)
   }
 
   _, err = scheduler.AddFunc(spec, func() {
-    err := backup(config, logger)
+    err := backup(config)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     }
@@ -58,7 +60,7 @@ func schedule(spec string, logger *zap.Logger) error {
   return nil
 }
 
-func backup(config *chbackup.Config, logger *zap.Logger) error {
+func backup(config *chbackup.Config) error {
   backupName := time.Now().Format(chbackup.BackupTimeFormat)
 
   err := chbackup.CreateBackup(*config, backupName, "")
@@ -68,7 +70,7 @@ func backup(config *chbackup.Config, logger *zap.Logger) error {
 
   var diffFrom string
   // first or each 4 backup is full
-  if len(lastLocalBackups) < 1 || incrementalBackupCounter > 4 {
+  if len(lastLocalBackups) < 1 || incrementalBackupCounter > maxIncrementalBackupCount {
     incrementalBackupCounter = 0
     diffFrom = ""
   } else {
@@ -83,29 +85,9 @@ func backup(config *chbackup.Config, logger *zap.Logger) error {
   incrementalBackupCounter++
 
   if len(lastLocalBackups) > 2 {
-    outdatedBackupName := lastLocalBackups[0]
-    logger.Info("remove local backup", zap.String("name", outdatedBackupName))
-    err := chbackup.RemoveBackupLocal(*config, outdatedBackupName)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
     lastLocalBackups = append(lastLocalBackups[1:], backupName+backupSuffix)
   } else {
     lastLocalBackups = append(lastLocalBackups, backupName+backupSuffix)
-  }
-
-  if len(lastRemoteBackups) > 3 {
-    outdatedBackupName := lastRemoteBackups[0]
-    logger.Info("remove remote backup", zap.String("name", outdatedBackupName))
-    err := chbackup.RemoveBackupRemote(*config, outdatedBackupName)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    lastRemoteBackups = append(lastRemoteBackups[1:], backupName + backupSuffix)
-  } else {
-    lastRemoteBackups = append(lastRemoteBackups, backupName + backupSuffix)
   }
 
   return nil

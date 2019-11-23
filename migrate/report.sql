@@ -22,6 +22,7 @@ create table report2
   `appComponentCreation_d`     UInt16 CODEC(Gorilla, ZSTD(19)),
   `projectComponentCreation_d` UInt16 CODEC(Gorilla, ZSTD(19)),
   `moduleLoading_d`            UInt16 CODEC(Gorilla, ZSTD(19)),
+  `projectDumbAware_d`         UInt16 CODEC(Gorilla, ZSTD(19)),
   `editorRestoring_d`          UInt16 CODEC(Gorilla, ZSTD(19)),
 
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(19)),
@@ -29,5 +30,5 @@ create table report2
 )
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))
-    order by (product, machine, branch, build_c1, build_c2, build_c3, build_time, project, generated_time)
+    order by (product, machine, branch, build_c1, build_c2, build_c3, project, build_time, generated_time)
     settings old_parts_lifetime = 10, index_granularity = 8192;

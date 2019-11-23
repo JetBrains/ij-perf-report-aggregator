@@ -16,8 +16,11 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
 
     AppComponentCreation:     -1,
     ProjectComponentCreation: -1,
-    ModuleLoading:            -1,
-    EditorRestoring:          -1,
+
+    ProjectDumbAware: -1,
+
+    ModuleLoading:   -1,
+    EditorRestoring: -1,
   }
 
   instantMetrics := &model.InstantEventMetrics{
@@ -57,6 +60,9 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
       durationMetrics.ProjectComponentCreation = activity.Duration
     case "project components creation":
       durationMetrics.ProjectComponentCreation = activity.Duration
+
+    case "project post-startup dumb-aware activities":
+      durationMetrics.ProjectDumbAware = activity.Duration
 
     case "module loading":
       durationMetrics.ModuleLoading = activity.Duration
@@ -109,6 +115,10 @@ func ComputeMetrics(report *model.Report, logger *zap.Logger) (*model.DurationEv
   if durationMetrics.ModuleLoading == -1 {
     logRequiredMetricNotFound(logger, "ModuleLoading")
     return nil, nil
+  }
+  if durationMetrics.ProjectDumbAware == -1 {
+    // not reported because ended too late?
+    logger.Info("metric 'ProjectDumbAware' not found")
   }
   if durationMetrics.EditorRestoring == -1 {
     // not reported because ended too late?

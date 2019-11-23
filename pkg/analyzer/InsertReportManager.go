@@ -122,7 +122,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
     }
   }
 
-  err := t.WriteMetrics(row.Product, row, branch, logger)
+  err := t.WriteMetrics(row.Product, row, branch, "", logger)
   if err != nil {
     if err == ErrMetricsCannotBeComputed {
       logger.Warn(err.Error())
@@ -135,7 +135,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
   return nil
 }
 
-func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResult, branch interface{}, logger *zap.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResult, branch interface{}, providedProject string, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return err
@@ -162,24 +162,11 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
   }
 
   project := report.Project
-  //if len(project) == 0 {
-  //  switch report.ProductCode {
-  //  case "WS":
-  //    //noinspection SpellCheckingInspection
-  //    project = "JeNLJFVa04IA+Wasc+Hjj3z64R0"
-  //  case "PS":
-  //    //noinspection SpellCheckingInspection
-  //    project = "j1a8nhKJexyL/zyuOXJ5CFOHYzU"
-  //  case "IU":
-  //    //noinspection SpellCheckingInspection
-  //    project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
-  //  default:
-  //    return errors.New("unknown product: " + report.ProductCode)
-  //  }
-  //}
-
   if len(project) == 0 {
-    return errors.New("unknown project")
+    project = providedProject
+    if len(project) == 0 {
+      return errors.New("unknown project")
+    }
   }
 
   args := []interface{}{product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
@@ -201,8 +188,11 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
       v = durationMetrics.AppComponentCreation
     case "projectComponentCreation":
       v = durationMetrics.ProjectComponentCreation
+
     case "moduleLoading":
       v = durationMetrics.ModuleLoading
+    case "projectDumbAware":
+      v = durationMetrics.ProjectDumbAware
     case "editorRestoring":
       v = durationMetrics.EditorRestoring
     default:

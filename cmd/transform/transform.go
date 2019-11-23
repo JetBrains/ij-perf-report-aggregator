@@ -49,6 +49,8 @@ type ReportRow struct {
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
+
+  Project string `db:"project"`
 }
 
 type TimeRange struct {
@@ -66,7 +68,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   defer cancel()
 
   // set insertWorkerCount to 1 - not enough memory
-  insertReportManager, err := analyzer.NewInsertReportManager(db, taskContext, "report2", 1, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(db, taskContext, "report2", 2, logger)
   if err != nil {
     return err
   }
@@ -115,7 +117,7 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
     select cast(product, 'UInt8') as product, cast(machine, 'UInt8') as machine, cast(branch, 'UInt8') as branch, 
            toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report, 
            tc_build_id, tc_installer_build_id, tc_build_properties,
-           build_c1, build_c2, build_c3
+           build_c1, build_c2, build_c3, project
     from report
     where generated_time >= ? and generated_time < ?
     order by product, machine, branch, build_c1, build_c2, build_c3, build_time, project, generated_time
@@ -132,11 +134,6 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
     if err != nil {
       return errors.WithStack(err)
     }
-
-    //tcBuildProperties, err := normalizeTcProperties(row)
-    //if err != nil {
-    //  return err
-    //}
 
     reportRow := &analyzer.MetricResult{
       RawReport: row.RawReport,
@@ -155,7 +152,7 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
       BuildC3: row.BuildC3,
     }
 
-    err = insertReportManager.WriteMetrics(row.Product, reportRow, row.Branch, logger)
+    err = insertReportManager.WriteMetrics(row.Product, reportRow, row.Branch, row.Project, logger)
     if err != nil {
       return err
     }
@@ -168,57 +165,3 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
 
   return nil
 }
-
-//func normalizeTcProperties(row ReportRow) (string, error) {
-//  if len(row.TcBuildProperties) == 0 {
-//    return "", nil
-//  }
-//
-//  var json map[string]interface{}
-//  err := jsoniter.ConfigFastest.Unmarshal(row.TcBuildProperties, &json)
-//  if err != nil {
-//    return "", errors.WithStack(err)
-//  }
-//
-//  keys := make([]string, 0, len(json))
-//  for k := range json {
-//    keys = append(keys, k)
-//  }
-//
-//  sort.Strings(keys)
-//  p := properties.NewProperties()
-//
-//  for _, key := range keys {
-//    i := json[key]
-//    switch v := i.(type) {
-//    case bool:
-//      if v {
-//        _, _, _ = p.Set(key, "true")
-//      } else {
-//        _, _, _ = p.Set(key, "false")
-//      }
-//    case string:
-//      _, _, _ = p.Set(key, v)
-//    case int:
-//      _, _, _ = p.Set(key, strconv.Itoa(v))
-//    case float64:
-//      vInt := int(v)
-//      if float64(vInt) != v {
-//        return "", errors.Errorf("really float?")
-//      }
-//      _, _, _ = p.Set(key, strconv.Itoa(vInt))
-//    default:
-//      return "", errors.Errorf("unknown type: %v", v)
-//    }
-//  }
-//
-//  newData := tc_properties.PropertiesToJson(p)
-//
-//  // check that json is valid
-//  var validate map[string]interface{}
-//  err = jsoniter.UnmarshalFromString(newData, &validate)
-//  if err != nil {
-//    return "", errors.WithStack(err)
-//  }
-//  return newData, nil
-//}

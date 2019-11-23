@@ -76,6 +76,9 @@ type DurationEventMetrics struct {
   AppComponentCreation     int
   ProjectComponentCreation int
 
+  // project post-startup dumb-aware activities
+  ProjectDumbAware int
+
   ModuleLoading   int
   EditorRestoring int
 }

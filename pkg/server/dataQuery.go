@@ -6,9 +6,9 @@ import (
   "github.com/jmoiron/sqlx"
   "github.com/json-iterator/go"
   "github.com/pkg/errors"
+  "gopkg.in/sakura-internet/go-rison.v3"
   "math"
   "net/http"
-  "net/url"
   "regexp"
   "strings"
 )
@@ -70,22 +70,24 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
 }
 
 func ReadQuery(request *http.Request) (DataQuery, error) {
-  path := request.URL.RawPath
-  index := strings.LastIndexByte(path, '/')
+  path := request.URL.Path
+  // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
+  index := strings.IndexRune(path, '(')
   if index == -1 {
     return DataQuery{}, errors.New("query not found")
   }
-  decoded, err := url.PathUnescape(path[index+1:])
+
+  jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)
   if err != nil {
     return DataQuery{}, errors.WithStack(err)
   }
-  return readQuery(decoded)
+  return readQuery(jsonData)
 }
 
-func readQuery(s string) (DataQuery, error) {
+func readQuery(s []byte) (DataQuery, error) {
   var result DataQuery
   jsonConfig := jsoniter.ConfigFastest
-  err := jsonConfig.UnmarshalFromString(s, &result)
+  err := jsonConfig.Unmarshal(s, &result)
   if err != nil {
     return result, errors.WithStack(err)
   }

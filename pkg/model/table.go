@@ -1,7 +1,7 @@
 package model
 
 var EssentialDurationMetricNames = []string{"bootstrap", "appInitPreparation", "appInit", "pluginDescriptorLoading", "appComponentCreation", "projectComponentCreation"}
-var DurationMetricNames = append(EssentialDurationMetricNames, "moduleLoading", "editorRestoring")
+var DurationMetricNames = append(EssentialDurationMetricNames, "moduleLoading", "projectDumbAware", "editorRestoring")
 var InstantMetricNames = []string{"splash", "startUpCompleted"}
 
 // https://clickhouse.yandex/docs/en/query_language/alter/#manipulations-with-key-expressions

@@ -34,7 +34,7 @@ type MetricQuery struct {
 }
 
 func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, context context.Context) error {
-  rows, err := SelectData(query, "report", t.db, context)
+  rows, err := SelectRows(query, "report", t.db, context)
   if err != nil {
     return errors.WithStack(err)
   }

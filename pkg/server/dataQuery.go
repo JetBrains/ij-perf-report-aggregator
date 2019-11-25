@@ -70,28 +70,33 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
 }
 
 func ReadQuery(request *http.Request) (DataQuery, error) {
+  var result DataQuery
+  err := readQueryFromRequest(request, &result)
+  return result, err
+}
+
+func readQueryFromRequest(request *http.Request, v interface{}) error {
   path := request.URL.Path
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
   index := strings.IndexRune(path, '(')
   if index == -1 {
-    return DataQuery{}, errors.New("query not found")
+    return errors.New("query not found")
   }
 
   jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)
   if err != nil {
-    return DataQuery{}, errors.WithStack(err)
+    return errors.WithStack(err)
   }
-  return readQuery(jsonData)
+  return readQuery(jsonData, v)
 }
 
-func readQuery(s []byte) (DataQuery, error) {
-  var result DataQuery
+func readQuery(s []byte, v interface{}) error {
   jsonConfig := jsoniter.ConfigFastest
-  err := jsonConfig.Unmarshal(s, &result)
+  err := jsonConfig.Unmarshal(s, v)
   if err != nil {
-    return result, errors.WithStack(err)
+    return errors.WithStack(err)
   }
-  return result, nil
+  return nil
 }
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
@@ -100,15 +105,23 @@ var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
 // add ().space,'*
 var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
 
-func SelectData(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Rows, error) {
-  sqlQuery, args, err := buildSql(query, table)
+func SelectRows(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Rows, error) {
+  sqlQuery, args, err := BuildSql(query, table)
   if err != nil {
     return nil, err
   }
   return db.QueryContext(context, sqlQuery, args...)
 }
 
-func buildSql(query DataQuery, table string) (string, []interface{}, error) {
+func SelectRow(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Row, error) {
+  sqlQuery, args, err := BuildSql(query, table)
+  if err != nil {
+    return nil, err
+  }
+  return db.QueryRowContext(context, sqlQuery, args...), nil
+}
+
+func BuildSql(query DataQuery, table string) (string, []interface{}, error) {
   var sb strings.Builder
   var args []interface{}
 

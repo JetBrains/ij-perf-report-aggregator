@@ -119,7 +119,7 @@ func formatFloat(v float64) string {
 }
 
 func analyzeGold(db *sqlx.DB, branch string, goldWeekStart string) ([]*Item, error) {
-  var totalResult []*Item
+  totalResult := make([]*Item, 0, 4)
 
   // We compute aggregated data for machine group, but db contains only machine and not group. So, have to execute request for each machine group separately.
   machineInfo := GetMachineInfo()

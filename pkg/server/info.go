@@ -2,7 +2,7 @@ package server
 
 import (
   "errors"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "net/http"
 )
@@ -49,7 +49,7 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  WriteInfo(buffer, productNames, groupNames, model.DurationMetricNames, model.InstantMetricNames, productNameToMachineMap)
+  WriteInfo(buffer, productNames, groupNames, analyzer.MetricDescriptors, productNameToMachineMap)
   return CopyBuffer(buffer), nil
 }
 

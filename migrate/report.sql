@@ -21,9 +21,15 @@ create table report2
   `pluginDescriptorLoading_d`  UInt16 CODEC(Gorilla, ZSTD(19)),
   `appComponentCreation_d`     UInt16 CODEC(Gorilla, ZSTD(19)),
   `projectComponentCreation_d` UInt16 CODEC(Gorilla, ZSTD(19)),
+
+  `projectFrameInit_d`         UInt16 CODEC(Gorilla, ZSTD(19)),
+  `projectProfileLoading_d`    UInt16 CODEC(Gorilla, ZSTD(19)),
+
   `moduleLoading_d`            UInt16 CODEC(Gorilla, ZSTD(19)),
   `projectDumbAware_d`         UInt16 CODEC(Gorilla, ZSTD(19)),
+
   `editorRestoring_d`          UInt16 CODEC(Gorilla, ZSTD(19)),
+  `editorRestoringTillPaint_d` UInt16 CODEC(Gorilla, ZSTD(19)),
 
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(19)),
   `startUpCompleted_i`         Int32 CODEC(Gorilla, ZSTD(19))

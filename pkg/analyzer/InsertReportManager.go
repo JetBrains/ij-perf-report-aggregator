@@ -2,7 +2,6 @@ package analyzer
 
 import (
   "context"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
@@ -52,21 +51,30 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
     return nil, errors.WithStack(err)
   }
 
+  // product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+  //    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+  //    branch,
+  //    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3
   var sb strings.Builder
-  sb.WriteString("insert into " + tableName + " values (")
+  sb.WriteString("insert into ")
+  sb.WriteString(tableName)
+  sb.WriteString(" (product, machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
+  for _, metric := range MetricDescriptors {
+    sb.WriteRune(',')
+    sb.WriteString(metric.Name)
+  }
+  sb.WriteString(") values (")
 
-  for i := 0; i < 11; i++ {
+  for i, n := 0, nonMetricFieldCount + len(MetricDescriptors); i < n; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
     sb.WriteRune('?')
   }
-  model.ProcessMetricName(func(name string, isInstant bool) {
-    sb.WriteString(", ?")
-  })
   sb.WriteRune(')')
 
-  insertManager, err := sql_util.NewBulkInsertManager(db, context, sb.String(), insertWorkerCount, logger.Named("report"))
+  sql := sb.String()
+  insertManager, err := sql_util.NewBulkInsertManager(db, context, sql, insertWorkerCount, logger.Named("report"))
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -146,10 +154,12 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     return errors.WithStack(err)
   }
 
-  durationMetrics, instantMetrics := ComputeMetrics(report, logger)
-  // or both null, or not - no need to check each one
-  if durationMetrics == nil || instantMetrics == nil {
-    return ErrMetricsCannotBeComputed
+  project := report.Project
+  if len(project) == 0 {
+    project = providedProject
+    if len(project) == 0 {
+      return errors.New("unknown project")
+    }
   }
 
   buildTimeUnix, err := GetBuildTimeFromReport(report)
@@ -161,71 +171,15 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     buildTimeUnix = row.BuildTime
   }
 
-  project := report.Project
-  if len(project) == 0 {
-    project = providedProject
-    if len(project) == 0 {
-      return errors.New("unknown project")
-    }
-  }
-
-  args := []interface{}{product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+  args := make([]interface{}, 0, nonMetricFieldCount+len(MetricDescriptors))
+  args = append(args, product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
     row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
     branch,
-    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3}
-  for _, name := range model.DurationMetricNames {
-    var v int
-    switch name {
-    case "bootstrap":
-      v = durationMetrics.Bootstrap
-    case "appInitPreparation":
-      v = durationMetrics.AppInitPreparation
-    case "appInit":
-      v = durationMetrics.AppInit
-    case "pluginDescriptorLoading":
-      v = durationMetrics.PluginDescriptorLoading
-    case "appComponentCreation":
-      v = durationMetrics.AppComponentCreation
-    case "projectComponentCreation":
-      v = durationMetrics.ProjectComponentCreation
+    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
 
-    case "moduleLoading":
-      v = durationMetrics.ModuleLoading
-    case "projectDumbAware":
-      v = durationMetrics.ProjectDumbAware
-    case "editorRestoring":
-      v = durationMetrics.EditorRestoring
-    default:
-      return errors.New("unknown metric " + name)
-    }
-
-    if v > 65535 {
-      return errors.Errorf("value outside of uint16 range (generatedTime: %d, value: %d)", row.GeneratedTime, v)
-    } else if v == -1 {
-      // undefined
-      v = 0
-    } else if v < 0 {
-      return errors.Errorf("value must be positive (generatedTime: %d, value: %d)", row.GeneratedTime, v)
-    }
-
-    args = append(args, v)
-  }
-
-  for _, name := range model.InstantMetricNames {
-    var v int
-    switch name {
-    case "splash":
-      v = instantMetrics.Splash
-      if v < 0 {
-        continue
-      }
-    case "startUpCompleted":
-      v = instantMetrics.StartUpCompleted
-    default:
-      return errors.New("unknown metric " + name)
-    }
-
-    args = append(args, v)
+  err = ComputeMetrics(report, &args, logger)
+  if err != nil {
+    return err
   }
 
   _, err = insertStatement.ExecContext(t.context, args...)

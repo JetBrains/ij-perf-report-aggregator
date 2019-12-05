@@ -27,12 +27,6 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
   return CopyBuffer(buffer), nil
 }
 
-type MetricQuery struct {
-  BaseMetricQuery
-
-  order rune
-}
-
 func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, context context.Context) error {
   rows, err := SelectRows(query, "report", t.db, context)
   if err != nil {
@@ -121,11 +115,18 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
           continue
         }
 
+        v := *(columnPointers[index].(*interface{}))
+
+        if v == uint16Zero {
+          // skip 0 values (0 as null - not existent)
+          continue
+        }
+
         jsonWriter.S(`,"`)
         jsonWriter.S(field.Name)
         jsonWriter.S(`":`)
 
-        switch untypedValue := (*(columnPointers[index].(*interface{}))).(type) {
+        switch untypedValue := v.(type) {
         case float64:
           jsonWriter.F(math.Round(untypedValue))
         case float32:
@@ -153,3 +154,5 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
 
   return nil
 }
+
+const uint16Zero = uint16(0)

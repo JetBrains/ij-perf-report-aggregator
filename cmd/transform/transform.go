@@ -58,6 +58,9 @@ type TimeRange struct {
   Max time.Time
 }
 
+// set insertWorkerCount to 1 if not enough memory
+const insertWorkerCount = 2
+
 func transform(clickHouseUrl string, logger *zap.Logger) error {
   db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
   if err != nil {
@@ -67,14 +70,16 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  // set insertWorkerCount to 1 - not enough memory
-  insertReportManager, err := analyzer.NewInsertReportManager(db, taskContext, "report2", 2, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(db, taskContext, "report2", insertWorkerCount, logger)
   if err != nil {
     return err
   }
 
-  // due to large TC properties
-  insertReportManager.InsertManager.BatchSize = 2000
+  // reduce batch size if not enough memory
+  //insertReportManager.InsertManager.BatchSize = 2000
+
+  //var products []string
+  //db.SelectContext(taskContext, &products, "select distinct product from report")
 
   // the whole select result in memory - so, limit
   var timeRange TimeRange
@@ -85,8 +90,8 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
 
   logger.Info("time range", zap.Time("start", timeRange.Min), zap.Time("end", timeRange.Max))
 
-  // 1 week
-  selectDuration := time.Hour * 24 * 7
+  // 4 weeks
+  selectDuration := time.Hour * 24 * 7 * 4
   for current := timeRange.Min; current.Before(timeRange.Max); {
     next := current.Add(selectDuration)
     err = process(db, current, next, insertReportManager, taskContext, logger)
@@ -120,7 +125,7 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
            build_c1, build_c2, build_c3, project
     from report
     where generated_time >= ? and generated_time < ?
-    order by product, machine, branch, build_c1, build_c2, build_c3, build_time, project, generated_time
+    order by product, machine, branch, build_c1, build_c2, build_c3, project, build_time, generated_time
   `, startTime, endTime)
   if err != nil {
     return errors.WithStack(err)

@@ -133,10 +133,7 @@ func BuildSql(query DataQuery, table string) (string, []interface{}, error) {
   sb.WriteString("select")
 
   if len(query.Dimensions) != 0 {
-    err := writeDimensions(query, &sb)
-    if err != nil {
-      return "", args, err
-    }
+    writeDimensions(query, &sb)
   }
 
   for i, field := range query.Fields {
@@ -200,7 +197,7 @@ func BuildSql(query DataQuery, table string) (string, []interface{}, error) {
   return sb.String(), args, nil
 }
 
-func writeDimensions(query DataQuery, sb *strings.Builder) error {
+func writeDimensions(query DataQuery, sb *strings.Builder) {
   for i, dimension := range query.Dimensions {
     if i != 0 {
       sb.WriteRune(',')
@@ -208,7 +205,6 @@ func writeDimensions(query DataQuery, sb *strings.Builder) error {
     sb.WriteRune(' ')
     writeDimension(dimension, sb)
   }
-  return nil
 }
 
 func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {

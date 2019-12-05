@@ -1,3 +1,5 @@
+{% import "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer" %}
+
 {% stripspace %}
 {% func httpError(error *HttpError) %}
 {
@@ -32,19 +34,18 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, groupNames []string, essentialMetricNames []string, instantMetricNames []string, productNameToMachineNames map[string]map[string]*MachineGroup) %}
+{% func Info(productNames []string, groupNames []string, metrics []*analyzer.Metric, productNameToMachineNames map[string]map[string]*MachineGroup) %}
 {
   "productNames": {%= safeStringList(productNames) %},
-  "durationMetricNames": [
-    {% for i, name := range essentialMetricNames %}
+  "metrics": [
+    {% for i, metric := range metrics %}
       {% if i != 0 %},{% endif %}
-      "{%s= name %}"
-    {% endfor %}
-  ],
-  "instantMetricNames": [
-    {% for i, name := range instantMetricNames %}
-      {% if i != 0 %},{% endif %}
-      "{%s= name %}"
+      {
+        "name": {%q= metric.Name %}
+        {% if metric.IsInstant %}
+          , "isInstant": true
+        {% endif %}
+      }
     {% endfor %}
   ],
   "productToMachine": {

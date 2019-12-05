@@ -65,27 +65,3 @@ type Activity struct {
   End      int `json:"end"`
   Duration int `json:"duration"`
 }
-
-// computed metrics
-type DurationEventMetrics struct {
-  Bootstrap               int
-  AppInitPreparation      int
-  AppInit                 int
-  PluginDescriptorLoading int
-
-  AppComponentCreation     int
-  ProjectComponentCreation int
-
-  // project post-startup dumb-aware activities
-  ProjectDumbAware int
-
-  ModuleLoading   int
-  EditorRestoring int
-}
-
-type InstantEventMetrics struct {
-  // value - not duration, but start, because it is instant event and not duration event
-  Splash int
-
-  StartUpCompleted int
-}

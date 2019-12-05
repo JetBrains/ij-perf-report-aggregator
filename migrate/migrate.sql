@@ -4,9 +4,9 @@
 2. backup old database (the whole clickhouse directory).
 3. use clickhouse-client because other client read timeout maybe not enough (copy data is a long operation)
 
-docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.16.2.2 --host clickhouse-server
+docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.17.4.11 --host clickhouse-server
 
-docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.16.2.2 --host clickhouse-server
+docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.17.4.11 --host clickhouse-server
 
 SELECT
     cast(product, 'UInt8') AS product,

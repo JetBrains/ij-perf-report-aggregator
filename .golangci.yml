@@ -3,7 +3,6 @@ linters:
     - bodyclose
     - gocritic
     - gocyclo
-    - interfacer
     - maligned
     - prealloc
     - scopelint

@@ -23,6 +23,9 @@ func TestAdvancedFilter(t *testing.T) {
   assert := assert.New(t)
 
   sql, args, err := BuildSql(query, "test")
+  if err != nil {
+    t.Error(err)
+  }
   assert.Equal("select from test where generated_time > subtractMonths(now(), 1)", sql)
   assert.Empty(args)
 }
@@ -42,6 +45,9 @@ func TestLimit(t *testing.T) {
   assert := assert.New(t)
 
   sql, args, err := BuildSql(query, "test")
+  if err != nil {
+    t.Error(err)
+  }
   assert.Equal("select from test limit 1", sql)
   assert.Empty(args)
 }

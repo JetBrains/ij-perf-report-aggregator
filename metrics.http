@@ -8,44 +8,6 @@ Accept: application/json
 
 ###
 
-GET http://localhost:8428/api/v1/query?query=quantile(0.5, bootstrap_d{product="IU",machine="1"}[5y]) by (buildC1)
-Accept: application/json
-
-###
-
-GET http://localhost:8428/api/v1/query?query=day_of_week(bootstrap_d{product="IU",machine="1"}[5y])
-Accept: application/json
-
-###
-
-GET http://localhost:8428/api/v1/query?query=count(count(bootstrap_d{product="IU",machine="1"}[5y]) by (buildC1))
-Accept: application/json
-
-###
-
-GET http://localhost:8428/api/v1/query?query=bootstrap_d{product="IU",machine="1"}[5y] start()
-Accept: application/json
-
-###
-
-GET http://localhost:8428/api/v1/query?query=bootstrap_d[5y]
-Accept: application/json
-
-###
-
-GET http://localhost:8428/api/v1/query_range?query=bootstrap_d&start=1412028000&end=1569794400&step=86400
-Accept: application/json
-
-###
-GET http://localhost:8428/api/v1/export?match[]={__name__!=""}
-
-###
-GET http://localhost:9044/info
-
-###
-GET http://localhost:9044/metrics?product=IU&machine=zlata
-
-###
 GET https://buildserver.labs.intellij.net/guestAuth/app/rest/changes?locator=build:(id:57684587)
 Authorization: Bearer {{token}}
 Accept: application/json
@@ -57,7 +19,7 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=buildType:(id:ijplatform_master_UltimateStartupPerfTestMac),status:SUCCESS,count:500,sinceDate:1570093455&fields=count,href,nextHref,build(id,agent(name))
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=buildType:(id:ijplatform_master_UltimateStartupPerfTestMac),status:SUCCESS,count:10&fields=count,href,nextHref,build(id,status,agent(name),artifact-dependencies(build(id,buildTypeId,finishDate)),artifacts(file(children(file(children(file(href)))))))
 Authorization: Bearer {{token}}
 Accept: application/json
 ###
@@ -72,7 +34,7 @@ Authorization: Bearer {{token}}
 Accept: application/json
 ###
 
-GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*)
+GET https://buildserver.labs.intellij.net/app/rest/builds/?locator=id:55176443&fields=build(*,artifacts(*))
 Authorization: Bearer {{token}}
 Accept: application/json
 ###

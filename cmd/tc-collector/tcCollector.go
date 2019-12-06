@@ -102,14 +102,14 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
 
   for _, buildTypeId := range buildTypeIds {
     q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),count:1000"
+    locator := "buildType:(id:" + buildTypeId + "),count:500"
 
     if !since.IsZero() {
       locator += ",sinceDate:" + since.Format(tcTimeFormat)
     }
 
     q.Set("locator", locator)
-    q.Set("fields", "count,href,nextHref,build(id,status,agent(name),artifact-dependencies(build(id,buildTypeId,finishDate)))")
+    q.Set("fields", "count,href,nextHref,build(id,status,agent(name),artifacts(file(children(file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
     serverUrl.RawQuery = q.Encode()
 
     nextHref, err := collector.processBuilds(serverUrl.String())
@@ -214,12 +214,12 @@ func (t *Collector) loadReports(builds []Build) error {
     return func() error {
       build := builds[taskIndex]
 
-      data, err := t.downloadStartUpReport(build)
+      dataList, err := t.downloadStartUpReports(build)
       if err != nil {
         return err
       }
 
-      if data == nil {
+      if dataList == nil {
         return nil
       }
 
@@ -238,14 +238,21 @@ func (t *Collector) loadReports(builds []Build) error {
         return err
       }
 
-      return t.reportAnalyzer.Analyze(data, model.ExtraData{
-        Machine:            build.Agent.Name,
-        TcBuildId:          build.Id,
-        TcInstallerBuildId: installerBuildId,
-        BuildTime:          buildTime,
-        TcBuildProperties:  tcBuildProperties,
-        Changes:            changes,
-      })
+      for _, data := range dataList {
+        err = t.reportAnalyzer.Analyze(data, model.ExtraData{
+          Machine:            build.Agent.Name,
+          TcBuildId:          build.Id,
+          TcInstallerBuildId: installerBuildId,
+          BuildTime:          buildTime,
+          TcBuildProperties:  tcBuildProperties,
+          Changes:            changes,
+        })
+      }
+
+      if err != nil {
+        return err
+      }
+      return nil
     }, nil
   })
   if err != nil {

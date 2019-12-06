@@ -117,7 +117,7 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
 
         v := *(columnPointers[index].(*interface{}))
 
-        if v == uint16Zero {
+        if v == uint16Zero || v == float32Zero {
           // skip 0 values (0 as null - not existent)
           continue
         }
@@ -156,3 +156,4 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
 }
 
 const uint16Zero = uint16(0)
+const float32Zero = float32(0)

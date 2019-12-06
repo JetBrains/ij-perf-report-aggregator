@@ -8,11 +8,58 @@ import (
   "go.uber.org/zap"
   "io/ioutil"
   "net/url"
+  "path"
   "strconv"
+  "strings"
 )
 
-func (t *Collector) downloadStartUpReport(build Build) ([]byte, error) {
-  artifactUrl, err := url.Parse(t.serverUrl + "/builds/id:" + strconv.Itoa(build.Id) + "/artifacts/content/run/startup/startup-stats-startup.json")
+func (t *Collector) downloadStartUpReports(build Build) ([][]byte, error) {
+  var result [][]byte
+  for _, artifact := range build.Artifacts.File {
+    err := t.findAndDownloadStartUpReports(build, artifact.Children, &result)
+    if err != nil {
+      return nil, err
+    }
+  }
+  return result, nil
+}
+
+func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[][]byte) error {
+  for _, artifact := range artifact.File {
+    if len(artifact.Url) != 0 {
+      if !strings.HasSuffix(artifact.Url, ".json") {
+        continue
+      }
+
+      name := path.Base(artifact.Url)
+      if !strings.HasPrefix(name, "startup-stats-") {
+        continue
+      }
+
+      //if name != "startup-stats-restoringEditors.json" {
+      //  continue
+      //}
+
+      artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
+      report, err := t.downloadStartUpReport(build, artifactUrlString)
+      if err != nil {
+        return err
+      }
+
+      *result = append(*result, report)
+    } else {
+      err := t.findAndDownloadStartUpReports(build, artifact.Children, result)
+      if err != nil {
+        return err
+      }
+    }
+  }
+
+  return nil
+}
+
+func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string) ([]byte, error) {
+  artifactUrl, err := url.Parse(artifactUrlString)
   if err != nil {
     return nil, errors.WithStack(err)
   }

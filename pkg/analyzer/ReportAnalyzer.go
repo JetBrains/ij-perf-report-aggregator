@@ -182,6 +182,8 @@ func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
     Product: report.ExtraData.ProductCode,
     Machine: report.ExtraData.Machine,
 
+    BuildTime: report.ExtraData.BuildTime,
+
     GeneratedTime:      report.GeneratedTime,
     TcBuildId:          getNullIfEmpty(report.ExtraData.TcBuildId),
     TcInstallerBuildId: getNullIfEmpty(report.ExtraData.TcInstallerBuildId),
@@ -213,14 +215,6 @@ func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
     return err
   }
 
-  reportRow.BuildTime, err = GetBuildTimeFromReport(report.Report)
-  if err != nil {
-    return err
-  }
-  if reportRow.BuildTime <= 0 {
-    reportRow.BuildTime = report.ExtraData.BuildTime
-  }
-
   if report.ExtraData.TcInstallerBuildId > 0 {
     err = t.insertReportManager.insertInstallerManager.Insert(report.ExtraData.TcInstallerBuildId, report.ExtraData.Changes)
     if err != nil {
@@ -228,7 +222,12 @@ func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
     }
   }
 
-  err = t.insertReportManager.Insert(reportRow, branch)
+  providedProject := report.Report.Project
+  //if len(providedProject) == 0 {
+  //  providedProject = "/q9N7EHxr8F1NHjbNQnpqb0Q0fs"
+  //}
+
+  err = t.insertReportManager.Insert(reportRow, branch, providedProject)
   if err != nil {
     return err
   }

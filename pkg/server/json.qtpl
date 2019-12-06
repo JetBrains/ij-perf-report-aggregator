@@ -34,7 +34,7 @@
 }
 {% endfunc %}
 
-{% func Info(productNames []string, groupNames []string, metrics []*analyzer.Metric, productNameToMachineNames map[string]map[string]*MachineGroup) %}
+{% func Info(productNames []string, groupNames []string, metrics []*analyzer.Metric, productNameToMachines map[string]map[string]*MachineGroup, productNameToProjects map[string]*[]string) %}
 {
   "productNames": {%= safeStringList(productNames) %},
   "metrics": [
@@ -51,7 +51,13 @@
   "productToMachine": {
     {% for i, product := range productNames %}
       {% if i != 0 %},{% endif %}
-      "{%s= product %}": {%= writeMachineGroups(groupNames, productNameToMachineNames[product]) %}
+      "{%s= product %}": {%= writeMachineGroups(groupNames, productNameToMachines[product]) %}
+    {% endfor %}
+  },
+  "productToProjects": {
+    {% for i, product := range productNames %}
+      {% if i != 0 %},{% endif %}
+      "{%s= product %}": {%= writeProjects(productNameToProjects[product]) %}
     {% endfor %}
   }
 }
@@ -88,6 +94,15 @@
       "name": {%q= groupName %},
       "children": {%= writeMachineInfoList(machineGroup.machines) %}
     }
+  {% endfor %}
+]
+{% endfunc %}
+
+{% func writeProjects(projects *[]string) %}
+[
+  {% for index, project := range *projects %}
+    {% if index != 0 %},{% endif %}
+    {%q= project %}
   {% endfor %}
 ]
 {% endfunc %}

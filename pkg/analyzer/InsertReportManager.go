@@ -2,6 +2,7 @@ package analyzer
 
 import (
   "context"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
@@ -31,6 +32,9 @@ type MetricResult struct {
 
   RawReport []byte
 
+  // maybe null
+  Report *model.Report
+
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
@@ -46,7 +50,7 @@ type InsertReportManager struct {
 }
 
 func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
-  selectStatement, err := db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and generated_time = ? limit 1")
+  selectStatement, err := db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -65,7 +69,7 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
   sb.WriteString(") values (")
 
-  for i, n := 0, nonMetricFieldCount + len(MetricDescriptors); i < n; i++ {
+  for i, n := 0, nonMetricFieldCount+len(MetricDescriptors); i < n; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
@@ -115,11 +119,11 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
 }
 
 // checks that not duplicated, warn if metrics cannot be computed
-func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
+func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedProject string) error {
   logger := t.Logger.With(zap.String("product", row.Product), zap.String("generatedTime", time.Unix(row.GeneratedTime, 0).Format(time.RFC1123)))
 
   if row.GeneratedTime <= t.MaxGeneratedTime {
-    exists, err := t.CheckExists(t.SelectStatement.QueryRow(row.Product, row.Machine, row.GeneratedTime))
+    exists, err := t.CheckExists(t.SelectStatement.QueryRow(row.Product, row.Machine, providedProject, row.GeneratedTime))
     if err != nil {
       return err
     }
@@ -130,7 +134,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string) error {
     }
   }
 
-  err := t.WriteMetrics(row.Product, row, branch, "", logger)
+  err := t.WriteMetrics(row.Product, row, branch, providedProject, logger)
   if err != nil {
     if err == ErrMetricsCannotBeComputed {
       logger.Warn(err.Error())
@@ -149,9 +153,12 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     return err
   }
 
-  report, err := ReadReport(row.RawReport)
-  if err != nil {
-    return errors.WithStack(err)
+  report := row.Report
+  if report == nil {
+    report, err = ReadReport(row.RawReport)
+    if err != nil {
+      return err
+    }
   }
 
   project := report.Project

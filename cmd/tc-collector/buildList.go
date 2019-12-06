@@ -22,6 +22,16 @@ type Build struct {
   Agent  Agent  `json:"agent"`
 
   ArtifactDependencies ArtifactDependencies `json:"artifact-dependencies"`
+  Artifacts            Artifacts            `json:"artifacts"`
+}
+
+type Artifacts struct {
+  File []Artifact `json:"file"`
+}
+
+type Artifact struct {
+  Url      string    `json:"href"`
+  Children Artifacts `json:"children"`
 }
 
 type ArtifactDependencies struct {

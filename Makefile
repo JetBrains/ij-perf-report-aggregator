@@ -59,5 +59,3 @@ update-deps:
 # kubectl port-forward svc/clickhouse 9900:9000
 
 # clickhouse server -C~/Documents/report-aggregator/deployment/ch-local-config.xml
-
-#

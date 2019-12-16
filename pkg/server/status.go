@@ -11,11 +11,26 @@ import (
   "net/http"
   "sort"
   "strconv"
+  "strings"
 )
 
+//noinspection SpellCheckingInspection
+var projectNameToTitle = map[string]string{
+  "/q9N7EHxr8F1NHjbNQnpqb0Q0fs": "joda-time",
+  "73YWaW9bytiPDGuKvwNIYMK5CKI": "simple for IJ",
+  "j1a8nhKJexyL/zyuOXJ5CFOHYzU": "simple for PS",
+  "JeNLJFVa04IA+Wasc+Hjj3z64R0": "simple for WS",
+  "nC4MRRFMVYUSQLNIvPgDt+B3JqA": "Idea",
+}
+
 type Item struct {
-  Product   string
+  Product string
+  Project string
+
+  InstallerId int `db:"tc_installer_build_id"`
+
   Bootstrap float64
+  AppInit   float64 `db:"appInit"`
 
   MachineGroup string
 }
@@ -23,8 +38,8 @@ type Item struct {
 type ActualData struct {
   Item
 
-  InstallerId int `db:"tc_installer_build_id"`
-  RunCount    int `db:"runCount"`
+  BuildTime int `db:"build_time"`
+  RunCount  int `db:"runCount"`
 }
 
 type AnalyzeResult struct {
@@ -43,6 +58,13 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
     return nil, NewHttpError(400, "The branch parameter must be alphanumeric")
   }
 
+  project := urlQuery.Get("project")
+  // simple for IJ
+  if len(project) == 0 {
+    //noinspection SpellCheckingInspection
+    project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
+  }
+
   goldWeekStart := urlQuery.Get("goldWeekStart")
   switch {
   case len(goldWeekStart) == 0:
@@ -51,7 +73,7 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
     return nil, NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
   }
 
-  result, err := CompareMetrics(t.db, branch, goldWeekStart + " 00:00:00")
+  result, err := CompareMetrics(t.db, branch, goldWeekStart+" 00:00:00")
   if err != nil {
     return nil, err
   }
@@ -73,25 +95,35 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
 
 func PrintResult(result AnalyzeResult, writer io.Writer) {
   table := tablewriter.NewWriter(writer)
-  table.SetHeader([]string{"Product", "Machine", "Gold", "Actual"})
+  table.SetHeader([]string{"Product", "Project", "Machine", "Bootstrap (g)", "Bootstrap (a)", "App Init (g)", "App Init (a)", "Installer Id"})
   table.SetAutoMergeCells(true)
   table.SetRowLine(true)
   table.SetAutoWrapText(false)
 
-  for _, item := range result.GoldItems {
-    actualItems, ok := result.CurrentItems[item.MachineGroup]
+  for _, goldItem := range result.GoldItems {
+    actualItems, ok := result.CurrentItems[goldItem.MachineGroup]
     if !ok {
-      log.Printf("error: no actual data for product %s and machine %s", item.Product, item.MachineGroup)
+      log.Printf("error: no actual data for product %s and machine %s", goldItem.Product, goldItem.MachineGroup)
       continue
     }
 
-    actualItem := actualItems[item.Product]
+    actualItem := actualItems[getItemKey(*goldItem)]
     if len(actualItem) == 0 {
-      log.Printf("error: no actual data for product %s and machine %s", item.Product, item.MachineGroup)
+      log.Printf("error: no actual data for product %s and machine %s", goldItem.Product, goldItem.MachineGroup)
       continue
     }
 
-    table.Append([]string{item.Product, item.MachineGroup, formatFloat(item.Bootstrap), formatFloat(actualItem[0].Bootstrap)})
+    projectLabel := projectNameToTitle[goldItem.Project]
+    if len(projectLabel) == 0 {
+      projectLabel = goldItem.Project
+    }
+    actualData := actualItem[0]
+    table.Append([]string{goldItem.Product, projectLabel, goldItem.MachineGroup,
+      formatFloat(goldItem.Bootstrap), formatFloat(actualData.Bootstrap),
+      formatFloat(goldItem.AppInit), formatFloat(actualData.AppInit),
+      strconv.Itoa(actualData.InstallerId),
+      //time.Unix(int64(actualData.BuildTime), 0).String(),
+    })
   }
 
   table.Render()
@@ -125,10 +157,10 @@ func analyzeGold(db *sqlx.DB, branch string, goldWeekStart string) ([]*Item, err
   machineInfo := GetMachineInfo()
   for _, groupName := range machineInfo.GroupNames {
     query, args, err := sqlx.In(`
-      select product, quantileTDigest(bootstrap_d) as bootstrap 
+      select product, project, quantileTDigest(bootstrap_d) as bootstrap, quantileTDigest(appInit_d) as appInit 
       from report 
       where branch = ? and generated_time between toDateTime(?, 'UTC') and addWeeks(toDateTime(?, 'UTC'), 1) and machine in (?)
-      group by product
+      group by product, project
     `, branch, goldWeekStart, goldWeekStart, getMachineNames(machineInfo, groupName))
     if err != nil {
       return nil, errors.WithStack(err)
@@ -152,10 +184,36 @@ func analyzeGold(db *sqlx.DB, branch string, goldWeekStart string) ([]*Item, err
   }
 
   sort.Slice(totalResult, func(i, j int) bool {
-    return totalResult[i].Product < totalResult[j].Product
+    a := totalResult[i]
+    b := totalResult[j]
+    if a.Product != b.Product {
+      return a.Product < b.Product
+    }
+    if a.Project != b.Project {
+      return a.Project < b.Project
+    }
+
+    aM := machineGroupOrder(a.MachineGroup)
+    bM := machineGroupOrder(b.MachineGroup)
+    if aM == bM {
+      return a.MachineGroup < b.MachineGroup
+    } else {
+      return aM < bM
+    }
   })
 
   return totalResult, nil
+}
+
+// wanted order: mac, linux, windows
+func machineGroupOrder(s string) int {
+  if strings.HasPrefix(s, "mac") {
+    return 1
+  } else if strings.HasPrefix(s, "Linux") {
+    return 2
+  } else {
+    return 3
+  }
 }
 
 func analyzeCurrent(db *sqlx.DB, branch string) (map[string]map[string][]ActualData, error) {
@@ -166,11 +224,17 @@ func analyzeCurrent(db *sqlx.DB, branch string) (map[string]map[string][]ActualD
   // We compute aggregated data for machine group, but db contains only machine and not group. So, have to execute request for each machine group separately.
   for _, machineGroupName := range machineInfo.GroupNames {
     // do not limit, because there are multiple products
+    // for last 3 days — to ensure that we can find installer that was enough tested (at least 4 times).
     query, args, err := sqlx.In(`
-      select product, tc_installer_build_id, count(tc_installer_build_id) as runCount, quantileTDigest(bootstrap_d) as bootstrap from report
-      where tc_installer_build_id != 0 and branch = ? and generated_time > subtractDays(now(), 1) and machine in (?)
-      group by product, tc_installer_build_id
-      order by product, runCount desc, tc_installer_build_id desc
+      select * 
+      from (
+            select product, project, tc_installer_build_id, count(tc_installer_build_id) as runCount, quantileTDigest(bootstrap_d) as bootstrap, quantileTDigest(appInit_d) as appInit
+            from report
+            where tc_installer_build_id != 0 and branch = ? and generated_time > subtractDays(now(), 3) and machine in (?)
+            group by product, project, tc_installer_build_id
+           )
+      where runCount >= 4
+      order by product, project, tc_installer_build_id desc
     `, branch, getMachineNames(machineInfo, machineGroupName))
     if err != nil {
       return nil, errors.WithStack(err)
@@ -190,23 +254,33 @@ func analyzeCurrent(db *sqlx.DB, branch string) (map[string]map[string][]ActualD
       item.MachineGroup = machineGroupName
     }
 
-    productMap := totalResult[machineGroupName]
-    if productMap == nil {
-      productMap = make(map[string][]ActualData)
-      totalResult[machineGroupName] = productMap
+    itemMap := totalResult[machineGroupName]
+    if itemMap == nil {
+      itemMap = make(map[string][]ActualData)
+      totalResult[machineGroupName] = itemMap
     }
 
     for _, item := range result {
-      list := productMap[item.Product]
+      if item.RunCount <= 3 {
+        // skip
+        continue
+      }
+
+      key := getItemKey(item.Item)
+      list := itemMap[key]
       if list == nil {
-        productMap[item.Product] = []ActualData{item}
+        itemMap[key] = []ActualData{item}
       } else {
-        productMap[item.Product] = append(list, item)
+        itemMap[key] = append(list, item)
       }
     }
   }
 
   return totalResult, nil
+}
+
+func getItemKey(item Item) string {
+  return item.Product + ":" + item.Project
 }
 
 func getMachineNames(machineInfo MachineInfo, groupName string) []string {

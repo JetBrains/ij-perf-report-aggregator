@@ -40,6 +40,12 @@ func doNotifyServer(logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
+  logger.Info("ask to backup db")
+  err = nc.Publish("db.backup", []byte("tcCollector"))
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
   // ensure that message is delivered, because app will be exited very soon
   err = nc.Flush()
   if err != nil {

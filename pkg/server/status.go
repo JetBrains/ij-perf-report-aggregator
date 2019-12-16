@@ -58,13 +58,6 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
     return nil, NewHttpError(400, "The branch parameter must be alphanumeric")
   }
 
-  project := urlQuery.Get("project")
-  // simple for IJ
-  if len(project) == 0 {
-    //noinspection SpellCheckingInspection
-    project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
-  }
-
   goldWeekStart := urlQuery.Get("goldWeekStart")
   switch {
   case len(goldWeekStart) == 0:

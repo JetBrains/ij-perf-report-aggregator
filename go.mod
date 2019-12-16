@@ -31,7 +31,6 @@ require (
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/panjf2000/ants/v2 v2.2.2
 	github.com/pkg/errors v0.8.1
-	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/cors v1.7.0
 	github.com/spaolacci/murmur3 v1.0.1-0.20190317074736-539464a789e9 // indirect
 	github.com/stretchr/testify v1.4.0
@@ -46,7 +45,7 @@ require (
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
-	golang.org/x/tools v0.0.0-20191213221258-04c2e8eff935 // indirect
+	golang.org/x/tools v0.0.0-20191216052735-49a3e744a425 // indirect
 	google.golang.org/genproto v0.0.0-20191206224255-0243a4be9c8f // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 )

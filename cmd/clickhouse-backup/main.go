@@ -7,15 +7,15 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/kelseyhightower/envconfig"
-  "github.com/robfig/cron/v3"
+  "github.com/nats-io/nats.go"
   "go.uber.org/zap"
   "strings"
   "time"
 )
 
 var lastLocalBackups []string
-const backupSuffix = ".tar"
 
+const backupSuffix = ".tar"
 var incrementalBackupCounter = 0
 const maxIncrementalBackupCount = 4
 
@@ -25,38 +25,57 @@ func main() {
     _ = logger.Sync()
   }()
 
-  spec := flag.String("spec", "", "")
+  natsUrl := flag.String("nats", "", "The NATS URL.")
   flag.Parse()
 
-  err := schedule(*spec, logger)
+  err := start(*natsUrl, logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
   }
 }
 
-func schedule(spec string, logger *zap.Logger) error {
-  scheduler := cron.New(cron.WithLogger(&ZapLoggerAdapter{logger: logger}))
+func start(natsUrl string, logger *zap.Logger) error {
+  nc, err := nats.Connect(natsUrl)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
   config := chbackup.DefaultConfig()
   config.General.DisableProgressBar = true
   config.General.BackupsToKeepLocal = maxIncrementalBackupCount + 1
   config.General.BackupsToKeepRemote = 10
-  err := envconfig.Process("", config)
+  err = envconfig.Process("", config)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  _, err = scheduler.AddFunc(spec, func() {
-    err := backup(config)
+  taskContext, cancel := util.CreateCommandContext()
+  defer cancel()
+
+  sub, err := nc.SubscribeSync("db.backup")
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  for taskContext.Err() == nil {
+    _, err := sub.NextMsgWithContext(taskContext)
+    if err != nil {
+      contextError := taskContext.Err()
+      if contextError != nil {
+        logger.Info("cancelled", zap.NamedError("reason", contextError))
+        return nil
+      }
+      return errors.WithStack(contextError)
+    }
+
+    logger.Info("backup requested")
+
+    err = backup(config)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     }
-  })
-  if err != nil {
-    return err
   }
 
-  scheduler.Run()
   return nil
 }
 
@@ -74,7 +93,7 @@ func backup(config *chbackup.Config) error {
     incrementalBackupCounter = 0
     diffFrom = ""
   } else {
-    diffFrom = strings.TrimSuffix(lastLocalBackups[len(lastLocalBackups) - 1], backupSuffix)
+    diffFrom = strings.TrimSuffix(lastLocalBackups[len(lastLocalBackups)-1], backupSuffix)
   }
 
   err = chbackup.Upload(*config, backupName, diffFrom)
@@ -91,38 +110,4 @@ func backup(config *chbackup.Config) error {
   }
 
   return nil
-}
-
-type ZapLoggerAdapter struct {
-  logger *zap.Logger
-}
-
-func toZapFields(keysAndValues []interface{}) []zap.Field {
-  var fields []zap.Field
-  for i := 0; i < len(keysAndValues); i += 2 {
-    key := keysAndValues[i].(string)
-    value := keysAndValues[i+1]
-    switch v := (value.(interface{})).(type) {
-    case time.Time:
-      fields = append(fields, zap.Time(key, v))
-    case string:
-      fields = append(fields, zap.String(key, v))
-    case int:
-      fields = append(fields, zap.Int(key, v))
-    default:
-      fields = append(fields, zap.String(key, fmt.Sprintf("%v", value)))
-    }
-  }
-  return fields
-}
-
-func (t *ZapLoggerAdapter) Info(msg string, keysAndValues ...interface{}) {
-  t.logger.Info(msg, toZapFields(keysAndValues)...)
-}
-
-func (t *ZapLoggerAdapter) Error(err error, msg string, keysAndValues ...interface{}) {
-  var fields []zap.Field
-  fields = append(fields, zap.Error(err))
-  fields = append(fields, toZapFields(keysAndValues)...)
-  t.logger.Error(msg, fields...)
 }

@@ -1,10 +1,10 @@
 package main
 
 import (
-  "flag"
   "fmt"
   "github.com/AlexAkulov/clickhouse-backup/pkg/chbackup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/kelseyhightower/envconfig"
   "github.com/nats-io/nats.go"
@@ -16,7 +16,9 @@ import (
 var lastLocalBackups []string
 
 const backupSuffix = ".tar"
+
 var incrementalBackupCounter = 0
+
 const maxIncrementalBackupCount = 4
 
 func main() {
@@ -25,16 +27,14 @@ func main() {
     _ = logger.Sync()
   }()
 
-  natsUrl := flag.String("nats", "", "The NATS URL.")
-  flag.Parse()
-
-  err := start(*natsUrl, logger)
+  err := start("nats://"+env.Get("NATS", "nats:4222"), logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
   }
 }
 
 func start(natsUrl string, logger *zap.Logger) error {
+  logger.Info("started", zap.String("nats", natsUrl))
   nc, err := nats.Connect(natsUrl)
   if err != nil {
     return errors.WithStack(err)

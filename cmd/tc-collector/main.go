@@ -35,7 +35,6 @@ func configureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) 
   clickHouseUrl := app.Flag("clickhouse", "The ClickHouse server URL.").Default("localhost:9000").String()
   tcUrl := app.Flag("tc", "The TeamCity server URL.").Required().String()
   sinceDate := app.Flag("since", "The date to force collecting since").String()
-  notifyServer := app.Flag("notify-server", "").Bool()
 
   app.Action(func(context *kingpin.ParseContext) error {
     var since time.Time
@@ -56,8 +55,9 @@ func configureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) 
       return err
     }
 
-    if *notifyServer {
-      err = doNotifyServer(logger)
+    natsUrl := os.Getenv("NATS")
+    if len(natsUrl) > 0 {
+      err = doNotifyServer(natsUrl, logger)
       if err != nil {
         return err
       }

@@ -28,9 +28,9 @@ import (
 
 const tcTimeFormat = "20060102T150405-0700"
 
-func doNotifyServer(logger *zap.Logger) error {
+func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   logger.Info("ask report aggregator server to clear cache")
-  nc, err := nats.Connect("nats://nats:4222")
+  nc, err := nats.Connect("nats://" + natsUrl)
   if err != nil {
     return errors.WithStack(err)
   }

@@ -13,7 +13,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
-	github.com/aws/aws-sdk-go v1.26.2 // indirect
+	github.com/aws/aws-sdk-go v1.26.3 // indirect
 	github.com/cespare/xxhash v1.1.0
 	github.com/deanishe/go-env v0.4.0
 	github.com/develar/errors v0.9.0
@@ -45,8 +45,8 @@ require (
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553 // indirect
 	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
-	golang.org/x/tools v0.0.0-20191216052735-49a3e744a425 // indirect
-	google.golang.org/genproto v0.0.0-20191206224255-0243a4be9c8f // indirect
+	golang.org/x/tools v0.0.0-20191217033636-bbbf87ae2631 // indirect
+	google.golang.org/genproto v0.0.0-20191216205247-b31c10ee225f // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 )
 

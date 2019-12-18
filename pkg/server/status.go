@@ -200,11 +200,14 @@ func analyzeGold(db *sqlx.DB, branch string, goldWeekStart string) ([]*Item, err
 
 // wanted order: mac, linux, windows
 func machineGroupOrder(s string) int {
-  if strings.HasPrefix(s, "mac") {
+  switch {
+  case strings.HasPrefix(s, "mac"):
     return 1
-  } else if strings.HasPrefix(s, "Linux") {
+
+  case strings.HasPrefix(s, "Linux"):
     return 2
-  } else {
+
+  default:
     return 3
   }
 }

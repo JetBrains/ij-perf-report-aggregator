@@ -2,6 +2,7 @@ package main
 
 import (
   "compress/gzip"
+  "context"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
@@ -66,7 +67,11 @@ func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string)
 
   response, err := t.get(artifactUrl.String())
   if err != nil {
-    return nil, errors.WithStack(err)
+    if err == context.Canceled {
+      return nil, err
+    } else {
+      return nil, errors.WithStack(err)
+    }
   }
 
   defer util.Close(response.Body, t.logger)

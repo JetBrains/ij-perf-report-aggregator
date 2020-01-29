@@ -47,10 +47,10 @@ update-deps:
 	GOPROXY=https://proxy.golang.org go get -u ./...
 	go mod tidy
 
-# docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:19.17.4.11
+# docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:20.1.2.4
 # clickhouse server
 
-# docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.17.4.11 --host clickhouse-server
+# docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.1.2.4 --host clickhouse-server
 # optimize table report
 
 # SELECT partition, name, active FROM system.parts WHERE table = 'report'

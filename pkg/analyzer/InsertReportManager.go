@@ -178,6 +178,10 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     buildTimeUnix = row.BuildTime
   }
 
+  if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-blade-") {
+    return nil
+  }
+
   args := make([]interface{}, 0, nonMetricFieldCount+len(MetricDescriptors))
   args = append(args, product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
     row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,

@@ -4,9 +4,9 @@
 2. backup old database (the whole clickhouse directory).
 3. use clickhouse-client because other client read timeout maybe not enough (copy data is a long operation)
 
-docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.17.4.11 --host clickhouse-server
+docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.1.2.4 --host clickhouse-server
 
-docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:19.17.4.11 --host clickhouse-server
+docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.1.2.4 --host clickhouse-server
 
 SELECT
     cast(product, 'UInt8') AS product,
@@ -34,6 +34,11 @@ ORDER BY
 INTO OUTFILE '/data/f'
 FORMAT Parquet
 */
+
+alter table report modify column machine Enum8('intellij-macos-hw-unit-1550' = 1, 'intellij-macos-hw-unit-1551' = 2,
+  'intellij-windows-hw-unit-499' = 3, 'intellij-windows-hw-unit-498' = 4,
+  'intellij-linux-hw-unit-558' = 5, 'intellij-linux-hw-unit-449' = 6, 'intellij-linux-hw-unit-450' = 7, 'intellij-linux-hw-unit-463' = 8, 'intellij-linux-hw-unit-504' = 9, 'intellij-linux-hw-unit-493' = 10, 'intellij-linux-hw-unit-556' = 11, 'intellij-linux-hw-unit-531' = 12, 'intellij-linux-hw-unit-484' = 13, 'intellij-linux-hw-unit-534' = 14,
+  'Dead agent' = 15);
 
 /* use clickhouse-client and not IDEA executor - to get progress and proper read-timeout  */
 insert into report2 select * from report;

@@ -13,7 +13,7 @@ func main() {
     _ = logger.Sync()
   }()
 
-  dbUrl := flag.String("db", "127.0.0.1:9000", "The ClickHouse database URL.")
+  dbUrl := flag.String("db", server.DefaultDbUrl, "The ClickHouse database URL.")
   natsUrl := flag.String("nats", "", "The NATS URL.")
   flag.Parse()
 

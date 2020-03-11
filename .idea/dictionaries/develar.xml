@@ -2,6 +2,7 @@
   <dictionary name="develar">
     <words>
       <w>clickhouse</w>
+      <w>gosu</w>
       <w>ijplatform</w>
       <w>intelli</w>
       <w>kubectl</w>

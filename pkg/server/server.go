@@ -17,6 +17,8 @@ import (
   "time"
 )
 
+const DefaultDbUrl = "127.0.0.1:9000"
+
 type StatsServer struct {
   db *sqlx.DB
 
@@ -27,7 +29,7 @@ type StatsServer struct {
 
 func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
-    dbUrl = "127.0.0.1:9000"
+    dbUrl = DefaultDbUrl
   }
 
   // limit max memory to use - 3GB

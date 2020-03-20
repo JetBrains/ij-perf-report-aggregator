@@ -20,7 +20,7 @@ spec:
           args: ["--db", "clickhouse:9000", "--nats", "nats://nats:4222"]
           env:
             - name: SERVER_PORT
-              value: "80"
+              value: "8080"
           resources:
             requests:
               memory: 256Mi
@@ -28,12 +28,12 @@ spec:
             limits:
               cpu: "0.9"
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           readinessProbe:
             httpGet:
               path: /health-check
-              port: 80
+              port: 8080
           livenessProbe:
             httpGet:
               path: /health-check
-              port: 80
+              port: 8080

@@ -10,8 +10,9 @@
   {% code
   keys := p.Keys()
   sort.Strings(keys)
+  isFirst := true
   %}
-  {% for i, key := range keys %}
+  {% for _, key := range keys %}
     {% code
     if isExcludedProperty(key) {
       continue
@@ -22,7 +23,10 @@
     }
     %}
 
-    {% if i != 0 %},{% endif %}
+    {% if !isFirst %},{% endif %}
+    {% code
+      isFirst = false
+    %}
 
     "{%s= key %}":
     {% if v == "true" || v == "false" || govalidator.IsInt(v) %}

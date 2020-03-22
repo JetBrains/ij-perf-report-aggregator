@@ -1,7 +1,7 @@
 create table report2
 (
-  `product`                    Enum8('IU' = 1, 'WS' = 2, 'PS' = 3) CODEC(ZSTD(19)),
-  `machine`                    Enum8('intellij-macos-hw-unit-1550' = 1, 'intellij-macos-hw-unit-1551' = 2, 'intellij-windows-hw-unit-499' = 3, 'intellij-windows-hw-unit-498' = 4, 'intellij-linux-hw-unit-558' = 5, 'intellij-linux-hw-unit-449' = 6, 'intellij-linux-hw-unit-450' = 7, 'intellij-linux-hw-unit-463' = 8, 'intellij-linux-hw-unit-504' = 9, 'intellij-linux-hw-unit-493' = 10, 'intellij-linux-hw-unit-556' = 11, 'intellij-linux-hw-unit-531' = 12, 'intellij-linux-hw-unit-484' = 13, 'intellij-linux-hw-unit-534' = 14, 'Dead agent' = 15, 'intellij-linux-hw-blade-003' = 16) CODEC(ZSTD(19)),
+  `product`                    Enum8('IU' = 1, 'WS' = 2, 'PS' = 3, 'DB' = 4, 'GO' = 5, 'RM' = 6) CODEC(ZSTD(19)),
+  `machine`                    Enum8('intellij-macos-hw-unit-1550' = 1, 'intellij-macos-hw-unit-1551' = 2, 'intellij-windows-hw-unit-499' = 3, 'intellij-windows-hw-unit-498' = 4, 'intellij-linux-hw-unit-558' = 5, 'intellij-linux-hw-unit-449' = 6, 'intellij-linux-hw-unit-450' = 7, 'intellij-linux-hw-unit-463' = 8, 'intellij-linux-hw-unit-504' = 9, 'intellij-linux-hw-unit-493' = 10, 'intellij-linux-hw-unit-556' = 11, 'intellij-linux-hw-unit-531' = 12, 'intellij-linux-hw-unit-484' = 13, 'intellij-linux-hw-unit-534' = 14) CODEC(ZSTD(19)),
   `build_time`                 DateTime CODEC(Delta(4), ZSTD(19)),
   `generated_time`             DateTime CODEC(Delta(4), ZSTD(19)),
   `project`                    FixedString(27) CODEC(ZSTD(19)),
@@ -37,4 +37,4 @@ create table report2
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))
     order by (product, machine, branch, build_c1, build_c2, build_c3, project, build_time, generated_time)
-    settings old_parts_lifetime = 10, index_granularity = 8192;
+    settings old_parts_lifetime = 10;

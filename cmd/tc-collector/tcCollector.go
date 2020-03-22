@@ -1,32 +1,49 @@
 package main
 
 import (
-  "bytes"
   "context"
-  "encoding/base64"
-  "encoding/hex"
+  "database/sql"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/json-iterator/go"
+  "github.com/jmoiron/sqlx"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
-  "io/ioutil"
-  "log"
   "net/http"
   "net/url"
   "os"
-  "runtime"
   "sort"
-  "strconv"
-  "strings"
-  "sync"
   "time"
 )
 
 const tcTimeFormat = "20060102T150405-0700"
+
+type Collector struct {
+  serverUrl string
+
+  httpClient  *http.Client
+  taskContext context.Context
+
+  reportAnalyzer *analyzer.ReportAnalyzer
+
+  logger *zap.Logger
+
+  tcSessionId atomic.String
+
+  installerBuildIdToInfo map[int]*InstallerInfo
+
+  reportExistenceChecker *ReportExistenceChecker
+}
+
+var ProductCodeToBuildName = map[string]string{
+  "IU": "Ultimate",
+  "WS": "WebStorm",
+  "PS": "PhpStorm",
+  "DB": "DataGrip",
+  "GO": "GoLand",
+  "RM": "RubyMine",
+}
 
 func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   logger.Info("ask report aggregator server to clear cache")
@@ -51,33 +68,20 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   if err != nil {
     return errors.WithStack(err)
   }
-  return err
+  return nil
 }
 
-func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, since time.Time, httpClient *http.Client, logger *zap.Logger) error {
-  //memProfiler := profile.Start(profile.MemProfile)
-  //defer func() {
-  //  memProfiler.Stop()
-  //}()
-
+func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, userSpecifiedSince time.Time, httpClient *http.Client, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, taskContext, logger)
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, taskContext, logger, func() {
+    logger.Debug("canceled by analyzer")
+    cancel()
+  })
   if err != nil {
     return err
   }
-
-  go func() {
-    err = <-reportAnalyzer.ErrorChannel
-    cancel()
-
-    if err != nil {
-      // zap doesn't print with newlines
-      log.Printf("%+v", err)
-      logger.Error("cannot analyze", zap.Error(err))
-    }
-  }()
 
   serverHost := tcUrl
   collector := &Collector{
@@ -88,10 +92,10 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     httpClient:  httpClient,
     taskContext: taskContext,
 
-    rwLock:                  &sync.RWMutex{},
-    installerBuildToChanges: make(map[int][][]byte),
+    installerBuildIdToInfo: make(map[int]*InstallerInfo),
 
     logger: logger,
+    reportExistenceChecker: &ReportExistenceChecker{},
   }
 
   serverUrl, err := url.Parse(collector.serverUrl + "/builds/")
@@ -99,203 +103,133 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     return err
   }
 
-  if since.IsZero() {
-    lastGeneratedTime := reportAnalyzer.GetLastGeneratedTime()
-    if lastGeneratedTime > 0 {
-      since = time.Unix(lastGeneratedTime, -1)
-    }
-  }
-
   for _, buildTypeId := range buildTypeIds {
+    if taskContext.Err() != nil {
+      return errors.WithStack(taskContext.Err())
+    }
+
     q := serverUrl.Query()
     locator := "buildType:(id:" + buildTypeId + "),count:500"
+
+    since := userSpecifiedSince
+    if userSpecifiedSince.IsZero() {
+      err = reportAnalyzer.Db.QueryRow("select last_time from collector_state where build_type_id = ? order by last_time desc limit 1", buildTypeId).Scan(&since)
+      if err != nil && err != sql.ErrNoRows {
+        return errors.WithStack(err)
+      }
+    }
 
     if !since.IsZero() {
       locator += ",sinceDate:" + since.Format(tcTimeFormat)
     }
 
     q.Set("locator", locator)
-    q.Set("fields", "count,href,nextHref,build(id,status,agent(name),artifacts(file(children(file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
+    q.Set("fields", "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(children(file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
     serverUrl.RawQuery = q.Encode()
 
-    nextHref, err := collector.processBuilds(serverUrl.String())
+    logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+
+    err := collector.reportExistenceChecker.reset(buildTypeId, reportAnalyzer, taskContext, since)
     if err != nil {
       return err
     }
 
-    //memProfiler.Stop()
-    //os.Exit(0)
+    // TC returns from newest to oldest, but we need
+    // 1) to insert in opposite order (less merge work for ClickHouse)
+    //2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
+    var buildsToLoad [][]*Build
 
-    for len(nextHref) != 0 {
-      nextHref, err = collector.processBuilds(serverHost + nextHref)
-      if err != nil {
-        return err
-      }
-    }
-  }
-
-  select {
-  case analyzeError := <-reportAnalyzer.ErrorChannel:
-    cancel()
-    return analyzeError
-
-  case <-reportAnalyzer.Done():
-    cancel()
-    return nil
-
-  case <-taskContext.Done():
-    return nil
-  }
-}
-
-func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error) {
-  t.rwLock.RLock()
-  result := t.installerBuildToChanges[installerBuildId]
-  t.rwLock.RUnlock()
-
-  if len(result) != 0 {
-    return result, nil
-  }
-
-  t.rwLock.Lock()
-  defer t.rwLock.Unlock()
-
-  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
-  if err != nil {
-    return nil, err
-  }
-
-  response, err := t.get(artifactUrl.String())
-  if err != nil {
-    return nil, err
-  }
-
-  defer util.Close(response.Body, t.logger)
-
-  if response.StatusCode > 300 {
-    responseBody, _ := ioutil.ReadAll(response.Body)
-    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
-  }
-
-  t.storeSessionIdCookie(response)
-
-  var changeList ChangeList
-  err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&changeList)
-  if err != nil {
-    return nil, err
-  }
-
-  var b bytes.Buffer
-  result = make([][]byte, len(changeList.List))
-  for index, change := range changeList.List {
-    data, err := hex.DecodeString(change.Version)
+    buildList, err := collector.loadBuilds(serverUrl.String())
     if err != nil {
-      return nil, errors.WithStack(err)
+      return err
     }
 
-    b.Reset()
+    buildsToLoad = append(buildsToLoad, buildList.Builds)
 
-    encoding := base64.RawStdEncoding
-    buf := make([]byte, encoding.EncodedLen(len(data)))
-    encoding.Encode(buf, data)
-    result[index] = buf
-  }
+    totalCount := len(buildList.Builds)
+    nextHref := buildList.NextHref
+    for len(buildList.NextHref) != 0 {
+      if taskContext.Err() != nil {
+        return errors.WithStack(taskContext.Err())
+      }
 
-
-  t.installerBuildToChanges[installerBuildId] = result
-  return result, nil
-}
-
-func (t *Collector) loadReports(builds []Build) error {
-  sort.Slice(builds, func(i, j int) bool {
-    return builds[i].Id < builds[j].Id
-  })
-
-  networkRequestCount := runtime.NumCPU() + 1
-  if networkRequestCount > 8 {
-    networkRequestCount = 8
-  }
-
-  err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
-    return func() error {
-      build := builds[taskIndex]
-
-      dataList, err := t.downloadStartUpReports(build)
+      buildList, err = collector.loadBuilds(serverHost + nextHref)
       if err != nil {
         return err
       }
 
-      if dataList == nil {
+      nextHref = buildList.NextHref
+      buildsToLoad = append(buildsToLoad, buildList.Builds)
+      totalCount += len(buildList.Builds)
+    }
+
+    logger.Info("load reports", zap.Int("buildCount", totalCount), zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+
+    for i := len(buildsToLoad) - 1; i >= 0; i-- {
+      builds := buildsToLoad[i]
+      if len(builds) == 0 {
+        continue
+      }
+
+      sort.Slice(builds, func(i, j int) bool {
+        return builds[i].Id < builds[j].Id
+      })
+
+      lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+
+      err = collector.loadReports(builds)
+      if err != nil {
+        return err
+      }
+
+      // commit each chunk to ensure that if later will be some error, we don't start from the beginning
+      select {
+      case analyzeError := <-reportAnalyzer.WaitAndCommit():
+        if analyzeError != nil {
+          return analyzeError
+        }
+
+        // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
+        // set last collect time to 1 second after last build in chunk
+        err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), reportAnalyzer.Db, logger)
+        if err != nil {
+          return err
+        }
+
+        // break select and continue to process next build type chunk
+        break
+
+      case <-taskContext.Done():
         return nil
       }
-
-      installerBuildId, buildTime, err := computeBuildDate(build)
-      if err != nil {
-        return err
-      }
-
-      tcBuildProperties, err := t.downloadBuildProperties(build)
-      if err != nil {
-        return err
-      }
-
-      changes, err := t.loadInstallerChanges(installerBuildId)
-      if err != nil {
-        return err
-      }
-
-      for _, data := range dataList {
-        err = t.reportAnalyzer.Analyze(data, model.ExtraData{
-          Machine:            build.Agent.Name,
-          TcBuildId:          build.Id,
-          TcInstallerBuildId: installerBuildId,
-          BuildTime:          buildTime,
-          TcBuildProperties:  tcBuildProperties,
-          Changes:            changes,
-        })
-      }
-
-      if err != nil {
-        return err
-      }
-      return nil
-    }, nil
-  })
-  if err != nil {
-    return err
+    }
   }
 
   return nil
 }
 
-func computeBuildDate(build Build) (int, int64, error) {
-  for _, dependencyBuild := range build.ArtifactDependencies.Builds {
-    if strings.HasSuffix(dependencyBuild.BuildTypeId, "_Installers") {
-      parseFinishData, err := time.Parse(tcTimeFormat, dependencyBuild.FinishDate)
-      if err != nil {
-        return -1, -1, err
-      }
-
-      return dependencyBuild.Id, parseFinishData.Unix(), nil
-    }
+func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db *sqlx.DB, logger *zap.Logger) error {
+  tx, _ := db.Begin()
+  stmt, err := tx.Prepare("insert into collector_state values (?, ?)")
+  if err != nil {
+    return errors.WithStack(err)
   }
-  return -1, -1, errors.Errorf("cannot find installer build: %+v", build)
-}
 
-type Collector struct {
-  serverUrl string
+  defer util.Close(stmt, logger)
 
-  httpClient  *http.Client
-  taskContext context.Context
+  _, err = stmt.Exec(buildTypeId, lastCollectTimeToSet)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
-  reportAnalyzer *analyzer.ReportAnalyzer
-
-  logger *zap.Logger
-
-  tcSessionId atomic.String
-
-  rwLock                  *sync.RWMutex
-  installerBuildToChanges map[int][][]byte
+  err = tx.Commit()
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return nil
 }
 
 func getTcSessionIdCookie(cookies []*http.Cookie) string {
@@ -321,13 +255,17 @@ func (t *Collector) get(url string) (*http.Response, error) {
     return nil, err
   }
 
-  return t.httpClient.Do(request)
+  response, err := t.httpClient.Do(request)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+  return response, nil
 }
 
 func (t *Collector) createRequest(url string) (*http.Request, error) {
   request, err := http.NewRequestWithContext(t.taskContext, "GET", url, nil)
   if err != nil {
-    return nil, err
+    return nil, errors.WithStack(err)
   }
 
   sessionId := t.tcSessionId.Load()

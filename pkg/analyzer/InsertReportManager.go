@@ -43,10 +43,12 @@ type MetricResult struct {
 type InsertReportManager struct {
   sql_util.InsertDataManager
 
-  context          context.Context
-  MaxGeneratedTime int64
+  context                  context.Context
+  MaxGeneratedTime                 int64
+  IsCheckThatNotAlreadyAddedNeeded bool
 
   insertInstallerManager *InsertInstallerManager
+  tableName              string
 }
 
 func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
@@ -84,7 +86,7 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
-  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 2000)
+  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 1000)
 
   installerManager, err := NewInstallerInsertManager(db, context, logger)
   if err != nil {
@@ -92,6 +94,7 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
 
   manager := &InsertReportManager{
+    tableName: tableName,
     InsertDataManager: sql_util.InsertDataManager{
       Db: db,
 
@@ -106,15 +109,6 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
 
   insertManager.AddDependency(installerManager.InsertManager)
-
-  //noinspection SqlResolve
-  var maxGeneratedTime time.Time
-  err = db.QueryRow("select max(generated_time) from " + tableName).Scan(&maxGeneratedTime)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  manager.MaxGeneratedTime = maxGeneratedTime.Unix()
-
   return manager, nil
 }
 
@@ -122,7 +116,8 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
 func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedProject string) error {
   logger := t.Logger.With(zap.String("product", row.Product), zap.String("generatedTime", time.Unix(row.GeneratedTime, 0).Format(time.RFC1123)))
 
-  if row.GeneratedTime <= t.MaxGeneratedTime {
+  // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
+  if t.IsCheckThatNotAlreadyAddedNeeded && row.GeneratedTime <= t.MaxGeneratedTime {
     exists, err := t.CheckExists(t.SelectStatement.QueryRow(row.Product, row.Machine, providedProject, row.GeneratedTime))
     if err != nil {
       return err

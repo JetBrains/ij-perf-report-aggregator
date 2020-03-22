@@ -11,7 +11,6 @@ import (
   "github.com/alecthomas/kingpin"
   "github.com/develar/errors"
   "go.uber.org/zap"
-  "log"
   "os"
   "path/filepath"
   "regexp"
@@ -33,21 +32,10 @@ func collectFromDirs(dirs []string, dbPath string, machine string, logger *zap.L
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, taskContext, logger)
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, taskContext, logger, cancel)
   if err != nil {
     return err
   }
-
-  go func() {
-    err = <-reportAnalyzer.ErrorChannel
-    cancel()
-
-    if err != nil {
-      // zap doesn't print with newlines
-      log.Printf("%+v", err)
-      logger.Error("cannot analyze", zap.Error(err))
-    }
-  }()
 
   defer util.Close(reportAnalyzer, logger)
 
@@ -66,13 +54,9 @@ func collectFromDirs(dirs []string, dbPath string, machine string, logger *zap.L
   }
 
   select {
-  case analyzeError := <-reportAnalyzer.ErrorChannel:
+  case analyzeError := <-reportAnalyzer.WaitAndCommit():
     cancel()
     return analyzeError
-
-  case <-reportAnalyzer.Done():
-    cancel()
-    return nil
 
   case <-taskContext.Done():
     return nil

@@ -33,10 +33,11 @@ func StreamPropertiesToJson(qw422016 *qt422016.Writer, p *properties.Properties)
 //line pkg/tc-properties/tcProperties.qtpl:11
 	keys := p.Keys()
 	sort.Strings(keys)
+	isFirst := true
 
-//line pkg/tc-properties/tcProperties.qtpl:14
-	for i, key := range keys {
-//line pkg/tc-properties/tcProperties.qtpl:16
+//line pkg/tc-properties/tcProperties.qtpl:15
+	for _, key := range keys {
+//line pkg/tc-properties/tcProperties.qtpl:17
 		if isExcludedProperty(key) {
 			continue
 		}
@@ -45,57 +46,60 @@ func StreamPropertiesToJson(qw422016 *qt422016.Writer, p *properties.Properties)
 			continue
 		}
 
-//line pkg/tc-properties/tcProperties.qtpl:25
-		if i != 0 {
-//line pkg/tc-properties/tcProperties.qtpl:25
+//line pkg/tc-properties/tcProperties.qtpl:26
+		if !isFirst {
+//line pkg/tc-properties/tcProperties.qtpl:26
 			qw422016.N().S(`,`)
-//line pkg/tc-properties/tcProperties.qtpl:25
+//line pkg/tc-properties/tcProperties.qtpl:26
 		}
-//line pkg/tc-properties/tcProperties.qtpl:25
-		qw422016.N().S(`"`)
-//line pkg/tc-properties/tcProperties.qtpl:27
-		qw422016.N().S(key)
-//line pkg/tc-properties/tcProperties.qtpl:27
-		qw422016.N().S(`":`)
 //line pkg/tc-properties/tcProperties.qtpl:28
-		if v == "true" || v == "false" || govalidator.IsInt(v) {
+		isFirst = false
+
 //line pkg/tc-properties/tcProperties.qtpl:29
-			qw422016.N().S(v)
-//line pkg/tc-properties/tcProperties.qtpl:30
-		} else {
+		qw422016.N().S(`"`)
 //line pkg/tc-properties/tcProperties.qtpl:31
-			qw422016.N().Q(v)
+		qw422016.N().S(key)
+//line pkg/tc-properties/tcProperties.qtpl:31
+		qw422016.N().S(`":`)
 //line pkg/tc-properties/tcProperties.qtpl:32
+		if v == "true" || v == "false" || govalidator.IsInt(v) {
+//line pkg/tc-properties/tcProperties.qtpl:33
+			qw422016.N().S(v)
+//line pkg/tc-properties/tcProperties.qtpl:34
+		} else {
+//line pkg/tc-properties/tcProperties.qtpl:35
+			qw422016.N().Q(v)
+//line pkg/tc-properties/tcProperties.qtpl:36
 		}
-//line pkg/tc-properties/tcProperties.qtpl:33
+//line pkg/tc-properties/tcProperties.qtpl:37
 	}
-//line pkg/tc-properties/tcProperties.qtpl:33
+//line pkg/tc-properties/tcProperties.qtpl:37
 	qw422016.N().S(`}`)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 }
 
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 func WritePropertiesToJson(qq422016 qtio422016.Writer, p *properties.Properties) {
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	StreamPropertiesToJson(qw422016, p)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 }
 
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 func PropertiesToJson(p *properties.Properties) string {
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	WritePropertiesToJson(qb422016, p)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	qs422016 := string(qb422016.B)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 	return qs422016
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:39
 }

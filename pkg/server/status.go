@@ -1,6 +1,7 @@
 package server
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -147,7 +148,7 @@ func analyzeGold(db *sqlx.DB, branch string, goldWeekStart string) ([]*Item, err
   totalResult := make([]*Item, 0, 4)
 
   // We compute aggregated data for machine group, but db contains only machine and not group. So, have to execute request for each machine group separately.
-  machineInfo := GetMachineInfo()
+  machineInfo := analyzer.GetMachineInfo()
   for _, groupName := range machineInfo.GroupNames {
     query, args, err := sqlx.In(`
       select product, project, quantileTDigest(bootstrap_d) as bootstrap, quantileTDigest(appInit_d) as appInit 
@@ -213,7 +214,7 @@ func machineGroupOrder(s string) int {
 }
 
 func analyzeCurrent(db *sqlx.DB, branch string) (map[string]map[string][]ActualData, error) {
-  machineInfo := GetMachineInfo()
+  machineInfo := analyzer.GetMachineInfo()
 
   totalResult := make(map[string]map[string][]ActualData, len(machineInfo.GroupNames))
 
@@ -279,7 +280,7 @@ func getItemKey(item Item) string {
   return item.Product + ":" + item.Project
 }
 
-func getMachineNames(machineInfo MachineInfo, groupName string) []string {
+func getMachineNames(machineInfo analyzer.MachineInfo, groupName string) []string {
   var machineNames []string
   for name, otherGroupName := range machineInfo.MachineToGroupName {
     if groupName == otherGroupName {

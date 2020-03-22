@@ -10,17 +10,20 @@ import (
   "github.com/tdewolff/minify/v2"
   "github.com/tdewolff/minify/v2/json"
   "github.com/valyala/fastjson"
+  "go.uber.org/atomic"
   "go.uber.org/multierr"
   "go.uber.org/zap"
+  "log"
   "strconv"
   "strings"
   "sync"
 )
 
 type ReportAnalyzer struct {
-  input        chan *model.ReportInfo
-  waitChannel  chan struct{}
-  ErrorChannel chan error
+  insertQueue chan *ReportInfo
+  DoneChannel chan error
+
+  firstError atomic.Value
 
   analyzeContext context.Context
 
@@ -30,18 +33,18 @@ type ReportAnalyzer struct {
   minifier *minify.M
   Db       *sqlx.DB
 
-  insertReportManager *InsertReportManager
+  InsertReportManager *InsertReportManager
 
   logger *zap.Logger
 }
 
-func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, logger *zap.Logger) (*ReportAnalyzer, error) {
+func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, logger *zap.Logger, cancelOnError context.CancelFunc) (*ReportAnalyzer, error) {
   m := minify.New()
   m.AddFunc("json", json.Minify)
 
   // https://github.com/ClickHouse/ClickHouse/issues/2833
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0  &compress=1&send_timeout=30000&receive_timeout=3000")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -52,12 +55,13 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
   }
 
   analyzer := &ReportAnalyzer{
-    input:          make(chan *model.ReportInfo, 32),
+    insertQueue:    make(chan *ReportInfo, 32),
     analyzeContext: analyzeContext,
-    waitChannel:    make(chan struct{}),
-    ErrorChannel:   make(chan error),
+    DoneChannel:    make(chan error),
 
-    insertReportManager:    insertReportManager,
+    waitGroup: sync.WaitGroup{},
+
+    InsertReportManager: insertReportManager,
 
     minifier: m,
     Db:       db,
@@ -69,17 +73,27 @@ func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, 
     for {
       select {
       case <-analyzeContext.Done():
-        logger.Debug("analyze stopped")
+        logger.Debug("analyze stopped", zap.String("reason", "context cancelled"))
         return
 
-      case report, ok := <-analyzer.input:
+      case report, ok := <-analyzer.insertQueue:
         if !ok {
           return
         }
 
         err := analyzer.insert(report)
         if err != nil {
-          analyzer.ErrorChannel <- err
+          logger.Error("analyze stopped", zap.String("reason", "error occurred"), zap.Error(err))
+          analyzer.firstError.Store(err)
+          // first, publish error
+          analyzer.DoneChannel <- err
+          cancelOnError()
+
+          // zap doesn't print with newlines
+          log.Printf("%+v", err)
+
+          // do not process insertQueue anymore
+          return
         }
       }
     }
@@ -108,14 +122,40 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return errors.New("machine is not specified")
   }
 
-  reportInfo := &model.ReportInfo{Report: report, ExtraData: extraData}
-
-  if t.analyzeContext.Err() != nil {
-    return nil
-  }
-
   // normalize to compute consistent unique id
-  reportInfo.RawData, err = t.minifier.Bytes("json", data)
+  rawData, err := t.minifier.Bytes("json", data)
+  if err != nil {
+    return err
+  }
+
+  generatedTime, err := computeGeneratedTime(report, extraData)
+  if err != nil {
+    return err
+  }
+
+  reportInfo := &ReportInfo{
+    report:    report,
+    extraData: extraData,
+    row: &MetricResult{
+      Product: extraData.ProductCode,
+      Machine: extraData.Machine,
+
+      BuildTime: extraData.BuildTime,
+
+      GeneratedTime:      generatedTime,
+      TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
+      TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
+      TcBuildProperties:  extraData.TcBuildProperties,
+
+      RawReport: rawData,
+    },
+  }
+
+  buildComponents := strings.Split(extraData.BuildNumber, ".")
+  if len(buildComponents) == 2 {
+    buildComponents = append(buildComponents, "0")
+  }
+  reportInfo.row.BuildC1, reportInfo.row.BuildC2, reportInfo.row.BuildC3, err = splitBuildNumber(buildComponents)
   if err != nil {
     return err
   }
@@ -124,110 +164,88 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return nil
   }
 
-  err = computeGeneratedTime(reportInfo, extraData)
-  if err != nil {
-    return err
+  if t.analyzeContext.Err() != nil {
+    return nil
   }
 
-  t.input <- reportInfo
-  return nil
-}
-
-func computeGeneratedTime(reportInfo *model.ReportInfo, extraData model.ExtraData) error {
-  if reportInfo.Report.Generated == "" {
-    if extraData.LastGeneratedTime <= 0 {
-      return errors.New("generated time not in report and not provided explicitly")
-    }
-    reportInfo.GeneratedTime = extraData.LastGeneratedTime
-  } else {
-    parsedTime, err := parseTime(reportInfo.Report.Generated)
-    if err != nil {
-      return err
-    }
-    reportInfo.GeneratedTime = parsedTime.Unix()
-  }
-  return nil
-}
-
-func (t *ReportAnalyzer) Close() error {
-  t.closeOnce.Do(func() {
-    close(t.input)
-  })
-  return errors.WithStack(multierr.Combine(t.insertReportManager.insertInstallerManager.Close(), t.insertReportManager.Close(), t.Db.Close()))
-}
-
-func (t *ReportAnalyzer) Wait() {
-  t.waitGroup.Wait()
-}
-
-func (t *ReportAnalyzer) Done() <-chan struct{} {
-  go func() {
-    t.waitGroup.Wait()
-
-    err := t.insertReportManager.InsertManager.CommitAndWait()
-    if err != nil {
-      t.ErrorChannel <- err
-    }
-
-    close(t.waitChannel)
-  }()
-  return t.waitChannel
-}
-
-func (t *ReportAnalyzer) insert(report *model.ReportInfo) error {
-  t.waitGroup.Add(1)
-  defer t.waitGroup.Done()
-
-  reportRow := &MetricResult{
-    Product: report.ExtraData.ProductCode,
-    Machine: report.ExtraData.Machine,
-
-    BuildTime: report.ExtraData.BuildTime,
-
-    GeneratedTime:      report.GeneratedTime,
-    TcBuildId:          getNullIfEmpty(report.ExtraData.TcBuildId),
-    TcInstallerBuildId: getNullIfEmpty(report.ExtraData.TcInstallerBuildId),
-    TcBuildProperties:  report.ExtraData.TcBuildProperties,
-
-    RawReport: report.RawData,
-  }
-
-  var branch string
-  if len(report.ExtraData.TcBuildProperties) == 0 {
-    branch = "master"
+  if len(extraData.TcBuildProperties) == 0 {
+    reportInfo.branch = "master"
   } else {
     //noinspection SpellCheckingInspection
-    branch = fastjson.GetString(report.ExtraData.TcBuildProperties, "vcsroot.branch")
-    if len(branch) == 0 {
-      t.logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", report.ExtraData.TcBuildProperties))
+    reportInfo.branch = fastjson.GetString(extraData.TcBuildProperties, "vcsroot.branch")
+    if len(reportInfo.branch) == 0 {
+      t.logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
       return errors.New("cannot infer branch from TC properties")
     }
   }
 
-  buildComponents := strings.Split(report.ExtraData.BuildNumber, ".")
-  if len(buildComponents) == 2 {
-    buildComponents = append(buildComponents, "0")
-  }
+  t.waitGroup.Add(1)
+  t.insertQueue <- reportInfo
+  return nil
+}
 
-  var err error
-  reportRow.BuildC1, reportRow.BuildC2, reportRow.BuildC3, err = splitBuildNumber(buildComponents)
-  if err != nil {
-    return err
-  }
+type ReportInfo struct {
+  report    *model.Report
+  branch    string
+  extraData model.ExtraData
 
-  if report.ExtraData.TcInstallerBuildId > 0 {
-    err = t.insertReportManager.insertInstallerManager.Insert(report.ExtraData.TcInstallerBuildId, report.ExtraData.Changes)
+  row *MetricResult
+}
+
+func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (int64, error) {
+  if report.Generated == "" {
+    if extraData.LastGeneratedTime <= 0 {
+      return -1, errors.New("generated time not in report and not provided explicitly")
+    }
+    return extraData.LastGeneratedTime, nil
+  } else {
+    parsedTime, err := parseTime(report.Generated)
+    if err != nil {
+      return -1, err
+    }
+    return parsedTime.Unix(), nil
+  }
+}
+
+func (t *ReportAnalyzer) Close() error {
+  t.closeOnce.Do(func() {
+    close(t.insertQueue)
+  })
+  return errors.WithStack(multierr.Combine(t.InsertReportManager.insertInstallerManager.Close(), t.InsertReportManager.Close(), t.Db.Close()))
+}
+
+func (t *ReportAnalyzer) WaitAndCommit() <-chan error {
+  go func() {
+    t.waitGroup.Wait()
+
+    if t.firstError.Load() != nil {
+      return
+    }
+
+    err := t.InsertReportManager.InsertManager.CommitAndWait()
+    t.DoneChannel <- err
+  }()
+  return t.DoneChannel
+}
+
+func (t *ReportAnalyzer) insert(report *ReportInfo) error {
+  defer t.waitGroup.Done()
+
+  reportRow := report.row
+
+  if report.extraData.TcInstallerBuildId > 0 {
+    err := t.InsertReportManager.insertInstallerManager.Insert(report.extraData.TcInstallerBuildId, report.extraData.Changes)
     if err != nil {
       return err
     }
   }
 
-  providedProject := report.Report.Project
+  providedProject := report.report.Project
   //if len(providedProject) == 0 {
-  //  providedProject = "/q9N7EHxr8F1NHjbNQnpqb0Q0fs"
+  //  providedProject = ""
   //}
 
-  err = t.insertReportManager.Insert(reportRow, branch, providedProject)
+  err := t.InsertReportManager.Insert(reportRow, report.branch, providedProject)
   if err != nil {
     return err
   }
@@ -256,8 +274,4 @@ func splitBuildNumber(buildComponents []string) (int, int, int, error) {
     return 0, 0, 0, errors.WithStack(err)
   }
   return buildC1, buildC2, buildC3, nil
-}
-
-func (t *ReportAnalyzer) GetLastGeneratedTime() int64 {
-  return t.insertReportManager.MaxGeneratedTime
 }

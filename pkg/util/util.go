@@ -26,6 +26,7 @@ func CreateCommandContext() (context.Context, context.CancelFunc) {
   signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
   go func() {
     <-signals
+    println("cancel on signal")
     cancel()
   }()
   return taskContext, cancel

@@ -22,14 +22,6 @@ type Report struct {
   TotalDurationActual int `json:"totalDurationActual"`
 }
 
-type ReportInfo struct {
-  Report *Report
-
-  RawData       []byte
-  GeneratedTime int64
-  ExtraData     ExtraData
-}
-
 type ExtraData struct {
   LastGeneratedTime int64
   BuildTime         int64

@@ -17,6 +17,12 @@ var excludedTcProperties = map[string]bool{
   "env.ARTIFACTORY_API_KEY":                            true,
   "env.APPL_PASSWORD":                                  true,
   "jetbrains.sign.service.secret":                      true,
+  "Python":                                             true,
+  "AnyPython":                                          true,
+  "artifacts.path":                                     true,
+  "build.xml.path":                                     true,
+  "env.ARTIFACTORY_URL":                                true,
+  "teamcity.build.triggeredBy":                         true,
 }
 
 func ReadProperties(data []byte) ([]byte, error) {
@@ -34,6 +40,7 @@ func isExcludedProperty(key string) bool {
   if excludedTcProperties[key] ||
     // ignore dep
     strings.HasPrefix(key, "dep.") ||
+    strings.HasPrefix(key, "Python.") ||
     strings.HasPrefix(key, "teamcity.nuget.") ||
     strings.HasPrefix(key, "teamcity.torrent.") ||
     strings.HasPrefix(key, "secure:teamcity.") ||

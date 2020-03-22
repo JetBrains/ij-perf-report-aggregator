@@ -4,6 +4,7 @@ import (
   "context"
   "crypto/tls"
   _ "github.com/ClickHouse/clickhouse-go"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -22,7 +23,7 @@ const DefaultDbUrl = "127.0.0.1:9000"
 type StatsServer struct {
   db *sqlx.DB
 
-  machineInfo MachineInfo
+  machineInfo analyzer.MachineInfo
 
   logger *zap.Logger
 }
@@ -45,7 +46,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
     logger: logger,
 
-    machineInfo: GetMachineInfo(),
+    machineInfo: analyzer.GetMachineInfo(),
   }
 
   cacheManager := NewResponseCacheManager(logger)

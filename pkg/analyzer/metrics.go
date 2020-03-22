@@ -83,7 +83,8 @@ func init() {
     // old name
     "project inspection profiles loading": projectProfileLoading,
 
-    "module loading": createRequiredMetric("moduleLoading_d"),
+    // light edit mode doesn't have moduleLoading phase
+    "module loading": createMetric("moduleLoading_d"),
     "project post-startup dumb-aware activities": createMetric("projectDumbAware_d"),
 
     "editor restoring":            editorRestoring,
@@ -140,6 +141,7 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
 
   is14orGreater := version.Compare(report.Version, "14", ">=")
 
+  var notFoundMetrics []string
   for _, metric := range MetricDescriptors {
     if (*result)[nonMetricFieldCount+metric.index] == -1 {
       if metric.isRequired {
@@ -152,9 +154,13 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
       // undefined
       (*result)[nonMetricFieldCount+metric.index] = 0
       if is14orGreater || (metric.Name != "editorRestoringTillPaint_d" && metric.Name != "projectProfileLoading_d") {
-        logger.Debug("metric not found", zap.String("name", metric.Name))
+        notFoundMetrics = append(notFoundMetrics, metric.Name)
       }
     }
+  }
+
+  if len(notFoundMetrics) > 0 {
+    logger.Debug("metrics not found", zap.Strings("name", notFoundMetrics))
   }
 
   return nil

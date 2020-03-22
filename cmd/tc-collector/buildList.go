@@ -13,16 +13,25 @@ type BuildList struct {
   Href     string `json:"href"`
   NextHref string `json:"nextHref"`
 
-  Builds []Build `json:"build"`
+  Builds []*Build `json:"build"`
 }
 
 type Build struct {
-  Id     int    `json:"id"`
-  Status string `json:"status"`
-  Agent  Agent  `json:"agent"`
+  Id        int    `json:"id"`
+  Status    string `json:"status"`
+  Agent     Agent  `json:"agent"`
+  StartDate string `json:"startDate"`
 
   ArtifactDependencies ArtifactDependencies `json:"artifact-dependencies"`
   Artifacts            Artifacts            `json:"artifacts"`
+
+  installerInfo *InstallerInfo
+}
+
+type InstallerInfo struct {
+  id        int
+  changes   [][]byte
+  buildTime int64
 }
 
 type Artifacts struct {
@@ -48,24 +57,24 @@ type Agent struct {
   Name string `json:"name"`
 }
 
-func (t *Collector) processBuilds(url string) (string, error) {
+func (t *Collector) loadBuilds(url string) (*BuildList, error) {
   t.logger.Info("request", zap.String("url", url))
 
   request, err := t.createRequest(url)
   if err != nil {
-    return "", err
+    return nil, err
   }
 
   response, err := t.httpClient.Do(request)
   if err != nil {
-    return "", err
+    return nil, errors.WithStack(err)
   }
 
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
     responseBody, _ := ioutil.ReadAll(response.Body)
-    return "", errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)
@@ -73,14 +82,9 @@ func (t *Collector) processBuilds(url string) (string, error) {
   var result BuildList
   err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&result)
   if err != nil {
-    return "", err
+    return nil, errors.WithStack(err)
   }
-
-  err = t.loadReports(result.Builds)
-  if err != nil {
-    return "", err
-  }
-  return result.NextHref, nil
+  return &result, nil
 }
 
 type ChangeList struct {

@@ -6,13 +6,14 @@ import (
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
+  "golang.org/x/tools/container/intsets"
 )
 
 type InsertInstallerManager struct {
   sql_util.InsertDataManager
 
   maxId       int
-  insertedIds map[int]bool
+  insertedIds intsets.Sparse
 }
 
 func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logger *zap.Logger) (*InsertInstallerManager, error) {
@@ -37,7 +38,7 @@ func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logge
       Logger: logger,
     },
 
-    insertedIds: make(map[int]bool),
+    insertedIds: intsets.Sparse{},
   }
 
   //noinspection SqlResolve
@@ -50,7 +51,7 @@ func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logge
 }
 
 func (t *InsertInstallerManager) Insert(id int, changes [][]byte) error {
-  if t.insertedIds[id] {
+  if t.insertedIds.Has(id) {
     return nil
   }
 
@@ -75,6 +76,6 @@ func (t *InsertInstallerManager) Insert(id int, changes [][]byte) error {
     return errors.WithStack(err)
   }
 
-  t.insertedIds[id] = true
+  t.insertedIds.Insert(id)
   return nil
 }

@@ -15,7 +15,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
-	github.com/aws/aws-sdk-go v1.29.27 // indirect
+	github.com/aws/aws-sdk-go v1.29.29 // indirect
 	github.com/cespare/xxhash v1.1.0
 	github.com/deanishe/go-env v0.4.0
 	github.com/develar/errors v0.9.0
@@ -24,9 +24,9 @@ require (
 	github.com/json-iterator/go v1.1.9
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/klauspost/compress v1.10.3 // indirect
-	github.com/klauspost/pgzip v1.2.2 // indirect
+	github.com/klauspost/pgzip v1.2.3 // indirect
 	github.com/magiconair/properties v1.8.1
-	github.com/mattn/go-runewidth v0.0.8 // indirect
+	github.com/mattn/go-runewidth v0.0.9 // indirect
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
@@ -47,8 +47,10 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/crypto v0.0.0-20200317142112-1b76d66859c6 // indirect
-	golang.org/x/tools v0.0.0-20200318150045-ba25ddc85566 // indirect
+	golang.org/x/crypto v0.0.0-20200320181102-891825fb96df // indirect
+	golang.org/x/net v0.0.0-20200320220750-118fecf932d8 // indirect
+	golang.org/x/sys v0.0.0-20200321134203-328b4cd54aae // indirect
+	golang.org/x/tools v0.0.0-20200321224714-0d839f3cf2ed
 	google.golang.org/genproto v0.0.0-20200319113533-08878b785e9c // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect

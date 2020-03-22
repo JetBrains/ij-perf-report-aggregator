@@ -28,7 +28,7 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
 
 func (t *StatsServer) computeProductToMachines(taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {
   var productNames []string
-  rows, err := t.db.QueryContext(taskContext, "select distinct product, machine from report where machine != 'Dead agent' group by product, machine order by product, machine")
+  rows, err := t.db.QueryContext(taskContext, "select distinct product, machine from report group by product, machine order by product, machine")
   if err != nil {
     return nil, nil, err
   }
@@ -69,7 +69,7 @@ func (t *StatsServer) computeProductToMachines(taskContext context.Context) (map
 
 func (t *StatsServer) computeProductToProjects(taskContext context.Context) (map[string]*[]string, []string, error) {
   var productNames []string
-  rows, err := t.db.QueryContext(taskContext, "select distinct product, project from report where machine != 'Dead agent' group by product, project order by product, project")
+  rows, err := t.db.QueryContext(taskContext, "select distinct product, project from report group by product, project order by product, project")
   if err != nil {
     return nil, nil, err
   }

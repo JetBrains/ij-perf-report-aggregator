@@ -10,6 +10,7 @@ import (
   "log"
   "net/http"
   "os"
+  "strings"
   "time"
 )
 
@@ -31,7 +32,8 @@ func main() {
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
 func configureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) {
-  buildTypeIds := app.Flag("build-type-id", "The TeamCity build type id.").Short('c').Required().Strings()
+  buildTypeIds := app.Flag("build-type-id", "The TeamCity build type id.").Short('c').Strings()
+  productCodes := app.Flag("product", "The product code.").Short('p').Strings()
   clickHouseUrl := app.Flag("clickhouse", "The ClickHouse server URL.").Default("localhost:9000").String()
   tcUrl := app.Flag("tc", "The TeamCity server URL.").Required().String()
   sinceDate := app.Flag("since", "The date to force collecting since").String()
@@ -47,10 +49,19 @@ func configureCollectFromTeamCity(app *kingpin.Application, logger *zap.Logger) 
     }
 
     var httpClient = &http.Client{
-      Timeout: 30 * time.Second,
     }
 
-    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, *buildTypeIds, since, httpClient, logger)
+    osList := []string{"Mac", "Linux", "Windows"}
+    effectiveBuildIdList := *buildTypeIds
+    if len(effectiveBuildIdList) == 0 {
+      for _, product := range *productCodes {
+        for _, osName := range osList {
+          effectiveBuildIdList = append(effectiveBuildIdList, "ijplatform_master_"+ProductCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTest"+osName)
+        }
+      }
+    }
+
+    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, effectiveBuildIdList, since, httpClient, logger)
     if err != nil {
       return err
     }

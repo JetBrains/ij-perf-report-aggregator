@@ -9,6 +9,7 @@
      <console>1</console>   Default behavior is autodetection (log to console if not daemon mode and is tty)
   </logger>
   <!--display_name>production</display_name--> <!-- It is the name that will be shown in the client -->
+  <listen_host>127.0.0.1</listen_host>
   <http_port>8123</http_port>
   <tcp_port>9000</tcp_port>
 

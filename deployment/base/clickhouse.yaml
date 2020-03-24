@@ -17,14 +17,16 @@ spec:
           ports:
             - containerPort: 9000
               name: tcp
+          # use http to avoid warn like "TCPHandler: Client has not sent any data." in logs
           readinessProbe:
             # allow backup to be restored - do not promote
             initialDelaySeconds: 5
-            tcpSocket:
-              port: 9000
+            httpGet:
+              port: 8123
           livenessProbe:
-            tcpSocket:
-              port: 9000
+            periodSeconds: 30
+            httpGet:
+              port: 8123
 ---
 apiVersion: v1
 kind: Service

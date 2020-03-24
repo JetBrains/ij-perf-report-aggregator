@@ -22,8 +22,7 @@ build-mac:
 	XZ_OPT=-9 tar -cJf dist/mac-report-aggregator.tar.xz dist/mac/report-aggregator
 
 build-linux:
-	env GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++ go build -tags "sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/linux/report-aggregator ./cmd/report-aggregator
-	XZ_OPT=-9 tar -cJf dist/linux-report-aggregator.tar.xz dist/linux/report-aggregator
+	env GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o dist/linux/clickhouse-restore ./cmd/clickhouse-restore
 
 build-windows:
 	env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=/usr/local/bin/x86_64-w64-mingw32-gcc CXX=/usr/local/bin/x86_64-w64-mingw32-g++ go build -tags "sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/windows/report-aggregator.exe ./cmd/report-aggregator
@@ -58,3 +57,4 @@ update-deps:
 # kubectl port-forward svc/clickhouse 9900:9000
 
 # clickhouse server -C~/Documents/report-aggregator/deployment/ch-local-config.xml
+# clickhouse client -h 127.0.0.1

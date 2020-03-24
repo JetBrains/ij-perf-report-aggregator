@@ -15,6 +15,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
 	github.com/cespare/xxhash v1.1.0
+	github.com/cheggaaa/pb/v3 v3.0.4
 	github.com/deanishe/go-env v0.4.0
 	github.com/develar/errors v0.9.0
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
@@ -23,6 +24,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/magiconair/properties v1.8.1
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
+	github.com/minio/minio-go/v6 v6.0.50
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
@@ -39,6 +41,9 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/tools v0.0.0-20200321224714-0d839f3cf2ed
+	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
+	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
+	golang.org/x/tools v0.0.0-20200324161117-bbbf714b4a18
+	google.golang.org/genproto v0.0.0-20200323114720-3f67cca34472 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 )

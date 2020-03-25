@@ -8,13 +8,13 @@ import (
   "os"
 )
 
-const MetaFileName = "meta.json"
+const MetaFileName = "meta.json.gz"
 
 type BaseBackupManager struct {
   Bucket      string
   Client      *minio.Client
-  TaskContext context.Context
-  LocalPath   string
+  TaskContext   context.Context
+  ClickhouseDir string
 
   Logger *zap.Logger
 }
@@ -26,11 +26,11 @@ func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*
   }
 
   return &BaseBackupManager{
-    Bucket:      os.Getenv("S3_BUCKET"),
-    Client:      client,
-    TaskContext: taskContext,
-    LocalPath:   getClickhouseDir(),
-    Logger:      logger,
+    Bucket:        os.Getenv("S3_BUCKET"),
+    Client:        client,
+    TaskContext:   taskContext,
+    ClickhouseDir: getClickhouseDir(),
+    Logger:        logger,
   }, nil
 }
 

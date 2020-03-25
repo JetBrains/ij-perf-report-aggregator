@@ -2,6 +2,7 @@ package main
 
 import (
   "archive/tar"
+  "compress/gzip"
   "encoding/json"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -11,7 +12,6 @@ import (
   "github.com/minio/minio-go/v6"
   "go.uber.org/zap"
   "io"
-  "io/ioutil"
   "log"
   "os"
   "path/filepath"
@@ -51,13 +51,12 @@ func restore(bucket string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  err = backupManager.download(remoteFileInfo.Key, remoteFileInfo.Size)
+  err = os.MkdirAll(backupManager.ClickhouseDir, os.ModePerm)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  // rename shadow to data
-  err = os.Rename(filepath.Join(backupManager.LocalPath, "shadow"), filepath.Join(backupManager.LocalPath, "data"))
+  err = backupManager.download(remoteFileInfo.Key, filepath.Join(backupManager.ClickhouseDir, "data"), true)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -86,19 +85,13 @@ func (t *BackupManager) findBackup(bucket string) (*minio.ObjectInfo, error) {
   return candidate, nil
 }
 
-func (t *BackupManager) download(filePath string, estimatedFileSize int64) error {
-  err := os.MkdirAll(t.LocalPath, os.ModePerm)
+func (t *BackupManager) download(file string, outputRootDirectory string, extractMetadata bool) error {
+  object, err := t.Client.GetObjectWithContext(t.TaskContext, t.Bucket, file, minio.GetObjectOptions{})
   if err != nil {
     return errors.WithStack(err)
   }
 
-  object, err := t.Client.GetObjectWithContext(t.TaskContext, t.Bucket, filePath, minio.GetObjectOptions{})
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  //noinspection GoUnhandledErrorResult
-  defer object.Close()
+  defer util.Close(object, t.Logger)
 
   copyBuffer := make([]byte, 32*1024)
 
@@ -106,7 +99,12 @@ func (t *BackupManager) download(filePath string, estimatedFileSize int64) error
   if env.GetBool("DISABLE_PROGRESS", false) {
     proxyReader = object
   } else {
-    bar := pb.Start64(estimatedFileSize)
+    objectInfo, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, file, minio.StatObjectOptions{})
+    if err != nil {
+      return errors.WithStack(err)
+    }
+    bar := pb.Full.Start64(objectInfo.Size)
+    bar.SetRefreshRate(time.Second)
     proxyReader = bar.NewProxyReader(object)
     defer bar.Finish()
   }
@@ -124,42 +122,64 @@ func (t *BackupManager) download(filePath string, estimatedFileSize int64) error
     }
 
     if header.Name == clickhouse.MetaFileName {
-      b, err := ioutil.ReadAll(tarReader)
-      if err != nil {
-        return errors.WithStack(err)
-      }
-
-      err = json.Unmarshal(b, &metafile)
+      metafile, err = t.readMetaFile(tarReader)
       if err != nil {
         return errors.WithStack(err)
       }
       continue
     }
 
-    err = decompressTarFile(tarReader, header, t.LocalPath, copyBuffer, createdDirs)
+    err = decompressTarFile(tarReader, header, outputRootDirectory, copyBuffer, createdDirs)
     if err != nil {
       return errors.WithStack(err)
     }
   }
 
-  if len(metafile.RequiredBackup) != 0 {
-    t.Logger.Info("download required parts", zap.String("requiredBackup", metafile.RequiredBackup), zap.String("currentBackup", filePath))
-    err = t.download(metafile.RequiredBackup, metafile.EstimatedBackupSize)
+  t.Logger.Debug("move metadata", zap.String("backup", file))
+
+  currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
+  if extractMetadata {
+    // move metadata to root
+    metadataDir := filepath.Join(t.ClickhouseDir, "metadata")
+    //err = os.RemoveAll(metadataDir)
+    //if err != nil {
+    //  return errors.WithStack(err)
+    //}
+    err = os.Rename(currentMetadataDir, metadataDir)
     if err != nil {
       return errors.WithStack(err)
     }
+  } else {
+    err = os.RemoveAll(currentMetadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
+  if len(metafile.RequiredBackup) == 0 {
+    return nil
+  }
+
+  t.Logger.Info("download required parts", zap.String("requiredBackup", metafile.RequiredBackup), zap.String("currentBackup", file))
+  previousBackupDir := filepath.Join(t.ClickhouseDir, "backup", metafile.RequiredBackup)
+  err = t.download(metafile.RequiredBackup+".tar", previousBackupDir, false)
+  if err != nil {
+    return errors.WithStack(err)
   }
 
   for _, hardlink := range metafile.Hardlinks {
-    newName := filepath.Join(t.LocalPath, hardlink)
+    newName := filepath.Join(outputRootDirectory, hardlink)
     extractDir := filepath.Dir(newName)
-    oldName := filepath.Join(filepath.Dir(t.LocalPath), metafile.RequiredBackup, hardlink)
-    err = os.MkdirAll(extractDir, os.ModePerm)
-    if err != nil {
-      return errors.WithStack(err)
+    if !createdDirs[extractDir] {
+      err := os.MkdirAll(extractDir, os.ModePerm)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+
+      createdDirs[extractDir] = true
     }
 
-    err = os.Link(oldName, newName)
+    err = os.Link(filepath.Join(previousBackupDir, hardlink), newName)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -168,34 +188,48 @@ func (t *BackupManager) download(filePath string, estimatedFileSize int64) error
   return nil
 }
 
-func decompressTarFile(tarReader *tar.Reader, header *tar.Header, rootDirectory string, copyBuffer []byte, createdDirs map[string]bool) error {
-  outputFile := filepath.Join(rootDirectory, header.Name)
+func (t *BackupManager) readMetaFile(tarReader *tar.Reader) (clickhouse.MetaFile, error) {
+  var metafile clickhouse.MetaFile
 
-  var destinationDir string
-  if header.Typeflag == tar.TypeDir {
-    destinationDir = outputFile
-  } else {
-    destinationDir = filepath.Dir(outputFile)
+  gzipReader, err := gzip.NewReader(tarReader)
+  if err != nil {
+    return metafile, errors.WithStack(err)
   }
 
-  if !createdDirs[destinationDir] {
-    err := os.MkdirAll(destinationDir, os.ModePerm)
+  defer util.Close(gzipReader, t.Logger)
+
+  err = json.NewDecoder(gzipReader).Decode(&metafile)
+  if err != nil {
+    return metafile, errors.WithStack(err)
+  }
+  return metafile, nil
+}
+
+func decompressTarFile(tarReader *tar.Reader, header *tar.Header, outputRootDirectory string, copyBuffer []byte, createdDirs map[string]bool) error {
+  if header.Typeflag == tar.TypeDir {
+    // archive doesn't contain directory entries, and even if exists, do not create empty directories
+    return nil
+  }
+
+  file := filepath.Join(outputRootDirectory, header.Name)
+  dir := filepath.Dir(file)
+
+  if !createdDirs[dir] {
+    err := os.MkdirAll(dir, os.ModePerm)
     if err != nil {
       return errors.WithStack(err)
     }
 
-    createdDirs[destinationDir] = true
+    createdDirs[dir] = true
   }
 
   switch header.Typeflag {
-  case tar.TypeDir:
-    return nil
   case tar.TypeReg, tar.TypeChar, tar.TypeBlock, tar.TypeFifo:
-    return writeFile(tarReader, outputFile, copyBuffer)
+    return writeFile(tarReader, file, copyBuffer)
   case tar.TypeSymlink:
-    return os.Symlink(outputFile, header.Linkname)
+    return os.Symlink(file, header.Linkname)
   case tar.TypeLink:
-    return os.Link(outputFile, header.Linkname)
+    return os.Link(file, header.Linkname)
   default:
     return errors.Errorf("%s: unknown type flag: %c", header.Name, header.Typeflag)
   }

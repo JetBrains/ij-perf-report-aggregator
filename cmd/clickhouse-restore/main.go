@@ -46,7 +46,7 @@ func restore(bucket string, logger *zap.Logger) error {
   backupManager := &BackupManager{
     baseBackupManager,
   }
-  remoteFileInfo, err := backupManager.findBackup(bucket)
+  remoteFile, err := backupManager.findBackup(bucket)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -56,31 +56,31 @@ func restore(bucket string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  err = backupManager.download(remoteFileInfo.Key, filepath.Join(backupManager.ClickhouseDir, "data"), true)
+  err = backupManager.download(remoteFile, filepath.Join(backupManager.ClickhouseDir, "data"), true)
   if err != nil {
     return errors.WithStack(err)
   }
   return nil
 }
 
-func (t *BackupManager) findBackup(bucket string) (*minio.ObjectInfo, error) {
-  var candidate *minio.ObjectInfo
+func (t *BackupManager) findBackup(bucket string) (string, error) {
+  var candidate string
   var lastModified time.Time
   for objectInfo := range t.Client.ListObjectsV2(bucket, "", false, t.TaskContext.Done()) {
     if objectInfo.Err != nil {
-      return nil, errors.WithStack(objectInfo.Err)
+      return "", errors.WithStack(objectInfo.Err)
     }
 
     if strings.HasSuffix(objectInfo.Key, ".tar") {
       if lastModified.Before(objectInfo.LastModified) {
-        candidate = &objectInfo
+        candidate = objectInfo.Key
         lastModified = objectInfo.LastModified
       }
     }
   }
 
-  if candidate == nil {
-    return nil, errors.Errorf("backup not found (endpoint=%s, bucket=%s)", t.Client.EndpointURL(), bucket)
+  if len(candidate) == 0 {
+    return "", errors.Errorf("backup not found (endpoint=%s, bucket=%s)", t.Client.EndpointURL(), bucket)
   }
   return candidate, nil
 }
@@ -135,16 +135,16 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
     }
   }
 
-  t.Logger.Debug("move metadata", zap.String("backup", file))
+  t.Logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
 
   currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
   if extractMetadata {
     // move metadata to root
     metadataDir := filepath.Join(t.ClickhouseDir, "metadata")
-    //err = os.RemoveAll(metadataDir)
-    //if err != nil {
-    //  return errors.WithStack(err)
-    //}
+    err = os.RemoveAll(metadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
     err = os.Rename(currentMetadataDir, metadataDir)
     if err != nil {
       return errors.WithStack(err)

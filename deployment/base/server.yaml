@@ -16,7 +16,7 @@ spec:
         - name: regcred
       containers:
         - name: report-aggregator
-          image: github.com/JetBrains/ij-perf-report-aggregator/cmd/server
+          image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/server
           args: ["--db", "clickhouse:9000", "--nats", "nats://nats:4222"]
           env:
             - name: SERVER_PORT

@@ -1,6 +1,7 @@
 package main
 
 import (
+  "archive/tar"
   "database/sql"
   _ "github.com/ClickHouse/clickhouse-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -109,29 +110,23 @@ func (t *BackupManager) getTables(db *sql.DB, dbName string) ([]string, error) {
   return tables, nil
 }
 
-func (t *BackupManager) collectMetadata() ([]FileEntry, error) {
+func writeMetadata(writer *tar.Writer, metadataDir string) error {
   dbName := "default"
-  dbMetadataDir := filepath.Join(t.ClickhouseDir, "metadata", dbName)
+  dbMetadataDir := filepath.Join(metadataDir, dbName)
   files, err := ioutil.ReadDir(dbMetadataDir)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return errors.WithStack(err)
   }
 
-  extraEntries := make([]FileEntry, 0, len(files))
+  copyBuffer := make([]byte, 64*1024)
   for _, file := range files {
     name := file.Name()
     if file.Mode().IsRegular() && strings.HasSuffix(name, ".sql") {
-      content, err := ioutil.ReadFile(filepath.Join(dbMetadataDir, name))
+      err = writeFile(filepath.Join(dbMetadataDir, name), "_metadata_/"+dbName+"/"+name, file, writer, copyBuffer)
       if err != nil {
-        return nil, errors.WithStack(err)
+        return errors.WithStack(err)
       }
-      extraEntries = append(extraEntries, FileEntry{name: "_metadata_/" + dbName + "/" + name, data: content})
     }
   }
-  return extraEntries, nil
-}
-
-type FileEntry struct {
-  name string
-  data []byte
+  return nil
 }

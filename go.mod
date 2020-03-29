@@ -49,8 +49,9 @@ require (
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
+	golang.org/x/sys v0.0.0-20200327173247-9dae0f8f5775 // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20200325203130-f53864d0dba1
+	golang.org/x/tools v0.0.0-20200330040139-fa3cc9eebcfe
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect

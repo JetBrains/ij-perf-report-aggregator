@@ -6,23 +6,24 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
+  "github.com/minio/minio-go/v6"
   "github.com/nats-io/nats.go"
   "go.uber.org/zap"
-  "log"
   "os"
   "path/filepath"
   "runtime/debug"
-  "strings"
   "time"
 )
 
-const backupSuffix = ".tar"
+// example: if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day
+const maxIncrementalBackupCount = 8
 
-var incrementalBackupCounter = 0
+// RFC3339 is not suitable because of colon ':'
+const timeFormat = "2006-01-02T15-04-05"
 
-const maxIncrementalBackupCount = 4
-const backupsToKeepLocal = maxIncrementalBackupCount + 1
-
+// If pod started first time (not only this container), then first backup will be not incremental,
+// because clickhouse-restore renames directory and do not story copy in the backup dir. It is ok, since if the whole pod is restarted, then maybe clickhouse was upgraded.
+// Easy to copy, but for now decided that better to do full backup in this case.
 func main() {
   logger := util.CreateLogger()
   defer func() {
@@ -81,58 +82,59 @@ func start(natsUrl string, logger *zap.Logger) error {
     }
 
     logger.Info("backup requested")
-    err = backupManager.backup()
+    backupName := time.Now().UTC().Format(timeFormat)
+    backupDir := filepath.Join(backupManager.backupParentDir, backupName)
+    err = backupManager.backup(backupDir, backupName)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
+
+      err = os.RemoveAll(backupDir)
+      if err != nil {
+        logger.Error("cannot remove", zap.Error(err))
+      }
     }
   }
 
   return nil
 }
 
-func (t *BackupManager) backup() error {
+func (t *BackupManager) backup(backupDir string, backupName string) (err error) {
+  logger := t.Logger.With(zap.String("backup", backupName))
+
   defer func() {
     if r := recover(); r != nil {
-      log.Print(string(debug.Stack()))
-      t.Logger.Error("recovered", zap.ByteString("stack", debug.Stack()))
+      err = errors.New("panic: " + string(debug.Stack()))
     }
   }()
 
-  lastLocalBackups, err := t.removeOldLocalBackups(t.backupParentDir, backupsToKeepLocal)
+  diffFromPath, err := t.removeOldLocalBackups(t.backupParentDir, maxIncrementalBackupCount)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  backupName := time.Now().UTC().Format("2006-01-02T15-04-05")
-  logger := t.Logger.With(zap.String("backup", backupName))
+  if len(diffFromPath) != 0 {
+    key := diffFromPath + ".tar"
+    info, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, key, minio.StatObjectOptions{})
+    if err != nil || info.Err != nil || info.Size == 0 {
+      logger.Warn("incremental backup is not created because previous backup doesn't exist on remote side", zap.String("remoteBackupPath", key), zap.String("bucket", t.Bucket), zap.Any("endpoint", t.Client.EndpointURL()))
+      diffFromPath = ""
+    }
+  }
 
-  backupDir := filepath.Join(t.backupParentDir, backupName)
-  estimatedTarSize, extraEntries, err := t.createBackup(backupDir, logger)
+    estimatedTarSize, err := t.createBackup(backupDir, logger)
   if err != nil {
     return errors.WithStack(err)
-  }
-
-  var diffFrom string
-  // first or each 4 backup is full
-  if len(lastLocalBackups) == 0 || incrementalBackupCounter > maxIncrementalBackupCount {
-    incrementalBackupCounter = 0
-  } else {
-    diffFrom = strings.TrimSuffix(lastLocalBackups[len(lastLocalBackups)-1], backupSuffix)
-  }
-
-  var diffFromPath string
-  if len(diffFrom) != 0 {
-    diffFromPath = filepath.Join(t.backupParentDir, diffFrom)
   }
 
   logger.Info("upload", zap.String("backup", backupDir))
   task := Task{
+    metadataDir:      filepath.Join(t.ClickhouseDir, "metadata"),
     backupDir:        backupDir,
     estimatedTarSize: estimatedTarSize,
     diffFromPath:     diffFromPath,
-    extraEntries:     extraEntries,
     logger:           logger,
   }
+
   err = t.upload(backupName+".tar", task)
   if err != nil {
     return errors.WithStack(err)
@@ -144,32 +146,20 @@ func (t *BackupManager) backup() error {
 
   logger.Info("uploaded")
 
-  incrementalBackupCounter++
   return nil
 }
 
-func (t *BackupManager) createBackup(backupDir string, logger *zap.Logger) (int64, []FileEntry, error) {
+func (t *BackupManager) createBackup(backupDir string, logger *zap.Logger) (int64, error) {
   _, err := os.Stat(backupDir)
   if err == nil || !os.IsNotExist(err) {
-    return 0, nil, errors.Errorf("backup '%s' already exists", backupDir)
+    return 0, errors.Errorf("backup '%s' already exists", backupDir)
   }
 
   logger.Info("create")
   estimatedTarSize, err := t.freezeAndMoveToBackupDir(logger, backupDir)
   if err != nil {
-    return 0, nil, errors.WithStack(err)
+    return 0, errors.WithStack(err)
   }
 
-  // copy metadata to memory to ensure that it is not changed during compression
-  logger.Debug("copy metadata")
-  extraEntries, err := t.collectMetadata()
-  if err != nil {
-    return 0, nil, errors.WithStack(err)
-  }
-
-  for _, entry := range extraEntries {
-    estimatedTarSize += int64(len(entry.data)) + estimatedTarHeaderSize
-  }
-
-  return estimatedTarSize, extraEntries, nil
+  return estimatedTarSize, nil
 }

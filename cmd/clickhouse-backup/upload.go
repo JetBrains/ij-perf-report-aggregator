@@ -26,13 +26,17 @@ import (
 const estimatedTarHeaderSize = int64(345)
 
 func (t *BackupManager) upload(remoteFilePath string, task Task) error {
-  var progressBarUpdater *ProgressBarUpdater
+  var bar *pb.ProgressBar
+  putObjectOptions := minio.PutObjectOptions{
+    ContentType: "application/x-tar",
+    NumThreads: env.GetUint("UPLOAD_WORKER_COUNT", 0),
+  }
   if !env.GetBool("DISABLE_PROGRESS", false) {
-    bar := pb.Full.Start64(task.estimatedTarSize)
+    bar = pb.Full.Start64(task.estimatedTarSize)
     bar.Set(pb.Bytes, true)
     bar.SetRefreshRate(time.Second)
     defer bar.Finish()
-    progressBarUpdater = &ProgressBarUpdater{bar: bar}
+    putObjectOptions.Progress = &ProgressBarUpdater{bar: bar}
   }
 
   if t.TaskContext.Err() != nil {
@@ -52,12 +56,10 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
       }
     }()
 
-    err := createTar(writer, task, progressBarUpdater)
+    err := createTar(writer, task, bar)
     _ = writer.CloseWithError(errors.WithStack(err))
-    return
   }()
 
-  putObjectOptions := minio.PutObjectOptions{Progress: progressBarUpdater, ContentType: "application/x-tar"}
   _, err := t.Client.PutObjectWithContext(t.TaskContext, os.Getenv("S3_BUCKET"), remoteFilePath, reader, -1, putObjectOptions)
   if err != nil {
     return errors.WithStack(err)
@@ -67,15 +69,15 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
 }
 
 type Task struct {
+  metadataDir      string
   backupDir        string
   diffFromPath     string
   estimatedTarSize int64
-  extraEntries     []FileEntry
 
   logger *zap.Logger
 }
 
-func createTar(writer *nio.PipeWriter, task Task, progressBarUpdater *ProgressBarUpdater) error {
+func createTar(writer *nio.PipeWriter, task Task, progressBar *pb.ProgressBar) error {
   tarWriter := tar.NewWriter(writer)
   defer func() {
     err := tarWriter.Close()
@@ -84,10 +86,19 @@ func createTar(writer *nio.PipeWriter, task Task, progressBarUpdater *ProgressBa
     }
   }()
 
-  copyBuffer := make([]byte, 32*1024)
+  copyBuffer := make([]byte, 64*1024)
+
+  err := writeMetadata(tarWriter, task.metadataDir)
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
   var hardlinks []string
-  err := filepath.Walk(task.backupDir, func(filePath string, info os.FileInfo, err error) error {
+  err = filepath.Walk(task.backupDir, func(filePath string, info os.FileInfo, err error) error {
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
     if info == nil || !info.Mode().IsRegular() {
       return nil
     }
@@ -98,26 +109,14 @@ func createTar(writer *nio.PipeWriter, task Task, progressBarUpdater *ProgressBa
       if err == nil && os.SameFile(info, diffFromFile) {
         hardlinks = append(hardlinks, relativePath)
 
-        if progressBarUpdater != nil {
-          task.estimatedTarSize -= info.Size() - estimatedTarHeaderSize
-          progressBarUpdater.bar.SetTotal(task.estimatedTarSize)
+        if progressBar != nil {
+          progressBar.Add64(info.Size() - estimatedTarHeaderSize)
         }
         return nil
       }
     }
 
-    err = writeHeader(tarWriter, filePath[len(task.backupDir)+1:], info.Size())
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    file, err := os.Open(filePath)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    _, err = io.CopyBuffer(tarWriter, file, copyBuffer)
-    _ = file.Close()
+    err = writeFile(filePath, filePath[len(task.backupDir)+1:], info, tarWriter, copyBuffer)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -143,17 +142,26 @@ func createTar(writer *nio.PipeWriter, task Task, progressBarUpdater *ProgressBa
       return errors.WithStack(err)
     }
   }
+  return nil
+}
 
-  for _, entry := range task.extraEntries {
-    err := writeHeader(tarWriter, entry.name, int64(len(entry.data)))
-    if err != nil {
-      return errors.WithStack(err)
-    }
+func writeFile(filePath string, name string, info os.FileInfo, tarWriter *tar.Writer, copyBuffer []byte) error {
+  err := writeHeader(tarWriter, name, info.Size())
+  if err != nil {
+    return errors.WithStack(err)
+  }
 
-    _, err = tarWriter.Write(entry.data)
-    if err != nil {
-      return errors.WithStack(err)
-    }
+  file, err := os.Open(filePath)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  //noinspection GoUnhandledErrorResult
+  defer file.Close()
+
+  _, err = io.CopyBuffer(tarWriter, file, copyBuffer)
+  if err != nil {
+    return errors.WithStack(err)
   }
   return nil
 }

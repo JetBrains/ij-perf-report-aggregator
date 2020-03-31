@@ -9,6 +9,7 @@ import (
   "github.com/develar/errors"
   "go.uber.org/zap"
   "io/ioutil"
+  "math/rand"
   "os"
   "path/filepath"
   "strconv"
@@ -22,22 +23,6 @@ func (t *BackupManager) freezeAndMoveToBackupDir(logger *zap.Logger, backupDir s
   }
 
   defer util.Close(db, logger)
-
-  shadowPath := filepath.Join(t.ClickhouseDir, "shadow")
-
-  dir, err := os.Open(shadowPath)
-  if err != nil {
-    if !os.IsNotExist(err) {
-      return 0, errors.WithStack(err)
-    }
-  } else {
-    names, err := dir.Readdirnames(-1)
-    if err != nil {
-      return 0, errors.WithStack(err)
-    } else if len(names) > 0 {
-      return 0, errors.Errorf("'%s' is not empty: %s", shadowPath, strings.Join(names, ","))
-    }
-  }
 
   dbName := "default"
 
@@ -59,22 +44,19 @@ func (t *BackupManager) freezeAndMoveToBackupDir(logger *zap.Logger, backupDir s
   }
 
   shadowDir := filepath.Join(t.ClickhouseDir, "shadow")
-  for index, table := range tables {
-    logger.Info("freeze table", zap.String("table", table))
-    _, err := db.Exec("alter table default.`" + table + "` freeze")
+  currentIndex := rand.Int63()
+  for _, table := range tables {
+    dirName := strconv.FormatInt(currentIndex, 36) + "_" + table
+    logger.Info("freeze table", zap.String("table", table), zap.String("shadowDir", dirName), zap.String("db", dbName))
+    _, err := db.Exec("alter table default.`" + table + "` freeze with name '" + dirName + "'")
     if err != nil {
       return 0, errors.WithStack(err)
     }
 
-    err = os.Rename(filepath.Join(shadowDir, strconv.Itoa(index+1), "data", dbName, table), filepath.Join(backupShadowDir, table))
+    err = os.Rename(filepath.Join(shadowDir, dirName, "data", dbName, table), filepath.Join(backupShadowDir, table))
     if err != nil {
       return 0, errors.WithStack(err)
     }
-  }
-
-  err = os.RemoveAll(shadowDir)
-  if err != nil {
-    return 0, errors.WithStack(err)
   }
 
   row := db.QueryRow("select sum(bytes) + (count() * 345) from system.parts where active")

@@ -10,8 +10,6 @@ import (
   "github.com/cheggaaa/pb/v3"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
-  "github.com/djherbis/buffer"
-  "github.com/djherbis/nio"
   "github.com/minio/minio-go/v6"
   "go.uber.org/zap"
   "io"
@@ -30,6 +28,7 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
   putObjectOptions := minio.PutObjectOptions{
     ContentType: "application/x-tar",
     NumThreads: env.GetUint("UPLOAD_WORKER_COUNT", 0),
+    PartSize: uint64(env.GetUint("UPLOAD_PART_SIZE", 0) * 1024 * 1024),
   }
   if !env.GetBool("DISABLE_PROGRESS", false) {
     bar = pb.Full.Start64(task.estimatedTarSize)
@@ -43,8 +42,7 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
     return nil
   }
 
-  buf := buffer.New(4 * 1024 * 1024)
-  reader, writer := nio.Pipe(buf)
+  reader, writer := io.Pipe()
   //noinspection GoUnhandledErrorResult
   defer writer.Close()
 
@@ -77,18 +75,18 @@ type Task struct {
   logger *zap.Logger
 }
 
-func createTar(writer *nio.PipeWriter, task Task, progressBar *pb.ProgressBar) error {
+func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err error) {
   tarWriter := tar.NewWriter(writer)
   defer func() {
-    err := tarWriter.Close()
-    if err != nil {
-      _ = writer.CloseWithError(errors.WithStack(err))
+    closeErr := tarWriter.Close()
+    if err == nil {
+      err = closeErr
     }
   }()
 
   copyBuffer := make([]byte, 64*1024)
 
-  err := writeMetadata(tarWriter, task.metadataDir)
+  err = writeMetadata(tarWriter, task.metadataDir)
   if err != nil {
     return errors.WithStack(err)
   }

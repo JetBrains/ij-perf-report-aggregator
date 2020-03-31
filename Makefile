@@ -11,22 +11,6 @@ assets:
 	qtc -dir pkg/server
 	qtc -dir pkg/tc-properties
 
-build: lint
-	go mod tidy
-	make build-mac
-	make build-linux
-	make build-windows
-
-build-mac:
-	GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 go build -tags "sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/mac/report-aggregator ./cmd/report-aggregator
-	XZ_OPT=-9 tar -cJf dist/mac-report-aggregator.tar.xz dist/mac/report-aggregator
-
-build-linux:
-	env GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o dist/linux/clickhouse-restore ./cmd/clickhouse-restore
-
-build-windows:
-	env GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=/usr/local/bin/x86_64-w64-mingw32-gcc CXX=/usr/local/bin/x86_64-w64-mingw32-g++ go build -tags "sqlite_json sqlite_stat4 sqlite_foreign_keys" -ldflags='-s -w' -o dist/windows/report-aggregator.exe ./cmd/report-aggregator
-
 lint:
 	golangci-lint run
 

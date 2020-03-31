@@ -15,8 +15,6 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.4
 	github.com/deanishe/go-env v0.4.0
 	github.com/develar/errors v0.9.0
-	github.com/djherbis/buffer v1.1.0
-	github.com/djherbis/nio v2.0.3+incompatible
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
@@ -32,7 +30,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
-	github.com/nats-io/nats.go v1.9.1
+	github.com/nats-io/nats.go v1.9.2
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/panjf2000/ants/v2 v2.3.1
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
@@ -46,12 +44,11 @@ require (
 	go.uber.org/atomic v1.6.0
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 	golang.org/x/sys v0.0.0-20200327173247-9dae0f8f5775 // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20200330040139-fa3cc9eebcfe
+	golang.org/x/tools v0.0.0-20200331025713-a30bf2db82d4
 	gopkg.in/ini.v1 v1.55.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0
 	gopkg.in/yaml.v2 v2.2.8 // indirect

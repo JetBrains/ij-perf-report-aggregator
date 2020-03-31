@@ -9,6 +9,7 @@ import (
   "github.com/minio/minio-go/v6"
   "github.com/nats-io/nats.go"
   "go.uber.org/zap"
+  "math/rand"
   "os"
   "path/filepath"
   "runtime/debug"
@@ -29,6 +30,8 @@ func main() {
   defer func() {
     _ = logger.Sync()
   }()
+
+  rand.Seed(time.Now().UnixNano())
 
   err := start("nats://"+env.Get("NATS", "nats:4222"), logger)
   if err != nil {

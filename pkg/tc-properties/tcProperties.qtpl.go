@@ -38,7 +38,7 @@ func StreamPropertiesToJson(qw422016 *qt422016.Writer, p *properties.Properties)
 //line pkg/tc-properties/tcProperties.qtpl:15
 	for _, key := range keys {
 //line pkg/tc-properties/tcProperties.qtpl:17
-		if isExcludedProperty(key) {
+		if IsExcludedProperty(key) {
 			continue
 		}
 		v := p.GetString(key, "")

@@ -142,7 +142,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedP
   return nil
 }
 
-func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResult, branch interface{}, providedProject string, logger *zap.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResult, branch interface{}, providedProject interface{}, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return err
@@ -156,12 +156,14 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     }
   }
 
-  project := report.Project
-  if len(project) == 0 {
+  var project interface{}
+  if len(report.Project) == 0 {
     project = providedProject
-    if len(project) == 0 {
-      return errors.New("unknown project")
-    }
+    //if len(project) == 0 {
+    //  return errors.New("unknown project")
+    //}
+  } else {
+    project = report.Project
   }
 
   buildTimeUnix, err := GetBuildTimeFromReport(report)
@@ -173,9 +175,9 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     buildTimeUnix = row.BuildTime
   }
 
-  if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-blade-") {
-    return nil
-  }
+  //if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-blade-") {
+  //  return nil
+  //}
 
   args := make([]interface{}, 0, nonMetricFieldCount+len(MetricDescriptors))
   args = append(args, product, row.Machine, buildTimeUnix, row.GeneratedTime, project,

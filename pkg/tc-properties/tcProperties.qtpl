@@ -14,7 +14,7 @@
   %}
   {% for _, key := range keys %}
     {% code
-    if isExcludedProperty(key) {
+    if IsExcludedProperty(key) {
       continue
     }
     v := p.GetString(key, "")

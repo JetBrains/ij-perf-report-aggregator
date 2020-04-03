@@ -2,8 +2,10 @@ package main
 
 import (
   "context"
+  "encoding/json"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  tc_properties "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -13,10 +15,7 @@ import (
 
 /*
 
-1. Download backup, unpack to b and execute:
-rm -rf ~/ij-perf-db/clickhouse
-mkdir -p ~/ij-perf-db/clickhouse/metadata && mkdir ~/ij-perf-db/clickhouse/data && mv ~/Downloads/b/metadata/default ~/ij-perf-db/clickhouse/metadata/default && mv ~/Downloads/b/shadow/default ~/ij-perf-db/clickhouse/data/default
-
+1. run restore-backup RC
 2. change `migrate/report.sql` as needed and execute.
 
 */
@@ -38,7 +37,7 @@ type ReportRow struct {
   Branch  uint8
 
   GeneratedTime int64 `db:"generated_time"`
-  BuildTime     int64     `db:"build_time"`
+  BuildTime     int64 `db:"build_time"`
 
   RawReport []byte `db:"raw_report"`
 
@@ -50,7 +49,7 @@ type ReportRow struct {
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
 
-  Project string `db:"project"`
+  Project uint8 `db:"project"`
 }
 
 type TimeRange struct {
@@ -59,7 +58,7 @@ type TimeRange struct {
 }
 
 // set insertWorkerCount to 1 if not enough memory
-const insertWorkerCount = 2
+const insertWorkerCount = 4
 
 func transform(clickHouseUrl string, logger *zap.Logger) error {
   db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
@@ -122,10 +121,10 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
     select cast(product, 'UInt8') as product, cast(machine, 'UInt8') as machine, cast(branch, 'UInt8') as branch, 
            toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report, 
            tc_build_id, tc_installer_build_id, tc_build_properties,
-           build_c1, build_c2, build_c3, project
+           build_c1, build_c2, build_c3, cast(project, 'UInt8') as project
     from report
     where generated_time >= ? and generated_time < ?
-    order by product, machine, branch, build_c1, build_c2, build_c3, project, build_time, generated_time
+    order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
   `, startTime, endTime)
   if err != nil {
     return errors.WithStack(err)
@@ -136,6 +135,11 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
   var row ReportRow
   for rows.Next() {
     err = rows.StructScan(&row)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    err = cleanTcProperties(&row)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -168,5 +172,33 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
     return errors.WithStack(err)
   }
 
+  return nil
+}
+
+func cleanTcProperties(row *ReportRow) error {
+  if len(row.TcBuildProperties) == 0 {
+    return nil
+  }
+
+  var m map[string]interface{}
+  err := json.Unmarshal(row.TcBuildProperties, &m)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  modified := false
+  for key, _ := range m {
+    if tc_properties.IsExcludedProperty(key) {
+      delete(m, key)
+      modified = true
+    }
+  }
+
+  if modified {
+    row.TcBuildProperties, err = json.Marshal(m)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
   return nil
 }

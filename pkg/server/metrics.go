@@ -116,6 +116,7 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
         }
 
         v := *(columnPointers[index].(*interface{}))
+        index++
 
         if v == uint16Zero || v == float32Zero {
           // skip 0 values (0 as null - not existent)
@@ -142,8 +143,6 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
         default:
           return errors.Errorf("unknown type: %T for field %s", untypedValue, field.Name)
         }
-
-        index++
       }
     }
 

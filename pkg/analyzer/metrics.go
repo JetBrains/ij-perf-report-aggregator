@@ -14,6 +14,8 @@ type Metric struct {
 
   isRequired bool
   IsInstant  bool
+
+  sinceVersion string
 }
 
 const appInitCategory = 1
@@ -36,6 +38,12 @@ func init() {
     return result
   }
 
+  createVersionedMetric := func(name string, sinceVersion string) *Metric {
+    result := createMetric(name)
+    result.sinceVersion = sinceVersion
+    return result
+  }
+
   createRequiredMetric := func(name string) *Metric {
     result := createMetric(name)
     result.isRequired = true
@@ -54,8 +62,7 @@ func init() {
     return result
   }
 
-  pluginDescriptorLoading := createRequiredMetric("pluginDescriptorLoading_d")
-
+  pluginDescriptorLoading := createMetric("pluginDescriptorLoading_d")
   projectProfileLoading := createMetricWithCategory("projectProfileLoading_d", appInitCategory)
   editorRestoring := createMetric("editorRestoring_d")
 
@@ -70,6 +77,7 @@ func init() {
     "plugin descriptor loading": pluginDescriptorLoading,
     // old name
     "plugin descriptors loading": pluginDescriptorLoading,
+    "plugin initialization": createVersionedMetric("pluginDescriptorInitV18_d", "18"),
 
     "app component creation":  appComponentCreation,
     "app components creation": appComponentCreation,
@@ -95,6 +103,10 @@ func init() {
     // instant
     "splash initialization": createInstantMetric("splash_i"),
     "startUpCompleted":      createInstantMetric("startUpCompleted_i"),
+
+    "appStarter": createMetric("appStarter_d"),
+    // v19+
+    "eua showing": createVersionedMetric("euaShowing_d", "19"),
   }
 }
 
@@ -110,8 +122,6 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
 
   (*result)[nonMetricFieldCount+metricNameToDescriptor["startUpCompleted"].index] = report.TotalDurationActual
 
-  // v < 12: PluginDescriptorLoading can be or in MainActivities, or in PrepareAppInitActivities
-
   for _, activity := range report.MainActivities {
     err := setMetric(activity, report, result)
     if err != nil {
@@ -119,14 +129,23 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
     }
   }
 
-  for _, activity := range report.PrepareAppInitActivities {
-    switch activity.Name {
-    case "plugin descriptors loading":
-      (*result)[nonMetricFieldCount+metricNameToDescriptor["plugin descriptor loading"].index] = activity.Duration
-    default:
+  if version.Compare(report.Version, "18", ">=") {
+    for _, activity := range report.PrepareAppInitActivities {
       err := setMetric(activity, report, result)
       if err != nil {
         return err
+      }
+    }
+  } else {
+    for _, activity := range report.PrepareAppInitActivities {
+      switch activity.Name {
+      case "plugin descriptors loading":
+        (*result)[nonMetricFieldCount+metricNameToDescriptor["plugin descriptor loading"].index] = activity.Duration
+      default:
+        err := setMetric(activity, report, result)
+        if err != nil {
+          return err
+        }
       }
     }
   }
@@ -143,17 +162,21 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
 
   var notFoundMetrics []string
   for _, metric := range MetricDescriptors {
-    if (*result)[nonMetricFieldCount+metric.index] == -1 {
-      if metric.isRequired {
-        if metric.Name != "bootstrap_d" || version.Compare(report.Version, "6", ">=") {
-          logRequiredMetricNotFound(logger, metric.Name)
-          return nil
-        }
-      }
+    if (*result)[nonMetricFieldCount+metric.index] != -1 {
+      continue
+    }
 
-      // undefined
-      (*result)[nonMetricFieldCount+metric.index] = 0
-      if is14orGreater || (metric.Name != "editorRestoringTillPaint_d" && metric.Name != "projectProfileLoading_d") {
+    if metric.isRequired {
+      if metric.Name != "bootstrap_d" || version.Compare(report.Version, "6", ">=") {
+        logRequiredMetricNotFound(logger, metric.Name)
+        return nil
+      }
+    }
+
+    // undefined
+    (*result)[nonMetricFieldCount+metric.index] = 0
+    if is14orGreater || (metric.Name != "editorRestoringTillPaint_d" && metric.Name != "projectProfileLoading_d") {
+      if len(metric.sinceVersion) != 0 && version.Compare(report.Version, metric.sinceVersion, ">=") {
         notFoundMetrics = append(notFoundMetrics, metric.Name)
       }
     }
@@ -168,22 +191,28 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
 
 func setMetric(activity model.Activity, report *model.Report, result *[]interface{}) error {
   info, ok := metricNameToDescriptor[activity.Name]
-  if ok {
-    var v int
-    if info.IsInstant {
-      v = activity.Start
-    } else {
-      v = activity.Duration
-      if v > 65535 {
-        return errors.Errorf("value outside of uint16 range (generatedTime: %s, value: %v)", report.Generated, v)
-      }
-    }
-
-    if v < 0 {
-      return errors.Errorf("value must be positive (generatedTime: %s, value: %v)", report.Generated, v)
-    }
-    (*result)[nonMetricFieldCount+info.index] = v
+  if !ok {
+    return nil
   }
+
+  if len(info.sinceVersion) != 0 && version.Compare(report.Version, info.sinceVersion, "<") {
+    return nil
+  }
+
+  var v int
+  if info.IsInstant {
+    v = activity.Start
+  } else {
+    v = activity.Duration
+    if v > 65535 {
+      return errors.Errorf("value outside of uint16 range (generatedTime: %s, value: %v)", report.Generated, v)
+    }
+  }
+
+  if v < 0 {
+    return errors.Errorf("value must be positive (generatedTime: %s, value: %v)", report.Generated, v)
+  }
+  (*result)[nonMetricFieldCount+info.index] = v
   return nil
 }
 

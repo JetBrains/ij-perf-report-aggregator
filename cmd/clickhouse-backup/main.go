@@ -116,7 +116,7 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
   }
 
   if len(diffFromPath) != 0 {
-    key := diffFromPath + ".tar"
+    key := filepath.Base(diffFromPath) + ".tar"
     info, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, key, minio.StatObjectOptions{})
     if err != nil || info.Err != nil || info.Size == 0 {
       logger.Warn("incremental backup is not created because previous backup doesn't exist on remote side", zap.String("remoteBackupPath", key), zap.String("bucket", t.Bucket), zap.Any("endpoint", t.Client.EndpointURL()))

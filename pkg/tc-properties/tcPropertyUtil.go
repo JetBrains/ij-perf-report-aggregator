@@ -23,6 +23,25 @@ var excludedTcProperties = map[string]bool{
   "build.xml.path":                                     true,
   "env.ARTIFACTORY_URL":                                true,
   "teamcity.build.triggeredBy":                         true,
+  "vcsroot.agentCleanFilesPolicy":                      true,
+  "vcs.trigger.rules":                                  true,
+  "vcs.trigger.quiet.period":                           true,
+  "teamcity.vault.supported":                           true,
+  "teamcity.ui.settings.readOnly":                      true,
+  "teamcity.remote-debug.ant.supported":                true,
+  "runas_ready":                                        true,
+  "env.APPL_USER":                                      true,
+  "env.Apple_PubSub_Socket_Render":                     true,
+  "env.OLDPWD":                                         true,
+  "env.SSH_AUTH_SOCK":                                  true,
+  "env.TEAMCITY_VERSION":                               true,
+  "intellij.perf_stat.publishing.influxDB":             true,
+  "intellij.perf_stat.profile.yourkit":                 true,
+  "system.teamcity.version":                            true,
+  "vcsroot.useAlternates":                              true,
+  "vcsroot.ignoreKnownHosts":                           true,
+  "vcsroot.authMethod":                                 true,
+  "vcsroot.agentCleanPolicy":                           true,
 }
 
 func ReadProperties(data []byte) ([]byte, error) {
@@ -36,7 +55,7 @@ func ReadProperties(data []byte) ([]byte, error) {
 }
 
 // cat '/Volumes/data/Downloads/build.finish.properties' | python -m json.tool > f.json
-func isExcludedProperty(key string) bool {
+func IsExcludedProperty(key string) bool {
   if excludedTcProperties[key] ||
     // ignore dep
     strings.HasPrefix(key, "dep.") ||
@@ -50,6 +69,9 @@ func isExcludedProperty(key string) bool {
     strings.HasPrefix(key, "tools.xcode.arch.appletvos.") ||
     strings.HasPrefix(key, "tools.xcode.arch.iphoneos.") ||
     strings.HasPrefix(key, "tools.xcode.arch.watchos.") ||
+    strings.HasPrefix(key, "teamcity.dotnet.msbuild.") ||
+    strings.HasPrefix(key, "system.teamcity.dotnet.") ||
+    strings.HasPrefix(key, "system.intellij.build.toolbox.litegen.") ||
     strings.HasPrefix(key, "npmjs.com.auth.") ||
     strings.HasPrefix(key, "npm.auth.") {
     return true

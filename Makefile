@@ -35,10 +35,13 @@ update-deps:
 # docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.3.4.10 --host clickhouse-server
 # optimize table report
 
-# SELECT partition, name, active FROM system.parts WHERE table = 'report'
+# select partition, name, active from system.parts where table = 'report'
 
 # kubectl port-forward svc/clickhouse 2000:8123
 # kubectl port-forward svc/clickhouse 9900:9000
 
 # clickhouse server -C~/Documents/report-aggregator/deployment/ch-local-config.xml
 # clickhouse client -h 127.0.0.1
+
+# nats-server
+# /Volumes/data/nats-pub db.backup "test"

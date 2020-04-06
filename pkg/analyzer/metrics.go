@@ -107,6 +107,11 @@ func init() {
     "appStarter": createMetric("appStarter_d"),
     // v19+
     "eua showing": createVersionedMetric("euaShowing_d", "19"),
+
+    "service sync preloading": createMetric("serviceSyncPreloading_d"),
+    "service async preloading": createMetric("serviceAsyncPreloading_d"),
+    "project service sync preloading": createMetric("projectServiceSyncPreloading_d"),
+    "project service async preloading": createMetric("projectServiceAsyncPreloading_d"),
   }
 }
 

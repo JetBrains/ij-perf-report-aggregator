@@ -46,19 +46,8 @@ type BackupManager struct {
 }
 
 func start(natsUrl string, logger *zap.Logger) error {
-  logger.Info("started", zap.String("nats", natsUrl))
-  nc, err := nats.Connect(natsUrl)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
-
-  sub, err := nc.SubscribeSync("db.backup")
-  if err != nil {
-    return errors.WithStack(err)
-  }
 
   baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
   if err != nil {
@@ -67,6 +56,21 @@ func start(natsUrl string, logger *zap.Logger) error {
   backupManager := &BackupManager{
     BaseBackupManager: baseBackupManager,
     backupParentDir:   filepath.Join(baseBackupManager.ClickhouseDir, "backup"),
+  }
+
+  if env.GetBool("DO_BACKUP") {
+    return executeBackup(backupManager)
+  }
+
+  logger.Info("started", zap.String("nats", natsUrl))
+  nc, err := nats.Connect(natsUrl)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  sub, err := nc.SubscribeSync("db.backup")
+  if err != nil {
+    return errors.WithStack(err)
   }
 
   for taskContext.Err() == nil {
@@ -85,20 +89,25 @@ func start(natsUrl string, logger *zap.Logger) error {
     }
 
     logger.Info("backup requested")
-    backupName := time.Now().UTC().Format(timeFormat)
-    backupDir := filepath.Join(backupManager.backupParentDir, backupName)
-    err = backupManager.backup(backupDir, backupName)
-    if err != nil {
-      logger.Error("cannot backup", zap.Error(err))
-
-      err = os.RemoveAll(backupDir)
-      if err != nil {
-        logger.Error("cannot remove", zap.Error(err))
-      }
-    }
+    _ = executeBackup(backupManager)
   }
 
   return nil
+}
+
+func executeBackup(backupManager *BackupManager) error {
+  backupName := time.Now().UTC().Format(timeFormat)
+  backupDir := filepath.Join(backupManager.backupParentDir, backupName)
+  err := backupManager.backup(backupDir, backupName)
+  if err != nil {
+    backupManager.Logger.Error("cannot backup", zap.Error(err))
+
+    err = os.RemoveAll(backupDir)
+    if err != nil {
+      backupManager.Logger.Error("cannot remove", zap.Error(err))
+    }
+  }
+  return err
 }
 
 func (t *BackupManager) backup(backupDir string, backupName string) (err error) {

@@ -164,6 +164,11 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     //}
   } else {
     project = report.Project
+    // IJ simple project - map project v3 to existing v2 ID
+    if project == "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s" {
+      //noinspection SpellCheckingInspection
+      project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
+    }
   }
 
   buildTimeUnix, err := GetBuildTimeFromReport(report)

@@ -5,8 +5,9 @@ import (
   "encoding/json"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  tc_properties "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
@@ -14,10 +15,8 @@ import (
 )
 
 /*
-
 1. run restore-backup RC
 2. change `migrate/report.sql` as needed and execute.
-
 */
 func main() {
   logger := util.CreateLogger()
@@ -132,6 +131,7 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
 
   defer util.Close(rows, logger)
 
+  isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
   for rows.Next() {
     err = rows.StructScan(&row)
@@ -139,9 +139,11 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
       return errors.WithStack(err)
     }
 
-    err = cleanTcProperties(&row)
-    if err != nil {
-      return errors.WithStack(err)
+    if isCleanUpTcProperties {
+      err = cleanTcProperties(&row)
+      if err != nil {
+        return errors.WithStack(err)
+      }
     }
 
     reportRow := &analyzer.MetricResult{
@@ -187,7 +189,7 @@ func cleanTcProperties(row *ReportRow) error {
   }
 
   modified := false
-  for key, _ := range m {
+  for key := range m {
     if tc_properties.IsExcludedProperty(key) {
       delete(m, key)
       modified = true

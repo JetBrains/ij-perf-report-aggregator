@@ -240,12 +240,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     }
   }
 
-  providedProject := report.report.Project
-  //if len(providedProject) == 0 {
-  //  providedProject = ""
-  //}
-
-  err := t.InsertReportManager.Insert(reportRow, report.branch, providedProject)
+  err := t.InsertReportManager.Insert(reportRow, report.branch, report.report.Project)
   if err != nil {
     return err
   }

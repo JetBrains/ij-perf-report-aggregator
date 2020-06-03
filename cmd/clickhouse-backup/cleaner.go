@@ -5,7 +5,6 @@ import (
   "go.uber.org/zap"
   "io/ioutil"
   "os"
-  "path/filepath"
   "sort"
   "time"
 )
@@ -15,13 +14,17 @@ type LocalBackupFile struct {
   modified time.Time
 }
 
-func (t *BackupManager) removeOldLocalBackups(backupParentDir string, maxNumberOfFiles int) (string, error) {
+func (t *LocalBackupFile) String() string {
+  return t.name
+}
+
+func (t *BackupManager) collectLocalBackups(backupParentDir string) ([]string, error) {
   unfilteredFiles, err := ioutil.ReadDir(backupParentDir)
   if err != nil {
     if os.IsNotExist(err) {
-      return "", nil
+      return nil, nil
     }
-    return "", errors.WithStack(err)
+    return nil, errors.WithStack(err)
   }
 
   localBackups := make([]LocalBackupFile, 0, len(unfilteredFiles))
@@ -30,43 +33,34 @@ func (t *BackupManager) removeOldLocalBackups(backupParentDir string, maxNumberO
       continue
     }
 
-    e := LocalBackupFile{
+    entry := LocalBackupFile{
       name: f.Name(),
     }
 
     // "In the absence of a time zone indicator, Parse returns a time in UTC."
-    modTimeFromName, err := time.Parse(timeFormat, e.name)
+    modTimeFromName, err := time.Parse(timeFormat, entry.name)
     if err != nil {
       t.Logger.Warn("cannot infer modification time from directory name", zap.Error(err))
-      e.modified = f.ModTime()
+      entry.modified = f.ModTime()
     } else {
-      e.modified = modTimeFromName
+      entry.modified = modTimeFromName
     }
 
-    localBackups = append(localBackups, e)
+    localBackups = append(localBackups, entry)
   }
 
   if len(localBackups) == 0 {
-    return "", nil
+    return nil, nil
   }
 
-    sort.SliceStable(localBackups, func(i, j int) bool {
+  sort.SliceStable(localBackups, func(i, j int) bool {
     return localBackups[i].modified.Before(localBackups[j].modified)
   })
 
-  end := len(localBackups) - maxNumberOfFiles
-  if end <= 0 {
-    // incremental backup only if limit is not exceed - if exceeded it means that full backup should be created
-    return filepath.Join(t.backupParentDir, localBackups[len(localBackups)-1].name), nil
+  names := make([]string, len(localBackups))
+  for i, backup := range localBackups {
+    names[i] = backup.name
   }
 
-  for _, item := range localBackups[0:end] {
-    t.Logger.Info("remove old local backup", zap.String("backup", item.name))
-    err = os.RemoveAll(filepath.Join(backupParentDir, item.name))
-    if err != nil {
-      return "", errors.WithStack(err)
-    }
-  }
-
-  return "", nil
+  return names, nil
 }

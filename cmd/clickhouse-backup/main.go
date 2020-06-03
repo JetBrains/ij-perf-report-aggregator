@@ -119,21 +119,27 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
     }
   }()
 
-  diffFromPath, err := t.removeOldLocalBackups(t.backupParentDir, maxIncrementalBackupCount)
+  localBackups, err := t.collectLocalBackups(t.backupParentDir)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  if len(diffFromPath) != 0 {
-    key := filepath.Base(diffFromPath) + ".tar"
+  endOfLocalBackupsToRemove := len(localBackups) - maxIncrementalBackupCount
+  logger.Debug("local backups", zap.Strings("names", localBackups), zap.Int("endOfLocalBackupsToRemove", endOfLocalBackupsToRemove), zap.Int("maxIncrementalBackupCount", maxIncrementalBackupCount))
+  var diffFromPath string
+  // incremental backup only if limit is not exceed - if exceeded it means that full backup should be created
+  if endOfLocalBackupsToRemove <= 0 && len(localBackups) > 0 {
+    diffFromName := localBackups[len(localBackups)-1]
+    key := diffFromName + ".tar"
     info, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, key, minio.StatObjectOptions{})
     if err != nil || info.Err != nil || info.Size == 0 {
       logger.Warn("incremental backup is not created because previous backup doesn't exist on remote side", zap.String("remoteBackupPath", key), zap.String("bucket", t.Bucket), zap.Any("endpoint", t.Client.EndpointURL()))
-      diffFromPath = ""
+    } else {
+      diffFromPath = filepath.Join(t.backupParentDir, diffFromName)
     }
   }
 
-    estimatedTarSize, err := t.createBackup(backupDir, logger)
+  estimatedTarSize, err := t.createBackup(backupDir, logger)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -157,6 +163,17 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
   }
 
   logger.Info("uploaded")
+
+  if endOfLocalBackupsToRemove > 0 {
+    for _, name := range localBackups[0:endOfLocalBackupsToRemove] {
+      t.Logger.Info("remove old local backup", zap.String("backup", name))
+      err = os.RemoveAll(filepath.Join(t.backupParentDir, name))
+      if err != nil {
+        logger.Error("cannot remove local backup", zap.String("fileName", name), zap.Error(err))
+        break
+      }
+    }
+  }
 
   return nil
 }

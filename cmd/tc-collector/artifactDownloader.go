@@ -33,7 +33,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifact
       }
 
       name := path.Base(artifact.Url)
-      if !strings.HasPrefix(name, "startup-stats-") {
+      if !strings.HasPrefix(name, "startup-stats") {
         continue
       }
 

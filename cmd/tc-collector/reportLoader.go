@@ -93,7 +93,8 @@ func (t *Collector) loadReports(builds []*Build) error {
         return err
       }
 
-      if dataList == nil {
+      if len(dataList) == 0 {
+        t.logger.Error("cannot find any start-up report", zap.Int("id", build.Id))
         return nil
       }
 

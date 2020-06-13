@@ -67,7 +67,12 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
     return nil, NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
   }
 
-  result, err := CompareMetrics(t.db, branch, goldWeekStart+" 00:00:00")
+  db, err := t.GetDatabase("ij")
+  if err != nil {
+    return nil, err
+  }
+
+  result, err := CompareMetrics(db, branch, goldWeekStart+" 00:00:00")
   if err != nil {
     return nil, err
   }

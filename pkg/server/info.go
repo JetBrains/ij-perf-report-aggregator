@@ -4,18 +4,30 @@ import (
   "context"
   "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/jmoiron/sqlx"
   "net/http"
 )
 
 func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
-  groupNames := t.machineInfo.GroupNames
-  productNameToMachineMap, productNames, err := t.computeProductToMachines(request.Context())
+  dbName, err := data_query.ValidateDatabaseName(request.URL.Query().Get("db"))
   if err != nil {
     return nil, err
   }
 
-  productToProjects, _, err := t.computeProductToProjects(request.Context())
+  db, err := t.GetDatabase(dbName)
+  if err != nil {
+    return nil, err
+  }
+
+  groupNames := t.machineInfo.GroupNames
+  productNameToMachineMap, productNames, err := t.computeProductToMachines(db, request.Context())
+  if err != nil {
+    return nil, err
+  }
+
+  productToProjects, _, err := t.computeProductToProjects(db, request.Context())
   if err != nil {
     return nil, err
   }
@@ -26,9 +38,9 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeProductToMachines(taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {
+func (t *StatsServer) computeProductToMachines(db *sqlx.DB,  taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {
   var productNames []string
-  rows, err := t.db.QueryContext(taskContext, "select distinct product, machine from report group by product, machine order by product, machine")
+  rows, err := db.QueryContext(taskContext, "select distinct product, machine from report group by product, machine order by product, machine")
   if err != nil {
     return nil, nil, err
   }
@@ -67,9 +79,9 @@ func (t *StatsServer) computeProductToMachines(taskContext context.Context) (map
   return productNameToMachineMap, productNames, nil
 }
 
-func (t *StatsServer) computeProductToProjects(taskContext context.Context) (map[string]*[]string, []string, error) {
+func (t *StatsServer) computeProductToProjects(db *sqlx.DB, taskContext context.Context) (map[string]*[]string, []string, error) {
   var productNames []string
-  rows, err := t.db.QueryContext(taskContext, "select distinct product, project from report group by product, project order by product, project")
+  rows, err := db.QueryContext(taskContext, "select distinct product, project from report group by product, project order by product, project")
   if err != nil {
     return nil, nil, err
   }

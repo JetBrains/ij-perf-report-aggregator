@@ -1,4 +1,4 @@
-package server
+package data_query
 
 import (
   "context"
@@ -14,11 +14,11 @@ import (
 )
 
 type DataQuery struct {
+  Database string `json:"db"`
+
   Fields  []DataQueryDimension `json:"fields"`
   Filters []DataQueryFilter    `json:"filters"`
   Order   []string             `json:"order"`
-
-  Limit int `json:"limit"`
 
   // used only for grouped query
   Aggregator          string               `json:"aggregator"`
@@ -37,6 +37,16 @@ type DataQueryDimension struct {
   Name string `json:"name"`
   Sql  string `json:"sql"`
 }
+
+type DatabaseConnectionSupplier interface {
+  GetDatabase(name string) (*sqlx.DB, error)
+}
+
+// https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
+var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
+
+// add ().space,'*
+var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
 
 func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
   if b[0] == '"' {
@@ -72,7 +82,25 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
 func ReadQuery(request *http.Request) (DataQuery, error) {
   var result DataQuery
   err := readQueryFromRequest(request, &result)
-  return result, err
+  if err != nil {
+    return result, err
+  }
+
+  result.Database, err = ValidateDatabaseName(result.Database)
+  if err != nil {
+    return DataQuery{}, err
+  }
+  return result, nil
+}
+
+func ValidateDatabaseName(db string) (string, error) {
+  // for db name the same validation rules as for field name
+  if len(db) == 0 {
+    return "default", nil
+  } else if !reFieldName.MatchString(db) {
+    return "", errors.Errorf("Database name %s contains illegal chars", db)
+  }
+  return db, nil
 }
 
 func readQueryFromRequest(request *http.Request, v interface{}) error {
@@ -99,29 +127,33 @@ func readQuery(s []byte, v interface{}) error {
   return nil
 }
 
-// https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
-var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
+func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, error) {
+  sqlQuery, args, err := buildSql(query, table)
+  if err != nil {
+    return nil, err
+  }
 
-// add ().space,'*
-var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
-
-func SelectRows(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Rows, error) {
-  sqlQuery, args, err := BuildSql(query, table)
+  db, err := dbSupplier.GetDatabase(query.Database)
   if err != nil {
     return nil, err
   }
   return db.QueryContext(context, sqlQuery, args...)
 }
 
-func SelectRow(query DataQuery, table string, db *sqlx.DB, context context.Context) (*sql.Row, error) {
-  sqlQuery, args, err := BuildSql(query, table)
+func SelectRow(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Row, error) {
+  sqlQuery, args, err := buildSql(query, table)
+  if err != nil {
+    return nil, err
+  }
+
+  db, err := dbSupplier.GetDatabase(query.Database)
   if err != nil {
     return nil, err
   }
   return db.QueryRowContext(context, sqlQuery, args...), nil
 }
 
-func BuildSql(query DataQuery, table string) (string, []interface{}, error) {
+func buildSql(query DataQuery, table string) (string, []interface{}, error) {
   var sb strings.Builder
   var args []interface{}
 

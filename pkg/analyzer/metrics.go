@@ -23,8 +23,6 @@ const appInitCategory = 1
 var metricNameToDescriptor map[string]*Metric
 var MetricDescriptors []*Metric
 
-const nonMetricFieldCount = 13
-
 func init() {
   index := 0
   createMetric := func(name string) *Metric {
@@ -115,7 +113,7 @@ func init() {
   }
 }
 
-func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Logger) error {
+func ComputeMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
   if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
     logger.Warn("invalid report (due to opening second project?), report will be skipped")
     return nil
@@ -128,7 +126,7 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
   (*result)[nonMetricFieldCount+metricNameToDescriptor["startUpCompleted"].index] = report.TotalDurationActual
 
   for _, activity := range report.MainActivities {
-    err := setMetric(activity, report, result)
+    err := setMetric(nonMetricFieldCount, activity, report, result)
     if err != nil {
       return err
     }
@@ -136,7 +134,7 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
 
   if version.Compare(report.Version, "18", ">=") {
     for _, activity := range report.PrepareAppInitActivities {
-      err := setMetric(activity, report, result)
+      err := setMetric(nonMetricFieldCount, activity, report, result)
       if err != nil {
         return err
       }
@@ -147,7 +145,7 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
       case "plugin descriptors loading":
         (*result)[nonMetricFieldCount+metricNameToDescriptor["plugin descriptor loading"].index] = activity.Duration
       default:
-        err := setMetric(activity, report, result)
+        err := setMetric(nonMetricFieldCount, activity, report, result)
         if err != nil {
           return err
         }
@@ -194,7 +192,7 @@ func ComputeMetrics(report *model.Report, result *[]interface{}, logger *zap.Log
   return nil
 }
 
-func setMetric(activity model.Activity, report *model.Report, result *[]interface{}) error {
+func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.Report, result *[]interface{}) error {
   info, ok := metricNameToDescriptor[activity.Name]
   if !ok {
     return nil

@@ -20,6 +20,8 @@ import (
 )
 
 type ReportAnalyzer struct {
+  dbName string
+
   insertQueue chan *ReportInfo
   DoneChannel chan error
 
@@ -38,23 +40,24 @@ type ReportAnalyzer struct {
   logger *zap.Logger
 }
 
-func CreateReportAnalyzer(clickHouseUrl string, analyzeContext context.Context, logger *zap.Logger, cancelOnError context.CancelFunc) (*ReportAnalyzer, error) {
+func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext context.Context, logger *zap.Logger, cancelOnError context.CancelFunc) (*ReportAnalyzer, error) {
   m := minify.New()
   m.AddFunc("json", json.Minify)
 
   // https://github.com/ClickHouse/ClickHouse/issues/2833
   // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  insertReportManager, err := NewInsertReportManager(db, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
+  insertReportManager, err := NewInsertReportManager(db, dbName == "ij", analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
 
   analyzer := &ReportAnalyzer{
+    dbName:         dbName,
     insertQueue:    make(chan *ReportInfo, 32),
     analyzeContext: analyzeContext,
     DoneChannel:    make(chan error),
@@ -151,10 +154,16 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     },
   }
 
+  if len(extraData.BuildNumber) == 0 && t.dbName != "ij" {
+    // ignore report (remove later once santa project will be collected)
+    return nil
+  }
+
   buildComponents := strings.Split(extraData.BuildNumber, ".")
   if len(buildComponents) == 2 {
     buildComponents = append(buildComponents, "0")
   }
+
   reportInfo.row.BuildC1, reportInfo.row.BuildC2, reportInfo.row.BuildC3, err = splitBuildNumber(buildComponents)
   if err != nil {
     return err
@@ -174,8 +183,12 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     //noinspection SpellCheckingInspection
     reportInfo.branch = fastjson.GetString(extraData.TcBuildProperties, "vcsroot.branch")
     if len(reportInfo.branch) == 0 {
-      t.logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
-      return errors.New("cannot infer branch from TC properties")
+      if t.dbName == "ij" {
+        t.logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
+        return errors.New("cannot infer branch from TC properties")
+      } else {
+        reportInfo.branch = "master"
+      }
     }
   }
 

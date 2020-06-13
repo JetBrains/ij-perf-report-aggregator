@@ -16,43 +16,32 @@ import (
 
 func (t *Collector) downloadStartUpReports(build Build) ([][]byte, error) {
   var result [][]byte
-  for _, artifact := range build.Artifacts.File {
-    err := t.findAndDownloadStartUpReports(build, artifact.Children, &result)
-    if err != nil {
-      return nil, err
-    }
+  err := t.findAndDownloadStartUpReports(build, build.Artifacts, &result)
+  if err != nil {
+    return nil, err
   }
   return result, nil
 }
 
 func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[][]byte) error {
   for _, artifact := range artifact.File {
-    if len(artifact.Url) != 0 {
-      if !strings.HasSuffix(artifact.Url, ".json") {
-        continue
-      }
-
+    if strings.HasSuffix(artifact.Url, ".json") {
       name := path.Base(artifact.Url)
-      if !strings.HasPrefix(name, "startup-stats") {
+      if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") {
+        artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
+        report, err := t.downloadStartUpReport(build, artifactUrlString)
+        if err != nil {
+          return err
+        }
+
+        *result = append(*result, report)
         continue
       }
+    }
 
-      //if name != "startup-stats-restoringEditors.json" {
-      //  continue
-      //}
-
-      artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
-      report, err := t.downloadStartUpReport(build, artifactUrlString)
-      if err != nil {
-        return err
-      }
-
-      *result = append(*result, report)
-    } else {
-      err := t.findAndDownloadStartUpReports(build, artifact.Children, result)
-      if err != nil {
-        return err
-      }
+    err := t.findAndDownloadStartUpReports(build, artifact.Children, result)
+    if err != nil {
+      return err
     }
   }
 

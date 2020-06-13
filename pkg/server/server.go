@@ -11,9 +11,11 @@ import (
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "go.uber.org/zap"
+  "io"
   "net/http"
   "os"
   "os/signal"
+  "sync"
   "syscall"
   "time"
 )
@@ -21,7 +23,8 @@ import (
 const DefaultDbUrl = "127.0.0.1:9000"
 
 type StatsServer struct {
-  db *sqlx.DB
+  dbUrl string
+  nameToDb sync.Map
 
   machineInfo analyzer.MachineInfo
 
@@ -33,21 +36,20 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     dbUrl = DefaultDbUrl
   }
 
-  // limit max memory to use - 3GB
-  db, err := sqlx.Open("clickhouse", "tcp://"+dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_memory_usage=3221225472")
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  defer util.Close(db, logger)
-
   statsServer := &StatsServer{
-    db: db,
+    dbUrl: dbUrl,
 
     logger: logger,
 
     machineInfo: analyzer.GetMachineInfo(),
   }
+
+  defer func() {
+    statsServer.nameToDb.Range(func(name, db interface{}) bool {
+      util.Close(db.(io.Closer), logger)
+      return true
+    })
+  }()
 
   cacheManager := NewResponseCacheManager(logger)
 
@@ -56,7 +58,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   disposer := util.NewDisposer()
  	defer disposer.Dispose()
   if len(natsUrl) > 0 {
-    err = listenNats(cacheManager, natsUrl, disposer, logger)
+    err := listenNats(cacheManager, natsUrl, disposer, logger)
     if err != nil {
       return err
     }
@@ -82,6 +84,26 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   waitUntilTerminated(server, 1*time.Minute, logger)
   return nil
+}
+
+func (t *StatsServer) GetDatabase(name string) (*sqlx.DB, error) {
+  db, _ := t.nameToDb.Load(name)
+  if db != nil {
+    return db.(*sqlx.DB), nil
+  }
+
+  // limit max memory to use - 3GB
+  db, err := sqlx.Open("clickhouse", "tcp://"+t.dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_memory_usage=3221225472&database=" + name)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
+  actual, loaded := t.nameToDb.LoadOrStore(name, db)
+  if loaded {
+    // not stored because another thread already stored another value, so, close candidate
+    util.Close(db.(*sqlx.DB), t.logger)
+  }
+  return actual.(*sqlx.DB), nil
 }
 
 func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {

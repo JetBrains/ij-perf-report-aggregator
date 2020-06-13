@@ -37,6 +37,7 @@ require (
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.7.0
+	github.com/segmentio/ksuid v1.0.2
 	github.com/stretchr/testify v1.5.1
 	github.com/tdewolff/minify/v2 v2.7.6
 	github.com/valyala/bytebufferpool v1.0.0
@@ -50,7 +51,7 @@ require (
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
 	golang.org/x/sys v0.0.0-20200610111108-226ff32320da // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20200611032120-1fdcbd130028
+	golang.org/x/tools v0.0.0-20200612022331-742c5eb664c2
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0

@@ -2,6 +2,7 @@ package analyzer
 
 import (
   "context"
+  "database/sql"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/deanishe/go-env"
@@ -43,16 +44,23 @@ type MetricResult struct {
 type InsertReportManager struct {
   sql_util.InsertDataManager
 
-  context                  context.Context
+  context                          context.Context
   MaxGeneratedTime                 int64
   IsCheckThatNotAlreadyAddedNeeded bool
-
+  hasProductField     bool
+  nonMetricFieldCount int
   insertInstallerManager *InsertInstallerManager
   tableName              string
 }
 
-func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
-  selectStatement, err := db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
+func NewInsertReportManager(db *sqlx.DB, hasProductField bool, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
+  var selectStatement *sql.Stmt
+  var err error
+  if hasProductField {
+    selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
+  } else {
+    selectStatement, err = db.Prepare("select 1 from " + tableName + " where machine = ? and project = ? and generated_time = ? limit 1")
+  }
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -64,14 +72,27 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   var sb strings.Builder
   sb.WriteString("insert into ")
   sb.WriteString(tableName)
-  sb.WriteString(" (product, machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
-  for _, metric := range MetricDescriptors {
-    sb.WriteRune(',')
-    sb.WriteString(metric.Name)
+  sb.WriteString(" (")
+  if hasProductField {
+    sb.WriteString("product, ")
+  }
+  sb.WriteString("machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
+  if hasProductField {
+    for _, metric := range MetricDescriptors {
+      sb.WriteRune(',')
+      sb.WriteString(metric.Name)
+    }
   }
   sb.WriteString(") values (")
 
-  for i, n := 0, nonMetricFieldCount+len(MetricDescriptors); i < n; i++ {
+  nonMetricFieldCount := 13
+  metricFieldCount := len(MetricDescriptors)
+  if !hasProductField {
+    nonMetricFieldCount -= 1
+    metricFieldCount = 0
+  }
+
+  for i, n := 0, nonMetricFieldCount+metricFieldCount; i < n; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
@@ -79,8 +100,8 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
   sb.WriteRune(')')
 
-  sql := sb.String()
-  insertManager, err := sql_util.NewBulkInsertManager(db, context, sql, insertWorkerCount, logger.Named("report"))
+  effectiveSql := sb.String()
+  insertManager, err := sql_util.NewBulkInsertManager(db, context, effectiveSql, insertWorkerCount, logger.Named("report"))
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -94,7 +115,9 @@ func NewInsertReportManager(db *sqlx.DB, context context.Context, tableName stri
   }
 
   manager := &InsertReportManager{
-    tableName: tableName,
+    nonMetricFieldCount: nonMetricFieldCount,
+    hasProductField: hasProductField,
+    tableName:       tableName,
     InsertDataManager: sql_util.InsertDataManager{
       Db: db,
 
@@ -164,6 +187,9 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     //}
   } else {
     project = report.Project
+    if project == "Fleet" {
+      project = "fleet"
+    }
     // IJ simple project - map project v3 to existing v2 ID
     if project == "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s" {
       //noinspection SpellCheckingInspection
@@ -184,15 +210,20 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
   //  return nil
   //}
 
-  args := make([]interface{}, 0, nonMetricFieldCount+len(MetricDescriptors))
-  args = append(args, product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+  args := make([]interface{}, 0, t.nonMetricFieldCount+len(MetricDescriptors))
+  if t.hasProductField {
+    args = append(args, product)
+  }
+  args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
     row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
     branch,
     row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
 
-  err = ComputeMetrics(report, &args, logger)
-  if err != nil {
-    return err
+  if t.hasProductField {
+    err = ComputeMetrics(t.nonMetricFieldCount, report, &args, logger)
+    if err != nil {
+      return err
+    }
   }
 
   _, err = insertStatement.ExecContext(t.context, args...)

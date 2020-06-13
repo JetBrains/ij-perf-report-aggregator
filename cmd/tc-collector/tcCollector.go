@@ -36,7 +36,7 @@ type Collector struct {
   reportExistenceChecker *ReportExistenceChecker
 }
 
-var ProductCodeToBuildName = map[string]string{
+var productCodeToBuildName = map[string]string{
   "IU": "Ultimate",
   "WS": "WebStorm",
   "PS": "PhpStorm",
@@ -71,11 +71,11 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []string, userSpecifiedSince time.Time, httpClient *http.Client, logger *zap.Logger) error {
-  taskContext, cancel := util.CreateCommandContext()
-  defer cancel()
-
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, taskContext, logger, func() {
+func collectFromTeamCity(clickHouseUrl string, tcUrl string, dbName string, buildConfigurationIds []string,
+  userSpecifiedSince time.Time,
+  httpClient *http.Client, logger *zap.Logger,
+  taskContext context.Context, cancel context.CancelFunc) error {
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, dbName, taskContext, logger, func() {
     logger.Debug("canceled by analyzer")
     cancel()
   })
@@ -103,7 +103,7 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     return err
   }
 
-  for _, buildTypeId := range buildTypeIds {
+  for _, buildTypeId := range buildConfigurationIds {
     if taskContext.Err() != nil {
       return errors.WithStack(taskContext.Err())
     }
@@ -124,12 +124,12 @@ func collectFromTeamCity(clickHouseUrl string, tcUrl string, buildTypeIds []stri
     }
 
     q.Set("locator", locator)
-    q.Set("fields", "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(children(file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
+    q.Set("fields", "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(href,children(href,file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
     serverUrl.RawQuery = q.Encode()
 
     logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
 
-    err := collector.reportExistenceChecker.reset(buildTypeId, reportAnalyzer, taskContext, since)
+    err := collector.reportExistenceChecker.reset(dbName, buildTypeId, reportAnalyzer, taskContext, since)
     if err != nil {
       return err
     }

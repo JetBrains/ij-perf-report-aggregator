@@ -136,7 +136,6 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
   }
 
   t.Logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
-
   currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
   if extractMetadata {
     // move metadata to root

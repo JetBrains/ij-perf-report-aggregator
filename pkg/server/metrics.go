@@ -2,6 +2,7 @@ package server
 
 import (
   "context"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/pkg/errors"
   "github.com/valyala/quicktemplate"
@@ -13,7 +14,7 @@ import (
 )
 
 func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
-  dataQuery, err := ReadQuery(request)
+  dataQuery, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
@@ -27,8 +28,8 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, context context.Context) error {
-  rows, err := SelectRows(query, "report", t.db, context)
+func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer io.Writer, context context.Context) error {
+  rows, err := data_query.SelectRows(query, "report", t, context)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -54,7 +55,7 @@ func (t *StatsServer) computeMetricsResponse(query DataQuery, writer io.Writer, 
 
   var sb strings.Builder
 
-  dataItems := [][]DataQueryDimension{query.Dimensions, query.Fields}
+  dataItems := [][]data_query.DataQueryDimension{query.Dimensions, query.Fields}
 
   isFirst := true
   //lastBuildWithoutUniqueSuffix := ""

@@ -129,7 +129,7 @@ func (t *Collector) loadReports(builds []*Build) error {
 
 func computeBuildDate(build *Build) (int, int64, error) {
   for _, dependencyBuild := range build.ArtifactDependencies.Builds {
-    if strings.Contains(dependencyBuild.BuildTypeId, "_Installers") {
+    if strings.Contains(dependencyBuild.BuildTypeId, "Installer") {
       result, err := time.Parse(tcTimeFormat, dependencyBuild.FinishDate)
       if err != nil {
         return -1, -1, err

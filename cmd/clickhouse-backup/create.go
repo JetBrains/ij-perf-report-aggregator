@@ -2,30 +2,19 @@ package main
 
 import (
   "archive/tar"
-  "database/sql"
+  "fmt"
   _ "github.com/ClickHouse/clickhouse-go"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/deanishe/go-env"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
+  "github.com/segmentio/ksuid"
   "go.uber.org/zap"
   "io/ioutil"
-  "math/rand"
   "os"
   "path/filepath"
-  "strconv"
   "strings"
 )
 
-func (t *BackupManager) freezeAndMoveToBackupDir(logger *zap.Logger, backupDir string) (int64, error) {
-  db, err := sql.Open("clickhouse", "tcp://"+env.Get("CLICKHOUSE", "clickhouse:9000")+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
-  if err != nil {
-    return 0, errors.WithStack(err)
-  }
-
-  defer util.Close(db, logger)
-
-  dbName := "default"
-
+func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, dbName string, backupDir string, logger *zap.Logger) (int64, error) {
   tables, err := t.getTables(db, dbName)
   if err != nil {
     return 0, errors.WithStack(err)
@@ -44,56 +33,45 @@ func (t *BackupManager) freezeAndMoveToBackupDir(logger *zap.Logger, backupDir s
   }
 
   shadowDir := filepath.Join(t.ClickhouseDir, "shadow")
-  currentIndex := rand.Int63()
+  dirPrefix := ksuid.New().String()
   for _, table := range tables {
-    dirName := strconv.FormatInt(currentIndex, 36) + "_" + table
+    // todo How do clickhouse transform table to dir name?
+    dirName := dirPrefix + "_" + table
     logger.Info("freeze table", zap.String("table", table), zap.String("shadowDir", dirName), zap.String("db", dbName))
-    _, err := db.Exec("alter table default.`" + table + "` freeze with name '" + dirName + "'")
+    _, err := db.Exec(fmt.Sprintf("alter table `%s`.`%s` freeze with name '" + dirName + "'", dbName, table))
     if err != nil {
       return 0, errors.WithStack(err)
     }
 
-    err = os.Rename(filepath.Join(shadowDir, dirName, "data", dbName, table), filepath.Join(backupShadowDir, table))
+    tableShadowDir := filepath.Join(shadowDir, dirName)
+    err = os.Rename(filepath.Join(tableShadowDir, "data", dbName, table), filepath.Join(backupShadowDir, table))
+    if err != nil {
+      return 0, errors.WithStack(err)
+    }
+
+    err = os.RemoveAll(tableShadowDir)
     if err != nil {
       return 0, errors.WithStack(err)
     }
   }
-
-  row := db.QueryRow("select sum(bytes) + (count() * 345) from system.parts where active")
   var estimatedTarSize int64
-  err = row.Scan(&estimatedTarSize)
+  err = db.GetContext(t.TaskContext, &estimatedTarSize, "select sum(bytes_on_disk) + (count() * 345) from system.parts where active and database = ?", dbName)
   if err != nil {
     return 0, errors.WithStack(err)
   }
   return estimatedTarSize, nil
 }
 
-func (t *BackupManager) getTables(db *sql.DB, dbName string) ([]string, error) {
+func (t *BackupManager) getTables(db *sqlx.DB, dbName string) ([]string, error) {
   var tables []string
-  rows, err := db.QueryContext(t.TaskContext, "select name from system.tables where database = '"+dbName+"' and is_temporary = 0 and engine like '%MergeTree';")
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
-  defer util.Close(rows, t.Logger)
-  for rows.Next() {
-    var table string
-    err = rows.Scan(&table)
-    if err != nil {
-      return nil, errors.WithStack(err)
-    }
-
-    tables = append(tables, table)
-  }
-  err = rows.Err()
+  err := db.SelectContext(t.TaskContext, &tables, "select name from system.tables where database = ? and is_temporary = 0 and engine like '%MergeTree';", dbName)
   if err != nil {
     return nil, errors.WithStack(err)
   }
   return tables, nil
 }
 
-func writeMetadata(writer *tar.Writer, metadataDir string) error {
-  dbName := "default"
+func writeMetadata(writer *tar.Writer, dbName string, metadataDir string) error {
   dbMetadataDir := filepath.Join(metadataDir, dbName)
   files, err := ioutil.ReadDir(dbMetadataDir)
   if err != nil {

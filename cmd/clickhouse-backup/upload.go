@@ -70,6 +70,7 @@ type Task struct {
   metadataDir      string
   backupDir        string
   diffFromPath     string
+  dbNames          []string
   estimatedTarSize int64
 
   logger *zap.Logger
@@ -86,9 +87,11 @@ func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err er
 
   copyBuffer := make([]byte, 64*1024)
 
-  err = writeMetadata(tarWriter, task.metadataDir)
-  if err != nil {
-    return errors.WithStack(err)
+  for _, dbName := range task.dbNames {
+    err = writeMetadata(tarWriter, dbName, task.metadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
   }
 
   var hardlinks []string

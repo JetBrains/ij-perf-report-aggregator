@@ -35,6 +35,8 @@ type ReportRow struct {
   Machine uint8
   Branch  uint8
 
+  Project uint8 `db:"project"`
+
   GeneratedTime int64 `db:"generated_time"`
   BuildTime     int64 `db:"build_time"`
 
@@ -47,8 +49,6 @@ type ReportRow struct {
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
-
-  Project uint8 `db:"project"`
 }
 
 type TimeRange struct {
@@ -68,7 +68,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  insertReportManager, err := analyzer.NewInsertReportManager(db, taskContext, "report2", insertWorkerCount, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(db, true, taskContext, "report2", insertWorkerCount, logger)
   if err != nil {
     return err
   }

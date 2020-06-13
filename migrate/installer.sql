@@ -1,4 +1,4 @@
-create table installer2
+create table installer
 (
   `id`      UInt32 CODEC(DoubleDelta, ZSTD(19)),
   `changes` Array(FixedString(27)) CODEC(ZSTD(19))

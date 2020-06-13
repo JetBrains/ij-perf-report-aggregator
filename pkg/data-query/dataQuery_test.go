@@ -1,4 +1,4 @@
-package server
+package data_query
 
 import (
   "github.com/stretchr/testify/assert"
@@ -22,32 +22,10 @@ func TestAdvancedFilter(t *testing.T) {
   //noinspection GoImportUsedAsName
   assert := assert.New(t)
 
-  sql, args, err := BuildSql(query, "test")
+  sql, args, err := buildSql(query, "test")
   if err != nil {
     t.Error(err)
   }
   assert.Equal("select from test where generated_time > subtractMonths(now(), 1)", sql)
-  assert.Empty(args)
-}
-
-func TestLimit(t *testing.T) {
-  var query DataQuery
-  err := readQuery([]byte(`
-{
-  "limit": 1
-}
-`), &query)
-  if err != nil {
-    t.Error(err)
-  }
-
-  //noinspection GoImportUsedAsName
-  assert := assert.New(t)
-
-  sql, args, err := BuildSql(query, "test")
-  if err != nil {
-    t.Error(err)
-  }
-  assert.Equal("select from test limit 1", sql)
   assert.Empty(args)
 }

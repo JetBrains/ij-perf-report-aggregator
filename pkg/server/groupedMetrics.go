@@ -2,6 +2,7 @@ package server
 
 import (
   "context"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "math"
@@ -11,7 +12,7 @@ import (
 )
 
 func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
-  dataQuery, err := ReadQuery(request)
+  dataQuery, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
@@ -27,8 +28,8 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) getAggregatedResults(dataQuery DataQuery, requestContext context.Context) ([]MedianResult, error) {
-  rows, err := SelectRows(dataQuery, "report", t.db, requestContext)
+func (t *StatsServer) getAggregatedResults(dataQuery data_query.DataQuery, requestContext context.Context) ([]MedianResult, error) {
+  rows, err := data_query.SelectRows(dataQuery, "report", t, requestContext)
   if err != nil {
     return nil, errors.WithStack(err)
   }

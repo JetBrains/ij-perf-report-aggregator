@@ -6,13 +6,14 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/deanishe/go-env"
   "github.com/develar/errors"
+  "github.com/jmoiron/sqlx"
   "github.com/minio/minio-go/v6"
   "github.com/nats-io/nats.go"
   "go.uber.org/zap"
-  "math/rand"
   "os"
   "path/filepath"
   "runtime/debug"
+  "strings"
   "time"
 )
 
@@ -30,8 +31,6 @@ func main() {
   defer func() {
     _ = logger.Sync()
   }()
-
-  rand.Seed(time.Now().UnixNano())
 
   err := start("nats://"+env.Get("NATS", "nats:4222"), logger)
   if err != nil {
@@ -139,20 +138,20 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
     }
   }
 
-  estimatedTarSize, err := t.createBackup(backupDir, logger)
+  task := Task{
+    metadataDir:      filepath.Join(t.ClickhouseDir, "metadata"),
+    backupDir:        backupDir,
+    diffFromPath:     diffFromPath,
+    estimatedTarSize: 0,
+    logger:           logger,
+  }
+
+  err = t.createBackup(&task)
   if err != nil {
     return errors.WithStack(err)
   }
 
   logger.Info("upload", zap.String("backup", backupDir))
-  task := Task{
-    metadataDir:      filepath.Join(t.ClickhouseDir, "metadata"),
-    backupDir:        backupDir,
-    estimatedTarSize: estimatedTarSize,
-    diffFromPath:     diffFromPath,
-    logger:           logger,
-  }
-
   err = t.upload(backupName+".tar", task)
   if err != nil {
     return errors.WithStack(err)
@@ -178,17 +177,49 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
   return nil
 }
 
-func (t *BackupManager) createBackup(backupDir string, logger *zap.Logger) (int64, error) {
+func getDatabaseNamesToBackup() []string {
+  var result []string
+  for _, s := range strings.Split(env.GetString("DB"), ",") {
+    name := strings.TrimSpace(s)
+    if len(name) > 0 {
+      result = append(result, name)
+    }
+  }
+  return result
+}
+
+func (t *BackupManager) createBackup(task *Task) error {
+  backupDir := task.backupDir
   _, err := os.Stat(backupDir)
   if err == nil || !os.IsNotExist(err) {
-    return 0, errors.Errorf("backup '%s' already exists", backupDir)
+    return errors.Errorf("backup '%s' already exists", backupDir)
   }
 
-  logger.Info("create")
-  estimatedTarSize, err := t.freezeAndMoveToBackupDir(logger, backupDir)
+  db, err := sqlx.Open("clickhouse", "tcp://"+env.Get("CLICKHOUSE", "clickhouse:9000")+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
   if err != nil {
-    return 0, errors.WithStack(err)
+    return errors.WithStack(err)
   }
 
-  return estimatedTarSize, nil
+  defer util.Close(db, task.logger)
+
+  task.dbNames = getDatabaseNamesToBackup()
+  if len(task.dbNames) == 0 {
+    // select non-empty db
+    err := db.SelectContext(t.TaskContext, &task.dbNames, "select distinct database from system.tables where database != 'system'")
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
+  task.logger.Info("create")
+  for _, dbName := range task.dbNames {
+    estimatedTarSize, err := t.freezeAndMoveToBackupDir(db, dbName, backupDir, task.logger.With(zap.String("db", dbName)))
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    task.estimatedTarSize += estimatedTarSize
+  }
+
+  return nil
 }

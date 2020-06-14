@@ -2,6 +2,7 @@ package server
 
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -56,15 +57,15 @@ func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error)
   case len(branch) == 0:
     branch = "master"
   case !govalidator.IsAlphanumeric(branch):
-    return nil, NewHttpError(400, "The branch parameter must be alphanumeric")
+    return nil, http_error.NewHttpError(400, "The branch parameter must be alphanumeric")
   }
 
   goldWeekStart := urlQuery.Get("goldWeekStart")
   switch {
   case len(goldWeekStart) == 0:
-    return nil, NewHttpError(400, "The goldWeekStart parameter is required")
+    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter is required")
   case !govalidator.IsTime(goldWeekStart, "2006-01-02"):
-    return nil, NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
+    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
   }
 
   db, err := t.GetDatabase("ij")

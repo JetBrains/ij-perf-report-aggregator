@@ -125,7 +125,11 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer 
         }
 
         jsonWriter.S(`,"`)
-        jsonWriter.S(field.Name)
+        if len(field.ResultPropertyName) == 0 {
+          jsonWriter.S(field.Name)
+        } else {
+          jsonWriter.S(field.ResultPropertyName)
+        }
         jsonWriter.S(`":`)
 
         switch untypedValue := v.(type) {

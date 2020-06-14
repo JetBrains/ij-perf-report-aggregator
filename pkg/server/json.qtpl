@@ -1,7 +1,8 @@
 {% import "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer" %}
+{% import "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error" %}
 
 {% stripspace %}
-{% func httpError(error *HttpError) %}
+{% func httpError(error *http_error.HttpError) %}
 {
   "error": {%q= error.Message %}
 }

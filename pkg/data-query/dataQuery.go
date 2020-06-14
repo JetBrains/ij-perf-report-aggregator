@@ -3,6 +3,8 @@ package data_query
 import (
   "context"
   "database/sql"
+  "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/jmoiron/sqlx"
   "github.com/json-iterator/go"
   "github.com/pkg/errors"
@@ -36,6 +38,13 @@ type DataQueryFilter struct {
 type DataQueryDimension struct {
   Name string `json:"name"`
   Sql  string `json:"sql"`
+
+  metricPath string
+  metricName string
+  // tuple index - 3 for duration, 2 for start
+  metricValueIndex rune
+
+  ResultPropertyName string
 }
 
 type DatabaseConnectionSupplier interface {
@@ -44,6 +53,8 @@ type DatabaseConnectionSupplier interface {
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
 var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
+var reMetricName = regexp.MustCompile("^[a-z0-9 _]+$")
+var reDbName = reFieldName
 
 // add ().space,'*
 var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
@@ -69,14 +80,40 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
     })
   }
 
-  if !reFieldName.MatchString(t.Name) {
-    return errors.Errorf("Name %s is not a valid field name", t.Name)
+  qualifierDotIndex := strings.IndexRune(t.Name, '.')
+  if qualifierDotIndex == -1 {
+    if !isValidFieldName(t.Name) {
+      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
+    }
+  } else {
+    t.metricPath = t.Name[0:qualifierDotIndex]
+    t.metricName = t.Name[qualifierDotIndex+1:]
+    t.metricValueIndex = '3'
+
+    metricNameLength := len(t.metricName)
+    if metricNameLength > 2 && t.metricName[metricNameLength - 2] == '.' {
+      if t.metricName[metricNameLength - 1] == 's' {
+        t.metricValueIndex = '2'
+      }
+      t.metricName = t.metricName[:metricNameLength - 2]
+    }
+
+    t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+
+    if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {
+      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
+    }
   }
+
   if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
-    return errors.Errorf("Dimension SQL %s contains illegal chars", t.Name)
+    return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Name))
   }
 
   return nil
+}
+
+func isValidFieldName(v string) bool {
+  return reFieldName.MatchString(v)
 }
 
 func ReadQuery(request *http.Request) (DataQuery, error) {
@@ -97,7 +134,7 @@ func ValidateDatabaseName(db string) (string, error) {
   // for db name the same validation rules as for field name
   if len(db) == 0 {
     return "default", nil
-  } else if !reFieldName.MatchString(db) {
+  } else if !reDbName.MatchString(db) {
     return "", errors.Errorf("Database name %s contains illegal chars", db)
   }
   return db, nil
@@ -119,16 +156,18 @@ func readQueryFromRequest(request *http.Request, v interface{}) error {
 }
 
 func readQuery(s []byte, v interface{}) error {
-  jsonConfig := jsoniter.ConfigFastest
-  err := jsonConfig.Unmarshal(s, v)
+  err := jsoniter.ConfigFastest.Unmarshal(s, v)
   if err != nil {
-    return errors.WithStack(err)
+    return http_error.NewHttpError(400, err.Error())
   }
   return nil
 }
 
 func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, error) {
   sqlQuery, args, err := buildSql(query, table)
+
+  //fmt.Println(sqlQuery)
+
   if err != nil {
     return nil, err
   }
@@ -183,9 +222,29 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
       sb.WriteString(aggregator)
       sb.WriteRune('(')
     }
-    sb.WriteString(field.Name)
+
+    if len(field.metricPath) == 0 {
+      sb.WriteString(field.Name)
+    } else {
+      // select arrayElement(arrayFilter(it -> it.1 = 'start main frontend', JSONExtract(raw_report, 'prepareAppInitActivities', 'Array(Tuple(String, Int, Int))')), 1).3 as v
+      // from report;
+      sb.WriteString("arrayElement(arrayFilter(it -> it.1 = '")
+      sb.WriteString(field.metricName)
+      sb.WriteString("', JSONExtract(raw_report, '")
+      sb.WriteString(field.metricPath)
+      sb.WriteString("', 'Array(Tuple(String, Int, Int))')), 1).")
+      sb.WriteRune(field.metricValueIndex)
+    }
+
     if len(aggregator) != 0 {
-      sb.WriteString(") as ")
+      sb.WriteRune(')')
+    }
+
+    if len(field.ResultPropertyName) != 0 {
+      sb.WriteString(" as ")
+      sb.WriteString(field.ResultPropertyName)
+    } else if len(aggregator) != 0 {
+      sb.WriteString(" as ")
       sb.WriteString(field.Name)
     }
   }
@@ -214,8 +273,8 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
   if len(query.Order) != 0 {
     sb.WriteString(" order by")
     for i, field := range query.Order {
-      if !reFieldName.MatchString(field) {
-        return "", args, errors.Errorf("Name %s is not a valid field name", field)
+      if !isValidFieldName(field) {
+        return "", args, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", field))
       }
 
       if i != 0 {
@@ -251,8 +310,8 @@ func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{})
   sb.WriteString(" where")
 loop:
   for i, filter := range query.Filters {
-    if !reFieldName.MatchString(filter.Field) {
-      return errors.Errorf("Name %s is not a valid field name", filter.Field)
+    if !isValidFieldName(filter.Field) {
+      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", filter.Field))
     }
 
     if i != 0 {

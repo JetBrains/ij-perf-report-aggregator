@@ -22,7 +22,7 @@ func GetMachineInfo() MachineInfo {
   const linux2 = "Linux: i7-3770, 16Gb (10600 1333MHz), SSD"
 
   return MachineInfo{
-    GroupNames: []string{macMini, linux, linux2, win},
+    GroupNames: []string{macMini, linux, linux2, win, "linux-blade"},
     MachineToGroupName: map[string]string{
       "intellij-macos-hw-unit-1550": macMini,
       "intellij-macos-hw-unit-1551": macMini,

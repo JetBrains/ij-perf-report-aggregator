@@ -2,7 +2,7 @@ package server
 
 import (
   "compress/gzip"
-  "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/VictoriaMetrics/fastcache"
   "github.com/cespare/xxhash"
@@ -17,22 +17,6 @@ import (
 )
 
 var byteBufferPool bytebufferpool.Pool
-
-type HttpError struct {
-  Code    int
-  Message string
-}
-
-func (t *HttpError) Error() string {
-  return fmt.Sprintf("code=%d, message: %s", t.Code, t.Message)
-}
-
-func NewHttpError(code int, message string) error {
-  return &HttpError{
-    Code:    code,
-    Message: message,
-  }
-}
 
 type ResponseCacheManager struct {
   cache  *fastcache.Cache
@@ -143,11 +127,12 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
 
 func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
   switch exception := errors.Cause(err).(type) {
-  case *HttpError:
+  case *http_error.HttpError:
     w.WriteHeader(exception.Code)
     writehttpError(w, exception)
 
   default:
+    //fmt.Printf("%+v", err)
     t.logger.Error("cannot handle http request", zap.Error(err))
     http.Error(w, err.Error(), 503)
   }

@@ -53,7 +53,7 @@ type DatabaseConnectionSupplier interface {
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
 var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
-var reMetricName = regexp.MustCompile("^[a-z0-9 _]+$")
+var reMetricName = regexp.MustCompile("^[a-zA-Z0-9 _]+$")
 var reDbName = reFieldName
 
 // add ().space,'*

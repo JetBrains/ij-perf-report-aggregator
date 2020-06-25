@@ -41,8 +41,7 @@ type DataQueryDimension struct {
 
   metricPath string
   metricName string
-  // tuple index - 3 for duration, 2 for start
-  metricValueIndex rune
+  metricValueName rune
 
   ResultPropertyName string
 }
@@ -88,13 +87,11 @@ func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
   } else {
     t.metricPath = t.Name[0:qualifierDotIndex]
     t.metricName = t.Name[qualifierDotIndex+1:]
-    t.metricValueIndex = '3'
+    t.metricValueName = 'd'
 
     metricNameLength := len(t.metricName)
     if metricNameLength > 2 && t.metricName[metricNameLength - 2] == '.' {
-      if t.metricName[metricNameLength - 1] == 's' {
-        t.metricValueIndex = '2'
-      }
+      t.metricValueName = rune(t.metricName[metricNameLength-1])
       t.metricName = t.metricName[:metricNameLength - 2]
     }
 
@@ -163,24 +160,26 @@ func readQuery(s []byte, v interface{}) error {
   return nil
 }
 
-func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, error) {
-  sqlQuery, args, err := buildSql(query, table)
-
-  //fmt.Println(sqlQuery)
+func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, int, error) {
+  sqlQuery, args, fieldCount, err := buildSql(query, table)
 
   if err != nil {
-    return nil, err
+    return nil, -1, err
   }
 
   db, err := dbSupplier.GetDatabase(query.Database)
   if err != nil {
-    return nil, err
+    return nil, -1, err
   }
-  return db.QueryContext(context, sqlQuery, args...)
+  rows, err := db.QueryContext(context, sqlQuery, args...)
+  if err != nil {
+    return nil, -1, errors.WithStack(err)
+  }
+  return rows, fieldCount, nil
 }
 
 func SelectRow(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Row, error) {
-  sqlQuery, args, err := buildSql(query, table)
+  sqlQuery, args, _, err := buildSql(query, table)
   if err != nil {
     return nil, err
   }
@@ -192,26 +191,31 @@ func SelectRow(query DataQuery, table string, dbSupplier DatabaseConnectionSuppl
   return db.QueryRowContext(context, sqlQuery, args...), nil
 }
 
-func buildSql(query DataQuery, table string) (string, []interface{}, error) {
+func buildSql(query DataQuery, table string) (string, []interface{}, int, error) {
   var sb strings.Builder
   var args []interface{}
 
   aggregator := query.Aggregator
   if len(aggregator) != 0 && !reAggregator.MatchString(aggregator) {
-    return "", args, errors.Errorf("Aggregator %s contains illegal chars", aggregator)
+    return "", args, -1, errors.Errorf("Aggregator %s contains illegal chars", aggregator)
   }
 
   sb.WriteString("select")
 
+  fieldCount := len(query.Dimensions)
   if len(query.Dimensions) != 0 {
     writeDimensions(query, &sb)
   }
 
+  // write extra fields to the end, so, it maybe skipped during serialization
+  var extraSb strings.Builder
   for i, field := range query.Fields {
     if i != 0 || len(query.Dimensions) != 0 {
       sb.WriteRune(',')
     }
     sb.WriteRune(' ')
+
+    fieldCount++
 
     if len(field.Sql) != 0 {
       writeDimension(field, &sb)
@@ -226,14 +230,24 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
     if len(field.metricPath) == 0 {
       sb.WriteString(field.Name)
     } else {
-      // select arrayElement(arrayFilter(it -> it.1 = 'start main frontend', JSONExtract(raw_report, 'prepareAppInitActivities', 'Array(Tuple(String, Int, Int))')), 1).3 as v
+      // select JSONExtractInt(arrayFirst(it -> JSONExtractString(it, 'n') = 'start main frontend', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')), 'd') as v
       // from report;
-      sb.WriteString("arrayElement(arrayFilter(it -> it.1 = '")
-      sb.WriteString(field.metricName)
-      sb.WriteString("', JSONExtract(raw_report, '")
-      sb.WriteString(field.metricPath)
-      sb.WriteString("', 'Array(Tuple(String, Int, Int))')), 1).")
-      sb.WriteRune(field.metricValueIndex)
+      if field.metricValueName == 'e' {
+        // for temp field
+        fieldCount++
+        extraSb.WriteString(", ")
+        // SELECT (JSONExtractInt(item, 'd') + JSONExtractInt(item, 's')) as e from (SELECT arrayFirst(it -> JSONExtractString(it, 'n') = 'start main frontend', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')) as item from report);
+        writeExtractJsonObject(&extraSb, field)
+        extraSb.WriteString(" as item")
+
+        sb.WriteString("(JSONExtractInt(item, 's') + JSONExtractInt(item, 'd'))")
+      } else {
+        sb.WriteString("JSONExtractInt(")
+        writeExtractJsonObject(&sb, field)
+        sb.WriteString(", '")
+        sb.WriteRune(field.metricValueName)
+        sb.WriteString("')")
+      }
     }
 
     if len(aggregator) != 0 {
@@ -249,13 +263,17 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
     }
   }
 
+  if extraSb.Len() != 0 {
+    sb.WriteString(extraSb.String())
+  }
+
   sb.WriteString(" from ")
   sb.WriteString(table)
 
   if len(query.Filters) != 0 {
     err := writeWhereClause(&sb, query, &args)
     if err != nil {
-      return "", args, err
+      return "", args, -1, err
     }
   }
 
@@ -274,7 +292,7 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
     sb.WriteString(" order by")
     for i, field := range query.Order {
       if !isValidFieldName(field) {
-        return "", args, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", field))
+        return "", args, -1, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", field))
       }
 
       if i != 0 {
@@ -285,7 +303,15 @@ func buildSql(query DataQuery, table string) (string, []interface{}, error) {
     }
   }
 
-  return sb.String(), args, nil
+  return sb.String(), args, fieldCount, nil
+}
+
+func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {
+  sb.WriteString("arrayFirst(it -> JSONExtractString(it, 'n') = '")
+  sb.WriteString(field.metricName)
+  sb.WriteString("', JSONExtractArrayRaw(raw_report, '")
+  sb.WriteString(field.metricPath)
+  sb.WriteString("'))")
 }
 
 func writeDimensions(query DataQuery, sb *strings.Builder) {

@@ -29,7 +29,7 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
 }
 
 func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer io.Writer, context context.Context) error {
-  rows, err := data_query.SelectRows(query, "report", t, context)
+  rows, fieldCount, err := data_query.SelectRows(query, "report", t, context)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -41,8 +41,7 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer 
   jsonWriter := templateWriter.N()
   jsonWriter.S("[")
 
-  dimensionCount := len(query.Dimensions)
-  columnPointers := make([]interface{}, dimensionCount+ len(query.Fields))
+  columnPointers := make([]interface{}, fieldCount)
   for i := range columnPointers {
     columnPointers[i] = new(interface{})
   }
@@ -145,6 +144,8 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer 
           jsonWriter.D(int(untypedValue))
         case uint64:
           jsonWriter.DL(int64(untypedValue))
+        case int64:
+          jsonWriter.DL(untypedValue)
         default:
           return errors.Errorf("unknown type: %T for field %s", untypedValue, field.Name)
         }

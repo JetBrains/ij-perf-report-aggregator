@@ -29,7 +29,7 @@ func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte
 }
 
 func (t *StatsServer) getAggregatedResults(dataQuery data_query.DataQuery, requestContext context.Context) ([]MedianResult, error) {
-  rows, err := data_query.SelectRows(dataQuery, "report", t, requestContext)
+  rows, _, err := data_query.SelectRows(dataQuery, "report", t, requestContext)
   if err != nil {
     return nil, errors.WithStack(err)
   }

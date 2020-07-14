@@ -42,15 +42,16 @@ require (
 	github.com/tdewolff/minify/v2 v2.7.6
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.5.3
-	github.com/valyala/quicktemplate v1.5.0
+	github.com/valyala/quicktemplate v1.5.1
 	go.uber.org/atomic v1.6.0
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.15.0
+	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344 // indirect
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
 	golang.org/x/text v0.3.3 // indirect
-	golang.org/x/tools v0.0.0-20200702044944-0cc1aa72b347
+	golang.org/x/tools v0.0.0-20200713235242-6acd2ab80ede
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0

@@ -26,9 +26,12 @@ func GetMachineInfo() MachineInfo {
     MachineToGroupName: map[string]string{
       "intellij-macos-hw-unit-1550": macMini,
       "intellij-macos-hw-unit-1551": macMini,
+      "intellij-macos-hw-unit-1772": macMini,
+      "intellij-macos-hw-unit-1773": macMini,
 
       "intellij-windows-hw-unit-498": win,
       "intellij-windows-hw-unit-499": win,
+      "intellij-windows-hw-unit-449": win,
 
       "intellij-linux-hw-unit-449": linux,
       "intellij-linux-hw-unit-450": linux,

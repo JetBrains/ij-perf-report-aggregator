@@ -71,10 +71,15 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func collectFromTeamCity(clickHouseUrl string, tcUrl string, dbName string, buildConfigurationIds []string,
+func collectFromTeamCity(
+  clickHouseUrl string,
+  tcUrl string,
+  dbName string,
+  buildConfigurationIds []string,
   userSpecifiedSince time.Time,
   httpClient *http.Client, logger *zap.Logger,
-  taskContext context.Context, cancel context.CancelFunc) error {
+  taskContext context.Context, cancel context.CancelFunc,
+) error {
   reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, dbName, taskContext, logger, func() {
     logger.Debug("canceled by analyzer")
     cancel()
@@ -249,8 +254,8 @@ func (t *Collector) storeSessionIdCookie(response *http.Response) {
   }
 }
 
-func (t *Collector) get(url string) (*http.Response, error) {
-  request, err := t.createRequest(url)
+func (t *Collector) get(url string, ctx context.Context) (*http.Response, error) {
+  request, err := t.createRequest(url, ctx)
   if err != nil {
     return nil, err
   }
@@ -262,8 +267,8 @@ func (t *Collector) get(url string) (*http.Response, error) {
   return response, nil
 }
 
-func (t *Collector) createRequest(url string) (*http.Request, error) {
-  request, err := http.NewRequestWithContext(t.taskContext, "GET", url, nil)
+func (t *Collector) createRequest(url string, ctx context.Context) (*http.Request, error) {
+  request, err := http.NewRequestWithContext(ctx, "GET", url, nil)
   if err != nil {
     return nil, errors.WithStack(err)
   }

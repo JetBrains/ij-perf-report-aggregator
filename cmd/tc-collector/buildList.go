@@ -60,7 +60,7 @@ type Agent struct {
 func (t *Collector) loadBuilds(url string) (*BuildList, error) {
   t.logger.Info("request", zap.String("url", url))
 
-  request, err := t.createRequest(url)
+  request, err := t.createRequest(url, t.taskContext)
   if err != nil {
     return nil, err
   }

@@ -14,22 +14,22 @@ import (
   "strings"
 )
 
-func (t *Collector) downloadStartUpReports(build Build) ([][]byte, error) {
+func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([][]byte, error) {
   var result [][]byte
-  err := t.findAndDownloadStartUpReports(build, build.Artifacts, &result)
+  err := t.findAndDownloadStartUpReports(build, build.Artifacts, &result, ctx)
   if err != nil {
     return nil, err
   }
   return result, nil
 }
 
-func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[][]byte) error {
+func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[][]byte, ctx context.Context) error {
   for _, artifact := range artifact.File {
     if strings.HasSuffix(artifact.Url, ".json") {
       name := path.Base(artifact.Url)
       if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") {
         artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
-        report, err := t.downloadStartUpReport(build, artifactUrlString)
+        report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
         if err != nil {
           return err
         }
@@ -39,7 +39,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifact
       }
     }
 
-    err := t.findAndDownloadStartUpReports(build, artifact.Children, result)
+    err := t.findAndDownloadStartUpReports(build, artifact.Children, result, ctx)
     if err != nil {
       return err
     }
@@ -48,13 +48,13 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifact
   return nil
 }
 
-func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string) ([]byte, error) {
+func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string, ctx context.Context) ([]byte, error) {
   artifactUrl, err := url.Parse(artifactUrlString)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  response, err := t.get(artifactUrl.String())
+  response, err := t.get(artifactUrl.String(), ctx)
   if err != nil {
     if err == context.Canceled {
       return nil, err
@@ -84,13 +84,13 @@ func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string)
   return data, nil
 }
 
-func (t *Collector) downloadBuildProperties(build Build) ([]byte, error) {
+func (t *Collector) downloadBuildProperties(build Build, ctx context.Context) ([]byte, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/builds/id:" + strconv.Itoa(build.Id) + "/artifacts/content/.teamcity/properties/build.start.properties.gz")
   if err != nil {
     return nil, err
   }
 
-  response, err := t.get(artifactUrl.String())
+  response, err := t.get(artifactUrl.String(), ctx)
   if err != nil {
     return nil, err
   }

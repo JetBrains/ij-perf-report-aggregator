@@ -13,7 +13,6 @@ import (
   "go.uber.org/atomic"
   "go.uber.org/multierr"
   "go.uber.org/zap"
-  "log"
   "strconv"
   "strings"
   "sync"
@@ -45,7 +44,7 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
   m.AddFunc("json", json.Minify)
 
   // https://github.com/ClickHouse/ClickHouse/issues/2833
-  // ZSTD 19 is used, read/write timeout should be quite large (10 minutes)
+  // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
   db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
   if err != nil {
     return nil, errors.WithStack(err)
@@ -60,7 +59,8 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
     dbName:         dbName,
     insertQueue:    make(chan *ReportInfo, 32),
     analyzeContext: analyzeContext,
-    DoneChannel:    make(chan error),
+    // buffered channel - do not block send if no one yet read
+    DoneChannel:    make(chan error, 1),
 
     waitGroup: sync.WaitGroup{},
 
@@ -91,9 +91,6 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
           // first, publish error
           analyzer.DoneChannel <- err
           cancelOnError()
-
-          // zap doesn't print with newlines
-          log.Printf("%+v", err)
 
           // do not process insertQueue anymore
           return
@@ -167,10 +164,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   reportInfo.row.BuildC1, reportInfo.row.BuildC2, reportInfo.row.BuildC3, err = splitBuildNumber(buildComponents)
   if err != nil {
     return err
-  }
-
-  if t.analyzeContext.Err() != nil {
-    return nil
   }
 
   if t.analyzeContext.Err() != nil {

@@ -142,6 +142,8 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer 
           jsonWriter.D(int(untypedValue))
         case uint16:
           jsonWriter.D(int(untypedValue))
+        case uint32:
+          jsonWriter.D(int(untypedValue))
         case uint64:
           jsonWriter.DL(int64(untypedValue))
         case int64:

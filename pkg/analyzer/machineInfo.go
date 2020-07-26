@@ -32,6 +32,9 @@ func GetMachineInfo() MachineInfo {
       "intellij-windows-hw-unit-498": win,
       "intellij-windows-hw-unit-499": win,
       "intellij-windows-hw-unit-449": win,
+      "intellij-windows-hw-unit-463": win,
+      "intellij-windows-hw-unit-493": win,
+      "intellij-windows-hw-unit-504": win,
 
       "intellij-linux-hw-unit-449": linux,
       "intellij-linux-hw-unit-450": linux,

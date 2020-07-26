@@ -88,7 +88,7 @@ func (t *Collector) loadReports(builds []*Build) error {
         return nil
       }
 
-      dataList, err := t.downloadStartUpReports(*build)
+      dataList, err := t.downloadStartUpReports(*build, t.taskContext)
       if err != nil {
         return err
       }
@@ -98,12 +98,16 @@ func (t *Collector) loadReports(builds []*Build) error {
         return nil
       }
 
-      tcBuildProperties, err := t.downloadBuildProperties(*build)
+      tcBuildProperties, err := t.downloadBuildProperties(*build, t.taskContext)
       if err != nil {
         return err
       }
 
       for _, data := range dataList {
+        if t.taskContext.Err() != nil {
+          return nil
+        }
+
         err = t.reportAnalyzer.Analyze(data, model.ExtraData{
           Machine:            build.Agent.Name,
           TcBuildId:          build.Id,
@@ -112,10 +116,9 @@ func (t *Collector) loadReports(builds []*Build) error {
           TcBuildProperties:  tcBuildProperties,
           Changes:            installerInfo.changes,
         })
-      }
-
-      if err != nil {
-        return err
+        if err != nil {
+          return err
+        }
       }
       return nil
     }, nil
@@ -123,7 +126,6 @@ func (t *Collector) loadReports(builds []*Build) error {
   if err != nil {
     return errors.WithStack(err)
   }
-
   return nil
 }
 
@@ -147,7 +149,7 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error)
     return nil, err
   }
 
-  response, err := t.get(artifactUrl.String())
+  response, err := t.get(artifactUrl.String(), t.taskContext)
   if err != nil {
     return nil, err
   }

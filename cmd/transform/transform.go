@@ -60,7 +60,7 @@ type TimeRange struct {
 const insertWorkerCount = 4
 
 func transform(clickHouseUrl string, logger *zap.Logger) error {
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=ij")
   if err != nil {
     return errors.WithStack(err)
   }

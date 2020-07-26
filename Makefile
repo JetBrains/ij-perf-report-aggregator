@@ -41,7 +41,7 @@ update-deps:
 # kubectl port-forward svc/clickhouse 9900:9000
 
 # clickhouse server -C~/Documents/report-aggregator/deployment/ch-local-config.xml
-# clickhouse client -h 127.0.0.1
+# clickhouse client -h 127.0.0.1 -d ij
 
 # nats-server
 # /Volumes/data/nats-pub db.backup "test"

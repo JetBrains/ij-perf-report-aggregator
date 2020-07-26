@@ -59,6 +59,8 @@ func (t *StatsServer) getAggregatedResults(dataQuery data_query.DataQuery, reque
       groupName = strconv.FormatInt(int64(v), 10)
     case uint16:
       groupName = strconv.FormatInt(int64(v), 10)
+    case uint32:
+      groupName = strconv.FormatInt(int64(v), 10)
     case int:
       groupName = strconv.FormatInt(int64(v), 10)
     case string:
@@ -78,6 +80,8 @@ func (t *StatsServer) getAggregatedResults(dataQuery data_query.DataQuery, reque
       case int32:
         v = int(untypedValue)
       case uint16:
+        v = int(untypedValue)
+      case uint32:
         v = int(untypedValue)
       case int:
         v = untypedValue

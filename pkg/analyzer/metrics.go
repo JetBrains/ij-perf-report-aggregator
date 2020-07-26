@@ -16,6 +16,8 @@ type Metric struct {
   IsInstant  bool
 
   sinceVersion string
+
+  maxValue int
 }
 
 const appInitCategory = 1
@@ -29,6 +31,7 @@ func init() {
     result := &Metric{
       Name:  name,
       index: index,
+      maxValue: 65535,
     }
     index++
 
@@ -45,6 +48,12 @@ func init() {
   createRequiredMetric := func(name string) *Metric {
     result := createMetric(name)
     result.isRequired = true
+    return result
+  }
+
+  createUint32Metric := func(name string) *Metric {
+    result := createMetric(name)
+    result.maxValue = 4294967295
     return result
   }
 
@@ -106,10 +115,10 @@ func init() {
     // v19+
     "eua showing": createVersionedMetric("euaShowing_d", "19"),
 
-    "service sync preloading": createMetric("serviceSyncPreloading_d"),
-    "service async preloading": createMetric("serviceAsyncPreloading_d"),
-    "project service sync preloading": createMetric("projectServiceSyncPreloading_d"),
-    "project service async preloading": createMetric("projectServiceAsyncPreloading_d"),
+    "service sync preloading": createUint32Metric("serviceSyncPreloading_d"),
+    "service async preloading": createUint32Metric("serviceAsyncPreloading_d"),
+    "project service sync preloading": createUint32Metric("projectServiceSyncPreloading_d"),
+    "project service async preloading": createUint32Metric("projectServiceAsyncPreloading_d"),
   }
 }
 
@@ -207,8 +216,8 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
     v = activity.Start
   } else {
     v = activity.Duration
-    if v > 65535 {
-      return errors.Errorf("value outside of uint16 range (generatedTime: %s, value: %v)", report.Generated, v)
+    if v > info.maxValue {
+      return errors.Errorf("value outside of 0-%d range (generatedTime=%s, value=%v)", info.maxValue, report.Generated, v)
     }
   }
 

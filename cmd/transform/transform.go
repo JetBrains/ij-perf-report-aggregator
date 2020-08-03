@@ -7,9 +7,9 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
+  "go.deanishe.net/env"
   "go.uber.org/zap"
   "time"
 )

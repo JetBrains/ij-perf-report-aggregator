@@ -2,9 +2,9 @@ package clickhouse
 
 import (
   "context"
-  "github.com/deanishe/go-env"
   "github.com/develar/errors"
   "github.com/minio/minio-go/v6"
+  "go.deanishe.net/env"
   "go.uber.org/zap"
   "io/ioutil"
   "os"

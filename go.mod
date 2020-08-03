@@ -13,7 +13,6 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 	github.com/cespare/xxhash v1.1.0
 	github.com/cheggaaa/pb/v3 v3.0.4
-	github.com/deanishe/go-env v0.4.0
 	github.com/develar/errors v0.9.0
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
@@ -39,18 +38,20 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.5.1
-	github.com/tdewolff/minify/v2 v2.7.7
+	github.com/tdewolff/minify/v2 v2.8.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.5.3
-	github.com/valyala/quicktemplate v1.5.1
+	github.com/valyala/quicktemplate v1.6.0
+	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.6.0
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899 // indirect
+	golang.org/x/crypto v0.0.0-20200728195943-123391ffb6de // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
+	golang.org/x/sys v0.0.0-20200802091954-4b90ce9b60b3 // indirect
 	golang.org/x/text v0.3.3 // indirect
-	golang.org/x/tools v0.0.0-20200725200936-102e7d357031
+	golang.org/x/tools v0.0.0-20200731060945-b5fad4ed8dd6
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0

@@ -53,8 +53,9 @@ func ReadReport(data []byte) (*model.Report, error) {
 }
 
 func readActivitiesInOldFormat(key string, value *fastjson.Value) []model.Activity {
-  var result []model.Activity
-  for _, v := range value.GetArray(key) {
+  array := value.GetArray(key)
+  result := make([]model.Activity, 0, len(array))
+  for _, v := range array {
     result = append(result, model.Activity{
       Name:      string(v.GetStringBytes("name")),
       Thread:     string(v.GetStringBytes("thread")),
@@ -67,8 +68,9 @@ func readActivitiesInOldFormat(key string, value *fastjson.Value) []model.Activi
 }
 
 func readActivities(key string, value *fastjson.Value) []model.Activity {
-  var result []model.Activity
-  for _, v := range value.GetArray(key) {
+  array := value.GetArray(key)
+  result := make([]model.Activity, 0, len(array))
+  for _, v := range array {
     start := v.GetInt("s")
     duration := v.GetInt("d")
 

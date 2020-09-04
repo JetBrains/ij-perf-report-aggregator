@@ -81,6 +81,9 @@ func (t *Collector) loadReports(builds []*Build) error {
   err = util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
     return func() error {
       build := builds[taskIndex]
+      if build.Agent.Name == "Dead agent" {
+        return nil
+      }
 
       installerInfo := build.installerInfo
       if installerInfo == nil {

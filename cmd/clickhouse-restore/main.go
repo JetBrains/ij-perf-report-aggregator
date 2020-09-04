@@ -56,7 +56,20 @@ func restore(bucket string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  err = backupManager.download(remoteFile, filepath.Join(backupManager.ClickhouseDir, "data"), true)
+  dataDir := filepath.Join(backupManager.ClickhouseDir, "data")
+  _, err = os.Stat(dataDir)
+  if err == nil {
+    if !env.GetBool("REMOVE_OLD_DATA_DIR", false) {
+      return errors.Errorf("data directory \"%s\" already exists", dataDir)
+    }
+
+    err = os.RemoveAll(dataDir)
+    if err != nil && !os.IsNotExist(err) {
+      return errors.WithStack(err)
+    }
+  }
+
+  err = backupManager.download(remoteFile, dataDir, true)
   if err != nil {
     return errors.WithStack(err)
   }

@@ -97,7 +97,7 @@ func (t *Collector) loadReports(builds []*Build) error {
       }
 
       if len(dataList) == 0 {
-        t.logger.Error("cannot find any start-up report", zap.Int("id", build.Id))
+        t.logger.Error("cannot find any performance report", zap.Int("id", build.Id))
         return nil
       }
 
@@ -120,7 +120,11 @@ func (t *Collector) loadReports(builds []*Build) error {
           Changes:            installerInfo.changes,
         })
         if err != nil {
-          return err
+          if build.Status == "FAILURE" {
+            t.logger.Warn("cannot parse performance report in the failed build", zap.Int("buildId", build.Id), zap.Error(err))
+          } else {
+            return err
+          }
         }
       }
       return nil

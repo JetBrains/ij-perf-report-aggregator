@@ -90,9 +90,9 @@ func readActivities(key string, value *fastjson.Value) []model.Activity {
   return result
 }
 
-func GetBuildTimeFromReport(report *model.Report) (int64, error) {
+func getBuildTimeFromReport(report *model.Report, dbName string) (int64, error) {
   var buildTimeUnix int64
-  if version.Compare(report.Version, "13", ">=") {
+  if dbName != "ij" || version.Compare(report.Version, "13", ">=") {
     buildTime, err := parseTime(report.BuildDate)
     if err != nil {
       return 0, err

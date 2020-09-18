@@ -67,6 +67,8 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
       break
     }
 
+    var initialSince time.Time
+
     var buildConfigurationIds []string
     if len(chunk.Configurations) == 0 {
       osList := []string{"Mac", "Linux", "Windows"}
@@ -83,7 +85,14 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
       buildConfigurationIds = chunk.Configurations
     }
 
-    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, chunk.Database, buildConfigurationIds, since, httpClient, logger, taskContext, cancel)
+    if len(chunk.InitialSince) != 0 {
+      initialSince, err = dateparse.ParseStrict(chunk.InitialSince)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+    }
+
+    err := collectFromTeamCity(*clickHouseUrl, *tcUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger, taskContext, cancel)
     if err != nil {
       return err
     }
@@ -102,6 +111,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
 
 type CollectorChunk struct {
   Database       string   `json:"db"`
+  InitialSince   string   `json:"initialSince"`
   Products       []string `json:"products"`
   Configurations []string `json:"configurations"`
 }

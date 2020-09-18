@@ -76,6 +76,7 @@ func collectFromTeamCity(
   tcUrl string,
   dbName string,
   buildConfigurationIds []string,
+  initialSince time.Time,
   userSpecifiedSince time.Time,
   httpClient *http.Client, logger *zap.Logger,
   taskContext context.Context, cancel context.CancelFunc,
@@ -117,10 +118,13 @@ func collectFromTeamCity(
     locator := "buildType:(id:" + buildTypeId + "),count:500"
 
     since := userSpecifiedSince
-    if userSpecifiedSince.IsZero() {
-      err = reportAnalyzer.Db.QueryRow("select last_time from collector_state where build_type_id = ? order by last_time desc limit 1", buildTypeId).Scan(&since)
-      if err != nil && err != sql.ErrNoRows {
-        return errors.WithStack(err)
+    if since.IsZero() {
+      since = initialSince
+      if since.IsZero() {
+        err = reportAnalyzer.Db.QueryRow("select last_time from collector_state where build_type_id = ? order by last_time desc limit 1", buildTypeId).Scan(&since)
+        if err != nil && err != sql.ErrNoRows {
+          return errors.WithStack(err)
+        }
       }
     }
 

@@ -47,15 +47,17 @@ type InsertReportManager struct {
   context                          context.Context
   MaxGeneratedTime                 int64
   IsCheckThatNotAlreadyAddedNeeded bool
-  hasProductField     bool
-  nonMetricFieldCount int
-  insertInstallerManager *InsertInstallerManager
-  tableName              string
+  hasProductField                  bool
+  dbName                           string
+  nonMetricFieldCount              int
+  insertInstallerManager           *InsertInstallerManager
+  tableName                        string
 }
 
-func NewInsertReportManager(db *sqlx.DB, hasProductField bool, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
+func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
   var selectStatement *sql.Stmt
   var err error
+  hasProductField := dbName == "ij"
   if hasProductField {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
   } else {
@@ -116,8 +118,9 @@ func NewInsertReportManager(db *sqlx.DB, hasProductField bool, context context.C
 
   manager := &InsertReportManager{
     nonMetricFieldCount: nonMetricFieldCount,
-    hasProductField: hasProductField,
-    tableName:       tableName,
+    hasProductField:     hasProductField,
+    dbName:              dbName,
+    tableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
       Db: db,
 
@@ -182,9 +185,6 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
   var project interface{}
   if len(report.Project) == 0 {
     project = providedProject
-    //if len(project) == 0 {
-    //  return errors.New("unknown project")
-    //}
   } else {
     project = report.Project
     if project == "Fleet" {
@@ -197,7 +197,7 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     }
   }
 
-  buildTimeUnix, err := GetBuildTimeFromReport(report)
+  buildTimeUnix, err := getBuildTimeFromReport(report, t.dbName)
   if err != nil {
     return err
   }

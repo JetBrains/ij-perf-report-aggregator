@@ -50,7 +50,7 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
     return nil, errors.WithStack(err)
   }
 
-  insertReportManager, err := NewInsertReportManager(db, dbName == "ij", analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
+  insertReportManager, err := NewInsertReportManager(db, dbName, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
@@ -152,7 +152,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   }
 
   if len(extraData.BuildNumber) == 0 && t.dbName != "ij" {
-    // ignore report (remove later once santa project will be collected)
+    // ignore report (remove later once fleet project will be collected)
     return nil
   }
 

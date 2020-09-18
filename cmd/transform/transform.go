@@ -68,7 +68,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  insertReportManager, err := analyzer.NewInsertReportManager(db, true, taskContext, "report2", insertWorkerCount, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(db, "ij", taskContext, "report2", insertWorkerCount, logger)
   if err != nil {
     return err
   }

@@ -44,7 +44,6 @@ type TraceEvent struct {
   Timestamp int `json:"ts"`
 
   // in old reports (v10) can be int instead of string
-  //Thread   string `json:"tid"`
   Category string `json:"cat"`
 }
 

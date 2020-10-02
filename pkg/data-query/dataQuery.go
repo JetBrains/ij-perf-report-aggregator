@@ -208,7 +208,6 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
   }
 
   // write extra fields to the end, so, it maybe skipped during serialization
-  var extraSb strings.Builder
   for i, field := range query.Fields {
     if i != 0 || len(query.Dimensions) != 0 {
       sb.WriteRune(',')
@@ -233,14 +232,10 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
       // select JSONExtractInt(arrayFirst(it -> JSONExtractString(it, 'n') = 'start main frontend', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')), 'd') as v
       // from report;
       if field.metricValueName == 'e' {
-        // for temp field
-        fieldCount++
-        extraSb.WriteString(", ")
-        // SELECT (JSONExtractInt(item, 'd') + JSONExtractInt(item, 's')) as e from (SELECT arrayFirst(it -> JSONExtractString(it, 'n') = 'start main frontend', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')) as item from report);
-        writeExtractJsonObject(&extraSb, field)
-        extraSb.WriteString(" as item")
-
-        sb.WriteString("(JSONExtractInt(item, 's') + JSONExtractInt(item, 'd'))")
+        // arraySum(it -> it.1 = 's' or it.1 = 'd' ? it.2 : 0, JSONExtractKeysAndValues(arrayFirst(it -> JSONExtractString(it, 'n') = 'render', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')), 'Int'))
+        sb.WriteString("arraySum(it -> it.1 = 's' or it.1 = 'd' ? it.2 : 0, JSONExtractKeysAndValues(")
+        writeExtractJsonObject(&sb, field)
+        sb.WriteString(", 'Int'))")
       } else {
         sb.WriteString("JSONExtractInt(")
         writeExtractJsonObject(&sb, field)
@@ -261,10 +256,6 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
       sb.WriteString(" as ")
       sb.WriteString(field.Name)
     }
-  }
-
-  if extraSb.Len() != 0 {
-    sb.WriteString(extraSb.String())
   }
 
   sb.WriteString(" from ")

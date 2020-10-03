@@ -10,8 +10,9 @@ Tool to collect performance reports in JSON format from TeamCity, insert into Cl
 
 Directory `dashboard` contains Vue.js application built using [Element](https://element.eleme.io/#/en-US) Desktop UI Library.
 
-* `yarn` to install dependencies. Do not use NPM.
-* `yarn serve` to start a dev server with hot-module-replacement.
+ * `cd dashboard`
+ * `yarn` to install dependencies. [Yarn](https://classic.yarnpkg.com/en/docs/install/) is recommended, do not use NPM.
+ * `yarn serve` to start a dev server with hot-module-replacement.
 
 To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
 
@@ -25,6 +26,8 @@ Otherwise use:
  * `activityCategory.activityName.e` to get end value.
 
 For example, if activity `launch terminal` reported under category `prepareAppInitActivities`, use `prepareAppInitActivities.launch terminal` as metric name. Or `prepareAppInitActivities.first render.s` to get start value of `first render`.
+
+See [Layout](https://element.eleme.io/?ref=madewithvuejs.com#/en-US/component/layout).
 
 ## Adding a New Database
 

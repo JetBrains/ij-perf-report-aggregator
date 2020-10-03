@@ -22,7 +22,7 @@ require (
 	github.com/json-iterator/go v1.1.10
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/magiconair/properties v1.8.4
-	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/minio-go/v6 v6.0.57
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -46,12 +46,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201001193750-eb9a90e9f9cb // indirect
+	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10 // indirect
-	golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
+	golang.org/x/net v0.0.0-20201002202402-0a1ea396d57c // indirect
 	golang.org/x/text v0.3.3 // indirect
-	golang.org/x/tools v0.0.0-20201001230009-b5b87423c93b
+	golang.org/x/tools v0.0.0-20201002184944-ecd9fd270d5d
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/ini.v1 v1.61.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0

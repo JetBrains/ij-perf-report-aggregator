@@ -57,13 +57,16 @@ func ReadQueryFromRequest(request *http.Request) ([]DataQuery, error) {
   path := request.URL.Path
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
   // array?
-  index := strings.IndexRune(path, '!')
+  arrayStart := strings.IndexRune(path, '!')
+  objectStart := strings.IndexRune(path, '(')
+  var index int
+  if arrayStart < objectStart {
+    index = arrayStart
+  } else {
+    index = objectStart
+  }
   if index == -1 {
-    // object?
-    index := strings.IndexRune(path, '(')
-    if index == -1 {
-      return nil, errors.New("query not found")
-    }
+    return nil, errors.New("query not found")
   }
 
   jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)

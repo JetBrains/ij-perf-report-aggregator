@@ -10,6 +10,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/db" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/jb/dashboard/dist" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

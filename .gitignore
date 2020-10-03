@@ -8,3 +8,5 @@ db/
 /deployment/overlays/
 
 metabase.db.*
+node_modules/
+dist/

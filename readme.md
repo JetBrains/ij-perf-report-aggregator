@@ -1,41 +1,46 @@
-Tool to aggregate IntelliJ Platform performance reports.
+Tool to collect performance reports in JSON format from TeamCity, insert into ClickHouse and visualize.
 
+ * `clickhouse-backup` - backup clickhouse data.
+ * `clickhouse-restore` - restore clickhouse data.
+ * `report-aggregator` - stats server, provide access to ClickHouse via HTTP API tailored for analytics (inspired by [Cube.js](https://cube.dev/docs/query-format) query format).
+ * `tc-collector` - collect performance reports from [TeamCity artifacts](https://www.jetbrains.com/help/teamcity/build-artifact.html) and insert to ClickHouse.
+ * `transform` - transform existing data into another form. Raw JSON report is preserved as is, but for performance reasons maybe needed to pre-analyze and extract data into separate columns during collecting. And as data requirements changes, re-analyze the whole data set maybe required.
 
-1. Collect from `idea.log` (reported only for snapshot builds or in internal mode or if VM property `idea.log.perf.stats` is set to `true`).
+## Dashboard Editing
 
-    `report-aggregator collect --dir ~/Library/Logs/IntelliJIdea2019.3 --db ~/ij-perf-report-db/db.sqlite --machine "imac 2016"`
-    
-    Here `--machine` it is arbitrary id of machine where reports were generated (comparing reports make sense only on the same hardware). 
-    
-    See [Locating IDE log files](https://intellij-support.jetbrains.com/hc/en-us/articles/207241085-Locating-IDE-log-files).
-    
-2. Start server.
-    
-    `report-aggregator serve --db ~/ij-perf-report-db/db.sqlite`
-    
-3. Open [visualizer](https://ij-perf.jetbrains.com/#/aggregatedStats) (page `/#/aggregatedStats`), check `Server url` and click on `Load` to load and visualize data.
+Directory `dashboard` contains Vue.js application built using [Element](https://element.eleme.io/#/en-US) Desktop UI Library.
 
+* `yarn` to install dependencies. Do not use NPM.
+* `yarn serve` to start a dev server with hot-module-replacement.
 
-`aggregatedStats` visualizer page and this tool in an alpha stage. Aggregator throws error if anything is unclear to ensure that stats is representative.
+To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
 
-Chart legend allows you to disable unneeded metrics to make chart more clear.
- 
-```
-usage: report-aggregator [<flags>] <command> [<args> ...]
+`LineChartComponent` or `ClusteredChartComponent` supports `metrics` property. 
+Specify desired metric. Multiple metrics are supported, but keep in mind that each metric means chart series and overuse can make chart unreadable. 
 
-report-aggregator
+If metric is extracted from report to field, just use it's field name.
+Otherwise use:
+ * `activityCategory.activityName` to get duration value
+ * `activityCategory.activityName.s` to get start value.
+ * `activityCategory.activityName.e` to get end value.
 
-Flags:
-  --help     Show context-sensitive help (also try --help-long and --help-man).
-  --version  Show application version.
+For example, if activity `launch terminal` reported under category `prepareAppInitActivities`, use `prepareAppInitActivities.launch terminal` as metric name. Or `prepareAppInitActivities.first render.s` to get start value of `first render`.
 
-Commands:
-  help [<command>...]
-    Show help.
+## Adding a New Database
 
-  collect --dir=DIR --db=DB --machine=MACHINE
-    Collect reports from idea.log files.
+`clickhouse client -h 127.0.0.1` to use clickhouse client to perform SQL queries.
 
-  serve --db=DB
-    Serve SQLite database.
-```
+`cd ~/Documents/report-aggregator`
+
+1. Set env `DB_NAME` to desired database name:
+    ```shell
+    export DB_NAME=
+    ```
+2. Create directory for your database in `db-schema` and copy `report.sql` from another database.
+3. Execute SQL:
+    ```shell
+    clickhouse client -h 127.0.0.1 --query="create database $DB_NAME"
+    clickhouse client -h 127.0.0.1 -d $DB_NAME --multiquery < ./db-schema/common/installer.sql
+    clickhouse client -h 127.0.0.1 -d $DB_NAME --multiquery < ./db-schema/common/collector_state.sql
+    clickhouse client -h 127.0.0.1 -d $DB_NAME --multiquery < "./db-schema/$DB_NAME/report.sql"
+    ```

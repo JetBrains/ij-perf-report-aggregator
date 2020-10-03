@@ -1,0 +1,130 @@
+<yandex>
+  <logger>
+    <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
+    <level>trace</level>
+    <!--<log>/var/log/clickhouse-server/clickhouse-server.log</log>-->
+    <!--<errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>-->
+    <!--<size>1000M</size>-->
+    <!--<count>10</count>-->
+     <console>1</console>
+  </logger>
+  <!--display_name>production</display_name--> <!-- It is the name that will be shown in the client -->
+  <listen_host>0.0.0.0</listen_host>
+  <http_port>8123</http_port>
+  <tcp_port>9000</tcp_port>
+
+  <!-- Port for communication between replicas. Used for data exchange. -->
+  <interserver_http_port>9009</interserver_http_port>
+
+  <max_connections>4096</max_connections>
+  <keep_alive_timeout>3</keep_alive_timeout>
+
+  <!-- Maximum number of concurrent queries. -->
+  <max_concurrent_queries>100</max_concurrent_queries>
+
+  <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve
+       correct maximum value. -->
+   <max_open_files>262144</max_open_files>
+
+  <!-- Size of cache of uncompressed blocks of data, used in tables of MergeTree family.
+       In bytes. Cache is single for server. Memory is allocated only on demand.
+       Cache is used when 'use_uncompressed_cache' user setting turned on (off by default).
+       Uncompressed cache is advantageous only for very short queries and in rare cases.
+    -->
+  <uncompressed_cache_size>8589934592</uncompressed_cache_size>
+
+  <!-- Approximate size of mark cache, used in tables of MergeTree family.
+       In bytes. Cache is single for server. Memory is allocated only on demand.
+       You should not lower this value.
+    -->
+  <mark_cache_size>5368709120</mark_cache_size>
+
+
+  <!-- Path to data directory, with trailing slash. -->
+  <path>/var/lib/clickhouse/</path>
+
+  <!-- Path to temporary data for processing hard queries. -->
+  <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+
+  <!-- Directory with user provided files that are accessible by 'file' table function. -->
+  <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+
+  <!-- Path to configuration file with users, access rights, profiles of settings, quotas. -->
+  <users_config>users.xml</users_config>
+
+  <!-- Default profile of settings. -->
+  <default_profile>default</default_profile>
+
+  <!-- Default database. -->
+  <default_database>default</default_database>
+
+  <mlock_executable>false</mlock_executable>
+
+  <!-- Substitutions for parameters of replicated tables.
+        Optional. If you don't use replicated tables, you could omit that.
+
+       See https://clickhouse.yandex/docs/en/table_engines/replication/#creating-replicated-tables
+    -->
+  <macros incl="macros" optional="true"/>
+
+
+  <!-- Reloading interval for embedded dictionaries, in seconds. Default: 3600. -->
+  <builtin_dictionaries_reload_interval>3600</builtin_dictionaries_reload_interval>
+
+
+  <!-- Maximum session timeout, in seconds. Default: 3600. -->
+  <max_session_timeout>3600</max_session_timeout>
+
+  <!-- Default session timeout, in seconds. Default: 60. -->
+  <default_session_timeout>60</default_session_timeout>
+
+  <!-- Query log. Used only for queries with setting log_queries = 1. -->
+  <query_log>
+    <!-- What table to insert data. If table is not exist, it will be created.
+         When query log structure is changed after system update,
+          then old table will be renamed and new table will be created automatically.
+    -->
+    <database>system</database>
+    <table>query_log</table>
+    <!--
+        PARTITION BY expr https://clickhouse.yandex/docs/en/table_engines/custom_partitioning_key/
+        Example:
+            event_date
+            toMonday(event_date)
+            toYYYYMM(event_date)
+            toStartOfHour(event_time)
+    -->
+    <partition_by>toYYYYMM(event_date)</partition_by>
+    <!-- Interval of flushing data. -->
+    <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+  </query_log>
+
+  <!-- Trace log. Stores stack traces collected by query profilers.
+       See query_profiler_real_time_period_ns and query_profiler_cpu_time_period_ns settings. -->
+  <trace_log>
+    <database>system</database>
+    <table>trace_log</table>
+
+    <partition_by>toYYYYMM(event_date)</partition_by>
+    <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+  </trace_log>
+
+  <!-- Query thread log. Has information about all threads participated in query execution.
+       Used only for queries with setting log_query_threads = 1. -->
+  <query_thread_log>
+    <database>system</database>
+    <table>query_thread_log</table>
+    <partition_by>toYYYYMM(event_date)</partition_by>
+    <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+  </query_thread_log>
+
+  <!-- Configuration of external dictionaries. See:
+       https://clickhouse.yandex/docs/en/dicts/external_dicts/
+  -->
+  <dictionaries_config>*_dictionary.xml</dictionaries_config>
+
+  <!-- Directory in <clickhouse-path> containing schema files for various input formats.
+       The directory will be created if it doesn't exist.
+    -->
+  <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
+</yandex>

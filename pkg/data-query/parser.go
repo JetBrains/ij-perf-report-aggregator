@@ -33,56 +33,82 @@ func isValidFieldName(v string) bool {
   return reFieldName.MatchString(v)
 }
 
-func readQuery(s []byte, query *DataQuery) error {
+func readQuery(s []byte) ([]DataQuery, error) {
   parser := queryParsers.Get()
   defer queryParsers.Put(parser)
 
   value, err := parser.ParseBytes(s)
   if err != nil {
-    return errors.WithStack(err)
+    return nil, errors.WithStack(err)
   }
 
-  query.Database = string(value.GetStringBytes("db"))
+  var queries []DataQuery
+
+  if value.Type() == fastjson.TypeArray {
+    for _, v := range value.GetArray() {
+      query, err := readQueryValue(v)
+      if err != nil {
+        return queries, err
+      }
+
+      queries = append(queries, *query)
+    }
+  } else {
+    query, err := readQueryValue(value)
+    if err != nil {
+      return queries, err
+    }
+
+    queries = append(queries, *query)
+  }
+
+  return queries, nil
+}
+
+func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
+  query := &DataQuery{
+    Database: string(value.GetStringBytes("db")),
+  }
 
   if len(query.Database) == 0 {
     query.Database = "default"
   } else if !reDbName.MatchString(query.Database) {
-    return http_error.NewHttpError(400, fmt.Sprintf("Database name %s contains illegal chars", query.Database))
+    return nil, http_error.NewHttpError(400, fmt.Sprintf("Database name %s contains illegal chars", query.Database))
   }
 
-  err = readDimensions(value.GetArray("fields"), &query.Fields)
+  err := readDimensions(value.GetArray("fields"), &query.Fields)
   if err != nil {
-    return err
+    return nil, err
   }
 
   err = readFilters(value.GetArray("filters"), query)
   if err != nil {
-    return err
+    return nil, err
   }
 
   for _, v := range value.GetArray("order") {
     field := string(v.GetStringBytes())
     if !isValidFieldName(field) {
-      return http_error.NewHttpError(400, fmt.Sprintf("Order %s is not a valid field name", field))
+      return nil, http_error.NewHttpError(400, fmt.Sprintf("Order %s is not a valid field name", field))
     }
     query.Order = append(query.Order, field)
   }
 
   query.Aggregator = string(value.GetStringBytes("aggregator"))
   if len(query.Aggregator) != 0 && !reAggregator.MatchString(query.Aggregator) {
-    return http_error.NewHttpError(400, fmt.Sprintf("Aggregator %s contains illegal chars", query.Aggregator))
+    return nil, http_error.NewHttpError(400, fmt.Sprintf("Aggregator %s contains illegal chars", query.Aggregator))
   }
 
   err = readDimensions(value.GetArray("dimensions"), &query.Dimensions)
   if err != nil {
-    return err
+    return nil, err
   }
 
   query.TimeDimensionFormat = string(value.GetStringBytes("timeDimensionFormat"))
   if len(query.Aggregator) != 0 && !reAggregator.MatchString(query.Aggregator) {
-    return http_error.NewHttpError(400, fmt.Sprintf("timeDimensionFormat %s contains illegal chars", query.TimeDimensionFormat))
+    return nil, http_error.NewHttpError(400, fmt.Sprintf("timeDimensionFormat %s contains illegal chars", query.TimeDimensionFormat))
   }
-  return nil
+  return query, nil
 }
 
 func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error {
@@ -102,6 +128,7 @@ func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error 
         return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Name))
       }
     }
+    t.ResultPropertyName = string(v.GetStringBytes("resultKey"))
 
     qualifierDotIndex := strings.IndexRune(t.Name, '.')
     if qualifierDotIndex == -1 {
@@ -119,7 +146,9 @@ func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error 
         t.metricName = t.metricName[:metricNameLength-2]
       }
 
-      t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+      if len(t.ResultPropertyName) == 0 {
+        t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+      }
 
       if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {
         return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
@@ -174,10 +203,10 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
     } else {
       // by intention sql string is not validated
       if len(t.Operator) != 0 {
-        return http_error.NewHttpError(400, fmt.Sprintf("sql and operator are mutually exclusive"))
+        return http_error.NewHttpError(400, fmt.Sprintf("sql and operator are mutually exclusive (filter=%s)", t.Field))
       }
       if t.Value != nil {
-        return http_error.NewHttpError(400, fmt.Sprintf("sql and value are mutually exclusive"))
+        return http_error.NewHttpError(400, fmt.Sprintf("sql and value are mutually exclusive (filter=%s)", t.Field))
       }
     }
 
@@ -187,7 +216,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
 }
 
 func readStringList(parentValue *fastjson.Value) []string {
-  var list []string
+  list := make([]string, 0)
   for _, v := range parentValue.GetArray() {
     list = append(list, string(v.GetStringBytes()))
   }

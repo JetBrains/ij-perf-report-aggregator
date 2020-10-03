@@ -7,14 +7,13 @@ import (
 
 // test that config grabs env
 func TestAdvancedFilter(t *testing.T) {
-  var query DataQuery
-  err := readQuery([]byte(`
+  queries, err := readQuery([]byte(`
 {
   "filters": [
     {"field": "generated_time", "sql": "> subtractMonths(now(), 1)"}
   ]
 }
-`), &query)
+`))
   if err != nil {
     t.Error(err)
   }
@@ -22,7 +21,7 @@ func TestAdvancedFilter(t *testing.T) {
   //noinspection GoImportUsedAsName
   assert := assert.New(t)
 
-  sql, args, _, err := buildSql(query, "test")
+  sql, args, _, err := buildSql(queries[0], "test")
   if err != nil {
     t.Error(err)
   }

@@ -42,35 +42,35 @@ type DataQueryDimension struct {
   metricName      string
   metricValueName rune
 
-  ResultPropertyName string
+  ResultPropertyName string `json:"resultKey"`
 }
 
 type DatabaseConnectionSupplier interface {
   GetDatabase(name string) (*sqlx.DB, error)
 }
 
-func ReadQuery(request *http.Request) (DataQuery, error) {
-  var result DataQuery
-  err := readQueryFromRequest(request, &result)
-  if err != nil {
-    return result, err
-  }
-  return result, nil
+func ReadQuery(request *http.Request) ([]DataQuery, error) {
+  return ReadQueryFromRequest(request)
 }
 
-func readQueryFromRequest(request *http.Request, v *DataQuery) error {
+func ReadQueryFromRequest(request *http.Request) ([]DataQuery, error) {
   path := request.URL.Path
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
-  index := strings.IndexRune(path, '(')
+  // array?
+  index := strings.IndexRune(path, '!')
   if index == -1 {
-    return errors.New("query not found")
+    // object?
+    index := strings.IndexRune(path, '(')
+    if index == -1 {
+      return nil, errors.New("query not found")
+    }
   }
 
   jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)
   if err != nil {
-    return errors.WithStack(err)
+    return nil, errors.WithStack(err)
   }
-  return readQuery(jsonData, v)
+  return readQuery(jsonData)
 }
 
 func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, int, error) {

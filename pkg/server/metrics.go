@@ -6,7 +6,6 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/pkg/errors"
   "github.com/valyala/quicktemplate"
-  "io"
   "math"
   "net/http"
   "strconv"
@@ -14,21 +13,40 @@ import (
 )
 
 func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
-  dataQuery, err := data_query.ReadQuery(request)
+  dataQueries, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
 
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
-  err = t.computeMetricsResponse(dataQuery, buffer, request.Context())
-  if err != nil {
-    return nil, err
+
+  templateWriter := quicktemplate.AcquireWriter(buffer)
+  defer quicktemplate.ReleaseWriter(templateWriter)
+  jsonWriter := templateWriter.N()
+
+  if len(dataQueries) > 1 {
+    jsonWriter.S("[")
+  }
+
+  for index, dataQuery := range dataQueries {
+    if index != 0 {
+      jsonWriter.S(",")
+    }
+
+    err = t.computeMetricsResponse(dataQuery, jsonWriter, request.Context())
+    if err != nil {
+      return nil, err
+    }
+  }
+
+  if len(dataQueries) > 1 {
+    jsonWriter.S("]")
   }
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer io.Writer, context context.Context) error {
+func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, jsonWriter *quicktemplate.QWriter, context context.Context) error {
   rows, fieldCount, err := data_query.SelectRows(query, "report", t, context)
   if err != nil {
     return errors.WithStack(err)
@@ -36,9 +54,6 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, writer 
 
   defer util.Close(rows, t.logger)
 
-  templateWriter := quicktemplate.AcquireWriter(writer)
-  defer quicktemplate.ReleaseWriter(templateWriter)
-  jsonWriter := templateWriter.N()
   jsonWriter.S("[")
 
   columnPointers := make([]interface{}, fieldCount)

@@ -12,12 +12,12 @@ import (
 )
 
 func (t *StatsServer) handleGroupedMetricsRequest(request *http.Request) ([]byte, error) {
-  dataQuery, err := data_query.ReadQuery(request)
+  dataQueries, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
 
-  results, err := t.getAggregatedResults(dataQuery, request.Context())
+  results, err := t.getAggregatedResults(dataQueries[0], request.Context())
   if err != nil {
     return nil, err
   }

@@ -7,11 +7,12 @@ import (
 )
 
 func (t *StatsServer) handleReportRequest(request *http.Request) ([]byte, error) {
-  query, err := data_query.ReadQuery(request)
+  queries, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
 
+  query := queries[0]
   query.Fields = []data_query.DataQueryDimension{{Name: "raw_report"}}
   var rawReport []byte
   row, err := data_query.SelectRow(query, "report", t, request.Context())

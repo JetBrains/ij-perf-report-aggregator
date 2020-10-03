@@ -3,17 +3,16 @@ package data_query
 import (
   "context"
   "database/sql"
-  "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/jmoiron/sqlx"
-  "github.com/json-iterator/go"
   "github.com/pkg/errors"
+  "github.com/valyala/fastjson"
   "gopkg.in/sakura-internet/go-rison.v3"
   "math"
   "net/http"
-  "regexp"
   "strings"
 )
+
+var queryParsers fastjson.ParserPool
 
 type DataQuery struct {
   Database string `json:"db"`
@@ -39,8 +38,8 @@ type DataQueryDimension struct {
   Name string `json:"name"`
   Sql  string `json:"sql"`
 
-  metricPath string
-  metricName string
+  metricPath      string
+  metricName      string
   metricValueName rune
 
   ResultPropertyName string
@@ -50,94 +49,16 @@ type DatabaseConnectionSupplier interface {
   GetDatabase(name string) (*sqlx.DB, error)
 }
 
-// https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
-var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
-var reMetricName = regexp.MustCompile("^[a-zA-Z0-9 _]+$")
-var reDbName = reFieldName
-
-// add ().space,'*
-var reAggregator = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_(). ,'*<>/]*$")
-
-func (t *DataQueryDimension) UnmarshalJSON(b []byte) error {
-  if b[0] == '"' {
-    var s string
-    err := jsoniter.ConfigFastest.Unmarshal(b, &s)
-    if err != nil {
-      return err
-    }
-    t.Name = s
-  } else {
-    iterator := jsoniter.ConfigFastest.BorrowIterator(b)
-    defer jsoniter.ConfigFastest.ReturnIterator(iterator)
-    iterator.ReadObjectCB(func(iterator *jsoniter.Iterator, s string) bool {
-      if s == "name" {
-        t.Name = iterator.ReadString()
-      } else if s == "sql" {
-        t.Sql = iterator.ReadString()
-      }
-      return true
-    })
-  }
-
-  qualifierDotIndex := strings.IndexRune(t.Name, '.')
-  if qualifierDotIndex == -1 {
-    if !isValidFieldName(t.Name) {
-      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
-    }
-  } else {
-    t.metricPath = t.Name[0:qualifierDotIndex]
-    t.metricName = t.Name[qualifierDotIndex+1:]
-    t.metricValueName = 'd'
-
-    metricNameLength := len(t.metricName)
-    if metricNameLength > 2 && t.metricName[metricNameLength - 2] == '.' {
-      t.metricValueName = rune(t.metricName[metricNameLength-1])
-      t.metricName = t.metricName[:metricNameLength - 2]
-    }
-
-    t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
-
-    if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {
-      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
-    }
-  }
-
-  if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
-    return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Name))
-  }
-
-  return nil
-}
-
-func isValidFieldName(v string) bool {
-  return reFieldName.MatchString(v)
-}
-
 func ReadQuery(request *http.Request) (DataQuery, error) {
   var result DataQuery
   err := readQueryFromRequest(request, &result)
   if err != nil {
     return result, err
   }
-
-  result.Database, err = ValidateDatabaseName(result.Database)
-  if err != nil {
-    return DataQuery{}, err
-  }
   return result, nil
 }
 
-func ValidateDatabaseName(db string) (string, error) {
-  // for db name the same validation rules as for field name
-  if len(db) == 0 {
-    return "default", nil
-  } else if !reDbName.MatchString(db) {
-    return "", errors.Errorf("Database name %s contains illegal chars", db)
-  }
-  return db, nil
-}
-
-func readQueryFromRequest(request *http.Request, v interface{}) error {
+func readQueryFromRequest(request *http.Request, v *DataQuery) error {
   path := request.URL.Path
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
   index := strings.IndexRune(path, '(')
@@ -150,14 +71,6 @@ func readQueryFromRequest(request *http.Request, v interface{}) error {
     return errors.WithStack(err)
   }
   return readQuery(jsonData, v)
-}
-
-func readQuery(s []byte, v interface{}) error {
-  err := jsoniter.ConfigFastest.Unmarshal(s, v)
-  if err != nil {
-    return http_error.NewHttpError(400, err.Error())
-  }
-  return nil
 }
 
 func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, int, error) {
@@ -195,11 +108,6 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
   var sb strings.Builder
   var args []interface{}
 
-  aggregator := query.Aggregator
-  if len(aggregator) != 0 && !reAggregator.MatchString(aggregator) {
-    return "", args, -1, errors.Errorf("Aggregator %s contains illegal chars", aggregator)
-  }
-
   sb.WriteString("select")
 
   fieldCount := len(query.Dimensions)
@@ -221,8 +129,8 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
       continue
     }
 
-    if len(aggregator) != 0 {
-      sb.WriteString(aggregator)
+    if len(query.Aggregator) != 0 {
+      sb.WriteString(query.Aggregator)
       sb.WriteRune('(')
     }
 
@@ -245,14 +153,14 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
       }
     }
 
-    if len(aggregator) != 0 {
+    if len(query.Aggregator) != 0 {
       sb.WriteRune(')')
     }
 
     if len(field.ResultPropertyName) != 0 {
       sb.WriteString(" as ")
       sb.WriteString(field.ResultPropertyName)
-    } else if len(aggregator) != 0 {
+    } else if len(query.Aggregator) != 0 {
       sb.WriteString(" as ")
       sb.WriteString(field.Name)
     }
@@ -282,10 +190,6 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
   if len(query.Order) != 0 {
     sb.WriteString(" order by")
     for i, field := range query.Order {
-      if !isValidFieldName(field) {
-        return "", args, -1, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", field))
-      }
-
       if i != 0 {
         sb.WriteRune(',')
       }
@@ -327,10 +231,6 @@ func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{})
   sb.WriteString(" where")
 loop:
   for i, filter := range query.Filters {
-    if !isValidFieldName(filter.Field) {
-      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", filter.Field))
-    }
-
     if i != 0 {
       sb.WriteString(" and")
     }
@@ -350,13 +250,6 @@ loop:
       continue loop
     }
 
-    operator := filter.Operator
-    if len(operator) == 0 {
-      operator = "="
-    } else if len(operator) > 2 || (operator != ">" && operator != "<" && operator != "=" && operator != "!=") {
-      return errors.Errorf("Operator %s is not supported", operator)
-    }
-
     switch v := filter.Value.(type) {
     case int:
       // default
@@ -367,6 +260,17 @@ loop:
       }
     case string:
       // default
+    case []string:
+      sb.WriteString(" in (")
+      for i := 0; i < len(v); i++ {
+        *args = append(*args, v)
+        if i != 0 {
+          sb.WriteString(", ")
+        }
+        sb.WriteRune('?')
+      }
+      sb.WriteRune(')')
+      continue loop
     case []interface{}:
       sb.WriteString(" in (")
       *args = append(*args, v...)
@@ -383,7 +287,7 @@ loop:
     }
 
     sb.WriteRune(' ')
-    sb.WriteString(operator)
+    sb.WriteString(filter.Operator)
     sb.WriteString(" ?")
     *args = append(*args, filter.Value)
   }

@@ -9,4 +9,4 @@ db/
 
 metabase.db.*
 node_modules/
-dist/
+cmd/frontend/kodata/

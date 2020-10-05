@@ -1,5 +1,5 @@
 resources:
   - nats.yaml
-  - server.yaml
-  - service.yaml
   - clickhouse.yaml
+  - backend.yaml
+  - frontend.yaml

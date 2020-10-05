@@ -3,6 +3,7 @@ const path = require("path")
 
 module.exports = {
   integrity: true,
+  outputDir: path.resolve(__dirname, "../cmd/frontend/kodata"),
   chainWebpack: config => {
     config.devtool("source-map")
     config.optimization.splitChunks({

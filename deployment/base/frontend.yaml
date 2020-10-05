@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels: &LABELS
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels: *LABELS
+  template:
+    metadata:
+      labels: *LABELS
+    spec:
+      containers:
+        - image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend
+          name: frontend
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: frontend

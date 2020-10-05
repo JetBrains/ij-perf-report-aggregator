@@ -1,12 +1,16 @@
 <component name="ProjectDictionaryState">
   <dictionary name="develar">
     <words>
+      <w>certmanager</w>
       <w>clickhouse</w>
+      <w>fontend</w>
       <w>gocyclo</w>
       <w>gosu</w>
       <w>ijplatform</w>
       <w>intelli</w>
+      <w>kodata</w>
       <w>kubectl</w>
+      <w>letsencrypt</w>
       <w>macos</w>
       <w>minifier</w>
       <w>minio</w>

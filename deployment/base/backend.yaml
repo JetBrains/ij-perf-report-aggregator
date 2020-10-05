@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: report-aggregator
+  name: backend
   labels: &LABELS
-    app: report-aggregator
+    app: backend
 spec:
   replicas: 2
   selector:
@@ -15,7 +15,7 @@ spec:
       imagePullSecrets:
         - name: regcred
       containers:
-        - name: report-aggregator
+        - name: backend
           image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/server
           args: ["--db", "clickhouse:9000", "--nats", "nats://nats:4222"]
           env:
@@ -37,3 +37,17 @@ spec:
             httpGet:
               path: /health-check
               port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: backend

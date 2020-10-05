@@ -27,7 +27,7 @@ build-transform:
 	go build -tags -ldflags='-s -w' -o dist/transformer ./cmd/transform
 
 update-deps:
-	GOPROXY=https://proxy.golang.org go get -d -u ./...
+	go get -d -u ./...
 	go mod tidy
 
 # docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:20.3.4.10

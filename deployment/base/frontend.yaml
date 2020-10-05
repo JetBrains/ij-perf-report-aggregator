@@ -5,7 +5,7 @@ metadata:
   labels: &LABELS
     app: frontend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels: *LABELS
   template:
@@ -15,6 +15,13 @@ spec:
       containers:
         - image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend
           name: frontend
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: "0.1"
+            limits:
+              memory: 192Mi
+              cpu: "0.2"
           ports:
             - containerPort: 8080
 ---

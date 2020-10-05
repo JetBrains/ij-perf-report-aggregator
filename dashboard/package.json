@@ -7,7 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.4",
+    "@amcharts/amcharts4": "4.10.5",
     "compare-versions": "^3.6.0",
     "debounce": "^1.2.0",
     "element-ui": "^2.13.2",
@@ -15,7 +15,7 @@
     "rison-node": "^2.1.1",
     "vue": "^2.6.12",
     "vue-class-component": "^7.2.6",
-    "vue-property-decorator": "^9.0.0",
+    "vue-property-decorator": "^9.0.2",
     "vue-router": "^3.4.5",
     "vuex": "^3.5.1",
     "vuex-persistedstate": "^3.1.0"

@@ -10,9 +10,8 @@ Tool to collect performance reports in JSON format from TeamCity, insert into Cl
 
 Directory `dashboard` contains Vue.js application built using [Element](https://element.eleme.io/#/en-US) Desktop UI Library.
 
- * `cd dashboard`
- * `yarn` to install dependencies. [Yarn](https://classic.yarnpkg.com/en/docs/install/) is recommended, do not use NPM.
- * `yarn serve` to start a dev server with hot-module-replacement.
+ * `yarn --cwd dashboard` to install dependencies. [Yarn](https://classic.yarnpkg.com/en/docs/install/) is recommended, do not use NPM.
+ * `yarn --cwd dashboard serve` to start a dev server with hot-module-replacement.
 
 To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
 

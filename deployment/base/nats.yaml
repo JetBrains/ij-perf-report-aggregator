@@ -13,13 +13,14 @@ spec:
     spec:
       containers:
         - name: nats
-          image: nats:2.1-alpine
+          image: nats:2.1.8-scratch@sha256:58f4cc7757a15ffd8f476b74f9d5f199646235b25f85012e759f3cdf64b510a5
           resources:
             requests:
-              memory: "128Mi"
               cpu: "0.1"
+              memory: "64Mi"
             limits:
               cpu: "0.2"
+              memory: "128Mi"
           readinessProbe:
             tcpSocket:
               port: 4222

@@ -15,7 +15,7 @@ lint:
 	golangci-lint run
 
 build-server:
-	go build -tags -ldflags='-s -w' -o dist/server ./cmd/server
+	go build -tags -ldflags='-s -w' -o dist/server ./cmd/backend
 
 build-monitor:
 	go build -tags -ldflags='-s -w' -o dist/monitor ./cmd/monitor

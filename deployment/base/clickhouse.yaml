@@ -11,36 +11,84 @@ spec:
     metadata:
       labels: *LABELS
     spec:
+      initContainers:
+        - name: restore-clickhouse-backup
+          image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-restore
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "0.2"
+            limits:
+              cpu: "0.4"
+              memory: "256Mi"
+          env:
+            - name: REMOVE_OLD_DATA_DIR
+              value: "true"
+            - name: DISABLE_PROGRESS
+              value: "true"
+            - name: S3_BUCKET
+              valueFrom: &S3_BUCKET
+                secretKeyRef:
+                  name: ij-perf-data-minio-bucket
+                  key: AWS_ACCESS_KEY_ID
+          volumeMounts:
+            - name: clickhouse-data
+              mountPath: /var/lib/clickhouse
+            - name: s3
+              mountPath: /etc/s3
+              readOnly: true
       containers:
         - name: clickhouse
-          image: yandex/clickhouse-server:19.15.2.2
-          ports:
-            - containerPort: 9000
-              name: tcp
-          # use http to avoid warn like "TCPHandler: Client has not sent any data." in logs
-          readinessProbe:
-            # allow backup to be restored - do not promote
-            initialDelaySeconds: 5
-            httpGet:
-              port: 8123
-          livenessProbe:
-            periodSeconds: 30
-            httpGet:
-              port: 8123
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: clickhouse
-  labels:
-    app: clickhouse
-spec:
-  ports:
-    - name: tcp
-      port: 9000
-      protocol: TCP
-    - name: http
-      port: 8123
-      protocol: TCP
-  selector:
-    app: clickhouse
+          resources:
+            requests:
+              cpu: "0.5"
+              memory: "1Gi"
+            limits:
+              cpu: "1"
+              memory: "3Gi"
+          image: registry.jetbrains.team/p/ij-report-aggregator-deployment/containers/clickhouse@sha256:f7a673236e9fce21955225622421132dd127dfe454c616efae98ad9d66767eed
+          volumeMounts:
+            - name: clickhouse-data
+              mountPath: /var/lib/clickhouse
+        # backup requires access to volume, so, it cannot be done using k8s cron job
+        - name: clickhouse-backup
+          image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: "0.1"
+            limits:
+              # should be at least 512 because MinIO uploads in chunks (128MB by default) plus some internal buffers
+              memory: 512Mi
+              cpu: "0.2"
+          env:
+            - name: DISABLE_PROGRESS
+              value: "true"
+            - name: CLICKHOUSE
+              value: "127.0.0.1:9000"
+            - name: S3_BUCKET
+              valueFrom: *S3_BUCKET
+            # reduce memory usage - default part size is 128
+            - name: UPLOAD_WORKER_COUNT
+              value: "2"
+            - name: UPLOAD_PART_SIZE
+              value: "64"
+          volumeMounts:
+            - name: clickhouse-data
+              mountPath: /var/lib/clickhouse
+            - name: s3
+              mountPath: /etc/s3
+              readOnly: true
+      volumes:
+        - name: clickhouse-data
+          emptyDir: {}
+        - name: s3
+          secret:
+            secretName: ij-perf-data-minio-bucket
+            items:
+              - key: AWS_ACCESS_KEY_ID
+                path: accessKey
+              - key: AWS_SECRET_ACCESS_KEY
+                path: secretKey
+              - key: MINIO_ENDPOINT
+                path: endpoint

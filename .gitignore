@@ -7,6 +7,5 @@ db/
 
 /deployment/overlays/
 
-metabase.db.*
 node_modules/
 cmd/frontend/kodata/

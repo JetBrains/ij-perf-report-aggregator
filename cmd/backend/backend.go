@@ -1,7 +1,6 @@
 package main
 
 import (
-  "flag"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -13,11 +12,7 @@ func main() {
     _ = logger.Sync()
   }()
 
-  dbUrl := flag.String("db", server.DefaultDbUrl, "The ClickHouse database URL.")
-  natsUrl := flag.String("nats", "", "The NATS URL.")
-  flag.Parse()
-
-  err := server.Serve(*dbUrl, *natsUrl, logger)
+  err := server.Serve(util.GetEnv("CLICKHOUSE", server.DefaultDbUrl), util.GetEnv("NATS", ""), logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
   }

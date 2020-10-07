@@ -25,7 +25,7 @@ func main() {
     _ = logger.Sync()
   }()
 
-  err := restore(os.Getenv("S3_BUCKET"), logger)
+  err := restore(util.GetEnvOrPanic("S3_BUCKET"), logger)
   if err != nil {
     log.Fatalf("%+v", err)
   }

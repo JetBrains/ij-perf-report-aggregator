@@ -74,11 +74,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     writer.WriteHeader(200)
   })
 
-  serverPort := os.Getenv("SERVER_PORT")
-  if len(serverPort) == 0 {
-    serverPort = "9044"
-  }
-  server := listenAndServe(serverPort, mux, logger)
+  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), mux, logger)
 
   logger.Info("started", zap.String("address", server.Addr), zap.String("clickhouse", dbUrl), zap.String("nats", natsUrl))
 

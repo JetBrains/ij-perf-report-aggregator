@@ -1,0 +1,43 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: tc-collector
+spec:
+  # every 4 hours
+  schedule: "0 */4 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: tc-collector
+              image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/tc-collector
+              resources:
+                requests:
+                  memory: 512Mi
+                  cpu: "0.2"
+                limits:
+                  memory: 2Gi
+                  cpu: "0.4"
+              env:
+                - name: CONFIG
+                  valueFrom:
+                    configMapKeyRef:
+                      name: collector
+                      key: data
+                - name: NATS
+                  value: "nats:4222"
+                - name: CLICKHOUSE
+                  value: "clickhouse:9000"
+                - name: TC_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: ij-perf-data-tc
+                      key: token
+                # memory limit — do not overload server
+                - name: INSERT_WORKER_COUNT
+                  value: "1"
+                - name: INSERT_BATCH_SIZE
+                  value: "1000"

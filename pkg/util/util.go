@@ -33,15 +33,31 @@ func CreateCommandContext() (context.Context, context.CancelFunc) {
 }
 
 func CreateLogger() *zap.Logger {
-	config := zap.NewProductionConfig()
+  config := zap.NewProductionConfig()
   config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	config.DisableCaller = true
-	config.DisableStacktrace = true
-	// https://www.outcoldsolutions.com/blog/2018-08-10-timestamps-in-container-logs/
-	config.EncoderConfig.TimeKey = ""
-	logger, err := config.Build()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return logger
+  config.DisableCaller = true
+  config.DisableStacktrace = true
+  // https://www.outcoldsolutions.com/blog/2018-08-10-timestamps-in-container-logs/
+  config.EncoderConfig.TimeKey = ""
+  logger, err := config.Build()
+  if err != nil {
+    log.Fatal(err)
+  }
+  return logger
+}
+
+func GetEnvOrPanic(name string) string {
+ value := os.Getenv(name)
+ if len(value) == 0 {
+   panic("env " + name + " is not set")
+ }
+ return value
+}
+
+func GetEnv(name string, defaultValue string) string {
+  value := os.Getenv(name)
+  if len(value) == 0 {
+    return defaultValue
+  }
+  return value
 }

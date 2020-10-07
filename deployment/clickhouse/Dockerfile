@@ -9,7 +9,6 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# clickhouse-backup requires ca-certificates to access S3 - buildpack-deps also includes ca-certificates
 # clickhouse requires locales, tzdata
 # official Debian and Ubuntu images automatically run apt-get clean, so explicit invocation is not required
 RUN apt-get update -qq && apt-get install -qq --no-install-recommends locales tzdata ca-certificates && rm -rf /var/lib/apt /var/lib/dpkg /var/cache/debconf /var/cache/apt /var/log/dpkg.log /var/log/apt && \

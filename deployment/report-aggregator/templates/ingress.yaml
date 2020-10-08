@@ -1,0 +1,27 @@
+# https://github.com/kubernetes/kubernetes/issues/90077 (our cluster version is 1.16, so, networking.k8s.io/v1 cannot be used)
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+  {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  labels:
+    app: report-aggregator
+    {{- include "common.labels" . | nindent 4 }}
+  name: report-aggregator
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.tlsSecretName }}
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /api/v1
+            backend:
+              serviceName: backend
+              servicePort: 80
+          - path: /
+            backend:
+              serviceName: frontend
+              servicePort: 80

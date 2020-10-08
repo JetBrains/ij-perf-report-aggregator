@@ -2,22 +2,27 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: clickhouse
-  labels: &LABELS
+  labels:
     app: clickhouse
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   selector:
-    matchLabels: *LABELS
+    matchLabels:
+      app: clickhouse
+      {{- include "common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels: *LABELS
+      labels:
+        app: clickhouse
+        {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
       initContainers:
         - name: restore-clickhouse-backup
-          image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-restore
+          image: {{ .Values.images.clickhouseRestore }}
           resources:
             requests:
-              memory: "128Mi"
               cpu: "0.2"
+              memory: "128Mi"
             limits:
               cpu: "0.4"
               memory: "256Mi"
@@ -26,17 +31,8 @@ spec:
               value: "true"
             - name: DISABLE_PROGRESS
               value: "true"
-            - name: S3_BUCKET
-              valueFrom: &S3_BUCKET
-                secretKeyRef:
-                  name: ij-perf-data-minio-bucket
-                  key: AWS_ACCESS_KEY_ID
-          volumeMounts:
-            - name: clickhouse-data
-              mountPath: /var/lib/clickhouse
-            - name: s3
-              mountPath: /etc/s3
-              readOnly: true
+            {{- include "s3Env" . | nindent 12 }}
+        {{- include "clickhouseVolumeMounts" . | nindent 10 }}
       containers:
         - name: clickhouse
           resources:
@@ -46,39 +42,33 @@ spec:
             limits:
               cpu: "1"
               memory: "3Gi"
-          image: registry.jetbrains.team/p/ij-report-aggregator-deployment/containers/clickhouse@sha256:f7a673236e9fce21955225622421132dd127dfe454c616efae98ad9d66767eed
+          image: {{ .Values.images.clickhouse }}
           volumeMounts:
             - name: clickhouse-data
               mountPath: /var/lib/clickhouse
         # backup requires access to volume, so, it cannot be done using k8s cron job
         - name: clickhouse-backup
-          image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup
+          image: {{ .Values.images.clickhouseBackup }}
           resources:
             requests:
-              memory: 128Mi
               cpu: "0.1"
+              memory: 128Mi
             limits:
               # should be at least 512 because MinIO uploads in chunks (128MB by default) plus some internal buffers
-              memory: 512Mi
               cpu: "0.2"
+              memory: 512Mi
           env:
             - name: DISABLE_PROGRESS
               value: "true"
             - name: CLICKHOUSE
               value: "127.0.0.1:9000"
-            - name: S3_BUCKET
-              valueFrom: *S3_BUCKET
+            {{- include "s3Env" . | nindent 12 }}
             # reduce memory usage - default part size is 128
             - name: UPLOAD_WORKER_COUNT
               value: "2"
             - name: UPLOAD_PART_SIZE
               value: "64"
-          volumeMounts:
-            - name: clickhouse-data
-              mountPath: /var/lib/clickhouse
-            - name: s3
-              mountPath: /etc/s3
-              readOnly: true
+          {{- include "clickhouseVolumeMounts" . | nindent 10 }}
       volumes:
         - name: clickhouse-data
           emptyDir: {}

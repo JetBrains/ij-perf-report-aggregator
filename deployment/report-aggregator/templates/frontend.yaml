@@ -2,26 +2,31 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  labels: &LABELS
+  labels:
     app: frontend
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
-    matchLabels: *LABELS
+    matchLabels:
+      app: frontend
+      {{- include "common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels: *LABELS
+      labels:
+        app: frontend
+        {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend
+        - image: {{ .Values.images.frontend }}
           name: frontend
           resources:
             requests:
-              memory: 64Mi
               cpu: "0.1"
+              memory: 64Mi
             limits:
-              memory: 192Mi
               cpu: "0.2"
+              memory: 192Mi
           ports:
             - containerPort: 8080
 ---
@@ -31,6 +36,7 @@ metadata:
   name: frontend
   labels:
     app: frontend
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   ports:
   - port: 80
@@ -38,3 +44,4 @@ spec:
     protocol: TCP
   selector:
     app: frontend
+    {{- include "common.selectorLabels" . | nindent 4 }}

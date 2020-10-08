@@ -1,0 +1,14 @@
+ingress:
+  host: ""
+  tlsSecretName: ""
+  annotations: {}
+collector:
+  teamcityUrl: "http://buildserver.labs.intellij.net"
+  buildConfigurations: []
+images:
+  backend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/backend
+  frontend: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend
+  clickhouse: ""
+  clickhouseRestore: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-restore
+  clickhouseBackup: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup
+  collector: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/tc-collector

@@ -1,14 +1,9 @@
 <yandex>
   <logger>
-    <!-- Possible levels: https://github.com/pocoproject/poco/blob/develop/Foundation/include/Poco/Logger.h#L105 -->
-    <level>trace</level>
-    <!--<log>/var/log/clickhouse-server/clickhouse-server.log</log>-->
-    <!--<errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>-->
-    <!--<size>1000M</size>-->
-    <!--<count>10</count>-->
+    <level>debug</level>
      <console>1</console>   Default behavior is autodetection (log to console if not daemon mode and is tty)
   </logger>
-  <!--display_name>production</display_name--> <!-- It is the name that will be shown in the client -->
+  <disable_internal_dns_cache>1</disable_internal_dns_cache>
   <listen_host>127.0.0.1</listen_host>
   <http_port>8123</http_port>
   <tcp_port>9000</tcp_port>

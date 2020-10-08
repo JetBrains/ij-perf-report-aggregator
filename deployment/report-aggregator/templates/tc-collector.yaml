@@ -2,6 +2,8 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: tc-collector
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   # every 4 hours
   schedule: "0 */4 * * *"
@@ -9,28 +11,22 @@ spec:
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            {{- include "common.selectorLabels" . | nindent 12 }}
         spec:
           restartPolicy: OnFailure
           containers:
             - name: tc-collector
-              image: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/tc-collector
+              image: {{ .Values.images.collector }}
               resources:
                 requests:
-                  memory: 512Mi
                   cpu: "0.2"
+                  memory: 512Mi
                 limits:
-                  memory: 2Gi
                   cpu: "0.4"
+                  memory: 2Gi
               env:
-                - name: CONFIG
-                  valueFrom:
-                    configMapKeyRef:
-                      name: collector
-                      key: data
-                - name: NATS
-                  value: "nats:4222"
-                - name: CLICKHOUSE
-                  value: "clickhouse:9000"
                 - name: TC_TOKEN
                   valueFrom:
                     secretKeyRef:
@@ -41,3 +37,9 @@ spec:
                   value: "1"
                 - name: INSERT_BATCH_SIZE
                   value: "1000"
+                - name: NATS
+                  value: "nats:4222"
+                - name: CLICKHOUSE
+                  value: "clickhouse:9000"
+                - name: CONFIG
+                  value: {{ .Values.collector | toJson | quote }}

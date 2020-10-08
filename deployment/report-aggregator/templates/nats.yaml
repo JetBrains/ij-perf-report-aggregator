@@ -2,14 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nats
-  labels: &LABELS
+  labels:
     app: nats
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   selector:
-    matchLabels: *LABELS
+    matchLabels:
+      app: nats
+      {{- include "common.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      labels: *LABELS
+      labels:
+        app: nats
+        {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: nats
@@ -34,6 +39,7 @@ metadata:
   name: nats
   labels:
     app: nats
+    {{- include "common.labels" . | nindent 4 }}
 spec:
   ports:
     - name: tcp
@@ -44,3 +50,4 @@ spec:
       protocol: TCP
   selector:
     app: nats
+    {{- include "common.selectorLabels" . | nindent 4 }}

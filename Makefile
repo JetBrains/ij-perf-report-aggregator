@@ -43,7 +43,7 @@ update-deps:
 # download clickhouse for macOS: curl -O 'https://clickhouse-builds.s3.yandex.net/15568/55aa20074b36c8ea441b5dbacafadf0125441633/clickhouse_build_check/clang-10-darwin_relwithdebuginfo_none_bundled_unsplitted_disable_False_binary/clickhouse' && chmod a+x ./clickhouse
 # see https://github.com/ClickHouse/ClickHouse/issues/235#issuecomment-548781417
 
-# clickhouse server -C~/Documents/report-aggregator/deployment/ch-local-config.xml
+# clickhouse server -C ~/Documents/report-aggregator/deployment/ch-local-config.xml
 # clickhouse client -h 127.0.0.1 -d ij
 
 # nats-server

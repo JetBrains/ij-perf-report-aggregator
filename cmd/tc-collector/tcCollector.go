@@ -2,6 +2,7 @@ package main
 
 import (
   "context"
+  e "errors"
   "database/sql"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -266,7 +267,11 @@ func (t *Collector) get(url string, ctx context.Context) (*http.Response, error)
 
   response, err := t.httpClient.Do(request)
   if err != nil {
-    return nil, errors.WithStack(err)
+    if e.Is(err, context.Canceled) {
+      return nil, err
+    } else {
+      return nil, errors.WithStack(err)
+    }
   }
   return response, nil
 }

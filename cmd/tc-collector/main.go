@@ -1,7 +1,9 @@
 package main
 
 import (
+  "context"
   "encoding/json"
+  e "errors"
   "flag"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -23,6 +25,9 @@ func main() {
 
   err := configureCollectFromTeamCity(logger)
   if err != nil {
+    if e.Is(err, context.Canceled) {
+      os.Exit(78)
+    }
     log.Fatal(fmt.Sprintf("%+v", err))
   }
 }

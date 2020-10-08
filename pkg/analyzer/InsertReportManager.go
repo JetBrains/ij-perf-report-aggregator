@@ -189,11 +189,23 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     project = report.Project
     if project == "Fleet" {
       project = "fleet"
-    }
-    // IJ simple project - map project v3 to existing v2 ID
-    if project == "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s" {
+    } else {
+      // IJ simple project - map project v3 to existing v2 ID
+      if project == "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s" {
+        //noinspection SpellCheckingInspection
+        project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
+      }
+      // idea project
       //noinspection SpellCheckingInspection
-      project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
+      if project == "26hfTKDRtXpJ6U7ivgfKthtyU0A" {
+        //noinspection SpellCheckingInspection
+        project = "nC4MRRFMVYUSQLNIvPgDt+B3JqA"
+      }
+      // light edit
+      if project == "6hglkyp/cmAi7ntjrg7dHwd5NG4" {
+        //noinspection SpellCheckingInspection
+        project = "1PbxeQ044EEghMOG9hNEFee05kM"
+      }
     }
   }
 
@@ -227,5 +239,8 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
   }
 
   _, err = insertStatement.ExecContext(t.context, args...)
-  return errors.WithStack(err)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  return nil
 }

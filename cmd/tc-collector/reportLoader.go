@@ -2,8 +2,10 @@ package main
 
 import (
   "bytes"
+  "context"
   "encoding/base64"
   "encoding/hex"
+  e "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
@@ -23,8 +25,6 @@ func (t *Collector) loadReports(builds []*Build) error {
   if networkRequestCount > 8 {
     networkRequestCount = 8
   }
-
-  var err error
 
   var notLoadedInstallerBuildIds []*InstallerInfo
   for _, build := range builds {
@@ -62,7 +62,7 @@ func (t *Collector) loadReports(builds []*Build) error {
       }
       return nil
     })))
-    err = util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (f func() error, err error) {
+    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (f func() error, err error) {
       return func() error {
         installerInfo := notLoadedInstallerBuildIds[index]
         installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id)
@@ -78,7 +78,7 @@ func (t *Collector) loadReports(builds []*Build) error {
     }
   }
 
-  err = util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
+  err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
     return func() error {
       build := builds[taskIndex]
       if build.Agent.Name == "Dead agent" {
@@ -91,12 +91,12 @@ func (t *Collector) loadReports(builds []*Build) error {
         return nil
       }
 
-      dataList, err := t.downloadStartUpReports(*build, t.taskContext)
+      artifacts, err := t.downloadStartUpReports(*build, t.taskContext)
       if err != nil {
         return err
       }
 
-      if len(dataList) == 0 {
+      if len(artifacts) == 0 {
         t.logger.Error("cannot find any performance report", zap.Int("id", build.Id))
         return nil
       }
@@ -106,18 +106,19 @@ func (t *Collector) loadReports(builds []*Build) error {
         return err
       }
 
-      for _, data := range dataList {
+      for _, artifact := range artifacts {
         if t.taskContext.Err() != nil {
           return nil
         }
 
-        err = t.reportAnalyzer.Analyze(data, model.ExtraData{
+        err = t.reportAnalyzer.Analyze(artifact.data, model.ExtraData{
           Machine:            build.Agent.Name,
           TcBuildId:          build.Id,
           TcInstallerBuildId: installerInfo.id,
           BuildTime:          installerInfo.buildTime,
           TcBuildProperties:  tcBuildProperties,
           Changes:            installerInfo.changes,
+          ReportFile:         artifact.path,
         })
         if err != nil {
           if build.Status == "FAILURE" {
@@ -131,7 +132,11 @@ func (t *Collector) loadReports(builds []*Build) error {
     }, nil
   })
   if err != nil {
-    return errors.WithStack(err)
+    if e.Is(err, context.Canceled) {
+      return err
+    } else {
+      return errors.WithStack(err)
+    }
   }
   return nil
 }

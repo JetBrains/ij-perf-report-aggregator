@@ -182,6 +182,8 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
       } else {
         reportInfo.branch = "master"
       }
+    } else {
+      reportInfo.branch = strings.TrimPrefix(reportInfo.branch, "refs/heads/")
     }
   }
 
@@ -248,7 +250,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 
   err := t.InsertReportManager.Insert(reportRow, report.branch, report.report.Project)
   if err != nil {
-    return err
+    return errors.WithMessagef(err, "Cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
   }
   return nil
 }

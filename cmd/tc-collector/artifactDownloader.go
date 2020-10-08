@@ -14,8 +14,13 @@ import (
   "strings"
 )
 
-func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([][]byte, error) {
-  var result [][]byte
+type ArtifactItem struct {
+  data []byte
+  path string
+}
+
+func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([]ArtifactItem, error) {
+  var result []ArtifactItem
   err := t.findAndDownloadStartUpReports(build, build.Artifacts, &result, ctx)
   if err != nil {
     return nil, err
@@ -23,7 +28,7 @@ func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([]
   return result, nil
 }
 
-func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[][]byte, ctx context.Context) error {
+func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[]ArtifactItem, ctx context.Context) error {
   for _, artifact := range artifact.File {
     if strings.HasSuffix(artifact.Url, ".json") {
       name := path.Base(artifact.Url)
@@ -34,7 +39,10 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifact
           return err
         }
 
-        *result = append(*result, report)
+        *result = append(*result, ArtifactItem{
+          data: report,
+          path: artifactUrlString,
+        })
         continue
       }
     }
@@ -56,11 +64,7 @@ func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string,
 
   response, err := t.get(artifactUrl.String(), ctx)
   if err != nil {
-    if err == context.Canceled {
-      return nil, err
-    } else {
-      return nil, errors.WithStack(err)
-    }
+    return nil, err
   }
 
   defer util.Close(response.Body, t.logger)

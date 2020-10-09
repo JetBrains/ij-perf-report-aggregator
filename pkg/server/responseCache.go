@@ -4,9 +4,9 @@ import (
   "compress/gzip"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/VictoriaMetrics/fastcache"
-  "github.com/cespare/xxhash"
+  "github.com/cespare/xxhash/v2"
   "github.com/develar/errors"
+  "github.com/dgraph-io/ristretto"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "go.uber.org/zap"
@@ -19,7 +19,7 @@ import (
 var byteBufferPool bytebufferpool.Pool
 
 type ResponseCacheManager struct {
-  cache  *fastcache.Cache
+  cache  *ristretto.Cache
   logger *zap.Logger
 }
 
@@ -32,11 +32,21 @@ func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
   t.manager.handle(w, r, t.handler)
 }
 
-func NewResponseCacheManager(logger *zap.Logger) *ResponseCacheManager {
-  return &ResponseCacheManager{
-    cache:        fastcache.New(128 * 1000 * 1000 /* 128 MB */),
-    logger:       logger,
+func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
+  // 256 MB
+  cacheSize := 256 * 1000 * 1000
+  cache, err := ristretto.NewCache(&ristretto.Config{
+    NumCounters: int64((cacheSize / 50 /* assume that each response ~ 50 KB */) * 10) /* number of keys to track frequency of (10M) */,
+    MaxCost:     int64(cacheSize),
+    BufferItems: 64 /* number of keys per Get buffer */,
+  })
+  if err != nil {
+    return nil, errors.WithStack(err)
   }
+  return &ResponseCacheManager{
+    cache:  cache,
+    logger: logger,
+  }, nil
 }
 
 func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request) ([]byte, error)) http.Handler {
@@ -69,22 +79,22 @@ func generateKey(request *http.Request) []byte {
   return result
 }
 
-func (t *ResponseCacheManager) get(request *http.Request) ([]byte, []byte) {
-  key := generateKey(request)
-  var value []byte
-  value = t.cache.GetBig(value, key)
-  if len(value) == 0 {
-    return key, nil
-  }
-  return nil, value
-}
-
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
   w.Header().Set("Content-Type", "application/json")
 
-  cacheKey, result := t.get(request)
+  cacheKey := generateKey(request)
+  value, found := t.cache.Get(cacheKey)
   var eTag string
-  if result == nil {
+  var result []byte
+  if found {
+    result = value.([]byte)
+    prevEtag := request.Header.Get("If-None-Match")
+    eTag = computeEtag(result)
+    if prevEtag == eTag {
+      w.WriteHeader(304)
+      return
+    }
+  } else {
     var err error
     result, err = handler(request)
     if err != nil {
@@ -92,15 +102,8 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
       return
     }
 
-    t.cache.SetBig(cacheKey, result)
+    t.cache.Set(cacheKey, result, int64(len(result)))
     eTag = computeEtag(result)
-  } else {
-    prevEtag := request.Header.Get("If-None-Match")
-    eTag = computeEtag(result)
-    if prevEtag == eTag {
-      w.WriteHeader(304)
-      return
-    }
   }
 
   w.Header().Set("ETag", eTag)
@@ -165,7 +168,7 @@ func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {
 }
 
 func (t *ResponseCacheManager) Clear() {
-  t.cache.Reset()
+  t.cache.Clear()
 }
 
 func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {

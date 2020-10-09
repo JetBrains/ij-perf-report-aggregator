@@ -51,7 +51,10 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     })
   }()
 
-  cacheManager := NewResponseCacheManager(logger)
+  cacheManager, err := NewResponseCacheManager(logger)
+  if err != nil {
+    return err
+  }
 
   mux := http.NewServeMux()
 
@@ -103,7 +106,8 @@ func (t *StatsServer) GetDatabase(name string) (*sqlx.DB, error) {
 }
 
 func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {
-  nc, err := nats.Connect(natsUrl)
+  // wait when nats service will be deployed
+  nc, err := nats.Connect(natsUrl, nats.Timeout(30*time.Second))
   if err != nil {
     return errors.WithStack(err)
   }

@@ -2,11 +2,10 @@
   <configuration default="false" name="serve" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="report-aggregator" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="--db 127.0.0.1:9000" />
     <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <package value="$PROJECT_DIR$/cmd/report-aggregator" />
-    <directory value="$PROJECT_DIR$/cmd/server" />
+    <directory value="$PROJECT_DIR$/cmd/backend" />
     <method v="2" />
   </configuration>
 </component>

@@ -22,10 +22,10 @@ spec:
           name: frontend
           resources:
             requests:
-              cpu: "0.1"
+              cpu: "0.2"
               memory: 64Mi
             limits:
-              cpu: "0.2"
+              cpu: "0.6"
               memory: 192Mi
           ports:
             - containerPort: 8080

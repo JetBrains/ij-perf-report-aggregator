@@ -7,24 +7,25 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@amcharts/amcharts4": "4.10.5",
+    "@amcharts/amcharts4": "4.10.11",
+    "chokidar": "^3.4.3",
     "compare-versions": "^3.6.0",
     "debounce": "^1.2.0",
-    "element-ui": "^2.13.2",
-    "p-queue": "^6.6.1",
+    "element-ui": "^2.14.1",
+    "p-queue": "^6.6.2",
     "rison-node": "^2.1.1",
     "vue": "^2.6.12",
     "vue-class-component": "^7.2.6",
     "vue-property-decorator": "^9.0.2",
-    "vue-router": "^3.4.6",
+    "vue-router": "^3.4.9",
     "vuex": "^3.5.1",
     "vuex-persistedstate": "^3.1.0"
   },
   "devDependencies": {
     "@types/debounce": "^1.2.0",
-    "@vue/cli-plugin-typescript": "^4.5.7",
-    "@vue/cli-service": "^4.5.7",
-    "typescript": "^4.0.3",
+    "@vue/cli-plugin-typescript": "^4.5.9",
+    "@vue/cli-service": "^4.5.9",
+    "typescript": "^4.0.5",
     "vue-template-compiler": "^2.6.12"
   },
   "postcss": {
@@ -39,6 +40,6 @@
     "not dead"
   ],
   "resolutions": {
-    "chokidar": "^3.4.2"
+    "chokidar": "^3.4.3"
   }
 }

@@ -218,9 +218,9 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     buildTimeUnix = row.BuildTime
   }
 
-  //if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-blade-") {
-  //  return nil
-  //}
+  if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-compile-hp-blade-") {
+   return nil
+  }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+len(MetricDescriptors))
   if t.hasProductField {

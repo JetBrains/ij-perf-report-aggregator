@@ -5,7 +5,7 @@ create table report2
     'intellij-linux-hw-unit-558' = 5, 'intellij-linux-hw-unit-449' = 6, 'intellij-linux-hw-unit-450' = 7, 'intellij-linux-hw-unit-463' = 8,
     'intellij-linux-hw-unit-504' = 9, 'intellij-linux-hw-unit-493' = 10, 'intellij-linux-hw-unit-556' = 11, 'intellij-linux-hw-unit-531' = 12,
     'intellij-linux-hw-unit-484' = 13, 'intellij-linux-hw-unit-534' = 14, 'intellij-macos-hw-unit-1773' = 15, 'intellij-macos-hw-unit-1772' = 16,
-    'intellij-windows-hw-unit-449' = 17, 'intellij-windows-hw-unit-463' = 18, 'intellij-windows-hw-unit-504' = 19, 'intellij-windows-hw-unit-493' = 20) CODEC(ZSTD(20)),
+    'intellij-windows-hw-unit-449' = 17, 'intellij-windows-hw-unit-463' = 18, 'intellij-windows-hw-unit-504' = 19, 'intellij-windows-hw-unit-493' = 20, 'intellij-linux-hw-unit-499' = 21) CODEC(ZSTD(20)),
   `build_time`                 DateTime CODEC(Delta(4), ZSTD(20)),
   `generated_time`             DateTime CODEC(Delta(4), ZSTD(20)),
   `project`                    Enum8('/q9N7EHxr8F1NHjbNQnpqb0Q0fs' = 0, '1PbxeQ044EEghMOG9hNEFee05kM' = 1, '2j97HQ/UaQtIjdLtXG+0rvRD2Dw' = 2, '2tIppCeSStMfnlpjSo6a4ioxRd4' = 3, '73YWaW9bytiPDGuKvwNIYMK5CKI' = 4,

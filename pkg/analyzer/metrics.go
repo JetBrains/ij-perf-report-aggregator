@@ -217,7 +217,7 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
   } else {
     v = activity.Duration
     if v > info.maxValue {
-      return errors.Errorf("value outside of 0-%d range (generatedTime=%s, value=%v)", info.maxValue, report.Generated, v)
+      return errors.Errorf("value outside of 0-%d range (generatedTime=%s, value=%v, activity=%s)", info.maxValue, report.Generated, v, activity.Name)
     }
   }
 

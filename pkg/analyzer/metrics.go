@@ -57,6 +57,13 @@ func init() {
     return result
   }
 
+  createUint32RequiredMetric := func(name string) *Metric {
+    result := createMetric(name)
+    result.maxValue = 4294967295
+    result.isRequired = true
+    return result
+  }
+
   createMetricWithCategory := func(name string, category int) *Metric {
     result := createMetric(name)
     result.category = category
@@ -77,7 +84,7 @@ func init() {
   projectComponentCreation := createMetric("projectComponentCreation_d")
 
   metricNameToDescriptor = map[string]*Metric{
-    "bootstrap":                      createRequiredMetric("bootstrap_d"),
+    "bootstrap":                      createUint32RequiredMetric("bootstrap_d"),
     "app initialization preparation": createRequiredMetric("appInitPreparation_d"),
     "app initialization":             createRequiredMetric("appInit_d"),
 

@@ -7,7 +7,7 @@ require (
 	github.com/ClickHouse/clickhouse-go v1.4.3
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
+	github.com/alecthomas/units v0.0.0-20201120081800-1786d5ef83d4 // indirect
 	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
 	github.com/cespare/xxhash/v2 v2.1.1
@@ -26,7 +26,7 @@ require (
 	github.com/minio/minio-go/v6 v6.0.57
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/nats-io/jwt v1.2.0 // indirect
+	github.com/nats-io/jwt v1.2.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nats-io/nats.go v1.10.0
 	github.com/olekukonko/tablewriter v0.0.4
@@ -37,19 +37,20 @@ require (
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.6.1
 	github.com/tdewolff/minify/v2 v2.9.10
+	github.com/tdewolff/parse/v2 v2.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
-	github.com/valyala/fastjson v1.6.1
+	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
+	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
-	golang.org/x/sys v0.0.0-20201117222635-ba5294a509c7 // indirect
+	golang.org/x/sys v0.0.0-20201130171929-760e229fe7c5 // indirect
 	golang.org/x/text v0.3.4 // indirect
-	golang.org/x/tools v0.0.0-20201118030313-598b068a9102
+	golang.org/x/tools v0.0.0-20201130184508-c5a73c303507
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/sakura-internet/go-rison.v3 v3.1.0

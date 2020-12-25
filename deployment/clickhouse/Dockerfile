@@ -3,7 +3,7 @@ WORKDIR /project/src
 ADD https://raw.githubusercontent.com/nats-io/nats.go/7192159fcab301e10f8f9c6d21b57857d501c490/examples/nats-pub/main.go .
 RUN go get -d && GOOS=linux go build -ldflags='-s -w' -o /tmp/nats-pub .
 
-RUN cd /tmp && curl -L https://repo.clickhouse.tech/tgz/stable/clickhouse-common-static-20.11.3.3.tgz | tar xvz --strip-components=4 ./clickhouse-common-static-20.11.3.3/usr/bin/clickhouse
+RUN cd /tmp && curl -L https://repo.clickhouse.tech/tgz/stable/clickhouse-common-static-20.12.4.5.tgz | tar xvz --strip-components=4 ./clickhouse-common-static-20.12.4.5/usr/bin/clickhouse
 
 FROM ubuntu:20.04
 

@@ -134,7 +134,7 @@ func collectFromTeamCity(
     }
 
     q.Set("locator", locator)
-    q.Set("fields", "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(href,children(href,file(children(file(href)))))),artifact-dependencies(build(id,buildTypeId,finishDate)))")
+    q.Set("fields", buildTeamCityQuery())
     serverUrl.RawQuery = q.Encode()
 
     logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
@@ -219,6 +219,14 @@ func collectFromTeamCity(
   }
 
   return nil
+}
+
+func buildTeamCityQuery() string {
+  onlyFile := "file(href)"
+  childrenWithFile := "children(" + onlyFile + ")"
+  childrenWithFileAndRef := "children(href,file(" + childrenWithFile + "))"
+  childrenWithFileAndRef2 := "children(href,file(" + childrenWithFileAndRef + "))"
+  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(href," + childrenWithFileAndRef2 + ")),artifact-dependencies(build(id,buildTypeId,finishDate)))"
 }
 
 func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db *sqlx.DB, logger *zap.Logger) error {

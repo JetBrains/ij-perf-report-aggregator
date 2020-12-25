@@ -97,7 +97,7 @@ func (t *Collector) loadReports(builds []*Build) error {
       }
 
       if len(artifacts) == 0 {
-        t.logger.Error("cannot find any performance report", zap.Int("id", build.Id))
+        t.logger.Error("cannot find any performance report", zap.Int("id", build.Id), zap.String("status", build.Status))
         return nil
       }
 

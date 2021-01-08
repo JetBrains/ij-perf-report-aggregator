@@ -21,15 +21,15 @@ type ArtifactItem struct {
 
 func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([]ArtifactItem, error) {
   var result []ArtifactItem
-  err := t.findAndDownloadStartUpReports(build, build.Artifacts, &result, ctx)
+  err := t.findAndDownloadStartUpReports(build, build.Artifacts.File, &result, ctx)
   if err != nil {
     return nil, err
   }
   return result, nil
 }
 
-func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifacts, result *[]ArtifactItem, ctx context.Context) error {
-  for _, artifact := range artifact.File {
+func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artifact, result *[]ArtifactItem, ctx context.Context) error {
+  for _, artifact := range artifacts {
     if strings.HasSuffix(artifact.Url, ".json") {
       name := path.Base(artifact.Url)
       if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") {
@@ -47,7 +47,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifact Artifact
       }
     }
 
-    err := t.findAndDownloadStartUpReports(build, artifact.Children, result, ctx)
+    err := t.findAndDownloadStartUpReports(build, artifact.Children.File, result, ctx)
     if err != nil {
       return err
     }

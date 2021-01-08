@@ -222,11 +222,11 @@ func collectFromTeamCity(
 }
 
 func buildTeamCityQuery() string {
-  onlyFile := "file(href)"
-  childrenWithFile := "children(" + onlyFile + ")"
-  childrenWithFileAndRef := "children(href,file(" + childrenWithFile + "))"
-  childrenWithFileAndRef2 := "children(href,file(" + childrenWithFileAndRef + "))"
-  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(file(href," + childrenWithFileAndRef2 + ")),artifact-dependencies(build(id,buildTypeId,finishDate)))"
+  q := "file(href)"
+  for i := 0; i < 2; i++ {
+    q = "file(href,children(href," + q + "))"
+  }
+  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)))"
 }
 
 func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db *sqlx.DB, logger *zap.Logger) error {

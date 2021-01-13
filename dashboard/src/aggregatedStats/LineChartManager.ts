@@ -63,13 +63,19 @@ export class LineChartManager implements StatChartManager {
     configurator.configureXAxis(chart)
     // xAxis.groupData = true
     // DurationAxis doesn't work due to some unclear bug
-    const valueAxis = chart.yAxes.push(new am4charts.ValueAxis())
-    // const durationAxis = chart.yAxes.push(new am4charts.DurationAxis())
+    if (chartSettings.selectedProduct == "sharedIndexes") {
+      const durationAxis = chart.yAxes.push(new am4charts.DurationAxis())
+      durationAxis.baseUnit = "millisecond"
+      durationAxis.durationFormatter.baseUnit = "millisecond"
+      durationAxis.durationFormatter.durationFormat = "hh 'h' mm 'm' ss 's'"
+    } else {
+      const valueAxis = chart.yAxes.push(new am4charts.ValueAxis())
 
-    // do not use logarithmic scale for line chart of duration events - better looking and more clear charts, if height will be a problem, then chart height can be increased
-    valueAxis.logarithmic = this.isInstantEvents
-    valueAxis.durationFormatter.baseUnit = "millisecond"
-    valueAxis.durationFormatter.durationFormat = "S"
+      // do not use logarithmic scale for line chart of duration events - better looking and more clear charts, if height will be a problem, then chart height can be increased
+      valueAxis.logarithmic = this.isInstantEvents
+      valueAxis.durationFormatter.baseUnit = "millisecond"
+      valueAxis.durationFormatter.durationFormat = "S"
+    }
 
     if (this.chartSettings.showScrollbarXPreview) {
       this.configureScrollbarXWithPreview()

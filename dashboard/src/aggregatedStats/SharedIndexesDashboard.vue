@@ -140,11 +140,13 @@ class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
       const filters: Array<DataQueryFilter> = [
         {field: "project", value: experimentName},
         {field: "machine", value: request.machine},
-        /**
-         * Exclude reports that miss this metric key. Otherwise clickhouse would select all rows and with 0 as the metric value.
-         */
-        {field: metricKey, operator: '>', value: 0}
       ]
+
+      if (chartSettings.granularity === "as is") {
+        // Exclude reports that miss this metric key. Otherwise clickhouse would select all rows and with 0 as the metric value.
+        filters.push({field: metricKey, operator: '>', value: 0})
+      }
+
       const query = createDataQueryWithoutFields(request, filters, component, timeRange, chartSettings)
       const field: DataQueryDimension = {
         name: metric,

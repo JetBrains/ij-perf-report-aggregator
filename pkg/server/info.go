@@ -63,7 +63,7 @@ func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskCo
 	}
 
   split := strings.Split(*allMetricsJoined, ",")
-  metrics := make([]*analyzer.Metric, 0, len(split))
+  metrics := make([]*analyzer.Metric, len(split))
   for index, metricName := range split {
     metrics[index] = &analyzer.Metric{
       Name:      metricName,

@@ -45,7 +45,7 @@ import { Component, Prop, Watch } from "vue-property-decorator"
 import { LineChartManager, SeriesDescriptor } from "@/aggregatedStats/LineChartManager"
 import { ChartSettings } from "@/aggregatedStats/ChartSettings"
 import { SortedByCategory, SortedByDate } from "@/aggregatedStats/ChartConfigurator"
-import { DataQuery, DataQueryFilter, DataRequest, encodeQuery, getFilters, MetricDescriptor, Metrics } from "@/aggregatedStats/model"
+import { DataQuery, DataQueryFilter, DataRequest, encodeQuery, getFilters, MetricDescriptor, Metrics, MetricType } from "@/aggregatedStats/model"
 import { BaseStatChartComponent } from "@/aggregatedStats/BaseStatChartComponent"
 import { DurationParseResult, parseTimeRange, toClickhouseSql } from "@/aggregatedStats/parseDuration"
 
@@ -54,7 +54,7 @@ const rison = require("rison-node")
 @Component
 export default class LineChartComponent extends BaseStatChartComponent<LineChartManager> {
   @Prop({type: String, required: true})
-  type!: "duration" | "instant"
+  type!: MetricType
 
   @Prop(String)
   order!: "date" | "buildNumber"
@@ -156,7 +156,7 @@ export default class LineChartComponent extends BaseStatChartComponent<LineChart
       this.reportTableData = tableData
       this.infoIsVisible = true
     }) : new SortedByCategory()
-    const chartManager = new LineChartManager(this.$refs.chartContainer as HTMLElement, this.chartSettings || new ChartSettings(), this.type === "instant", configurator)
+    const chartManager = new LineChartManager(this.$refs.chartContainer as HTMLElement, this.chartSettings || new ChartSettings(), this.type, configurator)
 
     chartManager.chart.exporting.menu!!.items[0]!!.menu!!.push({
       label: "Open",

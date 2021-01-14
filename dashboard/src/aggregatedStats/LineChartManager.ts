@@ -3,7 +3,7 @@ import * as am4charts from "@amcharts/amcharts4/charts"
 import * as am4core from "@amcharts/amcharts4/core"
 import { ChartSettings } from "@/aggregatedStats/ChartSettings"
 import { addExportMenu, StatChartManager } from "@/charts/ChartManager"
-import { Metrics } from "@/aggregatedStats/model"
+import { Metrics, MetricType } from "@/aggregatedStats/model"
 import { ChartConfigurator } from "@/aggregatedStats/ChartConfigurator"
 import * as am4plugins_annotation from "@amcharts/amcharts4/plugins/annotation"
 
@@ -12,7 +12,7 @@ export class LineChartManager implements StatChartManager {
 
   constructor(container: HTMLElement,
               private chartSettings: ChartSettings,
-              private readonly isInstantEvents: boolean,
+              private readonly metricType: MetricType,
               private readonly configurator: ChartConfigurator) {
     this.chart = am4core.create(container, am4charts.XYChart)
 
@@ -63,13 +63,19 @@ export class LineChartManager implements StatChartManager {
     configurator.configureXAxis(chart)
     // xAxis.groupData = true
     // DurationAxis doesn't work due to some unclear bug
-    const valueAxis = chart.yAxes.push(new am4charts.ValueAxis())
-    // const durationAxis = chart.yAxes.push(new am4charts.DurationAxis())
+    if (chartSettings.selectedProduct == "sharedIndexes" && metricType == "duration") {
+      const durationAxis = chart.yAxes.push(new am4charts.DurationAxis())
+      durationAxis.baseUnit = "millisecond"
+      durationAxis.durationFormatter.baseUnit = "millisecond"
+      durationAxis.durationFormatter.durationFormat = "hh 'h' mm 'm' ss 's'"
+    } else {
+      const valueAxis = chart.yAxes.push(new am4charts.ValueAxis())
 
-    // do not use logarithmic scale for line chart of duration events - better looking and more clear charts, if height will be a problem, then chart height can be increased
-    valueAxis.logarithmic = this.isInstantEvents
-    valueAxis.durationFormatter.baseUnit = "millisecond"
-    valueAxis.durationFormatter.durationFormat = "S"
+      // do not use logarithmic scale for line chart of duration events - better looking and more clear charts, if height will be a problem, then chart height can be increased
+      valueAxis.logarithmic = this.metricType === "instant"
+      valueAxis.durationFormatter.baseUnit = "millisecond"
+      valueAxis.durationFormatter.durationFormat = "S"
+    }
 
     if (this.chartSettings.showScrollbarXPreview) {
       this.configureScrollbarXWithPreview()

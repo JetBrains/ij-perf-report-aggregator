@@ -6,23 +6,29 @@
         <el-form :inline="true" size="small">
           <el-form-item label="Server">
             <el-input
-                data-lpignore="true"
-                placeholder="Enter the aggregated stats server URL..."
-                v-model="chartSettings.serverUrl"/>
+              data-lpignore="true"
+              placeholder="Enter the aggregated stats server URL..."
+              v-model="chartSettings.serverUrl"/>
           </el-form-item>
 
-          <el-form-item label="Scenario">
+          <el-form-item label="Scenarios">
             <el-select v-model="selectedProjects" multiple collapse-tags style="min-width: 500px;">
               <el-option v-for="project in projects" :key="project" :label="project" :value="project"/>
             </el-select>
           </el-form-item>
 
+          <el-form-item label="Metrics">
+            <el-select v-model="selectedMetrics" multiple collapse-tags style="min-width: 200px;">
+              <el-option v-for="metric in metrics" :key="metric.name" :label="metric.name" :value="metric.name"/>
+            </el-select>
+          </el-form-item>
+
           <el-form-item label="Machine">
             <el-cascader
-                v-model="chartSettings.selectedMachine"
-                :show-all-levels="false"
-                :props='{"label": "name", value: "name", checkStrictly: true, emitPath: false}'
-                :options="machines"/>
+              v-model="chartSettings.selectedMachine"
+              :show-all-levels="false"
+              :props='{"label": "name", value: "name", checkStrictly: true, emitPath: false}'
+              :options="machines"/>
           </el-form-item>
 
           <el-form-item>
@@ -61,24 +67,21 @@
               </el-form-item>
             </el-form>
 
-            <el-row :gutter="5">
-              <el-col :span="12">
-                <el-card shadow="never" :body-style="{ padding: '0px' }">
-                  <LineChartComponent type="duration" :order="item.order" :dataRequest="dataRequest" :timeRange="timeRange"
-                                      :metrics='["metrics.scanning.d"]'
-                                      :seriesManager="seriesManager"
-                                      :chartSettings="chartSettings"/>
-                </el-card>
-              </el-col>
-              <el-col :span="12">
-                <el-card shadow="never" :body-style="{ padding: '0px' }">
-                  <LineChartComponent type="duration" :order="item.order" :dataRequest="dataRequest" :timeRange="timeRange"
-                                      :metrics='["metrics.indexing.d"]'
-                                      :seriesManager="seriesManager"
-                                      :chartSettings="chartSettings"/>
-                </el-card>
-              </el-col>
-            </el-row>
+            <template v-for='metric in selectedMetrics'>
+              <el-row :gutter="5" :key="metric">
+                <el-col :span="20">
+                  <el-card shadow="never" :body-style="{ padding: '0px' }">
+                    <LineChartComponent :type='metric.endsWith(".d") ? "duration" : metric.endsWith(".c") ? "counter" : "duration"'
+                                        :order="item.order"
+                                        :dataRequest="dataRequest"
+                                        :timeRange="timeRange"
+                                        :metrics='[metric]'
+                                        :seriesManager="seriesManager"
+                                        :chartSettings="chartSettings"/>
+                  </el-card>
+                </el-col>
+              </el-row>
+            </template>
           </div>
         </keep-alive>
       </el-tab-pane>
@@ -92,13 +95,13 @@ import LineChartComponent from "./LineChartComponent.vue"
 import ClusteredChartComponent from "./ClusteredChartComponent.vue"
 import { AggregatedStatsPage } from "./AggregatedStatsPage"
 import { MultiValueFilter } from "@/aggregatedStats/ValueFilter"
-import { DataQueryDimension, DataQueryFilter, DataRequest, encodeQueries, MetricDescriptor, Metrics } from "@/aggregatedStats/model"
+import { DataQueryDimension, DataQueryFilter, DataRequest, encodeQueries, Metrics } from "@/aggregatedStats/model"
 import { LineChartManager, SeriesDescriptor } from "@/aggregatedStats/LineChartManager"
 import { parseTimeRange } from "@/aggregatedStats/parseDuration"
 import { createDataQueryWithoutFields, LineChartSeriesManager } from "@/aggregatedStats/LineChartComponent.vue"
 
 @Component({
-  components: {LineChartComponent, ClusteredChartComponent}
+  components: {LineChartComponent, ClusteredChartComponent},
 })
 export default class SharedIndexesDashboard extends AggregatedStatsPage {
   protected projectFilterManager = new MultiValueFilter("selectedProjects")
@@ -108,19 +111,11 @@ export default class SharedIndexesDashboard extends AggregatedStatsPage {
   protected getDbName(): string {
     return "sharedIndexes"
   }
+
+  selectedMetrics: Array<string> = []
 }
 
-interface SeriesProjectFilterFactory {
-  seriesLabel: string
-  filter: (projectName: string) => boolean
-}
-
-const seriesFactories: Array<SeriesProjectFilterFactory> = [
-  {seriesLabel: "usual", filter: name => name.includes("-usual-")},
-  {seriesLabel: "shared", filter: name => name.includes("-shared-index")},
-]
-
-class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager{
+class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
   constructor() {
     Object.seal(this)
   }
@@ -129,73 +124,44 @@ class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager{
     const timeRange = parseTimeRange(component.timeRange)
     const chartSettings = component.chartSettings
 
-    const projectFilters: Array<{
-      projects: Array<string>
-      label: string
-    }> = seriesFactories
-      .map(it => ({projects: request.projects.filter(it.filter), label: it.seriesLabel}))
-      .filter(it => it.projects.length > 0)
-    if (projectFilters.length === 0) {
-      console.error("project selection is invalid - no candidates")
-      return
+    if (component.metrics.length != 1 || component.metricDescriptors.length != 1) {
+      throw Error("Only one metric is allowed")
     }
+    const metric = component.metrics[0]
+    const metricDescriptor = component.metricDescriptors[0]
 
-    const queries = projectFilters.map((projectFilter, index) => {
-      const query = createDataQueryWithoutFields(request, getFilters(request, projectFilter.projects), component, timeRange, chartSettings)
-      query.fields!!.push(...metricToFields(component.metrics, index))
-      return query
-    })
-
-    const seriesDescriptors = projectFilters
-      .map((projectFilter, index) => SharedIndexesLineChartSeriesManager.getSeries(component.metricDescriptors, index, it => `${it} ${projectFilter.label}`))
-      .flat()
-
-    component.loadData(`${chartSettings.serverUrl}/api/v1/metrics/${encodeQueries(queries)}`, (data: Array<Array<Metrics>>, chartManager: LineChartManager) => {
-      // data here is array of two data series - merge it
-      const result: Map<number, Metrics> = new Map<number, Metrics>()
-      for (const items of data) {
-        for (const item of items) {
-          // time is unique in our case (not across different OS (machine grouped by OS and hardware))
-          const key = item.t
-          const existingItem = result.get(key)
-          if (existingItem === undefined) {
-            result.set(key, item)
-          }
-          else {
-            Object.assign(existingItem, item)
-          }
-        }
+    const chartDescriptors = request.projects.map((experimentName, index) => {
+      const metricKey = metricDescriptor.key + "_" + index
+      const seriesDescriptor: SeriesDescriptor = {
+        name: metricDescriptor.key + " " + experimentName,
+        dataField: metricKey,
+        hiddenByDefault: metricDescriptor.hiddenByDefault,
       }
-
-      chartManager.render(Array.from(result.values()).sort((a, b) => a.t - b.t), seriesDescriptors)
-    })
-  }
-
-  private static getSeries(metricDescriptors: Array<MetricDescriptor>, index: number, nameProducer: (name: string) => string): Array<SeriesDescriptor> {
-    return metricDescriptors.map(it => {
+      const filters: Array<DataQueryFilter> = [
+        {field: "project", value: experimentName},
+        {field: "machine", value: request.machine},
+        /**
+         * Exclude reports that miss this metric key. Otherwise clickhouse would select all rows and with 0 as the metric value.
+         */
+        {field: metricKey, operator: '>', value: 0}
+      ]
+      const query = createDataQueryWithoutFields(request, filters, component, timeRange, chartSettings)
+      const field: DataQueryDimension = {
+        name: metric,
+        resultKey: metricKey,
+      }
+      query.fields!!.push(field)
       return {
-        name: nameProducer(it.name),
-        dataField: `${it.key}_${index}`,
-        hiddenByDefault: it.hiddenByDefault,
+        query: query,
+        seriesDescriptor: seriesDescriptor,
       }
     })
+
+    component.loadData(`${chartSettings.serverUrl}/api/v1/metrics/${encodeQueries(chartDescriptors.map(e => e.query))}`, (rawData: any, chartManager: LineChartManager) => {
+      const data = (chartDescriptors.length == 1 ? [rawData as Array<Metrics>] : rawData as Array<Array<Metrics>>).flat()
+      chartManager.render(data.sort((a, b) => a.t - b.t), chartDescriptors.map(e => e.seriesDescriptor))
+    })
   }
-}
-
-function metricToFields(metrics: Array<string>, index: number): Array<DataQueryDimension> {
-  return metrics.map(it => {
-    return {
-      name: it,
-      resultKey: `${it.substring(it.indexOf(".") + 1, it.lastIndexOf("."))}_${index}`
-    }
-  })
-}
-
-function getFilters(request: DataRequest, projects: Array<string>): Array<DataQueryFilter> {
-  const result: Array<DataQueryFilter> = []
-  result.push({field: "project", value: projects})
-  result.push({field: "machine", value: request.machine})
-  return result
 }
 
 </script>

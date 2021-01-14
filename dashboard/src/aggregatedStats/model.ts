@@ -1,6 +1,8 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 export type Metrics = { [key: string]: number; }
 
+export type MetricType = "instant" | "duration" | "counter"
+
 export interface InfoResponse {
   readonly productNames: Array<string>
   readonly metrics: Array<MetricInfo>

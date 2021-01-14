@@ -55,7 +55,7 @@ func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskCo
 		return []*analyzer.Metric{}, nil
 	}
 	var allMetricsJoined *string
-	row := db.QueryRowContext(taskContext, "select arrayStringConcat(arrayDistinct(arrayFlatten(groupArray(arrayMap(o -> concat('metrics.', JSONExtractString(o, 'n'), if (JSONHas(o, 'd'), '.d', ''), if (JSONHas(o, 'i'), '.i', '')), JSONExtractArrayRaw(raw_report, 'metrics'))))), ',') as all_metrics_joined from report;")
+	row := db.QueryRowContext(taskContext, "select arrayStringConcat(arrayDistinct(arrayFlatten(groupArray(arrayMap(o -> concat('metrics.', JSONExtractString(o, 'n'), if (JSONHas(o, 'd'), '.d', ''), if (JSONHas(o, 'i'), '.i', ''), if (JSONHas(o, 'c'), '.c', '')), JSONExtractArrayRaw(raw_report, 'metrics'))))), ',') from report")
 	err := row.Scan(&allMetricsJoined)
 	if err != nil {
 		return nil, err

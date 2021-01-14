@@ -71,7 +71,7 @@
               <el-row :gutter="5" :key="metric">
                 <el-col :span="20">
                   <el-card shadow="never" :body-style="{ padding: '0px' }">
-                    <LineChartComponent type="duration"
+                    <LineChartComponent :type='metric.endsWith(".d") ? "duration" : metric.endsWith(".c") ? "counter" : "duration"'
                                         :order="item.order"
                                         :dataRequest="dataRequest"
                                         :timeRange="timeRange"
@@ -95,7 +95,7 @@ import LineChartComponent from "./LineChartComponent.vue"
 import ClusteredChartComponent from "./ClusteredChartComponent.vue"
 import { AggregatedStatsPage } from "./AggregatedStatsPage"
 import { MultiValueFilter } from "@/aggregatedStats/ValueFilter"
-import { DataQueryDimension, DataRequest, encodeQueries, Metrics } from "@/aggregatedStats/model"
+import { DataQueryDimension, DataQueryFilter, DataRequest, encodeQueries, Metrics } from "@/aggregatedStats/model"
 import { LineChartManager, SeriesDescriptor } from "@/aggregatedStats/LineChartManager"
 import { parseTimeRange } from "@/aggregatedStats/parseDuration"
 import { createDataQueryWithoutFields, LineChartSeriesManager } from "@/aggregatedStats/LineChartComponent.vue"
@@ -137,9 +137,13 @@ class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
         dataField: metricKey,
         hiddenByDefault: metricDescriptor.hiddenByDefault,
       }
-      const filters = [
+      const filters: Array<DataQueryFilter> = [
         {field: "project", value: experimentName},
         {field: "machine", value: request.machine},
+        /**
+         * Exclude reports that miss this metric key. Otherwise clickhouse would select all rows and with 0 as the metric value.
+         */
+        {field: metricKey, operator: '>', value: 0}
       ]
       const query = createDataQueryWithoutFields(request, filters, component, timeRange, chartSettings)
       const field: DataQueryDimension = {

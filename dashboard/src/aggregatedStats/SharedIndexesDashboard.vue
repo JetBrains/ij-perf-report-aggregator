@@ -11,9 +11,15 @@
               v-model="chartSettings.serverUrl"/>
           </el-form-item>
 
-          <el-form-item label="Scenario">
+          <el-form-item label="Scenarios">
             <el-select v-model="selectedProjects" multiple collapse-tags style="min-width: 500px;">
               <el-option v-for="project in projects" :key="project" :label="project" :value="project"/>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="Metrics">
+            <el-select v-model="selectedMetrics" multiple collapse-tags style="min-width: 200px;">
+              <el-option v-for="metric in metrics" :key="metric.name" :label="metric.name" :value="metric.name"/>
             </el-select>
           </el-form-item>
 
@@ -61,33 +67,21 @@
               </el-form-item>
             </el-form>
 
-            <el-row :gutter="5">
-              <el-col :span="20">
-                <el-card shadow="never" :body-style="{ padding: '0px' }">
-                  <LineChartComponent type="duration"
-                                      :order="item.order"
-                                      :dataRequest="dataRequest"
-                                      :timeRange="timeRange"
-                                      :metrics='["metrics.indexing.d"]'
-                                      :seriesManager="seriesManager"
-                                      :chartSettings="chartSettings"/>
-                </el-card>
-              </el-col>
-            </el-row>
-
-            <el-row :gutter="5">
-              <el-col :span="20">
-                <el-card shadow="never" :body-style="{ padding: '0px' }">
-                  <LineChartComponent type="duration"
-                                      :order="item.order"
-                                      :dataRequest="dataRequest"
-                                      :timeRange="timeRange"
-                                      :metrics='["metrics.scanning.d"]'
-                                      :seriesManager="seriesManager"
-                                      :chartSettings="chartSettings"/>
-                </el-card>
-              </el-col>
-            </el-row>
+            <template v-for='metric in selectedMetrics'>
+              <el-row :gutter="5" :key="metric">
+                <el-col :span="20">
+                  <el-card shadow="never" :body-style="{ padding: '0px' }">
+                    <LineChartComponent type="duration"
+                                        :order="item.order"
+                                        :dataRequest="dataRequest"
+                                        :timeRange="timeRange"
+                                        :metrics='[metric]'
+                                        :seriesManager="seriesManager"
+                                        :chartSettings="chartSettings"/>
+                  </el-card>
+                </el-col>
+              </el-row>
+            </template>
           </div>
         </keep-alive>
       </el-tab-pane>
@@ -117,6 +111,8 @@ export default class SharedIndexesDashboard extends AggregatedStatsPage {
   protected getDbName(): string {
     return "sharedIndexes"
   }
+
+  selectedMetrics: Array<string> = []
 }
 
 class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
@@ -137,7 +133,7 @@ class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
     const chartDescriptors = request.projects.map((experimentName, index) => {
       const metricKey = metricDescriptor.key + "_" + index
       const seriesDescriptor: SeriesDescriptor = {
-        name: metricDescriptor.key + ' ' + experimentName,
+        name: metricDescriptor.key + " " + experimentName,
         dataField: metricKey,
         hiddenByDefault: metricDescriptor.hiddenByDefault,
       }

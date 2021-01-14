@@ -40,13 +40,37 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
   if dbName == "ij" {
     metricDescriptors = analyzer.MetricDescriptors
   } else {
-    metricDescriptors = []*analyzer.Metric{}
+    metrics, err := t.computeAvailableMetrics(dbName, db, request.Context())
+    if err != nil {
+      return nil, err
+    }
+    metricDescriptors = metrics
   }
   WriteInfo(buffer, productNames, t.machineInfo.GroupNames, metricDescriptors, productNameToMachineMap, productToProjects)
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeProductToMachines(dbName string, db *sqlx.DB,  taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {
+func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskContext context.Context) ([]*analyzer.Metric, error) {
+	if dbName != "sharedIndexes" {
+		return []*analyzer.Metric{}, nil
+	}
+	var allMetricsJoined *string
+	row := db.QueryRowContext(taskContext, "select arrayStringConcat(arrayDistinct(arrayFlatten(groupArray(arrayMap(o -> concat('metrics.', JSONExtractString(o, 'n'), if (JSONHas(o, 'd'), '.d', ''), if (JSONHas(o, 'i'), '.i', '')), JSONExtractArrayRaw(raw_report, 'metrics'))))), ',') as all_metrics_joined from report;")
+	err := row.Scan(&allMetricsJoined)
+	if err != nil {
+		return nil, err
+	}
+	var metrics []*analyzer.Metric
+	for _, metricName := range strings.Split(*allMetricsJoined, ",") {
+		metrics = append(metrics, &analyzer.Metric{
+			Name:      metricName,
+			IsInstant: strings.HasSuffix(metricName, ".i"),
+		})
+	}
+	return metrics, nil
+}
+
+func (t *StatsServer) computeProductToMachines(dbName string, db *sqlx.DB, taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {
   var productNames []string
   var rows *sql.Rows
   var err error

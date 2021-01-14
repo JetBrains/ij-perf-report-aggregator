@@ -1,7 +1,7 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import { Component, Vue, Watch } from "vue-property-decorator"
 import { loadJson } from "@/httpUtil"
-import { DataRequest, expandMachineAsFilterValue, InfoResponse, MachineGroup } from "@/aggregatedStats/model"
+import { DataRequest, expandMachineAsFilterValue, InfoResponse, MachineGroup, MetricInfo } from "@/aggregatedStats/model"
 import { debounce } from "debounce"
 import { timeRanges } from "./parseDuration"
 import { Location } from "vue-router"
@@ -67,6 +67,7 @@ export abstract class AggregatedStatsPage extends Vue {
   products: Array<string> = []
   projects: Array<string> = []
   machines: Array<MachineGroup> = []
+  metrics: Array<MetricInfo> = []
 
   isFetching: boolean = false
 
@@ -97,6 +98,7 @@ export abstract class AggregatedStatsPage extends Vue {
 
         this.lastInfoResponse = Object.seal(data)
         this.products = data.productNames
+        this.metrics = data.metrics
 
         let selectedProduct = this.chartSettings.selectedProduct
         if (this.products.length === 0) {

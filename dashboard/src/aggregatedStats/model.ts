@@ -3,8 +3,14 @@ export type Metrics = { [key: string]: number; }
 
 export interface InfoResponse {
   readonly productNames: Array<string>
+  readonly metrics: Array<MetricInfo>
   readonly productToMachine: { [key: string]: Array<MachineGroup>; }
   readonly productToProjects: { [key: string]: Array<string>; }
+}
+
+export interface MetricInfo {
+  readonly name: string
+  readonly isInstant: boolean | undefined
 }
 
 export interface MachineGroup {

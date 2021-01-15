@@ -167,6 +167,8 @@ func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, jsonWri
           jsonWriter.DL(int64(untypedValue))
         case int64:
           jsonWriter.DL(untypedValue)
+        case string:
+          jsonWriter.S(`"` + untypedValue + `"`)
         default:
           return errors.Errorf("unknown type: %T for field %s", untypedValue, field.Name)
         }

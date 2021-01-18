@@ -36,7 +36,7 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, dbName string, bac
   dirPrefix := ksuid.New().String()
   for _, table := range tables {
     // todo How do clickhouse transform table to dir name?
-    dirName := dirPrefix + "_" + table
+    dirName := dirPrefix + "_" + strings.ReplaceAll(table, ".", "__")
     logger.Info("freeze table", zap.String("table", table), zap.String("shadowDir", dirName), zap.String("db", dbName))
     _, err := db.Exec(fmt.Sprintf("alter table `%s`.`%s` freeze with name '" + dirName + "'", dbName, table))
     if err != nil {
@@ -44,7 +44,8 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, dbName string, bac
     }
 
     tableShadowDir := filepath.Join(shadowDir, dirName)
-    err = os.Rename(filepath.Join(tableShadowDir, "data", dbName, table), filepath.Join(backupShadowDir, table))
+    escapedTableName := strings.Replace(table, ".inner.", "%2Einner%2E", 1)
+    err = os.Rename(filepath.Join(tableShadowDir, "data", dbName, escapedTableName), filepath.Join(backupShadowDir, escapedTableName))
     if err != nil {
       return 0, errors.WithStack(err)
     }
@@ -54,6 +55,7 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, dbName string, bac
       return 0, errors.WithStack(err)
     }
   }
+
   var estimatedTarSize int64
   err = db.GetContext(t.TaskContext, &estimatedTarSize, "select sum(bytes_on_disk) + (count() * 345) from system.parts where active and database = ?", dbName)
   if err != nil {

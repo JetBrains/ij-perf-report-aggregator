@@ -58,8 +58,15 @@ from metric_descriptors
 where exists;
 
 -- Metrics table inheriting all fields of the 'report' table.
-create or replace view metrics as
-select *
+create materialized view metrics
+    engine = MergeTree
+      partition by (toYYYYMM(generated_time))
+      order by (machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time)
+      settings old_parts_lifetime = 10
+    populate
+as
+select * except (raw_report, tc_build_properties)
 from metric_values
        join report
-            on metric_values.generated_time = report.generated_time;
+            on metric_values.generated_time = report.generated_time
+      order by (machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time);

@@ -47,7 +47,11 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
 }
 
 func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, jsonWriter *quicktemplate.QWriter, context context.Context) error {
-  rows, fieldCount, err := data_query.SelectRows(query, "report", t, context)
+  table := "report"
+  if query.Database == "sharedIndexes" {
+    table = "metrics"
+  }
+  rows, fieldCount, err := data_query.SelectRows(query, table, t, context)
   if err != nil {
     return errors.WithStack(err)
   }

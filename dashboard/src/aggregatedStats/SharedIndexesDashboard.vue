@@ -95,7 +95,7 @@ import LineChartComponent from "./LineChartComponent.vue"
 import ClusteredChartComponent from "./ClusteredChartComponent.vue"
 import { AggregatedStatsPage } from "./AggregatedStatsPage"
 import { MultiValueFilter } from "@/aggregatedStats/ValueFilter"
-import { DataQueryDimension, DataQueryFilter, DataRequest, encodeQueries, Metrics } from "@/aggregatedStats/model"
+import { DataQueryFilter, DataRequest, encodeQueries, Metrics } from "@/aggregatedStats/model"
 import { LineChartManager, SeriesDescriptor } from "@/aggregatedStats/LineChartManager"
 import { parseTimeRange } from "@/aggregatedStats/parseDuration"
 import { createDataQueryWithoutFields, LineChartSeriesManager } from "@/aggregatedStats/LineChartComponent.vue"
@@ -142,17 +142,21 @@ class SharedIndexesLineChartSeriesManager implements LineChartSeriesManager {
         {field: "machine", value: request.machine},
       ]
 
-      if (chartSettings.granularity === "as is") {
-        // Exclude reports that miss this metric key. Otherwise clickhouse would select all rows and with 0 as the metric value.
-        filters.push({field: metricKey, operator: '>', value: 0})
-      }
-
       const query = createDataQueryWithoutFields(request, filters, component, timeRange, chartSettings)
-      const field: DataQueryDimension = {
-        name: metric,
+      query.fields!!.push({
+        name: 'metric_value',
         resultKey: metricKey,
-      }
-      query.fields!!.push(field)
+      })
+      query.filters!!.push(
+        {
+          field: 'metric_name',
+          value: metricDescriptor.key,
+        },
+        {
+          field: 'metric_type',
+          value: metric.endsWith('.c') ? 'c' : 'd'
+        }
+      )
       return {
         query: query,
         seriesDescriptor: seriesDescriptor,

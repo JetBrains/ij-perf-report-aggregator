@@ -4,7 +4,7 @@
     <el-col :span="10">
       <el-input
         type="textarea"
-        :rows="4"
+        :rows="30"
         placeholder="Enter the IntelliJ Platform start-up timeline..."
         @input="inputChanged"
         v-model="inputData">

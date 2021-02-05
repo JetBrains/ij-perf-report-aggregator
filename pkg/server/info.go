@@ -106,6 +106,8 @@ func (t *StatsServer) computeProductToMachines(dbName string, db *sqlx.DB, taskC
     var groupName string
     if strings.HasPrefix(machine, "intellij-linux-hw-blade-") {
       groupName = "linux-blade"
+    } else if strings.HasPrefix(machine, "intellij-windows-hw-blade-") {
+      groupName = "windows-blade"
     } else {
       var ok bool
       groupName, ok = t.machineInfo.MachineToGroupName[machine]

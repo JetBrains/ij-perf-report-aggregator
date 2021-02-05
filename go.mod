@@ -8,7 +8,7 @@ require (
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20201120081800-1786d5ef83d4 // indirect
-	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
+	github.com/araddon/dateparse v0.0.0-20210204225525-33e44430e129
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
 	github.com/cespare/xxhash/v2 v2.1.1
 	github.com/cheggaaa/pb/v3 v3.0.5
@@ -16,10 +16,9 @@ require (
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/go-cmp v0.5.2 // indirect
-	github.com/jmoiron/sqlx v1.2.0
+	github.com/jmoiron/sqlx v1.3.1
 	github.com/json-iterator/go v1.1.10
 	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
@@ -55,6 +54,7 @@ require (
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
+	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect

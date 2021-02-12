@@ -7,11 +7,11 @@ require (
 	github.com/ClickHouse/clickhouse-go v1.4.3
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20201120081800-1786d5ef83d4 // indirect
-	github.com/araddon/dateparse v0.0.0-20210204225525-33e44430e129
+	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
+	github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e
 	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
 	github.com/cespare/xxhash/v2 v2.1.1
-	github.com/cheggaaa/pb/v3 v3.0.5
+	github.com/cheggaaa/pb/v3 v3.0.6
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.0.3
 	github.com/fatih/color v1.10.0 // indirect
@@ -24,7 +24,6 @@ require (
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.4
-	github.com/mattn/go-runewidth v0.0.10 // indirect
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/md5-simd v1.1.1 // indirect
 	github.com/minio/minio-go/v6 v6.0.57
@@ -34,15 +33,16 @@ require (
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
 	github.com/nats-io/nats.go v1.10.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
-	github.com/olekukonko/tablewriter v0.0.4
+	github.com/olekukonko/tablewriter v0.0.5
 	github.com/panjf2000/ants/v2 v2.4.3
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
-	github.com/stretchr/testify v1.6.1
-	github.com/tdewolff/minify/v2 v2.9.11
+	github.com/stretchr/testify v1.7.0
+	github.com/tdewolff/minify/v2 v2.9.12
+	github.com/tdewolff/parse/v2 v2.5.10 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3

@@ -31,8 +31,10 @@ func GetMachineInfo() MachineInfo {
       "intellij-macos-hw-unit-1551": macMini,
       "intellij-macos-hw-unit-1772": macMini,
       "intellij-macos-hw-unit-1773": macMini,
+
       "intellij-macos-hw-unit-2204": macMiniM1,
       "intellij-macos-hw-unit-2205": macMiniM1,
+      "intellij-macos-hw-unit-2206": macMiniM1,
 
       "intellij-windows-hw-unit-498": win,
       "intellij-windows-hw-unit-499": win,

@@ -106,21 +106,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return nil
   }
 
-  report, err := ReadReport(data)
-  if err != nil {
-    return err
-  }
-
-  if len(extraData.ProductCode) == 0 {
-    extraData.ProductCode = report.ProductCode
-  }
-  if len(extraData.BuildNumber) == 0 {
-    extraData.BuildNumber = report.Build
-  }
-
-  if len(extraData.Machine) == 0 {
-    return errors.New("machine is not specified")
-  }
+  var err error
 
   // normalize to compute consistent unique id
   rawData, err := t.minifier.Bytes("json", data)
@@ -128,27 +114,46 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return err
   }
 
-  generatedTime, err := computeGeneratedTime(report, extraData)
+  runResult := &RunResult{
+    RawReport: rawData,
+
+    TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
+    TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
+    TcBuildProperties:  extraData.TcBuildProperties,
+  }
+
+  if t.dbName == "ij" {
+    err = ReadIjReport(runResult)
+  } else {
+    err = ReadReport(runResult)
+  }
   if err != nil {
     return err
   }
 
-  reportInfo := &ReportInfo{
-    report:    report,
-    extraData: extraData,
-    row: &MetricResult{
-      Product: extraData.ProductCode,
-      Machine: extraData.Machine,
+  if runResult.Report == nil {
+    // ignore report
+    return nil
+  }
 
-      BuildTime: extraData.BuildTime,
+  if len(extraData.ProductCode) == 0 {
+    extraData.ProductCode = runResult.Report.ProductCode
+  }
+  if len(extraData.BuildNumber) == 0 {
+    extraData.BuildNumber = runResult.Report.Build
+  }
 
-      GeneratedTime:      generatedTime,
-      TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
-      TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
-      TcBuildProperties:  extraData.TcBuildProperties,
+  if len(extraData.Machine) == 0 {
+    return errors.New("machine is not specified")
+  }
 
-      RawReport: rawData,
-    },
+  runResult.Product = extraData.ProductCode
+  runResult.Machine = extraData.Machine
+  runResult.BuildTime = extraData.BuildTime
+
+  runResult.GeneratedTime, err = computeGeneratedTime(runResult.Report, extraData)
+  if err != nil {
+    return err
   }
 
   if len(extraData.BuildNumber) == 0 && t.dbName != "ij" {
@@ -161,7 +166,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     buildComponents = append(buildComponents, "0")
   }
 
-  reportInfo.row.BuildC1, reportInfo.row.BuildC2, reportInfo.row.BuildC3, err = splitBuildNumber(buildComponents)
+  runResult.BuildC1, runResult.BuildC2, runResult.BuildC3, err = splitBuildNumber(buildComponents)
   if err != nil {
     return err
   }
@@ -171,33 +176,34 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   }
 
   if len(extraData.TcBuildProperties) == 0 {
-    reportInfo.branch = "master"
+    runResult.branch = "master"
   } else {
     //noinspection SpellCheckingInspection
-    reportInfo.branch = fastjson.GetString(extraData.TcBuildProperties, "vcsroot.branch")
-    if len(reportInfo.branch) == 0 {
+    runResult.branch = fastjson.GetString(extraData.TcBuildProperties, "vcsroot.branch")
+    if len(runResult.branch) == 0 {
       if t.dbName == "ij" {
         t.logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
         return errors.New("cannot infer branch from TC properties")
       } else {
-        reportInfo.branch = "master"
+        runResult.branch = "master"
       }
     } else {
-      reportInfo.branch = strings.TrimPrefix(reportInfo.branch, "refs/heads/")
+      runResult.branch = strings.TrimPrefix(runResult.branch, "refs/heads/")
     }
   }
 
   t.waitGroup.Add(1)
-  t.insertQueue <- reportInfo
+  t.insertQueue <- &ReportInfo{
+    extraData: extraData,
+    runResult: runResult,
+  }
   return nil
 }
 
 type ReportInfo struct {
-  report    *model.Report
-  branch    string
   extraData model.ExtraData
 
-  row *MetricResult
+  runResult *RunResult
 }
 
 func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (int64, error) {
@@ -239,7 +245,7 @@ func (t *ReportAnalyzer) WaitAndCommit() <-chan error {
 func (t *ReportAnalyzer) insert(report *ReportInfo) error {
   defer t.waitGroup.Done()
 
-  reportRow := report.row
+  runResult := report.runResult
 
   if report.extraData.TcInstallerBuildId > 0 {
     err := t.InsertReportManager.insertInstallerManager.Insert(report.extraData.TcInstallerBuildId, report.extraData.Changes)
@@ -248,7 +254,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     }
   }
 
-  err := t.InsertReportManager.Insert(reportRow, report.branch, report.report.Project)
+  err := t.InsertReportManager.Insert(runResult)
   if err != nil {
     return errors.WithMessagef(err, "Cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
   }

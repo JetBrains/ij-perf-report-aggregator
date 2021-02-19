@@ -13,44 +13,6 @@ import (
   "strings"
 )
 
-func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
-  dbName, err := data_query.ValidateDatabaseName(request.URL.Query().Get("db"))
-  if err != nil {
-    return nil, err
-  }
-
-  db, err := t.GetDatabase(dbName)
-  if err != nil {
-    return nil, err
-  }
-
-  productNameToMachineMap, productNames, err := t.computeProductToMachines(dbName, db, request.Context())
-  if err != nil {
-    return nil, err
-  }
-
-  productToProjects, _, err := t.computeProductToProjects(dbName, db, request.Context())
-  if err != nil {
-    return nil, err
-  }
-
-  buffer := byteBufferPool.Get()
-  defer byteBufferPool.Put(buffer)
-
-  var metricDescriptors []*analyzer.Metric
-  if dbName == "ij" {
-    metricDescriptors = analyzer.MetricDescriptors
-  } else {
-    metrics, err := t.computeAvailableMetrics(dbName, db, request.Context())
-    if err != nil {
-      return nil, err
-    }
-    metricDescriptors = metrics
-  }
-  WriteInfo(buffer, productNames, t.machineInfo.GroupNames, metricDescriptors, productNameToMachineMap, productToProjects)
-  return CopyBuffer(buffer), nil
-}
-
 func (t *StatsServer) handleMetaMeasureRequest(request *http.Request) ([]byte, error) {
   dbName, err := data_query.ValidateDatabaseName(request.URL.Query().Get("db"))
   if err != nil {
@@ -65,53 +27,45 @@ func (t *StatsServer) handleMetaMeasureRequest(request *http.Request) ([]byte, e
   buffer := byteBufferPool.Get()
   defer byteBufferPool.Put(buffer)
 
-  var metricDescriptors []*analyzer.Metric
+  var measureNames []string
   if dbName == "ij" {
-    metricDescriptors = analyzer.MetricDescriptors
+    measureNames = make([]string, len(analyzer.IjMetricDescriptors))
+    for index, descriptor := range analyzer.IjMetricDescriptors {
+      measureNames[index] = descriptor.Name
+    }
   } else {
-    metrics, err := t.computeAvailableMetrics(dbName, db, request.Context())
+    measureNames, err = t.computeAvailableMetrics(dbName, db, request.Context())
     if err != nil {
       return nil, err
     }
-    metricDescriptors = metrics
   }
 
   templateWriter := quicktemplate.AcquireWriter(buffer)
   defer quicktemplate.ReleaseWriter(templateWriter)
   jsonWriter := templateWriter.N()
-  jsonWriter.S("[")
-  for index, descriptor := range metricDescriptors {
+  for index, name := range measureNames {
     if index != 0 {
       jsonWriter.S(",")
     }
-    jsonWriter.Q(descriptor.Name)
+    jsonWriter.Q(name)
   }
   jsonWriter.S("]")
 
   return CopyBuffer(buffer), nil
 }
 
-func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskContext context.Context) ([]*analyzer.Metric, error) {
-	if dbName != "sharedIndexes" {
-		return []*analyzer.Metric{}, nil
+func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskContext context.Context) ([]string, error) {
+	if dbName == "fleet" {
+		return []string{}, nil
 	}
 
-	var allMetricsJoined *string
-	row := db.QueryRowContext(taskContext, "select arrayStringConcat(arrayDistinct(arrayFlatten(groupArray(arrayMap(o -> concat('metrics.', JSONExtractString(o, 'n'), if (JSONHas(o, 'd'), '.d', ''), if (JSONHas(o, 'i'), '.i', ''), if (JSONHas(o, 'c'), '.c', '')), JSONExtractArrayRaw(raw_report, 'metrics'))))), ',') from report")
-	err := row.Scan(&allMetricsJoined)
+	var result []string
+  //goland:noinspection SqlResolve
+	err := db.SelectContext(taskContext, &result, "select distinct measures.name from report array join measures")
 	if err != nil {
 		return nil, err
 	}
-
-  split := strings.Split(*allMetricsJoined, ",")
-  metrics := make([]*analyzer.Metric, len(split))
-  for index, metricName := range split {
-    metrics[index] = &analyzer.Metric{
-      Name:      metricName,
-      IsInstant: strings.HasSuffix(metricName, ".i"),
-    }
-  }
-	return metrics, nil
+	return result, nil
 }
 
 func (t *StatsServer) computeProductToMachines(dbName string, db *sqlx.DB, taskContext context.Context) (map[string]map[string]*MachineGroup, []string, error) {

@@ -1,0 +1,10 @@
+{
+  "name": "ij",
+  "private": true,
+  "dependencies": {
+    "element-plus": "1.0.2-beta.33",
+    "vue-router": "4.0.4",
+    "shared": "workspace:*",
+    "vue": "3.0.7"
+  }
+}

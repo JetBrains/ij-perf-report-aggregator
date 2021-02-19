@@ -10,6 +10,7 @@ import (
   "net/http"
   "strconv"
   "strings"
+  "time"
 )
 
 func (t *StatsServer) handleLoadRequest(request *http.Request) ([]byte, error) {
@@ -21,7 +22,7 @@ func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error
 }
 
 func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int) ([]byte, error) {
-  dataQueries, err := data_query.ReadQuery(request)
+  dataQueries, wrappedAsArray, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }
@@ -33,7 +34,7 @@ func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int)
   defer quicktemplate.ReleaseWriter(templateWriter)
   jsonWriter := templateWriter.N()
 
-  if len(dataQueries) > 1 {
+  if len(dataQueries) > 1 || wrappedAsArray {
     jsonWriter.S("[")
   }
 
@@ -52,7 +53,7 @@ func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int)
     }
   }
 
-  if len(dataQueries) > 1 {
+  if len(dataQueries) > 1 || wrappedAsArray {
     jsonWriter.S("]")
   }
   return CopyBuffer(buffer), nil
@@ -240,11 +241,6 @@ func (t *StatsServer) computeMeasureResponse(query data_query.DataQuery, jsonWri
         v := *(columnPointers[index].(*interface{}))
         index++
 
-        //if v == int32Zero || v == uint16Zero || v == uint32Zero || v == float32Zero {
-        //  // skip 0 values (0 as null - not existent)
-        //  continue
-        //}
-
         if !query.Flat {
           if isFirstColumn {
             isFirstColumn = false
@@ -272,6 +268,8 @@ func (t *StatsServer) computeMeasureResponse(query data_query.DataQuery, jsonWri
           jsonWriter.DL(untypedValue)
         case string:
           jsonWriter.Q(untypedValue)
+        case time.Time:
+          jsonWriter.Q(untypedValue.Format(query.TimeDimensionFormat))
         default:
           return errors.Errorf("unknown type: %T for field %s", untypedValue, field.Name)
         }
@@ -289,6 +287,4 @@ func (t *StatsServer) computeMeasureResponse(query data_query.DataQuery, jsonWri
 }
 
 const uint16Zero = uint16(0)
-const uint32Zero = uint32(0)
 const float32Zero = float32(0)
-const int32Zero = int32(0)

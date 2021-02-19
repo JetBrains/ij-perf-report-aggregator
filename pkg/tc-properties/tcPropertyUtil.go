@@ -42,6 +42,7 @@ var excludedTcProperties = map[string]bool{
   "vcsroot.ignoreKnownHosts":                           true,
   "vcsroot.authMethod":                                 true,
   "vcsroot.agentCleanPolicy":                           true,
+  "teamcity.internal.git.sshSendEnvRequestToken":       true,
 }
 
 func ReadProperties(data []byte) ([]byte, error) {

@@ -18,6 +18,7 @@
       <w>minifier</w>
       <w>minio</w>
       <w>nats</w>
+      <w>pnpm</w>
       <w>quantile</w>
       <w>rison</w>
       <w>rowid</w>

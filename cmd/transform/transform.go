@@ -11,6 +11,7 @@ import (
   "github.com/jmoiron/sqlx"
   "go.deanishe.net/env"
   "go.uber.org/zap"
+  "strings"
   "time"
 )
 
@@ -31,11 +32,10 @@ func main() {
 }
 
 type ReportRow struct {
-  Product uint8
-  Machine uint8
-  Branch  uint8
+  Machine string
+  Branch  string
 
-  Project uint8 `db:"project"`
+  Project string `db:"project"`
 
   GeneratedTime int64 `db:"generated_time"`
   BuildTime     int64 `db:"build_time"`
@@ -60,7 +60,9 @@ type TimeRange struct {
 const insertWorkerCount = 4
 
 func transform(clickHouseUrl string, logger *zap.Logger) error {
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=ij")
+  dbName := "sharedIndexes"
+
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -68,7 +70,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  insertReportManager, err := analyzer.NewInsertReportManager(db, "ij", taskContext, "report2", insertWorkerCount, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(db, dbName, taskContext, "report2", insertWorkerCount, logger)
   if err != nil {
     return err
   }
@@ -117,13 +119,13 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
   rows, err := db.QueryxContext(taskContext, `
-    select cast(product, 'UInt8') as product, cast(machine, 'UInt8') as machine, cast(branch, 'UInt8') as branch, 
-           toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report, 
+    select machine, branch,
+           toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
            tc_build_id, tc_installer_build_id, tc_build_properties,
-           build_c1, build_c2, build_c3, cast(project, 'UInt8') as project
+           build_c1, build_c2, build_c3, project
     from report
     where generated_time >= ? and generated_time < ?
-    order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
+    order by machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
   `, startTime, endTime)
   if err != nil {
     return errors.WithStack(err)
@@ -133,6 +135,7 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
 
   isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
+  rowLoop:
   for rows.Next() {
     err = rows.StructScan(&row)
     if err != nil {
@@ -146,8 +149,10 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
       }
     }
 
-    reportRow := &analyzer.MetricResult{
-      RawReport: row.RawReport,
+    s := string(row.RawReport)
+
+    runResult := &analyzer.RunResult{
+      RawReport: []byte(s),
 
       Machine: row.Machine,
 
@@ -163,7 +168,21 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
       BuildC3: row.BuildC3,
     }
 
-    err = insertReportManager.WriteMetrics(row.Product, reportRow, row.Branch, row.Project, logger)
+    //if dbName == "ij" {
+    //  report, err = ReadIjReport(row.RawReport)
+    //} else {
+    err = analyzer.ReadReport(runResult)
+    //}
+    if err != nil {
+      return err
+    }
+
+    if runResult.Report == nil || !strings.HasPrefix(runResult.Report.Project, "ijx-intellij-speed/") {
+      // ignore report
+      continue rowLoop
+    }
+
+    err = insertReportManager.WriteMetrics(nil, runResult, row.Branch, row.Project, logger)
     if err != nil {
       return err
     }

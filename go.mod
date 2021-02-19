@@ -9,11 +9,11 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
 	github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e
-	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/cespare/xxhash/v2 v2.1.1
 	github.com/cheggaaa/pb/v3 v3.0.6
 	github.com/develar/errors v0.9.0
-	github.com/dgraph-io/ristretto v0.0.3
+	github.com/dgraph-io/ristretto v0.0.4-0.20210308215531-9b320d0a70ed
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/frankban/quicktest v1.5.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
@@ -42,7 +42,7 @@ require (
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tdewolff/minify/v2 v2.9.13
-	github.com/tdewolff/parse/v2 v2.5.11 // indirect
+	github.com/tdewolff/parse/v2 v2.5.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3
@@ -54,7 +54,7 @@ require (
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
-	golang.org/x/sys v0.0.0-20210301091718-77cc2087c03b // indirect
+	golang.org/x/sys v0.0.0-20210309040221-94ec62e08169 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect

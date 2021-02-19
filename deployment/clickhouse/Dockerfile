@@ -1,4 +1,4 @@
-FROM golang:1.15 AS builder
+FROM golang:1.16 AS builder
 WORKDIR /project/src
 ADD https://raw.githubusercontent.com/nats-io/nats.go/7192159fcab301e10f8f9c6d21b57857d501c490/examples/nats-pub/main.go .
 RUN go get -d && GOOS=linux go build -ldflags='-s -w' -o /tmp/nats-pub .

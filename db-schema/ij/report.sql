@@ -23,8 +23,8 @@ create table report2
   `build_c3`                   UInt16 CODEC(DoubleDelta, ZSTD(20)),
 
   `bootstrap_d`          UInt32 CODEC (Gorilla, ZSTD(20)),
-  `appInitPreparation_d` UInt16 CODEC (Gorilla, ZSTD(20)),
-  `appInit_d`            UInt16 CODEC (Gorilla, ZSTD(20)),
+  `appInitPreparation_d` Int32 CODEC (Gorilla, ZSTD(20)),
+  `appInit_d`            Int32 CODEC (Gorilla, ZSTD(20)),
 
   `pluginDescriptorLoading_d`    UInt16 CODEC(Gorilla, ZSTD(20)),
   `pluginDescriptorInitV18_d`    UInt16 CODEC(Gorilla, ZSTD(20)),
@@ -50,7 +50,15 @@ create table report2
   `editorRestoringTillPaint_d` UInt16 CODEC(Gorilla, ZSTD(20)),
 
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(20)),
-  `startUpCompleted_i`         Int32 CODEC(Gorilla, ZSTD(20))
+  `startUpCompleted_i`         Int32 CODEC(Gorilla, ZSTD(20)),
+
+  `classLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingSearchTime_i` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingDefineTime_i` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
+
+  `resourceLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
+  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20))
 )
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))

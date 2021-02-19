@@ -14,6 +14,7 @@ func (t *StatsServer) handleReportRequest(request *http.Request) ([]byte, error)
 
   query := queries[0]
   query.Fields = []data_query.DataQueryDimension{{Name: "raw_report"}}
+  query.Order = nil
   var rawReport []byte
   row, err := data_query.SelectRow(query, "report", t, request.Context())
   if err != nil {

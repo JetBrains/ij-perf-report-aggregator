@@ -23,7 +23,7 @@ type Metric struct {
 const appInitCategory = 1
 
 var metricNameToDescriptor map[string]*Metric
-var MetricDescriptors []*Metric
+var IjMetricDescriptors []*Metric
 
 const clTotal = "class loading: total"
 const clSearch = "class loading: search"
@@ -43,7 +43,7 @@ func init() {
     }
     index++
 
-    MetricDescriptors = append(MetricDescriptors, result)
+    IjMetricDescriptors = append(IjMetricDescriptors, result)
     return result
   }
 
@@ -147,13 +147,13 @@ func init() {
   }
 }
 
-func ComputeMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
+func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
   if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
     logger.Warn("invalid report (due to opening second project?), report will be skipped")
     return nil
   }
 
-  for range MetricDescriptors {
+  for range IjMetricDescriptors {
     *result = append(*result, -1)
   }
 
@@ -198,7 +198,7 @@ func ComputeMetrics(nonMetricFieldCount int, report *model.Report, result *[]int
   is14orGreater := version.Compare(report.Version, "14", ">=")
 
   var notFoundMetrics []string
-  for _, metric := range MetricDescriptors {
+  for _, metric := range IjMetricDescriptors {
     if (*result)[nonMetricFieldCount+metric.index] != -1 {
       continue
     }

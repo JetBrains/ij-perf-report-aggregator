@@ -12,3 +12,5 @@ cmd/frontend/kodata/
 values-resolved.yaml
 
 vite-project/
+
+.eslintcache

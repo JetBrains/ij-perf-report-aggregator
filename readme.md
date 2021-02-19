@@ -8,14 +8,14 @@ Tool to collect performance reports in JSON format from TeamCity, insert into Cl
 
 ## Dashboard Editing
 
-Directory `dashboard` contains Vue.js application built using [Element](https://element.eleme.io/#/en-US) Desktop UI Library.
+Directory `dashboard` contains Vue.js application built using [Element Plus](http://element-plus.org/) Desktop UI Library.
 
- * `yarn --cwd dashboard` to install dependencies. [Yarn](https://classic.yarnpkg.com/en/docs/install/) is recommended, do not use NPM.
- * `yarn --cwd dashboard serve` to start a dev server with hot-module-replacement.
+ * `pnpm i` to install dependencies. [pnpm](https://pnpm.js.org/en/installation/) is recommended, do not use Yarn or NPM.
+ * `pnpm serve` to start a dev server with hot module replacement.
 
 To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
 
-`LineChartComponent` or `ClusteredChartComponent` supports `metrics` property. 
+`LineChartCard` or `BarChartCard` supports `measures` property. 
 Specify desired metric. Multiple metrics are supported, but keep in mind that each metric means chart series and overuse can make chart unreadable. 
 
 If metric is extracted from report to field, just use it's field name.
@@ -26,7 +26,7 @@ Otherwise use:
 
 For example, if activity `launch terminal` reported under category `prepareAppInitActivities`, use `prepareAppInitActivities.launch terminal` as metric name. Or `prepareAppInitActivities.first render.s` to get start value of `first render`.
 
-See [Layout](https://element.eleme.io/?ref=madewithvuejs.com#/en-US/component/layout).
+See [Layout](https://element-plus.org/#/en-US/component/layout).
 
 ## Adding a New Database
 

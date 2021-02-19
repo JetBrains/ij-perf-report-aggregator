@@ -12,6 +12,8 @@ import (
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
 var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
+// opposite to reFieldName, dot is supported for nested fields
+var reNestedFieldName = regexp.MustCompile("^[a-zA-Z_][.0-9a-zA-Z_]*$")
 var reMetricName = regexp.MustCompile("^[a-zA-Z0-9 _]+$")
 
 // add ().space,'*
@@ -31,6 +33,10 @@ func ValidateDatabaseName(db string) (string, error) {
 
 func isValidFieldName(v string) bool {
   return reFieldName.MatchString(v)
+}
+
+func isValidFilterFieldName(v string) bool {
+  return reNestedFieldName.MatchString(v)
 }
 
 func readQuery(s []byte) ([]DataQuery, error) {
@@ -92,7 +98,7 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
 
   for _, v := range value.GetArray("order") {
     field := string(v.GetStringBytes())
-    if !isValidFieldName(field) {
+    if !reNestedFieldName.MatchString(field) {
       return nil, http_error.NewHttpError(400, fmt.Sprintf("Order %s is not a valid field name", field))
     }
     query.Order = append(query.Order, field)
@@ -117,51 +123,87 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
 
 func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error {
   for _, v := range list {
-    var t DataQueryDimension
-    if v.Type() == fastjson.TypeString {
-      t = DataQueryDimension{
-        Name: string(v.GetStringBytes()),
-      }
-    } else {
+    t, err := readDimension(v)
+    if err != nil {
+      return err
+    }
+
+    if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
+      return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Name))
+    }
+    if len(t.ResultPropertyName) != 0 && !isValidFieldName(t.ResultPropertyName) {
+      return http_error.NewHttpError(400, fmt.Sprintf("ResultPropertyName %s is not a valid field name", t.Name))
+    }
+    *result = append(*result, *t)
+  }
+  return nil
+}
+
+func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
+  var t DataQueryDimension
+  if v.Type() == fastjson.TypeString {
+    t = DataQueryDimension{
+      Name: string(v.GetStringBytes()),
+    }
+  } else {
+    subNameValue := v.Get("subName")
+    if subNameValue == nil {
       t = DataQueryDimension{
         Name: string(v.GetStringBytes("name")),
         Sql:  string(v.GetStringBytes("sql")),
       }
-
-      if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
-        return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Name))
-      }
-    }
-    t.ResultPropertyName = string(v.GetStringBytes("resultKey"))
-
-    qualifierDotIndex := strings.IndexRune(t.Name, '.')
-    if qualifierDotIndex == -1 {
-      if !isValidFieldName(t.Name) {
-        return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
-      }
     } else {
-      t.metricPath = t.Name[0:qualifierDotIndex]
-      t.metricName = t.Name[qualifierDotIndex+1:]
-      t.metricValueName = 'd'
-
-      metricNameLength := len(t.metricName)
-      if metricNameLength > 2 && t.metricName[metricNameLength-2] == '.' {
-        t.metricValueName = rune(t.metricName[metricNameLength-1])
-        t.metricName = t.metricName[:metricNameLength-2]
+      if v.Exists("sql") {
+        return nil, http_error.NewHttpError(400, fmt.Sprintf("If nested field name %s is specidied, custom SQL is not allowed", t.Name))
       }
 
-      if len(t.ResultPropertyName) == 0 {
-        t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+      var sb strings.Builder
+      arrayJoin := v.GetStringBytes("name")
+      sb.Write(arrayJoin)
+      sb.WriteRune('.')
+      bytes := subNameValue.GetStringBytes()
+      sb.Write(bytes)
+
+      t = DataQueryDimension{
+        Name:               sb.String(),
+        arrayJoin:          string(arrayJoin),
+        ResultPropertyName: string(v.GetStringBytes("resultKey")),
       }
 
-      if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {
-        return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
+      if !reNestedFieldName.MatchString(t.Name) {
+        return nil, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
       }
+      if !isValidFieldName(t.arrayJoin) {
+        return nil, http_error.NewHttpError(400, fmt.Sprintf("subName %s is not a valid field name", t.Name))
+      }
+
+      return &t, nil
+    }
+  }
+
+  t.ResultPropertyName = string(v.GetStringBytes("resultKey"))
+
+  qualifierDotIndex := strings.IndexRune(t.Name, '.')
+  if qualifierDotIndex != -1 {
+    t.metricPath = t.Name[0:qualifierDotIndex]
+    t.metricName = t.Name[qualifierDotIndex+1:]
+    t.metricValueName = 'd'
+
+    metricNameLength := len(t.metricName)
+    if metricNameLength > 2 && t.metricName[metricNameLength-2] == '.' {
+      t.metricValueName = rune(t.metricName[metricNameLength-1])
+      t.metricName = t.metricName[:metricNameLength-2]
     }
 
-    *result = append(*result, t)
+    if len(t.ResultPropertyName) == 0 {
+      t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+    }
+
+    if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {
+      return nil, http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Name))
+    }
   }
-  return nil
+  return &t, nil
 }
 
 func readFilters(list []*fastjson.Value, query *DataQuery) error {
@@ -194,8 +236,8 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       return errors.Errorf("Filter value %v is not supported", value)
     }
 
-    if !isValidFieldName(t.Field) {
-      return http_error.NewHttpError(400, fmt.Sprintf("Name %s is not a valid field name", t.Field))
+    if !isValidFilterFieldName(t.Field) {
+      return http_error.NewHttpError(400, fmt.Sprintf("%s is not a valid filter field name", t.Field))
     }
 
     if len(t.Sql) == 0 {

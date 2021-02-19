@@ -16,17 +16,17 @@ var queryParsers fastjson.ParserPool
 
 type DataQuery struct {
   Database string
-  Table string
-  Flat  bool
+  Table    string
+  Flat     bool
 
-  Fields  []DataQueryDimension `json:"fields"`
-  Filters []DataQueryFilter    `json:"filters"`
-  Order   []string             `json:"order"`
+  Fields  []DataQueryDimension
+  Filters []DataQueryFilter
+  Order   []string
 
   // used only for grouped query
-  Aggregator          string               `json:"aggregator"`
-  Dimensions          []DataQueryDimension `json:"dimensions"`
-  TimeDimensionFormat string               `json:"timeDimensionFormat"`
+  Aggregator          string
+  Dimensions          []DataQueryDimension
+  TimeDimensionFormat string
 }
 
 type DataQueryFilter struct {
@@ -37,45 +37,49 @@ type DataQueryFilter struct {
 }
 
 type DataQueryDimension struct {
-  Name string `json:"name"`
-  Sql  string `json:"sql"`
+  Name string
+  Sql  string
 
   metricPath      string
   metricName      string
   metricValueName rune
 
-  ResultPropertyName string `json:"resultKey"`
+  ResultPropertyName string
+
+  arrayJoin string
 }
 
 type DatabaseConnectionSupplier interface {
   GetDatabase(name string) (*sqlx.DB, error)
 }
 
-func ReadQuery(request *http.Request) ([]DataQuery, error) {
-  return ReadQueryFromRequest(request)
-}
-
-func ReadQueryFromRequest(request *http.Request) ([]DataQuery, error) {
+func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   path := request.URL.Path
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
   // array?
   arrayStart := strings.IndexRune(path, '!')
   objectStart := strings.IndexRune(path, '(')
   var index int
-  if arrayStart < objectStart {
+  wrappedAsArray := arrayStart < objectStart
+  if wrappedAsArray {
     index = arrayStart
   } else {
     index = objectStart
   }
   if index == -1 {
-    return nil, errors.New("query not found")
+    return nil, false, errors.New("query not found")
   }
 
   jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, false, errors.WithStack(err)
   }
-  return readQuery(jsonData)
+
+  list, err := readQuery(jsonData)
+  if err != nil {
+    return nil, false, err
+  }
+  return list, wrappedAsArray, nil
 }
 
 func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, queryContext context.Context) (*sql.Rows, int, error) {
@@ -83,8 +87,6 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
   if err != nil {
     return nil, -1, err
   }
-
-  println(sqlQuery, args)
 
   db, err := dbSupplier.GetDatabase(query.Database)
   if err != nil {
@@ -120,6 +122,18 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
   var args []interface{}
 
   sb.WriteString("select")
+
+  // the only array join is supported for now
+  arrayJoin := ""
+  for _, dimension := range query.Fields {
+    if len(dimension.arrayJoin) != 0 {
+      // the only array join is supported for now
+      arrayJoin = dimension.arrayJoin
+      // for field add distinct to filter duplicates out
+      //sb.WriteString(" distinct ")
+      break
+    }
+  }
 
   fieldCount := len(query.Dimensions)
   if len(query.Dimensions) != 0 {
@@ -173,12 +187,31 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
       sb.WriteString(field.ResultPropertyName)
     } else if len(query.Aggregator) != 0 {
       sb.WriteString(" as ")
-      sb.WriteString(field.Name)
+      if len(field.arrayJoin) == 0 {
+        sb.WriteString(field.Name)
+      } else {
+        // measures.values is not a valid field name
+        sb.WriteString("measure_value")
+      }
     }
   }
 
   sb.WriteString(" from ")
   sb.WriteString(table)
+
+  if len(arrayJoin) == 0 {
+    for _, dimension := range query.Dimensions {
+      if len(dimension.arrayJoin) != 0 {
+        arrayJoin = dimension.arrayJoin
+        break
+      }
+    }
+  }
+
+  if len(arrayJoin) != 0 {
+    sb.WriteString(" array join ")
+    sb.WriteString(arrayJoin)
+  }
 
   if len(query.Filters) != 0 {
     err := writeWhereClause(&sb, query, &args)

@@ -18,7 +18,7 @@ import (
 
 var ErrMetricsCannotBeComputed = errors.New("metrics cannot be computed")
 
-type MetricResult struct {
+type RunResult struct {
   Product string
 
   // or uint8 as enum id, or string as enum value
@@ -39,6 +39,11 @@ type MetricResult struct {
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
+
+  measureNames  []string
+  measureValues []int
+
+  branch string
 }
 
 type InsertReportManager struct {
@@ -79,19 +84,23 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
     sb.WriteString("product, ")
   }
   sb.WriteString("machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
-  if hasProductField {
-    for _, metric := range MetricDescriptors {
+
+  metricFieldCount := 0
+  if dbName == "ij" {
+    for _, metric := range IjMetricDescriptors {
       sb.WriteRune(',')
       sb.WriteString(metric.Name)
     }
+    metricFieldCount = len(IjMetricDescriptors)
+  } else if dbName != "fleet" {
+    sb.WriteString(", measures.name, measures.value")
+    metricFieldCount = 2
   }
   sb.WriteString(") values (")
 
   nonMetricFieldCount := 13
-  metricFieldCount := len(MetricDescriptors)
   if !hasProductField {
     nonMetricFieldCount -= 1
-    metricFieldCount = 0
   }
 
   for i, n := 0, nonMetricFieldCount+metricFieldCount; i < n; i++ {
@@ -139,12 +148,12 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
 }
 
 // checks that not duplicated, warn if metrics cannot be computed
-func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedProject string) error {
-  logger := t.Logger.With(zap.String("product", row.Product), zap.String("generatedTime", time.Unix(row.GeneratedTime, 0).Format(time.RFC1123)))
+func (t *InsertReportManager) Insert(runResult *RunResult) error {
+  logger := t.Logger.With(zap.String("product", runResult.Product), zap.String("generatedTime", time.Unix(runResult.GeneratedTime, 0).Format(time.RFC1123)))
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
-  if t.IsCheckThatNotAlreadyAddedNeeded && row.GeneratedTime <= t.MaxGeneratedTime {
-    exists, err := t.CheckExists(t.SelectStatement.QueryRow(row.Product, row.Machine, providedProject, row.GeneratedTime))
+  if t.IsCheckThatNotAlreadyAddedNeeded && runResult.GeneratedTime <= t.MaxGeneratedTime {
+    exists, err := t.CheckExists(t.SelectStatement.QueryRow(runResult.Product, runResult.Machine, runResult.Report.Project, runResult.GeneratedTime))
     if err != nil {
       return err
     }
@@ -155,7 +164,7 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedP
     }
   }
 
-  err := t.WriteMetrics(row.Product, row, branch, providedProject, logger)
+  err := t.WriteMetrics(runResult.Product, runResult, runResult.branch, runResult.Report.Project, logger)
   if err != nil {
     if err == ErrMetricsCannotBeComputed {
       logger.Warn(err.Error())
@@ -168,25 +177,17 @@ func (t *InsertReportManager) Insert(row *MetricResult, branch string, providedP
   return nil
 }
 
-func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResult, branch interface{}, providedProject interface{}, logger *zap.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product interface{}, row *RunResult, branch string, providedProject interface{}, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return err
   }
 
-  report := row.Report
-  if report == nil {
-    report, err = ReadReport(row.RawReport)
-    if err != nil {
-      return err
-    }
-  }
-
   var project interface{}
-  if len(report.Project) == 0 {
+  if len(row.Report.Project) == 0 {
     project = providedProject
   } else {
-    project = report.Project
+    project = row.Report.Project
     if project == "Fleet" {
       project = "fleet"
     } else {
@@ -202,6 +203,7 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
         project = "nC4MRRFMVYUSQLNIvPgDt+B3JqA"
       }
       // light edit
+      //goland:noinspection SpellCheckingInspection
       if project == "6hglkyp/cmAi7ntjrg7dHwd5NG4" {
         //noinspection SpellCheckingInspection
         project = "1PbxeQ044EEghMOG9hNEFee05kM"
@@ -209,7 +211,7 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     }
   }
 
-  buildTimeUnix, err := getBuildTimeFromReport(report, t.dbName)
+  buildTimeUnix, err := getBuildTimeFromReport(row.Report, t.dbName)
   if err != nil {
     return err
   }
@@ -224,23 +226,37 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     }
   }
 
-  args := make([]interface{}, 0, t.nonMetricFieldCount+len(MetricDescriptors))
-  if t.hasProductField {
-    args = append(args, product)
-  }
-  args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-    branch,
-    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
+  if t.dbName == "ij" {
+    var args []interface{}
+    args = make([]interface{}, 0, t.nonMetricFieldCount+len(IjMetricDescriptors))
+    if t.hasProductField {
+      args = append(args, product)
+    }
+    args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+      branch,
+      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
 
-  if t.hasProductField {
-    err = ComputeMetrics(t.nonMetricFieldCount, report, &args, logger)
+    err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
     if err != nil {
       return err
     }
+
+    _, err = insertStatement.ExecContext(t.context, args...)
+  } else if t.dbName == "fleet" {
+    _, err = insertStatement.ExecContext(t.context, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+      branch,
+      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
+
+  } else {
+    _, err = insertStatement.ExecContext(t.context, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+      branch,
+      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3,
+      row.measureNames, row.measureValues)
   }
 
-  _, err = insertStatement.ExecContext(t.context, args...)
   if err != nil {
     return errors.WithStack(err)
   }

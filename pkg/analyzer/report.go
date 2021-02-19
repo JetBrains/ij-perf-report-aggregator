@@ -10,99 +10,61 @@ import (
 
 var structParsers fastjson.ParserPool
 
-func ReadReport(data []byte) (*model.Report, error) {
+func ReadReport(runResult *RunResult) error {
   parser := structParsers.Get()
   defer structParsers.Put(parser)
 
-  value, err := parser.ParseBytes(data)
+  report, err := parser.ParseBytes(runResult.RawReport)
   if err != nil {
     //fmt.Print(string(data))
-    return nil, errors.WithStack(err)
+    return  errors.WithStack(err)
   }
 
-  report := model.Report{
-    Version:                  string(value.GetStringBytes("version")),
-    Generated:                string(value.GetStringBytes("generated")),
-    Project:                  string(value.GetStringBytes("project")),
+  runResult.Report = &model.Report{
+    Version:                  string(report.GetStringBytes("version")),
+    Generated:                string(report.GetStringBytes("generated")),
+    Project:                  string(report.GetStringBytes("project")),
 
-    Build:                    string(value.GetStringBytes("build")),
-    BuildDate:                string(value.GetStringBytes("buildDate")),
+    Build:                    string(report.GetStringBytes("build")),
+    BuildDate:                string(report.GetStringBytes("buildDate")),
 
-    Os:                       string(value.GetStringBytes("os")),
-    ProductCode:              string(value.GetStringBytes("productCode")),
-    Runtime:                  string(value.GetStringBytes("runtime")),
+    Os:                       string(report.GetStringBytes("os")),
+    ProductCode:              string(report.GetStringBytes("productCode")),
+    Runtime:                  string(report.GetStringBytes("runtime")),
 
-    TotalDurationActual:      value.GetInt("totalDurationActual"),
+    TotalDurationActual: report.GetInt("totalDurationActual"),
   }
 
-  for _, v := range value.GetArray("traceEvents") {
-    report.TraceEvents = append(report.TraceEvents, model.TraceEvent{
-      Name:      string(v.GetStringBytes("name")),
-      Phase:     string(v.GetStringBytes("ph")),
-      Timestamp: v.GetInt("ts"),
-      Category:  string(v.GetStringBytes("cat")),
-    })
-  }
-  report.MainActivities = readActivitiesInOldFormat("items", value)
-  if version.Compare(report.Version, "20", ">=") {
-    report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", value)
-    if version.Compare(report.Version, "27", ">=") {
-      classLoading := value.Get("classLoading")
-      resourceLoading := value.Get("resourceLoading")
-      if classLoading != nil && resourceLoading != nil {
-        report.PrepareAppInitActivities = append(report.PrepareAppInitActivities,
-          model.Activity{Name: clTotal, Start: classLoading.GetInt("time")},
-          model.Activity{Name: clSearch, Start: classLoading.GetInt("searchTime")},
-          model.Activity{Name: clDefine, Start: classLoading.GetInt("defineTime")},
-          model.Activity{Name: clCount, Start: classLoading.GetInt("count")},
+  measureNames := make([]string, 0)
+  measureValues := make([]int, 0)
+  for _, measure := range report.GetArray("metrics") {
+    measureName := string(measure.GetStringBytes("n"))
 
-          model.Activity{Name: rlTime, Start: resourceLoading.GetInt("time")},
-          model.Activity{Name: rlCount, Start: resourceLoading.GetInt("count")},
-        )
+    value := measure.Get("d")
+    if value == nil {
+      value = measure.Get("c")
+      if value == nil {
+        return nil
       }
     }
-  } else {
-    report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", value)
-  }
-  return &report, nil
-}
 
-func readActivitiesInOldFormat(key string, value *fastjson.Value) []model.Activity {
-  array := value.GetArray(key)
-  result := make([]model.Activity, 0, len(array))
-  for _, v := range array {
-    result = append(result, model.Activity{
-      Name:      string(v.GetStringBytes("name")),
-      Thread:     string(v.GetStringBytes("thread")),
-      Start: v.GetInt("start"),
-      End: v.GetInt("end"),
-      Duration: v.GetInt("duration"),
-    })
-  }
-  return result
-}
-
-func readActivities(key string, value *fastjson.Value) []model.Activity {
-  array := value.GetArray(key)
-  result := make([]model.Activity, 0, len(array))
-  for _, v := range array {
-    start := v.GetInt("s")
-    duration := v.GetInt("d")
-
-    ownDuration := v.GetInt("od")
-    if ownDuration == 0 {
-      ownDuration = duration
+    floatValue := value.GetFloat64()
+    intValue := int(floatValue)
+    if floatValue != float64(intValue) {
+      return errors.WithMessagef(nil, "int expected, but got float %f", floatValue)
     }
 
-    result = append(result, model.Activity{
-      Name:     string(v.GetStringBytes("n")),
-      Thread:   string(v.GetStringBytes("t")),
-      Start:    start,
-      End:      start + duration,
-      Duration: ownDuration,
-    })
+    measureNames = append(measureNames, measureName)
+    measureValues = append(measureValues, intValue)
   }
-  return result
+
+  if len(measureNames) == 0 {
+    return nil
+  }
+
+  runResult.measureNames = measureNames
+  runResult.measureValues = measureValues
+  return nil
 }
 
 func getBuildTimeFromReport(report *model.Report, dbName string) (int64, error) {

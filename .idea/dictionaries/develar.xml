@@ -4,6 +4,7 @@
       <w>cascader</w>
       <w>certmanager</w>
       <w>clickhouse</w>
+      <w>clusterize</w>
       <w>fontend</w>
       <w>gocyclo</w>
       <w>gosu</w>
@@ -18,6 +19,7 @@
       <w>minifier</w>
       <w>minio</w>
       <w>nats</w>
+      <w>pnpm</w>
       <w>quantile</w>
       <w>rison</w>
       <w>rowid</w>

@@ -1,66 +1,9 @@
-{% import "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer" %}
 {% import "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error" %}
 
 {% stripspace %}
 {% func httpError(error *http_error.HttpError) %}
 {
   "error": {%q= error.Message %}
-}
-{% endfunc %}
-
-{% func GroupedMetricList(list []MedianResult) %}
-{
-  "groupNames": [
-    {% if len(list) > 0 %}
-      {% for i, value := range list[0].groupedValues %}
-        {% if i != 0 %},{% endif %}
-        "{%s= value.group %}"
-      {% endfor %}
-    {% endif %}
-  ],
-  "data": [
-    {% for i, item := range list %}
-      {% if i != 0 %},{% endif %}
-      {
-        {% for _, value := range item.groupedValues %}
-        "{%s= value.group %}": {%d value.value %},
-        {% endfor %}
-        {% comment %}
-          metric as last to avoid using any logic "should we print last comma or not"
-        {% endcomment %}
-        "metric": {%q= item.metricName %}
-      }
-    {% endfor %}
-  ]
-}
-{% endfunc %}
-
-{% func Info(productNames []string, groupNames []string, metrics []*analyzer.Metric, productNameToMachines map[string]map[string]*MachineGroup, productNameToProjects map[string]*[]string) %}
-{
-  "productNames": {%= safeStringList(productNames) %},
-  "metrics": [
-    {% for i, metric := range metrics %}
-      {% if i != 0 %},{% endif %}
-      {
-        "name": {%q= metric.Name %}
-        {% if metric.IsInstant %}
-          , "isInstant": true
-        {% endif %}
-      }
-    {% endfor %}
-  ],
-  "productToMachine": {
-    {% for i, product := range productNames %}
-      {% if i != 0 %},{% endif %}
-      "{%s= product %}": {%= writeMachineGroups(groupNames, productNameToMachines[product]) %}
-    {% endfor %}
-  },
-  "productToProjects": {
-    {% for i, product := range productNames %}
-      {% if i != 0 %},{% endif %}
-      "{%s= product %}": {%= writeProjects(productNameToProjects[product]) %}
-    {% endfor %}
-  }
 }
 {% endfunc %}
 
@@ -73,49 +16,4 @@
 ]
 {% endfunc %}
 
-{% func writeMachineGroups(groupNames []string, groups map[string]*MachineGroup) %}
-[
-  {% code
-    isFirst := true
-  %}
-  {% for _, groupName := range groupNames %}
-    {% code
-      machineGroup, ok := groups[groupName]
-      if !ok {
-        continue
-      }
-    %}
-
-    {% if !isFirst %},{% endif %}
-    {% code
-      isFirst = false
-    %}
-
-    {
-      "name": {%q= groupName %},
-      "children": {%= writeMachineInfoList(machineGroup.machines) %}
-    }
-  {% endfor %}
-]
-{% endfunc %}
-
-{% func writeProjects(projects *[]string) %}
-[
-  {% for index, project := range *projects %}
-    {% if index != 0 %},{% endif %}
-    {%q= project %}
-  {% endfor %}
-]
-{% endfunc %}
-
-{% func writeMachineInfoList(machines []string) %}
-[
-  {% for i, machine := range machines %}
-    {% if i != 0 %},{% endif %}
-    {
-      "name": {%q= machine %}
-    }
-  {% endfor %}
-]
-{% endfunc %}
 {% endstripspace %}

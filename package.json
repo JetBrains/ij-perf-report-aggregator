@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "scripts": {
+    "serve": "vite serve",
+    "build": "vite build --emptyOutDir",
+    "lint": "NODE_ENV=production eslint --ext .ts,.vue dashboard jb/dashboard/jb",
+    "update-deps": "pnpm update -i -r --latest"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "4.17.0",
+    "@typescript-eslint/parser": "4.17.0",
+    "@vitejs/plugin-vue": "1.1.5",
+    "@vue/compiler-sfc": "3.0.7",
+    "@vue/eslint-config-typescript": "7.0.0",
+    "eslint": "7.21.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-vue": "7.7.0",
+    "rollup": "2.41.0",
+    "rollup-plugin-visualizer": "4.2.0",
+    "sass": "1.32.8",
+    "typescript": "4.2.3",
+    "vite": "2.0.5",
+    "vite-plugin-components": "0.8.0",
+    "vite-plugin-eslint": "1.1.0",
+    "vue-template-compiler": "^2.6.12"
+  }
+}

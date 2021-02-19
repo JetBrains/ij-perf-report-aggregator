@@ -61,18 +61,15 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   disposer := util.NewDisposer()
  	defer disposer.Dispose()
   if len(natsUrl) > 0 {
-    err := listenNats(cacheManager, natsUrl, disposer, logger)
+    err = listenNats(cacheManager, natsUrl, disposer, logger)
     if err != nil {
       return err
     }
   }
 
-  mux.Handle("/api/v1/dimensions", cacheManager.CreateHandler(statsServer.handleDimensionsRequest))
-  mux.Handle("/api/v1/info", cacheManager.CreateHandler(statsServer.handleInfoRequest))
   mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   mux.Handle("/api/v1/metrics/", cacheManager.CreateHandler(statsServer.handleMetricsRequest))
-  mux.Handle("/api/v1/groupedMetrics/", cacheManager.CreateHandler(statsServer.handleGroupedMetricsRequest))
   mux.Handle("/api/v1/compareMetrics", cacheManager.CreateHandler(statsServer.handleStatusRequest))
   mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
 

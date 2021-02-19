@@ -1,0 +1,18 @@
+{
+  "name": "report-visualizer",
+  "private": true,
+  "dependencies": {
+    "echarts": "5.0.2",
+    "shared": "workspace:*",
+    "@amcharts/amcharts4": "4.10.16",
+    "element-plus": "1.0.2-beta.33",
+    "compare-versions": "^3.6.0",
+    "p-queue": "^6.6.2",
+    "rison-node": "^2.1.1",
+    "vue-router": "4.0.4",
+    "vue": "3.0.7"
+  },
+  "devDependencies": {
+    "@types/debounce": "^1.2.0"
+  }
+}

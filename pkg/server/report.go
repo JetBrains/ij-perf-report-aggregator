@@ -7,7 +7,7 @@ import (
 )
 
 func (t *StatsServer) handleReportRequest(request *http.Request) ([]byte, error) {
-  queries, err := data_query.ReadQuery(request)
+  queries, _, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
   }

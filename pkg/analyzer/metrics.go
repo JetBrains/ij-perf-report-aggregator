@@ -25,6 +25,14 @@ const appInitCategory = 1
 var metricNameToDescriptor map[string]*Metric
 var MetricDescriptors []*Metric
 
+const clTotal = "class loading: total"
+const clSearch = "class loading: search"
+const clDefine = "class loading: define"
+const clCount = "class loading: count"
+
+const rlTime = "resource loading: time"
+const rlCount = "resource loading: count"
+
 func init() {
   index := 0
   createMetric := func(name string) *Metric {
@@ -47,6 +55,7 @@ func init() {
 
   createRequiredMetric := func(name string) *Metric {
     result := createMetric(name)
+    result.maxValue = 2147483647
     result.isRequired = true
     return result
   }
@@ -122,10 +131,19 @@ func init() {
     // v19+
     "eua showing": createVersionedMetric("euaShowing_d", "19"),
 
-    "service sync preloading": createUint32Metric("serviceSyncPreloading_d"),
-    "service async preloading": createUint32Metric("serviceAsyncPreloading_d"),
-    "project service sync preloading": createUint32Metric("projectServiceSyncPreloading_d"),
+    "service sync preloading":          createUint32Metric("serviceSyncPreloading_d"),
+    "service async preloading":         createUint32Metric("serviceAsyncPreloading_d"),
+    "project service sync preloading":  createUint32Metric("projectServiceSyncPreloading_d"),
     "project service async preloading": createUint32Metric("projectServiceAsyncPreloading_d"),
+
+    // v27+
+    clTotal:  createInstantMetric("classLoadingTime_i"),
+    clSearch: createInstantMetric("classLoadingSearchTime_i"),
+    clDefine: createInstantMetric("classLoadingDefineTime_i"),
+    clCount:  createInstantMetric("classLoadingCount_i"),
+
+    rlTime:  createInstantMetric("resourceLoadingTime_i"),
+    rlCount: createInstantMetric("resourceLoadingCount_i"),
   }
 }
 

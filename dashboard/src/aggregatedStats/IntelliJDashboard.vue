@@ -89,6 +89,24 @@
               </el-col>
             </el-row>
 
+            <el-divider class="dividerAfterForm">Class and Resource Loading</el-divider>
+            <el-row :gutter="5">
+              <el-col :span="12">
+                <el-card shadow="never" :body-style="{ padding: '0px' }">
+                  <LineChartComponent type="duration" :order="item.order" :dataRequest="dataRequest" :timeRange="timeRange"
+                                      :metrics='["classLoadingTime_i", "classLoadingSearchTime_i", "classLoadingDefineTime_i"]'
+                                      :chartSettings="chartSettings"/>
+                </el-card>
+              </el-col>
+              <el-col :span="12">
+                <el-card shadow="never" :body-style="{ padding: '0px' }">
+                  <LineChartComponent type="duration" :order="item.order" :dataRequest="dataRequest" :timeRange="timeRange"
+                                      :metrics='["classLoadingCount_i", "resourceLoadingCount_i"]'
+                                      :chartSettings="chartSettings"/>
+                </el-card>
+              </el-col>
+            </el-row>
+
             <el-divider>Services</el-divider>
             <el-row :gutter="5" style="margin-top: 5px;">
               <el-col :span="12">

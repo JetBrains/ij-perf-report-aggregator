@@ -2,9 +2,7 @@
 
 1. update table sql if needed (see actual sql in clickhouse metadata)
 2. backup old database (the whole clickhouse directory).
-3. use clickhouse-client because other client read timeout maybe not enough (copy data is a long operation)
-
-docker run -it --rm --volume=$HOME/ij-perf-db:/data:delegated --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.3.4.10 --host clickhouse-server
+3. use transform.go to re-analyze data or use clickhouse-client because other client read timeout maybe not enough (copy data is a long operation) to perform SQL operation.
 */
 
 alter table report modify column machine Enum8('intellij-macos-hw-unit-1550' = 1, 'intellij-macos-hw-unit-1551' = 2, 'intellij-windows-hw-unit-499' = 3, 'intellij-windows-hw-unit-498' = 4, 'intellij-linux-hw-unit-558' = 5, 'intellij-linux-hw-unit-449' = 6, 'intellij-linux-hw-unit-450' = 7, 'intellij-linux-hw-unit-463' = 8,'intellij-linux-hw-unit-504' = 9, 'intellij-linux-hw-unit-493' = 10, 'intellij-linux-hw-unit-556' = 11, 'intellij-linux-hw-unit-531' = 12,'intellij-linux-hw-unit-484' = 13, 'intellij-linux-hw-unit-534' = 14, 'intellij-macos-hw-unit-1773' = 15, 'intellij-macos-hw-unit-1772' = 16,'intellij-windows-hw-unit-449' = 17, 'intellij-windows-hw-unit-463' = 18, 'intellij-windows-hw-unit-504' = 19, 'intellij-windows-hw-unit-493' = 20, 'intellij-linux-hw-unit-499' = 21);
@@ -16,10 +14,10 @@ alter table report modify column project Enum8('/q9N7EHxr8F1NHjbNQnpqb0Q0fs' = 0
     'rF+W6q6L8SY62UPQ8EQhbENYOD0' = 13, 'uCOz0OEnAx055YJB55nc/baK48g' = 14, '36S9pX28rRGM06EN52YRr5qMIO0' = 15);
 
 /* use clickhouse-client and not IDEA executor - to get progress and proper read-timeout  */
-insert into report2 select * from report;
+insert into report select * from report;
 
 drop table report;
-rename table report2 to report
+rename table report to report
 
 /*
 // migrate changes as new-line delimited to array

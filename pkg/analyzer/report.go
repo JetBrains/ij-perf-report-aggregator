@@ -46,6 +46,21 @@ func ReadReport(data []byte) (*model.Report, error) {
   report.MainActivities = readActivitiesInOldFormat("items", value)
   if version.Compare(report.Version, "20", ">=") {
     report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", value)
+    if version.Compare(report.Version, "27", ">=") {
+      classLoading := value.Get("classLoading")
+      resourceLoading := value.Get("resourceLoading")
+      if classLoading != nil && resourceLoading != nil {
+        report.PrepareAppInitActivities = append(report.PrepareAppInitActivities,
+          model.Activity{Name: clTotal, Start: classLoading.GetInt("time")},
+          model.Activity{Name: clSearch, Start: classLoading.GetInt("searchTime")},
+          model.Activity{Name: clDefine, Start: classLoading.GetInt("defineTime")},
+          model.Activity{Name: clCount, Start: classLoading.GetInt("count")},
+
+          model.Activity{Name: rlTime, Start: resourceLoading.GetInt("time")},
+          model.Activity{Name: rlCount, Start: resourceLoading.GetInt("count")},
+        )
+      }
+    }
   } else {
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", value)
   }

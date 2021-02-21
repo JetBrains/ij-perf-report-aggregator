@@ -8,10 +8,9 @@
   },
   "dependencies": {
     "@amcharts/amcharts4": "4.10.15",
-    "chokidar": "^3.5.1",
     "compare-versions": "^3.6.0",
     "debounce": "^1.2.0",
-    "element-ui": "^2.15.0",
+    "element-ui": "^2.15.1",
     "p-queue": "^6.6.2",
     "rison-node": "^2.1.1",
     "vue": "^2.6.12",
@@ -25,6 +24,7 @@
     "@types/debounce": "^1.2.0",
     "@vue/cli-plugin-typescript": "^4.5.11",
     "@vue/cli-service": "^4.5.11",
+    "chokidar": "^3.5.1",
     "typescript": "^4.1.5",
     "vue-template-compiler": "^2.6.12"
   },

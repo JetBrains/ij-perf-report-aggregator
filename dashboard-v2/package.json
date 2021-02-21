@@ -1,0 +1,39 @@
+{
+  "name": "performance-dashboard",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "vite-build": "vite build --emptyOutDir",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "echarts": "^5.0.2",
+    "element-plus": "^1.0.2-beta.32",
+    "rison-node": "^2.1.1",
+    "vue": "^3.0.5"
+  },
+  "devDependencies": {
+    "@rollup/plugin-eslint": "^8.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.15.2",
+    "@typescript-eslint/parser": "^4.15.2",
+    "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/cli-plugin-eslint": "~v5.0.0-alpha.4",
+    "@vue/cli-plugin-typescript": "~v5.0.0-alpha.4",
+    "@vue/cli-service": "~v5.0.0-alpha.4",
+    "@vue/compiler-sfc": "^3.0.5",
+    "@vue/eslint-config-typescript": "^7.0.0",
+    "eslint": "^7.20.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-vue": "^7.6.0",
+    "rollup-plugin-eslint": "^7.0.0",
+    "typescript": "~4.2.2",
+    "vite": "^2.0.2",
+    "vite-plugin-eslint": "^1.1.0",
+    "webpack": "^5.24.1"
+  },
+  "resolutions": {
+    "chokidar": "^3.5.1"
+  }
+}

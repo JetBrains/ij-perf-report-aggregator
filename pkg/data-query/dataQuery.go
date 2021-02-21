@@ -15,7 +15,9 @@ import (
 var queryParsers fastjson.ParserPool
 
 type DataQuery struct {
-  Database string `json:"db"`
+  Database string
+  Table string
+  Flat  bool
 
   Fields  []DataQueryDimension `json:"fields"`
   Filters []DataQueryFilter    `json:"filters"`
@@ -76,20 +78,26 @@ func ReadQueryFromRequest(request *http.Request) ([]DataQuery, error) {
   return readQuery(jsonData)
 }
 
-func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Rows, int, error) {
+func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, queryContext context.Context) (*sql.Rows, int, error) {
   sqlQuery, args, fieldCount, err := buildSql(query, table)
-
   if err != nil {
     return nil, -1, err
   }
+
+  println(sqlQuery, args)
 
   db, err := dbSupplier.GetDatabase(query.Database)
   if err != nil {
     return nil, -1, err
   }
-  rows, err := db.QueryContext(context, sqlQuery, args...)
+
+  rows, err := db.QueryContext(queryContext, sqlQuery, args...)
   if err != nil {
-    return nil, -1, errors.WithStack(err)
+    if err == context.Canceled {
+      return nil, -1, err
+    } else {
+      return nil, -1, errors.WithMessage(err, "cannot execute SQL: "+sqlQuery)
+    }
   }
   return rows, fieldCount, nil
 }

@@ -3,5 +3,6 @@
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$/dashboard" libraries="{report-aggregator/dashboard/node_modules}" />
     <file url="file://$PROJECT_DIR$/jb/dashboard" libraries="{report-aggregator/dashboard/node_modules}" />
+    <excludedPredefinedLibrary name="report-aggregator/dashboard-v2/node_modules" />
   </component>
 </project>

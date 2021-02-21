@@ -15,8 +15,7 @@
       <option name="FORCE_QUOTE_STYlE" value="true" />
       <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
     </JSCodeStyleSettings>
-    <SQLiteCodeStyleSettings version="2">
-      <option name="myVersion" value="2" />
+    <SQLiteCodeStyleSettings version="5">
       <option name="USE_GENERIC_STYLE" value="true" />
     </SQLiteCodeStyleSettings>
     <TypeScriptCodeStyleSettings version="0">

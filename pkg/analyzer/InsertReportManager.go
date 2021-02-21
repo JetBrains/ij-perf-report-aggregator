@@ -109,7 +109,7 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   }
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
-  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 1000)
+  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 1_000)
 
   installerManager, err := NewInstallerInsertManager(db, context, logger)
   if err != nil {
@@ -218,8 +218,10 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *MetricResul
     buildTimeUnix = row.BuildTime
   }
 
-  if strings.HasPrefix(row.Machine.(string), "intellij-linux-hw-compile-hp-blade-") {
-   return nil
+  if m, ok := row.Machine.(string); ok {
+    if strings.HasPrefix(m, "intellij-linux-hw-compile-hp-blade-") {
+      return nil
+    }
   }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+len(MetricDescriptors))

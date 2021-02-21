@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+dist
+*.local
+package-lock.json
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

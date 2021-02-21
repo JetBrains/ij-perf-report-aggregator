@@ -20,13 +20,13 @@ require (
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/json-iterator/go v1.1.10
-	github.com/klauspost/cpuid v1.3.1 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.4
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/minio/md5-simd v1.1.1 // indirect
+	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v6 v6.0.57
+	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nats-io/jwt v1.2.2 // indirect
@@ -41,8 +41,8 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.7.0
-	github.com/tdewolff/minify/v2 v2.9.12
-	github.com/tdewolff/parse/v2 v2.5.10 // indirect
+	github.com/tdewolff/minify/v2 v2.9.13
+	github.com/tdewolff/parse/v2 v2.5.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3
@@ -50,11 +50,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
+	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/net v0.0.0-20210224082022-3d97a244fca7 // indirect
+	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect

@@ -68,12 +68,16 @@ func readQuery(s []byte) ([]DataQuery, error) {
 func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
   query := &DataQuery{
     Database: string(value.GetStringBytes("db")),
+    Table: string(value.GetStringBytes("table")),
+    Flat: value.GetBool("flat"),
   }
 
   if len(query.Database) == 0 {
     query.Database = "default"
   } else if !reDbName.MatchString(query.Database) {
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Database name %s contains illegal chars", query.Database))
+  } else if len(query.Table) > 0 && !reDbName.MatchString(query.Table) {
+    return nil, http_error.NewHttpError(400, fmt.Sprintf("Table name %s contains illegal chars", query.Table))
   }
 
   err := readDimensions(value.GetArray("fields"), &query.Fields)

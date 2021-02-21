@@ -8,6 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/jmoiron/sqlx"
+  "github.com/valyala/quicktemplate"
   "net/http"
   "strings"
 )
@@ -50,6 +51,46 @@ func (t *StatsServer) handleInfoRequest(request *http.Request) ([]byte, error) {
   return CopyBuffer(buffer), nil
 }
 
+func (t *StatsServer) handleMetaMeasureRequest(request *http.Request) ([]byte, error) {
+  dbName, err := data_query.ValidateDatabaseName(request.URL.Query().Get("db"))
+  if err != nil {
+    return nil, err
+  }
+
+  db, err := t.GetDatabase(dbName)
+  if err != nil {
+    return nil, err
+  }
+
+  buffer := byteBufferPool.Get()
+  defer byteBufferPool.Put(buffer)
+
+  var metricDescriptors []*analyzer.Metric
+  if dbName == "ij" {
+    metricDescriptors = analyzer.MetricDescriptors
+  } else {
+    metrics, err := t.computeAvailableMetrics(dbName, db, request.Context())
+    if err != nil {
+      return nil, err
+    }
+    metricDescriptors = metrics
+  }
+
+  templateWriter := quicktemplate.AcquireWriter(buffer)
+  defer quicktemplate.ReleaseWriter(templateWriter)
+  jsonWriter := templateWriter.N()
+  jsonWriter.S("[")
+  for index, descriptor := range metricDescriptors {
+    if index != 0 {
+      jsonWriter.S(",")
+    }
+    jsonWriter.Q(descriptor.Name)
+  }
+  jsonWriter.S("]")
+
+  return CopyBuffer(buffer), nil
+}
+
 func (t *StatsServer) computeAvailableMetrics(dbName string, db *sqlx.DB, taskContext context.Context) ([]*analyzer.Metric, error) {
 	if dbName != "sharedIndexes" {
 		return []*analyzer.Metric{}, nil
@@ -81,7 +122,7 @@ func (t *StatsServer) computeProductToMachines(dbName string, db *sqlx.DB, taskC
   if hasProductField {
     rows, err = db.QueryContext(taskContext, "select distinct product, machine from report group by product, machine order by product, machine")
   } else {
-    rows, err = db.QueryContext(taskContext, "select distinct machine from report")
+    rows, err = db.QueryContext(taskContext, "select distinct machine from report order by machine")
   }
   if err != nil {
     return nil, nil, err

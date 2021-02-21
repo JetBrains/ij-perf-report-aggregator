@@ -1,6 +1,6 @@
 <yandex>
   <logger>
-    <level>debug</level>
+    <level>trace</level>
     <console>1</console>
   </logger>
 

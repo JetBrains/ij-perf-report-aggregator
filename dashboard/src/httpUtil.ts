@@ -1,7 +1,6 @@
 // Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import { Notification } from "element-ui"
 
-// Copyright 2000-2019 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 export function loadJson(url: string, processed: (() => void) | null): Promise<any> {
   console.log(`load`, url)
 

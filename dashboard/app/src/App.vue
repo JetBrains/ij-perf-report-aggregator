@@ -34,7 +34,10 @@
           </el-menu-item>
         </template>
       </template>
-      <el-menu-item style="padding: 0; vertical-align: center; float: right">
+      <el-menu-item
+        v-show='!activePath.startsWith("/report")'
+        style="padding: 0; vertical-align: center; float: right"
+      >
         <ServerSelect v-model="serverUrl" />
       </el-menu-item>
     </el-menu>

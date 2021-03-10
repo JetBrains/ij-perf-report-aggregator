@@ -84,8 +84,8 @@ export default defineComponent({
     },
     // not reactive - change of initial value is ignored by intention
     measures: {
-      type: Array as PropType<Array<string>>,
-      default: () => [],
+      type: Array as PropType<Array<string> | null>,
+      default: () => null,
     },
   },
   setup(props) {
@@ -93,25 +93,28 @@ export default defineComponent({
     let chartManager: LineChartManager | null = null
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     let dataQueryExecutor = props.provider ?? inject(dataQueryExecutorKey)!
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    const measures = props.measures
-    if (measures.length !== 0) {
+
+    if (props.measures != null) {
       // static list of measures is provided - create sub data query executor
-      const measureConfigurator = new PredefinedMeasureConfigurator(measures, props.skipZeroValues)
-      watch(() => props.skipZeroValues, value => {
-        (measureConfigurator as PredefinedMeasureConfigurator).skipZeroValues = value
+      const skipZeroValues = toRef(props, "skipZeroValues")
+      watch(skipZeroValues, () => {
         dataQueryExecutor.scheduleLoad()
       })
+
+      const measureConfigurator = new PredefinedMeasureConfigurator(props.measures, skipZeroValues)
       dataQueryExecutor = dataQueryExecutor.createSub([measureConfigurator])
       dataQueryExecutor.scheduleLoad()
     }
 
-    // inject is used instead of prop because on dashboard page there are a lot of ChartCards and it is tedious to set property for each
     const chartToolTipManager = new ChartToolTipManager(dataQueryExecutor)
     onMounted(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       chartManager = new LineChartManager(chartElement.value!, dataQueryExecutor, toRef(props, "dataZoom"),
         chartToolTipManager.formatArrayValue.bind(chartToolTipManager))
+
+      // watch(() => props.measures, () => {
+      //
+      // })
     })
     onUnmounted(() => {
       const it = chartManager
@@ -145,7 +148,7 @@ class ChartToolTipManager {
     this.infoIsVisible.value = false
   }, 2_000)
 
-  constructor(private readonly dataQueryExecutor: DataQueryExecutor) {
+  constructor(private dataQueryExecutor: DataQueryExecutor) {
   }
 
   formatArrayValue(params: Array<CallbackDataParams>) {

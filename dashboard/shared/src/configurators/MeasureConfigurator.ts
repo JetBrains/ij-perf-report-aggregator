@@ -1,7 +1,7 @@
 import { LineSeriesOption } from "echarts/charts"
 import { DatasetOption } from "echarts/types/dist/shared"
 import { DimensionDefinition } from "echarts/types/src/util/types"
-import { shallowRef, watch } from "vue"
+import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, ChartOptions } from "../chart"
@@ -83,11 +83,11 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, public skipZeroValues: boolean = true) {
+  constructor(private readonly measures: Array<string>, public skipZeroValues: Ref<boolean> = shallowRef(true)) {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    configureQuery(this.measures, query, this.skipZeroValues)
+    configureQuery(this.measures, query, this.skipZeroValues.value)
     configuration.chartConfigurator = this
     configuration.measures = this.measures
     return true

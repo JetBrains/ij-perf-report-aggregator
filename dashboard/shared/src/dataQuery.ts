@@ -87,6 +87,8 @@ interface ExtraQueryProducer {
   mutate(): boolean
 
   getDataSetLabel(index: number): string
+
+  getDataSetMeasureNames(index: number): Array<string>
 }
 
 export class DataQueryExecutorConfiguration {

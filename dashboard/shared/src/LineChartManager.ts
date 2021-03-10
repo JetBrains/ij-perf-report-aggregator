@@ -24,7 +24,7 @@ export class LineChartManager {
   private readonly chart: ChartManagerHelper
 
   constructor(container: HTMLElement,
-              private readonly dataQueryExecutor: DataQueryExecutor,
+              private _dataQueryExecutor: DataQueryExecutor,
               dataZoom: Ref<boolean>,
               tooltipFormatter: ToolTipFormatter) {
     this.chart = new ChartManagerHelper(container)
@@ -77,17 +77,29 @@ export class LineChartManager {
     })
 
     this.chart.enableZoomTool()
-
-    dataQueryExecutor.setListener((data, configuration) => {
-      this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
-      // console.log(JSON.stringify(this.chart.getOption(), null, 2))
-    })
-
+    this.setDataListener()
     watch(dataZoom, debounceSync(() => {
       this.chart.chart.setOption({
         dataZoom: dataZoom.value ? dataZoomConfig : undefined,
       })
     }))
+  }
+
+  private setDataListener() {
+    this.dataQueryExecutor.setListener((data, configuration) => {
+      this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
+      // console.log(JSON.stringify(this.chart.getOption(), null, 2))
+    })
+  }
+
+  get dataQueryExecutor(): DataQueryExecutor {
+    return this._dataQueryExecutor
+  }
+
+  set dataQueryExecutor(newDataQueryExecutor: DataQueryExecutor) {
+    this._dataQueryExecutor.setListener(null)
+    this._dataQueryExecutor = newDataQueryExecutor
+    this.setDataListener()
   }
 
   dispose(): void {

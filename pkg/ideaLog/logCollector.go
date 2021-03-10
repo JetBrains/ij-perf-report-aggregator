@@ -32,7 +32,7 @@ func collectFromDirs(dirs []string, dbPath string, machine string, logger *zap.L
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, "", taskContext, logger, cancel)
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(dbPath, "", nil, taskContext, logger, cancel)
   if err != nil {
     return err
   }

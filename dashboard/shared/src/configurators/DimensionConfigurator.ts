@@ -32,22 +32,9 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
     if (this.multiple && Array.isArray(value)) {
       filter.value = value[0]
       if (value.length > 1) {
-        let index = 1
-        if (configuration.extraQueryProducer != null) {
-          throw new Error("extraQueryMutator is already set")
-        }
-        configuration.extraQueryProducer = {
-          mutate() {
-            filter.value = value[index++]
-            return index !== value.length
-          },
-          getDataSetLabel(index: number): string {
-            return value[index]
-          }
-        }
+        configureQueryProducer(configuration, filter, value)
       }
     }
-
     query.addFilter(filter)
     return true
   }
@@ -83,5 +70,25 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
     return loadJson<Array<string>>(`${configuration.serverUrl}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
       this.values.value = data
     })
+  }
+}
+
+function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+  let index = 1
+  if (configuration.extraQueryProducer != null) {
+    throw new Error("extraQueryMutator is already set")
+  }
+
+  configuration.extraQueryProducer = {
+    mutate() {
+      filter.value = values[index++]
+      return index !== values.length
+    },
+    getDataSetLabel(index: number): string {
+      return values[index]
+    },
+    getDataSetMeasureNames(_index: number): Array<string> {
+      return configuration.measures
+    }
   }
 }

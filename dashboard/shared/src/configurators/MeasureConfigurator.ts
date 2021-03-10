@@ -1,11 +1,11 @@
 import { LineSeriesOption } from "echarts/charts"
 import { DatasetOption } from "echarts/types/dist/shared"
 import { DimensionDefinition } from "echarts/types/src/util/types"
-import { shallowRef, watch } from "vue"
+import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, ChartOptions } from "../chart"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, encodeQuery, toMutableArray } from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -37,7 +37,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       return false
     }
 
-    configureQuery(measureNames, query, this.skipZeroValues)
+    configureQuery(measureNames, query, configuration, this.skipZeroValues)
     configuration.measures = measureNames
     configuration.chartConfigurator = this
     return true
@@ -52,8 +52,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   loadMetadata(taskHandle: TaskHandle): Promise<unknown> {
-    const parent = this.parent
-    if (parent == null) {
+    if (this.serverConfigurator.databaseName === "ij") {
       const server = this.serverConfigurator.value.value
       if (server == null || server.length === 0) {
         return Promise.resolve()
@@ -64,9 +63,13 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       })
     }
 
+    const parent = this.parent
     const query = new DataQuery()
     const configuration = new DataQueryExecutorConfiguration()
-    if (!parent.configureQuery(query, configuration) || !parent.serverConfigurator.configureQuery(query, configuration)) {
+    if (!this.serverConfigurator.configureQuery(query, configuration)) {
+      return Promise.resolve()
+    }
+    if (parent != null && !parent.configureQuery(query, configuration)) {
       return Promise.resolve()
     }
 
@@ -83,11 +86,16 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, public skipZeroValues: boolean = true) {
+  private readonly measures: Array<string>
+
+  constructor(measures: Array<string>, public skipZeroValues: Ref<boolean> = shallowRef(true)) {
+    // analyzer replaces space to underscore, but configurator supports specifying original metric names
+    // render window.end => render_window.end
+    this.measures = measures.map(it => it.replaceAll(" ", "_"))
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    configureQuery(this.measures, query, this.skipZeroValues)
+    configureQuery(this.measures, query, configuration, this.skipZeroValues.value)
     configuration.chartConfigurator = this
     configuration.measures = this.measures
     return true
@@ -101,18 +109,16 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 export function measureNameToLabel(key: string): string {
   const metricPathEndDotIndex = key.indexOf(".")
   if (metricPathEndDotIndex == -1) {
-    return key.replace(/_[a-z]$/g, "")
+    return key
   }
   else {
-    let name = key.substring(metricPathEndDotIndex + 1)
-    if (name.length > 2 && name[name.length - 2] == ".") {
-      name = name.substring(0, name.length - 2)
-    }
-    return name
+    return key
+      .substring(0, metricPathEndDotIndex)
+      .replaceAll("_",  " ")
   }
 }
 
-function configureQuery(measureNames: Array<string>, query: DataQuery, skipZeroValues: boolean): void {
+function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
 
@@ -121,20 +127,35 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, skipZeroV
     sql: "toUnixTimestamp(generated_time) * 1000",
   })
 
-  if (query.db !== "ij" && query.db !== "fleet") {
-    query.addField({name: "measures", subName: "value"})
-    query.addFilter({field: "measures.name", value: measureNames})
-    if (skipZeroValues) {
-      query.addFilter({field: "measures.value", operator: "!=", value: 0})
-    }
-  }
-  else {
+  if (query.db === "ij") {
     for (let i = 0; i < measureNames.length; i++) {
       const value = measureNames[i]
       query.addField(value)
       if (skipZeroValues) {
         query.addFilter({field: value, operator: "!=", value: 0})
       }
+    }
+  }
+  else {
+    const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
+    const filter = {field: "measures.name", value: pureNames[0]}
+    if (measureNames.length > 1) {
+      // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
+      configureQueryProducer(configuration, filter, pureNames)
+    }
+
+    if (measureNames.some(it => it.endsWith(".end"))) {
+      query.addField({name: "measures", subName: "end", sql: "(measures.start + measures.value)"})
+    }
+    else {
+      query.addField({name: "measures", subName: "value"})
+    }
+
+    query.addFilter(filter)
+
+    if (skipZeroValues) {
+      // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
+      query.addFilter({field: "measures.value", operator: "!=", value: 0})
     }
   }
 
@@ -144,14 +165,33 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, skipZeroV
   query.order = ["t"]
 }
 
+function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+  let index = 1
+  if (configuration.extraQueryProducer != null) {
+    throw new Error("extraQueryMutator is already set")
+  }
+
+  configuration.extraQueryProducer = {
+    mutate() {
+      filter.value = values[index++]
+      return index !== values.length
+    },
+    getDataSetLabel(index: number): string {
+      return values[index].replaceAll("_", " ")
+    },
+    getDataSetMeasureNames(_index: number): Array<string> {
+      return [values[_index]]
+    }
+  }
+}
+
 function configureChart(configuration: DataQueryExecutorConfiguration, dataSetList: DataQueryResult): ChartOptions {
-  const measures = configuration.measures
-  const series = new Array<LineSeriesOption>(measures.length * dataSetList.length)
+  const series = new Array<LineSeriesOption>()
 
   const dataSets = new Array<DatasetOption>(dataSetList.length)
-  let seriesIndex = 0
   const extraQueryProducer = configuration.extraQueryProducer
   for (let dataSetIndex = 0; dataSetIndex < dataSetList.length; dataSetIndex++) {
+    const measures = extraQueryProducer == null ? configuration.measures : extraQueryProducer.getDataSetMeasureNames(dataSetIndex)
     const dimensions = new Array<DimensionDefinition>(1 + measures.length)
     dimensions[0] = {name: "time", type: "time"}
 
@@ -167,7 +207,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataSetLi
       else {
         seriesName = `${dataSetLabel}-${measureNameToLabel(measures[i])}`
       }
-      series[seriesIndex++] = {
+      series.push({
         name: seriesName,
         datasetIndex: dataSetIndex,
         type: "line",
@@ -182,7 +222,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataSetLi
           y: i + 1,
           tooltip: [i + 1],
         },
-      }
+      })
       dimensions[i + 1] = {
         name: seriesName,
         type: "int",

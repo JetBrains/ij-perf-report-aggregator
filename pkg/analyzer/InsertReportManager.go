@@ -40,8 +40,7 @@ type RunResult struct {
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
 
-  measureNames  []string
-  measureValues []int
+  extraFieldData  []interface{}
 
   branch string
 }
@@ -52,7 +51,7 @@ type InsertReportManager struct {
   context                          context.Context
   MaxGeneratedTime                 int64
   IsCheckThatNotAlreadyAddedNeeded bool
-  hasProductField                  bool
+  config                           DatabaseConfiguration
   dbName                           string
   nonMetricFieldCount              int
   insertInstallerManager           *InsertInstallerManager
@@ -62,8 +61,8 @@ type InsertReportManager struct {
 func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
   var selectStatement *sql.Stmt
   var err error
-  hasProductField := dbName == "ij"
-  if hasProductField {
+  config := GetAnalyzer(dbName)
+  if config.hasProductField {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
   } else {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where machine = ? and project = ? and generated_time = ? limit 1")
@@ -80,30 +79,20 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   sb.WriteString("insert into ")
   sb.WriteString(tableName)
   sb.WriteString(" (")
-  if hasProductField {
+  if config.hasProductField {
     sb.WriteString("product, ")
   }
   sb.WriteString("machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
 
-  metricFieldCount := 0
-  if dbName == "ij" {
-    for _, metric := range IjMetricDescriptors {
-      sb.WriteRune(',')
-      sb.WriteString(metric.Name)
-    }
-    metricFieldCount = len(IjMetricDescriptors)
-  } else if dbName != "fleet" {
-    sb.WriteString(", measures.name, measures.value")
-    metricFieldCount = 2
-  }
+  config.insertStatementWriter(&sb)
   sb.WriteString(") values (")
 
   nonMetricFieldCount := 13
-  if !hasProductField {
+  if !config.hasProductField {
     nonMetricFieldCount -= 1
   }
 
-  for i, n := 0, nonMetricFieldCount+metricFieldCount; i < n; i++ {
+  for i, n := 0, nonMetricFieldCount+config.extraFieldCount; i < n; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
@@ -127,7 +116,7 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
 
   manager := &InsertReportManager{
     nonMetricFieldCount: nonMetricFieldCount,
-    hasProductField:     hasProductField,
+    config:              config,
     dbName:              dbName,
     tableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
@@ -177,7 +166,7 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
   return nil
 }
 
-func (t *InsertReportManager) WriteMetrics(product interface{}, row *RunResult, branch string, providedProject interface{}, logger *zap.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject interface{}, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return err
@@ -226,37 +215,25 @@ func (t *InsertReportManager) WriteMetrics(product interface{}, row *RunResult, 
     }
   }
 
-  if t.dbName == "ij" {
-    var args []interface{}
-    args = make([]interface{}, 0, t.nonMetricFieldCount+len(IjMetricDescriptors))
-    if t.hasProductField {
-      args = append(args, product)
-    }
-    args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-      branch,
-      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
+  args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
+  if t.config.hasProductField {
+    args = append(args, product)
+  }
+  args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
+    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
+    branch,
+    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
 
+  if t.dbName == "ij" {
     err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
     if err != nil {
       return err
     }
-
-    _, err = insertStatement.ExecContext(t.context, args...)
-  } else if t.dbName == "fleet" {
-    _, err = insertStatement.ExecContext(t.context, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-      branch,
-      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
-
   } else {
-    _, err = insertStatement.ExecContext(t.context, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-      row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-      branch,
-      row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3,
-      row.measureNames, row.measureValues)
+    args = append(args, row.extraFieldData...)
   }
 
+  _, err = insertStatement.ExecContext(t.context, args...)
   if err != nil {
     return errors.WithStack(err)
   }

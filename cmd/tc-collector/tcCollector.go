@@ -2,8 +2,8 @@ package main
 
 import (
   "context"
-  e "errors"
   "database/sql"
+  e "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
@@ -82,7 +82,7 @@ func collectFromTeamCity(
   httpClient *http.Client, logger *zap.Logger,
   taskContext context.Context, cancel context.CancelFunc,
 ) error {
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, dbName, taskContext, logger, func() {
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, dbName, analyzer.GetAnalyzer(dbName).ReportReader, taskContext, logger, func() {
     logger.Debug("canceled by analyzer")
     cancel()
   })

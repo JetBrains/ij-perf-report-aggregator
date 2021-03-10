@@ -51,12 +51,7 @@ create table report2
   `classLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
 
   `resourceLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
-  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
-
-  measures Nested(
-    name LowCardinality(String),
-    value Int32
-  ) CODEC (ZSTD(20))
+  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20))
 )
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))

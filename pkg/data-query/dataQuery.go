@@ -267,8 +267,13 @@ func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
   if len(dimension.Sql) != 0 {
     sb.WriteString(dimension.Sql)
     sb.WriteString(" as ")
+    // escape - maybe nested name with dot
+    sb.WriteRune('`')
+    sb.WriteString(dimension.Name)
+    sb.WriteRune('`')
+  } else {
+    sb.WriteString(dimension.Name)
   }
-  sb.WriteString(dimension.Name)
 }
 
 func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{}) error {

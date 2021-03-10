@@ -31,11 +31,6 @@ import { defineComponent, computed, inject } from "vue"
 import { aggregationOperatorConfiguratorKey } from "../componentKeys"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
 
-function getConfigurator(props: {configurator?: AggregationOperatorConfigurator}): AggregationOperatorConfigurator {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return props.configurator ?? inject(aggregationOperatorConfiguratorKey)!
-}
-
 export default defineComponent({
   name: "AggregationOperatorSelect",
   props: {
@@ -45,23 +40,30 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const providedConfigurator = inject(aggregationOperatorConfiguratorKey, null)
+
+    function getConfigurator(): AggregationOperatorConfigurator {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return props.configurator ?? providedConfigurator
+    }
+
     return {
       value: computed({
         get() {
-          return getConfigurator(props).value.value.operator
+          return getConfigurator().value.value.operator
         },
         set(value: string) {
           // eslint-disable-next-line
-          getConfigurator(props).value.value.operator = value
+          getConfigurator().value.value.operator = value
         },
       }),
       quantile: computed({
         get() {
-          return getConfigurator(props).value.value.quantile
+          return getConfigurator().value.value.quantile
         },
         set(value: number) {
           // eslint-disable-next-line
-          getConfigurator(props).value.value.quantile = value
+          getConfigurator().value.value.quantile = value
         },
       }),
     }

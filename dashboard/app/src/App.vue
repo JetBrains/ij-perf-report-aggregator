@@ -12,6 +12,7 @@
         <el-submenu
           v-if="item.title !== null"
           :index="item.title"
+          @click="topLevelClicked(item.children[0].path)"
         >
           <template #title>
             {{ item.title }}
@@ -34,7 +35,10 @@
           </el-menu-item>
         </template>
       </template>
-      <el-menu-item style="padding: 0; vertical-align: center; float: right">
+      <el-menu-item
+        v-show='!activePath.startsWith("/report")'
+        style="padding: 0; vertical-align: center; float: right"
+      >
         <ServerSelect v-model="serverUrl" />
       </el-menu-item>
     </el-menu>
@@ -51,7 +55,7 @@
 import { serverUrlKey } from "shared/src/componentKeys"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { watch, defineComponent, provide, ref } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { getRoutes } from "./route"
 
 export default defineComponent({
@@ -71,10 +75,16 @@ export default defineComponent({
       activePath.value = p
     })
 
+    const router = useRouter()
     return {
       serverUrl,
       activePath,
       routes,
+      topLevelClicked(path: string) {
+        router.push({
+          path,
+        })
+      }
     }
   },
 })

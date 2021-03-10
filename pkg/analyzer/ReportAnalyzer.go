@@ -19,7 +19,8 @@ import (
 )
 
 type ReportAnalyzer struct {
-  dbName string
+  dbName   string
+  analyzer CustomReportAnalyzer
 
   insertQueue chan *ReportInfo
   DoneChannel chan error
@@ -39,7 +40,14 @@ type ReportAnalyzer struct {
   logger *zap.Logger
 }
 
-func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext context.Context, logger *zap.Logger, cancelOnError context.CancelFunc) (*ReportAnalyzer, error) {
+func CreateReportAnalyzer(
+  clickHouseUrl string,
+  dbName string,
+  reportAnalyzer CustomReportAnalyzer,
+  analyzeContext context.Context,
+  logger *zap.Logger,
+  cancelOnError context.CancelFunc,
+) (*ReportAnalyzer, error) {
   m := minify.New()
   m.AddFunc("json", json.Minify)
 
@@ -57,10 +65,11 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
 
   analyzer := &ReportAnalyzer{
     dbName:         dbName,
+    analyzer:       reportAnalyzer,
     insertQueue:    make(chan *ReportInfo, 32),
     analyzeContext: analyzeContext,
     // buffered channel - do not block send if no one yet read
-    DoneChannel:    make(chan error, 1),
+    DoneChannel: make(chan error, 1),
 
     waitGroup: sync.WaitGroup{},
 
@@ -84,7 +93,7 @@ func CreateReportAnalyzer(clickHouseUrl string, dbName string, analyzeContext co
           return
         }
 
-        err := analyzer.insert(report)
+        err = analyzer.insert(report)
         if err != nil {
           logger.Error("analyze stopped", zap.String("reason", "error occurred"), zap.Error(err))
           analyzer.firstError.Store(err)
@@ -122,11 +131,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TcBuildProperties:  extraData.TcBuildProperties,
   }
 
-  if t.dbName == "ij" {
-    err = ReadIjReport(runResult)
-  } else {
-    err = ReadReport(runResult)
-  }
+  err = ReadReport(runResult, t.analyzer)
   if err != nil {
     return err
   }

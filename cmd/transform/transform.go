@@ -11,7 +11,6 @@ import (
   "github.com/jmoiron/sqlx"
   "go.deanishe.net/env"
   "go.uber.org/zap"
-  "strings"
   "time"
 )
 
@@ -60,7 +59,7 @@ type TimeRange struct {
 const insertWorkerCount = 4
 
 func transform(clickHouseUrl string, logger *zap.Logger) error {
-  dbName := "sharedIndexes"
+  dbName := "fleet"
 
   db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
   if err != nil {
@@ -76,10 +75,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   }
 
   // reduce batch size if not enough memory
-  //insertReportManager.InsertManager.BatchSize = 2000
-
-  //var products []string
-  //db.SelectContext(taskContext, &products, "select distinct product from report")
+  insertReportManager.InsertManager.BatchSize = 10_000
 
   // the whole select result in memory - so, limit
   var timeRange TimeRange
@@ -94,7 +90,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   selectDuration := time.Hour * 24 * 7 * 4
   for current := timeRange.Min; current.Before(timeRange.Max); {
     next := current.Add(selectDuration)
-    err = process(db, current, next, insertReportManager, taskContext, logger)
+    err = process(db, dbName, current, next, insertReportManager, taskContext, logger)
     if err != nil {
       return err
     }
@@ -115,7 +111,15 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportManager *analyzer.InsertReportManager, taskContext context.Context, logger *zap.Logger) error {
+func process(
+  db *sqlx.DB,
+  dbName string,
+  startTime time.Time,
+  endTime time.Time,
+  insertReportManager *analyzer.InsertReportManager,
+  taskContext context.Context,
+  logger *zap.Logger,
+) error {
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
   rows, err := db.QueryxContext(taskContext, `
@@ -132,6 +136,8 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
   }
 
   defer util.Close(rows, logger)
+
+  customReportAnalyzer := analyzer.GetAnalyzer(dbName).ReportReader
 
   isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
@@ -168,21 +174,17 @@ func process(db *sqlx.DB, startTime time.Time, endTime time.Time, insertReportMa
       BuildC3: row.BuildC3,
     }
 
-    //if dbName == "ij" {
-    //  report, err = ReadIjReport(row.RawReport)
-    //} else {
-    err = analyzer.ReadReport(runResult)
-    //}
+    err = analyzer.ReadReport(runResult, customReportAnalyzer)
     if err != nil {
       return err
     }
 
-    if runResult.Report == nil || !strings.HasPrefix(runResult.Report.Project, "ijx-intellij-speed/") {
+    if runResult.Report == nil {
       // ignore report
       continue rowLoop
     }
 
-    err = insertReportManager.WriteMetrics(nil, runResult, row.Branch, row.Project, logger)
+    err = insertReportManager.WriteMetrics("", runResult, row.Branch, row.Project, logger)
     if err != nil {
       return err
     }

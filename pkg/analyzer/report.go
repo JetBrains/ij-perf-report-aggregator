@@ -10,7 +10,7 @@ import (
 
 var structParsers fastjson.ParserPool
 
-func ReadReport(runResult *RunResult) error {
+func ReadReport(runResult *RunResult, reader CustomReportAnalyzer) error {
   parser := structParsers.Get()
   defer structParsers.Put(parser)
 
@@ -35,35 +35,10 @@ func ReadReport(runResult *RunResult) error {
     TotalDurationActual: report.GetInt("totalDurationActual"),
   }
 
-  measureNames := make([]string, 0)
-  measureValues := make([]int, 0)
-  for _, measure := range report.GetArray("metrics") {
-    measureName := string(measure.GetStringBytes("n"))
-
-    value := measure.Get("d")
-    if value == nil {
-      value = measure.Get("c")
-      if value == nil {
-        return nil
-      }
-    }
-
-    floatValue := value.GetFloat64()
-    intValue := int(floatValue)
-    if floatValue != float64(intValue) {
-      return errors.WithMessagef(nil, "int expected, but got float %f", floatValue)
-    }
-
-    measureNames = append(measureNames, measureName)
-    measureValues = append(measureValues, intValue)
+  err = reader(runResult, report)
+  if err != nil {
+    return err
   }
-
-  if len(measureNames) == 0 {
-    return nil
-  }
-
-  runResult.measureNames = measureNames
-  runResult.measureValues = measureValues
   return nil
 }
 

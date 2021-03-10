@@ -58,7 +58,7 @@
 </template>
 <script lang="ts">
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { defineComponent, inject, onMounted, onUnmounted, PropType, reactive, Ref, ref, shallowRef, toRef, watch } from "vue"
+import { defineComponent, inject, onMounted, onUnmounted, PropType, reactive, Ref, ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { LineChartManager } from "../LineChartManager"
 import { DEFAULT_LINE_CHART_HEIGHT, numberFormat, timeFormat } from "../chart"
@@ -82,36 +82,43 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    // not reactive - change of initial value is ignored by intention
     measures: {
-      type: Array as PropType<Array<string>>,
-      default: () => [],
+      type: Array as PropType<Array<string> | null>,
+      default: () => null,
     },
   },
   setup(props) {
     const chartElement: Ref<HTMLElement | null> = shallowRef(null)
     let chartManager: LineChartManager | null = null
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    let dataQueryExecutor = props.provider ?? inject(dataQueryExecutorKey)!
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    const measures = props.measures
-    if (measures.length !== 0) {
-      // static list of measures is provided - create sub data query executor
-      const measureConfigurator = new PredefinedMeasureConfigurator(measures, props.skipZeroValues)
-      watch(() => props.skipZeroValues, value => {
-        (measureConfigurator as PredefinedMeasureConfigurator).skipZeroValues = value
-        dataQueryExecutor.scheduleLoad()
-      })
-      dataQueryExecutor = dataQueryExecutor.createSub([measureConfigurator])
-      dataQueryExecutor.scheduleLoad()
-    }
+    const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
+    const skipZeroValues = toRef(props, "skipZeroValues")
+    const chartToolTipManager = new ChartToolTipManager()
+    watchEffect(function () {
+      let dataQueryExecutor = props.provider ?? providedDataQueryExecutor
+      if (dataQueryExecutor == null) {
+        throw new Error("Neither `provider` property is set, nor `dataQueryExecutor` is provided")
+      }
 
-    // inject is used instead of prop because on dashboard page there are a lot of ChartCards and it is tedious to set property for each
-    const chartToolTipManager = new ChartToolTipManager(dataQueryExecutor)
+      // static list of measures is provided - create sub data query executor
+      if (props.measures != null) {
+        dataQueryExecutor = dataQueryExecutor.createSub([new PredefinedMeasureConfigurator(props.measures, skipZeroValues)])
+        dataQueryExecutor.scheduleLoad()
+      }
+      chartToolTipManager.dataQueryExecutor = dataQueryExecutor
+      if (chartManager != null) {
+        chartManager.dataQueryExecutor = dataQueryExecutor
+      }
+    })
+
     onMounted(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      chartManager = new LineChartManager(chartElement.value!, dataQueryExecutor, toRef(props, "dataZoom"),
+      chartManager = new LineChartManager(chartElement.value!, chartToolTipManager.dataQueryExecutor, toRef(props, "dataZoom"),
         chartToolTipManager.formatArrayValue.bind(chartToolTipManager))
+
+      watch(skipZeroValues, () => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        chartManager!.dataQueryExecutor.scheduleLoad()
+      })
     })
     onUnmounted(() => {
       const it = chartManager
@@ -136,6 +143,8 @@ export default defineComponent({
 })
 
 class ChartToolTipManager {
+  public dataQueryExecutor!: DataQueryExecutor
+
   private readonly tooltipUrlProvider = inject(tooltipUrlProviderKey, null)
   readonly infoIsVisible = ref(false)
 
@@ -144,9 +153,6 @@ class ChartToolTipManager {
   readonly scheduleTooltipHide = debounceSync(() => {
     this.infoIsVisible.value = false
   }, 2_000)
-
-  constructor(private readonly dataQueryExecutor: DataQueryExecutor) {
-  }
 
   formatArrayValue(params: Array<CallbackDataParams>) {
     const query = this.dataQueryExecutor.lastQuery

@@ -46,7 +46,7 @@ export class ChartComponent {
           console.error("Cannot create chart", e)
           ElNotification({
             type: "error",
-            message: e.toString(),
+            message: (e as Error).toString(),
           })
         })
     }

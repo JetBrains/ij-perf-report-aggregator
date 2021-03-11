@@ -91,6 +91,7 @@ export abstract class BaseTimeLineChartManager extends XYChartManager {
         return value
       }
       else {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         return `${value}\n{description}`
       }
     })
@@ -176,7 +177,7 @@ export abstract class BaseTimeLineChartManager extends XYChartManager {
         }
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
       if ((item as any).cat === SERVICE_WAITING) {
         // highlight as error
         item.color = color("#ff0000")

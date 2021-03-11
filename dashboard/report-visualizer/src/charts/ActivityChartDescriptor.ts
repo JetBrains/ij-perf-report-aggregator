@@ -35,8 +35,7 @@ export const chartDescriptors: Array<ActivityChartDescriptor> = [
     sourceNames: serviceSourceNames,
     shortNameProducer: getShortName,
     async chartManagerProducer(container: HTMLElement, sourceNames: Array<string>, descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return new ((await import("./ServiceChartManager")).ServiceChartManager)(container, sourceNames!, descriptor)
+      return new ((await import("./ServiceChartManager")).ServiceChartManager)(container, sourceNames, descriptor)
     }
   },
   {

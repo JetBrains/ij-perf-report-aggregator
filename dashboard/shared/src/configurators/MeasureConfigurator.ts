@@ -1,18 +1,16 @@
 import { LineSeriesOption } from "echarts/charts"
-import { DatasetOption } from "echarts/types/dist/shared"
-import { DimensionDefinition } from "echarts/types/src/util/types"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, ChartOptions } from "../chart"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 
 // natural sort of alphanumerical strings
-export const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
+const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
@@ -79,7 +77,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     query.table = "report"
     query.flat = true
 
-    return loadJson<Array<string>>(`${configuration.serverUrl}/api/v1/load/${encodeQuery(query)}`, null, taskHandle, data => {
+    return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, null, taskHandle, data => {
       this.data.value = data
     })
   }
@@ -127,21 +125,24 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
     sql: "toUnixTimestamp(generated_time) * 1000",
   })
 
+  // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
   if (query.db === "ij") {
-    for (let i = 0; i < measureNames.length; i++) {
-      const value = measureNames[i]
-      query.addField(value)
-      if (skipZeroValues) {
-        query.addFilter({field: value, operator: "!=", value: 0})
-      }
+    const field: DataQueryDimension = {name: measureNames[0]}
+    const filter: DataQueryFilter | null = skipZeroValues ? {field: measureNames[0], operator: "!=", value: 0} : null
+    if (measureNames.length > 1) {
+      configureQueryProducer(configuration, field, filter, measureNames)
+    }
+
+    query.addField(field)
+    if (filter != null) {
+      query.addFilter(filter)
     }
   }
   else {
     const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
-    const filter = {field: "measures.name", value: pureNames[0]}
+    const filter: DataQueryFilter = {field: "measures.name", value: pureNames[0]}
     if (measureNames.length > 1) {
-      // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-      configureQueryProducer(configuration, filter, pureNames)
+      configureQueryProducer(configuration, null, filter, pureNames)
     }
 
     if (measureNames.some(it => it.endsWith(".end"))) {
@@ -165,7 +166,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   query.order = ["t"]
 }
 
-function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
   let index = 1
   if (configuration.extraQueryProducer != null) {
     throw new Error("extraQueryMutator is already set")
@@ -173,72 +174,57 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
 
   configuration.extraQueryProducer = {
     mutate() {
-      filter.value = values[index++]
+      if (field != null) {
+        field.name = values[index]
+        if (filter != null) {
+          filter.field = field.name
+        }
+      }
+      else if (filter != null) {
+        filter.value = values[index]
+      }
+      index++
       return index !== values.length
     },
     getDataSetLabel(index: number): string {
       return values[index].replaceAll("_", " ")
     },
-    getDataSetMeasureNames(_index: number): Array<string> {
-      return [values[_index]]
+    getMeasureName(index: number): string {
+      return values[index]
     }
   }
 }
 
-function configureChart(configuration: DataQueryExecutorConfiguration, dataSetList: DataQueryResult): ChartOptions {
+function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): ChartOptions {
   const series = new Array<LineSeriesOption>()
-
-  const dataSets = new Array<DatasetOption>(dataSetList.length)
   const extraQueryProducer = configuration.extraQueryProducer
-  for (let dataSetIndex = 0; dataSetIndex < dataSetList.length; dataSetIndex++) {
-    const measures = extraQueryProducer == null ? configuration.measures : extraQueryProducer.getDataSetMeasureNames(dataSetIndex)
-    const dimensions = new Array<DimensionDefinition>(1 + measures.length)
-    dimensions[0] = {name: "time", type: "time"}
+  for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
+    const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
 
-    const dataSetLabel = extraQueryProducer == null ? null : extraQueryProducer.getDataSetLabel(dataSetIndex)
-    for (let i = 0; i < measures.length; i++) {
-      let seriesName: string
-      if (dataSetLabel === null) {
-        seriesName = measureNameToLabel(measures[i])
-      }
-      else if (measures.length === 1) {
-        seriesName = dataSetLabel
-      }
-      else {
-        seriesName = `${dataSetLabel}-${measureNameToLabel(measures[i])}`
-      }
-      series.push({
-        name: seriesName,
-        datasetIndex: dataSetIndex,
-        type: "line",
-        smooth: true,
-        showSymbol: false,
-        legendHoverLink: true,
-        sampling: "lttb",
-        encode: {
-          // index of time
-          x: 0,
-          // +1 because time is the 0-dimension
-          y: i + 1,
-          tooltip: [i + 1],
-        },
-      })
-      dimensions[i + 1] = {
-        name: seriesName,
-        type: "int",
-      }
+    const label = extraQueryProducer == null ? null : extraQueryProducer.getDataSetLabel(dataIndex)
+    let seriesName: string
+    if (label === null) {
+      seriesName = measureNameToLabel(measureName)
     }
-
-    dataSets[dataSetIndex] = {
-      dimensions,
-      // just optimization to avoid auto-detect (https://echarts.apache.org/en/option.html#dataset.sourceHeader)
-      sourceHeader: false,
-      source: dataSetList[dataSetIndex],
+    else if (measureName.length === 1) {
+      seriesName = label
     }
+    else {
+      seriesName = `${label}-${measureNameToLabel(measureName)}`
+    }
+    series.push({
+      name: seriesName,
+      type: "line",
+      smooth: true,
+      showSymbol: false,
+      legendHoverLink: true,
+      sampling: "lttb",
+      dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
+      data: dataList[dataIndex],
+    })
   }
 
   return {
-    dataset: dataSets,
     series,
   }
 }

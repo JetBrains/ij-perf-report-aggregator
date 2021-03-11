@@ -88,11 +88,19 @@ interface ExtraQueryProducer {
 
   getDataSetLabel(index: number): string
 
-  getDataSetMeasureNames(index: number): Array<string>
+  getMeasureName(index: number): string
 }
 
 export class DataQueryExecutorConfiguration {
-  serverUrl?: string
+  serverUrl: string | null = null
+
+  getServerUrl(): string {
+    const result = this.serverUrl
+    if (result == null) {
+      throw new Error("serverUrl is not configured")
+    }
+    return result
+  }
 
   // returns false if done
   extraQueryProducer: ExtraQueryProducer | null = null

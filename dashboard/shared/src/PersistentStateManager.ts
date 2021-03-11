@@ -18,6 +18,7 @@ export class PersistentStateManager {
       this.state = defaultState
     }
     else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       this.state = JSON.parse(storedState)
       Object.assign(this.state, defaultState)
     }
@@ -60,7 +61,7 @@ export class PersistentStateManager {
 
       if (isChanged) {
         // noinspection JSIgnoredPromiseFromCall
-        this.router.push({query,})
+        void this.router.push({query,})
       }
     }
   }

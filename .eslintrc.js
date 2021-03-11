@@ -3,25 +3,26 @@ module.exports = {
   env: {
     node: true,
   },
-  settings: {
-    "import/extensions": [
-      ".ts",
-      ".vue",
-    ],
-  },
+  // settings: {
+  //   "import/extensions": [
+  //     ".ts",
+  //     ".vue",
+  //   ],
+  // },
   extends: [
-    "plugin:vue/vue3-essential",
-    "plugin:vue/vue3-recommended",
-    "plugin:vue/vue3-strongly-recommended",
     "plugin:import/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "@vue/typescript/recommended",
+    "plugin:vue/vue3-essential",
+    "plugin:vue/vue3-recommended",
+    "plugin:vue/vue3-strongly-recommended",
   ],
   parserOptions: {
     ecmaVersion: 2020,
-    warnOnUnsupportedTypeScriptVersion: false,
+    project: ["./dashboard/**/tsconfig.json", "./jb/dashboard/jb/tsconfig.json"],
   },
   rules: {
     // "no-console": process.env.NODE_ENV === "production" ? ["warn", {allow: ["warn", "error"]}] : "off",
@@ -36,6 +37,7 @@ module.exports = {
     "import/no-extraneous-dependencies": "error",
     "arrow-parens": ["error", "as-needed"],
     "@typescript-eslint/semi": ["error", "never"],
+    "@typescript-eslint/restrict-template-expressions": ["error", {allowNullish: true}],
     "@typescript-eslint/no-inferrable-types": ["error", {"ignoreParameters": true}],
     "@typescript-eslint/member-delimiter-style": ["error", {
       "multiline": {

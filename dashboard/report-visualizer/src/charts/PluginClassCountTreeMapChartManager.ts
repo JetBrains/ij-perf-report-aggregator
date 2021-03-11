@@ -22,7 +22,7 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
         formatter: adaptToolTipFormatter(params => {
           const info = params[0]
           const value = info.value as number
-          let result = `${info.marker} ${info.name}<span style="float:right;margin-left:20px;font-weight:900">${numberFormat.format(value)}</span>`
+          let result = `${info.marker as string} ${info.name}<span style="float:right;margin-left:20px;font-weight:900">${numberFormat.format(value)}</span>`
           const item = (info.data as ItemExtraInfo).item
           result += `<br/>  class loading time in EDT<span style="float:right;margin-left:20px">${item.classLoadingEdtTime}</span>`
           result += `<br/>class loading time in background<span style="float:right;margin-left:20px">${item.classLoadingBackgroundTime}</span>`

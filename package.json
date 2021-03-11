@@ -3,7 +3,7 @@
   "scripts": {
     "serve": "vite serve",
     "build": "vite build --emptyOutDir",
-    "lint": "NODE_ENV=production eslint --ext .ts,.vue dashboard jb/dashboard/jb",
+    "lint": "NODE_ENV=production eslint dashboard jb/dashboard/jb",
     "update-deps": "pnpm update -i -r --latest"
   },
   "devDependencies": {
@@ -15,7 +15,7 @@
     "eslint": "7.21.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-vue": "7.7.0",
-    "rollup": "2.41.0",
+    "rollup": "2.41.1",
     "rollup-plugin-visualizer": "4.2.0",
     "sass": "1.32.8",
     "typescript": "4.2.3",

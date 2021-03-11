@@ -136,13 +136,12 @@ export class DataManager {
       return this._markerItems
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const items = this.data == null ? null : this.data!.items
+    const items = this.data == null ? null : this.data.items
     if (items == null || items.length === 0) {
       return []
     }
 
-    const result = new Array(markerNames.length)
+    const result = new Array<ItemV0 | null>(markerNames.length)
     // JS array is sparse and setting length doesn't pre-fill array
     result.fill(null)
     itemLoop: for (const item of items) {
@@ -169,7 +168,7 @@ export class DataManager {
   }
 
   computeGuides(items: Array<ItemV0>): Array<GuideLineDescriptor> {
-    const rangeItems: Array<ItemV0 | null> = new Array(markerNames.length)
+    const rangeItems = new Array<ItemV0 | null>(markerNames.length)
     rangeItems.fill(null)
 
     let outOfReady: ItemV0 | null = null
@@ -217,13 +216,16 @@ export class DataManager {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
 function getItemStartInMs(item: any): number {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   if (item.ts === undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
     return item.start
   }
   else {
     // trace event format
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return item.ts / 1000
   }
 }

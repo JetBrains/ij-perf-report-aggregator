@@ -67,7 +67,7 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
     }
 
     this.loading.value = true
-    return loadJson<Array<string>>(`${configuration.serverUrl}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
+    return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
       this.values.value = data
     })
   }
@@ -87,8 +87,8 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
     getDataSetLabel(index: number): string {
       return values[index]
     },
-    getDataSetMeasureNames(_index: number): Array<string> {
-      return configuration.measures
+    getMeasureName(_index: number): string {
+      return configuration.measures[0]
     }
   }
 }

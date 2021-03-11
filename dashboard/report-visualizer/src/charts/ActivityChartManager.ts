@@ -30,10 +30,9 @@ export class ActivityChartManager extends XYChartManager {
     this.chart.colors.step = 2
 
     this.chart.legend.itemContainers.template.events.on("hit", event => {
+      const target = event.target
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const target = event!.target!
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const legendItem = target!.dataItem!.dataContext as ActivityLegendItem
+      const legendItem = target.dataItem!.dataContext as ActivityLegendItem
       const legendHitHandler = this.legendHitHandler
       if (legendHitHandler != null) {
         legendHitHandler(legendItem, target.isActive)
@@ -126,6 +125,7 @@ export class ActivityChartManager extends XYChartManager {
     let getItemListBySourceName: (name: string) => Array<ItemV0> | null | undefined = name => {
       // eslint-disable-next-line
       // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return dataManager.data[name]
     }
 
@@ -138,7 +138,7 @@ export class ActivityChartManager extends XYChartManager {
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const items = dataManager.data[this.sourceNames[0]] as Array<Item>
+      const items: Array<ItemV0> = dataManager.data[this.sourceNames[0]] as Array<ItemV0>
       if (items == null || items.length === 0) {
         sourceNames = []
       }

@@ -143,6 +143,6 @@ function getClickHouseIntervalByDuration(range: TimeRange) {
     case "all":
       return "180 day"
     default:
-      throw new Error(`Unsupported time range: ${range}`)
+      throw new Error(`Unsupported time range: ${range as string}`)
   }
 }

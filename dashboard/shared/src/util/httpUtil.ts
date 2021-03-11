@@ -61,7 +61,7 @@ export function loadJson<T>(url: string,
         return Promise.reject(new Error(`cannot load data (url=${url}, status=${response.status}`))
       }
     })
-    .then(data => {
+    .then((data: T) => {
       loaded()
       if (taskHandle.isCancelled) {
         return null
@@ -89,7 +89,7 @@ export function loadJson<T>(url: string,
           showError(serverNotAvailableErrorMessage)
         }
         else {
-          showError(`Cannot load data from ${url}: ${e.message}`)
+          showError(`Cannot load data from ${url}: ${(e as Error).message}`)
         }
       }
       return null

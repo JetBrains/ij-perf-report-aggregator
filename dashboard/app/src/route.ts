@@ -35,8 +35,7 @@ export function createAndConfigureRouter(): Router {
     routes,
   })
   router.afterEach((to, _from) => {
-    // noinspection JSIgnoredPromiseFromCall
-    nextTick(() => {
+    void nextTick(() => {
       document.title = to.meta["pageTitle"] as string ?? ""
     })
   })

@@ -50,7 +50,7 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
     }
 
     this.loading.value = true
-    return loadJson<Array<string>>(`${configuration.serverUrl}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
+    return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
       this.loading.value = false
       if (this.customValueSort != null) {
         data.sort(this.customValueSort)

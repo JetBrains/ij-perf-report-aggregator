@@ -21,7 +21,7 @@ export class TimeDistributionChartManager implements ChartManager {
       tooltip: {
         formatter: adaptToolTipFormatter(params => {
           const info = params[0]
-          let result = `${info.marker} ${info.name}`
+          let result = `${info.marker as string} ${info.name}`
           const count = (info.data as ItemExtraInfo).count
           if (count !== undefined) {
             result += ` (count=${count})`

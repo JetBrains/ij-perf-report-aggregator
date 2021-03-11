@@ -66,6 +66,7 @@ export class DataQueryExecutor {
         debouncedExecution = new DebouncedTask(taskHandle => this.execute(taskHandle), valueChangeDelay)
       }
       watch(value, v => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         console.debug(`[queryExecutor] schedule execution on configurator value change (new value=${v})`)
         debouncedExecution.execute()
       }, {deep: typeof value.value === "object" && value.value !== null})
@@ -75,6 +76,7 @@ export class DataQueryExecutor {
   }
 
   scheduleLoadIncludingConfigurators(immediately: boolean = false): void {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.debug(`${this.getDebugTag()} scheduleLoadIncludingConfigurators (immediately=${immediately})`)
 
     for (const configurator of this.configurators) {
@@ -141,7 +143,7 @@ export class DataQueryExecutor {
     }
     serializedQuery += ")"
 
-    return await loadJson<Array<Array<Array<never>>>>(`${configuration.serverUrl}/api/v1/load/${serializedQuery}`, null, taskHandle, data => {
+    return await loadJson<Array<Array<Array<never>>>>(`${configuration.getServerUrl()}/api/v1/load/${serializedQuery}`, null, taskHandle, data => {
       if (taskHandle.isCancelled) {
         return
       }
@@ -149,6 +151,7 @@ export class DataQueryExecutor {
       this._lastQuery = query
 
       // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery), null, 2)})`)
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
       if (this.listener == null) {
         this.notConsumedData = {configuration, data}

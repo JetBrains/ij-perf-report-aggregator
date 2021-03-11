@@ -21,7 +21,7 @@ export function transformToTimeLineItems(items: Array<ItemV0>): Array<TimeLineIt
       level: 0,
       colorIndex: -1,
       rowIndex: -1,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-assignment
       color: null as any,
     }
     result[i] = item

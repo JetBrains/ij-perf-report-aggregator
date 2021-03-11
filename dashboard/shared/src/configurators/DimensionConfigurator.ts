@@ -84,7 +84,7 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
       filter.value = values[index++]
       return index !== values.length
     },
-    getDataSetLabel(index: number): string {
+    getSeriesName(index: number): string {
       return values[index]
     },
     getMeasureName(_index: number): string {

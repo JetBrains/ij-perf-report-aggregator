@@ -4,8 +4,12 @@
   "dependencies": {
     "echarts": "5.0.2",
     "element-plus": "1.0.2-beta.33",
+    "humanize-duration": "^3.25.1",
     "rison-node": "2.1.1",
     "vue": "3.0.7",
     "vue-router": "4.0.4"
+  },
+  "devDependencies": {
+    "@types/humanize-duration": "^3.18.1"
   }
 }

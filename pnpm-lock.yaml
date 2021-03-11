@@ -90,12 +90,17 @@ importers:
     dependencies:
       echarts: 5.0.2
       element-plus: 1.0.2-beta.33_vue@3.0.7
+      humanize-duration: 3.25.1
       rison-node: 2.1.1
       vue: 3.0.7
       vue-router: 4.0.4_vue@3.0.7
+    devDependencies:
+      '@types/humanize-duration': 3.18.1
     specifiers:
+      '@types/humanize-duration': ^3.18.1
       echarts: 5.0.2
       element-plus: 1.0.2-beta.33
+      humanize-duration: ^3.25.1
       rison-node: 2.1.1
       vue: 3.0.7
       vue-router: 4.0.4
@@ -240,6 +245,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-bWG5wapaWgbss9E238T0R6bfo5Fh3OkeoSt245CM7JJwVwpw6MEBCbIxLq5z8KzsE3uJhzcIuQkyiZmzV3M/Dw==
+  /@types/humanize-duration/3.18.1:
+    dev: true
+    resolution:
+      integrity: sha512-MUgbY3CF7hg/a/jogixmAufLjJBQT7WEf8Q+kYJkOc47ytngg1IuZobCngdTjAgY83JWEogippge5O5fplaQlw==
   /@types/json-schema/7.0.7:
     dev: true
     resolution:
@@ -1817,6 +1826,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==
+  /humanize-duration/3.25.1:
+    dev: false
+    resolution:
+      integrity: sha512-P+dRo48gpLgc2R9tMRgiDRNULPKCmqFYgguwqOO2C0fjO35TgdURDQDANSR1Nt92iHlbHGMxOTnsB8H8xnMa2Q==
   /iconv-lite/0.6.2:
     dependencies:
       safer-buffer: 2.1.2

@@ -1,9 +1,9 @@
 import { DurationAxis } from "@amcharts/amcharts4/charts"
 import { Label, ColorSet } from "@amcharts/amcharts4/core"
-import {DataManager} from "../state/DataManager"
-import {InputData} from "../state/data"
-import {BaseTimeLineChartManager, LABEL_DURATION_THRESHOLD} from "./BaseTimeLineChartManager"
-import {TimeLineItem, transformToTimeLineItems} from "./timeLineChartHelper"
+import { DataManager } from "../state/DataManager"
+import { InputData } from "../state/data"
+import { BaseTimeLineChartManager, LABEL_DURATION_THRESHOLD } from "./BaseTimeLineChartManager"
+import { TimeLineItem, transformToTimeLineItems } from "./timeLineChartHelper"
 
 export class TimelineChartManager extends BaseTimeLineChartManager {
   private readonly statsLabel: Label
@@ -83,11 +83,11 @@ export class TimelineChartManager extends BaseTimeLineChartManager {
     for (const item of parallelItems) {
       const isAsyncServicePreloading = item.name.endsWith(" async preloading")
       if (isAsyncServicePreloading || item.name.endsWith(" sync preloading")) {
-        guides.push({label: "", value: item.end, color: item.color})
+        guides.push({ label: "", value: item.end, color: item.color })
       }
 
       if (isAsyncServicePreloading) {
-        guides.push({label: "", value: item.start, color: item.color})
+        guides.push({ label: "", value: item.start, color: item.color })
       }
     }
   }

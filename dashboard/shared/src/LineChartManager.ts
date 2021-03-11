@@ -1,13 +1,42 @@
 import { TplFormatterParam } from "echarts/types/src/util/format"
 import { OrdinalRawValue } from "echarts/types/src/util/types"
+import humanizeDuration, { HumanizerOptions } from "humanize-duration"
 import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { adaptToolTipFormatter, ChartOptions, numberFormat, timeFormat, ToolTipFormatter, useLineAndBarCharts } from "./chart"
+import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "./chart"
 import { DataQuery } from "./dataQuery"
+import { ChartOptions, useLineAndBarCharts } from "./echarts"
 import { debounceSync } from "./util/debounce"
 
 export type ChartTooltipLinkProvider = (name: string, query: DataQuery) => string
+
+const durationFormatOptions: HumanizerOptions = {
+  language: "shortEn",
+  round: true,
+  units: ["y", "mo", "w", "d", "h", "m", "s", "ms"],
+  languages: {
+    shortEn: {
+      y: () => "y",
+      mo: () => "mo",
+      w: () => "w",
+      d: () => "d",
+      h: () => "h",
+      m: () => "m",
+      s: () => "s",
+      ms: () => "ms",
+    },
+  },
+}
+const shortEnglishHumanizer = humanizeDuration.humanizer(durationFormatOptions)
+export const axisDurationFormatter = humanizeDuration.humanizer({
+  ...durationFormatOptions,
+  delimiter: " "
+})
+
+export function formatDuration(value: number): string {
+  return shortEnglishHumanizer(value)
+}
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -17,8 +46,6 @@ const dataZoomConfig = [
 ]
 
 useLineAndBarCharts()
-
-const numberFormatWithUnit = createNumberFormatWithUnit()
 
 export class LineChartManager {
   private readonly chart: ChartManagerHelper
@@ -60,15 +87,14 @@ export class LineChartManager {
       yAxis: {
         type: "value",
         axisLabel: {
-          // just to be sure that axis label will be formatted using language-sensitive number formatting
-          formatter(value: OrdinalRawValue, _index: number) {
-            return numberFormat.format(value as number)
+          formatter(value: OrdinalRawValue, _index: number): string {
+            return axisDurationFormatter(value as number)
           },
         },
         axisPointer: {
           label: {
-            formatter(data: TplFormatterParam) {
-              return numberFormatWithUnit.format(data["value"])
+            formatter(data: TplFormatterParam): string {
+              return formatDuration(data["value"])
             },
           },
         },
@@ -105,22 +131,5 @@ export class LineChartManager {
   dispose(): void {
     this.chart.dispose()
     this.dataQueryExecutor.setListener(null)
-  }
-}
-
-function createNumberFormatWithUnit(): Intl.NumberFormat {
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: "unit",
-      unit: "millisecond",
-      maximumFractionDigits: 0,
-    })
-  }
-  catch (e) {
-    // Safari doesn't support `unit` (https://caniuse.com/mdn-javascript_builtins_intl_numberformat_numberformat_unit)
-    return new Intl.NumberFormat(undefined, {
-      style: "decimal",
-      maximumFractionDigits: 0,
-    })
   }
 }

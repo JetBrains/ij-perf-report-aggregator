@@ -11,10 +11,11 @@
 </template>
 <script lang="ts">
 import { PropType, defineComponent, inject, onMounted, onUnmounted, Ref, shallowRef } from "vue"
-import { BarChartManager} from "../BarChartManager"
+import { BarChartManager } from "../BarChartManager"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { aggregationOperatorConfiguratorKey, dataQueryExecutorKey, timeRangeKey } from "../componentKeys"
+import { chartDefaultStyle } from "../chart"
 import { PredefinedGroupingMeasureConfigurator } from "../configurators/PredefinedGroupingMeasureConfigurator"
+import { aggregationOperatorConfiguratorKey, chartStyle, dataQueryExecutorKey, timeRangeKey } from "../injectionKeys"
 
 export default defineComponent({
   name: "BarChartCard",
@@ -49,7 +50,7 @@ export default defineComponent({
       throw new Error("aggregationOperatorConfigurator is not injected but required")
     }
 
-    const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange)
+    const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, inject(chartStyle, chartDefaultStyle))
     let dataQueryExecutor = props.provider ?? inject(dataQueryExecutorKey)
     dataQueryExecutor = dataQueryExecutor.createSub([aggregationOperatorConfigurator, measureConfigurator])
     dataQueryExecutor.init()

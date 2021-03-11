@@ -8,8 +8,8 @@
 
 <script lang="ts">
 import { defineComponent, shallowRef } from "vue"
-import {ChartComponent} from "../charts/ChartComponent"
-import {ServiceTimeLineChartManager} from "./ServiceTimeLineChartManager"
+import { ChartComponent } from "../charts/ChartComponent"
+import { ServiceTimeLineChartManager } from "./ServiceTimeLineChartManager"
 
 export default defineComponent({
   name: "ServiceTimelineChart",

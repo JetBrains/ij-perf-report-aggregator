@@ -1,5 +1,5 @@
 import { EChartsType, throttle, init as initChart } from "echarts/core"
-import { ChartOptions } from "./chart"
+import { ChartOptions } from "./echarts"
 
 export class ChartManagerHelper {
   readonly chart: EChartsType

@@ -1,10 +1,10 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import { Axis, CategoryAxis, DurationAxis, ColumnSeries, LabelBullet } from "@amcharts/amcharts4/charts"
 import { color, Color, Sprite, ColorSet } from "@amcharts/amcharts4/core"
-import {XYChartManager} from "../charts/ChartManager"
-import {DataManager, SERVICE_WAITING} from "../state/DataManager"
-import {ItemV0} from "../state/data"
-import {TimeLineGuide, TimeLineItem, transformToTimeLineItems} from "./timeLineChartHelper"
+import { XYChartManager } from "../charts/ChartManager"
+import { DataManager, SERVICE_WAITING } from "../state/DataManager"
+import { ItemV0 } from "../state/data"
+import { TimeLineGuide, TimeLineItem, transformToTimeLineItems } from "./timeLineChartHelper"
 
 export const LABEL_DURATION_THRESHOLD = 20
 

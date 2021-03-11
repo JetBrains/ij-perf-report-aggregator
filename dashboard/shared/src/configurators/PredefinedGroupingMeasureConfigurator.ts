@@ -2,13 +2,15 @@ import { BarSeriesOption } from "echarts/charts"
 import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
 import { Ref } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
-import { ChartConfigurator, ChartOptions, numberFormat } from "../chart"
+import { axisDurationFormatter } from "../LineChartManager"
+import { ChartConfigurator, ChartStyle, numberFormat } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
+import { ChartOptions } from "../echarts"
 import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, private readonly timeRange: Ref<TimeRange>) {
+  constructor(private readonly measures: Array<string>, private readonly timeRange: Ref<TimeRange>, private readonly chartStyle: ChartStyle) {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -63,7 +65,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       const source: Array<{ [key: string]: string | number }> = []
       for (let dataSetIndex = 0; dataSetIndex < dataSets.length; dataSetIndex++){
         const dataSet = dataSets[dataSetIndex]
-        const dataSetLabel = extraQueryProducer.getDataSetLabel(dataSetIndex)
+        const dataSetLabel = extraQueryProducer.getSeriesName(dataSetIndex)
         const column: { [key: string]: string | number } = {dimension: dataSetLabel}
         source.push(column)
         for (const data of dataSet) {
@@ -82,10 +84,8 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
           type: "bar",
           label: {
             show: true,
-            formatter(data: CallbackDataParams) {
-              return numberFormat.format((data.value as { [key: string]: string | number })[data.seriesName as string] as number)
-            },
-            position: "right",
+            formatter: formatterForFieldData,
+            position: this.chartStyle.barSeriesLabelPosition,
           },
         }
       }
@@ -106,10 +106,8 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
         seriesLayoutBy: "row",
         label: {
           show: true,
-          formatter(data: CallbackDataParams) {
-            return numberFormat.format(Math.round((data.value as Array<number>)[i + 1]))
-          },
-          position: "right",
+          formatter,
+          position: this.chartStyle.barSeriesLabelPosition,
         },
       }
     }
@@ -130,6 +128,19 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       series,
     }
   }
+}
+
+const formatterForFieldData = function (data: CallbackDataParams) {
+  const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
+  if (value > 10_000) {
+    return axisDurationFormatter(value)
+  }
+  return numberFormat.format(value)
+}
+
+const formatter = function (data: CallbackDataParams): string {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return numberFormat.format((data.value as Array<number>)[data.seriesIndex! + 1])
 }
 
 function getClickHouseIntervalByDuration(range: TimeRange) {

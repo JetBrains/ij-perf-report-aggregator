@@ -4,7 +4,7 @@
     placement="top"
     trigger="manual"
     :auto-close="1000"
-    :width="240"
+    width="fit-content"
   >
     <template #reference>
       <el-card
@@ -43,13 +43,13 @@
         <div
           v-for="item in reportTooltipData.items"
           :key="item.name"
-          style="margin: 10px 0 0;"
+          style="margin: 10px 0 0;white-space: nowrap"
         >
           <span
             class="tooltipNameMarker"
             :style='{"background-color": item.color}'
           />
-          <span style="margin-left:2px">{{ item.name }}</span>
+          <span style="margin-left:2px;">{{ item.name }}</span>
           <span class="tooltipValue">{{ item.value }}</span>
         </div>
       </div>
@@ -60,11 +60,11 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { defineComponent, inject, onMounted, onUnmounted, PropType, reactive, Ref, ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { LineChartManager } from "../LineChartManager"
-import { DEFAULT_LINE_CHART_HEIGHT, numberFormat, timeFormat } from "../chart"
-import { dataQueryExecutorKey, tooltipUrlProviderKey } from "../componentKeys"
+import { formatDuration, LineChartManager } from "../LineChartManager"
+import { DEFAULT_LINE_CHART_HEIGHT, timeFormat } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
-import { encodeQuery } from "../dataQuery"
+import { DataQueryFilter, encodeQuery } from "../dataQuery"
+import { dataQueryExecutorKey, serverUrlKey, tooltipUrlProviderKey } from "../injectionKeys"
 import { debounceSync } from "../util/debounce"
 
 export default defineComponent({
@@ -91,8 +91,10 @@ export default defineComponent({
     const chartElement: Ref<HTMLElement | null> = shallowRef(null)
     let chartManager: LineChartManager | null = null
     const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const serverUrl = inject(serverUrlKey)!
     const skipZeroValues = toRef(props, "skipZeroValues")
-    const chartToolTipManager = new ChartToolTipManager()
+    const chartToolTipManager = new ChartToolTipManager(serverUrl)
     watchEffect(function () {
       let dataQueryExecutor = props.provider ?? providedDataQueryExecutor
       if (dataQueryExecutor == null) {
@@ -143,6 +145,9 @@ export default defineComponent({
 })
 
 class ChartToolTipManager {
+  constructor(private readonly serverUrl: Ref<string>) {
+  }
+
   public dataQueryExecutor!: DataQueryExecutor
 
   private readonly tooltipUrlProvider = inject(tooltipUrlProviderKey, null)
@@ -166,12 +171,36 @@ class ChartToolTipManager {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: measure.seriesName!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        value: numberFormat.format((measure.value as Array<number>)[measure.encode!["y"][0]]),
+        value: formatDuration((measure.value as Array<number>)[measure.encode!["y"][0]]),
         color: measure.color as string,
       }
     })
-    reportTooltipData.linkText = timeFormat.format((params[0].value as Array<number>)[0])
-    reportTooltipData.linkUrl = this.tooltipUrlProvider == null ? null : `/api/v1/report/${encodeQuery(query)}`
+    const generatedTime = (params[0].value as Array<number>)[0]
+    reportTooltipData.linkText = timeFormat.format(generatedTime)
+    if (this.tooltipUrlProvider == null) {
+      reportTooltipData.linkUrl = null
+    }
+    else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      let q: { filters: Array<DataQueryFilter> } = JSON.parse(JSON.stringify(query, function replacer(key, value) {
+        if (key === "fields" || key === "order" || key === "flat") {
+          return undefined
+        }
+        else {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return value
+        }
+      }))
+      q.filters = q.filters.filter(it => it.field !== "measures.name")
+      for (const filter of q.filters) {
+        if (filter.field === "generated_time") {
+          filter.value = generatedTime / 1000
+          delete filter.sql
+          break
+        }
+      }
+      reportTooltipData.linkUrl = `/report?reportUrl=${encodeURIComponent(this.serverUrl.value)}/api/v1/report/${encodeQuery(q as never)}`
+    }
     this.infoIsVisible.value = true
     this.scheduleTooltipHide()
     return null

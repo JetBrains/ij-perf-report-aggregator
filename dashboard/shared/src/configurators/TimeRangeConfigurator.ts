@@ -1,7 +1,7 @@
 import { provide, ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { timeRangeKey } from "../componentKeys"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
+import { timeRangeKey } from "../injectionKeys"
 
 export declare type TimeRange = "1M" | "3M" | "1y" | "all"
 

@@ -96,7 +96,7 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
     for _, measure := range items {
       name := string(measure.GetStringBytes("name"))
       // in milliseconds
-      names = append(names, strings.ReplaceAll(name, " ", "_"))
+      names = append(names, name)
       values = append(values, measure.GetInt("duration"))
       starts = append(starts, measure.GetInt("start"))
       threads = append(threads, string(measure.GetStringBytes("thread")))
@@ -119,7 +119,7 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
       }
 
       // in milliseconds
-      names = append(names, strings.ReplaceAll(name, " ", "_"))
+      names = append(names, name)
       values = append(values, measure.GetInt("d"))
       starts = append(starts, measure.GetInt("s"))
       threads = append(threads, string(measure.GetStringBytes("t")))

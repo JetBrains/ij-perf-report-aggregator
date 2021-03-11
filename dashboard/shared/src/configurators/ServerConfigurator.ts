@@ -1,7 +1,7 @@
 import { inject, Ref, ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { serverUrlKey } from "../componentKeys"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
+import { serverUrlKey } from "../injectionKeys"
 
 export class ServerConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"

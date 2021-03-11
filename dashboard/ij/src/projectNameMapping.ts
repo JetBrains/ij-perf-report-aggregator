@@ -1,5 +1,5 @@
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { DimensionConfigurator} from "shared/src/configurators/DimensionConfigurator"
+import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 
 const projectNameToTitle = new Map<string, string>()

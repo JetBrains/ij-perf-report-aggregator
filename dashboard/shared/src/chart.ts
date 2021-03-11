@@ -1,17 +1,6 @@
-import { BarChart, BarSeriesOption, LineChart, LineSeriesOption } from "echarts/charts"
-import {
-  BrushComponent,
-  DatasetComponent,
-  DataZoomComponent,
-  GridComponent, GridComponentOption,
-  LegendComponent,
-  TitleComponent, TitleComponentOption,
-  ToolboxComponent, TooltipComponentOption,
-} from "echarts/components"
-import { use, ComposeOption } from "echarts/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { DataQueryExecutorConfiguration } from "./dataQuery"
-import { useCanvasRenderer } from "./echarts"
+import { ChartOptions } from "./echarts"
 
 export const DEFAULT_LINE_CHART_HEIGHT = 340
 
@@ -28,10 +17,6 @@ export interface ChartConfigurator {
   configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ChartOptions
 }
 
-export type ChartOptions = ComposeOption<
-  TooltipComponentOption | BarSeriesOption | LineSeriesOption | TitleComponentOption | GridComponentOption
->
-
 export const timeFormat = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
   month: "short",
@@ -46,14 +31,11 @@ export const numberFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,
 })
 
-// register the required components
-export function useLineAndBarCharts(): void {
-  useCanvasRenderer()
+export const chartDefaultStyle: ChartStyle = {
+  barSeriesLabelPosition: "insideRight"
+}
 
-  use([
-    ToolboxComponent, BrushComponent, DataZoomComponent, DatasetComponent,
-    TitleComponent, LegendComponent,
-    GridComponent,
-    BarChart, LineChart,
-  ])
+export interface ChartStyle {
+  barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |
+    "insideBottom" | "insideTopLeft" | "insideTopRight" | "insideBottomLeft" | "insideBottomRight"
 }

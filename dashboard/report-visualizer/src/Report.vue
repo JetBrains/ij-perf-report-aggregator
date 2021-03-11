@@ -37,7 +37,7 @@ import TabbedInfoCharts from "./TabbedInfoCharts.vue"
 
 export default defineComponent({
   name: "Report",
-  components: {InputForm, TabbedCharts, TabbedInfoCharts},
+  components: { InputForm, TabbedCharts, TabbedInfoCharts },
 })
 </script>
 

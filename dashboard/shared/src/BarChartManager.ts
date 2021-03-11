@@ -1,6 +1,6 @@
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { ChartOptions, useLineAndBarCharts } from "./chart"
+import { ChartOptions, useLineAndBarCharts } from "./echarts"
 
 useLineAndBarCharts()
 
@@ -16,7 +16,7 @@ export class BarChartManager {
         top: 30,
         left: 5,
         // place for bar label
-        right: 25,
+        right: 20,
         bottom: 5,
         containLabel: true,
       },

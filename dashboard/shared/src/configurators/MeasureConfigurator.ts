@@ -2,8 +2,9 @@ import { LineSeriesOption } from "echarts/charts"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator, ChartOptions } from "../chart"
+import { ChartConfigurator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
+import { ChartOptions } from "../echarts"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -84,12 +85,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  private readonly measures: Array<string>
-
-  constructor(measures: Array<string>, public skipZeroValues: Ref<boolean> = shallowRef(true)) {
-    // analyzer replaces space to underscore, but configurator supports specifying original metric names
-    // render window.end => render_window.end
-    this.measures = measures.map(it => it.replaceAll(" ", "_"))
+  constructor(private readonly measures: Array<string>, public skipZeroValues: Ref<boolean> = shallowRef(true)) {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -107,12 +103,11 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 export function measureNameToLabel(key: string): string {
   const metricPathEndDotIndex = key.indexOf(".")
   if (metricPathEndDotIndex == -1) {
-    return key
+    // remove _d or _i suffix
+    return key.replace(/_[a-z]$/g, "")
   }
   else {
-    return key
-      .substring(0, metricPathEndDotIndex)
-      .replaceAll("_",  " ")
+    return key.substring(0, metricPathEndDotIndex)
   }
 }
 
@@ -186,8 +181,8 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
       index++
       return index !== values.length
     },
-    getDataSetLabel(index: number): string {
-      return values[index].replaceAll("_", " ")
+    getSeriesName(index: number): string {
+      return measureNameToLabel(values[index])
     },
     getMeasureName(index: number): string {
       return values[index]
@@ -201,17 +196,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
   for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
     const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
 
-    const label = extraQueryProducer == null ? null : extraQueryProducer.getDataSetLabel(dataIndex)
-    let seriesName: string
-    if (label === null) {
-      seriesName = measureNameToLabel(measureName)
-    }
-    else if (measureName.length === 1) {
-      seriesName = label
-    }
-    else {
-      seriesName = `${label}-${measureNameToLabel(measureName)}`
-    }
+    const seriesName = extraQueryProducer == null ? measureNameToLabel(measureName) : extraQueryProducer.getSeriesName(dataIndex)
     series.push({
       name: seriesName,
       type: "line",

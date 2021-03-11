@@ -133,7 +133,7 @@
 import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { ChartTooltipLinkProvider } from "shared/src/LineChartManager"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { aggregationOperatorConfiguratorKey, tooltipUrlProviderKey } from "shared/src/componentKeys"
+import { chartDefaultStyle } from "shared/src/chart"
 import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
@@ -148,6 +148,8 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { encodeQuery } from "shared/src/dataQuery"
+import { aggregationOperatorConfiguratorKey, tooltipUrlProviderKey , chartStyle } from "shared/src/injectionKeys"
+
 import { defineComponent, provide } from "vue"
 import { useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
@@ -159,8 +161,12 @@ export default defineComponent({
     AggregationOperatorSelect,
   },
   setup() {
-    const tooltipUrlProvider: ChartTooltipLinkProvider = (_name, query) => `/api/v1/report/${encodeQuery(query)}`
-    provide(tooltipUrlProviderKey, tooltipUrlProvider)
+    provide(tooltipUrlProviderKey, (_name, query) => `/api/v1/report/${encodeQuery(query)}`)
+    provide(chartStyle, {
+      ...chartDefaultStyle,
+      // a lot of bars, as result, height of bar is not enough to make label readable
+      barSeriesLabelPosition: "right",
+    })
 
     // noinspection SpellCheckingInspection
     const persistentStateManager = new PersistentStateManager("ij-dashboard", {

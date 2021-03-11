@@ -10,7 +10,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, inject, PropType, computed } from "vue"
-import { dataQueryExecutorKey } from "../componentKeys"
+import { dataQueryExecutorKey } from "../injectionKeys"
 
 export default defineComponent({
   name: "ReloadButton",

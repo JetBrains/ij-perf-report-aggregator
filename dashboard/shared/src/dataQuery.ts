@@ -86,7 +86,7 @@ interface ExtraQueryProducer {
    */
   mutate(): boolean
 
-  getDataSetLabel(index: number): string
+  getSeriesName(index: number): string
 
   getMeasureName(index: number): string
 }

@@ -52,8 +52,8 @@
   </el-main>
 </template>
 <script lang="ts">
-import { serverUrlKey } from "shared/src/componentKeys"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
+import { serverUrlKey } from "shared/src/injectionKeys"
 import { watch, defineComponent, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { getRoutes } from "./route"

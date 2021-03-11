@@ -1,8 +1,8 @@
 import { decode as risonDecode } from "rison-node"
 import { watch, provide } from "vue"
 import { PersistentStateManager } from "./PersistentStateManager"
-import { dataQueryExecutorKey } from "./componentKeys"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, encodeQuery } from "./dataQuery"
+import { dataQueryExecutorKey } from "./injectionKeys"
 import { DebouncedTask, TaskHandle } from "./util/debounce"
 import { loadJson } from "./util/httpUtil"
 

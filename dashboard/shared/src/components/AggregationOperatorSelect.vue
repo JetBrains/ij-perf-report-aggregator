@@ -28,8 +28,8 @@
 </template>
 <script lang="ts">
 import { defineComponent, computed, inject } from "vue"
-import { aggregationOperatorConfiguratorKey } from "../componentKeys"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
+import { aggregationOperatorConfiguratorKey } from "../injectionKeys"
 
 export default defineComponent({
   name: "AggregationOperatorSelect",

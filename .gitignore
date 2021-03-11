@@ -10,7 +10,3 @@ db/
 node_modules/
 cmd/frontend/kodata/
 values-resolved.yaml
-
-vite-project/
-
-.eslintcache

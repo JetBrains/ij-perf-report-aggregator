@@ -15,9 +15,9 @@ export default defineComponent({
   name: "ServiceTimelineChart",
   setup() {
     const chartContainer = shallowRef<HTMLElement | null>(null)
-    new ChartComponent(async function() {
+    new ChartComponent(function() {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return new ServiceTimeLineChartManager(chartContainer.value!)
+      return Promise.resolve(new ServiceTimeLineChartManager(chartContainer.value!))
     })
     return {
       chartContainer,

@@ -81,7 +81,7 @@ export default defineComponent({
       activePath,
       routes,
       topLevelClicked(path: string) {
-        router.push({
+        void router.push({
           path,
         })
       }

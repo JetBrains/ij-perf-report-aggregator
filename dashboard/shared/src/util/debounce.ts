@@ -1,7 +1,7 @@
 interface DebouncedFunction {
   (): void
 
-  clear(): void
+  clear: () => void
 }
 
 export function debounceSync(func: () => void, wait: number = 100): DebouncedFunction {

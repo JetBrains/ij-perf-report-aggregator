@@ -38,7 +38,7 @@ importers:
     dependencies:
       element-plus: 1.0.2-beta.33_vue@3.0.7
       ij: link:../ij
-      jb: link:../../jb/dashboard/jb
+      jb: link:../../jb/dashboard
       report-visualizer: link:../report-visualizer
       shared: link:../shared
       vue: 3.0.7
@@ -99,10 +99,10 @@ importers:
       rison-node: 2.1.1
       vue: 3.0.7
       vue-router: 4.0.4
-  jb/dashboard/jb:
+  jb/dashboard:
     dependencies:
       element-plus: 1.0.2-beta.33_vue@3.0.7
-      shared: link:../../../dashboard/shared
+      shared: link:../../dashboard/shared
       vue: 3.0.7
       vue-router: 4.0.4_vue@3.0.7
     specifiers:

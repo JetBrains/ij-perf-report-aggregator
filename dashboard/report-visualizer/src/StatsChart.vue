@@ -16,9 +16,9 @@ export default defineComponent({
   name: "StatsChart",
   setup() {
     const chartContainer = shallowRef<HTMLElement | null>(null)
-    new ChartComponent(async function(): Promise<ChartManager> {
+    new ChartComponent(function(): Promise<ChartManager> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return new StatsChartManager(chartContainer.value!)
+      return Promise.resolve(new StatsChartManager(chartContainer.value!))
     })
     return {
       chartContainer,

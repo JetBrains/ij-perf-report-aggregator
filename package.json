@@ -1,9 +1,10 @@
 {
   "private": true,
+  "ignorePatterns": ["**/node_modules/**/*.*"],
   "scripts": {
     "serve": "vite serve",
     "build": "vite build --emptyOutDir",
-    "lint": "NODE_ENV=production eslint dashboard jb/dashboard/jb",
+    "lint": "NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}' 'jb/dashboard/src/**/*.{ts,vue}'",
     "update-deps": "pnpm update -i -r --latest"
   },
   "devDependencies": {

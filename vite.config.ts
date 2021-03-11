@@ -4,7 +4,7 @@ import path from "path"
 import vue from "@vitejs/plugin-vue"
 import { defineConfig } from "vite"
 import viteComponents from "vite-plugin-components"
-import eslintPlugin from "vite-plugin-eslint"
+// import eslint from "@rollup/plugin-eslint"
 
 // import visualizer from "rollup-plugin-visualizer"
 
@@ -12,13 +12,13 @@ import eslintPlugin from "vite-plugin-eslint"
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
 export default defineConfig({
   plugins: [
-    {
-      ...eslintPlugin({
-        include: ["dashboard/**/*.ts", "jb/dashboard/jb/**/*.vue"],
-        cache: false,
-      }),
-      enforce: "pre",
-    },
+    // {
+    //   ...eslintPlugin({
+    //     include: ["dashboard/**/*.ts", "jb/dashboard/jb/**/*.vue"],
+    //     cache: false,
+    //   }),
+    //   enforce: "pre",
+    // },
     vue(),
     viteComponents({
       deep: false,
@@ -53,7 +53,9 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "cmd/frontend/kodata"),
     rollupOptions: {
       // remove once migration from amcharts to echarts will be completed
-      external: ["xlsx", "pdfmake"]
+      external(id) {
+        return isModule(id, "xlsx") || isModule(id, "pdfmake")
+      },
       // plugins: [visualizer({filename: "/Volumes/data/foo/s.html"})],
       // output: {
       //   manualChunks: {
@@ -65,3 +67,7 @@ export default defineConfig({
     },
   },
 })
+
+function isModule(id: string, module: string) {
+  return id === module || id.includes(`/${module}/`) || id.startsWith(`${module}/`)
+}

@@ -52,7 +52,7 @@ export default defineComponent({
       charts,
       activeName,
       navigate(): void {
-        router.push({
+        void router.push({
           query: {
             ...route.query,
             infoTab: activeName.value,

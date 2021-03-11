@@ -14,12 +14,12 @@ export default defineComponent({
   name: "TimelineChart",
   setup() {
     const chartContainer = shallowRef<HTMLElement | null>(null)
-    new ChartComponent(async function() {
+    new ChartComponent(function() {
       const value = chartContainer.value
       if (value == null) {
         throw new Error("container is not created")
       }
-      return new TimelineChartManager(value)
+      return Promise.resolve(new TimelineChartManager(value))
     })
     return {
       chartContainer,

@@ -1,28 +1,28 @@
 module.exports = {
   root: true,
   env: {
-    node: true,
+    browser: true,
   },
-  // settings: {
-  //   "import/extensions": [
-  //     ".ts",
-  //     ".vue",
-  //   ],
-  // },
   extends: [
     "plugin:import/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "@vue/typescript/recommended",
     "plugin:vue/vue3-essential",
     "plugin:vue/vue3-recommended",
     "plugin:vue/vue3-strongly-recommended",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
   ],
+  // plugins: ["simple-import-sort"],
+  parser: "vue-eslint-parser",
   parserOptions: {
     ecmaVersion: 2020,
-    project: ["./dashboard/**/tsconfig.json", "./jb/dashboard/jb/tsconfig.json"],
+    project: ["./dashboard/**/tsconfig.json", "./jb/dashboard/tsconfig.json"],
+    parser: "@typescript-eslint/parser"
   },
   rules: {
     // "no-console": process.env.NODE_ENV === "production" ? ["warn", {allow: ["warn", "error"]}] : "off",

@@ -37,7 +37,7 @@ export default defineComponent({
     const chartElement: Ref<HTMLElement | null> = shallowRef(null)
     let chartManager: BarChartManager | null = null
     // eslint-disable-next-line vue/no-setup-props-destructure
-    const measures = props.measures as Array<string>
+    const measures = props.measures
 
     const timeRange = inject(timeRangeKey)
     if (timeRange === undefined) {

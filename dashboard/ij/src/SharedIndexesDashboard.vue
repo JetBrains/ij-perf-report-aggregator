@@ -74,6 +74,12 @@ export default defineComponent({
   setup() {
     const persistentStateManager = new PersistentStateManager("sharedIndexes-dashboard", {
       machine: "macMini 2018",
+      project: [
+        "ijx-intellij-speed/shared-indexes",
+        "ijx-intellij-speed/usual-indexes",
+        "ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes",
+      ],
+      measure: ["indexing", "scanning"],
     }, useRouter())
 
     const serverConfigurator = new ServerConfigurator("sharedIndexes", persistentStateManager)

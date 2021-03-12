@@ -57,16 +57,13 @@
   </el-popover>
 </template>
 <script lang="ts">
-import { CallbackDataParams } from "echarts/types/src/util/types"
-import { defineComponent, inject, onMounted, onUnmounted, PropType, reactive, Ref, ref, shallowRef, toRef, watch, watchEffect } from "vue"
+import { defineComponent, inject, onMounted, onUnmounted, PropType, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { LineChartManager } from "../LineChartManager"
-import { DEFAULT_LINE_CHART_HEIGHT, timeFormat } from "../chart"
+import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
-import { DataQueryFilter, encodeQuery } from "../dataQuery"
-import { getValueFormatterByMeasureName } from "../formatter"
-import { dataQueryExecutorKey, serverUrlKey, tooltipUrlProviderKey } from "../injectionKeys"
-import { debounceSync } from "../util/debounce"
+import { dataQueryExecutorKey } from "../injectionKeys"
+import { ChartToolTipManager } from "./ChartToolTipManager"
 
 export default defineComponent({
   name: "LineChartCard",
@@ -92,10 +89,8 @@ export default defineComponent({
     const chartElement: Ref<HTMLElement | null> = shallowRef(null)
     let chartManager: LineChartManager | null = null
     const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const serverUrl = inject(serverUrlKey)!
     const skipZeroValues = toRef(props, "skipZeroValues")
-    const chartToolTipManager = new ChartToolTipManager(serverUrl)
+    const chartToolTipManager = new ChartToolTipManager()
     watchEffect(function () {
       let dataQueryExecutor = props.provider ?? providedDataQueryExecutor
       if (dataQueryExecutor == null) {
@@ -145,81 +140,6 @@ export default defineComponent({
   }
 })
 
-class ChartToolTipManager {
-  constructor(private readonly serverUrl: Ref<string>) {
-  }
-
-  public dataQueryExecutor!: DataQueryExecutor
-
-  private readonly tooltipUrlProvider = inject(tooltipUrlProviderKey, null)
-  readonly infoIsVisible = ref(false)
-
-  readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null})
-
-  readonly scheduleTooltipHide = debounceSync(() => {
-    this.infoIsVisible.value = false
-  }, 2_000)
-
-  formatArrayValue(params: Array<CallbackDataParams>) {
-    const query = this.dataQueryExecutor.lastQuery
-    if (query == null) {
-      return null
-    }
-
-    const reportTooltipData = this.reportTooltipData
-    reportTooltipData.items = params.map(function (measure) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]]
-      return {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        name: measure.seriesName!,
-        value: getValueFormatterByMeasureName(measure.seriesId)(measureValue),
-        color: measure.color as string,
-      }
-    })
-    const generatedTime = (params[0].value as Array<number>)[0]
-    reportTooltipData.linkText = timeFormat.format(generatedTime)
-    if (this.tooltipUrlProvider == null) {
-      reportTooltipData.linkUrl = null
-    }
-    else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      let q: { filters: Array<DataQueryFilter> } = JSON.parse(JSON.stringify(query, function replacer(key, value) {
-        if (key === "fields" || key === "order" || key === "flat") {
-          return undefined
-        }
-        else {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-          return value
-        }
-      }))
-      q.filters = q.filters.filter(it => it.field !== "measures.name")
-      for (const filter of q.filters) {
-        if (filter.field === "generated_time") {
-          filter.value = generatedTime / 1000
-          delete filter.sql
-          break
-        }
-      }
-      reportTooltipData.linkUrl = `/report?reportUrl=${encodeURIComponent(this.serverUrl.value)}/api/v1/report/${encodeQuery(q as never)}`
-    }
-    this.infoIsVisible.value = true
-    this.scheduleTooltipHide()
-    return null
-  }
-}
-
-interface TooltipData {
-  linkText: string
-  linkUrl: string | null
-  items: Array<TooltipDataItem>
-}
-
-interface TooltipDataItem {
-  name: string
-  value: string
-  color: string
-}
 </script>
 <style scoped>
 .tooltipNameMarker {

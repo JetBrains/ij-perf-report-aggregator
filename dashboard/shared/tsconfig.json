@@ -2,7 +2,8 @@
   "extends": "../../tsconfig-base.json",
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
+    "src/shims-vue.d.ts",
+    "src/rison.d.ts",
     "src/**/*.vue"
   ]
 }

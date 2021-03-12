@@ -3,11 +3,8 @@ import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "./chart"
-import { DataQuery } from "./dataQuery"
 import { ChartOptions, useLineAndBarCharts } from "./echarts"
 import { debounceSync } from "./util/debounce"
-
-export type ChartTooltipLinkProvider = (name: string, query: DataQuery) => string
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside

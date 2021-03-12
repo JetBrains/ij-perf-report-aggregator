@@ -1,7 +1,7 @@
 import { InjectionKey, Ref } from "vue"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { ChartTooltipLinkProvider } from "./LineChartManager"
 import { ChartStyle } from "./chart"
+import { ChartTooltipLinkProvider } from "./components/ChartToolTipManager"
 import { AggregationOperatorConfigurator } from "./configurators/AggregationOperatorConfigurator"
 import { TimeRange } from "./configurators/TimeRangeConfigurator"
 

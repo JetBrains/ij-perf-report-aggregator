@@ -131,7 +131,6 @@
 
 <script lang="ts">
 import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
-import { ChartTooltipLinkProvider } from "shared/src/LineChartManager"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
 import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
@@ -147,9 +146,8 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { encodeQuery } from "shared/src/dataQuery"
-import { aggregationOperatorConfiguratorKey, tooltipUrlProviderKey , chartStyle } from "shared/src/injectionKeys"
-
+import { aggregationOperatorConfiguratorKey, chartStyle } from "shared/src/injectionKeys"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { defineComponent, provide } from "vue"
 import { useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
@@ -161,7 +159,7 @@ export default defineComponent({
     AggregationOperatorSelect,
   },
   setup() {
-    provide(tooltipUrlProviderKey, (_name, query) => `/api/v1/report/${encodeQuery(query)}`)
+    provideReportUrlProvider()
     provide(chartStyle, {
       ...chartDefaultStyle,
       // a lot of bars, as result, height of bar is not enough to make label readable

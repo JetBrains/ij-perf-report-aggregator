@@ -26,11 +26,6 @@ export const timeFormat = new Intl.DateTimeFormat(undefined, {
   second: "numeric",
 })
 
-// https://github.com/apache/echarts/issues/8294
-export const numberFormat = new Intl.NumberFormat(undefined, {
-  maximumFractionDigits: 0,
-})
-
 export const chartDefaultStyle: ChartStyle = {
   barSeriesLabelPosition: "insideRight"
 }

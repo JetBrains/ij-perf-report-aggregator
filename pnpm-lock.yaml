@@ -2225,13 +2225,13 @@ packages:
     dev: true
     resolution:
       integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
-  /nanoid/3.1.20:
+  /nanoid/3.1.21:
     dev: true
     engines:
       node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1
     hasBin: true
     resolution:
-      integrity: sha512-a1cQNyczgKbLX9jwbS/+d7W8fX/RfgYR7lVWwWOGIPNgK2m0MWvrGF6/m4kk6U3QcFMnZf3RIhL0v2Jgh/0Uxw==
+      integrity: sha512-A6oZraK4DJkAOICstsGH98dvycPr/4GGDH7ZWKmMdd3vGcOurZ6JmWFUt0DA5bzrrn2FrUjmv6mFNWvv8jpppA==
   /natural-compare/1.4.0:
     dev: true
     resolution:
@@ -2574,7 +2574,7 @@ packages:
   /postcss/8.2.8:
     dependencies:
       colorette: 1.2.2
-      nanoid: 3.1.20
+      nanoid: 3.1.21
       source-map: 0.6.1
     dev: true
     engines:
@@ -2791,7 +2791,7 @@ packages:
       integrity: sha512-GuV0OnSL2erZJ0j/9YUsrAdfSh3mGcrq+4wM4PqRftOYT7+TRhxbMrpVZaGC5YIPwncIoOM7PPnskDku5Ywg1Q==
   /rollup-plugin-visualizer/4.2.0_rollup@2.41.1:
     dependencies:
-      nanoid: 3.1.20
+      nanoid: 3.1.21
       open: 7.4.2
       rollup: 2.41.1
       source-map: 0.7.3

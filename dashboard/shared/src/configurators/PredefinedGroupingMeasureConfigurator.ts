@@ -2,10 +2,10 @@ import { BarSeriesOption } from "echarts/charts"
 import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
 import { Ref } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
-import { axisDurationFormatter } from "../LineChartManager"
-import { ChartConfigurator, ChartStyle, numberFormat } from "../chart"
+import { ChartConfigurator, ChartStyle } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { ChartOptions } from "../echarts"
+import { durationAxisLabelFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 
@@ -58,14 +58,20 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   configureChart(dataSets: DataQueryResult, configuration: DataQueryExecutorConfiguration): ChartOptions {
     const extraQueryProducer = configuration.extraQueryProducer
     if (extraQueryProducer != null) {
+      let useDurationFormatter = true
       // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
       const dimensions: Array<DimensionDefinition> = []
       dimensions.push({name: "dimension", type: "ordinal"})
       const dimensionNameSet = new Set<string>()
       const source: Array<{ [key: string]: string | number }> = []
-      for (let dataSetIndex = 0; dataSetIndex < dataSets.length; dataSetIndex++){
+      for (let dataSetIndex = 0; dataSetIndex < dataSets.length; dataSetIndex++) {
         const dataSet = dataSets[dataSetIndex]
         const dataSetLabel = extraQueryProducer.getSeriesName(dataSetIndex)
+
+        if (useDurationFormatter && !isDurationFormatterApplicable(extraQueryProducer.getMeasureName(dataSetIndex))) {
+          useDurationFormatter = false
+        }
+
         const column: { [key: string]: string | number } = {dimension: dataSetLabel}
         source.push(column)
         for (const data of dataSet) {
@@ -84,7 +90,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
           type: "bar",
           label: {
             show: true,
-            formatter: formatterForFieldData,
+            formatter: useDurationFormatter ? formatterForFieldData : formatterForFieldNumericData,
             position: this.chartStyle.barSeriesLabelPosition,
           },
         }
@@ -133,8 +139,15 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 const formatterForFieldData = function (data: CallbackDataParams) {
   const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
   if (value > 10_000) {
-    return axisDurationFormatter(value)
+    return durationAxisLabelFormatter(value)
   }
+  else {
+    return numberFormat.format(value)
+  }
+}
+
+const formatterForFieldNumericData = function (data: CallbackDataParams) {
+  const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
   return numberFormat.format(value)
 }
 

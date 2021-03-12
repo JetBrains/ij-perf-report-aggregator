@@ -60,10 +60,11 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { defineComponent, inject, onMounted, onUnmounted, PropType, reactive, Ref, ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { formatDuration, LineChartManager } from "../LineChartManager"
+import { LineChartManager } from "../LineChartManager"
 import { DEFAULT_LINE_CHART_HEIGHT, timeFormat } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQueryFilter, encodeQuery } from "../dataQuery"
+import { getValueFormatterByMeasureName } from "../formatter"
 import { dataQueryExecutorKey, serverUrlKey, tooltipUrlProviderKey } from "../injectionKeys"
 import { debounceSync } from "../util/debounce"
 
@@ -167,11 +168,12 @@ class ChartToolTipManager {
 
     const reportTooltipData = this.reportTooltipData
     reportTooltipData.items = params.map(function (measure) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]]
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: measure.seriesName!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        value: formatDuration((measure.value as Array<number>)[measure.encode!["y"][0]]),
+        value: getValueFormatterByMeasureName(measure.seriesId)(measureValue),
         color: measure.color as string,
       }
     })
@@ -218,7 +220,6 @@ interface TooltipDataItem {
   value: string
   color: string
 }
-
 </script>
 <style scoped>
 .tooltipNameMarker {

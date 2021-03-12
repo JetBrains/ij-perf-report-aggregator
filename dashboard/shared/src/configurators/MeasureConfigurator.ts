@@ -1,10 +1,12 @@
 import { LineSeriesOption } from "echarts/charts"
+import { TplFormatterParam } from "echarts/types/src/util/format"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
 import { ChartOptions } from "../echarts"
+import { durationAxisLabelFormatter, durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -193,11 +195,13 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
 function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): ChartOptions {
   const series = new Array<LineSeriesOption>()
   const extraQueryProducer = configuration.extraQueryProducer
+  let useDurationFormatter = true
   for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
     const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
-
     const seriesName = extraQueryProducer == null ? measureNameToLabel(measureName) : extraQueryProducer.getSeriesName(dataIndex)
     series.push({
+      // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
+      id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: "line",
       smooth: true,
@@ -207,9 +211,26 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
       data: dataList[dataIndex],
     })
+
+    if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
+      useDurationFormatter = false
+    }
   }
 
   return {
+    yAxis: {
+      axisLabel: {
+        formatter: useDurationFormatter ? durationAxisLabelFormatter : numberAxisLabelFormatter,
+      },
+      axisPointer: {
+        label: {
+          formatter(data: TplFormatterParam): string {
+            const value = data["value"] as number
+            return useDurationFormatter ? durationAxisPointerFormatter(value) : numberFormat.format(value)
+          },
+        },
+      },
+    },
     series,
   }
 }

@@ -1,6 +1,7 @@
 set -e
 
 pnpm i --frozen-lockfile
+pnpm lint
 pnpm build
 
 ko resolve -f deployment/report-aggregator/values.yaml --base-import-paths --tags "$BUILD_NUMBER" > deployment/report-aggregator/values-resolved.yaml

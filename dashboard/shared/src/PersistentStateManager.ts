@@ -3,8 +3,10 @@ import { Ref, watch } from "vue"
 import { LocationQueryRaw, Router, useRoute } from "vue-router"
 import { debounceSync } from "./util/debounce"
 
+declare type State = { [key: string]: number | string | Array<string> | unknown }
+
 export class PersistentStateManager {
-  private readonly state: { [key: string]: number | string | unknown }
+  private readonly state: State
 
   private readonly initializers: Array<() => void> = []
 
@@ -12,15 +14,20 @@ export class PersistentStateManager {
     localStorage.setItem(this.getKey(), JSON.stringify(this.state))
   }, 300)
 
-  constructor(private id: string, defaultState = {}, private readonly router: Router | null = null) {
+  constructor(private id: string, defaultState: State | null = null, private readonly router: Router | null = null) {
     const storedState = localStorage.getItem(this.getKey())
     if (storedState == null) {
-      this.state = defaultState
+      this.state = defaultState ?? {}
     }
     else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       this.state = JSON.parse(storedState)
-      Object.assign(this.state, defaultState)
+      if (defaultState != null) {
+        this.state = {
+          defaultState,
+          ...this.state,
+        }
+      }
     }
 
     if (this.router != null) {

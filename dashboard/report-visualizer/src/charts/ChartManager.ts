@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { XYChart, XYCursor, Chart, AxisDataItem } from "@amcharts/amcharts4/charts"
-import { options as amChartOptions, ExportMenu, Scrollbar, color, create, Color } from "@amcharts/amcharts4/core"
+import { AxisDataItem, XYChart, XYCursor } from "@amcharts/amcharts4/charts"
+import { color, Color, create, ExportMenu, options as amChartOptions, Scrollbar } from "@amcharts/amcharts4/core"
 import { DataManager } from "../state/DataManager"
+
 amChartOptions.onlyShowOnViewport = true
 // helps during hot-reload
 amChartOptions.autoDispose = true
@@ -12,7 +13,7 @@ export interface ChartManager {
   dispose(): void
 }
 
-export function addExportMenu(chart: XYChart): void {
+function addExportMenu(chart: XYChart): void {
   const exportMenu = new ExportMenu()
   const topItems = exportMenu.items[0].menu!
   for (let i = topItems.length - 1; i >= 0; i--) {
@@ -35,40 +36,24 @@ export function addExportMenu(chart: XYChart): void {
   chart.exporting.menu.verticalAlign = "bottom"
 }
 
-export function configureCommonChartSettings(chart: XYChart): void {
-  chart.mouseWheelBehavior = "zoomX"
-  chart.scrollbarX = new Scrollbar()
-  addExportMenu(chart)
-}
-
-export function configureCursor(chart: XYChart): void {
-  const cursor = new XYCursor()
-  cursor.lineY.disabled = true
-  cursor.lineX.disabled = true
-  cursor.behavior = "zoomXY"
-  chart.cursor = cursor
-}
-
-export abstract class BaseChartManager<T extends Chart> implements ChartManager {
-  protected constructor(protected readonly chart: T) {
-  }
-
-  abstract render(data: DataManager): void
-
-  /** @override */
-  dispose(): void {
-    this.chart.dispose()
-  }
-}
-
-export abstract class XYChartManager extends BaseChartManager<XYChart> {
+export abstract class XYChartManager implements ChartManager {
   protected readonly blackColor = color("#000000")
+  protected readonly chart: XYChart
 
   protected constructor(container: HTMLElement) {
-    super(create(container, XYChart))
+    this.chart = create(container, XYChart)
+    this.chart.mouseWheelBehavior = "zoomX"
+    this.chart.scrollbarX = new Scrollbar()
+    addExportMenu(this.chart)
+    const cursor = new XYCursor()
+    cursor.lineY.disabled = true
+    cursor.lineX.disabled = true
+    cursor.behavior = "zoomXY"
+    this.chart.cursor = cursor
+  }
 
-    configureCommonChartSettings(this.chart)
-    configureCursor(this.chart)
+  dispose(): void {
+    this.chart.dispose()
   }
 
   abstract render(data: DataManager): void

@@ -77,10 +77,25 @@ export const chartDescriptors: Array<ActivityChartDescriptor> = [
     rotatedLabels: false,
   },
   {
+    label: "Service Timelines",
+    isInfoChart: true,
+    id: "serviceTimeline",
+    async chartManagerProducer(container: HTMLElement, _sourceNames: Array<string>, _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
+      return new (await import("../timeline/ServiceTimeLineChartManager")).ServiceTimeLineChartManager(container)
+    },
+  },
+  {
+    label: "Timeline",
+    isInfoChart: true,
+    id: "timeline",
+    async chartManagerProducer(container: HTMLElement, _sourceNames: Array<string>, _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
+      return new (await import("../timeline/TimelineChartManager")).TimelineChartManager(container)
+    },
+  },
+  {
     label: "Time Distribution",
     isInfoChart: true,
     id: "timeDistribution",
-    sourceNames: [],
     async chartManagerProducer(container: HTMLElement, _sourceNames: Array<string>, _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
       return new (await import("./TimeDistributionChartManager")).TimeDistributionChartManager(container)
     },
@@ -89,9 +104,16 @@ export const chartDescriptors: Array<ActivityChartDescriptor> = [
     label: "Plugin Classes",
     isInfoChart: true,
     id: "pluginClassCount",
-    sourceNames: [],
     async chartManagerProducer(container: HTMLElement, _sourceNames: Array<string>, _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
       return new (await import("./PluginClassCountTreeMapChartManager")).PluginClassCountTreeMapChartManager(container)
+    },
+  },
+  {
+    label: "Stats",
+    isInfoChart: true,
+    id: "stats",
+    async chartManagerProducer(container: HTMLElement, _sourceNames: Array<string>, _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
+      return new (await import("./StatsChartManager")).StatsChartManager(container)
     },
   },
 ]

@@ -16,6 +16,7 @@ interface ItemExtraInfo {
 
 export class TimeDistributionChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
+
   constructor(container: HTMLElement) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<ChartOptions>({

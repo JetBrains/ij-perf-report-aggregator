@@ -4,27 +4,7 @@
     @tab-click="navigate"
   >
     <el-tab-pane
-      label="Timeline"
-      name="timeline"
-      lazy
-    >
-      <keep-alive>
-        <TimelineChart />
-      </keep-alive>
-    </el-tab-pane>
-    <el-tab-pane
-      label="Service Timeline"
-      name="serviceTimeline"
-      lazy
-    >
-      <keep-alive>
-        <ServiceTimelineChart />
-      </keep-alive>
-    </el-tab-pane>
-    <!--  use v-once because `charts` is not going to be changed  -->
-    <el-tab-pane
       v-for="item in charts"
-      v-once
       :key="item.id"
       :label="item.label"
       :name="item.id"
@@ -34,30 +14,19 @@
         <ActivityChart :type="item.id" />
       </keep-alive>
     </el-tab-pane>
-    <el-tab-pane
-      label="Stats"
-      name="stats"
-      lazy
-    >
-      <keep-alive>
-        <StatsChart />
-      </keep-alive>
-    </el-tab-pane>
   </el-tabs>
 </template>
 
 <script lang="ts">
-import { defineComponent, watch, ref } from "vue"
-import { useRouter, useRoute, RouteLocationNormalizedLoaded } from "vue-router"
+import { DebouncedTask } from "shared/src/util/debounce"
+import { defineComponent, ref, watch } from "vue"
+import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
-import StatsChart from "./StatsChart.vue"
 import { chartDescriptors } from "./charts/ActivityChartDescriptor"
-import ServiceTimelineChart from "./timeline/ServiceTimelineChart.vue"
-import TimelineChart from "./timeline/TimelineChart.vue"
 
 export default defineComponent({
   name: "TabbedInfoCharts",
-  components: {TimelineChart, ServiceTimelineChart, ActivityChart, StatsChart},
+  components: {ActivityChart},
   setup() {
     const activeName = ref("")
     const charts = chartDescriptors.filter(it => it.isInfoChart === true)
@@ -76,14 +45,14 @@ export default defineComponent({
     const router = useRouter()
     return {
       activeName,
-      navigate(): void {
-        void router.push({
+      navigate: new DebouncedTask(function () {
+        return router.push({
           query: {
             ...route.query,
             infoTab: activeName.value,
           },
         })
-      },
+      }, 0).executeFunctionReference,
       charts,
     }
   },

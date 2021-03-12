@@ -30,15 +30,18 @@ export default defineComponent({
         throw new Error(`Unknown chart type: ${type}`)
       }
 
+      const container = chartContainer.value
+      if (container == null) {
+        throw new Error("container is not created")
+      }
+
       const sourceNames = descriptor.sourceNames
       if (descriptor.chartManagerProducer == null) {
         return new (await import("./charts/ActivityChartManager"))
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          .ActivityChartManager(chartContainer.value!, sourceNames ?? [type], descriptor)
+          .ActivityChartManager(container, sourceNames ?? [type], descriptor)
       }
       else {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return await descriptor.chartManagerProducer(chartContainer.value!, sourceNames!, descriptor)
+        return await descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)
       }
     })
     watch(typeRef, () => {
@@ -57,3 +60,18 @@ export default defineComponent({
   }
 })
 </script>
+<style scoped>
+.activityChart {
+  width: 100%;
+  /*
+  our data has extraordinary high values (extremes) and it makes item chart not readable (extremes are visible and others column bars are too low),
+  as solution, amCharts supports breaks (https://www.amcharts.com/demos/column-chart-with-axis-break/),
+  but it contradicts to our goal - to show that these items are extremes,
+  so, as solution, we increase chart height to give more space to render bars.
+
+  It is ok, as now we use UI Library (ElementUI) and can use Tabs, Collapse and any other component to group charts.
+  Also, as we use Vue.js and Vue Router, it is one-line to provide dedicated view (/#/components and so on)
+  */
+  height: 500px;
+}
+</style>

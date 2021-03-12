@@ -1,4 +1,4 @@
-import { BarChart, BarSeriesOption, LineChart, LineSeriesOption, TreemapChart, TreemapSeriesOption } from "echarts/charts"
+import { BarChart, BarSeriesOption, LineChart, LineSeriesOption, TreemapChart, SunburstChart, TreemapSeriesOption, SunburstSeriesOption } from "echarts/charts"
 import {
   BrushComponent,
   DatasetComponent,
@@ -20,10 +20,16 @@ export function useCanvasRenderer(): void {
 }
 
 export type TreeMapChartOptions = ComposeOption<TreemapSeriesOption>
+export type SunburstChartOptions = ComposeOption<SunburstSeriesOption>
 
 export function useTreeMapChart(): void {
   useCanvasRenderer()
   use([TreemapChart])
+}
+
+export function useSunburstChart(): void {
+  useCanvasRenderer()
+  use([SunburstChart])
 }
 
 // register the required components

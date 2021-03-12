@@ -1,6 +1,8 @@
 {
   "private": true,
-  "ignorePatterns": ["**/node_modules/**/*.*"],
+  "ignorePatterns": [
+    "**/node_modules/**/*.*"
+  ],
   "scripts": {
     "serve": "vite serve",
     "build": "vite build --emptyOutDir",
@@ -16,7 +18,7 @@
     "eslint": "7.21.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-vue": "7.7.0",
-    "rollup": "2.41.1",
+    "rollup": "2.41.2",
     "rollup-plugin-visualizer": "4.2.0",
     "sass": "1.32.8",
     "typescript": "4.2.3",

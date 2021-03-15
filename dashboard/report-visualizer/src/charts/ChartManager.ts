@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// force order in chunk
+import "@amcharts/amcharts4/.internal/core/elements/Modal"
 import { AxisDataItem, XYChart, XYCursor } from "@amcharts/amcharts4/charts"
 import { color, Color, create, ExportMenu, options as amChartOptions, Scrollbar } from "@amcharts/amcharts4/core"
 import { DataManager } from "../state/DataManager"
 
-amChartOptions.onlyShowOnViewport = true
 // helps during hot-reload
 amChartOptions.autoDispose = true
 
@@ -15,6 +15,7 @@ export interface ChartManager {
 
 function addExportMenu(chart: XYChart): void {
   const exportMenu = new ExportMenu()
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const topItems = exportMenu.items[0].menu!
   for (let i = topItems.length - 1; i >= 0; i--) {
     const chartElement = topItems[i]
@@ -23,6 +24,7 @@ function addExportMenu(chart: XYChart): void {
     }
     else if (chartElement.label == "Image") {
       // remove PDF
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const subMenu = chartElement.menu!
       const length = subMenu.length
       if (subMenu[length - 1].label == "PDF") {
@@ -69,6 +71,7 @@ export abstract class XYChartManager implements ChartManager {
     range.grid.strokeOpacity = 1
 
     range.label.adapter.add("dy", (_y, _target) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return -this.chart.yAxes.getIndex(0)!.pixelHeight + yOffset
     })
     range.label.adapter.add("x", (x, _target) => {

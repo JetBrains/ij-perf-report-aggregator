@@ -1,4 +1,5 @@
 import ElNotification from "element-plus/es/el-notification"
+import { debounceSync } from "shared/src/util/debounce"
 import { watch, onBeforeUnmount, onMounted } from "vue"
 import { DataManager } from "../state/DataManager"
 import { InputData } from "../state/data"
@@ -7,6 +8,8 @@ import { ChartManager } from "./ChartManager"
 
 export class ChartComponent {
   chartManager: ChartManager | null = null
+
+  private readonly renderDataIfAvailableDebounced = debounceSync(() => this.renderDataIfAvailable(), 10)
 
   constructor(private readonly createChartManager: () => Promise<ChartManager>) {
     onBeforeUnmount(() => {
@@ -18,11 +21,11 @@ export class ChartComponent {
     })
 
     onMounted(() => {
-      this.renderDataIfAvailable()
+      this.renderDataIfAvailableDebounced()
     })
 
     watch(reportData, () => {
-      this.renderDataIfAvailable()
+      this.renderDataIfAvailableDebounced()
     })
   }
 
@@ -34,7 +37,6 @@ export class ChartComponent {
     }
 
     const dataManager = new DataManager(JSON.parse(data) as InputData)
-
     const chartManager = this.chartManager
     if (chartManager == null) {
       this.createChartManager()

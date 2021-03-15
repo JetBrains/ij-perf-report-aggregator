@@ -80,6 +80,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
         for _, osName := range osList {
           buildConfigurationIds = append(buildConfigurationIds, "ijplatform_master_"+productCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTest"+osName)
         }
+        buildConfigurationIds = append(buildConfigurationIds, "ijplatform_master_"+productCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTestMacM1")
       }
     } else {
       if len(chunk.Products) != 0 {

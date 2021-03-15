@@ -11,13 +11,14 @@
       lazy
     >
       <keep-alive>
-        <ActivityChart :type="item.id" />
+        <ActivityChart :descriptor="item" />
       </keep-alive>
     </el-tab-pane>
   </el-tabs>
 </template>
 
 <script lang="ts">
+import { DebouncedTask } from "shared/src/util/debounce"
 import { defineComponent, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
@@ -26,11 +27,18 @@ import { chartDescriptors } from "./charts/ActivityChartDescriptor"
 export default defineComponent({
   name: "TabbedCharts",
   components: {ActivityChart},
-  setup() {
-    const charts = chartDescriptors.filter(it => it.isInfoChart !== true)
+  props: {
+    isInfoChart: {
+      type: Boolean,
+      required: true,
+    }
+  },
+  setup(props) {
+    const charts = chartDescriptors.filter(it => it.isInfoChart === props.isInfoChart || (!props.isInfoChart && it.isInfoChart === undefined))
     const activeName = ref(charts[0].id)
+    const queryParamName = props.isInfoChart ? "infoTab" : "tab"
     function updateLocation(location: RouteLocationNormalizedLoaded): void {
-      const tab = location.query["tab"]
+      const tab = location.query[queryParamName]
       // do not check `location.path === "/"` because if component displayed, so, active
       if (tab == null) {
         activeName.value = charts[0].id
@@ -51,14 +59,14 @@ export default defineComponent({
     return {
       charts,
       activeName,
-      navigate(): void {
-        void router.push({
+      navigate: new DebouncedTask(function () {
+        return router.push({
           query: {
             ...route.query,
-            infoTab: activeName.value,
+            [queryParamName]: activeName.value,
           },
         })
-      }
+      }, 0).executeFunctionReference,
     }
   }
 })

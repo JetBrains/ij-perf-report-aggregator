@@ -10,8 +10,8 @@
     </el-col>
   </el-row>
 
-  <TabbedInfoCharts />
-  <TabbedCharts />
+  <TabbedCharts :is-info-chart="true" />
+  <TabbedCharts :is-info-chart="false" />
 
   <el-row>
     <el-col>
@@ -31,10 +31,9 @@
 import { defineComponent } from "vue"
 import InputForm from "./InputForm.vue"
 import TabbedCharts from "./TabbedCharts.vue"
-import TabbedInfoCharts from "./TabbedInfoCharts.vue"
 
 export default defineComponent({
   name: "Report",
-  components: {InputForm, TabbedCharts, TabbedInfoCharts},
+  components: {InputForm, TabbedCharts},
 })
 </script>

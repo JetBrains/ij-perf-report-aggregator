@@ -6,30 +6,26 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, shallowRef, toRef, watch } from "vue"
-import { chartDescriptors } from "./charts/ActivityChartDescriptor"
+import { debounceSync } from "shared/src/util/debounce"
+import { PropType , defineComponent, shallowRef, toRef, watch } from "vue"
+import { ActivityChartDescriptor } from "./charts/ActivityChartDescriptor"
 import { ChartComponent } from "./charts/ChartComponent"
 import { ChartManager } from "./charts/ChartManager"
 
 export default defineComponent({
   name: "ActivityChart",
   props: {
-    type: {
-      type: String,
+    descriptor: {
+      type: Object as PropType<ActivityChartDescriptor>,
       required: true,
     }
   },
   setup(props) {
-    const typeRef = toRef(props, "type")
+    const descriptorRef = toRef(props, "descriptor")
     const chartContainer = shallowRef<HTMLElement | null>(null)
 
     const chartHelper = new ChartComponent(async function(): Promise<ChartManager> {
-      const type = typeRef.value
-      const descriptor = chartDescriptors.find(it => it.id === type)
-      if (descriptor === undefined) {
-        throw new Error(`Unknown chart type: ${type}`)
-      }
-
+      const descriptor = descriptorRef.value
       const container = chartContainer.value
       if (container == null) {
         throw new Error("container is not created")
@@ -38,13 +34,13 @@ export default defineComponent({
       const sourceNames = descriptor.sourceNames
       if (descriptor.chartManagerProducer == null) {
         return new (await import("./charts/ActivityChartManager"))
-          .ActivityChartManager(container, sourceNames ?? [type], descriptor)
+          .ActivityChartManager(container, sourceNames ?? [descriptor.id], descriptor)
       }
       else {
         return await descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)
       }
     })
-    watch(typeRef, () => {
+    watch(descriptorRef, debounceSync(() => {
       const oldChartManager = chartHelper.chartManager
       if (oldChartManager != null) {
         oldChartManager.dispose()
@@ -52,7 +48,7 @@ export default defineComponent({
       }
 
       chartHelper.renderDataIfAvailable()
-    })
+    }, 0))
 
     return {
       chartContainer,

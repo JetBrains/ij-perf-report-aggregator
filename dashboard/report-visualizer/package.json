@@ -5,7 +5,7 @@
     "@amcharts/amcharts4": "4.10.16",
     "compare-versions": "^3.6.0",
     "echarts": "5.0.2",
-    "element-plus": "1.0.2-beta.33",
+    "element-plus": "1.0.2-beta.35",
     "p-queue": "^6.6.2",
     "rison-node": "^2.1.1",
     "shared": "workspace:*",

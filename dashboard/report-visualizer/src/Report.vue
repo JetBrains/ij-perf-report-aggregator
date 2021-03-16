@@ -37,3 +37,19 @@ export default defineComponent({
   components: {InputForm, TabbedCharts},
 })
 </script>
+<style>
+.tooltipMainValue {
+  float: right;
+  margin-left: 20px;
+  font-weight: 900;
+}
+.tooltipValue {
+  float: right;
+  margin-left: 20px;
+}
+.tooltipSelectableValue {
+  float: right;
+  margin-left: 20px;
+  user-select: text
+}
+</style>

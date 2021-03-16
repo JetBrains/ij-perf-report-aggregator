@@ -1,8 +1,11 @@
+import { BarChart } from "echarts/charts"
+import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { ChartOptions, useLineAndBarCharts } from "./echarts"
+import { ChartOptions } from "./echarts"
 
-useLineAndBarCharts()
+use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent])
 
 export class BarChartManager {
   private readonly chart: ChartManagerHelper

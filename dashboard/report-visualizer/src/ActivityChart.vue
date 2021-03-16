@@ -8,7 +8,7 @@
 <script lang="ts">
 import { debounceSync } from "shared/src/util/debounce"
 import { PropType , defineComponent, shallowRef, toRef, watch } from "vue"
-import { ActivityChartDescriptor } from "./charts/ActivityChartDescriptor"
+import { ActivityChartDescriptor } from "./ActivityChartDescriptor"
 import { ChartComponent } from "./charts/ChartComponent"
 import { ChartManager } from "./charts/ChartManager"
 
@@ -59,15 +59,6 @@ export default defineComponent({
 <style scoped>
 .activityChart {
   width: 100%;
-  /*
-  our data has extraordinary high values (extremes) and it makes item chart not readable (extremes are visible and others column bars are too low),
-  as solution, amCharts supports breaks (https://www.amcharts.com/demos/column-chart-with-axis-break/),
-  but it contradicts to our goal - to show that these items are extremes,
-  so, as solution, we increase chart height to give more space to render bars.
-
-  It is ok, as now we use UI Library (ElementUI) and can use Tabs, Collapse and any other component to group charts.
-  Also, as we use Vue.js and Vue Router, it is one-line to provide dedicated view (/#/components and so on)
-  */
-  height: 500px;
+  height: 450px;
 }
 </style>

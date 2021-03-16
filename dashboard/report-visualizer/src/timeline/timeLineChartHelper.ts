@@ -1,6 +1,6 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import { Color } from "@amcharts/amcharts4/core"
-import { ItemV0 } from "../state/data"
+import { ItemV0 } from "../data"
 
 export interface TimeLineItem extends ItemV0 {
   // helper property, not required to visualize chart (used only to compute rowIndex for non-parallel activities)

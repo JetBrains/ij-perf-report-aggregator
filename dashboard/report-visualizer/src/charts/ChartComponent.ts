@@ -1,9 +1,9 @@
 import ElNotification from "element-plus/es/el-notification"
 import { debounceSync } from "shared/src/util/debounce"
 import { watch, onBeforeUnmount, onMounted } from "vue"
-import { DataManager } from "../state/DataManager"
-import { InputData } from "../state/data"
-import { reportData } from "../state/state"
+import { DataManager } from "../DataManager"
+import { InputData } from "../data"
+import { reportData } from "../state"
 import { ChartManager } from "./ChartManager"
 
 export class ChartComponent {

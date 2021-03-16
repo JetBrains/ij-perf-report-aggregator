@@ -1,10 +1,10 @@
 import { Legend, DurationAxisDataItem } from "@amcharts/amcharts4/charts"
 import { ColorSet, Color, color as chartColor } from "@amcharts/amcharts4/core"
-import { ClassItem } from "../charts/ActivityChartManager"
+import { getShortName } from "../ActivityChartDescriptor"
+import { DataManager, SERVICE_WAITING } from "../DataManager"
+import { ClassItem, ClassItemChartConfig } from "../charts/ActivityChartManager"
 import { LegendItem } from "../charts/ChartManager"
-import { transformTraceEventToClassItem } from "../charts/ServiceChartManager"
-import { DataManager } from "../state/DataManager"
-import { CompleteTraceEvent } from "../state/data"
+import { CompleteTraceEvent } from "../data"
 import { BaseTimeLineChartManager } from "./BaseTimeLineChartManager"
 import { TimeLineGuide } from "./timeLineChartHelper"
 
@@ -74,5 +74,46 @@ export class ServiceTimeLineChartManager extends BaseTimeLineChartManager {
     // HTML WhiteSmoke
     axisFill.fill = chartColor("#F5F5F5")
     axisFill.fillOpacity = 0.3
+  }
+}
+
+function transformTraceEventToClassItem(items: Array<CompleteTraceEvent>, chartConfig: ClassItemChartConfig | null, resultList: Array<ClassItem>,
+                                               durationAsOwn: boolean): void {
+  for (const item of items) {
+    const isServiceWaiting = item.cat === SERVICE_WAITING
+    if (durationAsOwn && isServiceWaiting) {
+      continue
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ownDur = item.args!.ownDur
+    const reportedDurationInMicroSeconds = durationAsOwn ? ownDur : item.dur
+
+    if (reportedDurationInMicroSeconds < (10 * 1000)) {
+      continue
+    }
+
+    const shortName = getShortName(item)
+    const result: ClassItem & CompleteTraceEvent = {
+      ...item,
+      name: isServiceWaiting ? `wait for ${item.name}` : item.name,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      sourceName: item.cat!,
+      shortName: isServiceWaiting ? `wait for ${shortName}` : shortName,
+      chartConfig,
+      thread: item.tid,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      plugin: item.args!.plugin,
+      start: Math.round(item.ts / 1000),
+      end: Math.round((item.ts + item.dur) / 1000),
+      duration: Math.round(reportedDurationInMicroSeconds / 1000),
+      totalDuration: Math.round(item.dur / 1000),
+    }
+
+    if (!durationAsOwn) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
+      (result as any).ownDuration = Math.round(ownDur / 1000)
+    }
+    resultList.push(result)
   }
 }

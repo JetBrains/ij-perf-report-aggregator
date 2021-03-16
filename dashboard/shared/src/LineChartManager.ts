@@ -1,9 +1,12 @@
+import { LineChart } from "echarts/charts"
+import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
 import { TplFormatterParam } from "echarts/types/src/util/format"
 import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "./chart"
-import { ChartOptions, useLineAndBarCharts } from "./echarts"
+import { ChartOptions } from "./echarts"
 import { debounceSync } from "./util/debounce"
 
 const dataZoomConfig = [
@@ -13,7 +16,7 @@ const dataZoomConfig = [
   {},
 ]
 
-useLineAndBarCharts()
+use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineChart, LegendComponent])
 
 export class LineChartManager {
   private readonly chart: ChartManagerHelper

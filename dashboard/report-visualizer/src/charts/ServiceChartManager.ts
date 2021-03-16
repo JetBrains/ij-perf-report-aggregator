@@ -1,145 +1,170 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { DurationAxis } from "@amcharts/amcharts4/charts"
-import { DataManager, SERVICE_WAITING } from "../state/DataManager"
-import { CompleteTraceEvent } from "../state/data"
-import { ActivityChartDescriptor, getShortName } from "./ActivityChartDescriptor"
-import { ActivityChartManager, ActivityLegendItem, ClassItem, ClassItemChartConfig } from "./ActivityChartManager"
+import { BarChart } from "echarts/charts"
+import { DataZoomInsideComponent, GridComponent, MarkLineComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
+import { XAXisOption } from "echarts/types/dist/shared"
+import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
+import { TplFormatterParam } from "echarts/types/src/util/format"
+import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
+import { adaptToolTipFormatter } from "shared/src/chart"
+import { BarChartOptions, ChartOptions } from "shared/src/echarts"
+import { durationAxisPointerFormatter, numberFormat } from "shared/src/formatter"
+import { DataManager, markerNameToRangeTitle } from "../DataManager"
+import { ItemV20 } from "../data"
+import { ChartManager } from "./ChartManager"
+import { buildTooltip, TooltipLineDescriptor } from "./tooltip"
 
-export class ServiceChartManager extends ActivityChartManager {
-  constructor(container: HTMLElement, sourceNames: Array<string>, descriptor: ActivityChartDescriptor) {
-    super(container, sourceNames, descriptor)
-  }
-
-  protected configureDurationAxis(): DurationAxis {
-    const durationAxis = super.configureDurationAxis()
-    durationAxis.baseUnit = "millisecond"
-    return durationAxis
-  }
-
-  protected getTooltipText(): string {
-    return super.getTooltipText() + "\ntotal duration: {totalDuration} ms"
-  }
-
-  render(dataManager: DataManager): void {
-    const list = dataManager.serviceEvents
-    const categoryToEvents = new Map<string, Array<CompleteTraceEvent>>()
-    for (const event of list) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const category = event.cat!
-      let categoryEvents = categoryToEvents.get(category)
-      if (categoryEvents == null) {
-        categoryEvents = []
-        categoryToEvents.set(category, categoryEvents)
-      }
-      categoryEvents.push(event)
-    }
-
-    let colorIndex = 0
-    const legendData: Array<ActivityLegendItem> = []
-    const applicableSources = new Set<string>()
-    const concatenatedData: Array<ClassItem> = []
-
-    for (const sourceName of this.sourceNames) {
-      // see XYChart.handleSeriesAdded method - fill and stroke are required to be set, and stroke is set to fill if not set otherwise (in our case fill and stroke are equals)
-      // do not use XYChart.handleSeriesAdded because on add series it is already called, so, we need to reuse already generated color for first index
-      // noinspection DuplicatedCode
-      const color = this.chart.colors.getIndex(colorIndex++)
-      const chartConfig: ClassItemChartConfig = {
-        fill: color,
-        stroke: color,
-      }
-
-      // generate color before - even if no data for this type of items, still color should be the same regardless of current data set
-      // so, if currently no data for project, but there is data for modules, color for modules should use index 3 and not 2
-      const items = categoryToEvents.get(sourceName)
-      if (items == null || items.length === 0) {
-        continue
-      }
-
-      const legendItem: ActivityLegendItem = {
-        name: sourceNameToLegendName(sourceName, items.length),
-        fill: color,
-        sourceName,
-      }
-      legendData.push(legendItem)
-      applicableSources.add(sourceName)
-
-      transformTraceEventToClassItem(items, chartConfig, concatenatedData, true)
-    }
-
-    // noinspection DuplicatedCode
-    if (this.chart.legend != null) {
-      this.chart.legend.data = legendData
-      this.legendHitHandler = (legendItem, isActive) => {
-        if (isActive) {
-          applicableSources.add(legendItem.sourceName)
-        }
-        else {
-          applicableSources.delete(legendItem.sourceName)
-        }
-        // maybe there is a more effective way to hide data, but this one is reliable and simple
-        this.chart.data = concatenatedData.filter(it => applicableSources.has(it.sourceName))
-      }
-    }
-
-    concatenatedData.sort((a, b) => a.start - b.start)
-    this.computeRangeMarkers(dataManager, concatenatedData)
-    this.chart.data = concatenatedData
-  }
-}
+use([ToolboxComponent, TooltipComponent, DataZoomInsideComponent, GridComponent, BarChart, MarkLineComponent, CanvasRenderer])
 
 // 10 ms
 const threshold = 10 * 1000
 
-export function transformTraceEventToClassItem(items: Array<CompleteTraceEvent>, chartConfig: ClassItemChartConfig | null, resultList: Array<ClassItem>,
-                                               durationAsOwn: boolean): void {
-  for (const item of items) {
-    const isServiceWaiting = item.cat === SERVICE_WAITING
-    if (durationAsOwn && isServiceWaiting) {
-      continue
+type ChartDataItem = [string, number, ItemV20]
+
+function formatDurationInMicroSeconds(microseconds: number): string {
+  return numberFormat.format(microseconds / 1000)
+}
+
+export class ServiceChartManager implements ChartManager {
+  private readonly chart: ChartManagerHelper
+
+  private lastData!: Array<ChartDataItem>
+
+  constructor(container: HTMLElement) {
+    this.chart = new ChartManagerHelper(container)
+    this.chart.chart.setOption<BarChartOptions>({
+      grid: {
+        left: 50,
+        right: 5,
+        containLabel: true,
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: false,
+          },
+          saveAsImage: {},
+        },
+      },
+      dataZoom: [{type: "inside"}],
+      tooltip: {
+        trigger: "axis",
+        axisPointer: {
+          type: "cross",
+        },
+        enterable: true,
+        formatter: adaptToolTipFormatter(params => {
+          const info = params[0]
+          const chartItem = info.data as ChartDataItem
+          const item = chartItem[2]
+          const lines: Array<TooltipLineDescriptor> = [
+            {name: chartItem[0], main: true, value: durationAxisPointerFormatter(chartItem[1])},
+            {name: "range", value: `${(formatDurationInMicroSeconds(item.s))}&ndash;${formatDurationInMicroSeconds(item.s + item.d)}`},
+            {name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : ""},
+            {name: "plugin", selectable: true, value: item.p},
+          ]
+          if (item.od !== undefined) {
+            lines.push({name: "total duration", value: durationAxisPointerFormatter(item.d / 1000)})
+          }
+          return `${info.marker as string} ${buildTooltip(lines)}`
+        })
+      },
+      xAxis: {
+        type: "category",
+        axisLabel: {
+          interval: 0,
+          rotate: 30,
+          fontSize: 10,
+          color: (_value, index): string => {
+            const item = this.lastData[index as number]
+            const currentOption: BarChartOptions = this.chart.chart.getOption() as BarChartOptions
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return item[2].t === "edt" ? "orange" : (currentOption.xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
+          },
+        },
+        axisTick: {
+          alignWithLabel: true,
+        },
+      },
+      yAxis: {
+        type: "value",
+        axisPointer: {
+          label: {
+            formatter(data: TplFormatterParam) {
+              return numberFormat.format(data["value"])
+            },
+          },
+        },
+      },
+    })
+    this.chart.enableZoomTool()
+  }
+
+  dispose(): void {
+    this.chart.dispose()
+  }
+
+  render(dataManager: DataManager): void {
+    const list = dataManager.getServiceItems()
+    const data: Array<ChartDataItem> = []
+    this.lastData = data
+    for (const item of list) {
+      if (item.d < threshold) {
+        continue
+      }
+
+      data.push([
+        getShortName(item.n),
+        (item.od ?? item.d) / 1000,
+        item,
+      ])
+    }
+    // sort by start
+    data.sort((a, b) => a[2].s - b[2].s)
+    const markLineData: Array<MarkLine1DDataItemOption> = []
+    for (const markerItem of dataManager.markerItems) {
+      if (markerItem != null) {
+        const item = data.find(it => (it[2].s / 1000) >= markerItem.end)
+        if (item != null) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          markLineData.push({
+            xAxis: item[0] as never,
+            label: {
+              show: true,
+              formatter: markerNameToRangeTitle.get(markerItem.name),
+            },
+          })
+        }
+      }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const ownDur = item.args!.ownDur
-    const reportedDurationInMicroSeconds = durationAsOwn ? ownDur : item.dur
-
-    if (reportedDurationInMicroSeconds < threshold) {
-      continue
-    }
-
-    const shortName = getShortName(item)
-    const result: ClassItem & CompleteTraceEvent = {
-      ...item,
-      name: isServiceWaiting ? `wait for ${item.name}` : item.name,
-      sourceName: item.cat!,
-      shortName: isServiceWaiting ? `wait for ${shortName}` : shortName,
-      chartConfig,
-      thread: item.tid,
-      plugin: item.args!.plugin,
-      start: Math.round(item.ts / 1000),
-      end: Math.round((item.ts + item.dur) / 1000),
-      duration: Math.round(reportedDurationInMicroSeconds / 1000),
-      totalDuration: Math.round(item.dur / 1000),
-    }
-
-    if (!durationAsOwn) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-member-access
-      (result as any).ownDuration = Math.round(ownDur / 1000)
-    }
-    resultList.push(result)
+    this.chart.chart.setOption<ChartOptions>({
+      series: [
+        {
+          type: "bar",
+          dimensions: [
+            {name: "name", type: "ordinal"},
+            {name: "duration", type: "number"},
+            {name: "start", type: "number"},
+            {name: "thread", type: "ordinal"},
+          ],
+          // well, ItemV20 is not expected as dimension value, but it is actually allowed and supported
+          data: data as never,
+          markLine: {
+            symbol: "none",
+            silent: true,
+            lineStyle: {
+              type: "dashed",
+            },
+            data: markLineData,
+          },
+        },
+      ],
+    })
   }
 }
 
-function sourceNameToLegendName(sourceName: string, itemCount: number): string {
-  let prefix
-  if (sourceName.startsWith("app")) {
-    prefix = "App"
-  }
-  else if (sourceName.startsWith("project")) {
-    prefix = "Project"
-  }
-  else if (sourceName.startsWith("module")) {
-    prefix = "Module"
-  }
-  return `${prefix} ${sourceName.includes("Component") ? "component" : "service"} (${itemCount})`
+function getShortName(qualifiedName: string): string {
+  const lastDotIndex = qualifiedName.lastIndexOf(".")
+  return lastDotIndex < 0 ? qualifiedName : qualifiedName.substring(lastDotIndex + 1)
 }

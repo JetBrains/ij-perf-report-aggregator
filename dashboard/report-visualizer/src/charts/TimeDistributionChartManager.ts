@@ -1,14 +1,18 @@
+import { TreemapChart } from "echarts/charts"
+import { TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
 import { TreemapSeriesNodeItemOption } from "echarts/types/src/chart/treemap/TreemapSeries"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter } from "shared/src/chart"
-import { ChartOptions, TreeMapChartOptions, useTreeMapChart } from "shared/src/echarts"
+import { ChartOptions, TreeMapChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
-import { DataManager } from "../state/DataManager"
-import { IconData, InputDataV20, ItemV20 } from "../state/data"
-import { getShortName } from "./ActivityChartDescriptor"
+import { getShortName } from "../ActivityChartDescriptor"
+import { DataManager } from "../DataManager"
+import { IconData, InputDataV20, ItemV20 } from "../data"
 import { ChartManager } from "./ChartManager"
 
-useTreeMapChart()
+use([TooltipComponent, CanvasRenderer, TreemapChart])
 
 interface ItemExtraInfo {
   count?: string
@@ -20,6 +24,11 @@ export class TimeDistributionChartManager implements ChartManager {
   constructor(container: HTMLElement) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<ChartOptions>({
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
       tooltip: {
         formatter: adaptToolTipFormatter(params => {
           const info = params[0]
@@ -28,7 +37,7 @@ export class TimeDistributionChartManager implements ChartManager {
           if (count !== undefined) {
             result += ` (count=${count})`
           }
-          return result + `<span style="float:right;margin-left:20px;font-weight:900">${numberFormat.format(info.value as number)}</span>`
+          return result + `<span class="tooltipMainValue">${numberFormat.format(info.value as number)}</span>`
         }),
       },
     })
@@ -50,7 +59,6 @@ export class TimeDistributionChartManager implements ChartManager {
         type: "treemap",
         data: items,
         leafDepth: 2,
-        roam: "move",
         label: {
           formatter(data) {
             return `${data.name} (${numberFormat.format(data["value"] as number)})`

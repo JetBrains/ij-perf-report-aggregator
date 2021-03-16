@@ -1,7 +1,7 @@
 import { DurationAxis } from "@amcharts/amcharts4/charts"
 import { Label, ColorSet } from "@amcharts/amcharts4/core"
-import { DataManager } from "../state/DataManager"
-import { InputData } from "../state/data"
+import { DataManager } from "../DataManager"
+import { InputData } from "../data"
 import { BaseTimeLineChartManager, LABEL_DURATION_THRESHOLD } from "./BaseTimeLineChartManager"
 import { TimeLineItem, transformToTimeLineItems } from "./timeLineChartHelper"
 

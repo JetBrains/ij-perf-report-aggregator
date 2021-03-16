@@ -2,7 +2,7 @@
 import "@amcharts/amcharts4/.internal/core/elements/Modal"
 import { AxisDataItem, XYChart, XYCursor } from "@amcharts/amcharts4/charts"
 import { color, Color, create, ExportMenu, options as amChartOptions, Scrollbar } from "@amcharts/amcharts4/core"
-import { DataManager } from "../state/DataManager"
+import { DataManager } from "../DataManager"
 
 // helps during hot-reload
 amChartOptions.autoDispose = true

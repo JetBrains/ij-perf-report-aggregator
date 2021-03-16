@@ -52,7 +52,9 @@
   </el-main>
 </template>
 <script lang="ts">
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
+import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
 import { watch, defineComponent, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
@@ -68,6 +70,10 @@ export default defineComponent({
     const serverUrl = ref("")
     const routes = getRoutes()
     provide(serverUrlKey, serverUrl)
+
+    const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
+    persistentStateManager.add("serverUrl", serverUrl)
+    persistentStateManager.init()
 
     const route = useRoute()
     const activePath = ref("")

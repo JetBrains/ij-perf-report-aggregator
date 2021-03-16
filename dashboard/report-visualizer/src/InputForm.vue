@@ -52,7 +52,7 @@ import { DebouncedTask, TaskHandle } from "shared/src/util/debounce"
 import { loadJson } from "shared/src/util/httpUtil"
 import { defineComponent, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute } from "vue-router"
-import { recentlyUsedIdePort, reportData } from "./state/state"
+import { recentlyUsedIdePort, reportData } from "./state"
 
 export default defineComponent({
   name: "InputForm",

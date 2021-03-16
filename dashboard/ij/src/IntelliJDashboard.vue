@@ -172,7 +172,7 @@ export default defineComponent({
       project: "73YWaW9bytiPDGuKvwNIYMK5CKI",
       machine: "macMini 2018",
     }, useRouter())
-    const serverConfigurator = new ServerConfigurator("ij", persistentStateManager)
+    const serverConfigurator = new ServerConfigurator("ij")
     const productConfigurator = new DimensionConfigurator("product", serverConfigurator, persistentStateManager)
     const projectConfigurator = createProjectConfigurator(productConfigurator, persistentStateManager)
     const machineConfigurator = new MachineConfigurator(

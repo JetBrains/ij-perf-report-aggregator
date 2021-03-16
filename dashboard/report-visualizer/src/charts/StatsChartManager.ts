@@ -1,10 +1,14 @@
+import { SunburstChart } from "echarts/charts"
+import { TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
-import { SunburstChartOptions, useSunburstChart } from "shared/src/echarts"
+import { SunburstChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
-import { DataManager } from "../state/DataManager"
+import { DataManager } from "../DataManager"
 import { ChartManager } from "./ChartManager"
 
-useSunburstChart()
+use([TooltipComponent, CanvasRenderer, SunburstChart])
 
 export class StatsChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper

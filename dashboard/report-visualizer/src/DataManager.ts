@@ -1,9 +1,9 @@
 import compareVersions from "compare-versions"
-import { serviceSourceNames } from "../charts/ActivityChartDescriptor"
+import { serviceSourceNames } from "./ActivityChartDescriptor"
 import { CompleteTraceEvent, InputData, InputDataV11AndLess, InputDataV20, ItemV0, ItemV20 } from "./data"
 import { markerNames } from "./state"
 
-const markerNameToRangeTitle = new Map<string, string>([["app initialized callback", "app initialized"], ["module loading", "project initialized"]])
+export const markerNameToRangeTitle = new Map<string, string>([["app initialized callback", "app initialized"], ["module loading", "project initialized"]])
 
 export interface ItemStats {
   readonly reportedComponentCount: number
@@ -128,6 +128,53 @@ export class DataManager {
 
       this._serviceEvents = list
       return list
+    }
+  }
+
+  // start, duration in microseconds
+  getServiceItems(): Array<ItemV20> {
+    const version = this.version
+    const isNewCompactFormat = version != null && compareVersions.compare(version, "20", ">=")
+    if (isNewCompactFormat) {
+      const data = this.data as InputDataV20
+      // convertV20ToTraceEvent(data.serviceWaiting, "serviceWaiting", list)
+      return [
+        ...(data.appComponents ?? []),
+        ...(data.projectComponents ?? []),
+        ...(data.moduleComponents ?? []),
+
+        ...(data.appServices ?? []),
+        ...(data.projectServices ?? []),
+        ...(data.moduleServices ?? []),
+      ]
+    }
+    else if (version != null && compareVersions.compare(version, "12", ">=")) {
+      this._serviceEvents = this.data.traceEvents.filter(value => value.cat != null && serviceEventCategorySet.has(value.cat)) as Array<CompleteTraceEvent>
+      return this._serviceEvents.map(it => {
+        return {
+          n: it.name,
+          d: it.dur,
+          t: it.tid,
+          s: it.ts - it.dur,
+          p: "",
+        }
+      })
+    }
+    else {
+      throw new Error(`Report version ${version} is not supported, ask if needed`)
+      // const list: Array<CompleteTraceEvent> = []
+      // const data = this.data as InputDataV11AndLess
+      //
+      // convertV11ToTraceEvent(data.appComponents, "appComponents", list)
+      // convertV11ToTraceEvent(data.projectComponents, "projectComponents", list)
+      // convertV11ToTraceEvent(data.moduleComponents, "moduleComponents", list)
+      //
+      // convertV11ToTraceEvent(data.appServices, "appServices", list)
+      // convertV11ToTraceEvent(data.projectServices, "projectServices", list)
+      // convertV11ToTraceEvent(data.moduleServices, "moduleServices", list)
+      //
+      // this._serviceEvents = list
+      // return list
     }
   }
 

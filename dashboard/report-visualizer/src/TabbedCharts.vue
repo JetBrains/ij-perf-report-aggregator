@@ -22,7 +22,7 @@ import { DebouncedTask } from "shared/src/util/debounce"
 import { defineComponent, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
-import { chartDescriptors } from "./charts/ActivityChartDescriptor"
+import { chartDescriptors } from "./ActivityChartDescriptor"
 
 export default defineComponent({
   name: "TabbedCharts",

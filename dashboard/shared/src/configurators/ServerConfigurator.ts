@@ -1,5 +1,4 @@
-import { inject, Ref, ref } from "vue"
-import { PersistentStateManager } from "../PersistentStateManager"
+import { inject, ref, Ref } from "vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { serverUrlKey } from "../injectionKeys"
 
@@ -9,9 +8,12 @@ export class ServerConfigurator implements DataQueryConfigurator {
   readonly value: Ref<string>
   readonly valueChangeDelay = 900
 
-  constructor(readonly databaseName: string, persistentStateManager: PersistentStateManager) {
-    this.value = inject(serverUrlKey, ref(""))
-    persistentStateManager.add("serverUrl", this.value)
+  constructor(readonly databaseName: string) {
+    const serverUrl = inject(serverUrlKey, ref(ServerConfigurator.DEFAULT_SERVER_URL))
+    if (serverUrl === undefined) {
+      throw new Error("Server URL is not provided")
+    }
+    this.value = serverUrl
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {

@@ -82,7 +82,7 @@ export default defineComponent({
       measure: ["indexing", "scanning"],
     }, useRouter())
 
-    const serverConfigurator = new ServerConfigurator("sharedIndexes", persistentStateManager)
+    const serverConfigurator = new ServerConfigurator("sharedIndexes")
     const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
 
     const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),

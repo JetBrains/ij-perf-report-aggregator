@@ -29,7 +29,7 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "max-len": ["error", {"code": 180}],
     "object-shorthand": ["error", "always", {"avoidExplicitReturnArrows": true}],
-    "quotes": ["error", "double"],
+    "quotes": ["error", "double", {avoidEscape: true}],
     "@typescript-eslint/no-unused-vars": "off",
     "semi": "off",
     "import/order": [process.env.NODE_ENV === "production" ? "error" : "warn", {alphabetize: {order: "asc"}}],

@@ -60,7 +60,7 @@ export default defineComponent({
   components: {ReloadButton, LineChartCard, DimensionHierarchicalSelect, DimensionSelect, MeasureSelect, TimeRangeSelect},
   setup() {
     const persistentStateManager = new PersistentStateManager("ij-explore")
-    const serverConfigurator = new ServerConfigurator("ij", persistentStateManager)
+    const serverConfigurator = new ServerConfigurator("ij")
     const productConfigurator = new DimensionConfigurator("product", serverConfigurator, persistentStateManager)
     const projectConfigurator = createProjectConfigurator(productConfigurator, persistentStateManager)
     const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager)

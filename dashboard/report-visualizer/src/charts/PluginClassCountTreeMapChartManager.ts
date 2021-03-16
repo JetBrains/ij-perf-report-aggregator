@@ -1,13 +1,18 @@
+import { TreemapChart } from "echarts/charts"
+import { ToolboxComponent, TooltipComponent } from "echarts/components"
+import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
 import { TreemapSeriesNodeItemOption } from "echarts/types/src/chart/treemap/TreemapSeries"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter } from "shared/src/chart"
-import { ChartOptions, TreeMapChartOptions, useTreeMapChart } from "shared/src/echarts"
+import { ChartOptions, TreeMapChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
-import { DataManager } from "../state/DataManager"
-import { PluginStatItem } from "../state/data"
+import { DataManager } from "../DataManager"
+import { PluginStatItem } from "../data"
 import { ChartManager } from "./ChartManager"
+import { buildTooltip } from "./tooltip"
 
-useTreeMapChart()
+use([TooltipComponent, CanvasRenderer, TreemapChart, ToolboxComponent])
 
 interface ItemExtraInfo {
   abbreviatedName: string
@@ -19,15 +24,20 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
   constructor(container: HTMLElement) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<ChartOptions>({
+      toolbox: {
+        feature: {
+          saveAsImage: {},
+        },
+      },
       tooltip: {
         formatter: adaptToolTipFormatter(params => {
           const info = params[0]
-          const value = info.value as number
-          let result = `${info.marker as string} ${info.name}<span style="float:right;margin-left:20px;font-weight:900">${numberFormat.format(value)}</span>`
           const item = (info.data as ItemExtraInfo).item
-          result += `<br/>  class loading time in EDT<span style="float:right;margin-left:20px">${item.classLoadingEdtTime}</span>`
-          result += `<br/>class loading time in background<span style="float:right;margin-left:20px">${item.classLoadingBackgroundTime}</span>`
-          return result
+          return `${info.marker as string} ` + buildTooltip([
+            {name: info.name, main: true, value: numberFormat.format(info.value as number)},
+            {name: "class loading time in EDT", value: numberFormat.format(item.classLoadingEdtTime)},
+            {name: "class loading time in background", value: numberFormat.format(item.classLoadingBackgroundTime)},
+          ])
         }),
       },
     })
@@ -68,7 +78,6 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
         type: "treemap",
         data: items,
         leafDepth: 2,
-        roam: "move",
         label: {
           formatter(data) {
             return `${(data.data as ItemExtraInfo).abbreviatedName} (${numberFormat.format(data["value"] as number)})`

@@ -1,9 +1,9 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 import { Legend, CategoryAxis, DurationAxis, ColumnSeries } from "@amcharts/amcharts4/charts"
 import { color, Color } from "@amcharts/amcharts4/core"
-import { DataManager } from "../state/DataManager"
-import { CommonItem, ItemV0 } from "../state/data"
-import { ActivityChartDescriptor } from "./ActivityChartDescriptor"
+import { ActivityChartDescriptor } from "../ActivityChartDescriptor"
+import { DataManager } from "../DataManager"
+import { CommonItem, ItemV0 } from "../data"
 import { LegendItem, XYChartManager } from "./ChartManager"
 
 export class ActivityChartManager extends XYChartManager {

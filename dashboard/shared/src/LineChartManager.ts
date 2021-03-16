@@ -1,6 +1,7 @@
 import { LineChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
 import { TplFormatterParam } from "echarts/types/src/util/format"
 import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "./ChartManagerHelper"
@@ -16,7 +17,7 @@ const dataZoomConfig = [
   {},
 ]
 
-use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineChart, LegendComponent])
+use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineChart, LegendComponent, CanvasRenderer])
 
 export class LineChartManager {
   private readonly chart: ChartManagerHelper

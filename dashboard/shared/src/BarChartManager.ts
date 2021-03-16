@@ -1,11 +1,12 @@
 import { BarChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { use } from "echarts/core"
+import { CanvasRenderer } from "echarts/renderers"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { ChartOptions } from "./echarts"
 
-use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent])
+use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent, CanvasRenderer])
 
 export class BarChartManager {
   private readonly chart: ChartManagerHelper

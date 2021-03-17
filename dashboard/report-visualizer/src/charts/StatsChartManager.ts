@@ -6,7 +6,7 @@ import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { SunburstChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
 import { DataManager } from "../DataManager"
-import { ChartManager } from "./ChartManager"
+import { ChartManager } from "./ChartComponent"
 
 use([TooltipComponent, CanvasRenderer, SunburstChart])
 

@@ -5,11 +5,11 @@ import { CanvasRenderer } from "echarts/renderers"
 import { TreemapSeriesNodeItemOption } from "echarts/types/src/chart/treemap/TreemapSeries"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter } from "shared/src/chart"
-import { ChartOptions, TreeMapChartOptions } from "shared/src/echarts"
+import { LineChartOptions, TreeMapChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
 import { DataManager } from "../DataManager"
 import { PluginStatItem } from "../data"
-import { ChartManager } from "./ChartManager"
+import { ChartManager } from "./ChartComponent"
 import { buildTooltip } from "./tooltip"
 
 use([TooltipComponent, CanvasRenderer, TreemapChart, ToolboxComponent])
@@ -23,7 +23,7 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
   constructor(container: HTMLElement) {
     this.chart = new ChartManagerHelper(container)
-    this.chart.chart.setOption<ChartOptions>({
+    this.chart.chart.setOption<LineChartOptions>({
       toolbox: {
         feature: {
           saveAsImage: {},

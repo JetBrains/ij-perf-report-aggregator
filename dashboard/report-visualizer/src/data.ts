@@ -18,7 +18,7 @@ export interface ItemV20 {
   readonly od?: number
   readonly n: string
   readonly t: string
-  readonly p: string
+  readonly p?: string
 }
 
 export interface CommonItem {
@@ -48,16 +48,6 @@ export interface CompleteTraceEvent extends TraceEvent {
   readonly dur: number
 }
 
-export interface InputDataV11AndLess extends InputData {
-  readonly appComponents?: Array<ItemV0>
-  readonly projectComponents?: Array<ItemV0>
-  readonly moduleComponents?: Array<ItemV0>
-
-  readonly appServices?: Array<ItemV0>
-  readonly projectServices?: Array<ItemV0>
-  readonly moduleServices?: Array<ItemV0>
-}
-
 export interface InputDataV20 extends InputData {
   readonly appComponents?: Array<ItemV20>
   readonly projectComponents?: Array<ItemV20>
@@ -78,11 +68,12 @@ export interface InputData {
   readonly stats: Stats
   readonly plugins?: Array<PluginStatItem>
 
-  readonly icons?: Array<{ [key: string]: IconData }>
+  readonly icons?: Array<IconData>
 
   readonly items: Array<ItemV0>
 
-  readonly prepareAppInitActivities: Array<ItemV0>
+  // time in ms
+  readonly prepareAppInitActivities: Array<ItemV20>
 
   readonly appExtensions?: Array<ItemV0>
   readonly projectExtensions?: Array<ItemV0>
@@ -121,8 +112,21 @@ export interface StatItem {
 }
 
 export interface IconData {
+  readonly name: string
   readonly count: number
 
   readonly loading: number
   readonly decoding: number
+}
+
+export class UnitConverter {
+  static MICROSECONDS = new UnitConverter(1000)
+  static MILLISECONDS = new UnitConverter(1)
+
+  private constructor(readonly factor: number) {
+  }
+
+  convert(value: number): number {
+    return value / this.factor
+  }
 }

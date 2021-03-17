@@ -1,10 +1,13 @@
+import { ECBasicOption } from "echarts/types/dist/shared"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { DataQueryExecutorConfiguration } from "./dataQuery"
-import { ChartOptions } from "./echarts"
 
 export const DEFAULT_LINE_CHART_HEIGHT = 340
 
 export declare type ToolTipFormatter = (params: CallbackDataParams[]) => string | null
+
+// natural sort of alphanumerical strings
+export const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
 
 export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: CallbackDataParams | CallbackDataParams[], _ticket: string) => string {
   return function (params: CallbackDataParams | CallbackDataParams[], _ticket: string): string {
@@ -14,7 +17,7 @@ export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: Cal
 }
 
 export interface ChartConfigurator {
-  configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ChartOptions
+  configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ECBasicOption
 }
 
 export const timeFormat = new Intl.DateTimeFormat(undefined, {

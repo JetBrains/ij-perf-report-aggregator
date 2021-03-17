@@ -4,7 +4,7 @@ import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { ChartOptions } from "./echarts"
+import { LineChartOptions } from "./echarts"
 
 use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent, CanvasRenderer])
 
@@ -13,7 +13,7 @@ export class BarChartManager {
 
   constructor(container: HTMLElement, private readonly dataQueryExecutor: DataQueryExecutor) {
     this.chart = new ChartManagerHelper(container)
-    this.chart.chart.setOption<ChartOptions>({
+    this.chart.chart.setOption<LineChartOptions>({
       animation: false,
       legend: {},
       grid: {

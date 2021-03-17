@@ -52,10 +52,6 @@ export default defineConfig({
     // @ts-ignore
     outDir: path.resolve(__dirname, "cmd/frontend/kodata"),
     rollupOptions: {
-      // remove once migration from amcharts to echarts will be completed
-      external(id) {
-        return isModule(id, "xlsx") || isModule(id, "pdfmake")
-      },
       // plugins: [visualizer({filename: "/Volumes/data/foo/s.html"})],
       // output: {
       //   manualChunks: {
@@ -67,7 +63,3 @@ export default defineConfig({
     },
   },
 })
-
-function isModule(id: string, module: string) {
-  return id === module || id.includes(`/${module}/`) || id.startsWith(`${module}/`)
-}

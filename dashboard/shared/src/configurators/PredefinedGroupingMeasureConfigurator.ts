@@ -4,7 +4,7 @@ import { Ref } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { ChartConfigurator, ChartStyle } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { ChartOptions } from "../echarts"
+import { BarChartOptions } from "../echarts"
 import { durationAxisLabelFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
@@ -55,7 +55,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     return true
   }
 
-  configureChart(dataSets: DataQueryResult, configuration: DataQueryExecutorConfiguration): ChartOptions {
+  configureChart(dataSets: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
     const extraQueryProducer = configuration.extraQueryProducer
     if (extraQueryProducer != null) {
       let useDurationFormatter = true

@@ -3,14 +3,18 @@
     ref="chartContainer"
     class="activityChart"
   />
+  <small v-show="descriptor.id === 'serviceTimeline' || descriptor.id === 'timeline'">
+    Dotted border area — async preloading. Solid border area — sync preloading.
+  </small>
 </template>
 
 <script lang="ts">
 import { debounceSync } from "shared/src/util/debounce"
 import { PropType , defineComponent, shallowRef, toRef, watch } from "vue"
 import { ActivityChartDescriptor } from "./ActivityChartDescriptor"
-import { ChartComponent } from "./charts/ChartComponent"
-import { ChartManager } from "./charts/ChartManager"
+import { GroupedItems } from "./DataManager"
+import { ChartComponent, ChartManager } from "./charts/ChartComponent"
+import { ItemV20, UnitConverter } from "./data"
 
 export default defineComponent({
   name: "ActivityChart",
@@ -33,8 +37,23 @@ export default defineComponent({
 
       const sourceNames = descriptor.sourceNames
       if (descriptor.chartManagerProducer == null) {
-        return new (await import("./charts/ActivityChartManager"))
-          .ActivityChartManager(container, sourceNames ?? [descriptor.id], descriptor)
+        const names = sourceNames ?? [descriptor.id]
+        const hasALotOfData = !names.some(it => it === "reopeningEditors")
+        return new ((await import("./charts/ActivityBarChartManager")).ActivityBarChartManager)(container, dataManager => {
+          const result: GroupedItems = []
+          for (const name of names) {
+            const data = dataManager.data as never
+            const items = data[name] as Array<ItemV20> | null
+            if (items != null) {
+              result.push({category: name, items})
+            }
+          }
+          return result
+        }, {
+          unitConverter: UnitConverter.MILLISECONDS,
+          shortenName: hasALotOfData,
+          threshold: hasALotOfData ? undefined : 0,
+        })
       }
       else {
         return await descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)

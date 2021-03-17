@@ -5,12 +5,12 @@ import { CanvasRenderer } from "echarts/renderers"
 import { TreemapSeriesNodeItemOption } from "echarts/types/src/chart/treemap/TreemapSeries"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter } from "shared/src/chart"
-import { ChartOptions, TreeMapChartOptions } from "shared/src/echarts"
+import { LineChartOptions, TreeMapChartOptions } from "shared/src/echarts"
 import { numberFormat } from "shared/src/formatter"
 import { getShortName } from "../ActivityChartDescriptor"
 import { DataManager } from "../DataManager"
-import { IconData, InputDataV20, ItemV20 } from "../data"
-import { ChartManager } from "./ChartManager"
+import { InputDataV20, ItemV20 } from "../data"
+import { ChartManager } from "./ChartComponent"
 
 use([TooltipComponent, CanvasRenderer, TreemapChart])
 
@@ -23,7 +23,7 @@ export class TimeDistributionChartManager implements ChartManager {
 
   constructor(container: HTMLElement) {
     this.chart = new ChartManagerHelper(container)
-    this.chart.chart.setOption<ChartOptions>({
+    this.chart.chart.setOption<LineChartOptions>({
       toolbox: {
         feature: {
           saveAsImage: {},
@@ -58,12 +58,25 @@ export class TimeDistributionChartManager implements ChartManager {
       series: [{
         type: "treemap",
         data: items,
-        leafDepth: 2,
+        levels: [
+          {},
+          {},
+          {
+            colorSaturation: [0.35, 0.5],
+            itemStyle: {
+              borderWidth: 5,
+              gapWidth: 1,
+              borderColorSaturation: 0.6,
+            },
+            upperLabel: {show: true},
+          },
+        ],
+        leafDepth: 3,
         label: {
           formatter(data) {
             return `${data.name} (${numberFormat.format(data["value"] as number)})`
-          }
-        }
+          },
+        },
       }],
     })
   }
@@ -102,23 +115,15 @@ function addIcons(data: DataManager, items: Array<TreemapSeriesNodeItemOption>) 
   }
 
   const iconList: Array<TreemapSeriesNodeItemOption> = []
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  let count = 0
   let duration = 0
-  for (const [key, value] of Object.entries(icons)) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const info = value as IconData
-    count += info.count
-    duration += info.loading
+  for (const item of icons) {
+    duration += item.loading
     iconList.push({
-      name: key,
-      value: info.loading,
-      ...info,
+      value: item.loading,
+      ...item,
       children: [
-        {name: "searching", value: info.loading - info.decoding},
-        {name: "decoding", value: info.decoding},
+        {name: "searching", value: item.loading - item.decoding},
+        {name: "decoding", value: item.decoding},
       ],
     })
   }

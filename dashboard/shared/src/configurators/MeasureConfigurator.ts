@@ -3,17 +3,14 @@ import { TplFormatterParam } from "echarts/types/src/util/format"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator } from "../chart"
+import { ChartConfigurator, collator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
-import { ChartOptions } from "../echarts"
+import { LineChartOptions } from "../echarts"
 import { durationAxisLabelFormatter, durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
-
-// natural sort of alphanumerical strings
-const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
@@ -44,7 +41,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ChartOptions {
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): LineChartOptions {
     return configureChart(configuration, data)
   }
 
@@ -97,7 +94,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ChartOptions {
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): LineChartOptions {
     return configureChart(configuration, data)
   }
 }
@@ -192,7 +189,7 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
   }
 }
 
-function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): ChartOptions {
+function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
   const series = new Array<LineSeriesOption>()
   const extraQueryProducer = configuration.extraQueryProducer
   let useDurationFormatter = true

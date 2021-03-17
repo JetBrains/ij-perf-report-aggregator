@@ -7,7 +7,7 @@ import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "./chart"
-import { ChartOptions } from "./echarts"
+import { LineChartOptions } from "./echarts"
 import { debounceSync } from "./util/debounce"
 
 const dataZoomConfig = [
@@ -28,7 +28,7 @@ export class LineChartManager {
               tooltipFormatter: ToolTipFormatter) {
     this.chart = new ChartManagerHelper(container)
 
-    this.chart.chart.setOption<ChartOptions>({
+    this.chart.chart.setOption<LineChartOptions>({
       legend: {},
       animation: false,
       toolbox: {

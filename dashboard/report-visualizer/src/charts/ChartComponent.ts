@@ -4,7 +4,12 @@ import { watch, onBeforeUnmount, onMounted } from "vue"
 import { DataManager } from "../DataManager"
 import { InputData } from "../data"
 import { reportData } from "../state"
-import { ChartManager } from "./ChartManager"
+
+export interface ChartManager {
+  render(data: DataManager): void
+
+  dispose(): void
+}
 
 export class ChartComponent {
   chartManager: ChartManager | null = null

@@ -1,5 +1,5 @@
 import { EChartsType, throttle, init as initChart } from "echarts/core"
-import { ChartOptions } from "./echarts"
+import { ECBasicOption } from "echarts/types/dist/shared"
 
 export class ChartManagerHelper {
   readonly chart: EChartsType
@@ -23,7 +23,7 @@ export class ChartManagerHelper {
     })
   }
 
-  replaceDataSetAndSeries(options: ChartOptions): void {
+  replaceDataSetAndSeries(options: ECBasicOption): void {
     this.chart.setOption(options, {replaceMerge: ["dataset", "series"]})
   }
 

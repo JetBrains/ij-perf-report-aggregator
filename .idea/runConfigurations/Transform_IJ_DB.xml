@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Transform IJ DB" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="report-aggregator" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="DB" value="ij" />
+      <env name="UPDATE_TC_PROPERTIES" value="true" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/JetBrains/ij-perf-report-aggregator/cmd/transform" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/transform/transform.go" />
+    <method v="2" />
+  </configuration>
+</component>

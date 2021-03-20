@@ -36,6 +36,10 @@ export class DataQuery {
     this.fields.push(field)
   }
 
+  insertField(field: string | DataQueryDimension, index: number): void {
+    this.fields.splice(index, 0, field)
+  }
+
   addFilter(filter: DataQueryFilter): void {
     let filters = this.filters
     if (filters == null) {

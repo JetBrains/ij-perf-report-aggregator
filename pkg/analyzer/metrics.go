@@ -116,7 +116,7 @@ func init() {
 
     // light edit mode doesn't have moduleLoading phase
     "module loading": createMetric("moduleLoading_d"),
-    "project post-startup dumb-aware activities": createMetric("projectDumbAware_d"),
+    "project post-startup dumb-aware activities": createUint32Metric("projectDumbAware_d"),
 
     "editor restoring":            editorRestoring,
     "editor restoring till paint": createMetricWithCategory("editorRestoringTillPaint_d", appInitCategory),

@@ -1,11 +1,14 @@
 import { inject, provide } from "vue"
 import { DataQuery, DataQueryFilter, encodeQuery } from "./dataQuery"
-import { serverUrlKey, tooltipUrlProviderKey } from "./injectionKeys"
+import { serverUrlKey, reportInfoProviderKey } from "./injectionKeys"
 
 export function provideReportUrlProvider(): void {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const serverUrl = inject(serverUrlKey)!
-  provide(tooltipUrlProviderKey, (generatedTime, query) => createReportUrl(generatedTime, query, serverUrl.value))
+  provide(reportInfoProviderKey, {
+    infoFields: ["tc_installer_build_id"],
+    createReportUrl: (generatedTime, query) => createReportUrl(generatedTime, query, serverUrl.value)
+  })
 }
 
 function createReportUrl(generatedTime: number, query: DataQuery, serverUrl: string): string {

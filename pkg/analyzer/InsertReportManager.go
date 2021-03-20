@@ -62,7 +62,7 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   var selectStatement *sql.Stmt
   var err error
   config := GetAnalyzer(dbName)
-  if config.hasProductField {
+  if config.HasProductField {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
   } else {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where machine = ? and project = ? and generated_time = ? limit 1")
@@ -79,7 +79,7 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   sb.WriteString("insert into ")
   sb.WriteString(tableName)
   sb.WriteString(" (")
-  if config.hasProductField {
+  if config.HasProductField {
     sb.WriteString("product, ")
   }
   sb.WriteString("machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
@@ -88,7 +88,7 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   sb.WriteString(") values (")
 
   nonMetricFieldCount := 13
-  if !config.hasProductField {
+  if !config.HasProductField {
     nonMetricFieldCount -= 1
   }
 
@@ -166,37 +166,38 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
   return nil
 }
 
-func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject interface{}, logger *zap.Logger) error {
+//goland:noinspection SpellCheckingInspection
+var projectIdToName = map[string]string{
+  "Fleet": "fleet",
+
+  // IJ simple project - project v3
+  "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s": "simple for IJ",
+  // IJ simple project - project v2
+  "73YWaW9bytiPDGuKvwNIYMK5CKI": "simple for IJ",
+
+  // idea project (v2)
+  "26hfTKDRtXpJ6U7ivgfKthtyU0A": "idea",
+  // idea project (v3)
+  "nC4MRRFMVYUSQLNIvPgDt+B3JqA": "idea",
+
+  // light edit
+  "6hglkyp/cmAi7ntjrg7dHwd5NG4": "light edit (IJ)",
+  "1PbxeQ044EEghMOG9hNEFee05kM": "light edit (IJ)",
+}
+
+func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *zap.Logger) error {
   insertStatement, err := t.InsertManager.PrepareForInsert()
   if err != nil {
     return err
   }
 
-  var project interface{}
+  var project string
   if len(row.Report.Project) == 0 {
     project = providedProject
   } else {
-    project = row.Report.Project
-    if project == "Fleet" {
-      project = "fleet"
-    } else {
-      // IJ simple project - map project v3 to existing v2 ID
-      if project == "Mc92Qmj3NY0xxdIiX9ayVbbEZ7s" {
-        //noinspection SpellCheckingInspection
-        project = "73YWaW9bytiPDGuKvwNIYMK5CKI"
-      }
-      // idea project
-      //noinspection SpellCheckingInspection
-      if project == "26hfTKDRtXpJ6U7ivgfKthtyU0A" {
-        //noinspection SpellCheckingInspection
-        project = "nC4MRRFMVYUSQLNIvPgDt+B3JqA"
-      }
-      // light edit
-      //goland:noinspection SpellCheckingInspection
-      if project == "6hglkyp/cmAi7ntjrg7dHwd5NG4" {
-        //noinspection SpellCheckingInspection
-        project = "1PbxeQ044EEghMOG9hNEFee05kM"
-      }
+    project = projectIdToName[row.Report.Project]
+    if len(project) == 0 {
+      project = row.Report.Project
     }
   }
 
@@ -216,7 +217,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
-  if t.config.hasProductField {
+  if t.config.HasProductField {
     args = append(args, product)
   }
   args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
@@ -229,9 +230,9 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     if err != nil {
       return err
     }
-  } else {
-    args = append(args, row.extraFieldData...)
   }
+
+  args = append(args, row.extraFieldData...)
 
   _, err = insertStatement.ExecContext(t.context, args...)
   if err != nil {

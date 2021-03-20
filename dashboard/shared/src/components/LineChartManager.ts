@@ -4,11 +4,11 @@ import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { TplFormatterParam } from "echarts/types/src/util/format"
 import { watch , Ref } from "vue"
-import { ChartManagerHelper } from "./ChartManagerHelper"
-import { DataQueryExecutor } from "./DataQueryExecutor"
-import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "./chart"
-import { LineChartOptions } from "./echarts"
-import { debounceSync } from "./util/debounce"
+import { ChartManagerHelper } from "../ChartManagerHelper"
+import { DataQueryExecutor } from "../DataQueryExecutor"
+import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "../chart"
+import { LineChartOptions } from "../echarts"
+import { debounceSync } from "../util/debounce"
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -45,6 +45,7 @@ export class LineChartManager {
           type: "cross",
         },
         formatter: adaptToolTipFormatter(tooltipFormatter),
+        // triggerOn: "click",
       },
       xAxis: {
         type: "time",

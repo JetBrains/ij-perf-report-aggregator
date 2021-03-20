@@ -86,8 +86,16 @@ export class PersistentStateManager {
       }
     })
 
-    const existingValue = this.state[name]
+    let existingValue = this.state[name]
     if (existingValue != null && (typeof existingValue !== "string" || existingValue.length !== 0)) {
+      // noinspection SpellCheckingInspection
+      if (existingValue === "73YWaW9bytiPDGuKvwNIYMK5CKI") {
+        existingValue = "simple for IJ"
+      }
+      // noinspection SpellCheckingInspection
+      if (existingValue === "nC4MRRFMVYUSQLNIvPgDt+B3JqA") {
+        existingValue = "idea"
+      }
       this.initializers.push(() => {
         // console.debug(`[persistentState] set ${name} to ${existingValue}`)
         value.value = existingValue

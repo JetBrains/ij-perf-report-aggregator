@@ -4,30 +4,35 @@ import { DataQueryExecutor } from "../DataQueryExecutor"
 import { timeFormat } from "../chart"
 import { DataQuery } from "../dataQuery"
 import { getValueFormatterByMeasureName } from "../formatter"
-import { tooltipUrlProviderKey } from "../injectionKeys"
+import { reportInfoProviderKey } from "../injectionKeys"
 import { debounceSync } from "../util/debounce"
 
-export type ChartTooltipLinkProvider = (generatedTime: number, query: DataQuery) => string
+export interface ReportInfoProvider {
+  createReportUrl(generatedTime: number, query: DataQuery): string
+
+  readonly infoFields: Array<string>
+}
 
 interface TooltipData {
   linkText: string
   linkUrl: string | null
   items: Array<TooltipDataItem>
+  firstSeriesData: Array<number>
 }
 
 interface TooltipDataItem {
-  name: string
-  value: string
-  color: string
+  readonly name: string
+  readonly value: string
+  readonly color: string
 }
 
 export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
-  private readonly tooltipUrlProvider = inject(tooltipUrlProviderKey, null)
+  readonly reportInfoProvider = inject(reportInfoProviderKey, null)
   readonly infoIsVisible = ref(false)
 
-  readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null})
+  readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
 
   readonly scheduleTooltipHide = debounceSync(() => {
     this.infoIsVisible.value = false
@@ -51,13 +56,16 @@ export class ChartToolTipManager {
         color: measure.color as string,
       }
     })
-    const generatedTime = (params[0].value as Array<number>)[0]
+    const firstSeriesData = params[0].value as Array<number>
+    // same for all series
+    const generatedTime = firstSeriesData[0]
     reportTooltipData.linkText = timeFormat.format(generatedTime)
-    if (this.tooltipUrlProvider == null) {
+    reportTooltipData.firstSeriesData = firstSeriesData
+    if (this.reportInfoProvider == null) {
       reportTooltipData.linkUrl = null
     }
     else {
-      reportTooltipData.linkUrl = this.tooltipUrlProvider(generatedTime, query)
+      reportTooltipData.linkUrl = this.reportInfoProvider.createReportUrl(generatedTime, query)
     }
     this.infoIsVisible.value = true
     this.scheduleTooltipHide()

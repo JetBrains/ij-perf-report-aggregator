@@ -84,7 +84,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, public skipZeroValues: Ref<boolean> = shallowRef(true)) {
+  constructor(private readonly measures: Array<string>, readonly skipZeroValues: Ref<boolean> = shallowRef(true)) {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -114,10 +114,10 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
 
-  query.addField({
+  query.insertField({
     name: "t",
     sql: "toUnixTimestamp(generated_time) * 1000",
-  })
+  }, 0)
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
   if (query.db === "ij") {
@@ -127,7 +127,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
       configureQueryProducer(configuration, field, filter, measureNames)
     }
 
-    query.addField(field)
+    query.insertField(field, 1)
     if (filter != null) {
       query.addFilter(filter)
     }
@@ -140,10 +140,10 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
     }
 
     if (measureNames.some(it => it.endsWith(".end"))) {
-      query.addField({name: "measures", subName: "end", sql: "(measures.start + measures.value)"})
+      query.insertField({name: "measures", subName: "end", sql: "(measures.start + measures.value)"}, 1)
     }
     else {
-      query.addField({name: "measures", subName: "value"})
+      query.insertField({name: "measures", subName: "value"}, 1)
     }
 
     query.addFilter(filter)

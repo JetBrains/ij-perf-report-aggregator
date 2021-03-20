@@ -169,7 +169,7 @@ export default defineComponent({
     // noinspection SpellCheckingInspection
     const persistentStateManager = new PersistentStateManager("ij-dashboard", {
       product: "IU",
-      project: "73YWaW9bytiPDGuKvwNIYMK5CKI",
+      project: "simple for IJ",
       machine: "macMini 2018",
     }, useRouter())
     const serverConfigurator = new ServerConfigurator("ij")

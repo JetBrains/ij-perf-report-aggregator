@@ -30,16 +30,27 @@
           @click.prevent="hideTooltipOnCloseLink"
         />
 
-        <el-link
-          v-if="reportTooltipData.linkUrl != null"
-          :href="reportTooltipData.linkUrl"
-          target="_blank"
-          type="primary"
-        >
-          {{ reportTooltipData.linkText }}
-        </el-link>
-        <span v-else>{{ reportTooltipData.linkText }}</span>
+        <el-space>
+          <el-link
+            v-if="reportTooltipData.linkUrl != null"
+            :href="reportTooltipData.linkUrl"
+            target="_blank"
+            type="primary"
+          >
+            {{ reportTooltipData.linkText }}
+          </el-link>
+          <span v-else>{{ reportTooltipData.linkText }}</span>
 
+          <el-link
+            v-if="reportTooltipData.firstSeriesData.length >= 3"
+            title="Changes"
+            :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${reportTooltipData.firstSeriesData[2]}&tab=buildChangesDiv`"
+            target="_blank"
+            type="info"
+          >
+            changes
+          </el-link>
+        </el-space>
         <div
           v-for="item in reportTooltipData.items"
           :key="item.name"
@@ -59,11 +70,12 @@
 <script lang="ts">
 import { defineComponent, inject, onMounted, onUnmounted, PropType, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { LineChartManager } from "../LineChartManager"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { dataQueryExecutorKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
+import { LineChartManager } from "./LineChartManager"
 
 export default defineComponent({
   name: "LineChartCard",
@@ -99,7 +111,21 @@ export default defineComponent({
 
       // static list of measures is provided - create sub data query executor
       if (props.measures != null) {
-        dataQueryExecutor = dataQueryExecutor.createSub([new PredefinedMeasureConfigurator(props.measures, skipZeroValues)])
+        const configurators: Array<DataQueryConfigurator> = [
+          new PredefinedMeasureConfigurator(props.measures, skipZeroValues),
+        ]
+        const infoFields = chartToolTipManager.reportInfoProvider?.infoFields ?? []
+        if (infoFields.length !== 0) {
+          configurators.push({
+            configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+              for (const infoField of infoFields) {
+                query.addField(infoField)
+              }
+              return true
+            }
+          })
+        }
+        dataQueryExecutor = dataQueryExecutor.createSub(configurators)
         dataQueryExecutor.scheduleLoad()
       }
       chartToolTipManager.dataQueryExecutor = dataQueryExecutor

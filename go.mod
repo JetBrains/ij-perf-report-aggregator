@@ -1,6 +1,6 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.14
+go 1.16
 
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
@@ -11,16 +11,14 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/cespare/xxhash/v2 v2.1.1
-	github.com/cheggaaa/pb/v3 v3.0.6
+	github.com/cheggaaa/pb/v3 v3.0.7
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.0.4-0.20210308215531-9b320d0a70ed
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/frankban/quicktest v1.5.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
-	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/json-iterator/go v1.1.10
-	github.com/kr/pretty v0.2.0 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.5 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.4
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
@@ -50,10 +48,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
+	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210315170653-34ac3e1c2000 // indirect
-	golang.org/x/sys v0.0.0-20210315160823-c6e025ad8005 // indirect
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
+	golang.org/x/sys v0.0.0-20210319071255-635bc2c9138d // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect

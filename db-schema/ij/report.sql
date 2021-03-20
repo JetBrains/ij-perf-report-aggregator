@@ -7,9 +7,9 @@ create table report2
   `project`                    LowCardinality(String) CODEC(ZSTD(20)),
   `tc_build_id`                UInt32 CODEC(DoubleDelta, ZSTD(20)),
   `tc_installer_build_id`      UInt32 CODEC(DoubleDelta, ZSTD(20)),
-  `tc_build_properties`        String CODEC(ZSTD(20)),
+  `tc_build_properties`        String CODEC(ZSTD(22)),
   `branch`                     LowCardinality(String) CODEC(ZSTD(20)),
-  `raw_report`                 String CODEC(ZSTD(20)),
+  `raw_report`                 String CODEC(ZSTD(22)),
 
   `build_c1`                   UInt8 CODEC(DoubleDelta, ZSTD(20)),
   `build_c2`                   UInt16 CODEC(DoubleDelta, ZSTD(20)),
@@ -37,7 +37,7 @@ create table report2
   `projectProfileLoading_d`    UInt16 CODEC(Gorilla, ZSTD(20)),
 
   `moduleLoading_d`            UInt16 CODEC(Gorilla, ZSTD(20)),
-  `projectDumbAware_d`         UInt16 CODEC(Gorilla, ZSTD(20)),
+  `projectDumbAware_d`         Int32 CODEC(Gorilla, ZSTD(20)),
 
   `editorRestoring_d`          UInt16 CODEC(Gorilla, ZSTD(20)),
   `editorRestoringTillPaint_d` UInt16 CODEC(Gorilla, ZSTD(20)),
@@ -51,7 +51,15 @@ create table report2
   `classLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
 
   `resourceLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
-  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20))
+  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
+
+  service Nested(
+    name LowCardinality(String),
+    start Int32,
+    duration Int32,
+    thread LowCardinality(String),
+    plugin LowCardinality(String)
+  ) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))

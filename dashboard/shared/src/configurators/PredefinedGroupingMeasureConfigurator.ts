@@ -35,16 +35,16 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     // do not sort - bar chart shows series exactly in the same order as provided measure name list
     // reverse because echarts layout from bottom to top, but we need to put first measures to top
     const measureNames = this.measures.slice().reverse()
-    if (query.db !== "ij" && query.db !== "fleet") {
+    if (query.db === "ij") {
+      for (let i = 0; i < measureNames.length; i++) {
+        query.addField(measureNames[i])
+      }
+    }
+    else {
       query.addField({name: "measures", subName: "value"})
       query.addFilter({field: "measures.name", value: measureNames})
       if (measureNames.length > 1) {
         throw new Error("multiple measures are not supported")
-      }
-    }
-    else {
-      for (let i = 0; i < measureNames.length; i++) {
-        query.addField(measureNames[i])
       }
     }
 

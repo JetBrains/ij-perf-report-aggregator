@@ -17,6 +17,13 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
     })
   }
   report.MainActivities = readActivitiesInOldFormat("items", data)
+
+  serviceName := make([]string, 0)
+  serviceThread := make([]string, 0)
+  servicePlugin := make([]string, 0)
+  serviceStart := make([]int, 0)
+  serviceDuration := make([]int, 0)
+
   if version.Compare(report.Version, "20", ">=") {
     report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", data)
     if version.Compare(report.Version, "27", ">=") {
@@ -34,10 +41,34 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
         )
       }
     }
+
+    readServices(data, "appComponents", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
+    readServices(data, "appServices", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
+    readServices(data, "projectComponents", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
+    readServices(data, "projectServices", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
   } else {
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
   }
+  runResult.extraFieldData = []interface{}{serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin}
   return nil
+}
+
+func readServices(
+  data *fastjson.Value,
+  category string,
+  name *[]string,
+  start *[]int,
+  duration *[]int,
+  thread *[]string,
+  plugin *[]string,
+) {
+  for _, measure := range data.GetArray(category) {
+    *name = append(*name, string(measure.GetStringBytes("n")))
+    *start = append(*start, measure.GetInt("s"))
+    *duration = append(*duration, measure.GetInt("d"))
+    *thread = append(*thread, string(measure.GetStringBytes("t")))
+    *plugin = append(*plugin, string(measure.GetStringBytes("p")))
+  }
 }
 
 func readActivitiesInOldFormat(key string, data *fastjson.Value) []model.Activity {

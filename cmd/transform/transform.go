@@ -24,13 +24,14 @@ func main() {
     _ = logger.Sync()
   }()
 
-  err := transform("localhost:9000", logger)
+  err := transform("localhost:9000", env.Get("DB"), logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
   }
 }
 
 type ReportRow struct {
+  Product string
   Machine string
   Branch  string
 
@@ -58,8 +59,8 @@ type TimeRange struct {
 // set insertWorkerCount to 1 if not enough memory
 const insertWorkerCount = 4
 
-func transform(clickHouseUrl string, logger *zap.Logger) error {
-  dbName := "fleet"
+func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
+  logger.Info("start transforming", zap.String("db", dbName))
 
   db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
   if err != nil {
@@ -75,7 +76,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
   }
 
   // reduce batch size if not enough memory
-  insertReportManager.InsertManager.BatchSize = 10_000
+  insertReportManager.InsertManager.BatchSize = 6_000
 
   // the whole select result in memory - so, limit
   var timeRange TimeRange
@@ -108,6 +109,7 @@ func transform(clickHouseUrl string, logger *zap.Logger) error {
     return err
   }
 
+  logger.Info("transforming finished")
   return nil
 }
 
@@ -122,22 +124,36 @@ func process(
 ) error {
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
-  rows, err := db.QueryxContext(taskContext, `
-    select machine, branch,
-           toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
-           tc_build_id, tc_installer_build_id, tc_build_properties,
-           build_c1, build_c2, build_c3, project
-    from report
-    where generated_time >= ? and generated_time < ?
-    order by machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
-  `, startTime, endTime)
+
+  config := analyzer.GetAnalyzer(dbName)
+  var err error
+  var rows *sqlx.Rows
+  if config.HasProductField {
+    rows, err = db.QueryxContext(taskContext, `
+      select product, machine, branch,
+             toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
+             tc_build_id, tc_installer_build_id, tc_build_properties,
+             build_c1, build_c2, build_c3, project
+      from report
+      where generated_time >= ? and generated_time < ?
+      order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
+    `, startTime, endTime)
+  } else {
+    rows, err = db.QueryxContext(taskContext, `
+      select machine, branch,
+             toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
+             tc_build_id, tc_installer_build_id, tc_build_properties,
+             build_c1, build_c2, build_c3, project
+      from report
+      where generated_time >= ? and generated_time < ?
+      order by machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
+    `, startTime, endTime)
+  }
   if err != nil {
     return errors.WithStack(err)
   }
 
   defer util.Close(rows, logger)
-
-  customReportAnalyzer := analyzer.GetAnalyzer(dbName).ReportReader
 
   isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
@@ -174,7 +190,7 @@ func process(
       BuildC3: row.BuildC3,
     }
 
-    err = analyzer.ReadReport(runResult, customReportAnalyzer)
+    err = analyzer.ReadReport(runResult, config.ReportReader)
     if err != nil {
       return err
     }
@@ -184,7 +200,7 @@ func process(
       continue rowLoop
     }
 
-    err = insertReportManager.WriteMetrics("", runResult, row.Branch, row.Project, logger)
+    err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
     if err != nil {
       return err
     }

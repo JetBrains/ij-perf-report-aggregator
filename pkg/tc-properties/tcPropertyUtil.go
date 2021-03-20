@@ -43,6 +43,17 @@ var excludedTcProperties = map[string]bool{
   "vcsroot.authMethod":                                 true,
   "vcsroot.agentCleanPolicy":                           true,
   "teamcity.internal.git.sshSendEnvRequestToken":       true,
+
+  "DotNetCredentialProvider1.0.0_Path": true,
+  "DotNetCredentialProvider2.0.0_Path": true,
+  "DotNetCredentialProvider3.0.0_Path": true,
+  "DotNetCredentialProvider4.0.0_Path": true,
+
+  "build.counter":                         true,
+  "env.BUILD_NUMBER":                      true,
+  "tools.xcode.arch.macosx.Standard32bit": true,
+  "tools.xcode.arch.macosx.Standard64bit": true,
+  "teamcity.agent.ownPort":                true,
 }
 
 func ReadProperties(data []byte) ([]byte, error) {

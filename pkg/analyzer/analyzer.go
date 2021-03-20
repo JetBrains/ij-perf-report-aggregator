@@ -14,21 +14,22 @@ type DatabaseConfiguration struct {
   ReportReader          CustomReportAnalyzer
   insertStatementWriter InsertStatementWriter
 
-  hasProductField bool
+  HasProductField bool
   extraFieldCount int
 }
 
 func GetAnalyzer(dbName string) DatabaseConfiguration {
   if dbName == "ij" {
     return DatabaseConfiguration{
-      hasProductField: true,
-      extraFieldCount: len(IjMetricDescriptors),
-      ReportReader: analyzeIJReport,
+      HasProductField: true,
+      extraFieldCount: len(IjMetricDescriptors) + 5 /* service nested object field count */,
+      ReportReader:    analyzeIJReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
           sb.WriteRune(',')
           sb.WriteString(metric.Name)
         }
+        sb.WriteString(", service.name, service.start, service.duration, service.thread, service.plugin")
       },
     }
   } else if dbName == "sharedIndexes" {

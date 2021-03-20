@@ -43,7 +43,7 @@ export function loadJson<T>(url: string,
     }
   }
 
-  return fetch(url, {credentials: "omit", signal: controller.signal})
+  return fetch(url, {signal: controller.signal})
     .then(response => {
       if (taskHandle.isCancelled) {
         clearTimeout(timeoutId)

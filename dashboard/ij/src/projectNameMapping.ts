@@ -6,16 +6,12 @@ const projectNameToTitle = new Map<string, string>()
 // noinspection SpellCheckingInspection
 projectNameToTitle.set("/q9N7EHxr8F1NHjbNQnpqb0Q0fs", "joda-time")
 // noinspection SpellCheckingInspection
-projectNameToTitle.set("73YWaW9bytiPDGuKvwNIYMK5CKI", "simple for IJ")
-// noinspection SpellCheckingInspection
 projectNameToTitle.set("1PbxeQ044EEghMOG9hNEFee05kM", "light edit (IJ)")
 
 // noinspection SpellCheckingInspection
 projectNameToTitle.set("j1a8nhKJexyL/zyuOXJ5CFOHYzU", "simple for PS")
 // noinspection SpellCheckingInspection
 projectNameToTitle.set("JeNLJFVa04IA+Wasc+Hjj3z64R0", "simple for WS")
-// noinspection SpellCheckingInspection
-projectNameToTitle.set("nC4MRRFMVYUSQLNIvPgDt+B3JqA", "Idea")
 Object.seal(projectNameToTitle)
 
 export function getProjectName(value: string): string {

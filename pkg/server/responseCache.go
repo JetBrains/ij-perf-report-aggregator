@@ -81,6 +81,7 @@ func generateKey(request *http.Request) []byte {
 
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
   w.Header().Set("Content-Type", "application/json")
+  w.Header().Set("Access-Control-Allow-Origin", "*")
 
   cacheKey := generateKey(request)
   value, found := t.cache.Get(cacheKey)

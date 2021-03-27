@@ -4,7 +4,7 @@
   "dependencies": {
     "element-plus": "1.0.2-beta.35",
     "shared": "workspace:*",
-    "vue": "3.0.7",
-    "vue-router": "4.0.4"
+    "vue": "3.0.8",
+    "vue-router": "4.0.5"
   }
 }

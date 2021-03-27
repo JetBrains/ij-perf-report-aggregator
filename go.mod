@@ -18,9 +18,9 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/json-iterator/go v1.1.10
-	github.com/klauspost/cpuid/v2 v2.0.5 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/magiconair/properties v1.8.4
+	github.com/magiconair/properties v1.8.5
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v6 v6.0.57
@@ -48,11 +48,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670 // indirect
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
-	golang.org/x/sys v0.0.0-20210319071255-635bc2c9138d // indirect
+	golang.org/x/net v0.0.0-20210326220855-61e056675ecf // indirect
+	golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect

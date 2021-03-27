@@ -3,12 +3,12 @@
   "private": true,
   "dependencies": {
     "compare-versions": "^3.6.0",
-    "echarts": "5.0.2",
+    "echarts": "^5.0.2",
     "element-plus": "1.0.2-beta.35",
     "p-queue": "^6.6.2",
     "rison-node": "^2.1.1",
     "shared": "workspace:*",
-    "vue": "3.0.7",
-    "vue-router": "4.0.4"
+    "vue": "3.0.8",
+    "vue-router": "4.0.5"
   }
 }

@@ -3,10 +3,10 @@
   "private": true,
   "dependencies": {
     "echarts": "5.0.2",
-    "element-plus": "1.0.2-beta.35",
+    "element-plus": "1.0.2-beta.36",
     "humanize-duration": "^3.25.1",
     "rison-node": "2.1.1",
-    "vue": "3.0.8",
+    "vue": "3.0.9",
     "vue-router": "4.0.5"
   },
   "devDependencies": {

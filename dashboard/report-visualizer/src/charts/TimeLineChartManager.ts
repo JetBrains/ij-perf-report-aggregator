@@ -30,6 +30,11 @@ export class TimeLineChartManager implements ChartManager {
 
   constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
     this.chart = new ChartManagerHelper(container)
+    this.setInitialOption()
+    this.chart.enableZoomTool()
+  }
+
+  private setInitialOption() {
     this.chart.chart.setOption<CustomChartOptions>({
       toolbox: {
         feature: {
@@ -85,10 +90,10 @@ export class TimeLineChartManager implements ChartManager {
           show: true,
           interval(_index: number, value: string | number) {
             return !(value as string).includes("__")
-          }
+          },
         },
         axisLabel: {
-          formatter(value: string | number, _index: number)  {
+          formatter(value: string | number, _index: number) {
             return (value as string).includes("__") ? "" : value as string
           },
         },
@@ -96,8 +101,7 @@ export class TimeLineChartManager implements ChartManager {
           show: false,
         },
       },
-    })
-    this.chart.enableZoomTool()
+    }, {notMerge: true})
   }
 
   dispose(): void {
@@ -198,7 +202,7 @@ export class TimeLineChartManager implements ChartManager {
         let series = rowToItems.get(rowName)
         if (series == null) {
           series = {
-            name: threadName,
+            name: rowName,
             type: "custom",
             renderItem: renderItem as never,
             encode: {
@@ -242,14 +246,21 @@ export class TimeLineChartManager implements ChartManager {
     const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
     configureMarkAreas(dataManager, series, axisLineColor)
 
-    this.chart.chart.getDom().style.height = `${rowToItems.size * 20}px`
+    this.chart.chart.getDom().style.height = `${rowToItems.size * 24}px`
+    // for unknown reasons `replaceMerge: ["series"]` doesn't work and data from previous report can be still rendered,
+    // as workaround, create chart from scratch
+    this.chart.chart.clear()
+    this.setInitialOption()
     this.chart.chart.setOption<CustomChartOptions>({
       xAxis: {
         min: this.dataDescriptor.unitConverter.convert(minStart),
         max: this.dataDescriptor.unitConverter.convert(maxEnd),
       },
       series,
+    }, {
+      replaceMerge: ["series"],
     })
+    this.chart.chart.resize()
   }
 }
 

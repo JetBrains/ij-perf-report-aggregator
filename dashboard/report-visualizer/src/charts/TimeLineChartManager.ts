@@ -30,7 +30,6 @@ export class TimeLineChartManager implements ChartManager {
 
   constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
     this.chart = new ChartManagerHelper(container)
-    this.setInitialOption()
   }
 
   private setInitialOption() {
@@ -101,7 +100,6 @@ export class TimeLineChartManager implements ChartManager {
         },
       },
     }, {notMerge: true})
-    this.chart.enableZoomTool()
   }
 
   dispose(): void {
@@ -239,18 +237,16 @@ export class TimeLineChartManager implements ChartManager {
 
     const series = Array.from(rowToItems.values())
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
-    configureMarkAreas(dataManager, series, axisLineColor)
-
     this.chart.chart.getDom().style.height = `${rowToItems.size * 24}px`
     // for unknown reasons `replaceMerge: ["series"]` doesn't work and data from previous report can be still rendered,
     // as workaround, create chart from scratch
     this.chart.chart.clear()
     this.setInitialOption()
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
+    configureMarkAreas(dataManager, series, axisLineColor)
+
     this.chart.chart.setOption<CustomChartOptions>({
       xAxis: {
         min: this.dataDescriptor.unitConverter.convert(minStart),
@@ -260,6 +256,7 @@ export class TimeLineChartManager implements ChartManager {
     }, {
       replaceMerge: ["series"],
     })
+    this.chart.enableZoomTool()
     this.chart.chart.resize()
   }
 }

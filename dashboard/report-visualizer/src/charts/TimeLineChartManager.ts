@@ -31,7 +31,6 @@ export class TimeLineChartManager implements ChartManager {
   constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
     this.chart = new ChartManagerHelper(container)
     this.setInitialOption()
-    this.chart.enableZoomTool()
   }
 
   private setInitialOption() {
@@ -102,6 +101,7 @@ export class TimeLineChartManager implements ChartManager {
         },
       },
     }, {notMerge: true})
+    this.chart.enableZoomTool()
   }
 
   dispose(): void {

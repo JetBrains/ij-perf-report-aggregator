@@ -154,7 +154,7 @@ export class TimeLineChartManager implements ChartManager {
     let minStart = Number.MAX_VALUE
     let maxEnd = 0
     const rowIndexThreshold = (this.dataDescriptor.rowIndexThreshold ?? 300) * this.dataDescriptor.unitConverter.factor
-    const rowToEnd = new Map<number, number>()
+    const rowToEnd = new Map<number, RowInfo>()
     for (const threadName of threadNames) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const list = data.get(threadName)!
@@ -172,20 +172,7 @@ export class TimeLineChartManager implements ChartManager {
       for (const chartItem of list) {
         const item = chartItem[4]
         if (rowToEnd.size !== 0) {
-          let newRowIndex = -1
-          for (let i = rowIndex; i >= 0; i--) {
-            const end = rowToEnd.get(i)
-            if (end === undefined) {
-              break
-            }
-
-            // for parallel activities ladder is used only to avoid text overlapping,
-            // so two adjacent items are rendered in the same row if next one will not have a label
-            if (item.d < LABEL_THRESHOLD || (item.s - end) > rowIndexThreshold) {
-              newRowIndex = i
-            }
-          }
-
+          const newRowIndex = findRowIndex(rowIndex, rowToEnd, item, rowIndexThreshold)
           if (newRowIndex === -1) {
             // no place
             rowIndex++
@@ -200,7 +187,9 @@ export class TimeLineChartManager implements ChartManager {
         let series = rowToItems.get(rowName)
         if (series == null) {
           series = {
-            name: rowName,
+            // same name to ensure that color will be the same
+            name: threadName,
+            id: rowName,
             type: "custom",
             renderItem: renderItem as never,
             encode: {
@@ -231,7 +220,15 @@ export class TimeLineChartManager implements ChartManager {
 
         (series.data as Array<ChartDataItem>).push(chartItem)
 
-        rowToEnd.set(rowIndex, item.s + item.d)
+        const newEnd = item.s + item.d
+        const info = rowToEnd.get(rowIndex)
+        if (info === undefined) {
+          rowToEnd.set(rowIndex, {end: newEnd, item})
+        }
+        else if (info.end < newEnd) {
+          info.end = newEnd
+          info.item = item
+        }
       }
     }
 
@@ -359,4 +356,31 @@ function getThreadOrderWeight(name: string): number {
     default:
       return 100
   }
+}
+
+function findRowIndex(rowIndex: number, rowToEnd: Map<number, RowInfo>, item: ItemV20, rowIndexThreshold: number): number {
+  for (let i = rowIndex; i >= 0; i--) {
+    const rowItem = rowToEnd.get(i)
+    if (rowItem === undefined) {
+      return -1
+    }
+
+    // for parallel activities ladder is used only to avoid text overlapping,
+    // so two adjacent items are rendered in the same row if next one will not have a label
+    // item.d < LABEL_THRESHOLD ||
+
+    if ((item.s + item.d) < rowItem.end) {
+      // sub item should be at higher level
+      return -1
+    }
+    else if (item.d < LABEL_THRESHOLD || (item.s - rowItem.end) > rowIndexThreshold) {
+      return i
+    }
+  }
+  return -1
+}
+
+interface RowInfo {
+  end: number
+  item: ItemV20
 }

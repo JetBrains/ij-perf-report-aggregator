@@ -93,38 +93,34 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
   starts := make([]int, 0)
   threads := make([]string, 0)
   items := data.GetArray("items")
-  if items != nil {
-    for _, measure := range items {
-      name := string(measure.GetStringBytes("name"))
-      // in milliseconds
-      names = append(names, name)
-      values = append(values, measure.GetInt("duration"))
-      starts = append(starts, measure.GetInt("start"))
-      threads = append(threads, string(measure.GetStringBytes("thread")))
-    }
+  for _, measure := range items {
+    name := string(measure.GetStringBytes("name"))
+    // in milliseconds
+    names = append(names, name)
+    values = append(values, measure.GetInt("duration"))
+    starts = append(starts, measure.GetInt("start"))
+    threads = append(threads, string(measure.GetStringBytes("thread")))
   }
 
   activities := data.GetArray("prepareAppInitActivities")
 
   mapNameV22 := version.Compare(runResult.Report.Version, "22", "<=")
-  if activities != nil {
-    for _, measure := range activities {
-      name := string(measure.GetStringBytes("n"))
+  for _, measure := range activities {
+    name := string(measure.GetStringBytes("n"))
 
-      if mapNameV22 {
-        if name == "create window" {
-          name = "render window"
-        } else if name == "render" {
-          name = "render real panels"
-        }
+    if mapNameV22 {
+      if name == "create window" {
+        name = "render window"
+      } else if name == "render" {
+        name = "render real panels"
       }
-
-      // in milliseconds
-      names = append(names, name)
-      values = append(values, measure.GetInt("d"))
-      starts = append(starts, measure.GetInt("s"))
-      threads = append(threads, string(measure.GetStringBytes("t")))
     }
+
+    // in milliseconds
+    names = append(names, name)
+    values = append(values, measure.GetInt("d"))
+    starts = append(starts, measure.GetInt("s"))
+    threads = append(threads, string(measure.GetStringBytes("t")))
   }
 
   if len(names) == 0 {

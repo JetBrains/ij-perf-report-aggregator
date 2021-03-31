@@ -3,7 +3,7 @@ linters:
     - bodyclose
     - gocyclo
     - prealloc
-    - scopelint
+    - exportloopref
     - unconvert
     - unparam
   disable:

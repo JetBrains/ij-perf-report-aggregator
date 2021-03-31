@@ -7,7 +7,7 @@
     "jb": "workspace:*",
     "report-visualizer": "workspace:*",
     "shared": "workspace:*",
-    "vue": "3.0.9",
+    "vue": "3.0.10",
     "vue-router": "4.0.5"
   }
 }

@@ -3,7 +3,8 @@ package clickhouse
 import (
   "context"
   "github.com/develar/errors"
-  "github.com/minio/minio-go/v6"
+  "github.com/minio/minio-go/v7"
+  "github.com/minio/minio-go/v7/pkg/credentials"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io/ioutil"
@@ -40,7 +41,10 @@ func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*
     return nil, errors.WithStack(err)
   }
 
-  client, err := minio.New(endpoint, accessKey, secretKey, true)
+  client, err := minio.New(endpoint, &minio.Options{
+    Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
+    Secure: true,
+  })
   if err != nil {
     return nil, errors.WithStack(err)
   }

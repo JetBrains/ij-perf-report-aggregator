@@ -1,6 +1,6 @@
 import { Ref, watch } from "vue"
 
-import { LocationQueryRaw, Router, useRoute } from "vue-router"
+import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
 import { debounceSync } from "./util/debounce"
 
 declare type State = { [key: string]: number | string | Array<string> | unknown }
@@ -12,7 +12,11 @@ export class PersistentStateManager {
 
   private readonly debouncedSave = debounceSync(() => {
     localStorage.setItem(this.getKey(), JSON.stringify(this.state))
+
+    this.updateUrlQuery()
   }, 300)
+
+  private readonly route: RouteLocationNormalizedLoaded | null
 
   constructor(private id: string, defaultState: State | null = null, private readonly router: Router | null = null) {
     const storedState = localStorage.getItem(this.getKey())
@@ -30,8 +34,13 @@ export class PersistentStateManager {
       }
     }
 
-    if (this.router != null) {
-      const query = useRoute().query
+    if (this.router == null) {
+      this.route = null
+    }
+    else {
+      this.route = useRoute()
+      const route = this.route
+      const query = route.query
       for (const [name, value] of Object.entries(query)) {
         this.state[name] = value
       }
@@ -52,24 +61,30 @@ export class PersistentStateManager {
       initializer()
     }
     this.initializers.length = 0
+    this.updateUrlQuery()
+  }
 
-    if (this.router != null) {
-      const currentRoute = useRoute()
-      const query: LocationQueryRaw = {...currentRoute.query}
-      let isChanged = false
-      for (const [name, value] of Object.entries(this.state)) {
-        if (name !== "serverUrl" && typeof value === "string") {
-          if (isChanged || query[name] !== value) {
-            query[name] = value
-            isChanged = true
-          }
+  private updateUrlQuery() {
+    if (this.router == null) {
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const currentRoute = this.route!
+    const query: LocationQueryRaw = {...currentRoute.query}
+    let isChanged = false
+    for (const [name, value] of Object.entries(this.state)) {
+      if (name !== "serverUrl" && typeof value === "string") {
+        if (isChanged || query[name] !== value) {
+          query[name] = value
+          isChanged = true
         }
       }
+    }
 
-      if (isChanged) {
-        // noinspection JSIgnoredPromiseFromCall
-        void this.router.push({query,})
-      }
+    if (isChanged) {
+      // noinspection JSIgnoredPromiseFromCall
+      void this.router.push({query})
     }
   }
 

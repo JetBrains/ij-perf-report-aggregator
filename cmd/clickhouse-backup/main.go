@@ -6,7 +6,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  "github.com/minio/minio-go/v6"
+  "github.com/minio/minio-go/v7"
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
   "go.uber.org/zap"
@@ -73,7 +73,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   }
 
   for taskContext.Err() == nil {
-    _, err := sub.NextMsgWithContext(taskContext)
+    _, err = sub.NextMsgWithContext(taskContext)
     if err != nil {
       contextError := taskContext.Err()
       if contextError != nil {
@@ -123,14 +123,16 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
     return errors.WithStack(err)
   }
 
-  endOfLocalBackupsToRemove := len(localBackups) - maxIncrementalBackupCount
-  logger.Debug("local backups", zap.Strings("names", localBackups), zap.Int("endOfLocalBackupsToRemove", endOfLocalBackupsToRemove), zap.Int("maxIncrementalBackupCount", maxIncrementalBackupCount))
+  logger.Debug("local backups", zap.Strings("names", localBackups), zap.Int("maxIncrementalBackupCount", maxIncrementalBackupCount))
   var diffFromPath string
   // incremental backup only if limit is not exceed - if exceeded it means that full backup should be created
-  if endOfLocalBackupsToRemove <= 0 && len(localBackups) > 0 {
+  removeLocalBackups := len(localBackups) > maxIncrementalBackupCount
+  if len(localBackups) > 0 && !removeLocalBackups {
+    removeLocalBackups = false
+
     diffFromName := localBackups[len(localBackups)-1]
     key := diffFromName + ".tar"
-    info, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, key, minio.StatObjectOptions{})
+    info, err := t.Client.StatObject(t.TaskContext, t.Bucket, key, minio.StatObjectOptions{})
     if err != nil || info.Err != nil || info.Size == 0 {
       logger.Warn("incremental backup is not created because previous backup doesn't exist on remote side", zap.String("remoteBackupPath", key), zap.String("bucket", t.Bucket), zap.Any("endpoint", t.Client.EndpointURL()))
     } else {
@@ -163,8 +165,8 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
 
   logger.Info("uploaded")
 
-  if endOfLocalBackupsToRemove > 0 {
-    for _, name := range localBackups[0:endOfLocalBackupsToRemove] {
+  if removeLocalBackups {
+    for _, name := range localBackups {
       t.Logger.Info("remove old local backup", zap.String("backup", name))
       err = os.RemoveAll(filepath.Join(t.backupParentDir, name))
       if err != nil {
@@ -205,7 +207,7 @@ func (t *BackupManager) createBackup(task *Task) error {
   task.dbNames = getDatabaseNamesToBackup()
   if len(task.dbNames) == 0 {
     // select non-empty db
-    err := db.SelectContext(t.TaskContext, &task.dbNames, "select distinct database from system.tables where database != 'system'")
+    err = db.SelectContext(t.TaskContext, &task.dbNames, "select distinct database from system.tables where database != 'system'")
     if err != nil {
       return errors.WithStack(err)
     }

@@ -9,7 +9,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
   "github.com/develar/errors"
-  "github.com/minio/minio-go/v6"
+  "github.com/minio/minio-go/v7"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
@@ -58,7 +58,7 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
     _ = writer.CloseWithError(errors.WithStack(err))
   }()
 
-  _, err := t.Client.PutObjectWithContext(t.TaskContext, os.Getenv("S3_BUCKET"), remoteFilePath, reader, -1, putObjectOptions)
+  _, err := t.Client.PutObject(t.TaskContext, os.Getenv("S3_BUCKET"), remoteFilePath, reader, -1, putObjectOptions)
   if err != nil {
     return errors.WithStack(err)
   }

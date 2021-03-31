@@ -8,7 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
   "github.com/develar/errors"
-  "github.com/minio/minio-go/v6"
+  "github.com/minio/minio-go/v7"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
@@ -79,7 +79,7 @@ func restore(bucket string, logger *zap.Logger) error {
 func (t *BackupManager) findBackup(bucket string) (string, error) {
   var candidate string
   var lastModified time.Time
-  for objectInfo := range t.Client.ListObjectsV2(bucket, "", false, t.TaskContext.Done()) {
+  for objectInfo := range t.Client.ListObjects(t.TaskContext, bucket, minio.ListObjectsOptions{Recursive: false, WithMetadata: true}) {
     if objectInfo.Err != nil {
       return "", errors.WithStack(objectInfo.Err)
     }
@@ -99,7 +99,7 @@ func (t *BackupManager) findBackup(bucket string) (string, error) {
 }
 
 func (t *BackupManager) download(file string, outputRootDirectory string, extractMetadata bool) error {
-  object, err := t.Client.GetObjectWithContext(t.TaskContext, t.Bucket, file, minio.GetObjectOptions{})
+  object, err := t.Client.GetObject(t.TaskContext, t.Bucket, file, minio.GetObjectOptions{})
   if err != nil {
     return errors.WithStack(err)
   }
@@ -112,7 +112,7 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
   if env.GetBool("DISABLE_PROGRESS", false) {
     proxyReader = object
   } else {
-    objectInfo, err := t.Client.StatObjectWithContext(t.TaskContext, t.Bucket, file, minio.StatObjectOptions{})
+    objectInfo, err := t.Client.StatObject(t.TaskContext, t.Bucket, file, minio.StatObjectOptions{})
     if err != nil {
       return errors.WithStack(err)
     }

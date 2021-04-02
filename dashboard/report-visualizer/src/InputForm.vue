@@ -48,9 +48,10 @@
 </template>
 
 <script lang="ts">
+import { serverUrlKey } from "shared/src/injectionKeys"
 import { DebouncedTask, TaskHandle } from "shared/src/util/debounce"
 import { loadJson } from "shared/src/util/httpUtil"
-import { defineComponent, ref, watch } from "vue"
+import { defineComponent, inject, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute } from "vue-router"
 import { recentlyUsedIdePort, reportData } from "./state"
 
@@ -64,6 +65,9 @@ export default defineComponent({
     // so, it seems that data property it is the only recommended way
     const isFetching = ref(false)
     const isFetchingDev = ref(false)
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const serverUrl = inject(serverUrlKey)!
 
     let lastReportUrl = ""
 
@@ -90,7 +94,7 @@ export default defineComponent({
       const reportUrl = location.query["reportUrl"]
       if (reportUrl != null && reportUrl.length > 0 && lastReportUrl !== reportUrl) {
         isFetching.value = true
-        lastReportUrl = reportUrl as string
+        lastReportUrl = `${serverUrl.value}${(reportUrl as string)}`
         loadReportDebounced.execute()
       }
     }

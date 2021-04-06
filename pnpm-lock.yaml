@@ -46,13 +46,13 @@ importers:
       vue: 3.0.11
       vue-router: 4.0.5_vue@3.0.11
     specifiers:
-      element-plus: 1.0.2-beta.36
+      element-plus: ^1.0.2-beta.36
       ij: workspace:*
       jb: workspace:*
       report-visualizer: workspace:*
       shared: workspace:*
       vue: ^3.0.11
-      vue-router: 4.0.5
+      vue-router: ^4.0.5
   dashboard/ij:
     dependencies:
       element-plus: 1.0.2-beta.36_vue@3.0.11
@@ -60,10 +60,10 @@ importers:
       vue: 3.0.11
       vue-router: 4.0.5_vue@3.0.11
     specifiers:
-      element-plus: 1.0.2-beta.36
+      element-plus: ^1.0.2-beta.36
       shared: workspace:*
       vue: ^3.0.11
-      vue-router: 4.0.5
+      vue-router: ^4.0.5
   dashboard/report-visualizer:
     dependencies:
       compare-versions: 3.6.0
@@ -76,11 +76,11 @@ importers:
     specifiers:
       compare-versions: ^3.6.0
       echarts: ^5.0.2
-      element-plus: 1.0.2-beta.36
+      element-plus: ^1.0.2-beta.36
       rison-node: ^2.1.1
       shared: workspace:*
       vue: ^3.0.11
-      vue-router: 4.0.5
+      vue-router: ^4.0.5
   dashboard/shared:
     dependencies:
       echarts: 5.0.2
@@ -94,11 +94,11 @@ importers:
     specifiers:
       '@types/humanize-duration': ^3.18.1
       echarts: 5.0.2
-      element-plus: 1.0.2-beta.36
+      element-plus: ^1.0.2-beta.36
       humanize-duration: ^3.25.1
       rison-node: 2.1.1
       vue: ^3.0.11
-      vue-router: 4.0.5
+      vue-router: ^4.0.5
   jb/dashboard:
     dependencies:
       element-plus: 1.0.2-beta.36_vue@3.0.11
@@ -106,10 +106,10 @@ importers:
       vue: 3.0.11
       vue-router: 4.0.5_vue@3.0.11
     specifiers:
-      element-plus: 1.0.2-beta.36
+      element-plus: ^1.0.2-beta.36
       shared: workspace:*
       vue: ^3.0.11
-      vue-router: 4.0.5
+      vue-router: ^4.0.5
 lockfileVersion: 5.2
 packages:
   /@babel/code-frame/7.12.11:
@@ -433,7 +433,7 @@ packages:
     dev: true
     resolution:
       integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==
-  /ajv/8.0.1:
+  /ajv/8.0.5:
     dependencies:
       fast-deep-equal: 3.1.3
       json-schema-traverse: 1.0.0
@@ -441,7 +441,7 @@ packages:
       uri-js: 4.4.1
     dev: true
     resolution:
-      integrity: sha512-46ZA4TalFcLLqX1dEU3dhdY38wAtDydJ4e7QQTVekLUTzXkb1LfqU6VOBXC/a9wiv4T094WURqJH6ZitF92Kqw==
+      integrity: sha512-RkiLa/AeJx7+9OvniQ/qeWu0w74A8DiPPBclQ6ji3ZQkv5KamO+QGpqmi7O4JIw3rHGUXZ6CoP9tsAkn3gyazg==
   /ansi-colors/4.1.1:
     dev: true
     engines:
@@ -523,10 +523,10 @@ packages:
     dev: false
     resolution:
       integrity: sha512-DDmKA7sdSAJtTVeNZHrnr2yojfFaoeW8MfQN8CeuXg8DDQHTqKk9Fdv38dSvnesHoO8MUwMI2HphOeSyIF+wmQ==
-  /balanced-match/1.0.0:
+  /balanced-match/1.0.1:
     dev: true
     resolution:
-      integrity: sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
+      integrity: sha512-qyTw2VPYRg31SlVU5WDdvCSyMTJ3YSP4Kz2CidWZFPFawCiHJdCyKyZeXIGMJ5ebMQYXEI56kDR8tcnDkbZstg==
   /big.js/5.2.2:
     dev: true
     resolution:
@@ -543,7 +543,7 @@ packages:
       integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
   /brace-expansion/1.1.11:
     dependencies:
-      balanced-match: 1.0.0
+      balanced-match: 1.0.1
       concat-map: 0.0.1
     dev: true
     resolution:
@@ -972,7 +972,7 @@ packages:
       semver: 7.3.5
       strip-ansi: 6.0.0
       strip-json-comments: 3.1.1
-      table: 6.0.8
+      table: 6.0.9
       text-table: 0.2.0
       v8-compile-cache: 2.3.0
     dev: true
@@ -1351,13 +1351,13 @@ packages:
       node: '>= 0.4'
     resolution:
       integrity: sha512-USlDT524woQ08aoZFzh3/Z6ch9Y/EWXEHQ/AaRN0SkKq4t2Jw2R2339tSXmwuVoY7LLlBCbOIlx2myP/L5zk0g==
-  /is-docker/2.1.1:
+  /is-docker/2.2.0:
     dev: true
     engines:
       node: '>=8'
     hasBin: true
     resolution:
-      integrity: sha512-ZOoqiXfEwtGknTiuDEy8pN2CfE3TxMHprvNer1mXiqwkOT77Rw3YVrUQ52EqAOU3QAWDQ+bQdx7HJzrv7LS2Hw==
+      integrity: sha512-K4GwB4i/HzhAzwP/XSlspzRdFTI9N8OxJOyOU7Y5Rz+p+WBokXWVWblaJeBkggthmoSV0OoGTH5thJNvplpkvQ==
   /is-extglob/2.1.1:
     dev: true
     engines:
@@ -1421,7 +1421,7 @@ packages:
       integrity: sha512-OwijhaRSgqvhm/0ZdAcXNZt9lYdKFpcRDT5ULUuYXPoT794UNOdU+gpT6Rzo7b4V2HUl/op6GqY894AZwv9faQ==
   /is-wsl/2.2.0:
     dependencies:
-      is-docker: 2.1.1
+      is-docker: 2.2.0
     dev: true
     engines:
       node: '>=8'
@@ -1657,7 +1657,7 @@ packages:
       integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
   /open/7.4.2:
     dependencies:
-      is-docker: 2.1.1
+      is-docker: 2.2.0
       is-wsl: 2.2.0
     dev: true
     engines:
@@ -2147,9 +2147,9 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
-  /table/6.0.8:
+  /table/6.0.9:
     dependencies:
-      ajv: 8.0.1
+      ajv: 8.0.5
       is-boolean-object: 1.1.0
       is-number-object: 1.0.4
       is-string: 1.0.5
@@ -2162,7 +2162,7 @@ packages:
     engines:
       node: '>=10.0.0'
     resolution:
-      integrity: sha512-OBAdezyozae8IvjHGXBDHByVkLCcsmffXUSj8LXkNb0SluRd4ug3GFCjk6JynZONIPhOkyr0Nnvbq1rlIspXyQ==
+      integrity: sha512-F3cLs9a3hL1Z7N4+EkSscsel3z55XT950AvB05bwayrNg5T1/gykXtigioTAjbltvbMSJvvhFCbnf6mX+ntnJQ==
   /text-table/0.2.0:
     dev: true
     resolution:
@@ -2383,12 +2383,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
-  /y18n/5.0.5:
+  /y18n/5.0.6:
     dev: true
     engines:
       node: '>=10'
     resolution:
-      integrity: sha512-hsRUr4FFrvhhRH12wOdfs38Gy7k2FFzB9qgN9v3aLykRq0dRcdcpz5C9FxdS2NuhOrI/628b/KSTJ3rwHysYSg==
+      integrity: sha512-PlVX4Y0lDTN6E2V4ES2tEdyvXkeKzxa8c/vo0pxPr/TqbztddTP0yn7zZylIyiAuxerqj0Q5GhpJ1YJCP8LaZQ==
   /yallist/3.1.1:
     dev: true
     resolution:
@@ -2410,7 +2410,7 @@ packages:
       get-caller-file: 2.0.5
       require-directory: 2.1.1
       string-width: 4.2.2
-      y18n: 5.0.5
+      y18n: 5.0.6
       yargs-parser: 20.2.7
     dev: true
     engines:

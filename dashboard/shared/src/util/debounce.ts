@@ -107,7 +107,6 @@ export class DebouncedTask {
 
   /**
    * Do not pass function by reference - use executeFunctionReference instead.
-   * @param immediately
    */
   execute(immediately: boolean = false): void {
     if (immediately) {
@@ -122,7 +121,8 @@ export class DebouncedTask {
       }
 
       this.timestamp = 0
-      this.later()
+      // immediately doesn't mean right now, but the next event cycle
+      this.timeoutHandle = window.setTimeout(this.laterFunctionReference, 0)
     }
     else {
       if (this.taskHandle != null) {

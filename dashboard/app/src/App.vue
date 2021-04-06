@@ -56,6 +56,7 @@ import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
+import { DebouncedTask } from "shared/src/util/debounce"
 import { watch, defineComponent, provide, ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { getRoutes } from "./route"
@@ -81,15 +82,26 @@ export default defineComponent({
       activePath.value = p
     })
 
+    let lastRequestedPath: string | null = null
+    const navigateTo = new DebouncedTask(_taskHandle => {
+      if (lastRequestedPath === null) {
+        return Promise.resolve()
+      }
+      else {
+        return router.push({
+          path: lastRequestedPath,
+        })
+      }
+    }, 0)
+
     const router = useRouter()
     return {
       serverUrl,
       activePath,
       routes,
       topLevelClicked(path: string) {
-        void router.push({
-          path,
-        })
+        lastRequestedPath = path
+        navigateTo.execute()
       }
     }
   },

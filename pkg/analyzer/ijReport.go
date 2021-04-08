@@ -16,7 +16,6 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
       Category:  string(v.GetStringBytes("cat")),
     })
   }
-  report.MainActivities = readActivitiesInOldFormat("items", data)
 
   serviceName := make([]string, 0)
   serviceThread := make([]string, 0)
@@ -25,7 +24,13 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
   serviceDuration := make([]int, 0)
 
   if version.Compare(report.Version, "20", ">=") {
-    report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", data)
+    if version.Compare(report.Version, "32", ">=") {
+      report.Activities = readActivities("items", data)
+    } else {
+      report.Activities = readActivitiesInOldFormat("items", data)
+      report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", data)
+    }
+
     if version.Compare(report.Version, "27", ">=") {
       classLoading := data.Get("classLoading")
       resourceLoading := data.Get("resourceLoading")
@@ -47,6 +52,7 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
     readServices(data, "projectComponents", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
     readServices(data, "projectServices", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
   } else {
+    report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
   }
   runResult.extraFieldData = []interface{}{serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin}

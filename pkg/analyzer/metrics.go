@@ -157,16 +157,18 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
     *result = append(*result, -1)
   }
 
-  (*result)[nonMetricFieldCount+metricNameToDescriptor["startUpCompleted"].index] = report.TotalDurationActual
+  (*result)[nonMetricFieldCount+metricNameToDescriptor["startUpCompleted"].index] = report.TotalDuration
 
-  for _, activity := range report.MainActivities {
+  for _, activity := range report.Activities {
     err := setMetric(nonMetricFieldCount, activity, report, result)
     if err != nil {
       return err
     }
   }
 
-  if version.Compare(report.Version, "18", ">=") {
+  if version.Compare(report.Version, "32", ">=") {
+    // part of report.Activities
+  } else if version.Compare(report.Version, "18", ">=") {
     for _, activity := range report.PrepareAppInitActivities {
       err := setMetric(nonMetricFieldCount, activity, report, result)
       if err != nil {

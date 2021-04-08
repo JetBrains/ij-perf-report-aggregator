@@ -20,6 +20,11 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer) error {
     return  errors.WithStack(err)
   }
 
+  totalDuration := report.GetInt("totalDuration")
+  if totalDuration == 0 {
+    totalDuration = report.GetInt("totalDurationActual")
+  }
+
   runResult.Report = &model.Report{
     Version:                  string(report.GetStringBytes("version")),
     Generated:                string(report.GetStringBytes("generated")),
@@ -32,7 +37,7 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer) error {
     ProductCode:              string(report.GetStringBytes("productCode")),
     Runtime:                  string(report.GetStringBytes("runtime")),
 
-    TotalDurationActual: report.GetInt("totalDurationActual"),
+    TotalDuration: totalDuration,
   }
 
   err = reader(runResult, report)

@@ -16,10 +16,10 @@ type Report struct {
   // not used yet
   TraceEvents []TraceEvent `json:"traceEvents"`
 
-  MainActivities           []Activity `json:"items"`
+  Activities               []Activity `json:"items"`
   PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
 
-  TotalDurationActual int `json:"totalDurationActual"`
+  TotalDuration int
 }
 
 type ExtraData struct {

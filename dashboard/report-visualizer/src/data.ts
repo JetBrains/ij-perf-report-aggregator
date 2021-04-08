@@ -43,11 +43,6 @@ export interface TraceEventArgs {
   readonly plugin?: string
 }
 
-export interface CompleteTraceEvent extends TraceEvent {
-  // duration in microseconds
-  readonly dur: number
-}
-
 export interface InputDataV20 extends InputData {
   readonly appComponents?: Array<ItemV20>
   readonly projectComponents?: Array<ItemV20>
@@ -70,6 +65,7 @@ export interface InputData {
 
   readonly icons?: Array<IconData>
 
+  // time in ms
   readonly items: Array<ItemV0>
 
   // time in ms
@@ -84,9 +80,6 @@ export interface InputData {
   readonly projectOptionsTopHitProviders?: Array<ItemV0>
 
   readonly projectPostStartupActivities?: Array<ItemV0>
-
-  readonly totalDurationComputed: number
-  readonly totalDurationActual: number
 }
 
 export interface Stats {

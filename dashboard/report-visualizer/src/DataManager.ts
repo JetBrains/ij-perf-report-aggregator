@@ -29,6 +29,15 @@ export class DataManager {
 
   private _markerItems: Array<ItemV0 | null> | null = null
 
+  get isUnifiedItems(): boolean {
+    const version = this.version
+    return version != null && compareVersions.compare(version, "32", ">=")
+  }
+
+  get items(): Array<ItemV20> {
+    return this.data.items as unknown as Array<ItemV20>
+  }
+
   // start, duration in microseconds
   getServiceItems(): GroupedItems {
     const version = this.version

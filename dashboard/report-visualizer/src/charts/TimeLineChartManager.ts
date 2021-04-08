@@ -260,7 +260,7 @@ export class TimeLineChartManager implements ChartManager {
 
 function configureMarkAreas(dataManager: DataManager, series: Array<CustomSeriesOption>, axisLineColor: string): void {
   const areaData: Array<MarkArea2DDataItemOption> = []
-  for (const item of dataManager.data.prepareAppInitActivities) {
+  for (const item of (dataManager.isUnifiedItems ? dataManager.items : dataManager.data.prepareAppInitActivities)) {
     if (!(item.n.endsWith(" async preloading") || item.n.endsWith(" sync preloading"))) {
       continue
     }

@@ -87,7 +87,7 @@ export const chartDescriptors: Array<ActivityChartDescriptor> = [
         return [
           {
             category: "items",
-            items: dataManager.data.items.map(it => {
+            items: dataManager.isUnifiedItems ? dataManager.items : dataManager.data.items.map(it => {
               const item: ItemV20 = {
                 n: it.name,
                 s: it.start,

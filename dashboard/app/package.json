@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "element-plus": "^1.0.2-beta.36",
+    "element-plus": "^1.0.2-beta.37",
     "ij": "workspace:*",
     "jb": "workspace:*",
     "report-visualizer": "workspace:*",

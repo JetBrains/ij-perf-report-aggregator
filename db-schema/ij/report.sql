@@ -45,13 +45,13 @@ create table report2
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(20)),
   `startUpCompleted_i`         Int32 CODEC(Gorilla, ZSTD(20)),
 
-  `classLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingSearchTime_i` Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingDefineTime_i` Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingSearchTime` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingDefineTime` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
 
-  `resourceLoadingTime_i`       Int32 CODEC (Gorilla, ZSTD(20)),
-  `resourceLoadingCount_i`      Int32 CODEC (Gorilla, ZSTD(20)),
+  `resourceLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
+  `resourceLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
 
   service Nested(
     name LowCardinality(String),

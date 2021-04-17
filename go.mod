@@ -39,6 +39,7 @@ require (
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tdewolff/minify/v2 v2.9.16
+	github.com/tdewolff/parse/v2 v2.5.15 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3
@@ -46,11 +47,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
+	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1 // indirect
-	golang.org/x/sys v0.0.0-20210414055047-fe65e336abe0 // indirect
+	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d // indirect
+	golang.org/x/sys v0.0.0-20210415045647-66c3f260301c // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect

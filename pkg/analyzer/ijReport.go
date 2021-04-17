@@ -23,6 +23,14 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
   serviceStart := make([]int, 0)
   serviceDuration := make([]int, 0)
 
+  clTotal := 0
+  clSearch := 0
+  clDefine := 0
+  clCount := 0
+
+  rlTime := 0
+  rlCount := 0
+
   if version.Compare(report.Version, "20", ">=") {
     if version.Compare(report.Version, "32", ">=") {
       report.Activities = readActivities("items", data)
@@ -35,15 +43,13 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
       classLoading := data.Get("classLoading")
       resourceLoading := data.Get("resourceLoading")
       if classLoading != nil && resourceLoading != nil {
-        report.PrepareAppInitActivities = append(report.PrepareAppInitActivities,
-          model.Activity{Name: clTotal, Start: classLoading.GetInt("time")},
-          model.Activity{Name: clSearch, Start: classLoading.GetInt("searchTime")},
-          model.Activity{Name: clDefine, Start: classLoading.GetInt("defineTime")},
-          model.Activity{Name: clCount, Start: classLoading.GetInt("count")},
+        clTotal = classLoading.GetInt("time")
+        clSearch = classLoading.GetInt("searchTime")
+        clDefine = classLoading.GetInt("defineTime")
+        clCount = classLoading.GetInt("count")
 
-          model.Activity{Name: rlTime, Start: resourceLoading.GetInt("time")},
-          model.Activity{Name: rlCount, Start: resourceLoading.GetInt("count")},
-        )
+        rlTime = resourceLoading.GetInt("time")
+        rlCount = resourceLoading.GetInt("count")
       }
     }
 
@@ -55,7 +61,10 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
     report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
   }
-  runResult.extraFieldData = []interface{}{serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin}
+  runResult.extraFieldData = []interface{}{
+    serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
+    clTotal, clSearch, clDefine, clCount, rlTime, rlCount,
+  }
   return nil
 }
 

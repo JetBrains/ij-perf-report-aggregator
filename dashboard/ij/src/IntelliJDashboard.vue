@@ -51,12 +51,12 @@
           <el-row :gutter="5">
             <el-col :span="12">
               <LineChartCard
-                :measures='["classLoadingTime_i", "classLoadingSearchTime_i", "classLoadingDefineTime_i"]'
+                :measures='["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]'
               />
             </el-col>
             <el-col :span="12">
               <LineChartCard
-                :measures='["classLoadingCount_i", "resourceLoadingCount_i"]'
+                :measures='["classLoadingCount", "resourceLoadingCount"]'
               />
             </el-col>
           </el-row>

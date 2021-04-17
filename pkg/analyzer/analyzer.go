@@ -22,14 +22,17 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
   if dbName == "ij" {
     return DatabaseConfiguration{
       HasProductField: true,
-      extraFieldCount: len(IjMetricDescriptors) + 5 /* service nested object field count */,
+      extraFieldCount: len(IjMetricDescriptors) + 11 /* service nested object field count */,
       ReportReader:    analyzeIJReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
           sb.WriteRune(',')
           sb.WriteString(metric.Name)
         }
-        sb.WriteString(", service.name, service.start, service.duration, service.thread, service.plugin")
+        sb.WriteString(", " +
+          "service.name, service.start, service.duration, service.thread, service.plugin, " +
+          "classLoadingTime, classLoadingSearchTime, classLoadingDefineTime, classLoadingCount, " +
+          "resourceLoadingTime, resourceLoadingCount")
       },
     }
   } else if dbName == "sharedIndexes" {
@@ -102,9 +105,18 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
     threads = append(threads, string(measure.GetStringBytes("thread")))
   }
 
-  activities := data.GetArray("prepareAppInitActivities")
+  var activities []*fastjson.Value
 
   mapNameV22 := version.Compare(runResult.Report.Version, "22", "<=")
+  if mapNameV22 {
+    activities = data.GetArray("prepareAppInitActivities")
+  } else {
+    activities = data.GetArray("items")
+    if len(activities) == 0 {
+      activities = data.GetArray("prepareAppInitActivities")
+    }
+  }
+
   for _, measure := range activities {
     name := string(measure.GetStringBytes("n"))
 

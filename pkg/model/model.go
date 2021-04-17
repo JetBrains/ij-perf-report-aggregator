@@ -16,8 +16,8 @@ type Report struct {
   // not used yet
   TraceEvents []TraceEvent `json:"traceEvents"`
 
-  Activities               []Activity `json:"items"`
-  PrepareAppInitActivities []Activity `json:"prepareAppInitActivities"`
+  Activities               []Activity
+  PrepareAppInitActivities []Activity
 
   TotalDuration int
 }

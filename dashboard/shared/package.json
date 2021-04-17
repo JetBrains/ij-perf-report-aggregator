@@ -2,7 +2,7 @@
   "name": "shared",
   "private": true,
   "dependencies": {
-    "echarts": "5.0.2",
+    "echarts": "5.1.0",
     "element-plus": "^1.0.2-beta.40",
     "humanize-duration": "^3.25.1",
     "rison-node": "2.1.1",

@@ -12,11 +12,12 @@
         <el-submenu
           v-if="item.title !== null"
           :index="item.title"
-          @click="topLevelClicked(item.children[0].path)"
+          @click="topLevelClicked(item.children[0].children == null ? item.children[0].path : item.children[0].children[0].path)"
         >
           <template #title>
             {{ item.title }}
           </template>
+
           <template
             v-for="child in item.children"
             :key="child.path"

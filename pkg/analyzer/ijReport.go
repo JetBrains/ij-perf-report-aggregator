@@ -18,10 +18,10 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
   }
 
   serviceName := make([]string, 0)
-  serviceThread := make([]string, 0)
-  servicePlugin := make([]string, 0)
   serviceStart := make([]int, 0)
   serviceDuration := make([]int, 0)
+  serviceThread := make([]string, 0)
+  servicePlugin := make([]string, 0)
 
   clTotal := 0
   clSearch := 0
@@ -31,9 +31,21 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
   rlTime := 0
   rlCount := 0
 
+  measureName := make([]string, 0)
+  measureStart := make([]int, 0)
+  measureDuration := make([]int, 0)
+  measureThread := make([]string, 0)
+
   if version.Compare(report.Version, "20", ">=") {
     if version.Compare(report.Version, "32", ">=") {
       report.Activities = readActivities("items", data)
+
+      for _, activity := range report.Activities {
+        measureName = append(measureName, activity.Name)
+        measureStart = append(measureStart, activity.Start)
+        measureDuration = append(measureDuration, activity.Duration)
+        measureThread = append(measureThread, activity.Thread)
+      }
     } else {
       report.Activities = readActivitiesInOldFormat("items", data)
       report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", data)
@@ -64,6 +76,7 @@ func analyzeIJReport(runResult *RunResult, data *fastjson.Value) error {
   runResult.extraFieldData = []interface{}{
     serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
     clTotal, clSearch, clDefine, clCount, rlTime, rlCount,
+    measureName, measureStart, measureDuration, measureThread,
   }
   return nil
 }

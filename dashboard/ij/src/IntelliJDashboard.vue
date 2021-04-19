@@ -25,137 +25,29 @@
     <el-tab-pane
       label="Pulse"
       name="pulse"
-      lazy
-    >
-      <keep-alive>
-        <div>
-          <el-divider>
-            Bootstrap
-          </el-divider>
-          <el-row :gutter="5">
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "euaShowing_d", "appStarter_d"]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["pluginDescriptorInitV18_d", "appComponentCreation_d", "projectComponentCreation_d"]'
-              />
-            </el-col>
-          </el-row>
-
-          <el-divider>
-            Class and Resource Loading
-          </el-divider>
-          <el-row :gutter="5">
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["classLoadingCount", "resourceLoadingCount"]'
-              />
-            </el-col>
-          </el-row>
-
-          <el-divider>
-            Services
-          </el-divider>
-          <el-row :gutter="5">
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["appComponentCreation_d", "serviceSyncPreloading_d", "serviceAsyncPreloading_d"]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <LineChartCard
-                :skip-zero-values="false"
-                :measures='["projectComponentCreation_d", "projectServiceSyncPreloading_d", "projectServiceAsyncPreloading_d", "moduleLoading_d"]'
-              />
-            </el-col>
-          </el-row>
-
-          <el-divider>
-            Post-opening
-          </el-divider>
-          <el-row :gutter="5">
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["projectDumbAware_d", "editorRestoring_d", "editorRestoringTillPaint_d"]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <LineChartCard
-                :measures='["splash_i", "startUpCompleted_i"]'
-              />
-            </el-col>
-          </el-row>
-        </div>
-      </keep-alive>
-    </el-tab-pane>
+    />
     <el-tab-pane
       label="Progress Over Time"
       name="progressOverTime"
-      lazy
-    >
-      <keep-alive>
-        <div>
-          <AggregationOperatorSelect />
-          <el-row :gutter="5">
-            <el-col :span="12">
-              <BarChartCard
-                :measures='[
-                  "bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d",
-                  "appComponentCreation_d", "projectComponentCreation_d",
-                ]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <BarChartCard
-                :measures='["splash_i", "startUpCompleted_i"]'
-              />
-            </el-col>
-          </el-row>
-          <el-row
-            :gutter="5"
-            style="margin-top: 5px;"
-          >
-            <!-- todo "moduleLoading_d" when it will be fixed -->
-            <el-col :span="12">
-              <BarChartCard
-                :measures='[
-                  "appStarter_d",
-                  "serviceSyncPreloading_d", "serviceAsyncPreloading_d",
-                  "projectServiceSyncPreloading_d", "projectServiceAsyncPreloading_d",
-                ]'
-              />
-            </el-col>
-            <el-col :span="12">
-              <BarChartCard
-                :measures='[
-                  "projectDumbAware_d", "editorRestoring_d", "editorRestoringTillPaint_d"
-                ]'
-              />
-            </el-col>
-          </el-row>
-        </div>
-      </keep-alive>
-    </el-tab-pane>
+    />
+    <el-tab-pane
+      label="Module Loading"
+      name="moduleLoading"
+    />
   </el-tabs>
+  <router-view v-slot="{ Component }">
+    <keep-alive>
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
 
 <script lang="ts">
 import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
-import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
-import BarChartCard from "shared/src/components/BarChartCard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import LineChartCard from "shared/src/components/LineChartCard.vue"
 import ReloadButton from "shared/src/components/ReloadButton.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
@@ -166,15 +58,14 @@ import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionC
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyle } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { defineComponent, provide } from "vue"
-import { useRouter } from "vue-router"
+import { defineComponent, provide, ref, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 export default defineComponent({
   name: "IntelliJDashboard",
   components: {
-    ReloadButton, LineChartCard, BarChartCard, DimensionHierarchicalSelect, DimensionSelect, TimeRangeSelect,
-    AggregationOperatorSelect,
+    ReloadButton, DimensionHierarchicalSelect, DimensionSelect, TimeRangeSelect,
   },
   setup() {
     provideReportUrlProvider()
@@ -211,13 +102,33 @@ export default defineComponent({
 
     initDataComponent(persistentStateManager, dataQueryExecutor)
 
+    const route = useRoute()
+    const activeTab = ref("pulse")
+
+    function updateActiveTab(newPath: string): void {
+      if (newPath.endsWith("/pulse")) {
+        activeTab.value = "pulse"
+      }
+      else if (newPath.endsWith("/progressOverTime")) {
+        activeTab.value = "progressOverTime"
+      }
+    }
+
+    updateActiveTab(route.path)
+
+    const router = useRouter()
+    watch(() => route.path, updateActiveTab)
+    watch(activeTab, async value => {
+      await router.push({...route, path: `/ij/${value}`})
+    })
+
     return {
       productConfigurator,
       projectConfigurator,
       machineConfigurator,
       timeRangeConfigurator,
       getProjectName,
-      activeTab: "pulse",
+      activeTab,
     }
   },
 })

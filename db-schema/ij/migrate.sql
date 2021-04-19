@@ -17,7 +17,7 @@ alter table report modify column project Enum8('/q9N7EHxr8F1NHjbNQnpqb0Q0fs' = 0
 insert into report select * from report;
 
 drop table report;
-rename table report to report
+rename table report2 to report
 
 /*
 // migrate changes as new-line delimited to array

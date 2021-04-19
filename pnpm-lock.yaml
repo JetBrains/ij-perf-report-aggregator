@@ -13,7 +13,7 @@ importers:
       eslint-plugin-import: 2.22.1
       eslint-plugin-vue: 7.9.0
       rollup: ^2.45.2
-      rollup-plugin-visualizer: 5.3.6
+      rollup-plugin-visualizer: 5.4.0
       sass: 1.32.10
       typescript: 4.2.4
       vite: 2.1.5
@@ -31,7 +31,7 @@ importers:
       eslint-plugin-import: 2.22.1_eslint@7.24.0
       eslint-plugin-vue: 7.9.0_eslint@7.24.0
       rollup: 2.45.2
-      rollup-plugin-visualizer: 5.3.6_rollup@2.45.2
+      rollup-plugin-visualizer: 5.4.0_rollup@2.45.2
       sass: 1.32.10
       typescript: 4.2.4
       vite: 2.1.5
@@ -93,14 +93,14 @@ importers:
       '@types/humanize-duration': ^3.18.1
       echarts: 5.1.0
       element-plus: ^1.0.2-beta.40
-      humanize-duration: ^3.25.1
+      humanize-duration: ^3.25.2
       rison-node: 2.1.1
       vue: ^3.0.11
       vue-router: ^4.0.6
     dependencies:
       echarts: 5.1.0
       element-plus: 1.0.2-beta.40_vue@3.0.11
-      humanize-duration: 3.25.1
+      humanize-duration: 3.25.2
       rison-node: 2.1.1
       vue: 3.0.11
       vue-router: 4.0.6_vue@3.0.11
@@ -1261,8 +1261,8 @@ packages:
     resolution: {integrity: sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg==}
     dev: true
 
-  /humanize-duration/3.25.1:
-    resolution: {integrity: sha512-P+dRo48gpLgc2R9tMRgiDRNULPKCmqFYgguwqOO2C0fjO35TgdURDQDANSR1Nt92iHlbHGMxOTnsB8H8xnMa2Q==}
+  /humanize-duration/3.25.2:
+    resolution: {integrity: sha512-zSerjahuzBazDaE8skjMI7Xmrt/EirvW5cDsXgysx8tYIjcgCMnI5Y5985y3LxYeLah9L5cQY3WEw1k7GRWbfg==}
     dev: false
 
   /icss-replace-symbols/1.1.0:
@@ -1911,8 +1911,8 @@ packages:
     resolution: {integrity: sha512-GuV0OnSL2erZJ0j/9YUsrAdfSh3mGcrq+4wM4PqRftOYT7+TRhxbMrpVZaGC5YIPwncIoOM7PPnskDku5Ywg1Q==}
     dev: false
 
-  /rollup-plugin-visualizer/5.3.6_rollup@2.45.2:
-    resolution: {integrity: sha512-USIyYkzRuvIJZyUoFWSvejy/c8F9jm9mHbyB+01oE7m0Vc0Ll67HlZgRsY59IqU/j/qF1adPsXKSDkEXS6tzfg==}
+  /rollup-plugin-visualizer/5.4.0_rollup@2.45.2:
+    resolution: {integrity: sha512-4PlSd3xuKfqK0RT/Cu2E/jJZz9uBd6IjLNfLai0Jx6qmBv5XwyaQEg70TmcrGDvDSZJspc4NRyuB4KmS5TBnMA==}
     engines: {node: '>=10.16'}
     hasBin: true
     peerDependencies:

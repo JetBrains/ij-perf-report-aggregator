@@ -79,7 +79,7 @@ func init() {
 
   pluginDescriptorLoading := createMetric("pluginDescriptorLoading_d")
   projectProfileLoading := createMetricWithCategory("projectProfileLoading_d", appInitCategory)
-  editorRestoring := createMetric("editorRestoring_d")
+  editorRestoring := createMetric("editorRestoring")
 
   appComponentCreation := createMetric("appComponentCreation_d")
   projectComponentCreation := createMetric("projectComponentCreation_d")
@@ -106,18 +106,16 @@ func init() {
     // old name
     "project inspection profiles loading": projectProfileLoading,
 
-    // light edit mode doesn't have moduleLoading phase
-    "module loading": createMetric("moduleLoading_d"),
-    "project post-startup dumb-aware activities": createUint32Metric("projectDumbAware_d"),
+    "project post-startup dumb-aware activities": createUint32Metric("projectDumbAware"),
 
     "editor restoring":            editorRestoring,
-    "editor restoring till paint": createMetricWithCategory("editorRestoringTillPaint_d", appInitCategory),
+    "editor restoring till paint": createMetricWithCategory("editorRestoringTillPaint", appInitCategory),
     // old name
     "restoring editors": editorRestoring,
 
     // instant
     "splash initialization": createInstantMetric("splash_i"),
-    "startUpCompleted":      createInstantMetric("startUpCompleted_i"),
+    "startUpCompleted":      createInstantMetric("startUpCompleted"),
 
     "appStarter": createMetric("appStarter_d"),
     // v19+
@@ -197,7 +195,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
 
     // undefined
     (*result)[nonMetricFieldCount+metric.index] = 0
-    if is14orGreater || (metric.Name != "editorRestoringTillPaint_d" && metric.Name != "projectProfileLoading_d") {
+    if is14orGreater || (metric.Name != "editorRestoringTillPaint" && metric.Name != "projectProfileLoading_d") {
       if len(metric.sinceVersion) != 0 && version.Compare(report.Version, metric.sinceVersion, ">=") {
         notFoundMetrics = append(notFoundMetrics, metric.Name)
       }

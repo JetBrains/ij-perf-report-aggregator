@@ -36,14 +36,13 @@ create table report2
   `projectFrameInit_d`         UInt16 CODEC(Gorilla, ZSTD(20)),
   `projectProfileLoading_d`    UInt16 CODEC(Gorilla, ZSTD(20)),
 
-  `moduleLoading_d`            UInt16 CODEC(Gorilla, ZSTD(20)),
-  `projectDumbAware_d`         Int32 CODEC(Gorilla, ZSTD(20)),
+  `projectDumbAware`         Int32 CODEC(Gorilla, ZSTD(20)),
 
-  `editorRestoring_d`          UInt16 CODEC(Gorilla, ZSTD(20)),
-  `editorRestoringTillPaint_d` UInt16 CODEC(Gorilla, ZSTD(20)),
+  `editorRestoring`          UInt16 CODEC(Gorilla, ZSTD(20)),
+  `editorRestoringTillPaint` UInt16 CODEC(Gorilla, ZSTD(20)),
 
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(20)),
-  `startUpCompleted_i`         Int32 CODEC(Gorilla, ZSTD(20)),
+  `startUpCompleted`         Int32 CODEC(Gorilla, ZSTD(20)),
 
   `classLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingSearchTime` Int32 CODEC (Gorilla, ZSTD(20)),
@@ -59,6 +58,13 @@ create table report2
     duration Int32,
     thread LowCardinality(String),
     plugin LowCardinality(String)
+  ) CODEC (ZSTD(20)),
+
+  measure Nested(
+    name LowCardinality(String),
+    start Int32,
+    duration Int32,
+    thread LowCardinality(String)
   ) CODEC (ZSTD(20))
 )
   engine = MergeTree

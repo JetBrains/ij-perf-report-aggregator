@@ -4,7 +4,7 @@
   "dependencies": {
     "echarts": "5.1.0",
     "element-plus": "^1.0.2-beta.40",
-    "humanize-duration": "^3.25.1",
+    "humanize-duration": "^3.25.2",
     "rison-node": "2.1.1",
     "vue": "^3.0.11",
     "vue-router": "^4.0.6"

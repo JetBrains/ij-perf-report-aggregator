@@ -17,13 +17,30 @@
           <template #title>
             {{ item.title }}
           </template>
-          <el-menu-item
+          <template
             v-for="child in item.children"
             :key="child.path"
-            :index="child.path"
           >
-            {{ child.meta["menuTitle"] }}
-          </el-menu-item>
+            <el-menu-item
+              v-if="child.meta != null"
+              :index="child.path"
+            >
+              {{ child.meta["menuTitle"] }}
+            </el-menu-item>
+            <template v-else>
+              <template
+                v-for="nestedChild in child.children"
+                :key="nestedChild.path"
+              >
+                <el-menu-item
+                  v-if="nestedChild.meta != null"
+                  :index="nestedChild.path"
+                >
+                  {{ nestedChild.meta["menuTitle"] }}
+                </el-menu-item>
+              </template>
+            </template>
+          </template>
         </el-submenu>
         <template v-else>
           <el-menu-item
@@ -35,6 +52,7 @@
           </el-menu-item>
         </template>
       </template>
+
       <el-menu-item
         v-show='!activePath.startsWith("/report")'
         style="padding: 0; vertical-align: center; float: right"

@@ -6,9 +6,29 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       title: "IJ Dashboard",
       children: [
         {
-          path: "/ij/dashboard",
+          path: "/ij",
           component: () => import("./IntelliJDashboard.vue"),
-          meta: {pageTitle: "IJ Dashboard", menuTitle: "Dashboard"},
+          children: [
+            {
+              path: "/ij/dashboard",
+              redirect: "/ij/pulse",
+            },
+            {
+              path: "/ij/pulse",
+              component: () => import("./Pulse.vue"),
+              meta: {pageTitle: "IJ - Pulse", menuTitle: "Pulse"},
+            },
+            {
+              path: "/ij/progressOverTime",
+              component: () => import("./ProgressOverTime.vue"),
+              meta: {pageTitle: "IJ - Progress Over Time", menuTitle: "Progress Over Time"},
+            },
+            {
+              path: "/ij/moduleLoading",
+              component: () => import("./ModuleLoading.vue"),
+              meta: {pageTitle: "IJ - Module Loading", menuTitle: "Module Loading"},
+            },
+          ],
         },
         {
           path: "/ij/explore",

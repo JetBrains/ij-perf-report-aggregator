@@ -110,6 +110,33 @@ export function measureNameToLabel(key: string): string {
   }
 }
 
+function configureMeasureInANewFormat(measureNames: Array<string>,
+                                      configuration: DataQueryExecutorConfiguration,
+                                      query: DataQuery,
+                                      structureName: string,
+                                      valueName: string,
+                                      skipZeroValues: boolean) {
+  const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
+  const filter: DataQueryFilter = {field: `${structureName}.name`, value: pureNames[0]}
+  if (measureNames.length > 1) {
+    configureQueryProducer(configuration, null, filter, pureNames)
+  }
+
+  if (measureNames.some(it => it.endsWith(".end"))) {
+    query.insertField({name: structureName, subName: "end", sql: `(${structureName}.start + ${structureName}.${valueName})`}, 1)
+  }
+  else {
+    query.insertField({name: structureName, subName: valueName}, 1)
+  }
+
+  query.addFilter(filter)
+
+  if (skipZeroValues) {
+    // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
+    query.addFilter({field: `${structureName}.${valueName}`, operator: "!=", value: 0})
+  }
+}
+
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
@@ -121,37 +148,24 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
   if (query.db === "ij") {
-    const field: DataQueryDimension = {name: measureNames[0]}
-    const filter: DataQueryFilter | null = skipZeroValues ? {field: measureNames[0], operator: "!=", value: 0} : null
-    if (measureNames.length > 1) {
-      configureQueryProducer(configuration, field, filter, measureNames)
+    if (measureNames[0].includes(" ")) {
+      configureMeasureInANewFormat(measureNames, configuration, query, "measure", "duration", skipZeroValues)
     }
+    else {
+      const field: DataQueryDimension = {name: measureNames[0]}
+      const filter: DataQueryFilter | null = skipZeroValues ? {field: measureNames[0], operator: "!=", value: 0} : null
+      if (measureNames.length > 1) {
+        configureQueryProducer(configuration, field, filter, measureNames)
+      }
 
-    query.insertField(field, 1)
-    if (filter != null) {
-      query.addFilter(filter)
+      query.insertField(field, 1)
+      if (filter != null) {
+        query.addFilter(filter)
+      }
     }
   }
   else {
-    const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
-    const filter: DataQueryFilter = {field: "measures.name", value: pureNames[0]}
-    if (measureNames.length > 1) {
-      configureQueryProducer(configuration, null, filter, pureNames)
-    }
-
-    if (measureNames.some(it => it.endsWith(".end"))) {
-      query.insertField({name: "measures", subName: "end", sql: "(measures.start + measures.value)"}, 1)
-    }
-    else {
-      query.insertField({name: "measures", subName: "value"}, 1)
-    }
-
-    query.addFilter(filter)
-
-    if (skipZeroValues) {
-      // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
-      query.addFilter({field: "measures.value", operator: "!=", value: 0})
-    }
+    configureMeasureInANewFormat(measureNames, configuration, query, "measures", "value", skipZeroValues)
   }
 
   if (query.order != null) {

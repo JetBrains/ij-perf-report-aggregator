@@ -20,19 +20,25 @@ type DatabaseConfiguration struct {
 
 func GetAnalyzer(dbName string) DatabaseConfiguration {
   if dbName == "ij" {
+    fieldNames := []string{
+      "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
+      "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount",
+      "resourceLoadingTime", "resourceLoadingCount",
+      "measure.name", "measure.start", "measure.duration", "measure.thread",
+    }
     return DatabaseConfiguration{
       HasProductField: true,
-      extraFieldCount: len(IjMetricDescriptors) + 11 /* service nested object field count */,
+      extraFieldCount: len(IjMetricDescriptors) + len(fieldNames),
       ReportReader:    analyzeIJReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
           sb.WriteRune(',')
           sb.WriteString(metric.Name)
         }
-        sb.WriteString(", " +
-          "service.name, service.start, service.duration, service.thread, service.plugin, " +
-          "classLoadingTime, classLoadingSearchTime, classLoadingDefineTime, classLoadingCount, " +
-          "resourceLoadingTime, resourceLoadingCount")
+        for _, fieldName := range fieldNames {
+          sb.WriteRune(',')
+          sb.WriteString(fieldName)
+        }
       },
     }
   } else if dbName == "sharedIndexes" {

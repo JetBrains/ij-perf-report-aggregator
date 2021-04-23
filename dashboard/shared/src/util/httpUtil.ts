@@ -13,9 +13,9 @@ let errorMessageHandle: IMessageHandle | null = null
 export function loadJson<T>(url: string,
                             loading: Ref<boolean> | null,
                             taskHandle: TaskHandle,
-                            dataConsumer: (data: T) => void): Promise<unknown> {
+                            dataConsumer: (data: T) => void): Promise<T | null> {
   if (taskHandle.isCancelled) {
-    return Promise.resolve()
+    return Promise.resolve(null)
   }
 
   // console.debug("load", url)

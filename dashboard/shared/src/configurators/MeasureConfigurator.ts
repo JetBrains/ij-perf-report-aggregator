@@ -56,32 +56,49 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         return Promise.resolve()
       }
 
-      return loadJson<Array<string>>(`${server}/api/v1/meta/measure?db=${this.serverConfigurator.databaseName}`, null, taskHandle, data => {
+      return Promise.all([
+          loadJson<Array<string>>(`${server}/api/v1/meta/measure?db=${this.serverConfigurator.databaseName}`, null, taskHandle, data => {
+            if (data !== null) {
+              this.data.value = data
+            }
+          }),
+          loadMeasureList(taskHandle, "measure", this.serverConfigurator, this.parent),
+        ]).then(values => {
+          if (values.length === 2 && values[0] != null && values[1] != null) {
+            this.data.value = [...values[0], ...values[1]]
+          }
+        })
+    }
+
+    return loadMeasureList(taskHandle, "measures", this.serverConfigurator, this.parent).then(data => {
+      if (data !== null) {
         this.data.value = data
-      })
-    }
-
-    const parent = this.parent
-    const query = new DataQuery()
-    const configuration = new DataQueryExecutorConfiguration()
-    if (!this.serverConfigurator.configureQuery(query, configuration)) {
-      return Promise.resolve()
-    }
-    if (parent != null && !parent.configureQuery(query, configuration)) {
-      return Promise.resolve()
-    }
-
-    // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
-    query.addDimension({name: "measures", subName: "name"})
-    query.order = ["measures.name"]
-    query.table = "report"
-    query.flat = true
-
-    return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, null, taskHandle, data => {
-      this.data.value = data
+      }
     })
   }
 }
+
+function loadMeasureList(taskHandle: TaskHandle, structureName: string, serverConfigurator: ServerConfigurator, parent: DimensionConfigurator | null): Promise<Array<string> | null> {
+  const query = new DataQuery()
+  const configuration = new DataQueryExecutorConfiguration()
+  if (!serverConfigurator.configureQuery(query, configuration)) {
+    return Promise.resolve(null)
+  }
+  if (parent != null && !parent.configureQuery(query, configuration)) {
+    return Promise.resolve(null)
+  }
+
+  // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
+  query.addDimension({name: structureName, subName: "name"})
+  query.order = [`${structureName}.name`]
+  query.table = "report"
+  query.flat = true
+
+  return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, null, taskHandle, function () {
+    // ignore
+  })
+}
+
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   constructor(private readonly measures: Array<string>, readonly skipZeroValues: Ref<boolean> = shallowRef(true)) {

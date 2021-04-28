@@ -78,7 +78,10 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 }
 
-function loadMeasureList(taskHandle: TaskHandle, structureName: string, serverConfigurator: ServerConfigurator, parent: DimensionConfigurator | null): Promise<Array<string> | null> {
+function loadMeasureList(taskHandle: TaskHandle,
+                         structureName: string,
+                         serverConfigurator: ServerConfigurator,
+                         parent: DimensionConfigurator | null): Promise<Array<string> | null> {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {

@@ -5,6 +5,7 @@ go 1.16
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/ClickHouse/clickhouse-go v1.4.3
+	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20210208195552-ff826a37aa15 // indirect
@@ -17,7 +18,7 @@ require (
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/jmoiron/sqlx v1.3.3
-	github.com/json-iterator/go v1.1.10
+	github.com/json-iterator/go v1.1.11
 	github.com/klauspost/cpuid/v2 v2.0.6 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/magiconair/properties v1.8.5
@@ -39,7 +40,7 @@ require (
 	github.com/segmentio/ksuid v1.0.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tdewolff/minify/v2 v2.9.16
-	github.com/tdewolff/parse/v2 v2.5.15 // indirect
+	github.com/tdewolff/parse/v2 v2.5.16 // indirect
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.6.3
@@ -47,11 +48,11 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/multierr v1.6.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/crypto v0.0.0-20210415154028-4f45737414dc // indirect
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/mod v0.4.0 // indirect
-	golang.org/x/net v0.0.0-20210415231046-e915ea6b2b7d // indirect
-	golang.org/x/sys v0.0.0-20210415045647-66c3f260301c // indirect
+	golang.org/x/net v0.0.0-20210427231257-85d9c07bbe3a // indirect
+	golang.org/x/sys v0.0.0-20210426230700-d19ff857e887 // indirect
 	golang.org/x/tools v0.1.0
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect

@@ -2,6 +2,10 @@ ingress:
   host: ""
   tlsSecretName: ""
   annotations: {}
+ingressBackend:
+  host: ""
+  tlsSecretName: ""
+  annotations: {}
 collector:
   teamcityUrl: "http://buildserver.labs.intellij.net"
   buildConfigurations: []

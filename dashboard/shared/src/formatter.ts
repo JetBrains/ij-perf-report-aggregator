@@ -35,7 +35,7 @@ export function numberAxisLabelFormatter(value: number): string {
 }
 
 export function isDurationFormatterApplicable(measureName: string): boolean {
-  return !measureName.startsWith("numberOf") && !measureName.endsWith("Count_i")
+  return !measureName.startsWith("numberOf") && !measureName.endsWith("Count_i") && !measureName.endsWith("Count")
 }
 
 export function getValueFormatterByMeasureName(measureName: string): (valueInMs: number) => string {

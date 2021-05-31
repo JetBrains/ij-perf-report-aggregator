@@ -31,7 +31,7 @@ export default defineComponent({
   },
   emits: ["update:modelValue"],
   setup(props, {emit}) {
-    const suggestedServers: Array<Item> = [{value: ServerConfigurator.DEFAULT_SERVER_URL}, {value: "http://localhost:9044"}]
+    const suggestedServers: Array<Item> = [{value: ServerConfigurator.DEFAULT_SERVER_URL}, {value: "http://localhost:9044"}, {value: "https://ij-perf-api.labs.jb.gg"}]
     return {
       value: computed({
         get() {

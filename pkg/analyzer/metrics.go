@@ -129,11 +129,6 @@ func init() {
 }
 
 func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
-  if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
-    logger.Warn("invalid report (due to opening second project?), report will be skipped")
-    return nil
-  }
-
   for range IjMetricDescriptors {
     *result = append(*result, -1)
   }

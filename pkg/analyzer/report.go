@@ -5,12 +5,13 @@ import (
   "github.com/develar/errors"
   "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
+  "go.uber.org/zap"
   "time"
 )
 
 var structParsers fastjson.ParserPool
 
-func ReadReport(runResult *RunResult, reader CustomReportAnalyzer) error {
+func ReadReport(runResult *RunResult, reader CustomReportAnalyzer, logger *zap.Logger) error {
   parser := structParsers.Get()
   defer structParsers.Put(parser)
 
@@ -40,7 +41,7 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer) error {
     TotalDuration: totalDuration,
   }
 
-  err = reader(runResult, report)
+  err = reader(runResult, report, logger)
   if err != nil {
     return err
   }

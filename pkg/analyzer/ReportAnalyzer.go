@@ -131,7 +131,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TcBuildProperties:  extraData.TcBuildProperties,
   }
 
-  err = ReadReport(runResult, t.analyzer)
+  err = ReadReport(runResult, t.analyzer, t.logger)
   if err != nil {
     return err
   }

@@ -4,10 +4,11 @@ import (
   "github.com/develar/errors"
   "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
+  "go.uber.org/zap"
   "strings"
 )
 
-type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value) error
+type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error
 type InsertStatementWriter func(sb *strings.Builder)
 
 type DatabaseConfiguration struct {
@@ -63,7 +64,7 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
   }
 }
 
-func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value) error {
+func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
   measureNames := make([]string, 0)
   measureValues := make([]int, 0)
   for _, measure := range data.GetArray("metrics") {
@@ -96,7 +97,7 @@ func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value) erro
   return nil
 }
 
-func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
+func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
   names := make([]string, 0)
   values := make([]int, 0)
   starts := make([]int, 0)

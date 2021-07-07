@@ -137,7 +137,7 @@ export default defineComponent({
     onMounted(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       chartManager = new LineChartManager(chartElement.value!, chartToolTipManager.dataQueryExecutor, toRef(props, "dataZoom"),
-        chartToolTipManager.formatArrayValue.bind(chartToolTipManager))
+      chartToolTipManager.formatArrayValue.bind(chartToolTipManager))
 
       watch(skipZeroValues, () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

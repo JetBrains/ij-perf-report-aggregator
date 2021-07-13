@@ -223,7 +223,7 @@ func collectFromTeamCity(
 
 func buildTeamCityQuery() string {
   q := "file(href)"
-  for i := 0; i < 2; i++ {
+  for i := 0; i < 3; i++ {
     q = "file(href,children(href," + q + "))"
   }
   return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)))"

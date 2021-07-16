@@ -12,6 +12,7 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
+  "io/ioutil"
   "log"
   "os"
   "path/filepath"
@@ -25,42 +26,22 @@ func main() {
     _ = logger.Sync()
   }()
 
-  err := restore(util.GetEnvOrPanic("S3_BUCKET"), logger)
+  err := restoreMain(logger)
   if err != nil {
     log.Fatalf("%+v", err)
   }
 }
 
-type BackupManager struct {
-  *clickhouse.BaseBackupManager
-}
-
-func restore(bucket string, logger *zap.Logger) error {
+func restoreMain(logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-  backupManager := &BackupManager{
-    baseBackupManager,
-  }
-  remoteFile, err := backupManager.findBackup(bucket)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  err = os.MkdirAll(backupManager.ClickhouseDir, os.ModePerm)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  dataDir := filepath.Join(backupManager.ClickhouseDir, "data")
-  _, err = os.Stat(dataDir)
+  clickhouseDir := clickhouse.GetClickhouseDir()
+  dataDir := filepath.Join(clickhouseDir, "data")
+  _, err := os.Stat(dataDir)
   if err == nil {
     if !env.GetBool("REMOVE_OLD_DATA_DIR", false) {
-      return errors.Errorf("data directory \"%s\" already exists", dataDir)
+      return errors.Errorf("data directory \"%s\" already exists (set env REMOVE_OLD_DATA_DIR=true to force removing)", dataDir)
     }
 
     err = os.RemoveAll(dataDir)
@@ -69,11 +50,155 @@ func restore(bucket string, logger *zap.Logger) error {
     }
   }
 
-  err = backupManager.download(remoteFile, dataDir, true)
+  err = os.MkdirAll(clickhouseDir, os.ModePerm)
   if err != nil {
     return errors.WithStack(err)
   }
+
+  if len(os.Args) > 1 {
+    filePath := os.Args[1]
+    if filePath == "local" {
+      filePath, err = findLocalBackup()
+      if err != nil {
+        return err
+      }
+    }
+
+    file, err := os.Open(filePath)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    defer util.Close(file, logger)
+    return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger)
+  } else {
+    baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    backupManager := &BackupManager{
+      baseBackupManager,
+    }
+
+    remoteFile, err := backupManager.findBackup(util.GetEnvOrPanic("S3_BUCKET"))
+    if err != nil {
+      return err
+    }
+    return backupManager.download(remoteFile, dataDir, true)
+  }
+}
+
+type BackupManager struct {
+  *clickhouse.BaseBackupManager
+}
+
+func restore(file string, outputRootDirectory string, extractMetadata bool, proxyReader io.Reader, clickhouseDir string, backupManager *BackupManager, logger *zap.Logger) error {
+  copyBuffer := make([]byte, 32*1024)
+  createdDirs := make(map[string]bool)
+
+  tarReader := tar.NewReader(proxyReader)
+  var metafile clickhouse.MetaFile
+  for {
+    header, err := tarReader.Next()
+    if err == io.EOF {
+      break
+    } else if err != nil {
+      return errors.WithStack(err)
+    }
+
+    if header.Name == clickhouse.MetaFileName {
+      metafile, err = readMetaFile(tarReader, logger)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+      continue
+    }
+
+    err = decompressTarFile(tarReader, header, outputRootDirectory, copyBuffer, createdDirs)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
+  logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
+  currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
+  if extractMetadata {
+    // move metadata to root
+    metadataDir := filepath.Join(clickhouseDir, "metadata")
+    err := os.RemoveAll(metadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+    err = os.Rename(currentMetadataDir, metadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  } else {
+    err := os.RemoveAll(currentMetadataDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
+  if backupManager == nil || len(metafile.RequiredBackup) == 0 {
+    return nil
+  }
+
+  logger.Info("download required parts", zap.String("requiredBackup", metafile.RequiredBackup), zap.String("currentBackup", file))
+  previousBackupDir := filepath.Join(clickhouseDir, "backup", metafile.RequiredBackup)
+  err := backupManager.download(metafile.RequiredBackup+".tar", previousBackupDir, false)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  for _, hardlink := range metafile.Hardlinks {
+    newName := filepath.Join(outputRootDirectory, hardlink)
+    extractDir := filepath.Dir(newName)
+    if !createdDirs[extractDir] {
+      err = os.MkdirAll(extractDir, os.ModePerm)
+      if err != nil {
+        return errors.WithStack(err)
+      }
+
+      createdDirs[extractDir] = true
+    }
+
+    err = os.Link(filepath.Join(previousBackupDir, hardlink), newName)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+  }
+
   return nil
+}
+
+func findLocalBackup() (string, error) {
+  homeDir, err := os.UserHomeDir()
+  if err != nil {
+    return "", errors.WithStack(err)
+  }
+
+  var candidate string
+  var lastModified time.Time
+  downloadDir := filepath.Join(homeDir, "Downloads")
+  files, err := ioutil.ReadDir(downloadDir)
+  if err != nil {
+    return "", errors.WithStack(err)
+  }
+  for _, file := range files {
+    if strings.HasSuffix(file.Name(), ".tar") {
+      if lastModified.Before(file.ModTime()) {
+        candidate = file.Name()
+        lastModified = file.ModTime()
+      }
+    }
+  }
+
+  if len(candidate) == 0 {
+    return "", errors.Errorf("local backup not found (downloadDir=%s)", downloadDir)
+  }
+  return filepath.Join(downloadDir, candidate), nil
 }
 
 func (t *BackupManager) findBackup(bucket string) (string, error) {
@@ -106,8 +231,6 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
 
   defer util.Close(object, t.Logger)
 
-  copyBuffer := make([]byte, 32*1024)
-
   var proxyReader io.Reader
   if env.GetBool("DISABLE_PROGRESS", false) {
     proxyReader = object
@@ -122,85 +245,10 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
     defer bar.Finish()
   }
 
-  createdDirs := make(map[string]bool)
-
-  tarReader := tar.NewReader(proxyReader)
-  var metafile clickhouse.MetaFile
-  for {
-    header, err := tarReader.Next()
-    if err == io.EOF {
-      break
-    } else if err != nil {
-      return errors.WithStack(err)
-    }
-
-    if header.Name == clickhouse.MetaFileName {
-      metafile, err = t.readMetaFile(tarReader)
-      if err != nil {
-        return errors.WithStack(err)
-      }
-      continue
-    }
-
-    err = decompressTarFile(tarReader, header, outputRootDirectory, copyBuffer, createdDirs)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-  }
-
-  t.Logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
-  currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
-  if extractMetadata {
-    // move metadata to root
-    metadataDir := filepath.Join(t.ClickhouseDir, "metadata")
-    err = os.RemoveAll(metadataDir)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-    err = os.Rename(currentMetadataDir, metadataDir)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-  } else {
-    err = os.RemoveAll(currentMetadataDir)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-  }
-
-  if len(metafile.RequiredBackup) == 0 {
-    return nil
-  }
-
-  t.Logger.Info("download required parts", zap.String("requiredBackup", metafile.RequiredBackup), zap.String("currentBackup", file))
-  previousBackupDir := filepath.Join(t.ClickhouseDir, "backup", metafile.RequiredBackup)
-  err = t.download(metafile.RequiredBackup+".tar", previousBackupDir, false)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  for _, hardlink := range metafile.Hardlinks {
-    newName := filepath.Join(outputRootDirectory, hardlink)
-    extractDir := filepath.Dir(newName)
-    if !createdDirs[extractDir] {
-      err := os.MkdirAll(extractDir, os.ModePerm)
-      if err != nil {
-        return errors.WithStack(err)
-      }
-
-      createdDirs[extractDir] = true
-    }
-
-    err = os.Link(filepath.Join(previousBackupDir, hardlink), newName)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-  }
-
-  return nil
+  return restore(file, outputRootDirectory, extractMetadata, proxyReader, t.ClickhouseDir, t, t.Logger)
 }
 
-func (t *BackupManager) readMetaFile(tarReader *tar.Reader) (clickhouse.MetaFile, error) {
+func readMetaFile(tarReader *tar.Reader, logger *zap.Logger) (clickhouse.MetaFile, error) {
   var metafile clickhouse.MetaFile
 
   gzipReader, err := gzip.NewReader(tarReader)
@@ -208,7 +256,7 @@ func (t *BackupManager) readMetaFile(tarReader *tar.Reader) (clickhouse.MetaFile
     return metafile, errors.WithStack(err)
   }
 
-  defer util.Close(gzipReader, t.Logger)
+  defer util.Close(gzipReader, logger)
 
   err = json.NewDecoder(gzipReader).Decode(&metafile)
   if err != nil {

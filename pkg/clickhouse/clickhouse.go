@@ -9,6 +9,7 @@ import (
   "go.uber.org/zap"
   "io/ioutil"
   "os"
+  "path/filepath"
   "strings"
 )
 
@@ -53,9 +54,19 @@ func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*
     Bucket:        os.Getenv("S3_BUCKET"),
     Client:        client,
     TaskContext:   taskContext,
-    ClickhouseDir: env.GetString("CLICKHOUSE_DATA_PATH", "/var/lib/clickhouse"),
+    ClickhouseDir: GetClickhouseDir(),
     Logger:        logger,
   }, nil
+}
+
+func GetClickhouseDir() string {
+  s := env.GetString("CLICKHOUSE_DATA_PATH", "/var/lib/clickhouse")
+  if strings.HasPrefix(s, "~/") {
+    homeDir, _ := os.UserHomeDir()
+    return filepath.Join(homeDir, s[2:])
+  } else {
+    return s
+  }
 }
 
 func getEnvOrFile(envName string, file string) (string, error) {

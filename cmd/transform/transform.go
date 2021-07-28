@@ -190,7 +190,7 @@ func process(
       BuildC3: row.BuildC3,
     }
 
-    err = analyzer.ReadReport(runResult, config.ReportReader)
+    err = analyzer.ReadReport(runResult, config.ReportReader, logger)
     if err != nil {
       return err
     }

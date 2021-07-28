@@ -78,7 +78,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const persistentStateManager = new PersistentStateManager("sharedIndexes-dashboard", {
+    const persistentStateManager = new PersistentStateManager(`${props.dbName}-dashboard`, {
       machine: "macMini 2018",
       project: [
         "ijx-intellij-speed/shared-indexes",

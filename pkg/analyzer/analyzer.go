@@ -42,7 +42,7 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
         }
       },
     }
-  } else if dbName == "sharedIndexes" {
+  } else if dbName == "sharedIndexes" || dbName == "perfint" {
     return DatabaseConfiguration{
       ReportReader: analyzeSharedIndexesReport,
       extraFieldCount: 2,
@@ -64,7 +64,7 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
   }
 }
 
-func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
+func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   measureNames := make([]string, 0)
   measureValues := make([]int, 0)
   for _, measure := range data.GetArray("metrics") {
@@ -90,6 +90,8 @@ func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, _ *z
   }
 
   if len(measureNames) == 0 {
+    logger.Warn("invalid report - no measures, report will be skipped", zap.Int("id", runResult.TcBuildId))
+    runResult.Report = nil
     return nil
   }
 

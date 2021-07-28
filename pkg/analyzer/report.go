@@ -17,8 +17,7 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer, logger *zap.L
 
   report, err := parser.ParseBytes(runResult.RawReport)
   if err != nil {
-    //fmt.Print(string(data))
-    return  errors.WithStack(err)
+    return errors.WithStack(err)
   }
 
   totalDuration := report.GetInt("totalDuration")

@@ -2,8 +2,6 @@ package main
 
 import (
   "archive/tar"
-  "compress/gzip"
-  "encoding/json"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
@@ -37,7 +35,7 @@ func restoreMain(logger *zap.Logger) error {
   defer cancel()
 
   clickhouseDir := clickhouse.GetClickhouseDir()
-  dataDir := filepath.Join(clickhouseDir, "data")
+  dataDir := filepath.Join(clickhouseDir, "store")
   _, err := os.Stat(dataDir)
   if err == nil {
     if !env.GetBool("REMOVE_OLD_DATA_DIR", false) {
@@ -93,12 +91,13 @@ type BackupManager struct {
   *clickhouse.BaseBackupManager
 }
 
-func restore(file string, outputRootDirectory string, extractMetadata bool, proxyReader io.Reader, clickhouseDir string, backupManager *BackupManager, logger *zap.Logger) error {
+func restore(file string, outputRootDirectory string, isExtractMetadataNeeded bool, proxyReader io.Reader, clickhouseDir string, backupManager *BackupManager, logger *zap.Logger) error {
   copyBuffer := make([]byte, 32*1024)
   createdDirs := make(map[string]bool)
 
   tarReader := tar.NewReader(proxyReader)
   var metafile clickhouse.MetaFile
+  var info *clickhouse.MappingInfo
   for {
     header, err := tarReader.Next()
     if err == io.EOF {
@@ -110,29 +109,29 @@ func restore(file string, outputRootDirectory string, extractMetadata bool, prox
     if header.Name == clickhouse.MetaFileName {
       metafile, err = readMetaFile(tarReader, logger)
       if err != nil {
-        return errors.WithStack(err)
+        return err
+      }
+      continue
+    } else if header.Name == clickhouse.InfoFileName {
+      info, err = readInfoMappingFile(tarReader)
+      if err != nil {
+        return err
       }
       continue
     }
 
     err = decompressTarFile(tarReader, header, outputRootDirectory, copyBuffer, createdDirs)
     if err != nil {
-      return errors.WithStack(err)
+      return err
     }
   }
 
   logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
   currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
-  if extractMetadata {
-    // move metadata to root
-    metadataDir := filepath.Join(clickhouseDir, "metadata")
-    err := os.RemoveAll(metadataDir)
+  if isExtractMetadataNeeded {
+    err := extractMetadata(clickhouseDir, info, currentMetadataDir)
     if err != nil {
-      return errors.WithStack(err)
-    }
-    err = os.Rename(currentMetadataDir, metadataDir)
-    if err != nil {
-      return errors.WithStack(err)
+      return err
     }
   } else {
     err := os.RemoveAll(currentMetadataDir)
@@ -246,23 +245,6 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
   }
 
   return restore(file, outputRootDirectory, extractMetadata, proxyReader, t.ClickhouseDir, t, t.Logger)
-}
-
-func readMetaFile(tarReader *tar.Reader, logger *zap.Logger) (clickhouse.MetaFile, error) {
-  var metafile clickhouse.MetaFile
-
-  gzipReader, err := gzip.NewReader(tarReader)
-  if err != nil {
-    return metafile, errors.WithStack(err)
-  }
-
-  defer util.Close(gzipReader, logger)
-
-  err = json.NewDecoder(gzipReader).Decode(&metafile)
-  if err != nil {
-    return metafile, errors.WithStack(err)
-  }
-  return metafile, nil
 }
 
 func decompressTarFile(tarReader *tar.Reader, header *tar.Header, outputRootDirectory string, copyBuffer []byte, createdDirs map[string]bool) error {

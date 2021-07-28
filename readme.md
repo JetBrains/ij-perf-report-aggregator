@@ -30,9 +30,9 @@ See [Layout](https://element-plus.org/#/en-US/component/layout).
 
 ## Adding a New Database
 
-`clickhouse client -h 127.0.0.1` to use clickhouse client to perform SQL queries.
-
 `cd ~/Documents/report-aggregator`
+
+`clickhouse client -h 127.0.0.1` to use clickhouse client to perform SQL queries.
 
 1. Set env `DB_NAME` to desired database name:
     ```shell

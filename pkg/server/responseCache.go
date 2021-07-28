@@ -4,11 +4,11 @@ import (
   "compress/gzip"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/cespare/xxhash/v2"
   "github.com/develar/errors"
   "github.com/dgraph-io/ristretto"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
+  "github.com/zeebo/xxh3"
   "go.uber.org/zap"
   "io"
   "net/http"
@@ -82,6 +82,8 @@ func generateKey(request *http.Request) []byte {
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
   w.Header().Set("Content-Type", "application/json")
   w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set("Cache-Control", "public,max-age=15")
+	w.Header().Set("Vary", "Accept-Encoding")
 
   cacheKey := generateKey(request)
   value, found := t.cache.Get(cacheKey)
@@ -146,7 +148,7 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 // because if no data in cache (server restarted), in any case data will be recomputed
 func computeEtag(result []byte) string {
   // add length to reduce chance of collision
-  return strconv.FormatUint(xxhash.Sum64(result), 36) + "-" + strconv.FormatInt(int64(len(result)), 36)
+  return strconv.FormatUint(xxh3.Hash(result), 36) + "-" + strconv.FormatInt(int64(len(result)), 36)
 }
 
 func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {

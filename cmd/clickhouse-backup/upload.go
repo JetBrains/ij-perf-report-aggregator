@@ -68,9 +68,11 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
 
 type Task struct {
   metadataDir      string
+  storeDir         string
   backupDir        string
   diffFromPath     string
-  dbNames          []string
+  db               []clickhouse.DbInfo
+  tables           []clickhouse.TableInfo
   estimatedTarSize int64
 
   logger *zap.Logger
@@ -87,11 +89,9 @@ func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err er
 
   copyBuffer := make([]byte, 64*1024)
 
-  for _, dbName := range task.dbNames {
-    err = writeMetadata(tarWriter, dbName, task.metadataDir)
-    if err != nil {
-      return errors.WithStack(err)
-    }
+  err = writeMetadata(tarWriter, task)
+  if err != nil {
+    return errors.WithStack(err)
   }
 
   var hardlinks []string
@@ -117,7 +117,7 @@ func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err er
       }
     }
 
-    err = writeFile(filePath, filePath[len(task.backupDir)+1:], info, tarWriter, copyBuffer)
+    err = writeFile(filePath, filePath[len(task.backupDir)+1:], info.Size(), tarWriter, copyBuffer)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -146,8 +146,8 @@ func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err er
   return nil
 }
 
-func writeFile(filePath string, name string, info os.FileInfo, tarWriter *tar.Writer, copyBuffer []byte) error {
-  err := writeHeader(tarWriter, name, info.Size())
+func writeFile(filePath string, name string, size int64, tarWriter *tar.Writer, copyBuffer []byte) error {
+  err := writeHeader(tarWriter, name, size)
   if err != nil {
     return errors.WithStack(err)
   }

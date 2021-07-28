@@ -14,14 +14,6 @@ import (
 )
 
 func (t *StatsServer) handleLoadRequest(request *http.Request) ([]byte, error) {
-  return t.doHandleMetricsRequest(request, 2)
-}
-
-func (t *StatsServer) handleMetricsRequest(request *http.Request) ([]byte, error) {
-  return t.doHandleMetricsRequest(request, 1)
-}
-
-func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int) ([]byte, error) {
   dataQueries, wrappedAsArray, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, err
@@ -43,11 +35,7 @@ func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int)
       jsonWriter.S(",")
     }
 
-    if version == 1 {
-      err = t.computeMetricsResponse(dataQuery, jsonWriter, request.Context())
-    } else {
-      err = t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
-    }
+    err = t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
     if err != nil {
       return nil, err
     }
@@ -61,9 +49,6 @@ func (t *StatsServer) doHandleMetricsRequest(request *http.Request, version int)
 
 func (t *StatsServer) computeMetricsResponse(query data_query.DataQuery, jsonWriter *quicktemplate.QWriter, context context.Context) error {
   table := "report"
-  if query.Database == "sharedIndexes" {
-    table = "metrics"
-  }
 
   rows, fieldCount, err := data_query.SelectRows(query, table, t, context)
   if err != nil {

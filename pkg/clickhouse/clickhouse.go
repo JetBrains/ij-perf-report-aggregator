@@ -14,6 +14,24 @@ import (
 )
 
 const MetaFileName = "meta.json.gz"
+const InfoFileName = "info.json"
+
+type TableInfo struct {
+  Name         string `json:"name"`
+  Uuid         string `json:"uuid"`
+  MetadataPath string `db:"metadata_path" json:"metadataPath"`
+  Database     string `json:"db"`
+}
+
+type DbInfo struct {
+  Name string `json:"name"`
+  Uuid string `json:"uuid"`
+}
+
+type MappingInfo struct {
+  Tables []TableInfo `json:"tables"`
+  Db     []DbInfo    `json:"db"`
+}
 
 type BaseBackupManager struct {
   Bucket        string
@@ -44,7 +62,7 @@ func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*
 
   client, err := minio.New(endpoint, &minio.Options{
     Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-    Secure: true,
+    Secure: !strings.HasPrefix(endpoint, "127.0.0.1:"),
   })
   if err != nil {
     return nil, errors.WithStack(err)

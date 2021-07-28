@@ -3,7 +3,7 @@ import { ParentRouteRecord } from "shared/src/route"
 export function getIjRoutes(): Array<ParentRouteRecord> {
   return [
     {
-      title: "IJ Dashboard",
+      title: "IJ",
       children: [
         {
           path: "/ij",
@@ -43,7 +43,19 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
         {
           path: "/sharedIndexes/dashboard",
           component: () => import("./SharedIndexesDashboard.vue"),
-          meta: {pageTitle: "Shared Indexes Dashboard", menuTitle: "Shared Indexes Dashboard"},
+          props: {dbName: "sharedIndexes"},
+          meta: {pageTitle: "Shared Indexes Dashboard", menuTitle: "Shared Indexes"},
+        },
+      ]
+    },
+    {
+      title: null,
+      children: [
+        {
+          path: "/performanceIntegration/dashboard",
+          component: () => import("./SharedIndexesDashboard.vue"),
+          props: {dbName: "perfint"},
+          meta: {pageTitle: "Integration Performance Dashboard", menuTitle: "Integration Performance"},
         },
       ]
     },

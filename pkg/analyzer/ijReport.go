@@ -10,13 +10,15 @@ import (
 func analyzeIJReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   report := runResult.Report
 
-  if version.Compare(report.Version, "12", ">=") && len(report.TraceEvents) == 0 {
+  traceEvents := data.GetArray("traceEvents")
+
+  if version.Compare(report.Version, "12", ">=") && len(traceEvents) == 0 {
     logger.Warn("invalid report (due to opening second project?), report will be skipped", zap.Int("id", runResult.TcBuildId), zap.String("generated", report.Generated))
     runResult.Report = nil
     return nil
   }
 
-  for _, v := range data.GetArray("traceEvents") {
+  for _, v := range traceEvents {
     report.TraceEvents = append(report.TraceEvents, model.TraceEvent{
       Name:      string(v.GetStringBytes("name")),
       Phase:     string(v.GetStringBytes("ph")),

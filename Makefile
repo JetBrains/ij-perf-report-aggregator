@@ -49,3 +49,5 @@ update-deps:
 
 # nats-server
 # /Volumes/data/nats-pub db.backup "test"
+
+# minio server minio --console-address ":9001" --address "127.0.0.1:9002"

@@ -1,7 +1,7 @@
 FROM golang:1.16 AS builder
 WORKDIR /project/src
 ADD https://raw.githubusercontent.com/nats-io/nats.go/7192159fcab301e10f8f9c6d21b57857d501c490/examples/nats-pub/main.go .
-RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -o /tmp/nats-pub .
+RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/nats-pub .
 
 ARG CH_VERSION
 

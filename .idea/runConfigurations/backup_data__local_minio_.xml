@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="backup-data (local minio)" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="report-aggregator" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="S3_ENDPOINT" value="127.0.0.1:9002" />
+      <env name="S3_BUCKET" value="ij-perf-data" />
+      <env name="S3_ACCESS_KEY" value="minioadmin" />
+      <env name="S3_SECRET_KEY" value="minioadmin" />
+      <env name="CLICKHOUSE_DATA_PATH" value="$USER_HOME$/ij-perf-db/clickhouse" />
+      <env name="CLICKHOUSE" value="localhost:9000" />
+      <env name="DO_BACKUP" value="true" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/clickhouse-backup/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

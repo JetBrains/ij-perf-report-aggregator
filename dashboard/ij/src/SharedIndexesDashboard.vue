@@ -71,7 +71,13 @@ import { useRouter } from "vue-router"
 
 export default defineComponent({
   components: {ReloadButton, DimensionSelect, DimensionHierarchicalSelect, TimeRangeSelect, MeasureSelect, LineChartCard, BarChartCard},
-  setup() {
+  props: {
+    dbName: {
+      type: String,
+      required: true,
+    }
+  },
+  setup(props) {
     const persistentStateManager = new PersistentStateManager("sharedIndexes-dashboard", {
       machine: "macMini 2018",
       project: [
@@ -82,7 +88,7 @@ export default defineComponent({
       measure: ["indexing", "scanning"],
     }, useRouter())
 
-    const serverConfigurator = new ServerConfigurator("sharedIndexes")
+    const serverConfigurator = new ServerConfigurator(props.dbName)
     const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
 
     const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),

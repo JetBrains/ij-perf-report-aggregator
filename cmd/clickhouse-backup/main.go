@@ -1,6 +1,7 @@
 package main
 
 import (
+  "encoding/json"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -13,6 +14,7 @@ import (
   "os"
   "path/filepath"
   "runtime/debug"
+  "sort"
   "strings"
   "time"
 )
@@ -142,6 +144,7 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
 
   task := Task{
     metadataDir:      filepath.Join(t.ClickhouseDir, "metadata"),
+    storeDir:         filepath.Join(t.ClickhouseDir, "store"),
     backupDir:        backupDir,
     diffFromPath:     diffFromPath,
     estimatedTarSize: 0,
@@ -204,24 +207,79 @@ func (t *BackupManager) createBackup(task *Task) error {
 
   defer util.Close(db, task.logger)
 
-  task.dbNames = getDatabaseNamesToBackup()
-  if len(task.dbNames) == 0 {
-    // select non-empty db
-    err = db.SelectContext(t.TaskContext, &task.dbNames, "select distinct database from system.tables where database != 'system'")
-    if err != nil {
-      return errors.WithStack(err)
-    }
+  tables, err := t.getTables(db, getDatabaseNamesToBackup())
+  if err != nil {
+    return err
+  }
+
+  if len(tables) == 0 {
+    return errors.Errorf("no tables to backup")
   }
 
   task.logger.Info("create")
-  for _, dbName := range task.dbNames {
-    estimatedTarSize, err := t.freezeAndMoveToBackupDir(db, dbName, backupDir, task.logger.With(zap.String("db", dbName)))
+
+  err = os.MkdirAll(backupDir, os.ModePerm)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  var dbNames []string
+  for i := range tables {
+    table := &tables[i]
+    table.MetadataPath, err = filepath.Rel(task.storeDir, table.MetadataPath)
     if err != nil {
       return errors.WithStack(err)
     }
 
-    task.estimatedTarSize += estimatedTarSize
+    t.Logger.Debug("freeze tables", zap.Any("tables", tables))
+    err = t.freezeAndMoveToBackupDir(db, *table, backupDir, task.logger.With(zap.String("db", table.Database), zap.String("table", table.Name)))
+    if err != nil {
+      return err
+    }
+
+    i := sort.Search(len(dbNames), func(i int) bool { return dbNames[i] >= table.Database })
+    if i >= len(dbNames) || dbNames[i] != table.Database {
+      dbNames = append(dbNames, table.Database)
+    }
+  }
+
+  var estimatedTarSize int64
+  err = db.GetContext(t.TaskContext, &estimatedTarSize, "select sum(bytes_on_disk) + (count() * 345) from system.parts where active and database in (?)", dbNames)
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
+  dbList, err := getDbList(db, t, dbNames)
+  if err != nil {
+    return err
+  }
+
+  task.db = dbList
+  task.tables = tables
+  task.estimatedTarSize += estimatedTarSize
+
+  infoJson, err := json.Marshal(clickhouse.MappingInfo{
+    Tables: tables,
+    Db:     dbList,
+  })
+  task.estimatedTarSize += int64(len(infoJson))
+  if err != nil {
+    return errors.WithStack(err)
+  }
+  err = os.WriteFile(filepath.Join(backupDir, clickhouse.InfoFileName), infoJson, os.ModePerm)
+  if err != nil {
+    return errors.WithStack(err)
   }
 
   return nil
 }
+
+func getDbList(db *sqlx.DB, t *BackupManager, dbNames []string) ([]clickhouse.DbInfo, error) {
+  var result []clickhouse.DbInfo
+  err := db.SelectContext(t.TaskContext, &result, "select name, uuid from system.databases where name in (?) order by name", dbNames)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+  return result, nil
+}
+

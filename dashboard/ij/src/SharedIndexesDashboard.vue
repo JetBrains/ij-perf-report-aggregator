@@ -79,7 +79,7 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-das
     "ijx-intellij-speed/shared-indexes",
     "ijx-intellij-speed/usual-indexes",
     "ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes",
-  ] : ["intellij_sources/indexing", "intellij_sources/rebuild"],
+  ] : (props.dbName === "perfint" ? ["intellij_sources/indexing", "intellij_sources/rebuild"] : []),
   measure: props.defaultMeasures.slice(),
 }, useRouter())
 

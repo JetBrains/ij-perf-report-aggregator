@@ -42,7 +42,7 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
         }
       },
     }
-  } else if dbName == "sharedIndexes" || dbName == "perfint" {
+  } else if dbName == "sharedIndexes" || strings.HasSuffix(dbName, "perfint") {
     return DatabaseConfiguration{
       ReportReader: analyzeSharedIndexesReport,
       extraFieldCount: 2,

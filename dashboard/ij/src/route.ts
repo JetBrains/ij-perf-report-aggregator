@@ -65,5 +65,19 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
         },
       ]
     },
+    {
+      title: null,
+      children: [
+        {
+          path: "/rubyMinePerformanceIntegration/dashboard",
+          component: () => import("./SharedIndexesDashboard.vue"),
+          props: {
+            dbName: "rubymineperfint",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "RubyMine Integration Performance Dashboard", menuTitle: "RubyMine Integration Performance"},
+        },
+      ]
+    },
   ]
 }

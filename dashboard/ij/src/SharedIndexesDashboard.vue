@@ -46,7 +46,7 @@
   </template>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { DEFAULT_LINE_CHART_HEIGHT } from "shared/src/chart"
@@ -64,60 +64,44 @@ import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
-import { defineComponent, provide } from "vue"
+import { provide } from "vue"
 import { useRouter } from "vue-router"
 
-export default defineComponent({
-  components: {ReloadButton, DimensionSelect, DimensionHierarchicalSelect, TimeRangeSelect, MeasureSelect, LineChartCard, BarChartCard},
-  props: {
-    dbName: {
-      type: String,
-      required: true,
-    }
-  },
-  setup(props) {
-    const persistentStateManager = new PersistentStateManager(`${props.dbName}-dashboard`, {
-      machine: "macMini 2018",
-      project: [
-        "ijx-intellij-speed/shared-indexes",
-        "ijx-intellij-speed/usual-indexes",
-        "ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes",
-      ],
-      measure: ["indexing", "scanning"],
-    }, useRouter())
+// eslint-disable-next-line no-undef
+const props = defineProps<{
+  dbName: string
+  defaultMeasures: Array<string>
+}>()
 
-    const serverConfigurator = new ServerConfigurator(props.dbName)
-    const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
+const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
+  machine: "macMini 2018",
+  project: props.dbName === "sharedIndexes" ? [
+    "ijx-intellij-speed/shared-indexes",
+    "ijx-intellij-speed/usual-indexes",
+    "ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes",
+  ] : ["intellij_sources/indexing", "intellij_sources/rebuild"],
+  measure: props.defaultMeasures.slice(),
+}, useRouter())
 
-    const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),
-      persistentStateManager)
+const serverConfigurator = new ServerConfigurator(props.dbName)
+const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
 
-    const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, scenarioConfigurator)
-    const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),
+  persistentStateManager)
 
-    // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
-    provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, scenarioConfigurator)
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
-    const dataQueryExecutor = new DataQueryExecutor([
-      serverConfigurator,
-      scenarioConfigurator,
-      machineConfigurator,
-      timeRangeConfigurator,
-    ], true)
+// median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
+provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
-    initDataComponent(persistentStateManager, dataQueryExecutor)
-    return {
-      chartHeight: DEFAULT_LINE_CHART_HEIGHT,
-      scenarioConfigurator,
-      machineConfigurator,
-      measureConfigurator,
-      timeRangeConfigurator,
-      loadData: dataQueryExecutor.scheduleLoadIncludingConfiguratorsFunctionReference,
-      valueToGroup(value: string): string {
-        const separatorIndex = value.indexOf("/")
-        return separatorIndex > 0 ? value.substring(0, separatorIndex) : value
-      }
-    }
-  },
-})
+const dataQueryExecutor = new DataQueryExecutor([
+  serverConfigurator,
+  scenarioConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+], true)
+
+const chartHeight = DEFAULT_LINE_CHART_HEIGHT
+initDataComponent(persistentStateManager, dataQueryExecutor)
 </script>

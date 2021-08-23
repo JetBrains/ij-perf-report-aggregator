@@ -43,7 +43,10 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
         {
           path: "/sharedIndexes/dashboard",
           component: () => import("./SharedIndexesDashboard.vue"),
-          props: {dbName: "sharedIndexes"},
+          props: {
+            dbName: "sharedIndexes",
+            defaultMeasures: ["indexing", "scanning"],
+          },
           meta: {pageTitle: "Shared Indexes Dashboard", menuTitle: "Shared Indexes"},
         },
       ]
@@ -54,7 +57,10 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
         {
           path: "/performanceIntegration/dashboard",
           component: () => import("./SharedIndexesDashboard.vue"),
-          props: {dbName: "perfint"},
+          props: {
+            dbName: "perfint",
+            defaultMeasures: ["indexing", "numberOfIndexedFiles", "numberOfIndexingRuns", "scanning", "updatingTime"],
+          },
           meta: {pageTitle: "Integration Performance Dashboard", menuTitle: "Integration Performance"},
         },
       ]

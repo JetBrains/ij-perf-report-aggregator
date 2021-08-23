@@ -1,51 +1,49 @@
 <template>
-  <div>
-    <el-row>
-      <el-col :span="18">
-        <el-form
-          :inline="true"
-          size="small"
-        >
-          <DimensionSelect
-            label="Scenarios"
-            :dimension="scenarioConfigurator"
-          />
-          <MeasureSelect :configurator="measureConfigurator" />
-          <DimensionHierarchicalSelect
-            label="Machine"
-            :dimension="machineConfigurator"
-          />
-          <TimeRangeSelect :configurator="timeRangeConfigurator" />
+  <el-row>
+    <el-col :span="18">
+      <el-form
+        :inline="true"
+        size="small"
+      >
+        <DimensionSelect
+          label="Scenarios"
+          :dimension="scenarioConfigurator"
+        />
+        <MeasureSelect :configurator="measureConfigurator" />
+        <DimensionHierarchicalSelect
+          label="Machine"
+          :dimension="machineConfigurator"
+        />
+        <TimeRangeSelect :configurator="timeRangeConfigurator" />
 
-          <ReloadButton />
-        </el-form>
+        <ReloadButton />
+      </el-form>
+    </el-col>
+  </el-row>
+
+  <template
+    v-for="metric in measureConfigurator.value.value"
+    :key="metric"
+  >
+    <el-divider>
+      {{ metric }}
+    </el-divider>
+    <el-row
+      :gutter="5"
+    >
+      <el-col :span="14">
+        <LineChartCard
+          :measures="[metric]"
+        />
+      </el-col>
+      <el-col :span="10">
+        <BarChartCard
+          :height="chartHeight"
+          :measures="[metric]"
+        />
       </el-col>
     </el-row>
-
-    <template
-      v-for="metric in measureConfigurator.value.value"
-      :key="metric"
-    >
-      <el-divider>
-        {{ metric }}
-      </el-divider>
-      <el-row
-        :gutter="5"
-      >
-        <el-col :span="14">
-          <LineChartCard
-            :measures="[metric]"
-          />
-        </el-col>
-        <el-col :span="10">
-          <BarChartCard
-            :height="chartHeight"
-            :measures="[metric]"
-          />
-        </el-col>
-      </el-row>
-    </template>
-  </div>
+  </template>
 </template>
 
 <script lang="ts">

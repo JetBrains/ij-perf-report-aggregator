@@ -62,9 +62,10 @@ func (t *Collector) loadReports(builds []*Build) error {
       }
       return nil
     })))
-    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (f func() error, err error) {
+    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (func() error, error) {
       return func() error {
         installerInfo := notLoadedInstallerBuildIds[index]
+        var err error
         installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id)
         if err != nil {
           return errors.WithStack(err)

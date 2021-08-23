@@ -139,7 +139,7 @@ func collectFromTeamCity(
 
     logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
 
-    err := collector.reportExistenceChecker.reset(dbName, buildTypeId, reportAnalyzer, taskContext, since)
+    err = collector.reportExistenceChecker.reset(dbName, buildTypeId, reportAnalyzer, taskContext, since)
     if err != nil {
       return err
     }
@@ -259,7 +259,7 @@ func getTcSessionIdCookie(cookies []*http.Cookie) string {
   return ""
 }
 
-func (t *Collector) storeSessionIdCookie(response *http.Response) {
+func (t *Collector) storeSessionIdCookie  (response *http.Response) {
   cookie := getTcSessionIdCookie(response.Cookies())
   // TC doesn't set cookie if it was already set for request
   if len(cookie) > 0 {

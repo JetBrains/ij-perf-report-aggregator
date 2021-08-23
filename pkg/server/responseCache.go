@@ -82,7 +82,7 @@ func generateKey(request *http.Request) []byte {
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
   w.Header().Set("Content-Type", "application/json")
   w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set("Cache-Control", "public,max-age=15")
+  w.Header().Set("Cache-Control", "public, must-revalidate, max-age=15")
 	w.Header().Set("Vary", "Accept-Encoding")
 
   cacheKey := generateKey(request)
@@ -94,7 +94,8 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
     prevEtag := request.Header.Get("If-None-Match")
     eTag = computeEtag(result)
     if prevEtag == eTag {
-      w.WriteHeader(304)
+      w.Header().Set("ETag", eTag)
+      w.WriteHeader(http.StatusNotModified)
       return
     }
   } else {

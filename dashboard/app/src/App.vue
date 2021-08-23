@@ -63,8 +63,11 @@
     </el-menu>
   </el-header>
   <el-main>
-    <router-view v-slot="{ Component }">
-      <keep-alive max="4">
+    <router-view v-slot="{ Component, route }">
+      <keep-alive
+        :key="route.path"
+        max="4"
+      >
         <component :is="Component" />
       </keep-alive>
     </router-view>

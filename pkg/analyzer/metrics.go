@@ -71,6 +71,13 @@ func init() {
     return result
   }
 
+  createInt32MetricWithCategory := func(name string, category int) *Metric {
+    result := createMetric(name)
+    result.maxValue = 4294967295
+    result.category = category
+    return result
+  }
+
   createInstantMetric := func(name string) *Metric {
     result := createMetric(name)
     result.IsInstant = true
@@ -79,7 +86,7 @@ func init() {
 
   pluginDescriptorLoading := createMetric("pluginDescriptorLoading_d")
   projectProfileLoading := createMetricWithCategory("projectProfileLoading_d", appInitCategory)
-  editorRestoring := createMetric("editorRestoring")
+  editorRestoring := createUint32Metric("editorRestoring")
 
   appComponentCreation := createMetric("appComponentCreation_d")
   projectComponentCreation := createMetric("projectComponentCreation_d")
@@ -109,7 +116,7 @@ func init() {
     "project post-startup dumb-aware activities": createUint32Metric("projectDumbAware"),
 
     "editor restoring":            editorRestoring,
-    "editor restoring till paint": createMetricWithCategory("editorRestoringTillPaint", appInitCategory),
+    "editor restoring till paint": createInt32MetricWithCategory("editorRestoringTillPaint", appInitCategory),
     // old name
     "restoring editors": editorRestoring,
 

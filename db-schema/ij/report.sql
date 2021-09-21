@@ -38,8 +38,8 @@ create table report2
 
   `projectDumbAware`         Int32 CODEC(Gorilla, ZSTD(20)),
 
-  `editorRestoring`          UInt16 CODEC(Gorilla, ZSTD(20)),
-  `editorRestoringTillPaint` UInt16 CODEC(Gorilla, ZSTD(20)),
+  `editorRestoring`          Int32 CODEC(Gorilla, ZSTD(20)),
+  `editorRestoringTillPaint` Int32 CODEC(Gorilla, ZSTD(20)),
 
   `splash_i`                   Int32 CODEC(Gorilla, ZSTD(20)),
   `startUpCompleted`         Int32 CODEC(Gorilla, ZSTD(20)),

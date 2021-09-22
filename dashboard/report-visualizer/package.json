@@ -4,7 +4,7 @@
   "dependencies": {
     "compare-versions": "^3.6.0",
     "echarts": "5.2.1",
-    "element-plus": "1.1.0-beta.12",
+    "element-plus": "1.1.0-beta.14",
     "rison-node": "^2.1.1",
     "shared": "workspace:*",
     "vue": "3.2.13",

@@ -22,7 +22,7 @@ export default defineConfig({
     // },
     vue(),
     viteComponents({
-      resolvers: [ElementPlusResolver({})],
+      resolvers: [ElementPlusResolver({importStyle: "sass"})],
     }),
   ],
   root: "dashboard/app",

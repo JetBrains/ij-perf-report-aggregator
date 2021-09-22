@@ -1,50 +1,50 @@
 <!-- Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
 <template>
-  <el-row :gutter="16">
-    <el-col :span="10">
-      <el-input
+  <ElRow :gutter="16">
+    <ElCol :span="10">
+      <ElInput
         v-model="inputData"
         type="textarea"
         :rows="10"
         placeholder="Enter the IntelliJ Platform start-up timeline..."
       />
-    </el-col>
-    <el-col :span="14">
-      <el-form
+    </ElCol>
+    <ElCol :span="14">
+      <ElForm
         :inline="true"
         size="small"
       >
-        <el-form-item>
-          <el-button
+        <ElFormItem>
+          <ElButton
             :loading="isFetching"
             @click="getFromRunningInstance"
           >
             Get from running instance
-          </el-button>
-        </el-form-item>
-        <el-form-item>
+          </ElButton>
+        </ElFormItem>
+        <ElFormItem>
           <el-input-number
             v-model="portNumber"
             :min="1024"
             :max="65535"
           />
-        </el-form-item>
-      </el-form>
-      <el-form
+        </ElFormItem>
+      </ElForm>
+      <ElForm
         :inline="true"
         size="small"
       >
-        <el-form-item>
-          <el-button
+        <ElFormItem>
+          <ElButton
             :loading="isFetchingDev"
             @click="getFromRunningDevInstance"
           >
             Get from running instance on port 63343
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
+          </ElButton>
+        </ElFormItem>
+      </ElForm>
+    </ElCol>
+  </ElRow>
 </template>
 
 <script lang="ts">

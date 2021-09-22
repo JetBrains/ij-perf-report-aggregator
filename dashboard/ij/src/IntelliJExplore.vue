@@ -29,11 +29,9 @@
     <TimeRangeSelect :configurator="timeRangeConfigurator" />
   </el-form>
 
-  <el-row>
-    <el-col :span="12">
-      <LineChartCard />
-    </el-col>
-  </el-row>
+  <div class="grid grid-cols-2 gap-4">
+    <LineChartCard />
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,17 +1,17 @@
 <template>
-  <el-form-item label="Period">
-    <el-select
+  <ElFormItem label="Period">
+    <ElSelect
       v-model="value"
       filterable
     >
-      <el-option
+      <ElOption
         v-for="item in timeRanges"
         :key="item.value"
         :label="item.label"
         :value="item.value"
       />
-    </el-select>
-  </el-form-item>
+    </ElSelect>
+  </ElFormItem>
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue"

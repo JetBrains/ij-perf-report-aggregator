@@ -2,7 +2,7 @@
   <div>Page not found.</div>
 </template>
 <script lang="ts">
-import "element-plus/packages/theme-chalk/src/message.scss"
+// import "element-plus/theme-chalk/el-message.css"
 
 import { ElMessage } from "element-plus/es/components/message"
 import { IMessageHandle } from "element-plus/es/components/message/src/types"

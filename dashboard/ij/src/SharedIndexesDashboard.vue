@@ -1,25 +1,23 @@
 <template>
-  <el-row>
-    <el-col :span="18">
-      <el-form
-        :inline="true"
-        size="small"
-      >
-        <DimensionSelect
-          label="Scenarios"
-          :dimension="scenarioConfigurator"
-        />
-        <MeasureSelect :configurator="measureConfigurator" />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        />
-        <TimeRangeSelect :configurator="timeRangeConfigurator" />
+  <div class="w-full">
+    <ElForm
+      :inline="true"
+      size="small"
+    >
+      <DimensionSelect
+        label="Scenarios"
+        :dimension="scenarioConfigurator"
+      />
+      <MeasureSelect :configurator="measureConfigurator" />
+      <DimensionHierarchicalSelect
+        label="Machine"
+        :dimension="machineConfigurator"
+      />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
 
-        <ReloadButton />
-      </el-form>
-    </el-col>
-  </el-row>
+      <ReloadButton />
+    </ElForm>
+  </div>
 
   <template
     v-for="metric in measureConfigurator.value.value"
@@ -28,21 +26,19 @@
     <el-divider>
       {{ metric }}
     </el-divider>
-    <el-row
-      :gutter="5"
-    >
-      <el-col :span="14">
+    <div class="grid grid-cols-12 gap-4">
+      <div class="col-span-7">
         <LineChartCard
           :measures="[metric]"
         />
-      </el-col>
-      <el-col :span="10">
+      </div>
+      <div class="col-span-5">
         <BarChartCard
           :height="chartHeight"
           :measures="[metric]"
         />
-      </el-col>
-    </el-row>
+      </div>
+    </div>
   </template>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <el-form
+  <ElForm
     :inline="true"
     size="small"
   >
@@ -19,22 +19,22 @@
     <TimeRangeSelect :configurator="timeRangeConfigurator" />
 
     <ReloadButton />
-  </el-form>
+  </ElForm>
 
-  <el-tabs v-model="activeTab">
-    <el-tab-pane
+  <ElTabs v-model="activeTab">
+    <ElTabPane
       label="Pulse"
       name="pulse"
     />
-    <el-tab-pane
+    <ElTabPane
       label="Progress Over Time"
       name="progressOverTime"
     />
-    <el-tab-pane
+    <ElTabPane
       label="Module Loading"
       name="moduleLoading"
     />
-  </el-tabs>
+  </ElTabs>
   <router-view v-slot="{ Component }">
     <keep-alive>
       <component :is="Component" />

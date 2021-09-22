@@ -1,5 +1,8 @@
-import "element-plus/packages/theme-chalk/src/reset.scss"
-import "element-plus/packages/theme-chalk/src/base.scss"
+import "element-plus/theme-chalk/el-reset.css"
+import "element-plus/theme-chalk/index.css"
+// import "element-plus/theme-chalk/src/base.scss"
+
+import "./main.css"
 import { createApp } from "vue"
 import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"

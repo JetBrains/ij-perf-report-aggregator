@@ -2,9 +2,11 @@
 // @ts-ignore
 import path from "path"
 import vue from "@vitejs/plugin-vue"
+import { ComponentResolver, SideEffectsInfo } from "unplugin-vue-components/types"
+import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 import { defineConfig } from "vite"
 import viteComponents from "unplugin-vue-components/vite"
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
+import { kebabCase } from "unplugin-vue-components"
 // import eslint from "@rollup/plugin-eslint"
 
 // import visualizer from "rollup-plugin-visualizer"
@@ -22,7 +24,8 @@ export default defineConfig({
     // },
     vue(),
     viteComponents({
-      resolvers: [ElementPlusResolver({importStyle: "sass"})],
+      deep: false,
+      resolvers: [ElementPlusResolver({importStyle: false})],
     }),
   ],
   root: "dashboard/app",
@@ -50,3 +53,17 @@ export default defineConfig({
     },
   },
 })
+
+// export function ElementPlusResolver(): ComponentResolver {
+//   return (name: string) => {
+//     if (name.match(/^El[A-Z]/)) {
+//       // ElTableColumn -> table-column
+//       const partialName = kebabCase(name.slice(2))
+//       return {
+//         importName: name,
+//         path: "element-plus/es",
+//         sideEffects: `element-plus/theme-chalk/src/${partialName == "sub-menu" ? "submenu" : partialName}.scss`,
+//       }
+//     }
+//   }
+// }

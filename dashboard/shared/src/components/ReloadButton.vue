@@ -1,12 +1,12 @@
 <template>
-  <el-form-item>
-    <el-button
+  <ElFormItem>
+    <ElButton
       title="Updated automatically, but you can force data reloading"
       type="primary"
       icon="el-icon-refresh"
       @click="doLoad"
     />
-  </el-form-item>
+  </ElFormItem>
 </template>
 <script lang="ts">
 import { defineComponent, inject, PropType, computed } from "vue"

@@ -7,15 +7,11 @@
     width="fit-content"
   >
     <template #reference>
-      <el-card
-        shadow="never"
-        :body-style="{ padding: '0px' }"
-      >
-        <div
-          ref="chartElement"
-          :style='{width: "100%", height: `${chartHeight}px`}'
-        />
-      </el-card>
+      <div
+        ref="chartElement"
+        class="bg-white overflow-hidden shadow rounded-lg w-full"
+        :style="{height: `${chartHeight}px`}"
+      />
     </template>
     <template #default>
       <div

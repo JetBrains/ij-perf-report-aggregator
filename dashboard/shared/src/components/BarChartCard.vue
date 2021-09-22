@@ -1,13 +1,9 @@
 <template>
-  <el-card
-    shadow="never"
-    :body-style="{ padding: '0px' }"
-  >
-    <div
-      ref="chartElement"
-      :style='{width: "100%", height: `${height}px`}'
-    />
-  </el-card>
+  <div
+    ref="chartElement"
+    class="bg-white overflow-hidden shadow rounded-lg w-full"
+    :style="{height: `${height}px`}"
+  />
 </template>
 <script lang="ts">
 import { PropType, defineComponent, inject, onMounted, onUnmounted, Ref, shallowRef } from "vue"

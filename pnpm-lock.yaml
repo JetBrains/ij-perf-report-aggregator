@@ -48,7 +48,7 @@ importers:
 
   dashboard/app:
     specifiers:
-      element-plus: 1.1.0-beta.14
+      element-plus: 1.1.0-beta.12
       ij: workspace:*
       jb: workspace:*
       report-visualizer: workspace:*
@@ -56,7 +56,7 @@ importers:
       vue: 3.2.13
       vue-router: 4.0.11
     dependencies:
-      element-plus: 1.1.0-beta.14_vue@3.2.13
+      element-plus: 1.1.0-beta.12_vue@3.2.13
       ij: link:../ij
       jb: link:../../jb/dashboard
       report-visualizer: link:../report-visualizer
@@ -66,12 +66,12 @@ importers:
 
   dashboard/ij:
     specifiers:
-      element-plus: 1.1.0-beta.14
+      element-plus: 1.1.0-beta.12
       shared: workspace:*
       vue: 3.2.13
       vue-router: 4.0.11
     dependencies:
-      element-plus: 1.1.0-beta.14_vue@3.2.13
+      element-plus: 1.1.0-beta.12_vue@3.2.13
       shared: link:../shared
       vue: 3.2.13
       vue-router: 4.0.11_vue@3.2.13
@@ -80,7 +80,7 @@ importers:
     specifiers:
       compare-versions: ^3.6.0
       echarts: 5.2.1
-      element-plus: 1.1.0-beta.14
+      element-plus: 1.1.0-beta.12
       rison-node: ^2.1.1
       shared: workspace:*
       vue: 3.2.13
@@ -88,7 +88,7 @@ importers:
     dependencies:
       compare-versions: 3.6.0
       echarts: 5.2.1
-      element-plus: 1.1.0-beta.14_vue@3.2.13
+      element-plus: 1.1.0-beta.12_vue@3.2.13
       rison-node: 2.1.1
       shared: link:../shared
       vue: 3.2.13
@@ -98,14 +98,14 @@ importers:
     specifiers:
       '@types/humanize-duration': ^3.25.1
       echarts: 5.2.1
-      element-plus: 1.1.0-beta.14
+      element-plus: 1.1.0-beta.12
       humanize-duration: 3.27.0
       rison-node: 2.1.1
       vue: 3.2.13
       vue-router: 4.0.11
     dependencies:
       echarts: 5.2.1
-      element-plus: 1.1.0-beta.14_vue@3.2.13
+      element-plus: 1.1.0-beta.12_vue@3.2.13
       humanize-duration: 3.27.0
       rison-node: 2.1.1
       vue: 3.2.13
@@ -115,12 +115,12 @@ importers:
 
   jb/dashboard:
     specifiers:
-      element-plus: 1.1.0-beta.14
+      element-plus: 1.1.0-beta.12
       shared: workspace:*
       vue: 3.2.13
       vue-router: 4.0.11
     dependencies:
-      element-plus: 1.1.0-beta.14_vue@3.2.13
+      element-plus: 1.1.0-beta.12_vue@3.2.13
       shared: link:../../dashboard/shared
       vue: 3.2.13
       vue-router: 4.0.11_vue@3.2.13
@@ -920,8 +920,8 @@ packages:
     resolution: {integrity: sha512-2jtSwgyiRzybHRxrc2nKI+39wH3AwQgn+sogQ+q814gv8hIFwrcZbV07Ea9f8AmK0ufPVZUvvAG1uZJ+obV4Jw==}
     dev: true
 
-  /element-plus/1.1.0-beta.14_vue@3.2.13:
-    resolution: {integrity: sha512-LtAKw33mGhKfLhEhhDvY2rCwFvhc/fBusFetwxh/fuDIHwkA7gR9J+ygcMUX+OLcCUc8IZDhVH6umUaM7fK1Hw==}
+  /element-plus/1.1.0-beta.12_vue@3.2.13:
+    resolution: {integrity: sha512-IkFHcYWGDzHqeL2LpDM5ZQnuviqkNj8Bu9zg/Q6KImGk8xo4rqMf+e4rBHinIpeKzKdVag0c2TDABNBfKvjaPA==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
@@ -931,6 +931,7 @@ packages:
       async-validator: 3.5.2
       dayjs: 1.10.7
       lodash: 4.17.21
+      mitt: 2.1.0
       normalize-wheel: 1.0.1
       resize-observer-polyfill: 1.5.1
       vue: 3.2.13
@@ -1763,6 +1764,10 @@ packages:
   /minimist/1.2.5:
     resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
     dev: true
+
+  /mitt/2.1.0:
+    resolution: {integrity: sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==}
+    dev: false
 
   /modern-normalize/1.1.0:
     resolution: {integrity: sha512-2lMlY1Yc1+CUy0gw4H95uNN7vjbpoED7NNRSBHE25nWfLBdmMzFCsPshlzbxHz+gYMcBEUN8V4pU16prcdPSgA==}

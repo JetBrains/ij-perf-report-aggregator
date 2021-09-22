@@ -4,8 +4,8 @@
 <script lang="ts">
 import "element-plus/packages/theme-chalk/src/message.scss"
 
-import ElMessage from "element-plus/es/el-message"
-import { IMessageHandle } from "element-plus/lib/el-message/src/types"
+import { ElMessage } from "element-plus/es/components/message"
+import { IMessageHandle } from "element-plus/es/components/message/src/types"
 import { defineComponent, onMounted, onUnmounted } from "vue"
 
 export default defineComponent({

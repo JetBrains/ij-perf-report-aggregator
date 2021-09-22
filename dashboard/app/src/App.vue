@@ -9,7 +9,7 @@
         v-for="item in routes"
         :key="item.title"
       >
-        <el-submenu
+        <ElSubMenu
           v-if="item.title !== null"
           :index="item.title"
           @click="topLevelClicked(item.children[0].children == null ? item.children[0].path : item.children[0].children[0].path)"
@@ -42,7 +42,7 @@
               </template>
             </template>
           </template>
-        </el-submenu>
+        </ElSubMenu>
         <template v-else>
           <el-menu-item
             v-for="child in item.children"

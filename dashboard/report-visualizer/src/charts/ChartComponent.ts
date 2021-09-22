@@ -1,4 +1,4 @@
-import ElNotification from "element-plus/es/el-notification"
+import { ElNotification } from "element-plus/es/components/notification"
 import { debounceSync } from "shared/src/util/debounce"
 import { watch, onBeforeUnmount, onMounted } from "vue"
 import { DataManager } from "../DataManager"

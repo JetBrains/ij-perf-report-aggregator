@@ -2,9 +2,9 @@
   "name": "ij",
   "private": true,
   "dependencies": {
-    "element-plus": "1.1.0-beta.12",
+    "element-plus": "1.1.0-beta.17",
     "shared": "workspace:*",
-    "vue": "3.2.13",
+    "vue": "3.2.19",
     "vue-router": "4.0.11"
   }
 }

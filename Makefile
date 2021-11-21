@@ -43,8 +43,7 @@ update-deps:
 # kubectl port-forward svc/clickhouse 2000:8123
 # kubectl port-forward svc/clickhouse 9900:9000
 
-# download clickhouse for macOS: curl -O 'https://clickhouse-builds.s3.yandex.net/14587/83b4a620c80e01fedfc9605e522e3c40eebf9784/clickhouse_build_check/clang-10-darwin_relwithdebuginfo_none_bundled_unsplitted_disable_False_binary/clickhouse' && chmod a+x ./clickhouse
-# see https://github.com/ClickHouse/ClickHouse/issues/235#issuecomment-548781417
+# install clickhouse for macOS: brew install clickhouse
 
 # clickhouse server -C ~/Documents/report-aggregator/deployment/ch-local-config.xml
 # clickhouse client -h 127.0.0.1 -d ij

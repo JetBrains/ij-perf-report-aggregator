@@ -1,5 +1,5 @@
 module.exports = {
-  purge: ["./index.html", "./dashboard/**/*.{vue,ts}"],
+  content: ["./index.html", "./dashboard/**/*.{vue,ts}"],
   darkMode: "class",
   mode: "jit",
   theme: {

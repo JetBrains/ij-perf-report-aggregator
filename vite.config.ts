@@ -2,12 +2,10 @@
 // @ts-ignore
 import path from "path"
 import vue from "@vitejs/plugin-vue"
-import { ComponentResolver, SideEffectsInfo } from "unplugin-vue-components/types"
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
 import { defineConfig } from "vite"
-import viteComponents from "unplugin-vue-components/vite"
-import { kebabCase } from "unplugin-vue-components"
-// import eslint from "@rollup/plugin-eslint"
+import AutoImport from "unplugin-auto-import/vite"
+import Components from "unplugin-vue-components/vite"
 
 // import visualizer from "rollup-plugin-visualizer"
 
@@ -23,9 +21,11 @@ export default defineConfig({
     //   enforce: "pre",
     // },
     vue(),
-    viteComponents({
-      deep: false,
-      resolvers: [ElementPlusResolver({importStyle: false})],
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
     }),
   ],
   root: "dashboard/app",

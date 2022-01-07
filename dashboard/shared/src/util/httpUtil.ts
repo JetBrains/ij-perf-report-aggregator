@@ -1,14 +1,13 @@
 // import "element-plus/theme-chalk/el-message.css"
 
-import { ElMessage } from "element-plus/es/components/message"
-import { IMessageHandle } from "element-plus/es/components/message/src/types"
+import {MessageHandle} from "element-plus/lib/components"
 import { Ref } from "vue"
 
 import { TaskHandle } from "./debounce"
 
 const serverNotAvailableErrorMessage = "Server is not available. Please check that server is running and VPN connection is established."
 
-let errorMessageHandle: IMessageHandle | null = null
+let errorMessageHandle: MessageHandle | null = null
 
 export function loadJson<T>(url: string,
                             loading: Ref<boolean> | null,

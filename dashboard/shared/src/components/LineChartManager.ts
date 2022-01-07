@@ -52,7 +52,7 @@ export class LineChartManager {
         axisPointer: {
           label: {
             formatter(data: TplFormatterParam) {
-              return timeFormat.format(data["value"])
+              return timeFormat.format(data["value"] as number)
             },
           },
         },

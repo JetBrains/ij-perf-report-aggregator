@@ -53,13 +53,6 @@
           </el-menu-item>
         </template>
       </template>
-
-      <el-menu-item
-        v-show='!activePath.startsWith("/report")'
-        style="padding: 0; vertical-align: center; float: right"
-      >
-        <ServerSelect v-model="serverUrl" />
-      </el-menu-item>
     </el-menu>
   </el-header>
   <el-main>
@@ -72,6 +65,11 @@
       </keep-alive>
     </router-view>
   </el-main>
+  <ServerSelect
+    v-show='!activePath.startsWith("/report")'
+    v-model="serverUrl"
+    style=" top: 10px; right: 10px; position: absolute"
+  />
 </template>
 <script lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"

@@ -2,14 +2,14 @@
   "name": "shared",
   "private": true,
   "dependencies": {
-    "echarts": "5.2.1",
-    "element-plus": "1.1.0-beta.17",
-    "humanize-duration": "3.27.0",
+    "echarts": "5.2.2",
+    "element-plus": "1.3.0-beta.1",
+    "humanize-duration": "3.27.1",
     "rison-node": "2.1.1",
-    "vue": "3.2.19",
-    "vue-router": "4.0.11"
+    "vue": "3.2.26",
+    "vue-router": "4.0.12"
   },
   "devDependencies": {
-    "@types/humanize-duration": "^3.25.1"
+    "@types/humanize-duration": "^3.27.1"
   }
 }

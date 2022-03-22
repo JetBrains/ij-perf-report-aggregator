@@ -23,7 +23,7 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const value = this.value.value
-    if (value == null || value.length === 0) {
+    if (value == null) {
       console.debug(`[dimensionConfigurator(name=${this.name})] value is not set`)
       return false
     }

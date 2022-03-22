@@ -46,6 +46,16 @@
           >
             changes
           </el-link>
+
+          <el-link
+            v-if="reportTooltipData.firstSeriesData.length >= 4"
+            title="Test Artifacts"
+            :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${reportTooltipData.firstSeriesData[3]}&tab=artifacts`"
+            target="_blank"
+            type="info"
+          >
+            artifacts
+          </el-link>
         </el-space>
         <div
           v-for="item in reportTooltipData.items"

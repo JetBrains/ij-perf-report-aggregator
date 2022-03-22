@@ -4,7 +4,7 @@ import { reportInfoProviderKey } from "./injectionKeys"
 
 export function provideReportUrlProvider(): void {
   provide(reportInfoProviderKey, {
-    infoFields: ["tc_installer_build_id"],
+    infoFields: ["tc_installer_build_id", "tc_build_id"],
     createReportUrl,
   })
 }

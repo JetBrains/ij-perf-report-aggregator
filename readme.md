@@ -11,6 +11,7 @@ Tool to collect performance reports in JSON format from TeamCity, insert into Cl
 Directory `dashboard` contains Vue.js application built using [Element Plus](http://element-plus.org/) Desktop UI Library.
 
  * `pnpm i` to install dependencies. [pnpm](https://pnpm.js.org/en/installation/) is recommended, do not use Yarn or NPM.
+ * Run `serve` Run Configuration
  * `pnpm run dev` to start a dev server with hot module replacement.
  * Change _Server_ to `http://localhost:9044`
 

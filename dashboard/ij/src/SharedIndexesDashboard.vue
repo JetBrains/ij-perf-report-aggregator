@@ -64,9 +64,11 @@ import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
 
+provideReportUrlProvider()
 // eslint-disable-next-line no-undef
 const props = defineProps<{
   dbName: string

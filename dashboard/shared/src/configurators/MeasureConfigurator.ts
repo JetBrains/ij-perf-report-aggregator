@@ -235,7 +235,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: "line",
-      smooth: true,
+      smooth: false,
       showSymbol: false,
       legendHoverLink: true,
       sampling: "lttb",

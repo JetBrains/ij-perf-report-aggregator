@@ -12,6 +12,7 @@ Directory `dashboard` contains Vue.js application built using [Element Plus](htt
 
  * `pnpm i` to install dependencies. [pnpm](https://pnpm.js.org/en/installation/) is recommended, do not use Yarn or NPM.
  * `pnpm run dev` to start a dev server with hot module replacement.
+ * Change _Server_ to `http://localhost:9044`
 
 To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
 

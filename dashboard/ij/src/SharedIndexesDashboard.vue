@@ -8,6 +8,10 @@
         label="Scenarios"
         :dimension="scenarioConfigurator"
       />
+      <DimensionSelect
+        label="Branch"
+        :dimension="branchConfigurator"
+      />
       <MeasureSelect :configurator="measureConfigurator" />
       <DimensionHierarchicalSelect
         label="Machine"
@@ -81,6 +85,7 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-das
 
 const serverConfigurator = new ServerConfigurator(props.dbName)
 const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
+const branchConfigurator = new DimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 
 const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),
   persistentStateManager)
@@ -94,6 +99,7 @@ provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(
 const dataQueryExecutor = new DataQueryExecutor([
   serverConfigurator,
   scenarioConfigurator,
+  branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
 ], true)

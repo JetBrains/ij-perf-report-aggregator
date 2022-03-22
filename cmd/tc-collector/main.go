@@ -90,7 +90,16 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
 			if len(chunk.Products) != 0 {
 				return errors.New("Must be specified either configurations or products, but not both")
 			}
-
+			branches := []string{"master", "221"}
+			for _, configuration := range chunk.Configurations {
+				if strings.Contains(configuration, "<branch>") {
+					for _, branch := range branches {
+						buildConfigurationIds = append(buildConfigurationIds, strings.ReplaceAll(configuration, "<branch>", branch))
+					}
+				} else {
+					buildConfigurationIds = append(buildConfigurationIds, configuration)
+				}
+			}
 			buildConfigurationIds = chunk.Configurations
 		}
 

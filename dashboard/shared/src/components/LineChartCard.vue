@@ -69,6 +69,19 @@
           <span style="margin-left:2px;">{{ item.name }}</span>
           <span class="tooltipValue">{{ item.value }}</span>
         </div>
+        <div
+          v-if="reportTooltipData.firstSeriesData.length >= 7"
+          style="margin: 10px 0 0;white-space: nowrap"
+        >
+          <span
+            class="tooltipNameMarker"
+            :style='{"background-color": "green"}'
+          />
+          <span style="margin-left:2px;">Build Number</span>
+          <span class="tooltipValue">{{ reportTooltipData.firstSeriesData[4] }}.{{
+            reportTooltipData.firstSeriesData[5]
+          }}{{ reportTooltipData.firstSeriesData[6] !== 0 ? "." + reportTooltipData.firstSeriesData[6] : "" }}</span>
+        </div>
       </div>
     </template>
   </el-popover>

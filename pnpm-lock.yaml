@@ -98,6 +98,7 @@ importers:
 
   dashboard/shared:
     specifiers:
+      '@element-plus/icons-vue': ^1.1.4
       '@types/humanize-duration': ^3.27.1
       echarts: 5.3.1
       element-plus: 2.1.4
@@ -106,6 +107,7 @@ importers:
       vue: 3.2.31
       vue-router: 4.0.14
     dependencies:
+      '@element-plus/icons-vue': 1.1.4_vue@3.2.31
       echarts: 5.3.1
       element-plus: 2.1.4_vue@3.2.31
       humanize-duration: 3.27.1

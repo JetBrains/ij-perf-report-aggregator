@@ -7,7 +7,8 @@
     "humanize-duration": "3.27.1",
     "rison-node": "2.1.1",
     "vue": "3.2.31",
-    "vue-router": "4.0.14"
+    "vue-router": "4.0.14",
+    "@element-plus/icons-vue": "^1.1.4"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1"

@@ -82,6 +82,17 @@
             reportTooltipData.firstSeriesData[5]
           }}{{ reportTooltipData.firstSeriesData[6] !== 0 ? "." + reportTooltipData.firstSeriesData[6] : "" }}</span>
         </div>
+        <div
+          v-if="reportTooltipData.firstSeriesData.length >= 8"
+          style="margin: 10px 0 0;white-space: nowrap"
+        >
+          <span
+            class="tooltipNameMarker"
+            :style='{"background-color": "blue"}'
+          />
+          <span style="margin-left:2px;">Machine</span>
+          <span class="tooltipValue">{{ reportTooltipData.firstSeriesData[7] }}</span>
+        </div>
       </div>
     </template>
   </el-popover>

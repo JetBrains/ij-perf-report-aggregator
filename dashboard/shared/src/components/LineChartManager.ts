@@ -40,7 +40,7 @@ export class LineChartManager {
         },
       },
       tooltip: {
-        trigger: "axis",
+        trigger: "item",
         axisPointer: {
           type: "cross",
         },

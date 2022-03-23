@@ -4,6 +4,7 @@
       :inline="true"
       size="small"
     >
+      <FilterInput :configurator="scenarioConfigurator"/>
       <DimensionSelect
         label="Scenarios"
         :dimension="scenarioConfigurator"
@@ -67,6 +68,7 @@ import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
+import FilterInput from "../../shared/src/components/FilterInput.vue"
 
 provideReportUrlProvider()
 // eslint-disable-next-line no-undef

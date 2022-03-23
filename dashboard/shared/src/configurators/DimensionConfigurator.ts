@@ -1,4 +1,4 @@
-import { shallowRef } from "vue"
+import { ref, shallowRef, watch } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
@@ -50,13 +50,27 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
 }
 
 export class DimensionConfigurator extends BaseDimensionConfigurator {
+  public readonly filter = shallowRef("")
+  public originValues = Array<string>()
+
   constructor(name: string,
               readonly serverConfigurator: ServerConfigurator,
               persistentStateManager: PersistentStateManager,
               multiple: boolean = false) {
     super(name, multiple)
-
+    watch(this.filter, () => this.filterValues())
+    persistentStateManager.add(name+"filter", this.filter)
     persistentStateManager.add(name, this.value)
+  }
+
+  private filterValues() {
+    const filteredValues = Array<string>()
+    for (const datum of this.originValues) {
+      if (this.filter.value == "" || datum.includes(this.filter.value)) {
+        filteredValues.push(datum)
+      }
+    }
+    this.values.value = filteredValues
   }
 
   load(taskHandle: TaskHandle): Promise<unknown> {
@@ -68,7 +82,8 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 
     this.loading.value = true
     return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, this.loading, taskHandle, data => {
-      this.values.value = data
+      this.originValues = data
+      this.filterValues()
     })
   }
 }

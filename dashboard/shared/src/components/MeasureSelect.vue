@@ -36,3 +36,9 @@ export default defineComponent({
   },
 })
 </script>
+<style>
+.el-form-item__label {
+  display: flex;
+  align-items: center;
+}
+</style>

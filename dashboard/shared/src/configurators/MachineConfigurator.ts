@@ -120,6 +120,8 @@ function getValueToGroup() {
   // 16384 Mb	16384 Mb	2xDDR3-10600 1333MHz 8Gb(8192Mb)	Core i7-3770	3400 Mhz	Intel DH77EB	240 Gb
   const linux2 = "Linux: i7-3770, 16Gb (10600 1333MHz), SSD"
 
+  const blade = "linux-blade"
+
   return {
     "intellij-macos-hw-unit-1550": macMini,
     "intellij-macos-hw-unit-1551": macMini,
@@ -152,5 +154,33 @@ function getValueToGroup() {
     "intellij-linux-hw-unit-534": linux,
     "intellij-linux-hw-unit-556": linux,
     "intellij-linux-hw-unit-558": linux,
+
+    "intellij-linux-hw-blade-023": blade,
+    "intellij-linux-hw-blade-024": blade,
+    "intellij-linux-hw-blade-025": blade,
+    "intellij-linux-hw-blade-026": blade,
+    "intellij-linux-hw-blade-027": blade,
+    "intellij-linux-hw-blade-028": blade,
+    "intellij-linux-hw-blade-029": blade,
+    "intellij-linux-hw-blade-030": blade,
+    "intellij-linux-hw-blade-031": blade,
+    "intellij-linux-hw-blade-032": blade,
+    "intellij-linux-hw-blade-033": blade,
+    "intellij-linux-hw-blade-034": blade,
+    "intellij-linux-hw-blade-035": blade,
+    "intellij-linux-hw-blade-036": blade,
+    "intellij-linux-hw-blade-037": blade,
+    "intellij-linux-hw-blade-038": blade,
+    "intellij-linux-hw-blade-039": blade,
+    "intellij-linux-hw-blade-040": blade,
+    "intellij-linux-hw-blade-041": blade,
+    "intellij-linux-hw-blade-042": blade,
+    "intellij-linux-hw-blade-043": blade,
+    "intellij-linux-hw-blade-044": blade,
+    "intellij-linux-hw-blade-045": blade,
+    "intellij-linux-hw-blade-046": blade,
+    "intellij-linux-hw-blade-047": blade,
+    "intellij-linux-hw-blade-048": blade,
+    "intellij-linux-hw-blade-049": blade,
   }
 }

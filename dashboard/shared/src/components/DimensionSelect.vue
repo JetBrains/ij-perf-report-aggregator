@@ -76,7 +76,7 @@ export default defineComponent({
             props.dimension.value.value = value
           } else {
             // eslint-disable-next-line vue/no-mutating-props
-            props.dimension.value.value = ""
+            props.dimension.value.value = null
           }
         },
       }),

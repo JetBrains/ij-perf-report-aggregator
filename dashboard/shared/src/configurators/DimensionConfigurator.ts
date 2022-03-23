@@ -1,4 +1,4 @@
-import { ref, shallowRef, watch } from "vue"
+import { shallowRef, watch } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
@@ -6,7 +6,7 @@ import { loadJson } from "../util/httpUtil"
 import { ServerConfigurator } from "./ServerConfigurator"
 
 export abstract class BaseDimensionConfigurator implements DataQueryConfigurator {
-  readonly value = shallowRef<string | Array<string>>("")
+  readonly value = shallowRef<string | Array<string> | null>(null)
   readonly values = shallowRef<Array<string>>([])
   readonly loading = shallowRef(false)
 
@@ -22,10 +22,10 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
   abstract load(taskHandle: TaskHandle): Promise<unknown>
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const value = this.value.value
+    let value = this.value.value
     if (value == null) {
       console.debug(`[dimensionConfigurator(name=${this.name})] value is not set`)
-      return false
+      value = ""
     }
 
     const filter: DataQueryFilter = {field: this.name, value}

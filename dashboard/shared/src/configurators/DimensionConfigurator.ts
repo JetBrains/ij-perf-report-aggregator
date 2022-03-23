@@ -76,7 +76,7 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
   let index = 1
   if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryMutator is already set")
+    throw new Error("extraQueryProducer is already set")
   }
 
   configuration.extraQueryProducer = {

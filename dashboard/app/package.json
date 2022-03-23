@@ -2,12 +2,12 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "element-plus": "1.3.0-beta.4",
+    "element-plus": "2.1.4",
     "ij": "workspace:*",
     "jb": "workspace:*",
     "report-visualizer": "workspace:*",
     "shared": "workspace:*",
-    "vue": "3.2.26",
-    "vue-router": "4.0.12"
+    "vue": "3.2.31",
+    "vue-router": "4.0.14"
   }
 }

@@ -12,6 +12,7 @@
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.3.1",
     "@tailwindcss/typography": "^0.5.2",
+    "primevue": "^3.12.2",
     "@typescript-eslint/eslint-plugin": "5.16.0",
     "@typescript-eslint/parser": "5.16.0",
     "@vitejs/plugin-vue": "2.2.4",

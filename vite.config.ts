@@ -2,7 +2,7 @@
 // @ts-ignore
 import path from "path"
 import vue from "@vitejs/plugin-vue"
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers"
+import { ElementPlusResolver, PrimeVueResolver } from "unplugin-vue-components/resolvers"
 import { defineConfig } from "vite"
 import AutoImport from "unplugin-auto-import/vite"
 import Components from "unplugin-vue-components/vite"
@@ -22,10 +22,10 @@ export default defineConfig({
     // },
     vue(),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), PrimeVueResolver() ],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver(), PrimeVueResolver()],
     }),
   ],
   root: "dashboard/app",

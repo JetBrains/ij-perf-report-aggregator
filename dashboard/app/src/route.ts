@@ -1,14 +1,19 @@
-import { getIjRoutes } from "ij/src/route"
-import { getJbRoutes } from "jb/src/route"
-import { getReportVisualizerRoutes } from "report-visualizer/src/route"
+import { getIjItems, getIjRoutes } from "ij/src/route"
+import { getJbItems, getJbRoutes } from "jb/src/route"
+import { MenuItem } from "primevue/menuitem"
+import { getReportVisualizerItems, getReportVisualizerRoutes } from "report-visualizer/src/route"
 import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
 
-function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRaw >) {
+function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRaw>) {
   for (const route of routes) {
     result.push(...route.children)
   }
+}
+
+export function getItems(): Array<MenuItem> {
+  return [...getIjItems(), ...getJbItems(), ...getReportVisualizerItems()]
 }
 
 export function getRoutes(): Array<ParentRouteRecord> {

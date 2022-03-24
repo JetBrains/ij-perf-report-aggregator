@@ -1,85 +1,29 @@
 <template>
-  <el-header>
-    <el-menu
-      mode="horizontal"
-      :router="true"
-      :default-active="activePath"
+  <Menubar :model="items">
+    <template #end>
+      <ServerSelect
+        v-show='!activePath.startsWith("/report")'
+        v-model="serverUrl"
+      />
+    </template>
+  </Menubar>
+  <router-view v-slot="{ Component, route }">
+    <keep-alive
+      :key="route.path"
+      max="4"
     >
-      <template
-        v-for="item in routes"
-        :key="item.title"
-      >
-        <ElSubMenu
-          v-if="item.title !== null"
-          :index="item.title"
-          @click="topLevelClicked(item.children[0].children == null ? item.children[0].path : item.children[0].children[0].path)"
-        >
-          <template #title>
-            {{ item.title }}
-          </template>
-
-          <template
-            v-for="child in item.children"
-            :key="child.path"
-          >
-            <el-menu-item
-              v-if="child.meta != null"
-              :index="child.path"
-            >
-              {{ child.meta["menuTitle"] }}
-            </el-menu-item>
-            <template v-else>
-              <template
-                v-for="nestedChild in child.children"
-                :key="nestedChild.path"
-              >
-                <el-menu-item
-                  v-if="nestedChild.meta != null"
-                  :index="nestedChild.path"
-                >
-                  {{ nestedChild.meta["menuTitle"] }}
-                </el-menu-item>
-              </template>
-            </template>
-          </template>
-        </ElSubMenu>
-        <template v-else>
-          <el-menu-item
-            v-for="child in item.children"
-            :key="child.path"
-            :index="child.path"
-          >
-            {{ child.meta["menuTitle"] }}
-          </el-menu-item>
-        </template>
-      </template>
-    </el-menu>
-  </el-header>
-  <el-main>
-    <router-view v-slot="{ Component, route }">
-      <keep-alive
-        :key="route.path"
-        max="4"
-      >
-        <component :is="Component" />
-      </keep-alive>
-    </router-view>
-  </el-main>
-  <ServerSelect
-    v-show='!activePath.startsWith("/report")'
-    v-model="serverUrl"
-    style=" top: 10px; right: 10px; position: absolute"
-  />
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
 <script lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
-import { DebouncedTask } from "shared/src/util/debounce"
-import { watch, defineComponent, provide, ref } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { getRoutes } from "./route"
+import { defineComponent, provide, ref, watch } from "vue"
+import { useRoute } from "vue-router"
+import { getItems, getRoutes } from "./route"
 
 export default defineComponent({
   name: "App",
@@ -90,39 +34,24 @@ export default defineComponent({
   setup() {
     const serverUrl = ref("")
     const routes = getRoutes()
+    const items = ref(getItems())
     provide(serverUrlKey, serverUrl)
+
+    const activePath = ref("")
+    const route = useRoute()
+    watch(() => route.path, p => {
+      activePath.value = p
+    })
 
     const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
     persistentStateManager.add("serverUrl", serverUrl)
     persistentStateManager.init()
 
-    const route = useRoute()
-    const activePath = ref("")
-    watch(() => route.path, p => {
-      activePath.value = p
-    })
-
-    let lastRequestedPath: string | null = null
-    const navigateTo = new DebouncedTask(_taskHandle => {
-      if (lastRequestedPath === null) {
-        return Promise.resolve()
-      }
-      else {
-        return router.push({
-          path: lastRequestedPath,
-        })
-      }
-    }, 0)
-
-    const router = useRouter()
     return {
       serverUrl,
       activePath,
       routes,
-      topLevelClicked(path: string) {
-        lastRequestedPath = path
-        navigateTo.execute()
-      }
+      items,
     }
   },
 })

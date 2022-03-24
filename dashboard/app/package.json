@@ -8,6 +8,8 @@
     "report-visualizer": "workspace:*",
     "shared": "workspace:*",
     "vue": "3.2.31",
-    "vue-router": "4.0.14"
+    "vue-router": "4.0.14",
+    "primevue": "^3.12.2",
+    "primeicons": "^5.0.0"
   }
 }

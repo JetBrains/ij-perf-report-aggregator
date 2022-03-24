@@ -1,14 +1,24 @@
+import { MenuItem } from "primevue/menuitem"
 import { ParentRouteRecord } from "shared/src/route"
+import Report from "./Report.vue"
+
+export function getReportVisualizerItems(): Array<MenuItem> {
+  return [
+    {
+      label: "Report Analyzer",
+      to: "/report"
+    },
+  ]
+}
 
 export function getReportVisualizerRoutes(): Array<ParentRouteRecord> {
   return [
     {
-      title: null,
       children: [
         {
           path: "/report",
-          component: () => import("./Report.vue"),
-          meta: {pageTitle: "Report Analyzer", menuTitle: "Report Analyzer"},
+          component: () => Report,
+          meta: {pageTitle: "Report Analyzer"},
         },
       ],
     },

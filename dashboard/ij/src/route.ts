@@ -1,13 +1,56 @@
+import { MenuItem } from "primevue/menuitem"
 import { ParentRouteRecord } from "shared/src/route"
+import IntelliJDashboard from "./IntelliJDashboard.vue"
+import IntelliJExplore from "./IntelliJExplore.vue"
+import ModuleLoading from "./ModuleLoading.vue"
+import ProgressOverTime from "./ProgressOverTime.vue"
+import Pulse from "./Pulse.vue"
+
+export function getIjItems(): Array<MenuItem> {
+  return [
+    {
+      label: "IJ",
+      items: [
+        {
+          to: "/ij/pulse",
+          label: "Pulse",
+        },
+        {
+          to: "/ij/progressOverTime",
+          label: "Progress Over Time",
+        },
+        {
+          to: "/ij/moduleLoading",
+          label: "Module Loading",
+        },
+        {
+          to: "/ij/explore",
+          label: "Explore",
+        },
+      ],
+    },
+    {
+      label: "Shared Indexes",
+      to: "/sharedIndexes/dashboard",
+    },
+    {
+      label: "Integration Performance",
+      to: "/performanceIntegration/dashboard",
+    },
+    {
+      label: "RubyMine Integration Performance",
+      to: "/rubyMinePerformanceIntegration/dashboard",
+    },
+  ]
+}
 
 export function getIjRoutes(): Array<ParentRouteRecord> {
   return [
     {
-      title: "IJ",
       children: [
         {
           path: "/ij",
-          component: () => import("./IntelliJDashboard.vue"),
+          component: () => IntelliJDashboard,
           children: [
             {
               path: "/ij/dashboard",
@@ -15,30 +58,29 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             },
             {
               path: "/ij/pulse",
-              component: () => import("./Pulse.vue"),
-              meta: {pageTitle: "IJ - Pulse", menuTitle: "Pulse"},
+              component: () => Pulse,
+              meta: {pageTitle: "IJ - Pulse"},
             },
             {
               path: "/ij/progressOverTime",
-              component: () => import("./ProgressOverTime.vue"),
-              meta: {pageTitle: "IJ - Progress Over Time", menuTitle: "Progress Over Time"},
+              component: () => ProgressOverTime,
+              meta: {pageTitle: "IJ - Progress Over Time"},
             },
             {
               path: "/ij/moduleLoading",
-              component: () => import("./ModuleLoading.vue"),
-              meta: {pageTitle: "IJ - Module Loading", menuTitle: "Module Loading"},
+              component: () => ModuleLoading,
+              meta: {pageTitle: "IJ - Module Loading"},
             },
           ],
         },
         {
           path: "/ij/explore",
-          component: () => import("./IntelliJExplore.vue"),
-          meta: {pageTitle: "IJ Explore", menuTitle: "Explore"},
+          component: () => IntelliJExplore,
+          meta: {pageTitle: "IJ Explore"},
         },
       ]
     },
     {
-      title: null,
       children: [
         {
           path: "/sharedIndexes/dashboard",
@@ -47,12 +89,11 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             dbName: "sharedIndexes",
             defaultMeasures: ["indexing", "scanning"],
           },
-          meta: {pageTitle: "Shared Indexes Dashboard", menuTitle: "Shared Indexes"},
+          meta: {pageTitle: "Shared Indexes Dashboard"},
         },
       ]
     },
     {
-      title: null,
       children: [
         {
           path: "/performanceIntegration/dashboard",
@@ -61,12 +102,11 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             defaultMeasures: ["indexing", "numberOfIndexedFiles", "numberOfIndexingRuns", "scanning", "updatingTime"],
           },
-          meta: {pageTitle: "Integration Performance Dashboard", menuTitle: "Integration Performance"},
+          meta: {pageTitle: "Integration Performance Dashboard"},
         },
       ]
     },
     {
-      title: null,
       children: [
         {
           path: "/rubyMinePerformanceIntegration/dashboard",
@@ -75,7 +115,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             dbName: "rubymineperfint",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "RubyMine Integration Performance Dashboard", menuTitle: "RubyMine Integration Performance"},
+          meta: {pageTitle: "RubyMine Integration Performance Dashboard"},
         },
       ]
     },

@@ -1,25 +1,18 @@
 <template>
-  <el-autocomplete
+  Server:
+  <AutoComplete
     v-model="value"
-    class="inline-input"
-    data-lpignore="true"
     placeholder="The stats server URL"
-    size="small"
-    :fetch-suggestions="getSuggestions"
-  >
-    <template #prepend>
-      Server
-    </template>
-  </el-autocomplete>
+    dropdown
+    auto-highlight
+    :suggestions="filteredServer"
+    @complete="searchServer($event)"
+  />
 </template>
 <script lang="ts">
-import { computed, defineComponent } from "vue"
+import { computed, defineComponent, ref } from "vue"
 
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
-
-interface Item {
-  value: string
-}
 
 export default defineComponent({
   name: "ServerSelect",
@@ -31,7 +24,8 @@ export default defineComponent({
   },
   emits: ["update:modelValue"],
   setup(props, {emit}) {
-    const suggestedServers: Array<Item> = [{value: ServerConfigurator.DEFAULT_SERVER_URL}, {value: "http://localhost:9044"}, {value: "https://ij-perf-api.labs.jb.gg"}]
+    const suggestedServers: Array<string> = [ServerConfigurator.DEFAULT_SERVER_URL, "http://localhost:9044", "https://ij-perf-api.labs.jb.gg"]
+    const filteredServer = ref()
     return {
       value: computed({
         get() {
@@ -41,15 +35,17 @@ export default defineComponent({
           return emit("update:modelValue", value)
         },
       }),
-      getSuggestions(queryString: string | null, callback: (result: Array<Item>) => void) {
+      filteredServer,
+      searchServer(event: Event): void {
+        /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+        const queryString: string = event.query
         if (queryString == null || queryString.length === 0) {
-          callback(suggestedServers)
+          filteredServer.value = [...suggestedServers]
         }
         else {
-          const q = queryString.toLowerCase()
-          callback(suggestedServers.filter(it => it.value.startsWith(q) && it.value !== queryString))
+          filteredServer.value = [...suggestedServers.filter(it => it.replace(RegExp("http(s)?://"), "").startsWith(queryString.toLowerCase()) && it !== queryString)]
         }
-      }
+      },
     }
   },
 })

@@ -1,35 +1,30 @@
 <template>
-  <el-form-item :label="label">
-    <el-select
+  <template v-if="valueToGroup == null">
+    <MultiSelect
       v-model="value"
       :loading="loading"
-      :multiple="multiple"
-      filterable
-    >
-      <template v-if="valueToGroup == null">
-        <el-option
-          v-for="item in items"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </template>
-      <template v-else>
-        <el-option-group
-          v-for="group in items"
-          :key="group.label"
-          :label="group.label"
-        >
-          <el-option
-            v-for="item in group.options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-option-group>
-      </template>
-    </el-select>
-  </el-form-item>
+      :options="items"
+      :placeholder="label"
+      option-label="label"
+      option-value="value"
+      :max-selected-labels="3"
+      :selection-limit="multiple ? null : 1"
+    />
+  </template>
+  <template v-else>
+    <MultiSelect
+      v-model="value"
+      :loading="loading"
+      :options="items"
+      :placeholder="label"
+      option-label="label"
+      option-value="value"
+      option-group-children="options"
+      option-group-label="label"
+      :selection-limit="multiple ? null : 1"
+      :max-selected-labels="3"
+    />
+  </template>
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType } from "vue"

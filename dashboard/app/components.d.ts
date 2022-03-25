@@ -36,6 +36,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext')['default']
     Menubar: typeof import('primevue/menubar')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
+    Toolbar: typeof import('primevue/toolbar')['default']
   }
 }
 

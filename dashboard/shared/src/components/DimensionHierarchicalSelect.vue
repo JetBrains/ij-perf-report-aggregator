@@ -6,12 +6,12 @@
     :option-group-children="['children']"
     option-label="value"
     option-group-label="value"
-    :placeholder="label"
+    :placeholder="cLabel"
     @group-change="groupSelected"
   />
 </template>
 <script lang="ts">
-import { defineComponent } from "vue"
+import { computed, defineComponent, ref } from "vue"
 
 import { GroupedDimensionValue, MachineConfigurator } from "../configurators/MachineConfigurator"
 
@@ -32,14 +32,29 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const groupSelected = (e: GroupEvent) => {
+    const selectedGroup = ref<string>()
+    const groupSelect = (e: GroupEvent) => {
+      selectedGroup.value = e.value.value
       // eslint-disable-next-line vue/no-mutating-props
       props.dimension.value.value = e.value.children!.map(it => it.value)
     }
     return {
+      cLabel: computed({
+        get(): string {
+          if (typeof props.dimension.value.value == "string") {
+            return props.dimension.value.value
+          }
+          else {
+            return selectedGroup.value ?? ""
+          }
+        },
+        set(value: string) {
+          console.log(value)
+        },
+      }),
       value: props.dimension.value,
       values: props.dimension.values,
-      groupSelected,
+      groupSelected: groupSelect,
     }
   },
 })

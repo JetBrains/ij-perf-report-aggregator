@@ -1,25 +1,24 @@
 <template>
-  <el-tabs
-    v-model="activeName"
+  <TabView
+    v-model:active-index="activeId"
+    lazy
     @tab-click="navigate"
   >
-    <el-tab-pane
+    <TabPanel
       v-for="item in charts"
       :key="item.id"
-      :label="item.label"
-      :name="item.id"
-      lazy
+      :header="item.label"
     >
       <keep-alive>
         <ActivityChart :descriptor="item" />
       </keep-alive>
-    </el-tab-pane>
-  </el-tabs>
+    </TabPanel>
+  </TabView>
 </template>
 
 <script lang="ts">
 import { DebouncedTask } from "shared/src/util/debounce"
-import { defineComponent, ref, watch } from "vue"
+import { computed, defineComponent, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
 import { chartDescriptors } from "./ActivityChartDescriptor"
@@ -31,21 +30,24 @@ export default defineComponent({
     isInfoChart: {
       type: Boolean,
       required: true,
-    }
+    },
   },
   setup(props) {
     const charts = chartDescriptors.filter(it => it.isInfoChart === props.isInfoChart || (!props.isInfoChart && it.isInfoChart === undefined))
-    const activeName = ref(charts[0].id)
+    const activeId = ref(0)
+    const activeName = computed(() => {
+      return charts[activeId.value].id
+    })
     const queryParamName = props.isInfoChart ? "infoTab" : "tab"
+
     function updateLocation(location: RouteLocationNormalizedLoaded): void {
       const tab = location.query[queryParamName]
       // do not check `location.path === "/"` because if component displayed, so, active
       if (tab == null) {
-        activeName.value = charts[0].id
+        activeId.value = 0
       }
       else {
-        const descriptor = charts.find(it => it.id === tab)
-        activeName.value = descriptor === undefined ? charts[0].id : descriptor.id
+        activeId.value = charts.findIndex(it => it.id === tab)
       }
     }
 
@@ -59,6 +61,7 @@ export default defineComponent({
     return {
       charts,
       activeName,
+      activeId,
       navigate: new DebouncedTask(function () {
         return router.push({
           query: {
@@ -68,6 +71,6 @@ export default defineComponent({
         })
       }, 0).executeFunctionReference,
     }
-  }
+  },
 })
 </script>

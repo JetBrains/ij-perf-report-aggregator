@@ -1,25 +1,25 @@
 <template>
-  <ElForm
-    :inline="true"
-    size="small"
-  >
-    <DimensionSelect
-      label="Product"
-      :dimension="productConfigurator"
-    />
-    <DimensionSelect
-      label="Project"
-      :value-to-label="getProjectName"
-      :dimension="projectConfigurator"
-    />
-    <DimensionHierarchicalSelect
-      label="Machine"
-      :dimension="machineConfigurator"
-    />
-    <TimeRangeSelect :configurator="timeRangeConfigurator" />
-
-    <ReloadButton />
-  </ElForm>
+  <Toolbar>
+    <template #start>
+      <DimensionSelect
+        label="Product"
+        :dimension="productConfigurator"
+      />
+      <DimensionSelect
+        label="Project"
+        :value-to-label="getProjectName"
+        :dimension="projectConfigurator"
+      />
+      <DimensionHierarchicalSelect
+        label="Machine"
+        :dimension="machineConfigurator"
+      />
+      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+    </template>
+    <template #end>
+      <ReloadButton/>
+    </template>
+  </Toolbar>
 
   <ElTabs v-model="activeTab">
     <ElTabPane
@@ -37,14 +37,12 @@
   </ElTabs>
   <router-view v-slot="{ Component }">
     <keep-alive>
-      <component :is="Component" />
+      <component :is="Component"/>
     </keep-alive>
   </router-view>
 </template>
 
 <script lang="ts">
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
@@ -56,8 +54,10 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { aggregationOperatorConfiguratorKey, chartStyle } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { defineComponent, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
@@ -133,3 +133,9 @@ export default defineComponent({
   },
 })
 </script>
+
+<style>
+.p-toolbar-group-left > *{
+  margin: 10px;
+}
+</style>

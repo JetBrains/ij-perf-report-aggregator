@@ -1,30 +1,21 @@
 <template>
   <InputForm />
-
-  <el-row>
-    <el-col>
-      <small>
-        For timeline no threshold, for other charts threshold is 10ms.
-        End time equals to last dumb-aware project start-up activity (so, services and others may be out of end time).
-      </small>
-    </el-col>
-  </el-row>
+  <small>
+    For timeline no threshold, for other charts threshold is 10ms.
+    End time equals to last dumb-aware project start-up activity (so, services and others may be out of end time).
+  </small>
 
   <TabbedCharts :is-info-chart="true" />
   <TabbedCharts :is-info-chart="false" />
-
-  <el-row>
-    <el-col>
-      <ul>
-        <li>
-          <small>app initialized: end of phase <code>app initialized callback</code>.</small>
-        </li>
-        <li>
-          <small>project initialized: end of phase <code>module loading</code>.</small>
-        </li>
-      </ul>
-    </el-col>
-  </el-row>
+  
+  <ul>
+    <li>
+      <small>app initialized: end of phase <code>app initialized callback</code>.</small>
+    </li>
+    <li>
+      <small>project initialized: end of phase <code>module loading</code>.</small>
+    </li>
+  </ul>
 </template>
 
 <script lang="ts">
@@ -43,10 +34,12 @@ export default defineComponent({
   margin-left: 20px;
   font-weight: 900;
 }
+
 .tooltipValue {
   float: right;
   margin-left: 20px;
 }
+
 .tooltipSelectableValue {
   float: right;
   margin-left: 20px;

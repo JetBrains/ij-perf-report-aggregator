@@ -23,9 +23,9 @@
     />
   </div>
 
-  <el-divider>
+  <Divider align="center">
     Services
-  </el-divider>
+  </Divider>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
       :measures='["appComponentCreation_d", "serviceSyncPreloading_d", "serviceAsyncPreloading_d"]'
@@ -36,9 +36,9 @@
     />
   </div>
 
-  <el-divider>
+  <Divider align="center">
     Post-opening
-  </el-divider>
+  </Divider>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
       :measures='["projectDumbAware", "editorRestoring", "editorRestoringTillPaint"]'

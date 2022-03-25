@@ -1,42 +1,41 @@
 <template>
+  <Toolbar>
+    <template #start>
+      <DimensionSelect
+        label="Product"
+        :dimension="productConfigurator"
+      />
+      <DimensionSelect
+        label="Project"
+        :value-label="getProjectName"
+        :dimension="projectConfigurator"
+      />
+
+      <DimensionHierarchicalSelect
+        label="Machine"
+        :dimension="machineConfigurator"
+      />
+    </template>
+
+    <template #end>
+      <ReloadButton/>
+    </template>
+  </Toolbar>
+
   <el-form
     :inline="true"
     size="small"
   >
-    <DimensionSelect
-      label="Product"
-      :dimension="productConfigurator"
-    />
-    <DimensionSelect
-      label="Project"
-      :value-label="getProjectName"
-      :dimension="projectConfigurator"
-    />
-
-    <DimensionHierarchicalSelect
-      label="Machine"
-      :dimension="machineConfigurator"
-    />
-
-    <ReloadButton />
-  </el-form>
-
-  <el-form
-    :inline="true"
-    size="small"
-  >
-    <MeasureSelect :configurator="measureConfigurator" />
-    <TimeRangeSelect :configurator="timeRangeConfigurator" />
+    <MeasureSelect :configurator="measureConfigurator"/>
+    <TimeRangeSelect :configurator="timeRangeConfigurator"/>
   </el-form>
 
   <div class="grid grid-cols-2 gap-4">
-    <LineChartCard />
+    <LineChartCard/>
   </div>
 </template>
 
 <script lang="ts">
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
@@ -49,6 +48,8 @@ import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { defineComponent } from "vue"
 
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"

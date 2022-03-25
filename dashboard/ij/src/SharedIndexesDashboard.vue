@@ -111,9 +111,3 @@ const dataQueryExecutor = new DataQueryExecutor([
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
 initDataComponent(persistentStateManager, dataQueryExecutor)
 </script>
-
-<style>
-.p-toolbar-group-left > *{
-  margin: 10px;
-}
-</style>

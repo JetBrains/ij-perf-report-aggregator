@@ -1,7 +1,7 @@
 <template>
-  <ElDivider>
+  <Divider align="center">
     Bootstrap
-  </ElDivider>
+  </Divider>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
       :measures='["bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "euaShowing_d", "appStarter_d"]'
@@ -11,9 +11,9 @@
     />
   </div>
 
-  <ElDivider>
+  <Divider align="center">
     Class and Resource Loading
-  </ElDivider>
+  </Divider>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
       :measures='["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]'

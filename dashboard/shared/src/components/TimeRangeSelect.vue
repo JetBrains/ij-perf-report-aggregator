@@ -1,17 +1,10 @@
 <template>
-  <ElFormItem label="Period">
-    <ElSelect
-      v-model="value"
-      filterable
-    >
-      <ElOption
-        v-for="item in timeRanges"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
-    </ElSelect>
-  </ElFormItem>
+  <Dropdown
+    v-model="value"
+    :options="timeRanges"
+    option-label="label"
+    option-value="value"
+  />
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue"

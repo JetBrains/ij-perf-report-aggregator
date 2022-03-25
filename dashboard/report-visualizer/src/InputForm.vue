@@ -1,50 +1,38 @@
 <!-- Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file. -->
 <template>
-  <ElRow :gutter="16">
-    <ElCol :span="10">
-      <ElInput
-        v-model="inputData"
-        type="textarea"
-        :rows="10"
-        placeholder="Enter the IntelliJ Platform start-up timeline..."
-      />
-    </ElCol>
-    <ElCol :span="14">
-      <ElForm
-        :inline="true"
-        size="small"
-      >
-        <ElFormItem>
-          <ElButton
+  <div class="columns-2">
+    <Textarea
+      v-model="inputData"
+      :rows="10"
+      placeholder="Enter the IntelliJ Platform start-up timeline..."
+      :cols="80"
+      class="w-full"
+    />
+    <div class="w-full">
+      <div class="columns-1">
+        <div class="w-full">
+          <Button
             :loading="isFetching"
             @click="getFromRunningInstance"
           >
             Get from running instance
-          </ElButton>
-        </ElFormItem>
-        <ElFormItem>
-          <el-input-number
+          </Button>
+          <InputNumber
             v-model="portNumber"
             :min="1024"
             :max="65535"
+            :format="false"
           />
-        </ElFormItem>
-      </ElForm>
-      <ElForm
-        :inline="true"
-        size="small"
-      >
-        <ElFormItem>
-          <ElButton
-            :loading="isFetchingDev"
-            @click="getFromRunningDevInstance"
-          >
-            Get from running instance on port 63343
-          </ElButton>
-        </ElFormItem>
-      </ElForm>
-    </ElCol>
-  </ElRow>
+        </div>
+        <Button
+          :loading="isFetchingDev"
+          @click="getFromRunningDevInstance"
+        >
+          Get from running instance on port 63343
+        </Button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -118,12 +106,19 @@ export default defineComponent({
         isFetchingDev.value = true
         lastReportUrl = getIdeaReportUrl(63343)
         loadReportDebounced.execute()
-      }
+      },
     }
-  }
+  },
 })
 
 function getIdeaReportUrl(port: number) {
   return `http://127.0.0.1:${port}/api/startUpMeasurement`
 }
 </script>
+
+<style scoped>
+/*noinspection CssUnusedSymbol*/
+.p-button, .p-inputnumber, .p-inputtextarea {
+  margin: 10px;
+}
+</style>

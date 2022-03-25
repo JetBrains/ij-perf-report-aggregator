@@ -41,6 +41,7 @@ declare module 'vue' {
     OverlayPanel: typeof import('primevue/overlaypanel')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabView: typeof import('primevue/tabview')['default']
+    Textarea: typeof import('primevue/textarea')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
   }
 }

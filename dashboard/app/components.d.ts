@@ -38,6 +38,8 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     MultiSelect: typeof import('primevue/multiselect')['default']
     OverlayPanel: typeof import('primevue/overlaypanel')['default']
+    TabPanel: typeof import('primevue/tabpanel')['default']
+    TabView: typeof import('primevue/tabview')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
   }
 }

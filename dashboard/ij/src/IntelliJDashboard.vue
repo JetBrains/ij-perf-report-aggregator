@@ -14,35 +14,30 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template #end>
-      <ReloadButton/>
+      <ReloadButton />
     </template>
   </Toolbar>
 
-  <ElTabs v-model="activeTab">
-    <ElTabPane
-      label="Pulse"
-      name="pulse"
+  <TabView v-model:active-index="activeTab">
+    <TabPanel
+      v-for="tab in tabs"
+      :key="tab.title"
+      :header="tab.title"
     />
-    <ElTabPane
-      label="Progress Over Time"
-      name="progressOverTime"
-    />
-    <ElTabPane
-      label="Module Loading"
-      name="moduleLoading"
-    />
-  </ElTabs>
+  </TabView>
   <router-view v-slot="{ Component }">
     <keep-alive>
-      <component :is="Component"/>
+      <component :is="Component" />
     </keep-alive>
   </router-view>
 </template>
 
 <script lang="ts">
+import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
@@ -54,14 +49,15 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { aggregationOperatorConfiguratorKey, chartStyle } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { defineComponent, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
-
+export interface Tab{
+  route: string
+  title: string
+}
 export default defineComponent({
   name: "IntelliJDashboard",
   components: {
@@ -103,14 +99,31 @@ export default defineComponent({
     initDataComponent(persistentStateManager, dataQueryExecutor)
 
     const route = useRoute()
-    const activeTab = ref("pulse")
+    const activeTab = ref(0)
+    const tabs = ref<Array<Tab>>([
+      {
+        title: "Pulse",
+        route: "pulse",
+      },
+      {
+        title: "Progress Over Time",
+        route: "progressOverTime",
+      },
+      {
+        title: "Module Loading",
+        route: "moduleLoading",
+      },
+    ])
 
     function updateActiveTab(newPath: string): void {
       if (newPath.endsWith("/pulse")) {
-        activeTab.value = "pulse"
+        activeTab.value = 0
       }
       else if (newPath.endsWith("/progressOverTime")) {
-        activeTab.value = "progressOverTime"
+        activeTab.value = 1
+      }
+      else if (newPath.endsWith("/moduleLoading")) {
+        activeTab.value = 2
       }
     }
 
@@ -119,7 +132,8 @@ export default defineComponent({
     const router = useRouter()
     watch(() => route.path, updateActiveTab)
     watch(activeTab, async value => {
-      await router.push({...route, path: `/ij/${value}`})
+      console.log(tabs.value[value].route)
+      await router.push({...route, path: `/ij/${tabs.value[value].route}`})
     })
 
     return {
@@ -129,13 +143,8 @@ export default defineComponent({
       timeRangeConfigurator,
       getProjectName,
       activeTab,
+      tabs
     }
   },
 })
 </script>
-
-<style>
-.p-toolbar-group-left > *{
-  margin: 10px;
-}
-</style>

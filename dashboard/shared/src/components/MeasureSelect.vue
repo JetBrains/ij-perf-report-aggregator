@@ -1,18 +1,9 @@
 <template>
-  <el-form-item label="Metrics">
-    <el-select
-      v-model="value"
-      multiple
-      filterable
-    >
-      <el-option
-        v-for="value in data"
-        :key="value"
-        :label="value"
-        :value="value"
-      />
-    </el-select>
-  </el-form-item>
+  <MultiSelect
+    v-model="value"
+    :options="data"
+    placeholder="Metrics"
+  />
 </template>
 <script lang="ts">
 import { defineComponent } from "vue"
@@ -36,9 +27,3 @@ export default defineComponent({
   },
 })
 </script>
-<style>
-.el-form-item__label {
-  display: flex;
-  align-items: center;
-}
-</style>

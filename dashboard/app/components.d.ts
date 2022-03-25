@@ -5,6 +5,7 @@
 declare module 'vue' {
   export interface GlobalComponents {
     AutoComplete: typeof import('primevue/autocomplete')['default']
+    Button: typeof import('primevue/button')['default']
     Divider: typeof import('primevue/divider')['default']
     Dropdown: typeof import('primevue/dropdown')['default']
     ElAutocomplete: typeof import('element-plus/es')['ElAutocomplete']
@@ -33,6 +34,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     InputText: typeof import('primevue/inputtext')['default']
     Menubar: typeof import('primevue/menubar')['default']
+    MultiSelect: typeof import('primevue/multiselect')['default']
   }
 }
 

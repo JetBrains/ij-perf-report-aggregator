@@ -1,24 +1,16 @@
 <template>
-  <ElFormItem>
-    <ElButton
-      title="Updated automatically, but you can force data reloading"
-      type="primary"
-      @click="doLoad"
-    >
-      <el-icon>
-        <Refresh />
-      </el-icon>
-    </ElButton>
-  </ElFormItem>
+  <Button
+    icon="pi pi-refresh"
+    class="p-button-rounded p-button-primary"
+    @click="doLoad"
+  />
 </template>
 <script lang="ts">
-import { Refresh } from "@element-plus/icons-vue"
 import { defineComponent, inject, PropType, computed } from "vue"
 import { dataQueryExecutorKey } from "../injectionKeys"
 
 export default defineComponent({
   name: "ReloadButton",
-  components: {Refresh},
   props: {
     load: {
       type: Function as PropType<() => void>,

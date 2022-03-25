@@ -22,13 +22,12 @@
     </template>
   </Toolbar>
 
-  <el-form
-    :inline="true"
-    size="small"
-  >
-    <MeasureSelect :configurator="measureConfigurator"/>
-    <TimeRangeSelect :configurator="timeRangeConfigurator"/>
-  </el-form>
+  <Toolbar>
+    <template #start>
+      <MeasureSelect :configurator="measureConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+    </template>
+  </Toolbar>
 
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard/>

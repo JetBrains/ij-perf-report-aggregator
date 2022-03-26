@@ -13,6 +13,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "s3Env" -}}
+- name: S3_ENDPOINT
+  value: "s3.amazonaws.com"
 - name: S3_BUCKET
   valueFrom:
     secretKeyRef:

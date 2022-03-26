@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="develar">
     <words>
+      <w>amazonaws</w>
       <w>cascader</w>
       <w>certmanager</w>
       <w>clickhouse</w>
@@ -15,6 +16,7 @@
       <w>kubectl</w>
       <w>kustomize</w>
       <w>letsencrypt</w>
+      <w>liveness</w>
       <w>lttb</w>
       <w>macos</w>
       <w>minifier</w>

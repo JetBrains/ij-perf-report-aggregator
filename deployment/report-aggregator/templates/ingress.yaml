@@ -1,5 +1,4 @@
-# https://github.com/kubernetes/kubernetes/issues/90077 (our cluster version is 1.16, so, networking.k8s.io/v1 cannot be used)
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -18,34 +17,39 @@ spec:
       http:
         paths:
           - path: /api/v1
+            pathType: Prefix
             backend:
-              serviceName: backend
-              servicePort: 80
+              service:
+                name: backend
+                port:
+                  number: 80
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: frontend
-              servicePort: 80
+              service:
+                name: frontend
+                port:
+                  number: 80
 ---
 # oauth2
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: report-aggregator-oauth2
   annotations:
-  {{- toYaml .Values.ingress.annotationsOauth | nindent 4 }}
+    kubernetes.io/ingress.class: nginx
 spec:
-  tls:
-    - hosts:
-        - {{ .Values.ingress.host }}
-      secretName: {{ .Values.ingress.tlsSecretName }}
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /oauth2
+            pathType: Prefix
             backend:
-              serviceName: report-aggregator-oauth2-proxy
-              servicePort: 4180
+              service:
+                name: oauth2-proxy-jb
+                port:
+                  number: 4180
 ---
 kind: Service
 apiVersion: v1
@@ -57,8 +61,7 @@ spec:
   ports:
     - port: 4180
 ---
-# https://github.com/kubernetes/kubernetes/issues/90077 (our cluster version is 1.16, so, networking.k8s.io/v1 cannot be used)
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -77,6 +80,9 @@ spec:
       http:
         paths:
           - path: /api/v1
+            pathType: Prefix
             backend:
-              serviceName: backend
-              servicePort: 80
+              service:
+                name: backend
+                port:
+                  number: 80

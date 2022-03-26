@@ -16,6 +16,10 @@ spec:
         app: clickhouse
         {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       initContainers:
         - name: restore-clickhouse-backup
           image: {{ .Values.images.clickhouseRestore }}
@@ -82,5 +86,20 @@ spec:
                 path: accessKey
               - key: AWS_SECRET_ACCESS_KEY
                 path: secretKey
-              - key: bucket-name
-                path: endpoint
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  labels:
+    app: clickhouse
+spec:
+  ports:
+    - name: tcp
+      port: 9000
+      protocol: TCP
+    - name: http
+      port: 8123
+      protocol: TCP
+  selector:
+    app: clickhouse

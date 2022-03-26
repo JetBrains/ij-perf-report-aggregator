@@ -47,7 +47,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: oauth2-proxy-jb
+                name: report-aggregator-oauth2-proxy
                 port:
                   number: 4180
 ---

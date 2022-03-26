@@ -16,8 +16,8 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 - name: S3_BUCKET
   valueFrom:
     secretKeyRef:
-      name: ij-perf-data-minio-bucket
-      key: AWS_ACCESS_KEY_ID
+      name: ij-perf-data-s3-rw
+      key: bucket-name
 {{- end }}
 
 {{- define "clickhouseVolumeMounts" -}}

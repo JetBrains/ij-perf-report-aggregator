@@ -76,11 +76,11 @@ spec:
           emptyDir: {}
         - name: s3
           secret:
-            secretName: ij-perf-data-minio-bucket
+            secretName: ij-perf-data-s3-rw
             items:
               - key: AWS_ACCESS_KEY_ID
                 path: accessKey
               - key: AWS_SECRET_ACCESS_KEY
                 path: secretKey
-              - key: MINIO_ENDPOINT
+              - key: bucket-name
                 path: endpoint

@@ -1,13 +1,13 @@
-FROM golang:1.17 AS builder
+FROM golang:1.18 AS builder
 WORKDIR /project/src
-ADD https://raw.githubusercontent.com/nats-io/nats.go/7192159fcab301e10f8f9c6d21b57857d501c490/examples/nats-pub/main.go .
+ADD https://raw.githubusercontent.com/nats-io/nats.go/8dd5ec6c97bccaf8fc09b45a76d5694f0f6ae403/examples/nats-pub/main.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/nats-pub .
 
 ARG CH_VERSION
 
-RUN cd /tmp && curl -L https://repo.clickhouse.tech/tgz/stable/clickhouse-common-static-$CH_VERSION.tgz | tar xvz --strip-components=4 ./clickhouse-common-static-$CH_VERSION/usr/bin/clickhouse
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v$CH_VERSION-stable/clickhouse-common-static-$CH_VERSION.tgz | tar xvz --strip-components=4 ./clickhouse-common-static-$CH_VERSION/usr/bin/clickhouse
 
-FROM ubuntu:20.04
+FROM ubuntu:21.10
 
 ENV DEBIAN_FRONTEND=noninteractive
 

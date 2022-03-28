@@ -26,24 +26,26 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer, logger *zap.L
   }
 
   runResult.Report = &model.Report{
-    Version:                  string(report.GetStringBytes("version")),
-    Generated:                string(report.GetStringBytes("generated")),
-    Project:                  string(report.GetStringBytes("project")),
+    Version:   string(report.GetStringBytes("version")),
+    Generated: string(report.GetStringBytes("generated")),
+    Project:   string(report.GetStringBytes("project")),
 
-    Build:                    string(report.GetStringBytes("build")),
-    BuildDate:                string(report.GetStringBytes("buildDate")),
+    Build:     string(report.GetStringBytes("build")),
+    BuildDate: string(report.GetStringBytes("buildDate")),
 
-    Os:                       string(report.GetStringBytes("os")),
-    ProductCode:              string(report.GetStringBytes("productCode")),
-    Runtime:                  string(report.GetStringBytes("runtime")),
+    Os:          string(report.GetStringBytes("os")),
+    ProductCode: string(report.GetStringBytes("productCode")),
+    Runtime:     string(report.GetStringBytes("runtime")),
 
     TotalDuration: totalDuration,
   }
 
   err = reader(runResult, report, logger)
   if err != nil {
-    return err
+    return nil
   }
+
+  runResult.RawReport = report.MarshalTo(nil)
   return nil
 }
 

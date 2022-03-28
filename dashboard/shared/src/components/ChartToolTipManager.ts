@@ -5,7 +5,6 @@ import { timeFormat } from "../chart"
 import { DataQuery } from "../dataQuery"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { reportInfoProviderKey } from "../injectionKeys"
-import { debounceSync } from "../util/debounce"
 
 export interface ReportInfoProvider {
   createReportUrl(generatedTime: number, query: DataQuery): string

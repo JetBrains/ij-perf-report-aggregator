@@ -34,9 +34,6 @@ export class ChartToolTipManager {
 
   readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
 
-  readonly scheduleTooltipHide = debounceSync(() => {
-    this.infoIsVisible.value = false
-  }, 2_000)
 
   formatArrayValue(params: Array<CallbackDataParams>): null {
     const query = this.dataQueryExecutor.lastQuery
@@ -67,8 +64,6 @@ export class ChartToolTipManager {
     else {
       reportTooltipData.linkUrl = this.reportInfoProvider.createReportUrl(generatedTime, query)
     }
-    this.infoIsVisible.value = true
-    this.scheduleTooltipHide()
     return null
   }
 }

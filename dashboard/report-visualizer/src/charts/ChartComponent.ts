@@ -1,5 +1,6 @@
 import { debounceSync } from "shared/src/util/debounce"
 import { watch, onBeforeUnmount, onMounted } from "vue"
+import {useMessageStore} from "../../../app/stores/Message"
 import { DataManager } from "../DataManager"
 import { InputData } from "../data"
 import { reportData } from "../state"
@@ -50,10 +51,8 @@ export class ChartComponent {
         })
         .catch(e => {
           console.error("Cannot create chart", e)
-          ElNotification({
-            type: "error",
-            message: (e as Error).toString(),
-          })
+          useMessageStore().message = (e as Error).toString()
+          useMessageStore().isError = true
         })
     }
     else {

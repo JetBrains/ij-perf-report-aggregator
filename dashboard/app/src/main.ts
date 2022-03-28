@@ -1,7 +1,3 @@
-import "element-plus/theme-chalk/el-reset.css"
-import "element-plus/theme-chalk/index.css"
-// import "element-plus/theme-chalk/src/base.scss"
-
 import "./main.css"
 import { createPinia } from "pinia"
 import PrimeVue from "primevue/config"

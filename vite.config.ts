@@ -41,15 +41,5 @@ export default defineConfig({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     outDir: path.resolve(__dirname, "cmd/frontend/kodata"),
-    rollupOptions: {
-      // plugins: [visualizer({filename: "/Volumes/data/foo/s.html"})],
-      // output: {
-      //   manualChunks: {
-      //     // element-plus is used in various chunks (because pages are loaded dynamically)
-      //     echarts: ["echarts"],
-      //     vue: ["vue"],
-      //   }
-      // },
-    },
   },
 })

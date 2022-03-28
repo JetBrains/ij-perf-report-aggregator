@@ -45,6 +45,6 @@ module.exports = {
       },
     }],
     "vue/html-quotes": ["error", "double", {"avoidEscape": true}],
-    "no-restricted-imports": ["error", "element-plus", "echarts", "element-plus/es", "element-plus/lib/theme-chalk/index.css", "../shared", "../../shared"],
+    "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared"],
   },
 }

@@ -88,7 +88,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           component: () => SharedIndexesDashboard,
           props: {
             dbName: "sharedIndexes",
-            defaultMeasures: ["indexing", "scanning"],
+            defaultMeasures: [],
           },
           meta: {pageTitle: "Shared Indexes Dashboard"},
         },
@@ -101,7 +101,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           component: () => SharedIndexesDashboard,
           props: {
             dbName: "perfint",
-            defaultMeasures: ["indexing", "numberOfIndexedFiles", "numberOfIndexingRuns", "scanning", "updatingTime"],
+            defaultMeasures: [],
           },
           meta: {pageTitle: "Integration Performance Dashboard"},
         },

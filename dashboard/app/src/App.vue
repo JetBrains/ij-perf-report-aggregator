@@ -7,6 +7,13 @@
     {{ messageState.message }}
   </Message>
   <Menubar :model="items">
+    <template #start>
+      <img
+        width="70"
+        src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg"
+        alt="JetBrains Black Box Logo logo."
+      >
+    </template>
     <template #end>
       <ServerSelect
         v-show='!activePath.startsWith("/report")'

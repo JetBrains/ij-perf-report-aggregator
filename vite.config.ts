@@ -53,17 +53,3 @@ export default defineConfig({
     },
   },
 })
-
-// export function ElementPlusResolver(): ComponentResolver {
-//   return (name: string) => {
-//     if (name.match(/^El[A-Z]/)) {
-//       // ElTableColumn -> table-column
-//       const partialName = kebabCase(name.slice(2))
-//       return {
-//         importName: name,
-//         path: "element-plus/es",
-//         sideEffects: `element-plus/theme-chalk/src/${partialName == "sub-menu" ? "submenu" : partialName}.scss`,
-//       }
-//     }
-//   }
-// }

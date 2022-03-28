@@ -1,4 +1,11 @@
 <template>
+  <Message
+    v-show="messageState.isError"
+    severity="error"
+    @close="closeError"
+  >
+    {{ messageState.message }}
+  </Message>
   <Menubar :model="items">
     <template #end>
       <ServerSelect
@@ -23,6 +30,7 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
 import { defineComponent, provide, ref, watch } from "vue"
 import { useRoute } from "vue-router"
+import { useMessageStore } from "../stores/Message"
 import { getItems, getRoutes } from "./route"
 
 export default defineComponent({
@@ -47,18 +55,23 @@ export default defineComponent({
     persistentStateManager.add("serverUrl", serverUrl)
     persistentStateManager.init()
 
+    const messageState = useMessageStore()
     return {
       serverUrl,
       activePath,
       routes,
       items,
+      messageState,
+      closeError(): void {
+        messageState.isError = false
+      },
     }
   },
 })
 </script>
 
 <style>
-.p-toolbar-group-left > *{
+.p-toolbar-group-left > * {
   margin: 10px;
 }
 </style>

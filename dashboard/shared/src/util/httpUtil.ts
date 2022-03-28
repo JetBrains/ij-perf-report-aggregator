@@ -1,13 +1,9 @@
-// import "element-plus/theme-chalk/el-message.css"
-
-import {MessageHandle} from "element-plus/lib/components"
 import { Ref } from "vue"
+import {useMessageStore} from "../../../app/stores/Message"
 
 import { TaskHandle } from "./debounce"
 
 const serverNotAvailableErrorMessage = "Server is not available. Please check that server is running and VPN connection is established."
-
-let errorMessageHandle: MessageHandle | null = null
 
 export function loadJson<T>(url: string,
                             loading: Ref<boolean> | null,
@@ -50,10 +46,7 @@ export function loadJson<T>(url: string,
       }
 
       if (response.ok) {
-        if (errorMessageHandle != null) {
-          errorMessageHandle.close()
-          errorMessageHandle = null
-        }
+        closeError()
         return response.json()
       }
       else {
@@ -95,18 +88,11 @@ export function loadJson<T>(url: string,
     })
 }
 
-function showError(message: string) {
-  if (errorMessageHandle != null) {
-    return
-  }
+function closeError() {
+  useMessageStore().isError = false
+}
 
-  errorMessageHandle = ElMessage({
-    message,
-    type: "error",
-    duration: 0,
-    showClose: true,
-    onClose() {
-      errorMessageHandle = null
-    }
-  })
+function showError(message: string) {
+  useMessageStore().message = message
+  useMessageStore().isError = true
 }

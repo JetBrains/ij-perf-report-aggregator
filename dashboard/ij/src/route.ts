@@ -5,6 +5,7 @@ import IntelliJExplore from "./IntelliJExplore.vue"
 import ModuleLoading from "./ModuleLoading.vue"
 import ProgressOverTime from "./ProgressOverTime.vue"
 import Pulse from "./Pulse.vue"
+import SharedIndexesDashboard from "./SharedIndexesDashboard.vue"
 
 export function getIjItems(): Array<MenuItem> {
   return [
@@ -84,7 +85,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/sharedIndexes/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => SharedIndexesDashboard,
           props: {
             dbName: "sharedIndexes",
             defaultMeasures: ["indexing", "scanning"],
@@ -97,7 +98,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/performanceIntegration/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => SharedIndexesDashboard,
           props: {
             dbName: "perfint",
             defaultMeasures: ["indexing", "numberOfIndexedFiles", "numberOfIndexingRuns", "scanning", "updatingTime"],
@@ -110,7 +111,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/rubyMinePerformanceIntegration/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => SharedIndexesDashboard,
           props: {
             dbName: "rubymineperfint",
             defaultMeasures: [],

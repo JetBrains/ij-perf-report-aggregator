@@ -47,3 +47,5 @@ Accept: application/json
 GET https://buildserver.labs.intellij.net/app/rest/buildTypes/id:ijplatform_master_UltimateStartupPerfTestMac
 Authorization: Bearer {{token}}
 ###
+
+GET http://localhost:9044/api/v1/load/(db:perfint,fields:!((name:branch,sql:'distinct branch')),flat:!t,order:!(branch),table:report)

@@ -10,6 +10,7 @@
     "vue": "3.2.31",
     "vue-router": "4.0.14",
     "primevue": "^3.12.2",
-    "primeicons": "^5.0.0"
+    "primeicons": "^5.0.0",
+    "pinia": "^2.0.12"
   }
 }

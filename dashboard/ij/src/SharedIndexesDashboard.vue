@@ -78,12 +78,12 @@ const props = defineProps<{
 }>()
 
 const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
-  machine: "macMini 2018",
+  machine: "linux-blade",
   project: props.dbName === "sharedIndexes" ? [
     "ijx-intellij-speed/shared-indexes",
     "ijx-intellij-speed/usual-indexes",
     "ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes",
-  ] : (props.dbName === "perfint" ? ["intellij_sources/indexing", "intellij_sources/rebuild"] : []),
+  ] : (props.dbName === "perfint" ? [] : []),
   measure: props.defaultMeasures.slice(),
 }, useRouter())
 

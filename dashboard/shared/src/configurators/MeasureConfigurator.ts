@@ -14,7 +14,7 @@ import { ServerConfigurator } from "./ServerConfigurator"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
-  public readonly value = shallowRef<Array<string>>([])
+  public readonly value = shallowRef<Array<string>|null>(null)
 
   private readonly debouncedLoadMetadata = new DebouncedTask(taskHandle => this.loadMetadata(taskHandle))
 

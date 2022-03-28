@@ -7,7 +7,7 @@
   />
 </template>
 <script lang="ts">
-import { defineComponent } from "vue"
+import { computed, defineComponent } from "vue"
 
 import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
 
@@ -22,7 +22,17 @@ export default defineComponent({
   setup(props) {
     const configurator = props.configurator as MeasureConfigurator
     return {
-      value: configurator.value,
+      value: computed({
+        get() {
+          if(!configurator.data.value.some(it => configurator.value.value?.indexOf(it) > -1)){
+            return null
+          }
+          return configurator.data.value.length == 0 ? null : configurator.value.value
+        },
+        set(value) {
+          configurator.value.value = value
+        },
+      }),
       data: configurator.data,
     }
   },

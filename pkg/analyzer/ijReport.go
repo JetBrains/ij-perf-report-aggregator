@@ -7,7 +7,7 @@ import (
   "go.uber.org/zap"
 )
 
-func analyzeIJReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
+func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   report := runResult.Report
 
   traceEvents := data.GetArray("traceEvents")
@@ -107,6 +107,9 @@ func readServices(
     *thread = append(*thread, string(measure.GetStringBytes("t")))
     *plugin = append(*plugin, string(measure.GetStringBytes("p")))
   }
+
+  // remove to reduce size of raw report
+  data.Del(category)
 }
 
 func readActivitiesInOldFormat(key string, data *fastjson.Value) []model.Activity {
@@ -114,10 +117,10 @@ func readActivitiesInOldFormat(key string, data *fastjson.Value) []model.Activit
   result := make([]model.Activity, 0, len(array))
   for _, v := range array {
     result = append(result, model.Activity{
-      Name:      string(v.GetStringBytes("name")),
-      Thread:     string(v.GetStringBytes("thread")),
-      Start: v.GetInt("start"),
-      End: v.GetInt("end"),
+      Name:     string(v.GetStringBytes("name")),
+      Thread:   string(v.GetStringBytes("thread")),
+      Start:    v.GetInt("start"),
+      End:      v.GetInt("end"),
       Duration: v.GetInt("duration"),
     })
   }

@@ -62,7 +62,7 @@ const insertWorkerCount = 4
 func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   logger.Info("start transforming", zap.String("db", dbName))
 
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database="+dbName)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -157,7 +157,7 @@ func process(
 
   isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
-  rowLoop:
+rowLoop:
   for rows.Next() {
     err = rows.StructScan(&row)
     if err != nil {
@@ -171,10 +171,8 @@ func process(
       }
     }
 
-    s := string(row.RawReport)
-
     runResult := &analyzer.RunResult{
-      RawReport: []byte(s),
+      RawReport: row.RawReport,
 
       Machine: row.Machine,
 

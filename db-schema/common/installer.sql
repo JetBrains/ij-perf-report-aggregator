@@ -1,6 +1,6 @@
 create table installer
 (
-  `id`      UInt32 CODEC(DoubleDelta, ZSTD(20)),
+  `id`      UInt32 CODEC(Gorilla, ZSTD(20)),
   `changes` Array(FixedString(27)) CODEC(ZSTD(20))
 )
   engine = MergeTree

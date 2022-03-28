@@ -41,7 +41,6 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/segmentio/ksuid v1.0.4
 	github.com/stretchr/testify v1.7.0
-	github.com/tdewolff/minify/v2 v2.10.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.7.0
@@ -52,7 +51,7 @@ require (
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/net v0.0.0-20220325170049-de3da57026de // indirect
-	golang.org/x/sys v0.0.0-20220325203850-36772127a21f // indirect
+	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.10
 	google.golang.org/protobuf v1.24.0 // indirect
@@ -77,6 +76,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	github.com/tdewolff/parse/v2 v2.5.27 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

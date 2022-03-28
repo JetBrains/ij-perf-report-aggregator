@@ -6,8 +6,6 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  "github.com/tdewolff/minify/v2"
-  "github.com/tdewolff/minify/v2/json"
   "github.com/valyala/fastjson"
   "go.deanishe.net/env"
   "go.uber.org/atomic"
@@ -32,8 +30,7 @@ type ReportAnalyzer struct {
   waitGroup sync.WaitGroup
   closeOnce sync.Once
 
-  minifier *minify.M
-  Db       *sqlx.DB
+  Db *sqlx.DB
 
   InsertReportManager *InsertReportManager
 
@@ -48,12 +45,10 @@ func CreateReportAnalyzer(
   logger *zap.Logger,
   cancelOnError context.CancelFunc,
 ) (*ReportAnalyzer, error) {
-  m := minify.New()
-  m.AddFunc("json", json.Minify)
 
   // https://github.com/ClickHouse/ClickHouse/issues/2833
   // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database=" + dbName)
+  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database="+dbName)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -75,8 +70,7 @@ func CreateReportAnalyzer(
 
     InsertReportManager: insertReportManager,
 
-    minifier: m,
-    Db:       db,
+    Db: db,
 
     logger: logger,
   }
@@ -117,14 +111,8 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 
   var err error
 
-  // normalize to compute consistent unique id
-  rawData, err := t.minifier.Bytes("json", data)
-  if err != nil {
-    return err
-  }
-
   runResult := &RunResult{
-    RawReport: rawData,
+    RawReport: data,
 
     TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
     TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),

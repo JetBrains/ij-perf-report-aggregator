@@ -37,6 +37,7 @@ update-deps:
 
 # docker run -it --rm --link ij-perf-clickhouse-server:clickhouse-server yandex/clickhouse-client:20.3.4.10 --host clickhouse-server
 # optimize table report
+# optimize table report final
 
 # select partition, name, active from system.parts where table = 'report'
 

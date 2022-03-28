@@ -1,6 +1,6 @@
 <template>
   <OverlayPanel
-    ref="op"
+    ref="tooltip"
     :show-close-icon="true"
   >
     <div
@@ -11,7 +11,6 @@
         v-if="reportTooltipData.linkUrl != null"
         :href="reportTooltipData.linkUrl"
         target="_blank"
-        type="primary"
       >
         {{ reportTooltipData.linkText }}
       </a>
@@ -59,8 +58,8 @@
         />
         <span style="margin-left:2px;">Build Number</span>
         <span class="tooltipValue">{{ reportTooltipData.firstSeriesData[4] }}.{{
-            reportTooltipData.firstSeriesData[5]
-          }}{{ reportTooltipData.firstSeriesData[6] !== 0 ? "." + reportTooltipData.firstSeriesData[6] : "" }}</span>
+          reportTooltipData.firstSeriesData[5]
+        }}{{ reportTooltipData.firstSeriesData[6] !== 0 ? "." + reportTooltipData.firstSeriesData[6] : "" }}</span>
       </div>
       <div
         v-if="reportTooltipData.firstSeriesData.length >= 8"
@@ -85,12 +84,12 @@
 </template>
 <script lang="ts">
 import { defineComponent, inject, onMounted, onUnmounted, PropType, ref, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
+import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { DataQueryExecutor } from "../DataQueryExecutor"
 import { dataQueryExecutorKey } from "../injectionKeys"
-import { debounceSync } from "../util/debounce"
+import { DebouncedTask, debounceSync } from "../util/debounce"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
@@ -126,14 +125,20 @@ export default defineComponent({
     const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
     const skipZeroValues = toRef(props, "skipZeroValues")
     const chartToolTipManager = new ChartToolTipManager()
-    const op = ref<Tooltip>()
+    const tooltip = ref<Tooltip>()
+    const debounceTask = ref<DebouncedTask | null>(null)
     const show = event => {
-      op.value.show(event, chartElement.value)
+      if (debounceTask.value !== null) {
+        debounceTask.value.clear()
+      }
+      tooltip.value.show(event, chartElement.value)
     }
     const hide = event => {
-      debounceSync(() => {
-        op.value.hide(event, chartElement.value)
-      }, 2_000)()
+      debounceTask.value =
+        debounceSync(() => {
+          tooltip.value.hide(event, chartElement.value)
+        }, 2_000)
+      debounceTask.value()
     }
     watchEffect(function () {
       let dataQueryExecutor = props.provider ?? providedDataQueryExecutor
@@ -188,7 +193,7 @@ export default defineComponent({
       chartElement,
       chartHeight: DEFAULT_LINE_CHART_HEIGHT,
       reportTooltipData: chartToolTipManager.reportTooltipData,
-      op, show, hide,
+      tooltip, show, hide,
     }
   },
 })
@@ -208,9 +213,11 @@ export default defineComponent({
   float: right;
   margin-left: 20px;
 }
+
 a {
   text-decoration: none;
 }
+
 a.info {
   color: gray;
 }

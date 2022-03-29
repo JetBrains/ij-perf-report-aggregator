@@ -57,14 +57,18 @@ export default defineComponent({
     // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
     return {
       multiple: props.dimension.multiple,
-      value: computed<string | Array<string>|null>({
+      value: computed<string | Array<string>|null|Item>({
         get() {
           const value = props.dimension.value.value
           if (props.dimension.multiple && !Array.isArray(value)) {
             return value == null || value === "" ? [] : [value]
           }
           else {
-            return value
+            if(typeof value != "object") {
+              return {label: value, value}
+            } else {
+              return value
+            }
           }
         },
         set(value) {

@@ -4,6 +4,9 @@ import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, toArray } from "../dataQuery"
 import { BaseDimensionConfigurator } from "./DimensionConfigurator"
 
+// todo what is it?
+const macLarge = "mac large"
+
 export class MachineConfigurator implements DataQueryConfigurator {
   public readonly value = ref<string | Array<string>>("")
   public readonly values = ref<Array<GroupedDimensionValue>>([])
@@ -43,7 +46,12 @@ export class MachineConfigurator implements DataQueryConfigurator {
         groupName = "windows-blade"
       }
       else {
-        groupName = MachineConfigurator.valueToGroup[value]
+        if (value.startsWith("intellij-macos-unit-2200-large-")) {
+          groupName = macLarge
+        }
+        else {
+          groupName = MachineConfigurator.valueToGroup[value]
+        }
         if (groupName == null) {
           groupName = "Unknown"
           console.error(`Group is unknown for machine: ${value}`)
@@ -105,7 +113,6 @@ export interface GroupedDimensionValue {
 function getValueToGroup() {
   // Mac mini Space Gray/3.0 GHz 6C/8GB/256GB
   const macMini = "macMini 2018"
-
   // Mac Mini M1 Chip with 8‑Core CPU und 8‑Core GPU, SSD 256Gb, RAM 16Gb
   const macMiniM1 = "macMini M1 2020"
 
@@ -132,6 +139,8 @@ function getValueToGroup() {
     "intellij-macos-hw-unit-2205": macMiniM1,
     "intellij-macos-hw-unit-2206": macMiniM1,
     "intellij-macos-hw-unit-2207": macMiniM1,
+
+    "intellij-macos-unit-2200-large-10298": macLarge,
 
     "intellij-windows-hw-unit-498": win,
     "intellij-windows-hw-unit-499": win,

@@ -60,9 +60,6 @@ export default defineComponent({
       value: computed<string | Array<string>|null>({
         get() {
           const value = props.dimension.value.value
-          if(props.dimension.loading){
-            return null
-          }
           if (props.dimension.multiple && !Array.isArray(value)) {
             return value == null || value === "" ? [] : [value]
           }

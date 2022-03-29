@@ -1,6 +1,5 @@
 import { MenuItem } from "primevue/menuitem"
 import { ParentRouteRecord } from "shared/src/route"
-import IntelliJReport from "./Report.vue"
 
 export function getReportVisualizerItems(): Array<MenuItem> {
   return [
@@ -17,7 +16,7 @@ export function getReportVisualizerRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/report",
-          component: () => IntelliJReport,
+          component: () => import("./Report.vue"),
           meta: {pageTitle: "Report Analyzer"},
         },
       ],

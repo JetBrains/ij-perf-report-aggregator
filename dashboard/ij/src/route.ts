@@ -1,11 +1,5 @@
 import { MenuItem } from "primevue/menuitem"
 import { ParentRouteRecord } from "shared/src/route"
-import IntelliJDashboard from "./IntelliJDashboard.vue"
-import IntelliJExplore from "./IntelliJExplore.vue"
-import IntelliJPulse from "./IntelliJPulse.vue"
-import ModuleLoading from "./ModuleLoading.vue"
-import ProgressOverTime from "./ProgressOverTime.vue"
-import SharedIndexesDashboard from "./SharedIndexesDashboard.vue"
 
 export function getIjItems(): Array<MenuItem> {
   return [
@@ -51,7 +45,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/ij",
-          component: () => IntelliJDashboard,
+          component: () => import("./IntelliJDashboard.vue"),
           children: [
             {
               path: "/ij/dashboard",
@@ -59,24 +53,24 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             },
             {
               path: "/ij/pulse",
-              component: () => IntelliJPulse,
+              component: () => import("./IntelliJPulse.vue"),
               meta: {pageTitle: "IJ - Pulse"},
             },
             {
               path: "/ij/progressOverTime",
-              component: () => ProgressOverTime,
+              component: () => import("./ProgressOverTime.vue"),
               meta: {pageTitle: "IJ - Progress Over Time"},
             },
             {
               path: "/ij/moduleLoading",
-              component: () => ModuleLoading,
+              component: () => import("./ModuleLoading.vue"),
               meta: {pageTitle: "IJ - Module Loading"},
             },
           ],
         },
         {
           path: "/ij/explore",
-          component: () => IntelliJExplore,
+          component: () => import("./IntelliJExplore.vue"),
           meta: {pageTitle: "IJ Explore"},
         },
       ]
@@ -111,7 +105,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/rubyMinePerformanceIntegration/dashboard",
-          component: () => SharedIndexesDashboard,
+          component: () => import("./SharedIndexesDashboard.vue"),
           props: {
             dbName: "rubymineperfint",
             defaultMeasures: [],

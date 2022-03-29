@@ -9,6 +9,7 @@
       option-value="value"
       :max-selected-labels="3"
       :selection-limit="multiple ? null : 1"
+      :filter="true"
     />
   </template>
   <template v-else>
@@ -23,6 +24,7 @@
       option-group-label="label"
       :selection-limit="multiple ? null : 1"
       :max-selected-labels="3"
+      :filter="true"
     />
   </template>
 </template>

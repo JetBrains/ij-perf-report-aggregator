@@ -28,8 +28,6 @@ Otherwise use:
 
 For example, if activity `launch terminal` reported under category `prepareAppInitActivities`, use `prepareAppInitActivities.launch terminal` as metric name. Or `prepareAppInitActivities.first render.s` to get start value of `first render`.
 
-See [Layout](https://element-plus.org/#/en-US/component/layout).
-
 ## Adding a New Database
 
 `cd ~/Documents/report-aggregator`

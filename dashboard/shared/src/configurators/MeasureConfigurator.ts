@@ -1,5 +1,4 @@
 import { LineSeriesOption } from "echarts/charts"
-import { TplFormatterParam } from "echarts/types/src/util/format"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
@@ -257,7 +256,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       },
       axisPointer: {
         label: {
-          formatter(data: TplFormatterParam): string {
+          formatter(data): string {
             const value = data["value"] as number
             return useDurationFormatter ? durationAxisPointerFormatter(value) : numberFormat.format(value)
           },

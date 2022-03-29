@@ -7,7 +7,7 @@
     option-label="value"
     option-group-label="value"
     :placeholder="cLabel"
-    @group-change="groupSelected"
+    @group-change="groupSelect"
   />
 </template>
 <script lang="ts">
@@ -35,8 +35,10 @@ export default defineComponent({
     const selectedGroup = ref<string>()
     const groupSelect = (e: GroupEvent) => {
       selectedGroup.value = e.value.value
-      // eslint-disable-next-line vue/no-mutating-props
-      props.dimension.value.value = e.value.children!.map(it => it.value)
+      if(e.value.children != null) {
+        // eslint-disable-next-line vue/no-mutating-props
+        props.dimension.value.value = e.value.children.map(it => it.value)
+      }
     }
     return {
       cLabel: computed({
@@ -54,7 +56,7 @@ export default defineComponent({
       }),
       value: props.dimension.value,
       values: props.dimension.values,
-      groupSelected: groupSelect,
+      groupSelect,
     }
   },
 })

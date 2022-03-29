@@ -23,13 +23,13 @@ export default defineComponent({
     const configurator = props.configurator as MeasureConfigurator
     return {
       value: computed({
-        get() {
-          if(!configurator.data.value.some(it => configurator.value.value?.indexOf(it) > -1)){
+        get(): Array<string>|null {
+          if(!configurator.data.value.some(it => configurator.value.value != null && configurator.value.value.indexOf(it) > -1)){
             return null
           }
           return configurator.data.value.length == 0 ? null : configurator.value.value
         },
-        set(value) {
+        set(value: Array<string>|null) {
           configurator.value.value = value
         },
       }),

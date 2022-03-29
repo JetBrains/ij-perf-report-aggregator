@@ -2,7 +2,7 @@
   <div class="w-full">
     <Toolbar>
       <template #start>
-        <FilterInput :configurator="scenarioConfigurator"/>
+        <FilterInput :configurator="scenarioConfigurator" />
         <DimensionSelect
           label="Scenarios"
           :dimension="scenarioConfigurator"
@@ -11,15 +11,15 @@
           label="Branch"
           :dimension="branchConfigurator"
         />
-        <MeasureSelect :configurator="measureConfigurator"/>
+        <MeasureSelect :configurator="measureConfigurator" />
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
         />
-        <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+        <TimeRangeSelect :configurator="timeRangeConfigurator" />
       </template>
       <template #end>
-        <ReloadButton/>
+        <ReloadButton />
       </template>
     </Toolbar>
   </div>
@@ -48,6 +48,8 @@
 </template>
 
 <script lang="ts" setup>
+import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { DEFAULT_LINE_CHART_HEIGHT } from "shared/src/chart"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
@@ -62,10 +64,8 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
 import FilterInput from "../../shared/src/components/FilterInput.vue"

@@ -1,5 +1,5 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, reactive, ref } from "vue"
+import { inject, reactive } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { timeFormat } from "../chart"
 import { DataQuery } from "../dataQuery"
@@ -29,8 +29,6 @@ export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
-  readonly infoIsVisible = ref(false)
-
   readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
 
 

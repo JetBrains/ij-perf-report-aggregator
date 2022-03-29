@@ -3,10 +3,7 @@
     ref="tooltip"
     :show-close-icon="true"
   >
-    <div
-      @mouseenter="tooltipEnter"
-      @mouseleave="tooltipLeave"
-    >
+    <div>
       <a
         v-if="reportTooltipData.linkUrl != null"
         :href="reportTooltipData.linkUrl"
@@ -89,14 +86,14 @@ import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { dataQueryExecutorKey } from "../injectionKeys"
-import { DebouncedTask, debounceSync } from "../util/debounce"
+import { DebouncedFunction, debounceSync } from "../util/debounce"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
 export interface Tooltip {
-  show(event: any, ref: HTMLElement | null): void
+  show(event: Event, ref: HTMLElement | null): void
 
-  hide(event: any, ref: HTMLElement | null): void
+  hide(event: Event, ref: HTMLElement | null): void
 }
 
 export default defineComponent({
@@ -126,17 +123,17 @@ export default defineComponent({
     const skipZeroValues = toRef(props, "skipZeroValues")
     const chartToolTipManager = new ChartToolTipManager()
     const tooltip = ref<Tooltip>()
-    const debounceTask = ref<DebouncedTask | null>(null)
-    const show = event => {
+    const debounceTask = ref<DebouncedFunction>()
+    const show = (event: Event) => {
       if (debounceTask.value !== null) {
-        debounceTask.value.clear()
+        debounceTask.value?.clear()
       }
-      tooltip.value.show(event, chartElement.value)
+      tooltip.value?.show(event, chartElement.value)
     }
-    const hide = event => {
+    const hide = (event: Event) => {
       debounceTask.value =
         debounceSync(() => {
-          tooltip.value.hide(event, chartElement.value)
+          tooltip.value?.hide(event, chartElement.value)
         }, 2_000)
       debounceTask.value()
     }

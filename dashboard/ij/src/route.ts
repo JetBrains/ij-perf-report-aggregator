@@ -2,9 +2,9 @@ import { MenuItem } from "primevue/menuitem"
 import { ParentRouteRecord } from "shared/src/route"
 import IntelliJDashboard from "./IntelliJDashboard.vue"
 import IntelliJExplore from "./IntelliJExplore.vue"
+import IntelliJPulse from "./IntelliJPulse.vue"
 import ModuleLoading from "./ModuleLoading.vue"
 import ProgressOverTime from "./ProgressOverTime.vue"
-import Pulse from "./Pulse.vue"
 import SharedIndexesDashboard from "./SharedIndexesDashboard.vue"
 
 export function getIjItems(): Array<MenuItem> {
@@ -59,7 +59,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             },
             {
               path: "/ij/pulse",
-              component: () => Pulse,
+              component: () => IntelliJPulse,
               meta: {pageTitle: "IJ - Pulse"},
             },
             {
@@ -85,7 +85,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/sharedIndexes/dashboard",
-          component: () => SharedIndexesDashboard,
+          component: () => import("./SharedIndexesDashboard.vue"),
           props: {
             dbName: "sharedIndexes",
             defaultMeasures: [],
@@ -98,7 +98,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/performanceIntegration/dashboard",
-          component: () => SharedIndexesDashboard,
+          component: () => import("./SharedIndexesDashboard.vue"),
           props: {
             dbName: "perfint",
             defaultMeasures: [],

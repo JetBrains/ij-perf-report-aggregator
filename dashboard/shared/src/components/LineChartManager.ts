@@ -2,7 +2,6 @@ import { LineChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { TplFormatterParam } from "echarts/types/src/util/format"
 import { watch , Ref } from "vue"
 import { ChartManagerHelper } from "../ChartManagerHelper"
 import { DataQueryExecutor } from "../DataQueryExecutor"
@@ -51,7 +50,7 @@ export class LineChartManager {
         type: "time",
         axisPointer: {
           label: {
-            formatter(data: TplFormatterParam) {
+            formatter(data) {
               return timeFormat.format(data["value"] as number)
             },
           },

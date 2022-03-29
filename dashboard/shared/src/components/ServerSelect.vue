@@ -1,18 +1,24 @@
 <template>
-  Server:
-  <AutoComplete
-    v-model="value"
-    placeholder="The stats server URL"
-    dropdown
-    auto-highlight
-    :suggestions="filteredServer"
-    @complete="searchServer($event)"
-  />
+  <div>
+    Server:
+    <AutoComplete
+      v-model="value"
+      placeholder="The stats server URL"
+      dropdown
+      auto-highlight
+      :suggestions="filteredServer"
+      @complete="searchServer($event)"
+    />
+  </div>
 </template>
+
 <script lang="ts">
 import { computed, defineComponent, ref } from "vue"
 
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
+interface Event{
+  query: string
+}
 
 export default defineComponent({
   name: "ServerSelect",

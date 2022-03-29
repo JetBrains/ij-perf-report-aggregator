@@ -24,10 +24,11 @@ import InputForm from "./InputForm.vue"
 import TabbedCharts from "./TabbedCharts.vue"
 
 export default defineComponent({
-  name: "Report",
+  name: "IntelliJReport",
   components: {InputForm, TabbedCharts},
 })
 </script>
+<!--suppress CssUnusedSymbol -->
 <style>
 .tooltipMainValue {
   float: right;

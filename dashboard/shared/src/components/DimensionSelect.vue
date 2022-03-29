@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, PropType } from "vue"
-import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
+import { BaseDimensionConfigurator } from "../configurators/DimensionConfigurator"
 
 export default defineComponent({
   name: "DimensionSelect",
@@ -38,7 +38,7 @@ export default defineComponent({
       required: true,
     },
     dimension: {
-      type: Object as PropType<DimensionConfigurator>,
+      type: Object as PropType<BaseDimensionConfigurator>,
       required: true,
     },
     valueToLabel: {
@@ -55,7 +55,7 @@ export default defineComponent({
     // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
     return {
       multiple: props.dimension.multiple,
-      value: computed<string | Array<string>>({
+      value: computed<string | Array<string>|null>({
         get() {
           const value = props.dimension.value.value
           if (props.dimension.multiple && !Array.isArray(value)) {
@@ -66,12 +66,13 @@ export default defineComponent({
           }
         },
         set(value) {
-          if (value.length !== 0) {
-            // eslint-disable-next-line vue/no-mutating-props
-            props.dimension.value.value = value
-          } else {
+          if (value == null || value.length === 0) {
             // eslint-disable-next-line vue/no-mutating-props
             props.dimension.value.value = null
+          }
+          else {
+            // eslint-disable-next-line vue/no-mutating-props
+            props.dimension.value.value = value
           }
         },
       }),

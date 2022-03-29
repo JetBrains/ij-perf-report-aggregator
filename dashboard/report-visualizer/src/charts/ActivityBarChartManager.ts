@@ -4,7 +4,6 @@ import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { XAXisOption } from "echarts/types/dist/shared"
 import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
-import { TplFormatterParam } from "echarts/types/src/util/format"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter } from "shared/src/chart"
 import { BarChartOptions } from "shared/src/echarts"
@@ -90,8 +89,8 @@ export class ActivityBarChartManager implements ChartManager {
         type: "value",
         axisPointer: {
           label: {
-            formatter(data: TplFormatterParam) {
-              return numberFormat.format(data["value"])
+            formatter (data): string {
+              return typeof data["value"] == "number" ? numberFormat.format(data["value"]) : ""
             },
           },
         },

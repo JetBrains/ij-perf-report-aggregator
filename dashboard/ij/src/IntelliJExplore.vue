@@ -18,23 +18,25 @@
     </template>
 
     <template #end>
-      <ReloadButton/>
+      <ReloadButton />
     </template>
   </Toolbar>
 
   <Toolbar>
     <template #start>
-      <MeasureSelect :configurator="measureConfigurator"/>
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <MeasureSelect :configurator="measureConfigurator" />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
   </Toolbar>
 
   <div class="grid grid-cols-2 gap-4">
-    <LineChartCard/>
+    <LineChartCard />
   </div>
 </template>
 
 <script lang="ts">
+import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
@@ -47,8 +49,6 @@ import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { defineComponent } from "vue"
 
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"

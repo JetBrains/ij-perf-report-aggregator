@@ -53,7 +53,7 @@ import LineChartCard from "shared/src/components/LineChartCard.vue"
 import { defineComponent } from "vue"
 
 export default defineComponent({
-  name: "Pulse",
+  name: "IntelliJPulse",
   components: {LineChartCard},
 })
 </script>

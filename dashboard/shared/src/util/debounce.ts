@@ -1,4 +1,4 @@
-interface DebouncedFunction {
+export interface DebouncedFunction {
   (): void
 
   clear: () => void

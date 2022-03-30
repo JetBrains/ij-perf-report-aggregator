@@ -78,6 +78,7 @@ const props = defineProps<{
 const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
   machine: "linux-blade",
   project: [],
+  branch: "master",
   measure: props.defaultMeasures.slice(),
 }, useRouter())
 

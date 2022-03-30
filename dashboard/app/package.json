@@ -4,12 +4,12 @@
   "dependencies": {
     "ij": "workspace:*",
     "jb": "workspace:*",
+    "pinia": "^2.0.12",
+    "primeicons": "^5.0.0",
+    "primevue": "^3.12.3",
     "report-visualizer": "workspace:*",
     "shared": "workspace:*",
     "vue": "3.2.31",
-    "vue-router": "4.0.14",
-    "primevue": "^3.12.2",
-    "primeicons": "^5.0.0",
-    "pinia": "^2.0.12"
+    "vue-router": "4.0.14"
   }
 }

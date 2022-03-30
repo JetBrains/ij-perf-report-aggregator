@@ -10,7 +10,7 @@
     <template #start>
       <img
         width="70"
-        src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_square.svg"
+        :src="logoUrl"
         alt="JetBrains Black Box Logo logo."
       >
     </template>
@@ -30,51 +30,40 @@
     </keep-alive>
   </router-view>
 </template>
-<script lang="ts">
+<script setup lang="ts">
+/// <reference types="vite-svg-loader" />
+
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
-import { defineComponent, provide, ref, watch } from "vue"
+import { provide, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 import { useMessageStore } from "../stores/Message"
+
+import logoUrl from "./jb_square.svg?url"
 import { getItems, getRoutes } from "./route"
 
-export default defineComponent({
-  name: "App",
-  components: {
-    ServerSelect,
-  },
+const serverUrl = ref("")
+const routes = getRoutes()
+const items = ref(getItems())
+provide(serverUrlKey, serverUrl)
 
-  setup() {
-    const serverUrl = ref("")
-    const routes = getRoutes()
-    const items = ref(getItems())
-    provide(serverUrlKey, serverUrl)
-
-    const activePath = ref("")
-    const route = useRoute()
-    watch(() => route.path, p => {
-      activePath.value = p
-    })
-
-    const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
-    persistentStateManager.add("serverUrl", serverUrl)
-    persistentStateManager.init()
-
-    const messageState = useMessageStore()
-    return {
-      serverUrl,
-      activePath,
-      routes,
-      items,
-      messageState,
-      closeError(): void {
-        messageState.isError = false
-      },
-    }
-  },
+const activePath = ref("")
+const route = useRoute()
+watch(() => route.path, p => {
+  activePath.value = p
 })
+
+const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
+persistentStateManager.add("serverUrl", serverUrl)
+persistentStateManager.init()
+
+const messageState = useMessageStore()
+
+function closeError(): void {
+  messageState.isError = false
+}
 </script>
 
 <style>

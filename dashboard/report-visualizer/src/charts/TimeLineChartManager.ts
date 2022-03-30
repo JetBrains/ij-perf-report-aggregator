@@ -5,7 +5,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption} from "echarts/types/dist/shared"
 import { MarkArea2DDataItemOption } from "echarts/types/src/component/marker/MarkAreaModel"
 import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
-import { ItemStyleOption, SeriesLabelOption } from "echarts/types/src/util/types"
+import { SeriesLabelOption } from "echarts/types/src/util/types"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter, collator } from "shared/src/chart"
 import { BarChartOptions, CustomChartOptions } from "shared/src/echarts"
@@ -197,6 +197,7 @@ export class TimeLineChartManager implements ChartManager {
               y: 0,
             },
             itemStyle: {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               //@ts-ignore: https://github.com/apache/echarts/issues/16775
               color(value: { data: ChartDataItem; color: string }): string {
                 const chartItem = value.data

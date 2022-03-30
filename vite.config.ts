@@ -6,7 +6,7 @@ import { PrimeVueResolver } from "unplugin-vue-components/resolvers"
 import { defineConfig } from "vite"
 import AutoImport from "unplugin-auto-import/vite"
 import Components from "unplugin-vue-components/vite"
-
+import svgLoader from "vite-svg-loader"
 // import visualizer from "rollup-plugin-visualizer"
 
 // https://vitejs.dev/config/
@@ -21,6 +21,7 @@ export default defineConfig({
     //   enforce: "pre",
     // },
     vue(),
+    svgLoader(),
     AutoImport({
       resolvers: [PrimeVueResolver() ],
     }),

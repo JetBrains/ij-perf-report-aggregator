@@ -54,10 +54,12 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { defineComponent, provide, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
-export interface Tab{
+
+export interface Tab {
   route: string
   title: string
 }
+
 export default defineComponent({
   name: "IntelliJDashboard",
   components: {
@@ -116,15 +118,7 @@ export default defineComponent({
     ])
 
     function updateActiveTab(newPath: string): void {
-      if (newPath.endsWith("/pulse")) {
-        activeTab.value = 0
-      }
-      else if (newPath.endsWith("/progressOverTime")) {
-        activeTab.value = 1
-      }
-      else if (newPath.endsWith("/moduleLoading")) {
-        activeTab.value = 2
-      }
+      activeTab.value = tabs.value.findIndex(tab => newPath.endsWith("/" + tab.route))
     }
 
     updateActiveTab(route.path)
@@ -143,7 +137,7 @@ export default defineComponent({
       timeRangeConfigurator,
       getProjectName,
       activeTab,
-      tabs
+      tabs,
     }
   },
 })

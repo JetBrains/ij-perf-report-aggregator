@@ -9,8 +9,8 @@ export declare type ToolTipFormatter = (params: CallbackDataParams[]) => string 
 // natural sort of alphanumerical strings
 export const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
 
-export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: CallbackDataParams | CallbackDataParams[], _ticket: string) => string {
-  return function (params: CallbackDataParams | CallbackDataParams[], _ticket: string): string {
+export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: CallbackDataParams | CallbackDataParams[]) => string {
+  return function (params: CallbackDataParams | CallbackDataParams[]): string {
     // function return type doesn't allow null, but actually it can be returned
     return formatter(Array.isArray(params) ? params : [params]) as never
   }

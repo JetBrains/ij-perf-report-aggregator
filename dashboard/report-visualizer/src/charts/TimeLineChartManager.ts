@@ -1,11 +1,11 @@
-import { LineSeriesOption } from "echarts"
 import { CustomChart, CustomSeriesOption } from "echarts/charts"
 import { DataZoomInsideComponent, GridComponent, LegendComponent, MarkAreaComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { graphic, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption, ZRColor } from "echarts/types/dist/shared"
+import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption} from "echarts/types/dist/shared"
 import { MarkArea2DDataItemOption } from "echarts/types/src/component/marker/MarkAreaModel"
 import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
+import { SeriesLabelOption } from "echarts/types/src/util/types"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { adaptToolTipFormatter, collator } from "shared/src/chart"
 import { BarChartOptions, CustomChartOptions } from "shared/src/echarts"
@@ -149,7 +149,7 @@ export class TimeLineChartManager implements ChartManager {
     })
 
     // compute categories - for each thread maybe several categories as one service can include another one and we render it above each other
-    const rowToItems = new Map<string, CustomSeriesOption & { label: unknown; itemStyle: unknown }>()
+    const rowToItems = new Map<string, CustomSeriesOption & { label: SeriesLabelOption; itemStyle: unknown }>()
     // const labelThreshold = 20 * this.dataDescriptor.unitConverter.factor
     let minStart = Number.MAX_VALUE
     let maxEnd = 0

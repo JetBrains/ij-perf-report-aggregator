@@ -236,7 +236,9 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       type: "line",
       smooth: false,
       showSymbol: true,
-      symbolSize: 7,
+      symbolSize (_rawValue, _data) {
+        return Math.min(800/dataList[dataIndex].length, 9)
+      },
       symbol: "circle",
       legendHoverLink: true,
       sampling: "lttb",

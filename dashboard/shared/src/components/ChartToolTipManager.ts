@@ -31,7 +31,6 @@ export class ChartToolTipManager {
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
   readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
 
-
   formatArrayValue(params: Array<CallbackDataParams>): null {
     const query = this.dataQueryExecutor.lastQuery
     if (query == null) {

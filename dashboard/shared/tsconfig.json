@@ -4,6 +4,7 @@
     "src/**/*.ts",
     "src/shims-vue.d.ts",
     "src/rison.d.ts",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "../../dashboard/app/components.d.ts"
   ]
 }

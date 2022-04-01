@@ -6,23 +6,25 @@
     option-value="value"
   />
 </template>
-<script lang="ts">
-import { defineComponent, ref } from "vue"
+<script setup lang="ts">
+import { computed, shallowRef } from "vue"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
 
-export default defineComponent({
-  name: "TimeRangeSelect",
-  props: {
-    configurator: {
-      type: TimeRangeConfigurator,
-      required: true,
-    },
-  },
-  setup(props) {
-    return {
-      value: props.configurator.value,
-      timeRanges: ref(TimeRangeConfigurator.timeRanges),
-    }
+const props = defineProps({
+  configurator: {
+    type: TimeRangeConfigurator,
+    required: true,
   },
 })
+
+const value = computed({
+  get() {
+    return props.configurator.value.value
+  },
+  set(value: string) {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.configurator.value.value = value
+  },
+})
+const timeRanges = shallowRef(TimeRangeConfigurator.timeRanges)
 </script>

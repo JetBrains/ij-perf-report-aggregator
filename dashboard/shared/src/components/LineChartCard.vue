@@ -131,10 +131,9 @@ export default defineComponent({
       tooltip.value?.show(event, chartElement.value)
     }
     const hide = (event: Event) => {
-      debounceTask.value =
-        debounceSync(() => {
-          tooltip.value?.hide(event, chartElement.value)
-        }, 2_000)
+      debounceTask.value = debounceSync(() => {
+        tooltip.value?.hide(event, chartElement.value)
+      }, 2_000)
       debounceTask.value()
     }
     watchEffect(function () {
@@ -169,9 +168,13 @@ export default defineComponent({
     })
 
     onMounted(() => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      chartManager = new LineChartManager(chartElement.value!, chartToolTipManager.dataQueryExecutor, toRef(props, "dataZoom"),
-        chartToolTipManager.formatArrayValue.bind(chartToolTipManager))
+      chartManager = new LineChartManager(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        chartElement.value!,
+        chartToolTipManager.dataQueryExecutor,
+        toRef(props, "dataZoom"),
+        chartToolTipManager.formatArrayValue.bind(chartToolTipManager),
+      )
 
       watch(skipZeroValues, () => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -206,7 +209,7 @@ export default defineComponent({
 }
 
 .tooltipValue {
-  font-family: Menlo, Monaco, Consolas, Courier, monospace;
+  @apply font-mono;
   float: right;
   margin-left: 20px;
 }
@@ -216,6 +219,6 @@ a {
 }
 
 a.info {
-  color: gray;
+  @apply text-gray-600;
 }
 </style>

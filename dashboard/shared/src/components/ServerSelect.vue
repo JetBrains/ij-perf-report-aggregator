@@ -5,13 +5,13 @@
   >
     <div class="relative">
       <div class="flex gap-2 flex-row items-baseline">
-        <ComboboxLabel class="block text-gray-700">
+        <ComboboxLabel class="block text-sm text-gray-700">
           Server:
         </ComboboxLabel>
         <div class="relative">
           <ComboboxInput
             class="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-12 shadow-sm focus:border-indigo-500
-            focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
             :display-value="server => server"
             @change="query = $event.target.value"
           />
@@ -33,7 +33,7 @@
       >
         <ComboboxOptions
           class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md
-            bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
           <div
             v-if="filteredValues.length === 0 && query !== ''"
@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxLabel, ComboboxOption, ComboboxOptions } from "@headlessui/vue"
-import { computed, defineEmits, defineProps, ref } from "vue"
+import { computed, ref } from "vue"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 
 const props = defineProps({

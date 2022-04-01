@@ -2,7 +2,6 @@
 import vue from "@vitejs/plugin-vue"
 // @ts-ignore
 import path from "path"
-import AutoImport from "unplugin-auto-import/vite"
 import { PrimeVueResolver, HeadlessUiResolver } from "unplugin-vue-components/resolvers"
 import Components from "unplugin-vue-components/vite"
 import { defineConfig } from "vite"
@@ -22,9 +21,6 @@ export default defineConfig({
     // },
     vue(),
     svgLoader(),
-    AutoImport({
-      resolvers: [PrimeVueResolver()],
-    }),
     Components({
       resolvers: [
         PrimeVueResolver(),

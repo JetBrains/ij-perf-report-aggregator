@@ -1,6 +1,6 @@
 import { shallowRef } from "vue"
-import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
+import { PersistentStateManager } from "../PersistentStateManager"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -74,20 +74,34 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
   let index = 1
-  if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryProducer is already set")
+  if (configuration.extraQueryProducers.length >= 2) {
+    throw new Error("Only two extraQueryProducer are allowed")
   }
+  const seriesNames: string[] = []
+  let secondSerieName = ""
 
-  configuration.extraQueryProducer = {
+  configuration.extraQueryProducers.push({
     mutate() {
       filter.value = values[index++]
+      seriesNames.push(secondSerieName + "_" + this.getSeriesName(index - 1))
       return index !== values.length
     },
     getSeriesName(index: number): string {
+      if (seriesNames.length > values.length) {
+        return seriesNames[index]
+      }
       return values[index]
     },
     getMeasureName(_index: number): string {
       return configuration.measures[0]
-    }
-  }
+    },
+    reset() {
+      index = 1
+      filter.value = values[0]
+    },
+    setSecondSerieName(serieName: string): void {
+      secondSerieName = serieName
+      seriesNames.push(serieName + "_" + this.getSeriesName(index - 1))
+    },
+  })
 }

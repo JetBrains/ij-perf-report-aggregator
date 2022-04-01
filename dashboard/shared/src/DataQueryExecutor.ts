@@ -1,8 +1,8 @@
 import { decode as risonDecode } from "rison-node"
-import { watch, provide } from "vue"
-import { PersistentStateManager } from "./PersistentStateManager"
+import { provide, watch } from "vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, encodeQuery } from "./dataQuery"
 import { dataQueryExecutorKey } from "./injectionKeys"
+import { PersistentStateManager } from "./PersistentStateManager"
 import { DebouncedTask, TaskHandle } from "./util/debounce"
 import { loadJson } from "./util/httpUtil"
 
@@ -15,7 +15,7 @@ export class DataQueryExecutor {
 
   listener: DataQueryConsumer | null = null
   // data loading maybe started before html element is ready
-  private notConsumedData: {data: Array<Array<Array<never>>>; configuration: DataQueryExecutorConfiguration} | null = null
+  private notConsumedData: { data: Array<Array<Array<never>>>; configuration: DataQueryExecutorConfiguration } | null = null
 
   private readonly dependents: Array<DataQueryExecutor> = []
 
@@ -133,13 +133,45 @@ export class DataQueryExecutor {
 
     let serializedQuery = "!("
     serializedQuery += encodeQuery(query)
-    if (configuration.extraQueryProducer != null) {
+    //TODO: implement a general algorithm based on recursion to cover any number of multivalued dimensions
+    if(configuration.extraQueryProducers.length == 0){
+      //empty
+    } else if(configuration.extraQueryProducers.length === 1){
+      const extraQueryProducer = configuration.extraQueryProducers[0]
       let done = false
       do {
-        done = !configuration.extraQueryProducer.mutate()
+        done = !extraQueryProducer.mutate()
         serializedQuery += "," + encodeQuery(query)
       }
       while (!done)
+    } else if(configuration.extraQueryProducers.length === 2){
+      const extraQueryProducer1 = configuration.extraQueryProducers[0]
+      const extraQueryProducer2 = configuration.extraQueryProducers[1]
+      let done1 = false
+      let done2 = false
+      let firstSerieIndex = 0
+      extraQueryProducer2.setSecondSerieName(extraQueryProducer1.getSeriesName(firstSerieIndex))
+      do {
+        done2 = !extraQueryProducer2.mutate()
+        serializedQuery += "," + encodeQuery(query)
+      }
+      while (!done2)
+      extraQueryProducer2.reset()
+      do {
+        done1 = !extraQueryProducer1.mutate()
+        firstSerieIndex++
+        extraQueryProducer2.setSecondSerieName(extraQueryProducer1.getSeriesName(firstSerieIndex))
+        serializedQuery += "," + encodeQuery(query)
+        let done2 = false
+        do {
+          done2 = !extraQueryProducer2.mutate()
+          serializedQuery += "," + encodeQuery(query)
+        }
+        while (!done2)
+        extraQueryProducer2.reset()
+        done2 = false
+      }
+      while (!done1)
     }
     serializedQuery += ")"
 

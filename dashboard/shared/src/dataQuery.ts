@@ -93,6 +93,10 @@ interface ExtraQueryProducer {
   getSeriesName(index: number): string
 
   getMeasureName(index: number): string
+
+  reset(): void
+
+  setSecondSerieName(serieName: string): void
 }
 
 export class DataQueryExecutorConfiguration {
@@ -107,7 +111,7 @@ export class DataQueryExecutorConfiguration {
   }
 
   // returns false if done
-  extraQueryProducer: ExtraQueryProducer | null = null
+  extraQueryProducers: [ExtraQueryProducer?, ExtraQueryProducer?] = []
 
   private _chartConfigurator: ChartConfigurator | null = null
   get chartConfigurator(): ChartConfigurator {

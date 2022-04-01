@@ -1,11 +1,11 @@
 import { LineSeriesOption } from "echarts/charts"
 import { Ref, shallowRef, watch } from "vue"
-import { DataQueryResult } from "../DataQueryExecutor"
-import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, collator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
+import { DataQueryResult } from "../DataQueryExecutor"
 import { LineChartOptions } from "../echarts"
 import { durationAxisLabelFormatter, durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
+import { PersistentStateManager } from "../PersistentStateManager"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -13,7 +13,7 @@ import { ServerConfigurator } from "./ServerConfigurator"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
-  public readonly value = shallowRef<Array<string>|null>(null)
+  public readonly value = shallowRef<Array<string> | null>(null)
 
   private readonly debouncedLoadMetadata = new DebouncedTask(taskHandle => this.loadMetadata(taskHandle))
 
@@ -56,17 +56,17 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       }
 
       return Promise.all([
-          loadJson<Array<string>>(`${server}/api/v1/meta/measure?db=${this.serverConfigurator.databaseName}`, null, taskHandle, data => {
-            if (data !== null) {
-              this.data.value = data
-            }
-          }),
-          loadMeasureList(taskHandle, "measure", this.serverConfigurator, this.parent),
-        ]).then(values => {
-          if (values.length === 2 && values[0] != null && values[1] != null) {
-            this.data.value = [...values[0], ...values[1]]
+        loadJson<Array<string>>(`${server}/api/v1/meta/measure?db=${this.serverConfigurator.databaseName}`, null, taskHandle, data => {
+          if (data !== null) {
+            this.data.value = data
           }
-        })
+        }),
+        loadMeasureList(taskHandle, "measure", this.serverConfigurator, this.parent),
+      ]).then(values => {
+        if (values.length === 2 && values[0] != null && values[1] != null) {
+          this.data.value = [...values[0], ...values[1]]
+        }
+      })
     }
 
     return loadMeasureList(taskHandle, "measures", this.serverConfigurator, this.parent).then(data => {
@@ -195,11 +195,12 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
   let index = 1
-  if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryMutator is already set")
+
+  if (configuration.extraQueryProducers.length >= 2) {
+    throw new Error("Only two extraQueryProducer are allowed")
   }
 
-  configuration.extraQueryProducer = {
+  configuration.extraQueryProducers.push({
     mutate() {
       if (field != null) {
         field.name = values[index]
@@ -218,13 +219,24 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
     },
     getMeasureName(index: number): string {
       return values[index]
+    },
+    reset() {
+      field.name = values[0]
+      index = 1
+    },
+    setSecondSerieName(serieName: string): void {
+      //empty
     }
-  }
+
+  })
 }
 
 function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
   const series = new Array<LineSeriesOption>()
-  const extraQueryProducer = configuration.extraQueryProducer
+  let extraQueryProducer = null
+  if(configuration.extraQueryProducers.length > 0) {
+    extraQueryProducer = configuration.extraQueryProducers[configuration.extraQueryProducers.length-1]
+  }
   let useDurationFormatter = true
   for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
     const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
@@ -236,10 +248,10 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       type: "line",
       smooth: false,
       showSymbol: true,
-      symbolSize (_rawValue, _data) {
-        return Math.min(800/dataList[dataIndex].length, 9)
+      symbolSize(_rawValue, _data) {
+        return Math.min(800 / dataList[dataIndex].length, 9)
       },
-      symbol: "circle",
+      symbol: dataIndex % 2 ? "circle" : "triangle",
       legendHoverLink: true,
       sampling: "lttb",
       dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
@@ -249,6 +261,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false
     }
+
   }
 
   return {

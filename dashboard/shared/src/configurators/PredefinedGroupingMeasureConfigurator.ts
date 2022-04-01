@@ -1,9 +1,9 @@
 import { BarSeriesOption } from "echarts/charts"
 import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
 import { Ref } from "vue"
-import { DataQueryResult } from "../DataQueryExecutor"
 import { ChartConfigurator, ChartStyle } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
+import { DataQueryResult } from "../DataQueryExecutor"
 import { BarChartOptions } from "../echarts"
 import { durationAxisLabelFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
@@ -56,8 +56,8 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 
   configureChart(dataSets: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
-    const extraQueryProducer = configuration.extraQueryProducer
-    if (extraQueryProducer != null) {
+    const extraQueryProducers = configuration.extraQueryProducers
+    for (const extraQueryProducer of extraQueryProducers) {
       let useDurationFormatter = true
       // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
       const dimensions: Array<DimensionDefinition> = []
@@ -102,8 +102,8 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
         },
         series,
       }
-    }
 
+    }
     const data = dataSets[0]
     const series = new Array<BarSeriesOption>(data.length)
     for (let i = 0; i < data.length; i++) {

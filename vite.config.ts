@@ -2,7 +2,7 @@
 import vue from "@vitejs/plugin-vue"
 // @ts-ignore
 import path from "path"
-import { PrimeVueResolver, HeadlessUiResolver } from "unplugin-vue-components/resolvers"
+import { PrimeVueResolver } from "unplugin-vue-components/resolvers"
 import Components from "unplugin-vue-components/vite"
 import { defineConfig } from "vite"
 import svgLoader from "vite-svg-loader"
@@ -24,24 +24,25 @@ export default defineConfig({
     Components({
       resolvers: [
         PrimeVueResolver(),
-        HeadlessUiResolver(),
-        name => {
-          // @ts-ignore
-          const kind = process.env.NODE_ENV === "test" ? "" : "esm/"
-          if (name.endsWith("Icon")) {
-            return {
-              path: `@heroicons/vue/outline/${kind}${name}.js`,
-            }
-          }
-          else if (name.endsWith("IconSolid")) {
-            return {
-              path: `@heroicons/vue/solid/${kind}${name.substring(0, name.length - "Solid".length)}.js`,
-            }
-          }
-          else {
-            return null
-          }
-        }],
+        // HeadlessUiResolver(),
+        // name => {
+        //   // @ts-ignore
+        //   const kind = process.env.NODE_ENV === "test" ? "" : "esm/"
+        //   if (name.endsWith("Icon")) {
+        //     return {
+        //       path: `@heroicons/vue/outline/${kind}${name}.js`,
+        //     }
+        //   }
+        //   else if (name.endsWith("IconSolid")) {
+        //     return {
+        //       path: `@heroicons/vue/solid/${kind}${name.substring(0, name.length - "Solid".length)}.js`,
+        //     }
+        //   }
+        //   else {
+        //     return null
+        //   }
+        // },
+      ],
     }),
   ],
   root: "dashboard/app",

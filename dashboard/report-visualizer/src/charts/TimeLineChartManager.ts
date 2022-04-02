@@ -110,6 +110,11 @@ export class TimeLineChartManager implements ChartManager {
     const data = new Map<string, Array<ChartDataItem>>()
     const threshold = (this.dataDescriptor.threshold ?? 10) * this.dataDescriptor.unitConverter.factor
     for (const group of this.dataProvider(dataManager)) {
+      if (group.items == null) {
+        console.error(`No items for ${JSON.stringify(group)}`)
+        continue
+      }
+
       const namePrefix = group.category === "service waiting" ? "wait for " : ""
       for (const item of group.items) {
         if (item.d < threshold) {

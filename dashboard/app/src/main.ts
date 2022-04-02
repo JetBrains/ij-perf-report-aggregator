@@ -9,11 +9,18 @@ import { createAndConfigureRouter } from "./route"
 import "primevue/resources/primevue.css"
 import "primeicons/primeicons.css"
 // we use variable inter font, so, patched version of tailwind-light theme
-import "./tailwind-primevue-theme.css"
+import "primevue/resources/themes/lara-light-blue/theme.css"
 
-const app = createApp(App)
-app.use(createAndConfigureRouter())
-app.use(PrimeVue)
-const pinia = createPinia()
-app.use(pinia)
-app.mount("#app")
+async function initApp() {
+  const app = createApp(App)
+  const router = createAndConfigureRouter()
+  app.use(router)
+  app.use(PrimeVue)
+  const pinia = createPinia()
+  app.use(pinia)
+  await router.isReady()
+    .then(() => app.mount("#app"))
+}
+
+void initApp()
+

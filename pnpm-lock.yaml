@@ -110,8 +110,6 @@ importers:
 
   dashboard/shared:
     specifiers:
-      '@headlessui/vue': 1.5.0
-      '@heroicons/vue': 1.0.6
       '@types/humanize-duration': ^3.27.1
       echarts: 5.3.2
       humanize-duration: 3.27.1
@@ -121,8 +119,6 @@ importers:
       vue: 3.2.31
       vue-router: 4.0.14
     dependencies:
-      '@headlessui/vue': 1.5.0_vue@3.2.31
-      '@heroicons/vue': 1.0.6_vue@3.2.31
       echarts: 5.3.2
       humanize-duration: 3.27.1
       primeicons: 5.0.0
@@ -225,23 +221,6 @@ packages:
 
   /@fontsource/jetbrains-mono/4.5.5:
     resolution: {integrity: sha512-i17hJLwH3EaTVxujrZ/Dm4EHugCweHgu9mgyQlnyRpJXQdrK+oQVJqq8xMwQiw5Gck7+0SyuMWIqRiPPP7Vw6w==}
-    dev: false
-
-  /@headlessui/vue/1.5.0_vue@3.2.31:
-    resolution: {integrity: sha512-jAp6XYpqdEv32xhszaj5ejvjaX5qhu20sCbxu7lplePEfZL+4ffabivJBBTZAiPWczqAXmnZWNWG5DOyqjRa4w==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      vue: ^3.2.0
-    dependencies:
-      vue: 3.2.31
-    dev: false
-
-  /@heroicons/vue/1.0.6_vue@3.2.31:
-    resolution: {integrity: sha512-ng2YcCQrdoQWEFpw+ipFl2rZo8mZ56v0T5+MyfQQvNqfKChwgP6DMloZLW+rl17GEcHkE3H82UTAMKBKZr4+WA==}
-    peerDependencies:
-      vue: '>= 3'
-    dependencies:
-      vue: 3.2.31
     dev: false
 
   /@humanwhocodes/config-array/0.5.0:

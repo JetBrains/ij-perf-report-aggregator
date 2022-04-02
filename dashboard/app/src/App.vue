@@ -6,7 +6,10 @@
   >
     {{ messageState.message }}
   </Message>
-  <Menubar :model="items">
+  <Menubar
+    :model="items"
+    class="!rounded-none !border-0 !border-b !bg-inherit"
+  >
     <template #start>
       <img
         width="70"
@@ -21,14 +24,16 @@
       />
     </template>
   </Menubar>
-  <router-view v-slot="{ Component, route }">
-    <keep-alive
-      :key="route.path"
-      max="4"
-    >
-      <component :is="Component" />
-    </keep-alive>
-  </router-view>
+  <main class="mx-auto px-6 py-4">
+    <router-view v-slot="{ Component, route }">
+      <keep-alive
+        :key="route.path"
+        max="4"
+      >
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
+  </main>
 </template>
 <script setup lang="ts">
 /// <reference types="vite-svg-loader" />
@@ -42,16 +47,15 @@ import { useRoute } from "vue-router"
 import { useMessageStore } from "../stores/Message"
 
 import logoUrl from "./jb_square.svg?url"
-import { getItems, getRoutes } from "./route"
+import { getItems } from "./route"
 
 const serverUrl = ref("")
-const routes = getRoutes()
 const items = ref(getItems())
 provide(serverUrlKey, serverUrl)
 
 const activePath = ref("")
-const route = useRoute()
-watch(() => route.path, p => {
+const _route = useRoute()
+watch(() => _route.path, p => {
   activePath.value = p
 })
 

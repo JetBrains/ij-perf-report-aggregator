@@ -16,7 +16,7 @@ export function getItems(): Array<MenuItem> {
   return [...getIjItems(), ...getJbItems(), ...getReportVisualizerItems()]
 }
 
-export function getRoutes(): Array<ParentRouteRecord> {
+function getRoutes(): Array<ParentRouteRecord> {
   return [...getIjRoutes(), ...getJbRoutes(), ...getReportVisualizerRoutes()]
 }
 

@@ -1,8 +1,7 @@
 <template>
-  <!-- extra wrapping div is used, otherwise warning https://forum.vuejs.org/t/vue-3-how-do-i-use-custom-directive-on-component/105227/3-->
-  <div>
-    Server:
+  <label>Server:
     <AutoComplete
+      id="serverSelector"
       v-model="value"
       class="small"
       placeholder="The stats server URL"
@@ -11,11 +10,11 @@
       :suggestions="filteredServer"
       @complete="searchServer($event)"
     />
-  </div>
+  </label>
 </template>
 
 <script setup lang="ts">
-import { computed, defineEmits, defineProps, ref } from "vue"
+import { computed, ref } from "vue"
 
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 

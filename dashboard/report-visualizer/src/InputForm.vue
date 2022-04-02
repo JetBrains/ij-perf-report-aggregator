@@ -8,13 +8,13 @@
       :cols="80"
       class="!font-mono"
     />
-    <div class="grid grid-cols-2 gap-y-4 place-items-center place-content-start justify-items-start w-fit">
+    <div class="grid grid-cols-1 gap-2 place-content-start justify-items-start w-fit">
       <Button
         class="p-button-sm"
         :loading="isFetching"
         @click="getFromRunningInstance"
       >
-        Get from running instance
+        Get from instance
       </Button>
       <InputNumber
         v-model="portNumber"
@@ -22,14 +22,15 @@
         class="p-inputtext-sm"
         :min="1024"
         :max="65535"
+        size="5"
         :format="false"
       />
       <Button
         :loading="isFetchingDev"
-        class="col-span-2 p-button-sm"
+        class="col-span-2 p-button-sm w-full"
         @click="getFromRunningDevInstance"
       >
-        Get from running instance on port 63343
+        Get from instance on port 63343
       </Button>
     </div>
   </div>

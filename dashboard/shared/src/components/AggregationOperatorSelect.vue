@@ -1,21 +1,25 @@
 <template>
-  <Toolbar>
-    <template #start>
+  <div class="flex-initial space-x-2 py-4">
+    <label>
       <Dropdown
         v-model="value"
+        title="Aggregate by"
         :options="operators"
+        class="p-inputtext-sm"
         placeholder="Operator"
       />
-      <InputNumber
-        v-if="value === 'quantile'"
-        v-model="quantile"
-        :min="0"
-        :max="100"
-        :step="10"
-        :show-buttons="true"
-      />
-    </template>
-  </Toolbar>
+    </label>
+    <InputNumber
+      v-if="value === 'quantile'"
+      v-model="quantile"
+      class="p-inputtext-sm"
+      size="3"
+      :min="0"
+      :max="100"
+      :step="10"
+      :show-buttons="true"
+    />
+  </div>
 </template>
 <script lang="ts">
 import { computed, defineComponent, inject, ref } from "vue"

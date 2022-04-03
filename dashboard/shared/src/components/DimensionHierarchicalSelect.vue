@@ -1,63 +1,62 @@
 <template>
-  <CascadeSelect
+  <!-- https://github.com/primefaces/primevue/issues/1725 loading is not supported -->
+  <TreeSelect
     v-model="value"
+    selection-mode="single"
     :options="values"
-    option-value="value"
-    :option-group-children="['children']"
-    option-label="value"
-    option-group-label="value"
-    :placeholder="cLabel"
-    @group-change="groupSelect"
+    :placeholder="placeholder"
   />
 </template>
-<script lang="ts">
-import { computed, defineComponent, ref } from "vue"
-
+<script setup lang="ts">
+import { computed } from "vue"
 import { GroupedDimensionValue, MachineConfigurator } from "../configurators/MachineConfigurator"
+import { usePlaceholder } from "./placeholder"
 
-export interface GroupEvent {
-  value: GroupedDimensionValue
+function convertItemToTreeSelectModel(item: GroupedDimensionValue): unknown {
+  return {
+    key: item.value,
+    label: item.value,
+    children: item.children?.map(convertItemToTreeSelectModel),
+    leaf: item.children == null,
+  }
 }
 
-export default defineComponent({
-  name: "DimensionHierarchicalSelect",
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    dimension: {
-      type: MachineConfigurator,
-      required: true,
-    },
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
   },
-  setup(props) {
-    const selectedGroup = ref<string>()
-    const groupSelect = (e: GroupEvent) => {
-      selectedGroup.value = e.value.value
-      if(e.value.children != null) {
-        // eslint-disable-next-line vue/no-mutating-props
-        props.dimension.value.value = e.value.children.map(it => it.value)
-      }
-    }
-    return {
-      cLabel: computed({
-        get(): string {
-          if (typeof props.dimension.value.value == "string") {
-            return props.dimension.value.value
-          }
-          else {
-            return selectedGroup.value ?? ""
-          }
-        },
-        set(value: string) {
-          console.log(value)
-        },
-      }),
-      value: props.dimension.value,
-      values: props.dimension.values,
-      groupSelect,
-    }
+  dimension: {
+    type: MachineConfigurator,
+    required: true,
   },
+})
+
+interface SelectedValue {
+  [key: string]: boolean
+}
+
+const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.value.value)
+
+const value = computed<SelectedValue>({
+  get(): SelectedValue {
+    let v = props.dimension.value.value
+    if (!Array.isArray(v)) {
+      v = [v]
+    }
+
+    const result: SelectedValue = {}
+    for (const k of v) {
+      result[k] = true
+    }
+    return result
+  },
+  set(value: SelectedValue) {
+    // eslint-disable-next-line vue/no-mutating-props
+    props.dimension.value.value = Object.entries(value).filter(it => it[1]).map(it => it[0])
+  },
+})
+const values = computed(() => {
+  return props.dimension.values.value.map(convertItemToTreeSelectModel)
 })
 </script>

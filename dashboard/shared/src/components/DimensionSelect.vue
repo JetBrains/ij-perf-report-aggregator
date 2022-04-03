@@ -1,105 +1,106 @@
 <template>
-  <template v-if="valueToGroup == null">
-    <MultiSelect
-      v-model="value"
-      :loading="loading"
-      :options="items"
-      :placeholder="label"
-      option-label="label"
-      option-value="value"
-      :max-selected-labels="3"
-      :selection-limit="multiple ? null : 1"
-      :filter="true"
-    />
-  </template>
-  <template v-else>
-    <MultiSelect
-      v-model="value"
-      :loading="loading"
-      :options="items"
-      :placeholder="label"
-      option-label="label"
-      option-value="value"
-      option-group-children="options"
-      option-group-label="label"
-      :selection-limit="multiple ? null : 1"
-      :max-selected-labels="3"
-      :filter="true"
-    />
-  </template>
+  <MultiSelect
+    v-if="valueToGroup == null"
+    v-model="value"
+    :loading="loading"
+    :options="items"
+    :placeholder="placeholder"
+    option-label="label"
+    option-value="value"
+    :max-selected-labels="3"
+    :selection-limit="multiple ? null : 1"
+    :filter="true"
+  />
+  <MultiSelect
+    v-else
+    v-model="value"
+    :loading="loading"
+    :options="items"
+    :placeholder="placeholder"
+    option-label="label"
+    option-value="value"
+    option-group-children="options"
+    option-group-label="label"
+    :selection-limit="multiple ? null : 1"
+    :max-selected-labels="3"
+    :filter="true"
+  />
 </template>
-<script lang="ts">
-import { computed, defineComponent, PropType } from "vue"
+<script setup lang="ts">
+import { computed, PropType } from "vue"
 import { BaseDimensionConfigurator } from "../configurators/DimensionConfigurator"
+import { usePlaceholder } from "./placeholder"
 
-export default defineComponent({
-  name: "DimensionSelect",
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    dimension: {
-      type: Object as PropType<BaseDimensionConfigurator>,
-      required: true,
-    },
-    valueToLabel: {
-      type: Function as PropType<(v: string) => string>,
-      default: null,
-    },
-    // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-    valueToGroup: {
-      type: Function as PropType<(v: string) => string>,
-      default: null,
-    },
+const props = defineProps({
+  label: {
+    type: String,
+    required: true,
   },
-  setup(props) {
-    // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
-    return {
-      multiple: props.dimension.multiple,
-      value: computed<string | Array<string>|null>({
-        get() {
-          const value = props.dimension.value.value
-          if (props.dimension.multiple && !Array.isArray(value)) {
-            return value == null || value === "" ? [] : [value]
-          }
-          else {
-            if(typeof value != "object") {
-              return [value]
-            } else {
-              return value
-            }
-          }
-        },
-        set(value) {
-          if (value == null || value.length === 0) {
-            // eslint-disable-next-line vue/no-mutating-props
-            props.dimension.value.value = null
-          }
-          else {
-            // eslint-disable-next-line vue/no-mutating-props
-            props.dimension.value.value = value
-          }
-        },
-      }),
-      items: computed(() => {
-        const valueToLabel = props.valueToLabel ?? function (v) {
-          return v
-        }
+  dimension: {
+    type: Object as PropType<BaseDimensionConfigurator>,
+    required: true,
+  },
+  valueToLabel: {
+    type: Function as PropType<(v: string) => string>,
+    default: null,
+  },
+  // todo not working correctly for now (if value is set to not existing value, runtime error on select)
+  valueToGroup: {
+    type: Function as PropType<(v: string) => string>,
+    default: null,
+  },
+})
 
-        const values = props.dimension.values.value
-        if (props.valueToGroup != null) {
-          return group(values, props.valueToGroup, valueToLabel)
-        }
-        else {
-          return values.map(it => {
-            return {label: valueToLabel(it), value: it}
-          })
-        }
-      }),
-      loading: props.dimension.loading,
+const multiple = computed(() => props.dimension.multiple)
+const loading = computed(() => props.dimension.loading.value)
+
+const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.value.value)
+
+const value = computed<string | Array<string> | null>({
+  get() {
+    const values = props.dimension.values.value
+    if (values == null || values.length === 0) {
+      return null
+    }
+
+    const value = props.dimension.value.value
+    if (props.dimension.multiple && !Array.isArray(value)) {
+      return value == null || value === "" ? [] : [value]
+    }
+    else if (Array.isArray(value)) {
+      return value
+    }
+    else {
+      return [value as string]
     }
   },
+  set(value) {
+    if (value == null || value.length === 0) {
+      // eslint-disable-next-line vue/no-mutating-props
+      props.dimension.value.value = null
+    }
+    else {
+      // eslint-disable-next-line vue/no-mutating-props
+      props.dimension.value.value = value
+    }
+  },
+})
+
+const items = computed(() => {
+  const valueToLabel = props.valueToLabel ?? function (v) {
+    return v
+  }
+
+  const values = props.dimension.values.value
+  // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
+  if (props.valueToGroup == null) {
+    return values.map(it => {
+      return {label: valueToLabel(it), value: it}
+    })
+  }
+  else {
+    return group(values, props.valueToGroup, valueToLabel)
+  }
 })
 
 interface Item {
@@ -128,7 +129,7 @@ function group(values: Array<string>, groupFunction: (v: string) => string, valu
     }
     group.options.push({label: valueToLabel(value), value})
   }
-  console.log(JSON.stringify(groups, null, 2))
+  // console.log(JSON.stringify(groups, null, 2))
   return groups
 }
 </script>

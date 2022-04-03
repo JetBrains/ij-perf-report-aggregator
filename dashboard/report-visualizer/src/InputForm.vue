@@ -64,14 +64,12 @@ const loadReportDebounced = new DebouncedTask(function (taskHandle: TaskHandle):
   // localhost blocked by Firefox, but 127.0.0.1 not.
   // Google Chrome correctly resolves localhost, but Firefox doesn't.
   return loadJson(lastReportUrl, null, taskHandle, data => {
+    if (data != null) {
+      reportData.value = JSON.stringify(data, null, 2)
+    }
+  }).finally(() => {
     isFetchingDev.value = false
     isFetching.value = false
-
-    if (data == null) {
-      return
-    }
-
-    reportData.value = JSON.stringify(data, null, 2)
   })
 })
 

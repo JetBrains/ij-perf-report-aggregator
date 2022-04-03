@@ -1,11 +1,5 @@
 <template>
-  <Message
-    v-show="messageState.isError"
-    severity="error"
-    @close="closeError"
-  >
-    {{ messageState.message }}
-  </Message>
+  <PrimeToast />
   <Menubar
     :model="items"
     class="!rounded-none !border-0 !border-b !bg-inherit"
@@ -44,7 +38,7 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { serverUrlKey } from "shared/src/injectionKeys"
 import { provide, ref, watch } from "vue"
 import { useRoute } from "vue-router"
-import { useMessageStore } from "../stores/Message"
+import PrimeToast from "./PrimeToast.vue"
 
 import logoUrl from "./jb_square.svg?url"
 import { getItems } from "./route"
@@ -62,12 +56,6 @@ watch(() => _route.path, p => {
 const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
 persistentStateManager.add("serverUrl", serverUrl)
 persistentStateManager.init()
-
-const messageState = useMessageStore()
-
-function closeError(): void {
-  messageState.isError = false
-}
 </script>
 
 <style>

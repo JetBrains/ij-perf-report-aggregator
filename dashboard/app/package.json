@@ -6,7 +6,6 @@
     "@fontsource/jetbrains-mono": "4.5.5",
     "ij": "workspace:*",
     "jb": "workspace:*",
-    "pinia": "2.0.13",
     "primeicons": "5.0.0",
     "primevue": "3.12.4",
     "report-visualizer": "workspace:*",

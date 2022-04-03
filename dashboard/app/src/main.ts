@@ -1,8 +1,8 @@
 import "@fontsource/inter/variable.css"
 import "@fontsource/jetbrains-mono/variable.css"
 import "./main.css"
-import { createPinia } from "pinia"
 import PrimeVue from "primevue/config"
+import ToastService from "primevue/toastservice"
 import { createApp } from "vue"
 import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"
@@ -16,8 +16,7 @@ async function initApp() {
   const router = createAndConfigureRouter()
   app.use(router)
   app.use(PrimeVue)
-  const pinia = createPinia()
-  app.use(pinia)
+  app.use(ToastService)
   await router.isReady()
     .then(() => app.mount("#app"))
 }

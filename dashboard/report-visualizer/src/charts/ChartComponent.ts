@@ -1,6 +1,8 @@
+import { ToastSeverity } from "primevue/api"
+import { ToastServiceMethods } from "primevue/toastservice"
+import { useToast } from "primevue/usetoast"
 import { debounceSync } from "shared/src/util/debounce"
-import { watch, onBeforeUnmount, onMounted } from "vue"
-import {useMessageStore} from "../../../app/stores/Message"
+import { onBeforeUnmount, onMounted, watch } from "vue"
 import { DataManager } from "../DataManager"
 import { InputData } from "../data"
 import { reportData } from "../state"
@@ -13,6 +15,7 @@ export interface ChartManager {
 
 export class ChartComponent {
   chartManager: ChartManager | null = null
+  private readonly toast: ToastServiceMethods
 
   private readonly renderDataIfAvailableDebounced = debounceSync(() => this.renderDataIfAvailable(), 10)
 
@@ -32,6 +35,8 @@ export class ChartComponent {
     watch(reportData, () => {
       this.renderDataIfAvailableDebounced()
     })
+
+    this.toast = useToast()
   }
 
   renderDataIfAvailable(): void {
@@ -51,8 +56,7 @@ export class ChartComponent {
         })
         .catch(e => {
           console.error("Cannot create chart", e)
-          useMessageStore().message = (e as Error).toString()
-          useMessageStore().isError = true
+          this.toast.add({severity: ToastSeverity.ERROR, summary: "Cannot create chart", detail: (e as Error).toString()})
         })
     }
     else {

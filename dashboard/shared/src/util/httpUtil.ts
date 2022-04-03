@@ -1,9 +1,25 @@
+import { ToastSeverity } from "primevue/api"
+import { ToastMessageOptions } from "primevue/toast"
+import ToastEventBus from "primevue/toasteventbus"
 import { Ref } from "vue"
-import {useMessageStore} from "../../../app/stores/Message"
-
 import { TaskHandle } from "./debounce"
 
-const serverNotAvailableErrorMessage = "Server is not available. Please check that server is running and VPN connection is established."
+const serverNotAvailableErrorMessage = "Server is not available. Please check that server is running."
+
+let message: ToastMessageOptions | null = null
+
+function removeOldMessage() {
+  if (message != null) {
+    ToastEventBus.emit("remove", message)
+    message = null
+  }
+}
+
+function showError(detail: string) {
+  removeOldMessage()
+  message = {severity: ToastSeverity.ERROR, detail}
+  ToastEventBus.emit("add", message)
+}
 
 export function loadJson<T>(url: string,
                             loading: Ref<boolean> | null,
@@ -46,7 +62,7 @@ export function loadJson<T>(url: string,
       }
 
       if (response.ok) {
-        closeError()
+        removeOldMessage()
         return response.json()
       }
       else {
@@ -86,13 +102,4 @@ export function loadJson<T>(url: string,
       }
       return null
     })
-}
-
-function closeError() {
-  useMessageStore().isError = false
-}
-
-function showError(message: string) {
-  useMessageStore().message = message
-  useMessageStore().isError = true
 }

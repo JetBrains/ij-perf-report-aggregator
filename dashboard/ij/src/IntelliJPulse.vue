@@ -2,7 +2,7 @@
   <Divider align="center">
     Bootstrap
   </Divider>
-  <div class="grid grid-cols-2 gap-4">
+  <div :class="$style.twoCard">
     <LineChartCard
       :measures='["bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "euaShowing_d", "appStarter_d"]'
     />
@@ -14,7 +14,7 @@
   <Divider align="center">
     Class and Resource Loading
   </Divider>
-  <div class="grid grid-cols-2 gap-4">
+  <div :class="$style.twoCard">
     <LineChartCard
       :measures='["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]'
     />
@@ -26,7 +26,7 @@
   <Divider align="center">
     Services
   </Divider>
-  <div class="grid grid-cols-2 gap-4">
+  <div :class="$style.twoCard">
     <LineChartCard
       :measures='["appComponentCreation_d", "serviceSyncPreloading_d", "serviceAsyncPreloading_d"]'
     />
@@ -39,7 +39,7 @@
   <Divider align="center">
     Post-opening
   </Divider>
-  <div class="grid grid-cols-2 gap-4">
+  <div :class="$style.twoCard">
     <LineChartCard
       :measures='["projectDumbAware", "editorRestoring", "editorRestoringTillPaint"]'
     />
@@ -48,12 +48,11 @@
     />
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import LineChartCard from "shared/src/components/LineChartCard.vue"
-import { defineComponent } from "vue"
-
-export default defineComponent({
-  name: "IntelliJPulse",
-  components: {LineChartCard},
-})
 </script>
+<style module>
+.twoCard {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4
+}
+</style>

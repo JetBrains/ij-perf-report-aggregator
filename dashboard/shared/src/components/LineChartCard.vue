@@ -1,22 +1,29 @@
 <template>
+  <div
+    ref="chartElement"
+    class="bg-white shadow rounded-lg"
+    :style="{height: `${chartHeight}px`}"
+    @mouseenter="show"
+    @mouseleave="hide"
+  />
   <OverlayPanel
     ref="tooltip"
     :show-close-icon="true"
   >
     <div>
       <a
-        v-if="reportTooltipData.linkUrl != null"
-        :href="reportTooltipData.linkUrl"
+        v-if="tooltipData.linkUrl != null"
+        :href="tooltipData.linkUrl"
         target="_blank"
       >
-        {{ reportTooltipData.linkText }}
+        {{ tooltipData.linkText }}
       </a>
-      <span v-else>{{ reportTooltipData.linkText }}</span>
+      <span v-else>{{ tooltipData.linkText }}</span>
 
       <a
-        v-if="reportTooltipData.firstSeriesData.length >= 3"
+        v-if="tooltipData.firstSeriesData.length >= 3"
         title="Changes"
-        :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${reportTooltipData.firstSeriesData[2]}&tab=buildChangesDiv`"
+        :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[2]}&tab=buildChangesDiv`"
         target="_blank"
         class="info"
       >
@@ -24,9 +31,9 @@
       </a>
 
       <a
-        v-if="reportTooltipData.firstSeriesData.length >= 4"
+        v-if="tooltipData.firstSeriesData.length >= 4"
         title="Test Artifacts"
-        :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${reportTooltipData.firstSeriesData[3]}&tab=artifacts`"
+        :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=artifacts`"
         target="_blank"
         class="info"
       >
@@ -34,7 +41,7 @@
       </a>
 
       <div
-        v-for="item in reportTooltipData.items"
+        v-for="item in tooltipData.items"
         :key="item.name"
         style="margin: 10px 0 0;white-space: nowrap"
       >
@@ -46,54 +53,34 @@
         <span class="tooltipValue">{{ item.value }}</span>
       </div>
       <div
-        v-if="reportTooltipData.firstSeriesData.length >= 7"
-        style="margin: 10px 0 0;white-space: nowrap"
-      >
-        <span
-          class="tooltipNameMarker"
-          :style='{"background-color": "green"}'
-        />
-        <span style="margin-left:2px;">Build Number</span>
-        <span class="tooltipValue">{{ reportTooltipData.firstSeriesData[4] }}.{{
-          reportTooltipData.firstSeriesData[5]
-        }}{{ reportTooltipData.firstSeriesData[6] !== 0 ? "." + reportTooltipData.firstSeriesData[6] : "" }}</span>
-      </div>
-      <div
-        v-if="reportTooltipData.firstSeriesData.length >= 8"
+        v-if="tooltipData.firstSeriesData.length >= 8"
         style="margin: 10px 0 0;white-space: nowrap"
       >
         <span
           class="tooltipNameMarker"
           :style='{"background-color": "blue"}'
         />
-        <span style="margin-left:2px;">Machine</span>
-        <span class="tooltipValue">{{ reportTooltipData.firstSeriesData[7] }}</span>
+        <span style="margin-left:2px;">machine</span>
+        <span class="tooltipValue">{{ tooltipData.firstSeriesData[7] }}</span>
       </div>
     </div>
   </OverlayPanel>
-  <div
-    ref="chartElement"
-    class="bg-white shadow rounded-lg"
-    :style="{height: `${chartHeight}px`}"
-    @mouseenter="show"
-    @mouseleave="hide"
-  />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, PropType, ref, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
+import { computed, inject, onMounted, onUnmounted, PropType, ref, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { dataQueryExecutorKey } from "../injectionKeys"
-import { DebouncedFunction, debounceSync } from "../util/debounce"
+import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
 export interface Tooltip {
   show(event: Event, ref: HTMLElement | null): void
 
-  hide(event: Event, ref: HTMLElement | null): void
+  hide(): void
 }
 
 const props = defineProps({
@@ -121,19 +108,31 @@ const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager()
 const tooltip = ref<Tooltip>()
-const debounceTask = ref<DebouncedFunction>()
-const show = (event: Event) => {
-  if (debounceTask.value !== null) {
-    debounceTask.value?.clear()
+
+const tooltipData = chartToolTipManager.reportTooltipData
+
+let lastShowEvent: Event | null = null
+const debouncedHide = debounceSync(() => {
+  lastShowEvent = null
+  debouncedShow.clear()
+  tooltip.value?.hide()
+}, 2_000)
+const debouncedShow = debounceSync(() => {
+  if (lastShowEvent != null) {
+    tooltip.value?.show(lastShowEvent, chartElement.value)
   }
-  tooltip.value?.show(event, chartElement.value)
+}, 300)
+const show = (event: Event) => {
+  debouncedHide?.clear()
+  lastShowEvent = event
+  debouncedShow()
 }
-const hide = (event: Event) => {
-  debounceTask.value = debounceSync(() => {
-    tooltip.value?.hide(event, chartElement.value)
-  }, 2_000)
-  debounceTask.value()
+const hide = () => {
+  debouncedShow.clear()
+  lastShowEvent = null
+  debouncedHide()
 }
+
 watchEffect(function () {
   let dataQueryExecutor = props.provider ?? providedDataQueryExecutor
   if (dataQueryExecutor == null) {
@@ -188,7 +187,6 @@ onUnmounted(() => {
 })
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
-const reportTooltipData = chartToolTipManager.reportTooltipData
 </script>
 <style scoped>
 .tooltipNameMarker {

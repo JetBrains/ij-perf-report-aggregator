@@ -1,7 +1,6 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, reactive } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { timeFormat } from "../chart"
 import { DataQuery } from "../dataQuery"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { reportInfoProviderKey } from "../injectionKeys"
@@ -25,6 +24,14 @@ interface TooltipDataItem {
   readonly color: string
 }
 
+const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+})
+
 export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
@@ -37,8 +44,8 @@ export class ChartToolTipManager {
       return null
     }
 
-    const reportTooltipData = this.reportTooltipData
-    reportTooltipData.items = params.map(function (measure) {
+    const data = this.reportTooltipData
+    data.items = params.map(function (measure) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]]
       return {
@@ -52,13 +59,13 @@ export class ChartToolTipManager {
     const firstSeriesData = params[0].value as Array<number>
     // same for all series
     const generatedTime = firstSeriesData[0]
-    reportTooltipData.linkText = timeFormat.format(generatedTime)
-    reportTooltipData.firstSeriesData = firstSeriesData
+    data.linkText = timeFormatWithoutSeconds.format(generatedTime) + ` (${firstSeriesData[4]}.${firstSeriesData[5]}${firstSeriesData[6] === 0 ? "" : `.${firstSeriesData[6]}`})`
+    data.firstSeriesData = firstSeriesData
     if (this.reportInfoProvider == null) {
-      reportTooltipData.linkUrl = null
+      data.linkUrl = null
     }
     else {
-      reportTooltipData.linkUrl = this.reportInfoProvider.createReportUrl(generatedTime, query)
+      data.linkUrl = this.reportInfoProvider.createReportUrl(generatedTime, query)
     }
     return null
   }

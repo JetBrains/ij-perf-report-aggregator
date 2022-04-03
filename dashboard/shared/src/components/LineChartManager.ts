@@ -39,7 +39,9 @@ export class LineChartManager {
         },
       },
       tooltip: {
-        trigger: "item",
+        show: true,
+        trigger: "axis",
+        enterable: true,
         axisPointer: {
           type: "cross",
         },
@@ -49,6 +51,8 @@ export class LineChartManager {
       xAxis: {
         type: "time",
         axisPointer: {
+          // triggerOn: "mousemove|click",
+          snap: true,
           label: {
             formatter(data) {
               return timeFormat.format(data["value"] as number)

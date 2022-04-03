@@ -50,7 +50,6 @@ importers:
 
   dashboard/app:
     specifiers:
-      '@fontsource/inter': 4.5.7
       '@fontsource/jetbrains-mono': 4.5.5
       ij: workspace:*
       jb: workspace:*
@@ -61,7 +60,6 @@ importers:
       vue: 3.2.31
       vue-router: 4.0.14
     dependencies:
-      '@fontsource/inter': 4.5.7
       '@fontsource/jetbrains-mono': 4.5.5
       ij: link:../ij
       jb: link:../../jb/dashboard
@@ -212,10 +210,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /@fontsource/inter/4.5.7:
-    resolution: {integrity: sha512-25k3thupaOEBexuU+jAkGqieKPbuhSuA+sinDwp1iBNhqQPiJ9QHDvsXgoCgCbZ4sGlE8aCwZmSlDJrPdJHNkw==}
-    dev: false
 
   /@fontsource/jetbrains-mono/4.5.5:
     resolution: {integrity: sha512-i17hJLwH3EaTVxujrZ/Dm4EHugCweHgu9mgyQlnyRpJXQdrK+oQVJqq8xMwQiw5Gck7+0SyuMWIqRiPPP7Vw6w==}

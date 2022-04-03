@@ -1,4 +1,3 @@
-import "@fontsource/inter/variable.css"
 import "@fontsource/jetbrains-mono/variable.css"
 import "./main.css"
 import PrimeVue from "primevue/config"
@@ -8,8 +7,8 @@ import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"
 import "primevue/resources/primevue.css"
 import "primeicons/primeicons.css"
-// we use variable inter font, so, patched version of tailwind-light theme
-import "primevue/resources/themes/lara-light-blue/theme.css"
+// Lara Light is not used because of https://github.com/primefaces/primevue/issues/2390 (arrow doesn't have borders for overlay panel)
+import "primevue/resources/themes/saga-blue/theme.css"
 
 async function initApp() {
   const app = createApp(App)

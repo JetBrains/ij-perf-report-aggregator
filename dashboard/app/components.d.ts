@@ -4,22 +4,21 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AutoComplete: typeof import('primevue/autocomplete')['default']
-    Button: typeof import('primevue/button')['default']
-    Card: typeof import('primevue/card')['default']
-    Divider: typeof import('primevue/divider')['default']
-    Dropdown: typeof import('primevue/dropdown')['default']
-    InputNumber: typeof import('primevue/inputnumber')['default']
-    Menubar: typeof import('primevue/menubar')['default']
-    Message: typeof import('primevue/message')['default']
-    MultiSelect: typeof import('primevue/multiselect')['default']
-    OverlayPanel: typeof import('primevue/overlaypanel')['default']
-    TabMenu: typeof import('primevue/tabmenu')['default']
-    TabPanel: typeof import('primevue/tabpanel')['default']
-    TabView: typeof import('primevue/tabview')['default']
-    Textarea: typeof import('primevue/textarea')['default']
-    Toolbar: typeof import('primevue/toolbar')['default']
-    TreeSelect: typeof import('primevue/treeselect')['default']
+    AutoComplete: typeof import('primevue/autocomplete/sfc')['default']
+    Button: typeof import('primevue/button/sfc')['default']
+    Divider: typeof import('primevue/divider/sfc')['default']
+    Dropdown: typeof import('primevue/dropdown/sfc')['default']
+    InputNumber: typeof import('primevue/inputnumber/sfc')['default']
+    Menubar: typeof import('primevue/menubar/sfc')['default']
+    Message: typeof import('primevue/message/sfc')['default']
+    MultiSelect: typeof import('primevue/multiselect/sfc')['default']
+    OverlayPanel: typeof import('primevue/overlaypanel/sfc')['default']
+    TabMenu: typeof import('primevue/tabmenu/sfc')['default']
+    TabPanel: typeof import('primevue/tabpanel/sfc')['default']
+    TabView: typeof import('primevue/tabview/sfc')['default']
+    Textarea: typeof import('primevue/textarea/sfc')['default']
+    Toolbar: typeof import('primevue/toolbar/sfc')['default']
+    TreeSelect: typeof import('primevue/treeselect/sfc')['default']
   }
 }
 

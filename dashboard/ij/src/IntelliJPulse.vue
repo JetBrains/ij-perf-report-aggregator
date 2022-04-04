@@ -50,6 +50,7 @@
 </template>
 <script setup lang="ts">
 import LineChartCard from "shared/src/components/LineChartCard.vue"
+
 </script>
 <style module>
 .twoCard {

@@ -11,7 +11,7 @@ export interface ReportInfoProvider {
   readonly infoFields: Array<string>
 }
 
-interface TooltipData {
+export interface TooltipData {
   linkText: string
   linkUrl: string | null
   items: Array<TooltipDataItem>
@@ -38,7 +38,13 @@ export class ChartToolTipManager {
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
   readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
 
+  paused = false
+
   formatArrayValue(params: Array<CallbackDataParams>): null {
+    if (this.paused) {
+      return null
+    }
+
     const query = this.dataQueryExecutor.lastQuery
     if (query == null) {
       return null

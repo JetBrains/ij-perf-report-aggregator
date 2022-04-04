@@ -49,6 +49,9 @@ export class MachineConfigurator implements DataQueryConfigurator {
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
         }
+        else if (value.startsWith("intellij-linux-aws-m-i")) {
+          groupName = "AWS M I"
+        }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
         }

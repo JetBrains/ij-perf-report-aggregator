@@ -11,7 +11,7 @@
   />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, PropType, ref, Ref, shallowRef, toRef, watch, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, PropType, ref, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
@@ -40,7 +40,7 @@ const props = defineProps({
   },
 })
 
-const chartElement: Ref<HTMLElement | null> = shallowRef(null)
+const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: LineChartManager | null = null
 const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
 const skipZeroValues = toRef(props, "skipZeroValues")

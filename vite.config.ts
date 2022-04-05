@@ -27,23 +27,23 @@ export default defineConfig({
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),
-        // name => {
-        //   // @ts-ignore
-        //   const kind = process.env.NODE_ENV === "test" ? "" : "esm/"
-        //   if (name.endsWith("Icon")) {
-        //     return {
-        //       path: `@heroicons/vue/outline/${kind}${name}.js`,
-        //     }
-        //   }
-        //   else if (name.endsWith("IconSolid")) {
-        //     return {
-        //       path: `@heroicons/vue/solid/${kind}${name.substring(0, name.length - "Solid".length)}.js`,
-        //     }
-        //   }
-        //   else {
-        //     return null
-        //   }
-        // },
+        name => {
+          // @ts-ignore
+          const kind = process.env.NODE_ENV === "test" ? "" : "esm/"
+          if (name.endsWith("Icon")) {
+            return {
+              path: `@heroicons/vue/outline/${kind}${name}.js`,
+            }
+          }
+          else if (name.endsWith("IconSolid")) {
+            return {
+              path: `@heroicons/vue/solid/${kind}${name.substring(0, name.length - "Solid".length)}.js`,
+            }
+          }
+          else {
+            return null
+          }
+        },
       ],
     }),
   ],

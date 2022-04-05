@@ -5,7 +5,7 @@ import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, collator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
 import { LineChartOptions } from "../echarts"
-import { durationAxisLabelFormatter, durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -254,7 +254,7 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
   return {
     yAxis: {
       axisLabel: {
-        formatter: useDurationFormatter ? durationAxisLabelFormatter : numberAxisLabelFormatter,
+        formatter: useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter,
       },
       axisPointer: {
         label: {

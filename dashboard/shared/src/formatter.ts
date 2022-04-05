@@ -25,11 +25,6 @@ const durationFormatOptions: HumanizerOptions = {
 
 export const durationAxisPointerFormatter: (valueInMs: number) => string = humanizeDuration.humanizer(durationFormatOptions)
 
-export const durationAxisLabelFormatter: (valueInMs: number) => string = humanizeDuration.humanizer({
-  ...durationFormatOptions,
-  delimiter: " "
-})
-
 export function numberAxisLabelFormatter(value: number): string {
   return numberFormat.format(value)
 }
@@ -42,5 +37,5 @@ export function isDurationFormatterApplicable(measureName: string): boolean {
 }
 
 export function getValueFormatterByMeasureName(measureName: string): (valueInMs: number) => string {
-  return isDurationFormatterApplicable(measureName) ? durationAxisLabelFormatter : numberAxisLabelFormatter
+  return isDurationFormatterApplicable(measureName) ? durationAxisPointerFormatter : numberAxisLabelFormatter
 }

@@ -5,7 +5,7 @@ import { DataQueryResult } from "../DataQueryExecutor"
 import { ChartConfigurator, ChartStyle } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { BarChartOptions } from "../echarts"
-import { durationAxisLabelFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 
@@ -139,7 +139,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 const formatterForFieldData = function (data: CallbackDataParams) {
   const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
   if (value > 10_000) {
-    return durationAxisLabelFormatter(value)
+    return durationAxisPointerFormatter(value)
   }
   else {
     return numberFormat.format(value)

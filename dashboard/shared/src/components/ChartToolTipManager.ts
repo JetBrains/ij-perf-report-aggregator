@@ -2,7 +2,6 @@ import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, reactive } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DataQuery } from "../dataQuery"
-import { getValueFormatterByMeasureName } from "../formatter"
 import { reportInfoProviderKey } from "../injectionKeys"
 
 export interface ReportInfoProvider {
@@ -20,7 +19,7 @@ export interface TooltipData {
 
 interface TooltipDataItem {
   readonly name: string
-  readonly value: string
+  readonly value: number
   readonly color: string
 }
 
@@ -51,14 +50,14 @@ export class ChartToolTipManager {
     }
 
     const data = this.reportTooltipData
-    data.items = params.map(function (measure) {
+    data.items = params.map(measure => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]]
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: measure.seriesName!,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        value: getValueFormatterByMeasureName(measure.seriesId!)(measureValue),
+        value: measureValue,
         color: measure.color as string,
       }
     })

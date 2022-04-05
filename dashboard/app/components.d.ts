@@ -4,6 +4,7 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ArchiveIcon: typeof import('@heroicons/vue/outline/esm/ArchiveIcon.js')['default']
     AutoComplete: typeof import('primevue/autocomplete/sfc')['default']
     Button: typeof import('primevue/button/sfc')['default']
     Divider: typeof import('primevue/divider/sfc')['default']
@@ -13,12 +14,14 @@ declare module 'vue' {
     Message: typeof import('primevue/message/sfc')['default']
     MultiSelect: typeof import('primevue/multiselect/sfc')['default']
     OverlayPanel: typeof import('primevue/overlaypanel/sfc')['default']
+    ServerIcon: typeof import('@heroicons/vue/outline/esm/ServerIcon.js')['default']
     TabMenu: typeof import('primevue/tabmenu/sfc')['default']
     TabPanel: typeof import('primevue/tabpanel/sfc')['default']
     TabView: typeof import('primevue/tabview/sfc')['default']
     Textarea: typeof import('primevue/textarea/sfc')['default']
     Toolbar: typeof import('primevue/toolbar/sfc')['default']
     TreeSelect: typeof import('primevue/treeselect/sfc')['default']
+    UsersIcon: typeof import('@heroicons/vue/outline/esm/UsersIcon.js')['default']
   }
 }
 

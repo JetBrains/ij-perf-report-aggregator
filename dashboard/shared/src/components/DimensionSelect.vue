@@ -96,6 +96,10 @@ const items = computed(() => {
   if (props.valueToGroup == null) {
     return values.map(it => {
       return {label: valueToLabel(it), value: it}
+    }).sort((a, b) => {
+      //put selected values on top
+      if (value.value == null || !Array.isArray(value.value)) return 0
+      return value.value.includes(a.label) ? -1 : value.value.includes(b.label) ? 1 : 0
     })
   }
   else {

@@ -13,7 +13,6 @@ declare module 'vue' {
     Menubar: typeof import('primevue/menubar/sfc')['default']
     Message: typeof import('primevue/message/sfc')['default']
     MultiSelect: typeof import('primevue/multiselect/sfc')['default']
-    OverlayPanel: typeof import('primevue/overlaypanel/sfc')['default']
     ServerIcon: typeof import('@heroicons/vue/outline/esm/ServerIcon.js')['default']
     TabMenu: typeof import('primevue/tabmenu/sfc')['default']
     TabPanel: typeof import('primevue/tabpanel/sfc')['default']

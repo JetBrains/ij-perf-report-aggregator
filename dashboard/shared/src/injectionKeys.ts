@@ -2,6 +2,7 @@ import { InjectionKey, Ref } from "vue"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { ChartStyle } from "./chart"
 import { ReportInfoProvider } from "./components/ChartToolTipManager"
+import ChartTooltip from "./components/ChartTooltip.vue"
 import { AggregationOperatorConfigurator } from "./configurators/AggregationOperatorConfigurator"
 import { TimeRange } from "./configurators/TimeRangeConfigurator"
 
@@ -12,4 +13,6 @@ export const timeRangeKey: InjectionKey<Ref<TimeRange>> = Symbol("timeRange")
 export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("tooltipUrlProvider")
 export const serverUrlKey: InjectionKey<Ref<string>> = Symbol("serverUrl")
 
-export const chartStyle: InjectionKey<ChartStyle> = Symbol("chartStyle")
+export const chartStyleKey: InjectionKey<ChartStyle> = Symbol("chartStyle")
+
+export const chartToolTipKey: InjectionKey<Ref<typeof ChartTooltip>> = Symbol("chartToolTip")

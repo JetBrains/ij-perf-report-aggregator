@@ -1,6 +1,6 @@
 <template>
   <OverlayPanel
-    v-if="tooltipData != null"
+    v-if="tooltipData != null && tooltipData.items.length > 0"
     ref="panel"
     :show-close-icon="true"
   >
@@ -89,7 +89,7 @@ const debouncedShow = debounceSync(() => {
     panel.value?.show({currentTarget} as Event)
     currentTarget = null
   }
-}, 1)
+}, 300)
 
 function cancelHide() {
   hide.clear()
@@ -128,6 +128,12 @@ onBeforeUnmount(() => {
 
 defineExpose({
   show(event: MouseEvent, manager: ChartToolTipManager) {
+    if (lastManager !== manager && lastManager !== null) {
+      currentTarget = null
+      debouncedShow.clear()
+      panel.value?.hide()
+    }
+
     lastManager = manager
     hide.clear()
     if (!lastManager.paused) {

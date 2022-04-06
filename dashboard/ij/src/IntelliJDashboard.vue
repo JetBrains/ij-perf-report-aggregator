@@ -1,6 +1,6 @@
 <template>
-  <Toolbar class="!py-0 !px-2">
-    <template #start>
+  <Dashboard>
+    <template #toolbar>
       <DimensionSelect
         label="Product"
         :dimension="productConfigurator"
@@ -16,29 +16,26 @@
       />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
-    <template #end>
-      <ReloadButton />
-    </template>
-  </Toolbar>
 
-  <TabMenu
-    :model="tabs"
-    class="mb-1"
-  />
-  <router-view v-slot="{ Component }">
-    <keep-alive>
-      <component :is="Component" />
-    </keep-alive>
-  </router-view>
+    <TabMenu
+      :model="tabs"
+      class="mb-1"
+    />
+    <router-view v-slot="{ Component }">
+      <keep-alive>
+        <component :is="Component" />
+      </keep-alive>
+    </router-view>
+  </Dashboard>
 </template>
 
 <script setup lang="ts">
 import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
+import Dashboard from "shared/src/components/Dashboard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import ReloadButton from "shared/src/components/ReloadButton.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
@@ -46,7 +43,7 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyle } from "shared/src/injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -58,7 +55,7 @@ export interface Tab {
 }
 
 provideReportUrlProvider()
-provide(chartStyle, {
+provide(chartStyleKey, {
   ...chartDefaultStyle,
   // a lot of bars, as result, height of bar is not enough to make label readable
   barSeriesLabelPosition: "right",

@@ -2,7 +2,7 @@ import { LineChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { watch , Ref } from "vue"
+import { watch, Ref } from "vue"
 import { ChartManagerHelper } from "../ChartManagerHelper"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ToolTipFormatter } from "../chart"
@@ -26,7 +26,6 @@ export class LineChartManager {
               dataZoom: Ref<boolean>,
               tooltipFormatter: ToolTipFormatter) {
     this.chart = new ChartManagerHelper(container)
-
     this.chart.chart.setOption<LineChartOptions>({
       legend: {},
       animation: false,
@@ -46,12 +45,10 @@ export class LineChartManager {
           type: "cross",
         },
         formatter: adaptToolTipFormatter(tooltipFormatter),
-        // triggerOn: "click",
       },
       xAxis: {
         type: "time",
         axisPointer: {
-          // triggerOn: "mousemove|click",
           snap: true,
           label: {
             formatter(data) {
@@ -62,6 +59,9 @@ export class LineChartManager {
       },
       yAxis: {
         type: "value",
+        axisPointer: {
+          snap: true,
+        }
       },
       dataZoom: dataZoom.value ? dataZoomConfig : undefined,
     })

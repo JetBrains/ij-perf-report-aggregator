@@ -1,49 +1,43 @@
 <template>
-  <div class="w-full">
-    <Toolbar>
-      <template #start>
-        <DimensionSelect
-          label="Scenarios"
-          :dimension="scenarioConfigurator"
-        />
-        <DimensionSelect
-          label="Branch"
-          :dimension="branchConfigurator"
-        />
-        <MeasureSelect :configurator="measureConfigurator" />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        />
-        <TimeRangeSelect :configurator="timeRangeConfigurator" />
-      </template>
-      <template #end>
-        <ReloadButton />
-      </template>
-    </Toolbar>
-  </div>
-
-  <template
-    v-for="metric in measureConfigurator.value.value"
-    :key="metric"
-  >
-    <Divider align="center">
-      {{ metric }}
-    </Divider>
-    <div class="grid grid-cols-12 gap-4">
-      <div class="col-span-7">
-        <LineChartCard
-          :measures="[metric]"
-        />
+  <Dashboard>
+    <template #toolbar>
+      <DimensionSelect
+        label="Scenarios"
+        :dimension="scenarioConfigurator"
+      />
+      <DimensionSelect
+        label="Branch"
+        :dimension="branchConfigurator"
+      />
+      <MeasureSelect :configurator="measureConfigurator" />
+      <DimensionHierarchicalSelect
+        label="Machine"
+        :dimension="machineConfigurator"
+      />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
+    </template>
+    <template
+      v-for="metric in measureConfigurator.value.value"
+      :key="metric"
+    >
+      <Divider align="center">
+        {{ metric }}
+      </Divider>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-7">
+          <LineChartCard
+            :measures="[metric]"
+          />
+        </div>
+        <div class="col-span-5">
+          <BarChartCard
+            :height="chartHeight"
+            :measures="[metric]"
+          />
+        </div>
       </div>
-      <div class="col-span-5">
-        <BarChartCard
-          :height="chartHeight"
-          :measures="[metric]"
-        />
-      </div>
-    </div>
-  </template>
+    </template>
+  </Dashboard>
 </template>
 
 <script lang="ts" setup>
@@ -51,11 +45,11 @@ import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecut
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { DEFAULT_LINE_CHART_HEIGHT } from "shared/src/chart"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
+import Dashboard from "shared/src/components/Dashboard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
-import ReloadButton from "shared/src/components/ReloadButton.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"

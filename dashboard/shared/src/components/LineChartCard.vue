@@ -6,19 +6,15 @@
     @mouseenter="show"
     @mouseleave="hide"
   />
-  <ChartTooltip
-    ref="tooltip"
-  />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, PropType, ref, shallowRef, toRef, watch, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, PropType, shallowRef, toRef, watch, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { dataQueryExecutorKey } from "../injectionKeys"
+import { chartToolTipKey, dataQueryExecutorKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
-import ChartTooltip from "./ChartTooltip.vue"
 import { LineChartManager } from "./LineChartManager"
 
 const props = defineProps({
@@ -45,7 +41,8 @@ let chartManager: LineChartManager | null = null
 const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager()
-const tooltip = ref<typeof ChartTooltip>()
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const tooltip = inject(chartToolTipKey)!
 
 const show = (event: Event) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

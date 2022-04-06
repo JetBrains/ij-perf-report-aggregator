@@ -57,9 +57,3 @@ const persistentStateManager = new PersistentStateManager("common", {serverUrl: 
 persistentStateManager.add("serverUrl", serverUrl)
 persistentStateManager.init()
 </script>
-
-<style>
-.p-toolbar-group-left > * {
-  margin: 10px;
-}
-</style>

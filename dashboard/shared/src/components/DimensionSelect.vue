@@ -1,6 +1,6 @@
 <template>
   <MultiSelect
-    v-if="valueToGroup == null"
+    v-if="valueToGroup == null && multiple"
     v-model="value"
     :loading="loading"
     :options="items"
@@ -8,7 +8,16 @@
     option-label="label"
     option-value="value"
     :max-selected-labels="3"
-    :selection-limit="multiple ? null : 1"
+    :filter="true"
+  />
+  <Dropdown
+    v-if="valueToGroup == null && !multiple"
+    v-model="value"
+    :loading="loading"
+    :options="items"
+    :placeholder="placeholder"
+    option-label="label"
+    option-value="value"
     :filter="true"
   />
   <MultiSelect
@@ -64,14 +73,21 @@ const value = computed<string | Array<string> | null>({
     }
 
     const value = props.dimension.value.value
-    if (props.dimension.multiple && !Array.isArray(value)) {
-      return value == null || value === "" ? [] : [value]
-    }
-    else if (Array.isArray(value)) {
-      return value
+    if (props.dimension.multiple) {
+      if (Array.isArray(value)) {
+        return value
+      }
+      else {
+        return value == null || value === "" ? [] : [value]
+      }
     }
     else {
-      return [value as string]
+      if (Array.isArray(value)) {
+        return value[0]
+      }
+      else {
+        return value === "" ? null : value
+      }
     }
   },
   set(value) {
@@ -94,13 +110,19 @@ const items = computed(() => {
   const values = props.dimension.values.value
   // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
   if (props.valueToGroup == null) {
-    return values.map(it => {
+    const result = values.map(it => {
       return {label: valueToLabel(it), value: it}
-    }).sort((a, b) => {
-      //put selected values on top
-      if (value.value == null || !Array.isArray(value.value)) return 0
-      return value.value.includes(a.label) ? -1 : value.value.includes(b.label) ? 1 : 0
     })
+    if (values.length > 20) {
+      // put selected values on top
+      result.sort((a, b) => {
+        if (value.value == null || !Array.isArray(value.value)) {
+          return 0
+        }
+        return value.value.includes(a.label) ? -1 : value.value.includes(b.label) ? 1 : 0
+      })
+    }
+    return result
   }
   else {
     return group(values, props.valueToGroup, valueToLabel)

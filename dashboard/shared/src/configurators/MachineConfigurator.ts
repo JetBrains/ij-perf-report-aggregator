@@ -52,6 +52,9 @@ export class MachineConfigurator implements DataQueryConfigurator {
         else if (value.startsWith("intellij-linux-aws-m-i")) {
           groupName = "AWS M I"
         }
+        else if (value.startsWith("intellij-linux-hw-munit-")) {
+          groupName = "Linux Munich"
+        }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
         }

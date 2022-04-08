@@ -13,15 +13,27 @@ import { ServerConfigurator } from "./ServerConfigurator"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
-  public readonly value = shallowRef<Array<string>|null>(null)
+  private _value = shallowRef<Array<string>|string|null>(null)
+
+  public get value(){
+    if(typeof this._value.value == "string") {
+      this._value = shallowRef([this._value.value])
+      this.persistentStateManager.add("measure", this._value)
+    }
+    return this._value as Ref<string[]|null>
+  }
+
+  public set value(value: Ref<string[]|null>){
+    this._value = value
+  }
 
   private readonly debouncedLoadMetadata = new DebouncedTask(taskHandle => this.loadMetadata(taskHandle))
 
   constructor(private readonly serverConfigurator: ServerConfigurator,
-              persistentStateManager: PersistentStateManager,
+              private readonly persistentStateManager: PersistentStateManager,
               private readonly parent: DimensionConfigurator | null = null,
               readonly skipZeroValues: boolean = true) {
-    persistentStateManager.add("measure", this.value)
+    this.persistentStateManager.add("measure", this.value)
 
     if (this.parent != null) {
       watch(this.parent.value, this.debouncedLoadMetadata.executeFunctionReference)

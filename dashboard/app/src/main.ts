@@ -1,4 +1,5 @@
 import "@fontsource/jetbrains-mono/variable.css"
+import "@fontsource/inter/variable.css"
 import "./main.css"
 import PrimeVue from "primevue/config"
 import ToastService from "primevue/toastservice"
@@ -7,8 +8,7 @@ import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"
 import "primevue/resources/primevue.css"
 import "primeicons/primeicons.css"
-// Lara Light is not used because of https://github.com/primefaces/primevue/issues/2390 (arrow doesn't have borders for overlay panel)
-import "primevue/resources/themes/saga-blue/theme.css"
+import "../../../jb/prime-theme/themes/saga/saga-blue/theme.scss"
 
 async function initApp() {
   const app = createApp(App)

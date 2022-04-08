@@ -11,7 +11,7 @@
     :filter="true"
   />
   <Dropdown
-    v-if="valueToGroup == null && !multiple"
+    v-else-if="valueToGroup == null && !multiple"
     v-model="value"
     :loading="loading"
     :options="items"

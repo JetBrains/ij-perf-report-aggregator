@@ -23,7 +23,7 @@ import (
 const DefaultDbUrl = "127.0.0.1:9000"
 
 type StatsServer struct {
-  dbUrl string
+  dbUrl    string
   nameToDb sync.Map
 
   machineInfo analyzer.MachineInfo
@@ -59,7 +59,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   mux := http.NewServeMux()
 
   disposer := util.NewDisposer()
- 	defer disposer.Dispose()
+  defer disposer.Dispose()
   if len(natsUrl) > 0 {
     err = listenNats(cacheManager, natsUrl, disposer, logger)
     if err != nil {
@@ -91,7 +91,8 @@ func (t *StatsServer) GetDatabase(name string) (*sqlx.DB, error) {
   }
 
   // limit max memory to use - 3GB
-  db, err := sqlx.Open("clickhouse", "tcp://"+t.dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_memory_usage=3221225472&database=" + name)
+  // increase max query size, because we IN statements contains a lot of values (e.g. machines)
+  db, err := sqlx.Open("clickhouse", "tcp://"+t.dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_query_size=1000000&max_memory_usage=3221225472&database="+name)
   if err != nil {
     return nil, errors.WithStack(err)
   }

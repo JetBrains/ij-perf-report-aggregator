@@ -9,3 +9,7 @@ html {
 .p-toolbar-group-left, .p-toolbar-group-right {
   @apply gap-x-2;
 }
+
+.p-toast-detail {
+  @apply line-clamp-6 overflow-hidden max-w-sm w-full break-words;
+}

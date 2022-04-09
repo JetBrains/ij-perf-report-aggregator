@@ -2,10 +2,12 @@ package server
 
 import (
   "compress/gzip"
+  "context"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/dgraph-io/ristretto"
+  errors2 "github.com/pkg/errors"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "github.com/zeebo/xxh3"
@@ -83,7 +85,7 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
   w.Header().Set("Content-Type", "application/json")
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Cache-Control", "public, must-revalidate, max-age=15")
-	w.Header().Set("Vary", "Accept-Encoding")
+  w.Header().Set("Vary", "Accept-Encoding")
 
   cacheKey := generateKey(request)
   value, found := t.cache.Get(cacheKey)
@@ -140,8 +142,12 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 
   default:
     //fmt.Printf("%+v", err)
-    t.logger.Error("cannot handle http request", zap.Error(err))
-    http.Error(w, err.Error(), 503)
+    if errors2.Is(err, context.Canceled) {
+      http.Error(w, err.Error(), 499)
+    } else {
+      t.logger.Error("cannot handle http request", zap.Error(err))
+      http.Error(w, err.Error(), 503)
+    }
   }
 }
 

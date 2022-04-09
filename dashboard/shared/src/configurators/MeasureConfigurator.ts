@@ -13,18 +13,14 @@ import { ServerConfigurator } from "./ServerConfigurator"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
-  private _value = shallowRef<Array<string>|string|null>(null)
+  private readonly _value = shallowRef<Array<string> | string | null>(null)
 
-  public get value(){
-    if(typeof this._value.value == "string") {
-      this._value = shallowRef([this._value.value])
+  public get value() {
+    if (typeof this._value.value == "string") {
+      this._value.value = [this._value.value]
       this.persistentStateManager.add("measure", this._value)
     }
-    return this._value as Ref<string[]|null>
-  }
-
-  public set value(value: Ref<string[]|null>){
-    this._value = value
+    return this._value as Ref<string[] | null>
   }
 
   private readonly debouncedLoadMetadata = new DebouncedTask(taskHandle => this.loadMetadata(taskHandle))
@@ -248,8 +244,8 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       type: "line",
       smooth: false,
       showSymbol: true,
-      symbolSize (_rawValue, _data) {
-        return Math.min(800/dataList[dataIndex].length, 9)
+      symbolSize(_rawValue, _data) {
+        return Math.min(800 / dataList[dataIndex].length, 9)
       },
       symbol: "circle",
       legendHoverLink: true,

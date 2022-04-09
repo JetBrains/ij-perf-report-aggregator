@@ -3,9 +3,9 @@ WORKDIR /project/src
 ADD https://raw.githubusercontent.com/nats-io/nats.go/8dd5ec6c97bccaf8fc09b45a76d5694f0f6ae403/examples/nats-pub/main.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/nats-pub .
 
-ARG CH_VERSION
+ARG CH_URL
 
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v$CH_VERSION-stable/clickhouse-common-static-$CH_VERSION.tgz | tar xvz --strip-components=4 ./clickhouse-common-static-$CH_VERSION/usr/bin/clickhouse
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/$CH_URL | tar xvz --strip-components=3
 
 FROM ubuntu:21.10
 

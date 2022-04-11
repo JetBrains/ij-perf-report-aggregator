@@ -11,7 +11,9 @@ use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarCha
 export class BarChartManager {
   private readonly chart: ChartManagerHelper
 
-  constructor(container: HTMLElement, private readonly dataQueryExecutor: DataQueryExecutor) {
+  private readonly unsubscribe: () => void
+
+  constructor(container: HTMLElement, dataQueryExecutor: DataQueryExecutor) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<LineChartOptions>({
       animation: false,
@@ -38,13 +40,13 @@ export class BarChartManager {
       },
     })
 
-    dataQueryExecutor.setListener((data, configuration) => {
+    this.unsubscribe = dataQueryExecutor.subscribe((data, configuration) => {
       this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
     })
   }
 
   dispose(): void {
     this.chart.dispose()
-    this.dataQueryExecutor.setListener(null)
+    this.unsubscribe()
   }
 }

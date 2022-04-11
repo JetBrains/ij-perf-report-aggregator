@@ -1,19 +1,24 @@
 import { LineSeriesOption } from "echarts/charts"
-import { Ref, shallowRef, watch } from "vue"
+import { deepEqual } from "fast-equals"
+import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
+import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, collator } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
 import { LineChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
-import { DebouncedTask, TaskHandle } from "../util/debounce"
-import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
   private readonly _value = shallowRef<Array<string> | string | null>(null)
+
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.value, true)
+  }
 
   public get value() {
     if (typeof this._value.value == "string") {
@@ -23,17 +28,50 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return this._value as Ref<string[] | null>
   }
 
-  private readonly debouncedLoadMetadata = new DebouncedTask(taskHandle => this.loadMetadata(taskHandle))
-
-  constructor(private readonly serverConfigurator: ServerConfigurator,
+  constructor(serverConfigurator: ServerConfigurator,
               private readonly persistentStateManager: PersistentStateManager,
-              private readonly parent: DimensionConfigurator | null = null,
+              filters: Array<DataQueryConfigurator> = [],
               readonly skipZeroValues: boolean = true) {
-    this.persistentStateManager.add("measure", this.value)
+    this.persistentStateManager.add("measure", this.value);
 
-    if (this.parent != null) {
-      watch(this.parent.value, this.debouncedLoadMetadata.executeFunctionReference)
-    }
+    (filters.length === 0 ? serverConfigurator.createObservable() : combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable())))
+      .pipe(
+        debounceTime(100),
+        distinctUntilChanged(deepEqual),
+        switchMap(() => {
+          const isIj = serverConfigurator.databaseName === "ij"
+
+          const loadMeasureListUrl = getLoadMeasureListUrl(isIj ? "measure" : "measures", serverConfigurator, filters)
+          if (loadMeasureListUrl == null) {
+            return of(null)
+          }
+
+          if (isIj) {
+            const server = serverConfigurator.value.value
+            if (server == null || server.length === 0) {
+              return of(null)
+            }
+
+            return forkJoin([
+              fromFetchWithRetryAndErrorHandling<Array<string>>(`${server}/api/v1/meta/measure?db=${serverConfigurator.databaseName}`),
+              fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
+            ])
+              .pipe(
+                map(data => {
+                  return data.flat(1)
+                }),
+              )
+          }
+          else {
+            return fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
+          }
+        }),
+      )
+      .subscribe(data => {
+        if (data != null) {
+          this.data.value = data
+        }
+      })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -51,51 +89,34 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): LineChartOptions {
     return configureChart(configuration, data)
   }
-
-  scheduleLoadMetadata(immediately: boolean): void {
-    this.debouncedLoadMetadata.execute(immediately)
-  }
-
-  loadMetadata(taskHandle: TaskHandle): Promise<unknown> {
-    if (this.serverConfigurator.databaseName === "ij") {
-      const server = this.serverConfigurator.value.value
-      if (server == null || server.length === 0) {
-        return Promise.resolve()
-      }
-
-      return Promise.all([
-          loadJson<Array<string>>(`${server}/api/v1/meta/measure?db=${this.serverConfigurator.databaseName}`, null, taskHandle, data => {
-            if (data !== null) {
-              this.data.value = data
-            }
-          }),
-          loadMeasureList(taskHandle, "measure", this.serverConfigurator, this.parent),
-        ]).then(values => {
-          if (values.length === 2 && values[0] != null && values[1] != null) {
-            this.data.value = [...values[0], ...values[1]]
-          }
-        })
-    }
-
-    return loadMeasureList(taskHandle, "measures", this.serverConfigurator, this.parent).then(data => {
-      if (data !== null) {
-        this.data.value = [... new Set(data.flat())]
-      }
-    })
-  }
 }
 
-function loadMeasureList(taskHandle: TaskHandle,
-                         structureName: string,
-                         serverConfigurator: ServerConfigurator,
-                         parent: DimensionConfigurator | null): Promise<Array<string> | null> {
+function getLoadMeasureListUrl(structureName: string,
+                               serverConfigurator: ServerConfigurator,
+                               filters: Array<DataQueryConfigurator>): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {
-    return Promise.resolve(null)
+    return null
   }
-  if (parent != null && !parent.configureQuery(query, configuration)) {
-    return Promise.resolve(null)
+
+  if (filters.length !== 0) {
+    for (const parent of filters) {
+      if (parent instanceof DimensionConfigurator) {
+        const value = parent.value.value
+        if (value == null || value.length === 0) {
+          return null
+        }
+
+        query.addFilter({field: parent.name, value})
+      }
+      else {
+        // well, so, it is a filter configurator (e.g. MachineConfigurator)
+        if (!parent.configureQuery(query, configuration)) {
+          return null
+        }
+      }
+    }
   }
 
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
@@ -103,26 +124,15 @@ function loadMeasureList(taskHandle: TaskHandle,
   query.order = [`${structureName}.name`]
   query.table = "report"
   query.flat = true
-  let serializedQuery = "!("
-  serializedQuery += encodeQuery(query)
-  if (configuration.extraQueryProducer != null) {
-    let done = false
-    do {
-      done = !configuration.extraQueryProducer.mutate()
-      serializedQuery += "," + encodeQuery(query)
-    }
-    while (!done)
-  }
-  serializedQuery += ")"
-
-  return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${serializedQuery}`, null, taskHandle, function () {
-    // ignore
-  })
+  return `${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`
 }
-
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   constructor(private readonly measures: Array<string>, readonly skipZeroValues: Ref<boolean> = shallowRef(true)) {
+  }
+
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.skipZeroValues)
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -213,13 +223,12 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
-  let index = 1
-  if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryMutator is already set")
-  }
+  configuration.extraQueryProducers.push({
+    size(): number {
+      return values.length
+    },
 
-  configuration.extraQueryProducer = {
-    mutate() {
+    mutate(index: number): void {
       if (field != null) {
         field.name = values[index]
         if (filter != null) {
@@ -229,8 +238,6 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
       else if (filter != null) {
         filter.value = values[index]
       }
-      index++
-      return index !== values.length
     },
     getSeriesName(index: number): string {
       return measureNameToLabel(values[index])
@@ -238,16 +245,17 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
     getMeasureName(index: number): string {
       return values[index]
     }
-  }
+  })
 }
 
 function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
   const series = new Array<LineSeriesOption>()
-  const extraQueryProducer = configuration.extraQueryProducer
   let useDurationFormatter = true
-  for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
-    const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
-    const seriesName = extraQueryProducer == null ? measureNameToLabel(measureName) : extraQueryProducer.getSeriesName(dataIndex)
+  for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+    const measureName = configuration.measureNames[dataIndex]
+    const seriesName = configuration.seriesNames[dataIndex]
+    const seriesData = dataList[dataIndex]
+    const symbolSize = Math.min(800 / seriesData.length, 9)
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
@@ -255,14 +263,14 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       type: "line",
       smooth: false,
       showSymbol: true,
-      symbolSize(_rawValue, _data) {
-        return Math.min(800 / dataList[dataIndex].length, 9)
+      symbolSize(_rawValue, _data): number {
+        return symbolSize
       },
       symbol: "circle",
       legendHoverLink: true,
       sampling: "lttb",
       dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
-      data: dataList[dataIndex],
+      data: seriesData,
     })
 
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {

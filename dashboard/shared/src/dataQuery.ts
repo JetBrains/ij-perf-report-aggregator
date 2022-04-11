@@ -1,4 +1,5 @@
 import { encode as risonEncode } from "rison-node"
+import { Observable } from "rxjs"
 import { Ref } from "vue"
 import { ChartConfigurator } from "./chart"
 
@@ -77,18 +78,25 @@ export interface DataQueryDimension {
 
 export interface DataQueryConfigurator {
   readonly value?: Ref<unknown>
-  readonly valueChangeDelay?: number
 
-  scheduleLoadMetadata?(immediately: boolean): void
+  /**
+   * Return null if no need to observe — a fully static configurator that doesn't trigger query reconfiguration.
+   * Observable must emit at least one value.
+   */
+  createObservable(): Observable<unknown> | null
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean
+
+  createDimension?(): ExtraQueryProducer
 }
 
-interface ExtraQueryProducer {
+export interface ExtraQueryProducer {
+  size(): number
+
   /**
    * Mutate query and return false to stop producing.
    */
-  mutate(): boolean
+  mutate(index: number): void
 
   getSeriesName(index: number): string
 
@@ -98,6 +106,9 @@ interface ExtraQueryProducer {
 export class DataQueryExecutorConfiguration {
   serverUrl: string | null = null
 
+  readonly seriesNames: Array<string> = []
+  readonly measureNames: Array<string> = []
+
   getServerUrl(): string {
     const result = this.serverUrl
     if (result == null) {
@@ -106,8 +117,7 @@ export class DataQueryExecutorConfiguration {
     return result
   }
 
-  // returns false if done
-  extraQueryProducer: ExtraQueryProducer | null = null
+  readonly extraQueryProducers: Array<ExtraQueryProducer> = []
 
   private _chartConfigurator: ChartConfigurator | null = null
   get chartConfigurator(): ChartConfigurator {

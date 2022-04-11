@@ -104,17 +104,15 @@ export default {
       this.messages = [...this.messages, message]
     },
     remove(message) {
-      let index = -1
       for (let i = 0; i < this.messages.length; i++) {
         if (this.messages[i] === message) {
-          index = i
+          this.messages.splice(i, 1)
           break
         }
       }
-      this.messages.splice(index, 1)
     },
     onAdd(message) {
-      if (this.group == message.group) {
+      if (this.group === (message.group ?? null)) {
         this.add(message)
       }
     },

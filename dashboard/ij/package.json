@@ -3,9 +3,9 @@
   "private": true,
   "dependencies": {
     "primeicons": "^5.0.0",
-    "primevue": "^3.12.4",
+    "primevue": "^3.12.5",
     "shared": "workspace:*",
-    "vue": "3.2.31",
+    "vue": "3.2.32",
     "vue-router": "4.0.14"
   }
 }

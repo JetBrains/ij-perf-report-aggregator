@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
 import Dashboard from "shared/src/components/Dashboard.vue"
@@ -78,15 +78,13 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
-const dataQueryExecutor = new DataQueryExecutor([
+initDataComponent(persistentStateManager, [
   serverConfigurator,
   productConfigurator,
   projectConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-], true)
-
-initDataComponent(persistentStateManager, dataQueryExecutor)
+])
 
 const tabs = ref<Array<Tab>>([
   {

@@ -1,7 +1,6 @@
+import { debounceTime, Subject } from "rxjs"
 import { Ref, watch } from "vue"
-
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
-import { debounceSync } from "./util/debounce"
 
 declare type State = { [key: string]: number | string | Array<string> | unknown }
 
@@ -10,11 +9,7 @@ export class PersistentStateManager {
 
   private readonly initializers: Array<() => void> = []
 
-  private readonly debouncedSave = debounceSync(() => {
-    localStorage.setItem(this.getKey(), JSON.stringify(this.state))
-
-    this.updateUrlQuery()
-  }, 300)
+  private readonly saveSubject = new Subject<null>()
 
   private readonly route: RouteLocationNormalizedLoaded | null
 
@@ -45,6 +40,15 @@ export class PersistentStateManager {
         this.state[name] = value
       }
     }
+
+    this.saveSubject.pipe(
+      debounceTime(300),
+    )
+      .subscribe(() => {
+        localStorage.setItem(this.getKey(), JSON.stringify(this.state))
+
+        this.updateUrlQuery()
+      })
   }
 
   private getKey(): string {
@@ -97,7 +101,7 @@ export class PersistentStateManager {
       const oldValue = this.state[name]
       if (value !== oldValue) {
         this.state[name] = value
-        this.debouncedSave()
+        this.saveSubject.next(null)
       }
     })
 

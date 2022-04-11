@@ -46,7 +46,7 @@ module.exports = {
       },
     }],
     "vue/html-quotes": ["error", "double", {"avoidEscape": true}],
-    "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared"],
+    "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared", "rxjs/operators"],
     "vue/multi-word-component-names": ["error", {
       "ignores": ["Dashboard"]
     }]

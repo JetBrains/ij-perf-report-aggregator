@@ -8,20 +8,16 @@
   />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, PropType, shallowRef, toRef, watch, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, PropType, shallowRef, toRef, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { chartToolTipKey, dataQueryExecutorKey } from "../injectionKeys"
+import { DataQuery, DataQueryExecutorConfiguration } from "../dataQuery"
+import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
 const props = defineProps({
-  provider: {
-    type: DataQueryExecutor,
-    default: () => null,
-  },
   skipZeroValues: {
     type: Boolean,
     default: true,
@@ -38,7 +34,7 @@ const props = defineProps({
 
 const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: LineChartManager | null = null
-const providedDataQueryExecutor = inject(dataQueryExecutorKey, null)
+const providedConfigurators = inject(configuratorListKey, null)
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager()
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -56,31 +52,30 @@ const hide = () => {
 let dataQueryExecutor: DataQueryExecutor | null
 
 watchEffect(function () {
-  dataQueryExecutor = props.provider ?? providedDataQueryExecutor
-  if (dataQueryExecutor == null) {
-    throw new Error("Neither `provider` property is set, nor `dataQueryExecutor` is provided")
+  let configurators = providedConfigurators
+  if (configurators == null) {
+    throw new Error("`dataQueryExecutor` is not provided")
   }
 
   // static list of measures is provided - create sub data query executor
   if (props.measures != null) {
-    const configurators: Array<DataQueryConfigurator> = [
-      new PredefinedMeasureConfigurator(props.measures, skipZeroValues),
-    ]
+    configurators = configurators.concat(new PredefinedMeasureConfigurator(props.measures, skipZeroValues))
     const infoFields = chartToolTipManager.reportInfoProvider?.infoFields ?? []
     if (infoFields.length !== 0) {
       configurators.push({
+        createObservable() {
+          return null
+        },
         configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
           for (const infoField of infoFields) {
             query.addField(infoField)
           }
           return true
-        },
+        }
       })
     }
-    dataQueryExecutor = dataQueryExecutor.createSub(configurators)
-    dataQueryExecutor.scheduleLoad()
   }
-
+  dataQueryExecutor = new DataQueryExecutor(configurators)
   chartToolTipManager.dataQueryExecutor = dataQueryExecutor
   if (chartManager != null) {
     chartManager.dataQueryExecutor = dataQueryExecutor
@@ -96,11 +91,6 @@ onMounted(() => {
     toRef(props, "dataZoom"),
     chartToolTipManager.formatArrayValue.bind(chartToolTipManager),
   )
-
-  watch(skipZeroValues, () => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    chartManager!.dataQueryExecutor.scheduleLoad()
-  })
 })
 onUnmounted(() => {
   const it = chartManager

@@ -2,25 +2,10 @@
 // We suggest you to commit this file into source control
 // Read more: https://github.com/vuejs/vue-next/pull/3399
 
-declare module 'vue' {
+declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ArchiveIcon: typeof import('@heroicons/vue/outline/esm/ArchiveIcon.js')['default']
-    AutoComplete: typeof import('primevue/autocomplete/sfc')['default']
-    Button: typeof import('primevue/button/sfc')['default']
-    Divider: typeof import('primevue/divider/sfc')['default']
-    Dropdown: typeof import('primevue/dropdown/sfc')['default']
-    InputNumber: typeof import('primevue/inputnumber/sfc')['default']
-    Menubar: typeof import('primevue/menubar/sfc')['default']
-    Message: typeof import('primevue/message/sfc')['default']
-    MultiSelect: typeof import('primevue/multiselect/sfc')['default']
-    ServerIcon: typeof import('@heroicons/vue/outline/esm/ServerIcon.js')['default']
-    TabMenu: typeof import('primevue/tabmenu/sfc')['default']
-    TabPanel: typeof import('primevue/tabpanel/sfc')['default']
-    TabView: typeof import('primevue/tabview/sfc')['default']
-    Textarea: typeof import('primevue/textarea/sfc')['default']
-    Toolbar: typeof import('primevue/toolbar/sfc')['default']
-    TreeSelect: typeof import('primevue/treeselect/sfc')['default']
-    UsersIcon: typeof import('@heroicons/vue/outline/esm/UsersIcon.js')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }
 

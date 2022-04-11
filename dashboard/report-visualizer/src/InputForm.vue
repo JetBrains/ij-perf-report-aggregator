@@ -37,9 +37,10 @@
 </template>
 
 <script setup lang="ts">
+import { deepEqual } from "fast-equals"
+import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap } from "rxjs"
+import { fromFetchWithRetryAndErrorHandling } from "shared/src/configurators/rxjs"
 import { serverUrlKey } from "shared/src/injectionKeys"
-import { DebouncedTask, TaskHandle } from "shared/src/util/debounce"
-import { loadJson } from "shared/src/util/httpUtil"
 import { inject, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute } from "vue-router"
 import { recentlyUsedIdePort, reportData } from "./state"
@@ -54,31 +55,38 @@ const isFetchingDev = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const serverUrl = inject(serverUrlKey)!
 
-let lastReportUrl = ""
-
-const loadReportDebounced = new DebouncedTask(function (taskHandle: TaskHandle): Promise<unknown> {
-  if (lastReportUrl.length === 0) {
-    return Promise.resolve()
-  }
-
-  // localhost blocked by Firefox, but 127.0.0.1 not.
-  // Google Chrome correctly resolves localhost, but Firefox doesn't.
-  return loadJson(lastReportUrl, null, taskHandle, data => {
+const subject = new Subject<{url: string; isDev: boolean}>()
+subject
+  .pipe(
+    debounceTime(100),
+    distinctUntilChanged(deepEqual),
+    switchMap(({url, isDev}) => {
+      if (url.length === 0) {
+        return of(null)
+      }
+      const statusRef = isDev ? isFetchingDev : isFetching
+      statusRef.value = true
+      return fromFetchWithRetryAndErrorHandling<string>(url, {
+        summary: "Cannot connect to IDE",
+        detail: "Please check that port is correct."
+      })
+        .pipe(
+          finalize(() => {
+            statusRef.value = false
+          }),
+        )
+    }),
+  )
+  .subscribe(data => {
     if (data != null) {
       reportData.value = JSON.stringify(data, null, 2)
     }
-  }).finally(() => {
-    isFetchingDev.value = false
-    isFetching.value = false
   })
-})
 
 function loadReportUrlIfSpecified(location: RouteLocationNormalizedLoaded) {
   const reportUrl = location.query["reportUrl"]
-  if (reportUrl != null && reportUrl.length > 0 && lastReportUrl !== reportUrl) {
-    isFetching.value = true
-    lastReportUrl = `${serverUrl.value}${(reportUrl as string)}`
-    loadReportDebounced.execute()
+  if (reportUrl != null && reportUrl.length > 0) {
+    subject.next({url: `${serverUrl.value}${(reportUrl as string)}`, isDev: false})
   }
 }
 
@@ -90,14 +98,10 @@ watch(route, location => {
 const inputData = reportData
 const portNumber = recentlyUsedIdePort
 function getFromRunningInstance() {
-  isFetching.value = true
-  lastReportUrl = getIdeaReportUrl(recentlyUsedIdePort.value)
-  loadReportDebounced.execute()
+  subject.next({url: getIdeaReportUrl(recentlyUsedIdePort.value), isDev: false})
 }
 function getFromRunningDevInstance() {
-  isFetchingDev.value = true
-  lastReportUrl = getIdeaReportUrl(63343)
-  loadReportDebounced.execute()
+  subject.next({url: getIdeaReportUrl(63343), isDev: true})
 }
 
 function getIdeaReportUrl(port: number) {

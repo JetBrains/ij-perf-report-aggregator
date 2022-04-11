@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { DebouncedTask } from "shared/src/util/debounce"
+import { asyncScheduler, distinctUntilChanged, observeOn, Subject, switchMap } from "rxjs"
 import { computed, defineComponent, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
@@ -57,19 +57,32 @@ export default defineComponent({
       updateLocation(location)
     })
 
+    const subject = new Subject<string>()
+    subject
+      .pipe(
+        distinctUntilChanged(),
+        switchMap(activeName => {
+          return router.push({
+            query: {
+              ...route.query,
+              [queryParamName]: activeName,
+            },
+          })
+        }),
+        observeOn(asyncScheduler)
+      )
+      .subscribe(() => {
+        // empty
+      })
+
     const router = useRouter()
     return {
       charts,
       activeName,
       activeId,
-      navigate: new DebouncedTask(function () {
-        return router.push({
-          query: {
-            ...route.query,
-            [queryParamName]: activeName.value,
-          },
-        })
-      }, 0).executeFunctionReference,
+      navigate() {
+        subject.next(activeName.value)
+      },
     }
   },
 })

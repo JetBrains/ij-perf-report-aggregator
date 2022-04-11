@@ -79,7 +79,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     return loadMeasureList(taskHandle, "measures", this.serverConfigurator, this.parent).then(data => {
       if (data !== null) {
-        this.data.value = data
+        this.data.value = data.flat()
       }
     })
   }
@@ -103,8 +103,19 @@ function loadMeasureList(taskHandle: TaskHandle,
   query.order = [`${structureName}.name`]
   query.table = "report"
   query.flat = true
+  let serializedQuery = "!("
+  serializedQuery += encodeQuery(query)
+  if (configuration.extraQueryProducer != null) {
+    let done = false
+    do {
+      done = !configuration.extraQueryProducer.mutate()
+      serializedQuery += "," + encodeQuery(query)
+    }
+    while (!done)
+  }
+  serializedQuery += ")"
 
-  return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`, null, taskHandle, function () {
+  return loadJson<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${serializedQuery}`, null, taskHandle, function () {
     // ignore
   })
 }

@@ -8,18 +8,13 @@ import Components from "unplugin-vue-components/vite"
 import { defineConfig } from "vite"
 import svgLoader from "vite-svg-loader"
 // import visualizer from "rollup-plugin-visualizer"
+import eslintPlugin from "@nabla/vite-plugin-eslint"
 
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
 export default defineConfig({
   plugins: [
-    // {
-    //   ...eslintPlugin({
-    //     include: ["dashboard/**/*.ts", "jb/dashboard/jb/**/*.vue"],
-    //     cache: false,
-    //   }),
-    //   enforce: "pre",
-    // },
+    eslintPlugin(),
     vue(),
     // visualizer({template: "sunburst"}),
     svgLoader(),

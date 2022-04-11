@@ -13,6 +13,10 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   constructor(private readonly measures: Array<string>, private readonly timeRange: Ref<TimeRange>, private readonly chartStyle: ChartStyle) {
   }
 
+  createObservable() {
+    return null
+  }
+
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const timeRange = this.timeRange.value || TimeRangeConfigurator.timeRanges[0].value
     const interval = getClickHouseIntervalByDuration(timeRange)
@@ -55,31 +59,31 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     return true
   }
 
-  configureChart(dataSets: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
-    const extraQueryProducer = configuration.extraQueryProducer
-    if (extraQueryProducer != null) {
+  configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
+    const queryProducers = configuration.extraQueryProducers
+    if (queryProducers.length !== 0) {
       let useDurationFormatter = true
+
       // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
       const dimensions: Array<DimensionDefinition> = []
       dimensions.push({name: "dimension", type: "ordinal"})
       const dimensionNameSet = new Set<string>()
       const source: Array<{ [key: string]: string | number }> = []
-      for (let dataSetIndex = 0; dataSetIndex < dataSets.length; dataSetIndex++) {
-        const dataSet = dataSets[dataSetIndex]
-        const dataSetLabel = extraQueryProducer.getSeriesName(dataSetIndex)
 
-        if (useDurationFormatter && !isDurationFormatterApplicable(extraQueryProducer.getMeasureName(dataSetIndex))) {
+      for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+        if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
           useDurationFormatter = false
         }
 
-        const column: { [key: string]: string | number } = {dimension: dataSetLabel}
+        const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
         source.push(column)
-        for (const data of dataSet) {
+        for (const data of dataList[dataIndex]) {
           const valueKey = data[0] as string
           dimensionNameSet.add(valueKey)
           column[valueKey] = data[1]
         }
       }
+
       for (const name of dimensionNameSet) {
         dimensions.push({name, type: "number"})
       }
@@ -104,7 +108,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       }
     }
 
-    const data = dataSets[0]
+    const data = dataList[0]
     const series = new Array<BarSeriesOption>(data.length)
     for (let i = 0; i < data.length; i++) {
       series[i] = {

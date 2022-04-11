@@ -1,7 +1,9 @@
+import { Observable } from "rxjs"
 import { provide, ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { timeRangeKey } from "../injectionKeys"
+import { refToObservable } from "./rxjs"
 
 export declare type TimeRange = "1M" | "3M" | "1y" | "all"
 
@@ -17,6 +19,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator {
     {label: "Last year", value: "1y"},
     {label: "All", value: "all"},
   ]
+
   readonly value = ref<string>(TimeRangeConfigurator.timeRanges[0].value)
 
   constructor(persistentStateManager: PersistentStateManager) {
@@ -25,28 +28,18 @@ export class TimeRangeConfigurator implements DataQueryConfigurator {
     persistentStateManager.add("timeRange", this.value)
   }
 
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.value)
+  }
+
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
     const duration = this.value.value ?? TimeRangeConfigurator.timeRanges[0].value
-    if (duration !== "all") {
-      let sql: string
-      // if (duration === "1M") {
-      //   // aggregator uses interval to clusterize data - 1 month it is 30 day, because 1 month interval cannot be used -
-      //   // for clickhouse 1 month means 1 month staring from first day of month, and not from current day of current month,
-      //   // so, it can lead to not consistent number of clusters
-      //   sql = "> subtractDays(now(), 30)"
-      // }
-      // else if (duration === "3M") {
-      //   // aggregator uses interval to clusterize data - 1 month it is 30 day, because 1 month interval cannot be used -
-      //   // for clickhouse 1 month means 1 month staring from first day of month, and not from current day of current month,
-      //   // so, it can lead to not consistent number of clusters
-      //   sql = "> subtractDays(now(), 90)"
-      // }
-      // else {
-      // eslint-disable-next-line prefer-const
-        sql = `> ${toClickhouseSql(parseDuration(duration))}`
-      // }
-      query.addFilter({field: "generated_time", sql})
+    if (duration === "all") {
+      return true
     }
+
+    const sql = `> ${toClickhouseSql(parseDuration(duration))}`
+    query.addFilter({field: "generated_time", sql})
     return true
   }
 }

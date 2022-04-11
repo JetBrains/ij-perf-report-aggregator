@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
@@ -68,7 +68,7 @@ export default defineComponent({
     )
     const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
-    const dataQueryExecutor = new DataQueryExecutor([
+    initDataComponent(persistentStateManager, [
       serverConfigurator,
       productConfigurator,
       projectConfigurator,
@@ -77,15 +77,12 @@ export default defineComponent({
       measureConfigurator,
     ])
 
-    initDataComponent(persistentStateManager, dataQueryExecutor)
-
     return {
       productConfigurator,
       projectConfigurator,
       machineConfigurator,
       measureConfigurator,
       timeRangeConfigurator,
-      dataQueryExecutor,
       getProjectName,
     }
   },

@@ -1,9 +1,11 @@
+import { Observable } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
 import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { refToObservable } from "./rxjs"
 
 export abstract class BaseDimensionConfigurator implements DataQueryConfigurator {
   readonly value = shallowRef<string | Array<string> | null>(null)
@@ -15,6 +17,10 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
   protected constructor(readonly name: string, readonly multiple: boolean) {
   }
 
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.value, true)
+  }
+
   scheduleLoadMetadata(immediately: boolean): void {
     this.debouncedLoad.execute(immediately)
   }
@@ -22,10 +28,10 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
   abstract load(taskHandle: TaskHandle): Promise<unknown>
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    let value = this.value.value
-    if (value == null) {
-      console.debug(`[dimensionConfigurator(name=${this.name})] value is not set`)
-      value = ""
+    const value = this.value.value
+    if (value == null || value.length === 0) {
+      // console.debug(`[dimensionConfigurator(name=${this.name})] value is not set`)
+      return false
     }
 
     const filter: DataQueryFilter = {field: this.name, value}
@@ -52,10 +58,11 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
 export class DimensionConfigurator extends BaseDimensionConfigurator {
   constructor(name: string,
               readonly serverConfigurator: ServerConfigurator,
-              persistentStateManager: PersistentStateManager,
+              persistentStateManager: PersistentStateManager | null,
               multiple: boolean = false) {
     super(name, multiple)
-    persistentStateManager.add(name, this.value)
+
+    persistentStateManager?.add(name, this.value)
   }
 
   load(taskHandle: TaskHandle): Promise<unknown> {
@@ -73,21 +80,19 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
-  let index = 1
-  if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryProducer is already set")
-  }
-
-  configuration.extraQueryProducer = {
-    mutate() {
-      filter.value = values[index++]
-      return index !== values.length
+  configuration.extraQueryProducers.push({
+      size(): number {
+        return values.length
+      },
+      mutate(index: number) {
+        filter.value = values[index]
+      },
+      getSeriesName(index: number): string {
+        return values[index]
+      },
+      getMeasureName(_index: number): string {
+        return configuration.measures[0]
+      },
     },
-    getSeriesName(index: number): string {
-      return values[index]
-    },
-    getMeasureName(_index: number): string {
-      return configuration.measures[0]
-    }
-  }
+  )
 }

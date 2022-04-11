@@ -1,4 +1,5 @@
 import { LineSeriesOption } from "echarts/charts"
+import { Observable } from "rxjs"
 import { Ref, shallowRef, watch } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
@@ -10,10 +11,15 @@ import { DebouncedTask, TaskHandle } from "../util/debounce"
 import { loadJson } from "../util/httpUtil"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { refToObservable } from "./rxjs"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
   private readonly _value = shallowRef<Array<string> | string | null>(null)
+
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.value, true)
+  }
 
   public get value() {
     if (typeof this._value.value == "string") {
@@ -114,6 +120,10 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   constructor(private readonly measures: Array<string>, readonly skipZeroValues: Ref<boolean> = shallowRef(true)) {
   }
 
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.skipZeroValues)
+  }
+
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     configureQuery(this.measures, query, configuration, this.skipZeroValues.value)
     configuration.chartConfigurator = this
@@ -202,13 +212,12 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
-  let index = 1
-  if (configuration.extraQueryProducer != null) {
-    throw new Error("extraQueryMutator is already set")
-  }
+  configuration.extraQueryProducers.push({
+    size(): number {
+      return values.length
+    },
 
-  configuration.extraQueryProducer = {
-    mutate() {
+    mutate(index: number): void {
       if (field != null) {
         field.name = values[index]
         if (filter != null) {
@@ -218,8 +227,6 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
       else if (filter != null) {
         filter.value = values[index]
       }
-      index++
-      return index !== values.length
     },
     getSeriesName(index: number): string {
       return measureNameToLabel(values[index])
@@ -227,16 +234,17 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
     getMeasureName(index: number): string {
       return values[index]
     }
-  }
+  })
 }
 
 function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
   const series = new Array<LineSeriesOption>()
-  const extraQueryProducer = configuration.extraQueryProducer
   let useDurationFormatter = true
-  for (let dataIndex = 0; dataIndex < dataList.length; dataIndex++) {
-    const measureName = extraQueryProducer == null ? configuration.measures[0] : extraQueryProducer.getMeasureName(dataIndex)
-    const seriesName = extraQueryProducer == null ? measureNameToLabel(measureName) : extraQueryProducer.getSeriesName(dataIndex)
+  for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+    const measureName = configuration.measureNames[dataIndex]
+    const seriesName = configuration.seriesNames[dataIndex]
+    const seriesData = dataList[dataIndex]
+    const symbolSize = Math.min(800 / seriesData.length, 9)
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
@@ -244,14 +252,14 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       type: "line",
       smooth: false,
       showSymbol: true,
-      symbolSize(_rawValue, _data) {
-        return Math.min(800 / dataList[dataIndex].length, 9)
+      symbolSize(_rawValue, _data): number {
+        return symbolSize
       },
       symbol: "circle",
       legendHoverLink: true,
       sampling: "lttb",
       dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
-      data: dataList[dataIndex],
+      data: seriesData,
     })
 
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {

@@ -41,7 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import { DataQueryExecutor, initDataComponent } from "shared/src/DataQueryExecutor"
+import { ReloadConfigurator } from "shared/src/configurators/ReloadConfigurator"
+import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { DEFAULT_LINE_CHART_HEIGHT } from "shared/src/chart"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
@@ -89,14 +90,12 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
-const dataQueryExecutor = new DataQueryExecutor([
+const chartHeight = DEFAULT_LINE_CHART_HEIGHT
+initDataComponent(persistentStateManager, [
   serverConfigurator,
   scenarioConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-], true)
-
-const chartHeight = DEFAULT_LINE_CHART_HEIGHT
-initDataComponent(persistentStateManager, dataQueryExecutor)
+])
 </script>

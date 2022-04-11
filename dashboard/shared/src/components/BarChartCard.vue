@@ -11,15 +11,11 @@ import { BarChartManager } from "../BarChartManager"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { chartDefaultStyle } from "../chart"
 import { PredefinedGroupingMeasureConfigurator } from "../configurators/PredefinedGroupingMeasureConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, dataQueryExecutorKey, timeRangeKey } from "../injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, timeRangeKey } from "../injectionKeys"
 
 export default defineComponent({
   name: "BarChartCard",
   props: {
-    provider: {
-      type: DataQueryExecutor,
-      default: () => null,
-    },
     height: {
       type: Number,
       default: 440,
@@ -47,9 +43,9 @@ export default defineComponent({
     }
 
     const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, inject(chartStyleKey, chartDefaultStyle))
-    let dataQueryExecutor = props.provider ?? inject(dataQueryExecutorKey)
-    dataQueryExecutor = dataQueryExecutor.createSub([aggregationOperatorConfigurator, measureConfigurator])
-    dataQueryExecutor.init()
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const dataQueryExecutor = new DataQueryExecutor(inject(configuratorListKey)!.concat(aggregationOperatorConfigurator, measureConfigurator))
+    dataQueryExecutor.scheduleLoadIncludingConfigurators(true)
 
     onMounted(() => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -1,8 +1,10 @@
+import { Observable } from "rxjs"
 import { Ref, ref, watch } from "vue"
 
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, toArray } from "../dataQuery"
 import { BaseDimensionConfigurator } from "./DimensionConfigurator"
+import { refToObservable } from "./rxjs"
 
 // todo what is it?
 const macLarge = "mac large"
@@ -31,6 +33,10 @@ export class MachineConfigurator implements DataQueryConfigurator {
     })
   }
 
+  createObservable(): Observable<unknown> {
+    return refToObservable(this.value, true)
+  }
+
   scheduleLoadMetadata(immediately: boolean): void {
     this.dimension.scheduleLoadMetadata(immediately)
   }
@@ -45,12 +51,21 @@ export class MachineConfigurator implements DataQueryConfigurator {
       else if (value.startsWith("intellij-windows-hw-blade-")) {
         groupName = "windows-blade"
       }
+      else if (value.startsWith("intellij-windows-hw-munit-")) {
+        groupName = "Windows Munich"
+      }
       else {
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
         }
         else if (value.startsWith("intellij-linux-aws-m-i")) {
-          groupName = "AWS M I"
+          // noinspection SpellCheckingInspection
+          groupName = "EC2 m5d.xlarge or 5d.xlarge"
+        }
+        else if (value.startsWith("intellij-linux-performance-aws-i-")) {
+          // https://aws.amazon.com/ec2/instance-types/c6i/
+          // noinspection SpellCheckingInspection
+          groupName = "EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
         }
         else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich"

@@ -67,7 +67,7 @@ export class LineChartManager {
     })
 
     this.chart.enableZoomTool()
-    this.setDataListener()
+    this.subscribe()
     watch(dataZoom, debounceSync(() => {
       this.chart.chart.setOption({
         dataZoom: dataZoom.value ? dataZoomConfig : undefined,
@@ -75,8 +75,13 @@ export class LineChartManager {
     }))
   }
 
-  private setDataListener() {
-    this.dataQueryExecutor.setListener((data, configuration) => {
+  private unsubscribe: () => void = () => {
+    return
+  }
+
+  private subscribe() {
+    this.unsubscribe()
+    this.unsubscribe = this.dataQueryExecutor.subscribe((data, configuration) => {
       this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
       // console.log(JSON.stringify(this.chart.getOption(), null, 2))
     })
@@ -87,13 +92,12 @@ export class LineChartManager {
   }
 
   set dataQueryExecutor(newDataQueryExecutor: DataQueryExecutor) {
-    this._dataQueryExecutor.setListener(null)
     this._dataQueryExecutor = newDataQueryExecutor
-    this.setDataListener()
+    this.subscribe()
   }
 
   dispose(): void {
     this.chart.dispose()
-    this.dataQueryExecutor.setListener(null)
+    this.unsubscribe()
   }
 }

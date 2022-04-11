@@ -1,170 +1,202 @@
-import { decode as risonDecode } from "rison-node"
-import { watch, provide } from "vue"
+import { deepEqual } from "fast-equals"
+import { combineLatest, debounceTime, distinctUntilChanged, filter, forkJoin, map, mergeMap, Observable, of, shareReplay, switchMap, takeUntil, timer } from "rxjs"
+import { fromFetch } from "rxjs/fetch"
+import { provide } from "vue"
 import { PersistentStateManager } from "./PersistentStateManager"
+import { measureNameToLabel } from "./configurators/MeasureConfigurator"
+import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, encodeQuery } from "./dataQuery"
-import { dataQueryExecutorKey } from "./injectionKeys"
-import { DebouncedTask, TaskHandle } from "./util/debounce"
-import { loadJson } from "./util/httpUtil"
+import { configuratorListKey } from "./injectionKeys"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
 export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
 
+interface Result {
+  readonly data: DataQueryResult
+  readonly query: DataQuery
+  readonly configuration: DataQueryExecutorConfiguration
+}
+
 export class DataQueryExecutor {
-  private readonly debouncedExecution = new DebouncedTask(taskHandle => this.execute(taskHandle))
-  public readonly scheduleLoadIncludingConfiguratorsFunctionReference = (): void => this.scheduleLoadIncludingConfigurators()
-
-  listener: DataQueryConsumer | null = null
-  // data loading maybe started before html element is ready
-  private notConsumedData: {data: Array<Array<Array<never>>>; configuration: DataQueryExecutorConfiguration} | null = null
-
-  private readonly dependents: Array<DataQueryExecutor> = []
-
   private _lastQuery: DataQuery | null = null
+
   get lastQuery(): DataQuery | null {
     return this._lastQuery
   }
 
+  private readonly observable: Observable<Result>
+
   /**
    * `isGroup = true` means that this DataQueryExecutor only manages dependent executors but doesn't load data itself.
    */
-  constructor(private readonly configurators: Array<DataQueryConfigurator> = [],
-              private readonly isGroup: boolean = false,
-              private readonly parent: DataQueryExecutor | null = null) {
+  constructor(private readonly configurators: Array<DataQueryConfigurator>) {
+    this.observable = combineLatest(this.configurators.map(configurator => {
+      // combineLatest will not emit an initial value until each observable emits at least one value, so, null observer simply emits one null value
+      return (configurator.createObservable() ?? of(null))
+        .pipe(
+          distinctUntilChanged(deepEqual),
+          map(_ => configurator),
+        )
+    }))
+      .pipe(
+        debounceTime(100),
+        switchMap(configurators => {
+          const configuration = new DataQueryExecutorConfiguration()
+          const query = new DataQuery()
+
+          for (const configurator of configurators) {
+            if (!configurator.configureQuery(query, configuration)) {
+              return of(null)
+            }
+          }
+
+          const queries = generateQueries(query, configuration)
+          if (queries.length == 1) {
+            return fetch(queries[0], configuration)
+              .pipe(
+                // pass context along with data
+                map((data): Result => {
+                  return {query, configuration, data}
+                }),
+              )
+          }
+          else {
+            return forkJoin(queries.map(it => fetch(it, configuration)))
+              .pipe(
+                // pass context along with data and flatten result
+                map((data): Result => {
+                  return {query, configuration, data: data.flat(1)}
+                }),
+              )
+          }
+        }),
+        filter((it: Result | null): it is Result => it !== null),
+        shareReplay(1),
+      )
   }
 
-  createSub(configurators: Array<DataQueryConfigurator>): DataQueryExecutor {
-    const dataQueryExecutor = new DataQueryExecutor(configurators, false, this)
-    this.dependents.push(dataQueryExecutor)
-    return dataQueryExecutor
-  }
-
-  setListener(listener: DataQueryConsumer | null): void {
-    this.listener = listener
-    if (listener != null) {
-      const notConsumedData = this.notConsumedData
-      if (notConsumedData != null) {
-        this.notConsumedData = null
-        listener(notConsumedData.data, notConsumedData.configuration)
-      }
-    }
-  }
-
-  scheduleLoad(): void {
-    this.debouncedExecution.execute()
-  }
-
-  init(): void {
-    for (const configurator of this.configurators) {
-      const value = configurator.value
-      if (value == null) {
-        continue
-      }
-
-      let debouncedExecution = this.debouncedExecution
-      const valueChangeDelay = configurator.valueChangeDelay
-      if (valueChangeDelay !== undefined) {
-        debouncedExecution = new DebouncedTask(taskHandle => this.execute(taskHandle), valueChangeDelay)
-      }
-      watch(value, v => {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        console.debug(`[queryExecutor] schedule execution on configurator value change (new value=${v})`)
-        debouncedExecution.execute()
-      }, {deep: typeof value.value === "object" && value.value !== null})
-    }
-
-    this.scheduleLoadIncludingConfigurators(true)
+  subscribe(listener: DataQueryConsumer): () => void {
+    const subscription = this.observable.subscribe(({configuration, query, data}) => {
+      this._lastQuery = query
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
+      listener(data, configuration)
+    })
+    return () => subscription.unsubscribe()
   }
 
   scheduleLoadIncludingConfigurators(immediately: boolean = false): void {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.debug(`${this.getDebugTag()} scheduleLoadIncludingConfigurators (immediately=${immediately})`)
-
     for (const configurator of this.configurators) {
       if (configurator.scheduleLoadMetadata != null) {
         configurator.scheduleLoadMetadata(immediately)
       }
     }
-
-    // Will be asked to load data if some configurator is changed,
-    // but on route navigation all configurators are not changed, so, schedule load to make sure that chart will be not empty
-    this.debouncedExecution.execute(immediately)
-  }
-
-  private getDebugTag() {
-    if (this.isGroup) {
-      return `[queryExecutor(isGroup=true, dependentCount=${this.dependents.length})]`
-    }
-    else {
-      return `[queryExecutor${(this.parent == null ? "" : "(isDependent=true)")}]`
-    }
-  }
-
-  async execute(taskHandle: TaskHandle): Promise<unknown> {
-    const query = new DataQuery()
-    const configuration = new DataQueryExecutorConfiguration()
-
-    if (this.parent != null) {
-      for (const configurator of this.parent.configurators) {
-        if (!configurator.configureQuery(query, configuration)) {
-          return
-        }
-      }
-    }
-
-    if (!this.isGroup) {
-      for (const configurator of this.configurators) {
-        if (!configurator.configureQuery(query, configuration)) {
-          return
-        }
-      }
-    }
-
-    if (taskHandle.isCancelled) {
-      return
-    }
-
-    if (this.dependents.length > 0) {
-      await Promise.allSettled(this.dependents.map(it => it.execute(taskHandle)))
-    }
-
-    if (this.isGroup) {
-      return
-    }
-
-    let serializedQuery = "!("
-    serializedQuery += encodeQuery(query)
-    if (configuration.extraQueryProducer != null) {
-      let done = false
-      do {
-        done = !configuration.extraQueryProducer.mutate()
-        serializedQuery += "," + encodeQuery(query)
-      }
-      while (!done)
-    }
-    serializedQuery += ")"
-
-    return await loadJson<Array<Array<Array<never>>>>(`${configuration.getServerUrl()}/api/v1/load/${serializedQuery}`, null, taskHandle, data => {
-      if (taskHandle.isCancelled) {
-        return
-      }
-
-      this._lastQuery = query
-
-      // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery), null, 2)})`)
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
-      if (this.listener == null) {
-        this.notConsumedData = {configuration, data}
-      }
-      else {
-        this.listener(data, configuration)
-      }
-    })
   }
 }
 
-export function initDataComponent(persistentStateManager: PersistentStateManager, dataQueryExecutor: DataQueryExecutor): void {
-  provide(dataQueryExecutorKey, dataQueryExecutor)
+function fetch(serializedQuery: string, configuration: DataQueryExecutorConfiguration) {
+  return fromFetch(`${configuration.getServerUrl()}/api/v1/load/${serializedQuery}`)
+    .pipe(
+      // promise to result
+      mergeMap(response => response.json() as Promise<DataQueryResult>),
+      // timeout
+      takeUntil(timer(8_000)),
+    )
+}
+
+// https://stackoverflow.com/a/43053803
+function computeCartesian<T>(input: Array<Array<T>>): Array<Array<T>> {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return input.reduce((a, b) => {
+    return a.flatMap(d => b.map(e => [d, e].flat()))
+  })
+}
+
+export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): Array<string> {
+  let producers = configuration.extraQueryProducers
+  if (producers.length === 0) {
+    producers = [{
+      size(): number {
+        return 1
+      },
+      getMeasureName(_index: number): string {
+        return configuration.measures[0]
+      },
+      getSeriesName(_index: number): string {
+        return measureNameToLabel(this.getMeasureName(-1))
+      },
+      mutate(): boolean {
+        debugger
+        throw new Error("Not applicable")
+      }
+    }]
+  }
+
+  let cartesian: Array<Array<number>>
+  if (producers.length === 1) {
+    cartesian = Array.from(new Array<number>(producers[0].size()), (_, i) => [i])
+  }
+  else {
+    cartesian = computeCartesian(producers.map(it => {
+      return Array.from(new Array<number>(it.size()), (_, i) => i)
+    }))
+  }
+
+  let serializedQuery = ""
+
+  const result: Array<string> = []
+  let last = cartesian[0][0]
+  for (let combinationIndex = 0; combinationIndex < cartesian.length; combinationIndex++) {
+    const item = cartesian[combinationIndex]
+    // each column it is a producer
+    // each row it is a combination
+    // each column value it is an index of producer value
+    let seriesName = ""
+    let measureName = ""
+    for (let i = 0; i < item.length; i++) {
+      const producer = producers[i]
+      const index = item[i]
+      producer.mutate(index)
+      if (i !== 0) {
+        seriesName += " - "
+      }
+      if (i !== 0) {
+        measureName += " - "
+      }
+      seriesName += producer.getSeriesName(index)
+      measureName += producer.getMeasureName(index)
+    }
+
+    if (serializedQuery.length !== 0) {
+      serializedQuery += ","
+    }
+    serializedQuery += encodeQuery(query)
+
+    if (item.length > 1 && last !== item[0]) {
+      last = item[0]
+      result.push("!(" + serializedQuery + ")")
+      serializedQuery = ""
+    }
+
+    configuration.seriesNames.push(seriesName)
+    configuration.measureNames.push(measureName)
+  }
+
+  if (serializedQuery.length !== 0) {
+    result.push("!(" + serializedQuery + ")")
+  }
+  return result
+}
+
+export function initDataComponent(persistentStateManager: PersistentStateManager, configurators: Array<DataQueryConfigurator>): void {
   persistentStateManager.init()
-  dataQueryExecutor.init()
+
+  for (const configurator of configurators) {
+    if (configurator.scheduleLoadMetadata != null) {
+      configurator.scheduleLoadMetadata(true)
+    }
+  }
+
+  provide(configuratorListKey, configurators.concat(new ReloadConfigurator()))
 }

@@ -79,7 +79,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     return loadMeasureList(taskHandle, "measures", this.serverConfigurator, this.parent).then(data => {
       if (data !== null) {
-        this.data.value = data.flat()
+        this.data.value = [... new Set(data.flat())]
       }
     })
   }

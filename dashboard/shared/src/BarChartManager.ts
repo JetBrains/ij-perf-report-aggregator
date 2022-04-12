@@ -26,6 +26,12 @@ export class BarChartManager {
       },
       xAxis: {
         type: "value",
+        axisLabel: {
+          hideOverlap: true,
+          formatter(value:number){
+            return (value / 1000).toString() + "s"
+          }
+        },
       },
       yAxis: {
         type: "category",

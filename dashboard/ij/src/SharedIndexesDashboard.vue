@@ -24,12 +24,12 @@
         {{ metric }}
       </Divider>
       <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-7">
+        <div class="col-span-8">
           <LineChartCard
             :measures="[metric]"
           />
         </div>
-        <div class="col-span-5">
+        <div class="col-span-4">
           <BarChartCard
             :height="chartHeight"
             :measures="[metric]"

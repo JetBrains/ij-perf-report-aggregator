@@ -64,6 +64,9 @@
         <span>{{ tooltipData.firstSeriesData[7] }}</span>
       </div>
     </div>
+    <div class="text-xs pt-5">
+      Hold ⌘/⊞ to prevent popup refresh
+    </div>
   </OverlayPanel>
 </template>
 <script setup lang="ts">

@@ -123,8 +123,8 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       getSeriesName(_index: number): string {
         return measureNameToLabel(this.getMeasureName(-1))
       },
-      mutate(): boolean {
-        throw new Error("Not applicable")
+      mutate(): void {
+        // the only value
       }
     }]
   }

@@ -311,9 +311,9 @@ loop:
       // default
     case []string:
       sb.WriteString(" in (")
-      for i := 0; i < len(v); i++ {
-        *args = append(*args, v)
-        if i != 0 {
+      for j := 0; j < len(v); j++ {
+        *args = append(*args, v[j])
+        if j != 0 {
           sb.WriteString(", ")
         }
         sb.WriteRune('?')

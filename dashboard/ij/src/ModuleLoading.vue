@@ -1,19 +1,19 @@
 <template>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
-      :measures='["module cache loading", "modules loading without cache", "modules loading with cache"]'
+      :measures='["cache loading", "modules loading without cache", "modules loading with cache"]'
     />
     <LineChartCard
       :measures='[
         "project files loading", "serializers creation",
-        "project model changes saving (in queue)", "project model changes saving"
+        "applying loaded changes (in queue)", "applying loaded changes"
       ]'
     />
     <LineChartCard
-      :measures='["modules instantiation", "project libraries loading", "entities loading", "unloaded modules loading"]'
+      :measures='["modules instantiation", "libraries instantiation", "loading entities from files", "unloaded modules loading"]'
     />
     <LineChartCard
-      :measures='["events sending after modules are loaded", "events sending (in queue)", "events sending", "events modules added"]'
+      :measures='["postponed events sending", "events sending (in queue)", "events sending", "firing modules_added event"]'
     />
   </div>
 </template>

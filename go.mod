@@ -2,6 +2,10 @@ module github.com/JetBrains/ij-perf-report-aggregator
 
 go 1.18
 
+replace github.com/go-faster/ch => github.com/develar/ch v0.27.1
+
+//replace github.com/go-faster/ch => /Volumes/data/Documents/ch
+
 require (
 	facette.io/natsort v0.0.0-20181210072756-2cd4dd1e2dcb
 	github.com/ClickHouse/clickhouse-go v1.5.4
@@ -27,7 +31,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/md5-simd v1.1.2 // indirect
-	github.com/minio/minio-go/v7 v7.0.23
+	github.com/minio/minio-go/v7 v7.0.24
 	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/nats-io/jwt v1.2.2 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.4 // indirect
@@ -40,7 +44,7 @@ require (
 	github.com/rs/cors v1.8.2
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/segmentio/ksuid v1.0.4
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.7.0
@@ -57,14 +61,20 @@ require (
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
-	gopkg.in/sakura-internet/go-rison.v3 v3.2.0
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
 
 require (
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dmarkham/enumer v1.5.5 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/go-faster/ch v0.26.0
+	github.com/go-faster/city v1.0.1 // indirect
+	github.com/go-faster/errors v0.5.0 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -73,8 +83,22 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/pascaldekloe/name v1.0.1 // indirect
+	github.com/pierrec/lz4/v4 v4.1.14 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/segmentio/asm v1.1.4 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
+	go.opentelemetry.io/otel v1.6.3 // indirect
+	go.opentelemetry.io/otel/metric v0.29.0 // indirect
+	go.opentelemetry.io/otel/trace v1.6.3 // indirect
+	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+)
+
+require (
+	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a
+	github.com/sakura-internet/go-rison/v4 v4.0.0
 )

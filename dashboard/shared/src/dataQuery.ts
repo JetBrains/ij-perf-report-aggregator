@@ -61,15 +61,16 @@ export class DataQuery {
 }
 
 export interface DataQueryFilter {
-  field: string
+  f: string
   value?: number | string | Array<string>
   sql?: string
   // `=` by default
-  operator?: "=" | "!=" | ">"
+  // operator
+  o?: "=" | "!=" | ">"
 }
 
 export interface DataQueryDimension {
-  name: string
+  n: string
   // for nested
   subName?: string
   sql?: string

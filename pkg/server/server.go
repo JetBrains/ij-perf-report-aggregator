@@ -3,15 +3,14 @@ package server
 import (
   "context"
   "crypto/tls"
-  _ "github.com/ClickHouse/clickhouse-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
+  "github.com/go-faster/ch"
+  "github.com/jackc/puddle/puddleg"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "go.uber.org/zap"
-  "io"
   "net/http"
   "os"
   "os/signal"
@@ -23,10 +22,12 @@ import (
 const DefaultDbUrl = "127.0.0.1:9000"
 
 type StatsServer struct {
-  dbUrl    string
-  nameToDb sync.Map
+  dbUrl        string
+  nameToDbPool sync.Map
 
   machineInfo analyzer.MachineInfo
+
+  poolMutex sync.Mutex
 
   logger *zap.Logger
 }
@@ -45,8 +46,9 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   }
 
   defer func() {
-    statsServer.nameToDb.Range(func(name, db interface{}) bool {
-      util.Close(db.(io.Closer), logger)
+    statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
+      p := pool.(*puddleg.Pool[*ch.Client])
+      p.Close()
       return true
     })
   }()
@@ -69,7 +71,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
-  mux.Handle("/api/v1/compareMetrics", cacheManager.CreateHandler(statsServer.handleStatusRequest))
+  //mux.Handle("/api/v1/compareMetrics", cacheManager.CreateHandler(statsServer.handleStatusRequest))
   mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
@@ -84,25 +86,44 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func (t *StatsServer) GetDatabase(name string) (*sqlx.DB, error) {
-  db, _ := t.nameToDb.Load(name)
-  if db != nil {
-    return db.(*sqlx.DB), nil
+func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddleg.Resource[*ch.Client], error) {
+  untypedPool, exists := t.nameToDbPool.Load(name)
+  var pool *puddleg.Pool[*ch.Client]
+  if exists {
+    pool = untypedPool.(*puddleg.Pool[*ch.Client])
+  } else {
+    pool = createStoreForDatabaseUnderLock(name, t)
   }
 
-  // limit max memory to use - 3GB
-  // increase max query size, because we IN statements contains a lot of values (e.g. machines)
-  db, err := sqlx.Open("clickhouse", "tcp://"+t.dbUrl+"?read_timeout=45&write_timeout=45&compress=1&readonly=1&max_query_size=1000000&max_memory_usage=3221225472&database="+name)
+  resource, err := pool.Acquire(ctx)
   if err != nil {
     return nil, errors.WithStack(err)
   }
+  return resource, nil
+}
 
-  actual, loaded := t.nameToDb.LoadOrStore(name, db)
-  if loaded {
-    // not stored because another thread already stored another value, so, close candidate
-    util.Close(db.(*sqlx.DB), t.logger)
+func createStoreForDatabaseUnderLock(name string, t *StatsServer) *puddleg.Pool[*ch.Client] {
+  t.poolMutex.Lock()
+  defer t.poolMutex.Unlock()
+
+  constructor := func(ctx context.Context) (*ch.Client, error) {
+    return ch.Dial(ctx, ch.Options{
+      Address:  t.dbUrl,
+      Database: name,
+      Settings: []ch.Setting{
+        ch.SettingInt("readonly", 1),
+        ch.SettingInt("max_query_size", 1000000),
+        ch.SettingInt("max_memory_usage", 3221225472),
+      },
+    })
   }
-  return actual.(*sqlx.DB), nil
+  destructor := func(value *ch.Client) {
+    util.Close(value, t.logger)
+  }
+
+  pool := puddleg.NewPool(constructor, destructor, 16)
+  t.nameToDbPool.Store(name, pool)
+  return pool
 }
 
 func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {

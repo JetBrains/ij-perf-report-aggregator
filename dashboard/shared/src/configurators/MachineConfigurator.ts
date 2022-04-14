@@ -116,7 +116,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
     if (values.length > 0) {
       // stable order of fields in query (caching)
       values.sort()
-      query.addFilter({field: "machine", value: values})
+      query.addFilter({f: "machine", value: values})
     }
     return true
   }

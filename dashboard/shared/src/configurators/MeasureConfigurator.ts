@@ -1,4 +1,5 @@
 import { LineSeriesOption } from "echarts/charts"
+import { DatasetOption } from "echarts/types/dist/shared"
 import { deepEqual } from "fast-equals"
 import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { Ref, shallowRef } from "vue"
@@ -108,7 +109,7 @@ function getLoadMeasureListUrl(structureName: string,
           return null
         }
 
-        query.addFilter({field: parent.name, value})
+        query.addFilter({f: parent.name, value})
       }
       else {
         // well, so, it is a filter configurator (e.g. MachineConfigurator)
@@ -120,7 +121,7 @@ function getLoadMeasureListUrl(structureName: string,
   }
 
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
-  query.addDimension({name: structureName, subName: "name"})
+  query.addDimension({n: structureName, subName: "name"})
   query.order = [`${structureName}.name`]
   query.table = "report"
   query.flat = true
@@ -165,23 +166,23 @@ function configureMeasureInANewFormat(measureNames: Array<string>,
                                       valueName: string,
                                       skipZeroValues: boolean) {
   const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
-  const filter: DataQueryFilter = {field: `${structureName}.name`, value: pureNames[0]}
+  const filter: DataQueryFilter = {f: `${structureName}.name`, value: pureNames[0]}
   if (measureNames.length > 1) {
     configureQueryProducer(configuration, null, filter, pureNames)
   }
 
   if (measureNames.some(it => it.endsWith(".end"))) {
-    query.insertField({name: structureName, subName: "end", sql: `(${structureName}.start + ${structureName}.${valueName})`}, 1)
+    query.insertField({n: structureName, subName: "end", sql: `(${structureName}.start + ${structureName}.${valueName})`}, 1)
   }
   else {
-    query.insertField({name: structureName, subName: valueName}, 1)
+    query.insertField({n: structureName, subName: valueName}, 1)
   }
 
   query.addFilter(filter)
 
   if (skipZeroValues) {
     // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
-    query.addFilter({field: `${structureName}.${valueName}`, operator: "!=", value: 0})
+    query.addFilter({f: `${structureName}.${valueName}`, o: "!=", value: 0})
   }
 }
 
@@ -190,7 +191,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   measureNames.sort((a, b) => collator.compare(a, b))
 
   query.insertField({
-    name: "t",
+    n: "t",
     sql: "toUnixTimestamp(generated_time) * 1000",
   }, 0)
 
@@ -200,8 +201,8 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
       configureMeasureInANewFormat(measureNames, configuration, query, "measure", "duration", skipZeroValues)
     }
     else {
-      const field: DataQueryDimension = {name: measureNames[0]}
-      const filter: DataQueryFilter | null = skipZeroValues ? {field: measureNames[0], operator: "!=", value: 0} : null
+      const field: DataQueryDimension = {n: measureNames[0]}
+      const filter: DataQueryFilter | null = skipZeroValues ? {f: measureNames[0], o: "!=", value: 0} : null
       if (measureNames.length > 1) {
         configureQueryProducer(configuration, field, filter, measureNames)
       }
@@ -230,9 +231,9 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
 
     mutate(index: number): void {
       if (field != null) {
-        field.name = values[index]
+        field.n = values[index]
         if (filter != null) {
-          filter.field = field.name
+          filter.f = field.n
         }
       }
       else if (filter != null) {
@@ -251,34 +252,42 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
 function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
   const series = new Array<LineSeriesOption>()
   let useDurationFormatter = true
+
+  const dataset: Array<DatasetOption> = []
+
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
     const measureName = configuration.measureNames[dataIndex]
     const seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
-    const symbolSize = Math.min(800 / seriesData.length, 9)
+    const symbolSize = Math.min(800 / seriesData[0].length, 9)
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: "line",
       smooth: false,
-      showSymbol: true,
-      symbolSize(_rawValue, _data): number {
-        return symbolSize
-      },
+      showSymbol: seriesData[0].length < 100,
+      symbolSize,
       symbol: "circle",
       legendHoverLink: true,
       sampling: "lttb",
+      seriesLayoutBy: "row",
+      datasetIndex: dataIndex,
       dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
-      data: seriesData,
     })
 
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false
     }
+
+    dataset.push({
+      source: seriesData,
+      sourceHeader: false,
+    })
   }
 
   return {
+    dataset,
     yAxis: {
       axisLabel: {
         formatter: useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter,

@@ -39,7 +39,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator {
     }
 
     const sql = `> ${toClickhouseSql(parseDuration(duration))}`
-    query.addFilter({field: "generated_time", sql})
+    query.addFilter({f: "generated_time", sql})
     return true
   }
 }

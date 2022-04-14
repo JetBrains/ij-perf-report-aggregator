@@ -25,6 +25,11 @@ const durationFormatOptions: HumanizerOptions = {
 
 export const durationAxisPointerFormatter: (valueInMs: number) => string = humanizeDuration.humanizer(durationFormatOptions)
 
+export const durationFormatterInOneWord: (valueInMs: number) => string = humanizeDuration.humanizer({
+  ...durationFormatOptions,
+  largest: 1,
+})
+
 export function numberAxisLabelFormatter(value: number): string {
   return numberFormat.format(value)
 }

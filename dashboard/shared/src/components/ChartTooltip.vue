@@ -63,9 +63,9 @@
         <ServerIcon class="w-5 h-5" />
         <span>{{ tooltipData.firstSeriesData[7] }}</span>
       </div>
-    </div>
-    <div class="text-xs pt-5">
-      Hold ⌘/⊞ to prevent popup refresh
+      <div class="text-xs pt-3">
+        Hold {{ metaKeySymbol }} to prevent popup refresh
+      </div>
     </div>
   </OverlayPanel>
 </template>
@@ -80,6 +80,9 @@ const tooltipData = ref<TooltipData | null>(null)
 const panel = ref<OverlayPanel | null>()
 
 let currentTarget: EventTarget | null
+
+// noinspection JSDeprecatedSymbols
+const metaKeySymbol = window.navigator.platform.toUpperCase().includes("MAC") ? "⌘" : "⊞"
 
 const hide = debounceSync(() => {
   currentTarget = null

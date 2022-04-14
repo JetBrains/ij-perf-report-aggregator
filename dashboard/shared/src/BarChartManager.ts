@@ -5,6 +5,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { LineChartOptions } from "./echarts"
+import { durationFormatterInOneWord } from "./formatter"
 
 use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent, CanvasRenderer])
 
@@ -30,9 +31,7 @@ export class BarChartManager {
         type: "value",
         axisLabel: {
           hideOverlap: true,
-          formatter(value:number){
-            return (value / 1000).toString() + "s"
-          }
+          formatter: durationFormatterInOneWord,
         },
       },
       yAxis: {

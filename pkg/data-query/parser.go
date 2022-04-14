@@ -11,25 +11,19 @@ import (
 )
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
-var reFieldName = regexp.MustCompile("^[a-zA-Z_][0-9a-zA-Z_]*$")
+var reFieldName = regexp.MustCompile("^[a-zA-Z_]\\w*$")
+
 // opposite to reFieldName, dot is supported for nested fields
-var reNestedFieldName = regexp.MustCompile("^[a-zA-Z_][.0-9a-zA-Z_]*$")
-var reMetricName = regexp.MustCompile("^[a-zA-Z0-9 _]+$")
+var reNestedFieldName = regexp.MustCompile("^[a-zA-Z_][.\\da-zA-Z_]*$")
+var reMetricName = regexp.MustCompile("^[a-zA-Z\\d _]+$")
 
 // add ().space,'*
-var reAggregator = regexp.MustCompile("^[a-zA-Z_(][0-9a-zA-Z_(). ,'*<>/+]*$")
+var reAggregator = regexp.MustCompile("^[a-zA-Z_(][\\da-zA-Z_(). ,'*<>/+]*$")
 
 // for db name the same validation rules as for field name
 var reDbName = reFieldName
 
-func ValidateDatabaseName(db string) (string, error) {
-  if len(db) == 0 {
-    return "default", nil
-  } else if !reDbName.MatchString(db) {
-    return "", errors.Errorf("Database name %s contains illegal chars", db)
-  }
-  return db, nil
-}
+var queryParsers fastjson.ParserPool
 
 func isValidFieldName(v string) bool {
   return reFieldName.MatchString(v)
@@ -74,8 +68,8 @@ func readQuery(s []byte) ([]DataQuery, error) {
 func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
   query := &DataQuery{
     Database: string(value.GetStringBytes("db")),
-    Table: string(value.GetStringBytes("table")),
-    Flat: value.GetBool("flat"),
+    Table:    string(value.GetStringBytes("table")),
+    Flat:     value.GetBool("flat"),
   }
 
   if len(query.Database) == 0 {
@@ -149,15 +143,15 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
     subNameValue := v.Get("subName")
     if subNameValue == nil {
       t = DataQueryDimension{
-        Name: string(v.GetStringBytes("name")),
+        Name: string(v.GetStringBytes("n")),
         Sql:  string(v.GetStringBytes("sql")),
       }
     } else {
-      arrayJoin := string(v.GetStringBytes("name"))
+      arrayJoin := string(v.GetStringBytes("n"))
       t = DataQueryDimension{
         Name:               arrayJoin + "." + string(subNameValue.GetStringBytes()),
         arrayJoin:          arrayJoin,
-        Sql:  string(v.GetStringBytes("sql")),
+        Sql:                string(v.GetStringBytes("sql")),
         ResultPropertyName: string(v.GetStringBytes("resultKey")),
       }
 
@@ -200,9 +194,9 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
 func readFilters(list []*fastjson.Value, query *DataQuery) error {
   for _, v := range list {
     t := DataQueryFilter{
-      Field:    string(v.GetStringBytes("field")),
+      Field:    string(v.GetStringBytes("f")),
       Sql:      string(v.GetStringBytes("sql")),
-      Operator: string(v.GetStringBytes("operator")),
+      Operator: string(v.GetStringBytes("o")),
     }
 
     value := v.Get("value")

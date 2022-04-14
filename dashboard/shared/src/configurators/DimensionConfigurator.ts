@@ -24,7 +24,7 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
       return false
     }
 
-    const filter: DataQueryFilter = {field: this.name, value}
+    const filter: DataQueryFilter = {f: this.name, value}
     if (this.multiple && Array.isArray(value)) {
       filter.value = value[0]
       if (value.length > 1) {
@@ -37,7 +37,7 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
 
   protected createQuery(): DataQuery {
     const query = new DataQuery()
-    query.addField({name: this.name, sql: `distinct ${this.name}`})
+    query.addField({n: this.name, sql: `distinct ${this.name}`})
     query.order = [this.name]
     query.table = "report"
     query.flat = true

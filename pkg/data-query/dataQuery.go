@@ -2,17 +2,17 @@ package data_query
 
 import (
   "context"
-  "database/sql"
-  "github.com/jmoiron/sqlx"
-  "github.com/pkg/errors"
-  "github.com/valyala/fastjson"
-  "gopkg.in/sakura-internet/go-rison.v3"
+  "github.com/develar/errors"
+  "github.com/go-faster/ch"
+  "github.com/go-faster/ch/proto"
+  "github.com/sakura-internet/go-rison/v4"
+  "github.com/valyala/bytebufferpool"
+  "github.com/valyala/quicktemplate"
   "math"
   "net/http"
+  "strconv"
   "strings"
 )
-
-var queryParsers fastjson.ParserPool
 
 type DataQuery struct {
   Database string
@@ -30,10 +30,10 @@ type DataQuery struct {
 }
 
 type DataQueryFilter struct {
-  Field    string      `json:"field"`
-  Value    interface{} `json:"value"`
-  Sql      string      `json:"sql"`
-  Operator string      `json:"operator"`
+  Field    string
+  Value    interface{}
+  Sql      string
+  Operator string
 }
 
 type DataQueryDimension struct {
@@ -47,10 +47,6 @@ type DataQueryDimension struct {
   ResultPropertyName string
 
   arrayJoin string
-}
-
-type DatabaseConnectionSupplier interface {
-  GetDatabase(name string) (*sqlx.DB, error)
 }
 
 func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
@@ -82,44 +78,70 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   return list, wrappedAsArray, nil
 }
 
-func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, queryContext context.Context) (*sql.Rows, int, error) {
-  sqlQuery, args, fieldCount, err := buildSql(query, table)
+func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter, ctx context.Context) error {
+  sqlQuery, columnNameToIndex, err := buildSql(query, table)
   if err != nil {
-    return nil, -1, err
+    return err
   }
 
-  db, err := dbSupplier.GetDatabase(query.Database)
-  if err != nil {
-    return nil, -1, err
-  }
+  columnBuffers := make([]*bytebufferpool.ByteBuffer, len(columnNameToIndex))
 
-  rows, err := db.QueryContext(queryContext, sqlQuery, args...)
-  if err != nil {
-    if err == context.Canceled {
-      return nil, -1, err
-    } else {
-      return nil, -1, errors.WithMessage(err, "cannot execute SQL:\n"+sqlQuery+"\n")
+  err = executeQuery(sqlQuery, query, dbSupplier, ctx, func(ctx context.Context, block proto.Block, result *proto.Results) error {
+    if block.Rows == 0 {
+      return nil
     }
+    return writeResult(result, columnNameToIndex, columnBuffers, query)
+  })
+  if err != nil {
+    return err
   }
-  return rows, fieldCount, nil
+
+  if !query.Flat {
+    totalWriter.S("[")
+  }
+  for columnIndex, buffer := range columnBuffers {
+    if columnIndex != 0 {
+      totalWriter.S(",")
+    }
+
+    totalWriter.S("[")
+
+    if buffer != nil {
+      _, _ = buffer.WriteTo(totalWriter)
+      byteBufferPool.Put(buffer)
+    }
+
+    totalWriter.S("]")
+  }
+  if !query.Flat {
+    totalWriter.S("]")
+  }
+  return nil
 }
 
-func SelectRow(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) (*sql.Row, error) {
-  sqlQuery, args, _, err := buildSql(query, table)
+func SelectString(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) ([]byte, error) {
+  sqlQuery, _, err := buildSql(query, table)
   if err != nil {
     return nil, err
   }
 
-  db, err := dbSupplier.GetDatabase(query.Database)
+  dbResource, err := dbSupplier.AcquireDatabase(query.Database, context)
   if err != nil {
     return nil, err
   }
-  return db.QueryRowContext(context, sqlQuery, args...), nil
+
+  var res proto.ColStr
+  err = dbResource.Value().Do(context, ch.Query{Body: sqlQuery, Result: proto.ResultColumn{Data: &res}})
+  if err != nil {
+    return nil, err
+  }
+
+  defer dbResource.Release()
+  return res.Buf[res.Pos[0].Start:res.Pos[0].End], nil
 }
 
-func buildSql(query DataQuery, table string) (string, []interface{}, int, error) {
+func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   var sb strings.Builder
-  var args []interface{}
 
   sb.WriteString("select")
 
@@ -135,9 +157,21 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
     }
   }
 
-  fieldCount := len(query.Dimensions)
+  columnNameToIndex := make(map[string]int, len(query.Dimensions)+len(query.Fields))
+  columnIndex := 0
+
   if len(query.Dimensions) != 0 {
-    writeDimensions(query, &sb)
+    sb.WriteRune(' ')
+    for i, dimension := range query.Dimensions {
+      if i != 0 {
+        sb.WriteRune(',')
+      }
+
+      columnNameToIndex[dimension.Name] = columnIndex
+      columnIndex++
+
+      writeDimension(dimension, &sb)
+    }
   }
 
   // write extra fields to the end, so, it maybe skipped during serialization
@@ -147,12 +181,14 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
     }
     sb.WriteRune(' ')
 
-    fieldCount++
-
     if len(field.Sql) != 0 {
+      columnNameToIndex[field.Name] = columnIndex
+      columnIndex++
       writeDimension(field, &sb)
       continue
     }
+
+    var effectiveColumnName = ""
 
     if len(query.Aggregator) != 0 {
       sb.WriteString(query.Aggregator)
@@ -161,6 +197,7 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
 
     if len(field.metricPath) == 0 {
       sb.WriteString(field.Name)
+      effectiveColumnName = field.Name
     } else {
       // select JSONExtractInt(arrayFirst(it -> JSONExtractString(it, 'n') = 'start main frontend', JSONExtractArrayRaw(raw_report, 'prepareAppInitActivities')), 'd') as v
       // from report;
@@ -185,15 +222,20 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
     if len(field.ResultPropertyName) != 0 {
       sb.WriteString(" as ")
       sb.WriteString(field.ResultPropertyName)
+      effectiveColumnName = field.ResultPropertyName
     } else if len(query.Aggregator) != 0 {
       sb.WriteString(" as ")
       if len(field.arrayJoin) == 0 {
-        sb.WriteString(field.Name)
+        effectiveColumnName = field.Name
       } else {
         // measures.values is not a valid field name
-        sb.WriteString("measure_value")
+        effectiveColumnName = "measure_value"
       }
+      sb.WriteString(effectiveColumnName)
     }
+
+    columnNameToIndex[effectiveColumnName] = columnIndex
+    columnIndex++
   }
 
   sb.WriteString(" from ")
@@ -214,9 +256,9 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
   }
 
   if len(query.Filters) != 0 {
-    err := writeWhereClause(&sb, query, &args)
+    err := writeWhereClause(&sb, query)
     if err != nil {
-      return "", args, -1, err
+      return "", nil, err
     }
   }
 
@@ -242,7 +284,7 @@ func buildSql(query DataQuery, table string) (string, []interface{}, int, error)
     }
   }
 
-  return sb.String(), args, fieldCount, nil
+  return sb.String(), columnNameToIndex, nil
 }
 
 func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {
@@ -253,30 +295,23 @@ func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {
   sb.WriteString("'))")
 }
 
-func writeDimensions(query DataQuery, sb *strings.Builder) {
-  for i, dimension := range query.Dimensions {
-    if i != 0 {
-      sb.WriteRune(',')
-    }
-    sb.WriteRune(' ')
-    writeDimension(dimension, sb)
-  }
-}
-
 func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
-  if len(dimension.Sql) != 0 {
+  if len(dimension.Sql) == 0 {
+    sb.WriteString(dimension.Name)
+  } else {
     sb.WriteString(dimension.Sql)
     sb.WriteString(" as ")
     // escape - maybe nested name with dot
     sb.WriteRune('`')
     sb.WriteString(dimension.Name)
     sb.WriteRune('`')
-  } else {
-    sb.WriteString(dimension.Name)
   }
 }
 
-func writeWhereClause(sb *strings.Builder, query DataQuery, args *[]interface{}) error {
+// https://clickhouse.com/docs/en/sql-reference/syntax/#syntax-string-literal
+var stringEscaper = strings.NewReplacer("\\", "\\\\", "'", "''")
+
+func writeWhereClause(sb *strings.Builder, query DataQuery) error {
   sb.WriteString(" where")
 loop:
   for i, filter := range query.Filters {
@@ -301,44 +336,45 @@ loop:
 
     switch v := filter.Value.(type) {
     case int:
-      // default
+      sb.WriteString(filter.Operator)
+      sb.WriteString(strconv.Itoa(filter.Value.(int)))
     case float64:
+      sb.WriteString(filter.Operator)
       if v == math.Trunc(v) {
-        // convert to int (to be able to use time unix timestamps from client side)
-        filter.Value = int(v)
+        sb.WriteString(strconv.Itoa(int(v)))
+      } else {
+        sb.WriteString(strconv.FormatFloat(v, 'f', -1, 64))
       }
     case string:
-      // default
+      sb.WriteString(filter.Operator)
+      writeString(sb, v)
     case []string:
       sb.WriteString(" in (")
       for j := 0; j < len(v); j++ {
-        *args = append(*args, v[j])
         if j != 0 {
-          sb.WriteString(", ")
+          sb.WriteRune(',')
         }
-        sb.WriteRune('?')
+        writeString(sb, v[j])
       }
       sb.WriteRune(')')
-      continue loop
     case []interface{}:
       sb.WriteString(" in (")
-      *args = append(*args, v...)
-      for i := 0; i < len(v); i++ {
-        if i != 0 {
-          sb.WriteString(", ")
+      for j := 0; j < len(v); j++ {
+        if j != 0 {
+          sb.WriteRune(',')
         }
-        sb.WriteRune('?')
+        writeString(sb, v[j].(string))
       }
       sb.WriteRune(')')
-      continue loop
     default:
       return errors.Errorf("Filter value type %T is not supported", v)
     }
-
-    sb.WriteRune(' ')
-    sb.WriteString(filter.Operator)
-    sb.WriteString(" ?")
-    *args = append(*args, filter.Value)
   }
   return nil
+}
+
+func writeString(sb *strings.Builder, s string) {
+  sb.WriteByte('\'')
+  _, _ = stringEscaper.WriteString(sb, s)
+  sb.WriteByte('\'')
 }

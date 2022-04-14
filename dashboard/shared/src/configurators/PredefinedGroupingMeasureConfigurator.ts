@@ -21,7 +21,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     const timeRange = this.timeRange.value || TimeRangeConfigurator.timeRanges[0].value
     const interval = getClickHouseIntervalByDuration(timeRange)
     query.addDimension({
-      name: "t",
+      n: "t",
       sql: `toStartOfInterval(generated_time, interval ${interval}, '${Intl.DateTimeFormat().resolvedOptions().timeZone}')`,
     })
 
@@ -45,8 +45,8 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       }
     }
     else {
-      query.addField({name: "measures", subName: "value"})
-      query.addFilter({field: "measures.name", value: measureNames})
+      query.addField({n: "measures", subName: "value"})
+      query.addFilter({f: "measures.name", value: measureNames})
       if (measureNames.length > 1) {
         throw new Error("multiple measures are not supported")
       }
@@ -64,9 +64,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     if (queryProducers.length !== 0) {
       let useDurationFormatter = true
 
-      // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
-      const dimensions: Array<DimensionDefinition> = []
-      dimensions.push({name: "dimension", type: "ordinal"})
+
       const dimensionNameSet = new Set<string>()
       const source: Array<{ [key: string]: string | number }> = []
 
@@ -77,13 +75,17 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 
         const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
         source.push(column)
-        for (const data of dataList[dataIndex]) {
-          const valueKey = data[0] as string
+        const result = dataList[dataIndex]
+        for (let i = 0; i < result[0].length; i++){
+          const valueKey = result[0][i] as string
           dimensionNameSet.add(valueKey)
-          column[valueKey] = data[1]
+          column[valueKey] = result[1][i]
         }
       }
 
+      // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
+      const dimensions: Array<DimensionDefinition> = []
+      dimensions.push({name: "dimension", type: "ordinal"})
       for (const name of dimensionNameSet) {
         dimensions.push({name, type: "number"})
       }
@@ -99,6 +101,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
           },
         }
       }
+
       return {
         dataset: {
           dimensions,

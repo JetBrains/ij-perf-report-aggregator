@@ -2,15 +2,11 @@ package server
 
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
-  "github.com/asaskevich/govalidator"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  "github.com/json-iterator/go"
   "github.com/olekukonko/tablewriter"
   "io"
   "log"
-  "net/http"
   "sort"
   "strconv"
   "strings"
@@ -49,49 +45,49 @@ type AnalyzeResult struct {
   CurrentItems map[string]map[string][]ActualData
 }
 
-func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error) {
-  urlQuery := request.URL.Query()
-
-  branch := urlQuery.Get("branch")
-  switch {
-  case len(branch) == 0:
-    branch = "master"
-  case !govalidator.IsAlphanumeric(branch):
-    return nil, http_error.NewHttpError(400, "The branch parameter must be alphanumeric")
-  }
-
-  goldWeekStart := urlQuery.Get("goldWeekStart")
-  switch {
-  case len(goldWeekStart) == 0:
-    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter is required")
-  case !govalidator.IsTime(goldWeekStart, "2006-01-02"):
-    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
-  }
-
-  db, err := t.GetDatabase("ij")
-  if err != nil {
-    return nil, err
-  }
-
-  result, err := CompareMetrics(db, branch, goldWeekStart+" 00:00:00")
-  if err != nil {
-    return nil, err
-  }
-
-  if request.Header.Get("Accept") == "application/json" {
-    bytes, err := jsoniter.ConfigFastest.Marshal(result)
-    if err != nil {
-      return nil, err
-    }
-
-    return bytes, nil
-  }
-
-  buffer := byteBufferPool.Get()
-  defer byteBufferPool.Put(buffer)
-  PrintResult(*result, buffer)
-  return CopyBuffer(buffer), nil
-}
+//func (t *StatsServer) handleStatusRequest(request *http.Request) ([]byte, error) {
+//  urlQuery := request.URL.Query()
+//
+//  branch := urlQuery.Get("branch")
+//  switch {
+//  case len(branch) == 0:
+//    branch = "master"
+//  case !govalidator.IsAlphanumeric(branch):
+//    return nil, http_error.NewHttpError(400, "The branch parameter must be alphanumeric")
+//  }
+//
+//  goldWeekStart := urlQuery.Get("goldWeekStart")
+//  switch {
+//  case len(goldWeekStart) == 0:
+//    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter is required")
+//  case !govalidator.IsTime(goldWeekStart, "2006-01-02"):
+//    return nil, http_error.NewHttpError(400, "The goldWeekStart parameter must be in format yyyy-mm-dd hh:ss:mm")
+//  }
+//
+//  db, err := t.AcquireDatabase("ij", context.Background())
+//  if err != nil {
+//    return nil, err
+//  }
+//
+//  result, err := CompareMetrics(db, branch, goldWeekStart+" 00:00:00")
+//  if err != nil {
+//    return nil, err
+//  }
+//
+//  if request.Header.Get("Accept") == "application/json" {
+//    bytes, err := jsoniter.ConfigFastest.Marshal(result)
+//    if err != nil {
+//      return nil, err
+//    }
+//
+//    return bytes, nil
+//  }
+//
+//  buffer := byteBufferPool.Get()
+//  defer byteBufferPool.Put(buffer)
+//  PrintResult(*result, buffer)
+//  return CopyBuffer(buffer), nil
+//}
 
 func PrintResult(result AnalyzeResult, writer io.Writer) {
   table := tablewriter.NewWriter(writer)

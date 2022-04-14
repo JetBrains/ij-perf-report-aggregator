@@ -10,7 +10,7 @@
     "primevue": "3.12.5",
     "report-visualizer": "workspace:*",
     "shared": "workspace:*",
-    "vue": "3.2.32",
+    "vue": "3.2.33",
     "vue-router": "4.0.14"
   }
 }

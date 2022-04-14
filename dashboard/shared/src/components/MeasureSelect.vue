@@ -3,7 +3,7 @@
     v-model="value"
     :options="data"
     placeholder="Metrics"
-    :max-selected-labels="3"
+    :max-selected-labels="1"
   />
 </template>
 <script lang="ts">

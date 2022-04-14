@@ -7,7 +7,7 @@
     :placeholder="placeholder"
     option-label="label"
     option-value="value"
-    :max-selected-labels="3"
+    :max-selected-labels="1"
     :filter="true"
   />
   <Dropdown
@@ -31,7 +31,7 @@
     option-group-children="options"
     option-group-label="label"
     :selection-limit="multiple ? null : 1"
-    :max-selected-labels="3"
+    :max-selected-labels="1"
     :filter="true"
   />
 </template>

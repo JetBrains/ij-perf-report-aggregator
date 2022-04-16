@@ -2,13 +2,19 @@ package server
 
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "net/http"
 )
 
-func (t *StatsServer) handleMetaMeasureRequest( _ *http.Request) ([]byte, error) {
+func (t *StatsServer) handleMetaMeasureRequest(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
   buffer := byteBufferPool.Get()
-  defer byteBufferPool.Put(buffer)
+  isOk := false
+  defer func() {
+    if !isOk {
+      byteBufferPool.Put(buffer)
+    }
+  }()
 
   measureNames := make([]string, len(analyzer.IjMetricDescriptors))
   for index, descriptor := range analyzer.IjMetricDescriptors {
@@ -27,5 +33,6 @@ func (t *StatsServer) handleMetaMeasureRequest( _ *http.Request) ([]byte, error)
   }
   jsonWriter.S("]")
 
-  return CopyBuffer(buffer), nil
+  isOk = true
+  return buffer, true, nil
 }

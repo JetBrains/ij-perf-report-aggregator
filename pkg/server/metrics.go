@@ -3,18 +3,24 @@ package server
 import (
   "context"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
+  "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "net/http"
 )
 
-func (t *StatsServer) handleLoadRequest(request *http.Request) ([]byte, error) {
+func (t *StatsServer) handleLoadRequest(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
   dataQueries, wrappedAsArray, err := data_query.ReadQuery(request)
   if err != nil {
-    return nil, err
+    return nil, false, err
   }
 
   buffer := byteBufferPool.Get()
-  defer byteBufferPool.Put(buffer)
+  isOk := false
+  defer func() {
+    if !isOk {
+      byteBufferPool.Put(buffer)
+    }
+  }()
 
   templateWriter := quicktemplate.AcquireWriter(buffer)
   defer quicktemplate.ReleaseWriter(templateWriter)
@@ -31,14 +37,15 @@ func (t *StatsServer) handleLoadRequest(request *http.Request) ([]byte, error) {
 
     err = t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
     if err != nil {
-      return nil, err
+      return nil, false, err
     }
   }
 
   if len(dataQueries) > 1 || wrappedAsArray {
     jsonWriter.S("]")
   }
-  return CopyBuffer(buffer), nil
+  isOk = true
+  return buffer, true, nil
 }
 
 func (t *StatsServer) computeMeasureResponse(query data_query.DataQuery, jsonWriter *quicktemplate.QWriter, context context.Context) error {

@@ -1,15 +1,14 @@
 package server
 
 import (
-  "compress/gzip"
   "context"
+  errors2 "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/andybalholm/brotli"
   "github.com/develar/errors"
   "github.com/dgraph-io/ristretto"
-  errors2 "github.com/pkg/errors"
   "github.com/valyala/bytebufferpool"
-  "github.com/valyala/quicktemplate"
   "github.com/zeebo/xxh3"
   "go.uber.org/zap"
   "io"
@@ -26,7 +25,7 @@ type ResponseCacheManager struct {
 }
 
 type CachingHandler struct {
-  handler func(request *http.Request) ([]byte, error)
+  handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)
   manager *ResponseCacheManager
 }
 
@@ -51,22 +50,26 @@ func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) 
   }, nil
 }
 
-func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request) ([]byte, error)) http.Handler {
+func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) http.Handler {
   return &CachingHandler{
     handler: handler,
     manager: t,
   }
 }
 
-var jsonMarker = []byte("json:")
+var jsonMarker = []byte("j:")
+var uncompressedMarker = []byte("u:")
 
-func generateKey(request *http.Request) []byte {
-  buffer := quicktemplate.AcquireByteBuffer()
-  defer quicktemplate.ReleaseByteBuffer(buffer)
+func generateKey(request *http.Request, isBrotliSupported bool) []byte {
+  buffer := bytebufferpool.Get()
+  defer bytebufferpool.Put(buffer)
 
   // if json requested, it means that handler can return data in several formats
   if request.Header.Get("Accept") == "application/json" {
     _, _ = buffer.Write(jsonMarker)
+  }
+  if !isBrotliSupported {
+    _, _ = buffer.Write(uncompressedMarker)
   }
 
   u := request.URL
@@ -81,52 +84,60 @@ func generateKey(request *http.Request) []byte {
   return result
 }
 
-func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) ([]byte, error)) {
+func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) {
   w.Header().Set("Content-Type", "application/json")
   w.Header().Set("Access-Control-Allow-Origin", "*")
   w.Header().Set("Cache-Control", "public, must-revalidate, max-age=15")
   w.Header().Set("Vary", "Accept-Encoding")
 
-  cacheKey := generateKey(request)
+  isBrotliSupported := strings.Contains(request.Header.Get("Accept-Encoding"), "br")
+
+  cacheKey := generateKey(request, isBrotliSupported)
   value, found := t.cache.Get(cacheKey)
-  var eTag string
   var result []byte
   if found {
     result = value.([]byte)
     prevEtag := request.Header.Get("If-None-Match")
-    eTag = computeEtag(result)
+    eTag := computeEtag(result)
     if prevEtag == eTag {
       w.Header().Set("ETag", eTag)
       w.WriteHeader(http.StatusNotModified)
       return
     }
   } else {
-    var err error
-    result, err = handler(request)
+    buffer, releaseBuffer, err := handler(request)
     if err != nil {
       t.handleError(err, w)
       return
     }
 
-    t.cache.Set(cacheKey, result, int64(len(result)))
-    eTag = computeEtag(result)
-  }
-
-  w.Header().Set("ETag", eTag)
-
-  if len(result) > 8192 && strings.Contains(request.Header.Get("Accept-Encoding"), "gzip") {
-    w.Header().Set("Content-Encoding", "gzip")
-
-    compressedData, err := t.gzipData(result)
-    if err != nil {
-      t.logger.Error("cannot compress result", zap.Error(err))
-      http.Error(w, err.Error(), 503)
-      return
+    if isBrotliSupported {
+      result, err = t.brotliData(buffer.B)
+      if releaseBuffer {
+        bytebufferpool.Put(buffer)
+      }
+      if err != nil {
+        t.logger.Error("cannot compress result", zap.Error(err))
+        http.Error(w, err.Error(), 503)
+        return
+      }
+    } else {
+      result = CopyBuffer(buffer)
+      if releaseBuffer {
+        bytebufferpool.Put(buffer)
+      }
     }
 
-    result = compressedData
+    t.cache.Set(cacheKey, result, int64(len(result)))
   }
 
+  if isBrotliSupported {
+    w.Header().Set("Content-Encoding", "br")
+  }
+
+  w.Header().Set("ETag", computeEtag(result))
+  w.Header().Set("Content-Length", strconv.Itoa(len(result)))
+  w.WriteHeader(http.StatusOK)
   _, err := w.Write(result)
   if err != nil {
     t.logger.Error("cannot write cached result", zap.Error(err))
@@ -142,7 +153,7 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 
   default:
     //fmt.Printf("%+v", err)
-    if errors2.Is(err, context.Canceled) {
+    if errors2.Is(exception, context.Canceled) {
       http.Error(w, err.Error(), 499)
     } else {
       t.logger.Error("cannot handle http request", zap.Error(err))
@@ -155,25 +166,21 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 // because if no data in cache (server restarted), in any case data will be recomputed
 func computeEtag(result []byte) string {
   // add length to reduce chance of collision
-  return strconv.FormatUint(xxh3.Hash(result), 36) + "-" + strconv.FormatInt(int64(len(result)), 36)
+  hash := xxh3.Hash128(result)
+  return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36) + "-" + strconv.FormatUint(uint64(len(result)), 36)
 }
 
-func (t *ResponseCacheManager) gzipData(value []byte) ([]byte, error) {
+func (t *ResponseCacheManager) brotliData(value []byte) ([]byte, error) {
   buffer := bytebufferpool.Get()
   defer bytebufferpool.Put(buffer)
-  gzipWriter, err := gzip.NewWriterLevel(buffer, 5)
+  writer := brotli.NewWriter(buffer)
+  _, err := writer.Write(value)
   if err != nil {
+    util.Close(writer, t.logger)
     return nil, err
   }
 
-  _, err = gzipWriter.Write(value)
-  if err != nil {
-    util.Close(gzipWriter, t.logger)
-    return nil, err
-  }
-
-  util.Close(gzipWriter, t.logger)
-
+  util.Close(writer, t.logger)
   return CopyBuffer(buffer), nil
 }
 

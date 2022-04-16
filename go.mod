@@ -40,7 +40,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/panjf2000/ants/v2 v2.4.8
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
-	github.com/pkg/errors v0.9.1
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rs/cors v1.8.2
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/segmentio/ksuid v1.0.4
@@ -69,7 +69,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dmarkham/enumer v1.5.5 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/go-faster/ch v0.26.0
+	github.com/go-faster/ch v0.27.0
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.5.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
@@ -99,6 +99,7 @@ require (
 )
 
 require (
+	github.com/andybalholm/brotli v1.0.4
 	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 )

@@ -21,10 +21,9 @@ func TestAdvancedFilter(t *testing.T) {
   //noinspection GoImportUsedAsName
   assert := assert.New(t)
 
-  sql, args, _, err := buildSql(queries[0], "test")
+  sql, _, err := buildSql(queries[0], "test")
   if err != nil {
     t.Error(err)
   }
   assert.Equal("select from test where generated_time > subtractMonths(now(), 1)", sql)
-  assert.Empty(args)
 }

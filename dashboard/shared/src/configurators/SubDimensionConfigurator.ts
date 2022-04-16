@@ -31,7 +31,7 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
           }
 
           const query = this.createQuery()
-          query.addFilter({f: parentDimensionConfigurator.name, value: filterValue})
+          query.addFilter({f: parentDimensionConfigurator.name, v: filterValue})
           const configuration = new DataQueryExecutorConfiguration()
           if (!parentDimensionConfigurator.serverConfigurator.configureQuery(query, configuration)) {
             return of(null)

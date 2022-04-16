@@ -195,30 +195,17 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
   for _, v := range list {
     t := DataQueryFilter{
       Field:    string(v.GetStringBytes("f")),
-      Sql:      string(v.GetStringBytes("sql")),
+      Sql:      string(v.GetStringBytes("q")),
       Operator: string(v.GetStringBytes("o")),
     }
 
-    value := v.Get("value")
-    if value == nil {
-    } else if value.Type() == fastjson.TypeString {
-      t.Value = string(value.GetStringBytes())
-    } else if value.Type() == fastjson.TypeNumber {
-      number, err := value.Float64()
-      if err != nil {
-        return errors.WithStack(err)
-      }
+    if len(t.Sql) == 0 {
+      t.Sql = string(v.GetStringBytes("sql"))
+    }
 
-      if number == math.Trunc(number) {
-        // convert to int (to be able to use time unix timestamps from client side)
-        t.Value = int(number)
-      } else {
-        t.Value = number
-      }
-    } else if value.Type() == fastjson.TypeArray {
-      t.Value = readStringList(value)
-    } else {
-      return errors.Errorf("Filter value %v is not supported", value)
+    value := v.Get("v")
+    if value == nil {
+      value = v.Get("value")
     }
 
     if !isValidFilterFieldName(t.Field) {
@@ -226,6 +213,28 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
     }
 
     if len(t.Sql) == 0 {
+      if value == nil {
+        return errors.Errorf("Filter value is not specified", value)
+      } else if value.Type() == fastjson.TypeString {
+        t.Value = string(value.GetStringBytes())
+      } else if value.Type() == fastjson.TypeNumber {
+        number, err := value.Float64()
+        if err != nil {
+          return errors.WithStack(err)
+        }
+
+        if number == math.Trunc(number) {
+          // convert to int (to be able to use time unix timestamps from client side)
+          t.Value = int(number)
+        } else {
+          t.Value = number
+        }
+      } else if value.Type() == fastjson.TypeArray {
+        t.Value = readStringList(value)
+      } else {
+        return errors.Errorf("Filter value %v is not supported", value)
+      }
+
       if len(t.Operator) == 0 {
         t.Operator = "="
       } else if len(t.Operator) > 2 || (t.Operator != ">" && t.Operator != "<" && t.Operator != "=" && t.Operator != "!=") {

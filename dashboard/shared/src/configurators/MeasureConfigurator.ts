@@ -109,7 +109,7 @@ function getLoadMeasureListUrl(structureName: string,
           return null
         }
 
-        query.addFilter({f: parent.name, value})
+        query.addFilter({f: parent.name, v: value})
       }
       else {
         // well, so, it is a filter configurator (e.g. MachineConfigurator)
@@ -166,7 +166,7 @@ function configureMeasureInANewFormat(measureNames: Array<string>,
                                       valueName: string,
                                       skipZeroValues: boolean) {
   const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
-  const filter: DataQueryFilter = {f: `${structureName}.name`, value: pureNames[0]}
+  const filter: DataQueryFilter = {f: `${structureName}.name`, v: pureNames[0]}
   if (measureNames.length > 1) {
     configureQueryProducer(configuration, null, filter, pureNames)
   }
@@ -182,7 +182,7 @@ function configureMeasureInANewFormat(measureNames: Array<string>,
 
   if (skipZeroValues) {
     // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
-    query.addFilter({f: `${structureName}.${valueName}`, o: "!=", value: 0})
+    query.addFilter({f: `${structureName}.${valueName}`, o: "!=", v: 0})
   }
 }
 
@@ -202,7 +202,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
     }
     else {
       const field: DataQueryDimension = {n: measureNames[0]}
-      const filter: DataQueryFilter | null = skipZeroValues ? {f: measureNames[0], o: "!=", value: 0} : null
+      const filter: DataQueryFilter | null = skipZeroValues ? {f: measureNames[0], o: "!=", v: 0} : null
       if (measureNames.length > 1) {
         configureQueryProducer(configuration, field, filter, measureNames)
       }
@@ -237,7 +237,7 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
         }
       }
       else if (filter != null) {
-        filter.value = values[index]
+        filter.v = values[index]
       }
     },
     getSeriesName(index: number): string {

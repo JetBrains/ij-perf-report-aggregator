@@ -116,7 +116,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
     if (values.length > 0) {
       // stable order of fields in query (caching)
       values.sort()
-      query.addFilter({f: "machine", value: values})
+      query.addFilter({f: "machine", v: values})
     }
     return true
   }
@@ -156,6 +156,7 @@ function getValueToGroup() {
     "intellij-macos-hw-unit-2205": macMiniM1,
     "intellij-macos-hw-unit-2206": macMiniM1,
     "intellij-macos-hw-unit-2207": macMiniM1,
+    "intellij-macos-hw-munit-608": macMiniM1,
 
     "intellij-macos-unit-2200-large-10298": macLarge,
 

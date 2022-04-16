@@ -24,9 +24,9 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
       return false
     }
 
-    const filter: DataQueryFilter = {f: this.name, value}
+    const filter: DataQueryFilter = {f: this.name, v: value}
     if (this.multiple && Array.isArray(value)) {
-      filter.value = value[0]
+      filter.v = value[0]
       if (value.length > 1) {
         configureQueryProducer(configuration, filter, value)
       }
@@ -84,7 +84,7 @@ function configureQueryProducer(configuration: DataQueryExecutorConfiguration, f
         return values.length
       },
       mutate(index: number) {
-        filter.value = values[index]
+        filter.v = values[index]
       },
       getSeriesName(index: number): string {
         return values[index]

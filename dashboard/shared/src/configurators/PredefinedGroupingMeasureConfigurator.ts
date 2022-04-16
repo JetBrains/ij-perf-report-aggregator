@@ -46,7 +46,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     }
     else {
       query.addField({n: "measures", subName: "value"})
-      query.addFilter({f: "measures.name", value: measureNames})
+      query.addFilter({f: "measures.name", v: measureNames})
       if (measureNames.length > 1) {
         throw new Error("multiple measures are not supported")
       }

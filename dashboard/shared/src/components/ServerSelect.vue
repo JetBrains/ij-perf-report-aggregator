@@ -14,20 +14,14 @@
 </template>
 
 <script setup lang="ts">
+import { AutoCompleteCompleteEvent } from "primevue/autocomplete"
 import { computed, ref } from "vue"
 
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 
-interface Event{
-  query: string
-}
-
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: "",
-  },
-})
+const props = defineProps<{
+  modelValue: string
+}>()
 
 const emit = defineEmits(["update:modelValue"])
 
@@ -42,7 +36,7 @@ const value = computed({
   },
 })
 
-function searchServer(event: Event): void {
+function searchServer(event: AutoCompleteCompleteEvent): void {
   const queryString = event.query
   if (queryString == null || queryString.length === 0) {
     filteredServer.value = [...suggestedServers]

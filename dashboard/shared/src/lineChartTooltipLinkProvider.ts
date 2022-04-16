@@ -21,7 +21,7 @@ function createReportUrl(generatedTime: number, query: DataQuery): string {
   const filters = q["filters"] as Array<DataQueryFilter>
   for (let i = 0; i < filters.length; i++){
     if (filters[i].f === "generated_time") {
-      filters[i] = {f: "generated_time", value: generatedTime / 1000}
+      filters[i] = {f: "generated_time", v: generatedTime / 1000}
       break
     }
   }

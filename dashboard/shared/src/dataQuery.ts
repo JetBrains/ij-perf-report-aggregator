@@ -1,6 +1,5 @@
 import { encode as risonEncode } from "rison-node"
 import { Observable } from "rxjs"
-import { Ref } from "vue"
 import { ChartConfigurator } from "./chart"
 
 export function encodeQuery(query: DataQuery): string {
@@ -62,8 +61,8 @@ export class DataQuery {
 
 export interface DataQueryFilter {
   f: string
-  value?: number | string | Array<string>
-  sql?: string
+  v?: number | string | Array<string>
+  q?: string
   // `=` by default
   // operator
   o?: "=" | "!=" | ">"
@@ -78,7 +77,7 @@ export interface DataQueryDimension {
 }
 
 export interface DataQueryConfigurator {
-  readonly value?: Ref<unknown>
+  // readonly value?: Ref<unknown>
 
   /**
    * Return null if no need to observe — a fully static configurator that doesn't trigger query reconfiguration.

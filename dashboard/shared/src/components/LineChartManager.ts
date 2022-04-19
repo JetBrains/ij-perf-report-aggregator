@@ -97,7 +97,7 @@ export class LineChartManager {
   }
 
   dispose(): void {
-    this.chart.dispose()
     this.unsubscribe()
+    this.chart.dispose()
   }
 }

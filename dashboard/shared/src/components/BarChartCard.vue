@@ -5,61 +5,49 @@
     :style="{height: `${height}px`}"
   />
 </template>
-<script lang="ts">
-import { PropType, defineComponent, inject, onMounted, onUnmounted, Ref, shallowRef } from "vue"
+<script setup lang="ts">
+import { inject, onMounted, onUnmounted, Ref, shallowRef } from "vue"
 import { BarChartManager } from "../BarChartManager"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { chartDefaultStyle } from "../chart"
 import { PredefinedGroupingMeasureConfigurator } from "../configurators/PredefinedGroupingMeasureConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, timeRangeKey } from "../injectionKeys"
 
-export default defineComponent({
-  name: "BarChartCard",
-  props: {
-    height: {
-      type: Number,
-      default: 440,
-    },
-    // not reactive - change of initial value is ignored by intention
-    measures: {
-      type: Array as PropType<Array<string>>,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const chartElement: Ref<HTMLElement | null> = shallowRef(null)
-    let chartManager: BarChartManager | null = null
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    const measures = props.measures
+const props = withDefaults(defineProps<{
+  height?: number
+  measures: Array<string>
+}>(), {
+  height: 440,
+  measures: () => [],
+})
 
-    const timeRange = inject(timeRangeKey)
-    if (timeRange === undefined) {
-      throw new Error("timeRange is not injected but required")
-    }
+const chartElement = shallowRef<HTMLElement | null>(null)
+let chartManager: BarChartManager | null = null
+// eslint-disable-next-line vue/no-setup-props-destructure
+const measures = props.measures
 
-    const aggregationOperatorConfigurator = inject(aggregationOperatorConfiguratorKey)
-    if (aggregationOperatorConfigurator === undefined) {
-      throw new Error("aggregationOperatorConfigurator is not injected but required")
-    }
+const timeRange = inject(timeRangeKey)
+if (timeRange === undefined) {
+  throw new Error("timeRange is not injected but required")
+}
 
-    const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, inject(chartStyleKey, chartDefaultStyle))
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const dataQueryExecutor = new DataQueryExecutor(inject(configuratorListKey)!.concat(aggregationOperatorConfigurator, measureConfigurator))
-    onMounted(() => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor)
-    })
-    onUnmounted(() => {
-      const it = chartManager
-      if (it != null) {
-        chartManager = null
-        it.dispose()
-      }
-    })
+const aggregationOperatorConfigurator = inject(aggregationOperatorConfiguratorKey)
+if (aggregationOperatorConfigurator === undefined) {
+  throw new Error("aggregationOperatorConfigurator is not injected but required")
+}
 
-    return {
-      chartElement,
-    }
+const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, inject(chartStyleKey, chartDefaultStyle))
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const dataQueryExecutor = new DataQueryExecutor(inject(configuratorListKey)!.concat(aggregationOperatorConfigurator, measureConfigurator))
+onMounted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor)
+})
+onUnmounted(() => {
+  const it = chartManager
+  if (it != null) {
+    chartManager = null
+    it.dispose()
   }
 })
 </script>

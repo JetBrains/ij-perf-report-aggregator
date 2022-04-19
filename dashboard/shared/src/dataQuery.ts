@@ -77,8 +77,6 @@ export interface DataQueryDimension {
 }
 
 export interface DataQueryConfigurator {
-  // readonly value?: Ref<unknown>
-
   /**
    * Return null if no need to observe — a fully static configurator that doesn't trigger query reconfiguration.
    * Observable must emit at least one value.

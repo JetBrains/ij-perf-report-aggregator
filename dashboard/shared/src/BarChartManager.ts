@@ -45,7 +45,7 @@ export class BarChartManager {
   }
 
   dispose(): void {
-    this.chart.dispose()
     this.unsubscribe()
+    this.chart.dispose()
   }
 }

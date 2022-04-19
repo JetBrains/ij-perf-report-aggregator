@@ -60,86 +60,84 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 
   configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
-    const queryProducers = configuration.extraQueryProducers
-    if (queryProducers.length !== 0) {
-      let useDurationFormatter = true
-
-
-      const dimensionNameSet = new Set<string>()
-      const source: Array<{ [key: string]: string | number }> = []
-
-      for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
-        if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
-          useDurationFormatter = false
-        }
-
-        const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
-        source.push(column)
-        const result = dataList[dataIndex]
-        for (let i = 0; i < result[0].length; i++){
-          const valueKey = result[0][i] as string
-          dimensionNameSet.add(valueKey)
-          column[valueKey] = result[1][i]
-        }
-      }
-
-      // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
-      const dimensions: Array<DimensionDefinition> = []
-      dimensions.push({name: "dimension", type: "ordinal"})
-      for (const name of dimensionNameSet) {
-        dimensions.push({name, type: "number"})
-      }
-
-      const series = new Array<BarSeriesOption>(dimensions.length - 1)
-      for (let i = 0; i < series.length; i++) {
-        series[i] = {
-          type: "bar",
-          label: {
-            show: true,
-            formatter: useDurationFormatter ? formatterForFieldData : formatterForFieldNumericData,
-            position: this.chartStyle.barSeriesLabelPosition,
-          },
-        }
-      }
-
-      return {
-        dataset: {
-          dimensions,
-          source,
-        },
-        series,
-      }
+    const producers = configuration.extraQueryProducers
+    if (producers.length !== 0) {
+      return configureWithQueryProducers(dataList, configuration, this.chartStyle)
     }
 
+    const measures = configuration.measures
     const data = dataList[0]
-    const series = new Array<BarSeriesOption>(data.length)
-    for (let i = 0; i < data.length; i++) {
+
+    const series = new Array<BarSeriesOption>(data[0].length)
+    for (let i = 0; i < series.length; i++) {
       series[i] = {
         type: "bar",
-        seriesLayoutBy: "row",
         label: {
           show: true,
-          formatter,
+          // mostly all values in ms, no need to increase noise
+          formatter: formatBarSeriesLabel,
           position: this.chartStyle.barSeriesLabelPosition,
         },
       }
     }
 
-    const measures = configuration.measures
-    const header = new Array<string | number>(1 + measures.length)
-    header[0] = "date"
-
-    for (let i = 0; i < measures.length; i++) {
-      header[i + 1] = measureNameToLabel(measures[i])
-    }
-
     return {
       dataset: {
-        sourceHeader: true,
-        source: [header, ...data],
+        source: data.map((it, index) => {
+          return [index === 0 ? "measure" : measureNameToLabel(measures[index - 1]), ...it]
+        }),
       },
       series,
     }
+  }
+}
+
+function configureWithQueryProducers(dataList: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
+  let useDurationFormatter = true
+
+  const dimensionNameSet = new Set<string>()
+  const source: Array<{ [key: string]: string | number }> = []
+
+  for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+    if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
+      useDurationFormatter = false
+    }
+
+    const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
+    source.push(column)
+    const result = dataList[dataIndex]
+    for (let i = 0; i < result[0].length; i++) {
+      const valueKey = result[0][i] as string
+      dimensionNameSet.add(valueKey)
+      column[valueKey] = result[1][i]
+    }
+  }
+
+  // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
+  const dimensions: Array<DimensionDefinition> = []
+  dimensions.push({name: "dimension", type: "ordinal"})
+  for (const name of dimensionNameSet) {
+    dimensions.push({name, type: "number"})
+  }
+
+  const series = new Array<BarSeriesOption>(dimensions.length - 1)
+  for (let i = 0; i < series.length; i++) {
+    series[i] = {
+      type: "bar",
+      label: {
+        show: true,
+        formatter: useDurationFormatter ? formatterForFieldData : formatterForFieldNumericData,
+        position: chartStyle.barSeriesLabelPosition,
+      },
+    }
+  }
+
+  return {
+    dataset: {
+      dimensions,
+      source,
+    },
+    series,
   }
 }
 
@@ -158,7 +156,7 @@ const formatterForFieldNumericData = function (data: CallbackDataParams) {
   return numberFormat.format(value)
 }
 
-const formatter = function (data: CallbackDataParams): string {
+function formatBarSeriesLabel(data: CallbackDataParams): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return numberFormat.format((data.value as Array<number>)[data.seriesIndex! + 1])
 }

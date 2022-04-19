@@ -2,8 +2,6 @@ module github.com/JetBrains/ij-perf-report-aggregator
 
 go 1.18
 
-replace github.com/go-faster/ch => github.com/develar/ch v0.27.1
-
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
 
 require (
@@ -23,7 +21,7 @@ require (
 	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/jmoiron/sqlx v1.3.4
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -54,10 +52,10 @@ require (
 	go.uber.org/multierr v1.8.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4 // indirect
-	golang.org/x/net v0.0.0-20220412020605-290c469a71a5 // indirect
+	golang.org/x/net v0.0.0-20220418201149-a630d4f3e7a2 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/text v0.3.7 // indirect
-	golang.org/x/tools v0.1.10
+	golang.org/x/tools v0.1.11-0.20220415161144-46bc274e027b
 	google.golang.org/protobuf v1.24.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200902074654-038fdea0a05b // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
@@ -69,7 +67,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dmarkham/enumer v1.5.5 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
-	github.com/go-faster/ch v0.27.0
+	github.com/go-faster/ch v0.29.0
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.5.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect

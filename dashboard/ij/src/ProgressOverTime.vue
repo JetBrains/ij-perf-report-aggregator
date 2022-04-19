@@ -26,13 +26,7 @@
     />
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
-import { defineComponent } from "vue"
-
-export default defineComponent({
-  name: "ProgressOverTime",
-  components: {BarChartCard, AggregationOperatorSelect},
-})
 </script>

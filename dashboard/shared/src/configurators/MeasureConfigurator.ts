@@ -71,6 +71,14 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       .subscribe(data => {
         if (data != null) {
           this.data.value = data
+          if (Array.isArray(this._value.value)) {
+            this._value.value = this._value.value.filter(it => {
+              return this.data.value.indexOf(it) > -1
+            })
+          }
+          else if (typeof this._value.value == "string") {
+            this._value.value = this.data.value.indexOf(this._value.value) > 0 ? this._value.value : null
+          }
         }
       })
   }

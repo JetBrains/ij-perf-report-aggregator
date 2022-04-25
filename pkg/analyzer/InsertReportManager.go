@@ -197,10 +197,15 @@ var projectIdToName = map[string]string{
   "26hfTKDRtXpJ6U7ivgfKthtyU0A": "idea",
   // idea project (v3)
   "nC4MRRFMVYUSQLNIvPgDt+B3JqA": "idea",
+  // idea project (v4)
+  "Xplo4RZSHXIFu5elYBOiDDkwu20": "idea",
 
   // light edit
   "6hglkyp/cmAi7ntjrg7dHwd5NG4": "light edit (IJ)",
   "1PbxeQ044EEghMOG9hNEFee05kM": "light edit (IJ)",
+
+  // restoring editors
+  "/q9N7EHxr8F1NHjbNQnpqb0Q0fs": "restoring editors",
 }
 
 func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *zap.Logger) error {

@@ -212,21 +212,65 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
   if (query.db === "ij") {
-    if (measureNames[0].includes(" ")) {
-      configureMeasureInANewFormat(measureNames, configuration, query, "measure", "duration", skipZeroValues)
-    }
-    else {
-      const field: DataQueryDimension = {n: measureNames[0]}
-      const filter: DataQueryFilter | null = skipZeroValues ? {f: measureNames[0], o: "!=", v: 0} : null
-      if (measureNames.length > 1) {
-        configureQueryProducer(configuration, field, filter, measureNames)
-      }
+    const structureName = "measure"
+    const valueName = "duration"
+    const field: DataQueryDimension = {n: ""}
+    query.insertField(field, 1)
 
-      query.insertField(field, 1)
-      if (filter != null) {
-        query.addFilter(filter)
-      }
+    const prevFilters: Array<DataQueryFilter> = []
+
+    const addFilter = (filter: DataQueryFilter): void => {
+      prevFilters.push(filter)
+      query.addFilter(filter)
     }
+
+    configuration.extraQueryProducers.push({
+      size(): number {
+        return measureNames.length
+      },
+      mutate(index: number): void {
+        const measure = measureNames[index]
+
+        delete field.sql
+        delete field.subName
+
+        if (prevFilters.length > 0) {
+          query.removeFilters(prevFilters)
+          prevFilters.length = 0
+        }
+
+        if (measure.includes(" ")) {
+          if (measure.endsWith(".end")) {
+            field.n = structureName
+            field.subName = "end"
+            field.sql = `(${structureName}.start + ${structureName}.${valueName})`
+          }
+          else {
+            field.n = structureName
+            field.subName = valueName
+          }
+
+          addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.substring(0, measure.length - ".end".length) : measure})
+
+          if (skipZeroValues) {
+            // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
+            addFilter({f: `${structureName}.${valueName}`, o: "!=", v: 0})
+          }
+        }
+        else {
+          field.n = measure
+          if (skipZeroValues) {
+            addFilter({f: measure, o: "!=", v: 0})
+          }
+        }
+      },
+      getSeriesName(index: number): string {
+        return measureNameToLabel(measureNames[index])
+      },
+      getMeasureName(index: number): string {
+        return measureNames[index]
+      }
+    })
   }
   else {
     configureMeasureInANewFormat(measureNames, configuration, query, "measures", "value", skipZeroValues)

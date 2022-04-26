@@ -141,6 +141,8 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
 
   let serializedQuery = ""
 
+  // https://en.wikipedia.org/wiki/Cartesian_product
+
   const result: Array<string> = []
   const last = Array.from(new Array<number>(producers.length - 1), (_, i) => cartesian[0][i])
   for (let combinationIndex = 0; combinationIndex < cartesian.length; combinationIndex++) {

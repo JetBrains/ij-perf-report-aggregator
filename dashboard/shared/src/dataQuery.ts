@@ -40,6 +40,13 @@ export class DataQuery {
     this.fields.splice(index, 0, field)
   }
 
+  // removeField(field: DataQueryDimension) {
+  //   const index = this.fields.indexOf(field)
+  //   if (index > -1) {
+  //     this.fields.splice(index, 1)
+  //   }
+  // }
+
   addFilter(filter: DataQueryFilter): void {
     let filters = this.filters
     if (filters == null) {
@@ -47,6 +54,11 @@ export class DataQuery {
       this.filters = filters
     }
     filters.push(filter)
+  }
+
+  removeFilters(toRemove: Array<DataQueryFilter>): void {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.filters = this.filters!.filter(it => !toRemove.includes(it))
   }
 
   addDimension(dimension: DataQueryDimension): void {

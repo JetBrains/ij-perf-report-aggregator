@@ -41,6 +41,7 @@ export class ChartToolTipManager {
 
   formatArrayValue(params: Array<CallbackDataParams>): null {
     if (this.paused) {
+      console.log("paused")
       return null
     }
 

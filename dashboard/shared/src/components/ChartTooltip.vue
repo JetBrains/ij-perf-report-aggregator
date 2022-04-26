@@ -2,6 +2,7 @@
   <OverlayPanel
     v-if="tooltipData != null && tooltipData.items.length > 0"
     ref="panel"
+    onclose="panelClosedExplicitly"
     :show-close-icon="true"
   >
     <div
@@ -71,7 +72,7 @@
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { onBeforeUnmount, onMounted, ref } from "vue"
+import { onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
@@ -84,11 +85,31 @@ let currentTarget: EventTarget | null
 // noinspection JSDeprecatedSymbols
 const metaKeySymbol = window.navigator.platform.toUpperCase().includes("MAC") ? "⌘" : "⊞"
 
+// do not show tooltip if cursor was not pointed again to some item
+function resetState() {
+  const value = tooltipData.value
+  if (value != null) {
+    value.items.length = 0
+  }
+
+  isMetaPressed = false
+  if (lastManager != null) {
+    lastManager.paused = false
+  }
+}
+
 const hide = debounceSync(() => {
   currentTarget = null
   debouncedShow.clear()
   panel.value?.hide()
+  resetState()
 }, 2_000)
+
+function panelClosedExplicitly() {
+  hide.clear()
+  currentTarget = null
+  resetState()
+}
 
 const debouncedShow = debounceSync(() => {
   if (currentTarget != null) {

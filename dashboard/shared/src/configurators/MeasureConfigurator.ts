@@ -273,7 +273,6 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: "line",
-      smooth: false,
       showSymbol: seriesData[0].length < 100,
       symbolSize,
       symbol: "circle",

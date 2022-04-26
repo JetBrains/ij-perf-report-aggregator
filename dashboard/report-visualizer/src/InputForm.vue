@@ -12,10 +12,10 @@
       <Button
         class="p-button-sm"
         :loading="isFetching"
+        icon="pi pi-download"
+        label="Get from instance"
         @click="getFromRunningInstance"
-      >
-        Get from instance
-      </Button>
+      />
       <InputNumber
         v-model="portNumber"
         :show-buttons="true"
@@ -28,17 +28,16 @@
       <Button
         :loading="isFetchingDev"
         class="col-span-2 p-button-sm w-full"
+        icon="pi pi-download"
+        label="Get from instance on port 63343"
         @click="getFromRunningDevInstance"
-      >
-        Get from instance on port 63343
-      </Button>
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { deepEqual } from "fast-equals"
-import { debounceTime, distinctUntilChanged, finalize, of, Subject, switchMap } from "rxjs"
+import { debounceTime, finalize, of, Subject, switchMap } from "rxjs"
 import { fromFetchWithRetryAndErrorHandling } from "shared/src/configurators/rxjs"
 import { serverUrlKey } from "shared/src/injectionKeys"
 import { inject, ref, watch } from "vue"
@@ -56,10 +55,10 @@ const isFetchingDev = ref(false)
 const serverUrl = inject(serverUrlKey)!
 
 const subject = new Subject<{url: string; isDev: boolean}>()
+// distinctUntilChanged is not used here because report maybe loaded from the same instance multiple times
 subject
   .pipe(
     debounceTime(100),
-    distinctUntilChanged(deepEqual),
     switchMap(({url, isDev}) => {
       if (url.length === 0) {
         return of(null)
@@ -97,6 +96,7 @@ watch(route, location => {
 
 const inputData = reportData
 const portNumber = recentlyUsedIdePort
+
 function getFromRunningInstance() {
   subject.next({url: getIdeaReportUrl(recentlyUsedIdePort.value), isDev: false})
 }

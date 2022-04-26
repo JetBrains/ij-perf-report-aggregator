@@ -38,7 +38,7 @@ func executeQuery(
       },
     })
 
-    if !errors.Is(err, syscall.EPIPE) {
+    if !errors.Is(err, syscall.EPIPE) && !errors.Is(err, syscall.ETIMEDOUT) {
       return err
     }
 

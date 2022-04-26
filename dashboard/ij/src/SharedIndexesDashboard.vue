@@ -17,7 +17,7 @@
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
-      v-for="metric in measureConfigurator.value.value"
+      v-for="metric in measureConfigurator.selected.value"
       :key="metric"
     >
       <Divider align="center">
@@ -63,7 +63,7 @@ import { provide } from "vue"
 import { useRouter } from "vue-router"
 
 provideReportUrlProvider()
-// eslint-disable-next-line no-undef
+
 const props = defineProps<{
   dbName: string
   defaultMeasures: Array<string>

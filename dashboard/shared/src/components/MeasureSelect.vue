@@ -1,40 +1,62 @@
 <template>
   <MultiSelect
     v-model="value"
-    :options="data"
+    :options="items"
     placeholder="Metrics"
+    :filter="true"
+    :option-label="it => it"
     :max-selected-labels="1"
   />
 </template>
-<script lang="ts">
-import { computed, defineComponent } from "vue"
+<script setup lang="ts">
+import { computed } from "vue"
 
 import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
 
-export default defineComponent({
-  name: "MeasureSelect",
-  props: {
-    configurator: {
-      type: Object,
-      required: true,
-    },
-  },
-  setup(props) {
-    const configurator = props.configurator as MeasureConfigurator
-    return {
-      value: computed({
-        get(): Array<string>|null {
-          if(!configurator.data.value.some(it => configurator.value.value != null && configurator.value.value.indexOf(it) > -1)){
-            return null
-          }
-          return configurator.data.value.length == 0 ? null : configurator.value.value
-        },
-        set(value: Array<string>|null) {
-          configurator.value.value = value
-        },
-      }),
-      data: configurator.data,
+const props = defineProps<{
+  configurator: MeasureConfigurator
+}>()
+
+// const items = props.configurator.data
+// put selected values on top
+const items = computed(() => {
+  const configurator = props.configurator
+  let result = configurator.data.value
+
+  if (result.length < 20) {
+    return result
+  }
+
+  const selectedValue = configurator.selected.value ?? []
+  if (selectedValue.length === 0) {
+    return result
+  }
+
+  // do not modify original array
+  result = result.slice()
+  result.sort((a, b) => {
+    if (selectedValue.includes(a)) {
+      return selectedValue.includes(b) ? 0 : -1
     }
+    else {
+      return selectedValue.includes(b) ? 1 : 0
+    }
+  })
+  return result
+})
+
+const value = computed({
+  get(): Array<string> | null {
+    const configurator = props.configurator
+    const selectedValue = configurator.selected.value
+    const allValues = configurator.data.value
+    if (selectedValue != null && selectedValue.length > 0 && !allValues.some(it => selectedValue != null && selectedValue.includes(it))) {
+      return null
+    }
+    return allValues.length == 0 ? null : selectedValue
+  },
+  set(value: Array<string> | null) {
+    props.configurator.setSelected(value)
   },
 })
 </script>

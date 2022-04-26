@@ -15,33 +15,37 @@ import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
-  private readonly _value = shallowRef<Array<string> | string | null>(null)
+  private readonly _selected = shallowRef<Array<string> | string | null>(null)
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.value, true)
+    return refToObservable(this.selected, true)
   }
 
-  public get value() {
-    if (typeof this._value.value == "string") {
-      this._value.value = [this._value.value]
-      this.persistentStateManager.add("measure", this._value)
+  setSelected(value: Array<string> | string | null) {
+    this._selected.value = value
+  }
+
+  public get selected() {
+    const ref = this._selected
+    if (typeof ref.value === "string") {
+      ref.value = [ref.value]
     }
-    return this._value as Ref<string[] | null>
+    return ref as Ref<Array<string> | null>
   }
 
   constructor(serverConfigurator: ServerConfigurator,
               private readonly persistentStateManager: PersistentStateManager,
               filters: Array<DataQueryConfigurator> = [],
               readonly skipZeroValues: boolean = true) {
-    this.persistentStateManager.add("measure", this.value);
+    this.persistentStateManager.add("measure", this._selected)
+
+    const isIj = serverConfigurator.databaseName === "ij";
 
     (filters.length === 0 ? serverConfigurator.createObservable() : combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable())))
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),
         switchMap(() => {
-          const isIj = serverConfigurator.databaseName === "ij"
-
           const loadMeasureListUrl = getLoadMeasureListUrl(isIj ? "measure" : "measures", serverConfigurator, filters)
           if (loadMeasureListUrl == null) {
             return of(null)
@@ -69,22 +73,25 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }),
       )
       .subscribe(data => {
-        if (data != null) {
-          this.data.value = data
-          if (Array.isArray(this._value.value)) {
-            this._value.value = this._value.value.filter(it => {
-              return this.data.value.indexOf(it) > -1
-            })
-          }
-          else if (typeof this._value.value == "string") {
-            this._value.value = this.data.value.indexOf(this._value.value) > 0 ? this._value.value : null
-          }
+        if (data == null) {
+          return
+        }
+
+        if (isIj) {
+          data = Array.from(new Set(data.map(it => /^c\.i\.ide\.[a-zA-Z]\.[a-zA-Z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))
+        }
+
+        const selectedRef = this.selected
+        this.data.value = data
+        const selected = selectedRef.value
+        if (selected != null && selected.length !== 0) {
+          selectedRef.value = selected.filter(it => this.data.value.includes(it))
         }
       })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const measureNames = toMutableArray(this.value.value)
+    const measureNames = toMutableArray(this.selected.value)
     if (measureNames.length === 0) {
       return false
     }

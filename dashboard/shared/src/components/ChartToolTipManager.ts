@@ -65,7 +65,10 @@ export class ChartToolTipManager {
     const firstSeriesData = params[0].value as Array<number>
     // same for all series
     const generatedTime = firstSeriesData[0]
-    data.linkText = timeFormatWithoutSeconds.format(generatedTime) + ` (${firstSeriesData[4]}.${firstSeriesData[5]}${firstSeriesData[6] === 0 ? "" : `.${firstSeriesData[6]}`})`
+    data.linkText = timeFormatWithoutSeconds.format(generatedTime)
+    if(firstSeriesData[4] && firstSeriesData[5]){
+      data.linkText += ` (${firstSeriesData[4]}.${firstSeriesData[5]}${firstSeriesData[6] === 0 ? "" : `.${firstSeriesData[6]}`})`
+    }
     data.firstSeriesData = firstSeriesData
     if (this.reportInfoProvider == null) {
       data.linkUrl = null

@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type ReportAnalyzer struct {
@@ -117,9 +118,21 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
 		TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
 		TcBuildProperties:  extraData.TcBuildProperties,
+		ReportFileName:     extraData.ReportFile,
 	}
 
 	err = ReadReport(runResult, t.analyzer, t.logger)
+	if t.dbName == "perffleet" {
+		parser := structParsers.Get()
+		defer structParsers.Put(parser)
+		report, err := parser.ParseBytes(runResult.RawReport)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		runResult.Report.Generated = time.Unix(0, report.GetInt64("data", "0", "epochNanos")).Format(time.RFC1123Z)
+		runResult.Report.BuildDate = time.Unix(0, report.GetInt64("data", "0", "epochNanos")).Format(time.RFC1123Z)
+		runResult.Report.Project = string(report.GetStringBytes("data", "0", "attributes", "test.name"))
+	}
 	if err != nil {
 		return err
 	}
@@ -149,8 +162,9 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		return err
 	}
 
-	if len(extraData.BuildNumber) == 0 && t.dbName != "ij" {
+	if len(extraData.BuildNumber) == 0 && t.dbName != "ij" && t.dbName != "perffleet" {
 		// ignore report (remove later once fleet project will be collected)
+		t.logger.Warn("BuildNumber is missing, skipping")
 		return nil
 	}
 
@@ -159,9 +173,11 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 		buildComponents = append(buildComponents, "0")
 	}
 
-	runResult.BuildC1, runResult.BuildC2, runResult.BuildC3, err = splitBuildNumber(buildComponents)
-	if err != nil {
-		return err
+	if t.dbName != "perffleet" {
+		runResult.BuildC1, runResult.BuildC2, runResult.BuildC3, err = splitBuildNumber(buildComponents)
+		if err != nil {
+			return err
+		}
 	}
 
 	if t.analyzeContext.Err() != nil {

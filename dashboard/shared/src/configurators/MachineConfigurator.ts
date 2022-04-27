@@ -181,9 +181,6 @@ function getValueToGroup() {
   // 16384 Mb	16384 Mb	2xDDR3-12800 1600MHz 8Gb(8192Mb)	Core i7-3770	3400 Mhz	Intel DH77EB	240 Gb
   const linux = "Linux: i7-3770, 16Gb (12800 1600MHz), SSD"
 
-  // 16384 Mb	16384 Mb	2xDDR3-10600 1333MHz 8Gb(8192Mb)	Core i7-3770	3400 Mhz	Intel DH77EB	240 Gb
-  const linux2 = "Linux: i7-3770, 16Gb (10600 1333MHz), SSD"
-
   const blade = "linux-blade"
 
   return {
@@ -210,7 +207,6 @@ function getValueToGroup() {
     "intellij-linux-hw-unit-449": linux,
     "intellij-linux-hw-unit-499": linux,
     "intellij-linux-hw-unit-450": linux,
-    "intellij-linux-hw-unit-463": linux2,
     "intellij-linux-hw-unit-484": linux,
 
     // error in info table - only 16GB ram and not 32

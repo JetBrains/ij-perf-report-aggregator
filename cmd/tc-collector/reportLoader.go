@@ -20,79 +20,40 @@ import (
   "time"
 )
 
+var networkRequestCount = runtime.NumCPU() + 1
+
 func (t *Collector) loadReports(builds []*Build) error {
-  networkRequestCount := runtime.NumCPU() + 1
   if networkRequestCount > 8 {
     networkRequestCount = 8
   }
 
-  var notLoadedInstallerBuildIds []*InstallerInfo
-  for _, build := range builds {
+  for index, build := range builds {
     if t.reportExistenceChecker.has(build.Id) {
       t.logger.Info("build already processed", zap.Int("id", build.Id), zap.String("startDate", build.StartDate))
-      continue
+      builds[index] = nil
     }
-
-    id, buildTime, err := computeBuildDate(build)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    if id == -1 {
-      t.logger.Error("cannot find installer build", zap.Int("buildId", build.Id))
-      continue
-    }
-
-    installerInfo := t.installerBuildIdToInfo[id]
-    if installerInfo == nil {
-      installerInfo = &InstallerInfo{
-        id:        id,
-        buildTime: buildTime,
-      }
-      notLoadedInstallerBuildIds = append(notLoadedInstallerBuildIds, installerInfo)
-      t.installerBuildIdToInfo[id] = installerInfo
-    }
-    build.installerInfo = installerInfo
   }
 
-  if len(notLoadedInstallerBuildIds) > 0 {
-    t.logger.Debug("load installer info", zap.Int("count", len(notLoadedInstallerBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
-      for _, installerInfo := range notLoadedInstallerBuildIds {
-        encoder.AppendInt(installerInfo.id)
-      }
-      return nil
-    })))
-    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (func() error, error) {
-      return func() error {
-        installerInfo := notLoadedInstallerBuildIds[index]
-        var err error
-        installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id)
-        if err != nil {
-          return errors.WithStack(err)
-        }
-        return nil
-      }, nil
-    })
-
+  if t.reportAnalyzer.Config.HasInstallerField {
+    err := t.loadInstallerInfo(builds, networkRequestCount)
     if err != nil {
-      return errors.WithStack(err)
+      return err
     }
   }
 
   err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
     return func() error {
       build := builds[taskIndex]
-      if build.Agent.Name == "Dead agent" {
+      if build == nil || build.Agent.Name == "Dead agent" {
         return nil
       }
 
-      installerInfo := build.installerInfo
-      if installerInfo == nil {
+      if t.reportAnalyzer.Config.HasInstallerField && build.installerInfo == nil {
         // or already processed or cannot compute installer info
         return nil
       }
 
-      artifacts, err := t.downloadStartUpReports(*build, t.taskContext)
+      artifacts, err := t.downloadReports(*build, t.taskContext)
       if err != nil {
         return err
       }
@@ -112,15 +73,21 @@ func (t *Collector) loadReports(builds []*Build) error {
           return nil
         }
 
-        err = t.reportAnalyzer.Analyze(artifact.data, model.ExtraData{
-          Machine:            build.Agent.Name,
-          TcBuildId:          build.Id,
-          TcInstallerBuildId: installerInfo.id,
-          BuildTime:          installerInfo.buildTime,
-          TcBuildProperties:  tcBuildProperties,
-          Changes:            installerInfo.changes,
-          ReportFile:         artifact.path,
-        })
+        data := model.ExtraData{
+          Machine:           build.Agent.Name,
+          TcBuildId:         build.Id,
+          TcBuildProperties: tcBuildProperties,
+          ReportFile:        artifact.path,
+        }
+
+        if t.reportAnalyzer.Config.HasInstallerField {
+          installerInfo := build.installerInfo
+          data.BuildTime = installerInfo.buildTime
+          data.Changes = installerInfo.changes
+          data.TcInstallerBuildId = installerInfo.id
+        }
+
+        err = t.reportAnalyzer.Analyze(artifact.data, data)
         if err != nil {
           if build.Status == "FAILURE" {
             t.logger.Warn("cannot parse performance report in the failed build", zap.Int("buildId", build.Id), zap.Error(err))
@@ -136,6 +103,68 @@ func (t *Collector) loadReports(builds []*Build) error {
     if e.Is(err, context.Canceled) {
       return err
     } else {
+      return errors.WithStack(err)
+    }
+  }
+  return nil
+}
+
+func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) error {
+  var notLoadedInstallerBuildIds []*InstallerInfo
+  for _, build := range builds {
+    if build == nil {
+      continue
+    }
+
+    id, buildTime, err := computeBuildDate(build)
+    if err != nil {
+      return err
+    }
+
+    if id == -1 {
+      if t.reportAnalyzer.Config.HasInstallerField {
+        t.logger.Error("cannot find installer build", zap.Int("buildId", build.Id))
+      } else {
+        continue
+      }
+    }
+
+    installerInfo := t.installerBuildIdToInfo[id]
+    if installerInfo == nil {
+      installerInfo = &InstallerInfo{
+        id:        id,
+        buildTime: buildTime,
+      }
+      notLoadedInstallerBuildIds = append(notLoadedInstallerBuildIds, installerInfo)
+      t.installerBuildIdToInfo[id] = installerInfo
+    }
+    build.installerInfo = installerInfo
+  }
+
+  if len(notLoadedInstallerBuildIds) == 0 {
+    return nil
+  }
+
+  if notLoadedInstallerBuildIds[0].id != -1 {
+    t.logger.Debug("load installer info", zap.Int("count", len(notLoadedInstallerBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
+      for _, installerInfo := range notLoadedInstallerBuildIds {
+        encoder.AppendInt(installerInfo.id)
+      }
+      return nil
+    })))
+    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (func() error, error) {
+      return func() error {
+        installerInfo := notLoadedInstallerBuildIds[index]
+        var err error
+        installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id)
+        if err != nil {
+          return errors.WithStack(err)
+        }
+        return nil
+      }, nil
+    })
+
+    if err != nil {
       return errors.WithStack(err)
     }
   }

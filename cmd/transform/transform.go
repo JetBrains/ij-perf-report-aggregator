@@ -49,6 +49,12 @@ type ReportRow struct {
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
+
+  ServiceName     []string `db:"service.name"`
+  ServiceStart    []uint32 `db:"service.start"`
+  ServiceDuration []int32  `db:"service.duration"`
+  ServiceThread   []string `db:"service.thread"`
+  ServicePlugin   []string `db:"service.plugin"`
 }
 
 type TimeRange struct {
@@ -70,7 +76,9 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  insertReportManager, err := analyzer.NewInsertReportManager(db, dbName, taskContext, "report2", insertWorkerCount, logger)
+  config := analyzer.GetAnalyzer(dbName)
+
+  insertReportManager, err := analyzer.NewInsertReportManager(db, config, taskContext, "report2", insertWorkerCount, logger)
   if err != nil {
     return err
   }
@@ -80,6 +88,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
 
   // the whole select result in memory - so, limit
   var timeRange TimeRange
+  // use something like (now() - toIntervalMonth(1)) to test the transformer on a fresh data
   err = db.GetContext(taskContext, &timeRange, "select min(generated_time) as min, max(generated_time) as max from report")
   if err != nil {
     return errors.WithStack(err)
@@ -91,7 +100,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   selectDuration := time.Hour * 24 * 7 * 4
   for current := timeRange.Min; current.Before(timeRange.Max); {
     next := current.Add(selectDuration)
-    err = process(db, dbName, current, next, insertReportManager, taskContext, logger)
+    err = process(db, config, current, next, insertReportManager, taskContext, logger)
     if err != nil {
       return err
     }
@@ -115,7 +124,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
 
 func process(
   db *sqlx.DB,
-  dbName string,
+  config analyzer.DatabaseConfiguration,
   startTime time.Time,
   endTime time.Time,
   insertReportManager *analyzer.InsertReportManager,
@@ -125,7 +134,6 @@ func process(
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
 
-  config := analyzer.GetAnalyzer(dbName)
   var err error
   var rows *sqlx.Rows
   if config.HasProductField {
@@ -133,7 +141,8 @@ func process(
       select product, machine, branch,
              toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
              tc_build_id, tc_installer_build_id, tc_build_properties,
-             build_c1, build_c2, build_c3, project
+             build_c1, build_c2, build_c3, project,
+             service.name, service.start, service.duration, service.thread, service.plugin
       from report
       where generated_time >= ? and generated_time < ?
       order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
@@ -196,6 +205,14 @@ rowLoop:
     if runResult.Report == nil {
       // ignore report
       continue rowLoop
+    }
+
+    if config.HasProductField {
+      runResult.ExtraFieldData[0] = row.ServiceName
+      runResult.ExtraFieldData[1] = row.ServiceStart
+      runResult.ExtraFieldData[2] = row.ServiceDuration
+      runResult.ExtraFieldData[3] = row.ServiceThread
+      runResult.ExtraFieldData[4] = row.ServicePlugin
     }
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)

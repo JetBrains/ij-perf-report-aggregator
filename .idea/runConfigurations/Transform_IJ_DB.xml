@@ -4,7 +4,7 @@
     <working_directory value="$PROJECT_DIR$" />
     <envs>
       <env name="DB" value="ij" />
-      <env name="UPDATE_TC_PROPERTIES" value="true" />
+      <env name="UPDATE_TC_PROPERTIES" value="false" />
     </envs>
     <kind value="PACKAGE" />
     <package value="github.com/JetBrains/ij-perf-report-aggregator/cmd/transform" />

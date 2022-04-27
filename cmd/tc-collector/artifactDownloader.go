@@ -19,7 +19,7 @@ type ArtifactItem struct {
   path string
 }
 
-func (t *Collector) downloadStartUpReports(build Build, ctx context.Context) ([]ArtifactItem, error) {
+func (t *Collector) downloadReports(build Build, ctx context.Context) ([]ArtifactItem, error) {
   var result []ArtifactItem
   err := t.findAndDownloadStartUpReports(build, build.Artifacts.File, &result, ctx)
   if err != nil {
@@ -32,7 +32,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artif
   for _, artifact := range artifacts {
     if strings.HasSuffix(artifact.Url, ".json") {
       name := path.Base(artifact.Url)
-      if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") {
+      if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") || (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json") {
         artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
         report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
         if err != nil {

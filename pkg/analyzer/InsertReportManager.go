@@ -34,13 +34,14 @@ type RunResult struct {
   RawReport []byte
 
   // maybe null
-  Report *model.Report
+  Report         *model.Report
+  ReportFileName string
 
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
   BuildC3 int `db:"build_c3"`
 
-  extraFieldData  []interface{}
+  ExtraFieldData []interface{}
 
   branch string
 }
@@ -52,16 +53,26 @@ type InsertReportManager struct {
   MaxGeneratedTime                 int64
   IsCheckThatNotAlreadyAddedNeeded bool
   config                           DatabaseConfiguration
-  dbName                           string
   nonMetricFieldCount              int
   insertInstallerManager           *InsertInstallerManager
   tableName                        string
 }
 
-func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context, tableName string, insertWorkerCount int, logger *zap.Logger) (*InsertReportManager, error) {
+func NewInsertReportManager(
+  db *sqlx.DB,
+  config DatabaseConfiguration,
+  context context.Context,
+  tableName string,
+  insertWorkerCount int,
+  logger *zap.Logger,
+) (*InsertReportManager, error) {
   var selectStatement *sql.Stmt
   var err error
-  config := GetAnalyzer(dbName)
+
+  if len(config.TableName) != 0 {
+    tableName = config.TableName
+  }
+
   if config.HasProductField {
     selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
   } else {
@@ -71,28 +82,30 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
     return nil, errors.WithStack(err)
   }
 
-  // product, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-  //    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-  //    branch,
-  //    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3
+  metaFields := make([]string, 0, 16)
+  metaFields = append(metaFields, "machine", "generated_time", "project", "tc_build_id", "branch")
+
+  if config.HasProductField {
+    metaFields = append(metaFields, "product")
+  }
+  if config.HasInstallerField {
+    metaFields = append(metaFields, "build_time", "tc_installer_build_id", "tc_build_properties", "build_c1", "build_c2", "build_c3", "raw_report")
+  }
+
   var sb strings.Builder
   sb.WriteString("insert into ")
   sb.WriteString(tableName)
   sb.WriteString(" (")
-  if config.HasProductField {
-    sb.WriteString("product, ")
+  for i, field := range metaFields {
+    if i != 0 {
+      sb.WriteRune(',')
+    }
+    sb.WriteString(field)
   }
-  sb.WriteString("machine, build_time, generated_time, project, tc_build_id, tc_installer_build_id, tc_build_properties, branch, raw_report, build_c1, build_c2, build_c3")
-
   config.insertStatementWriter(&sb)
   sb.WriteString(") values (")
 
-  nonMetricFieldCount := 13
-  if !config.HasProductField {
-    nonMetricFieldCount -= 1
-  }
-
-  for i, n := 0, nonMetricFieldCount+config.extraFieldCount; i < n; i++ {
+  for i, n := 0, len(metaFields)+config.extraFieldCount; i < n; i++ {
     if i != 0 {
       sb.WriteRune(',')
     }
@@ -115,9 +128,8 @@ func NewInsertReportManager(db *sqlx.DB, dbName string, context context.Context,
   }
 
   manager := &InsertReportManager{
-    nonMetricFieldCount: nonMetricFieldCount,
+    nonMetricFieldCount: len(metaFields),
     config:              config,
-    dbName:              dbName,
     tableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
       Db: db,
@@ -191,48 +203,48 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     return err
   }
 
-  var project string
-  if len(row.Report.Project) == 0 {
+  project := row.Report.Project
+  if len(project) == 0 {
     project = providedProject
-  } else {
-    project = projectIdToName[row.Report.Project]
-    if len(project) == 0 {
-      project = row.Report.Project
-    }
-  }
-
-  buildTimeUnix, err := getBuildTimeFromReport(row.Report, t.dbName)
-  if err != nil {
-    return err
-  }
-
-  if buildTimeUnix <= 0 {
-    buildTimeUnix = row.BuildTime
-  }
-
-  if m, ok := row.Machine.(string); ok {
-    if strings.HasPrefix(m, "intellij-linux-hw-compile-hp-blade-") {
-      return nil
+  } else if t.config.HasInstallerField {
+    customName := projectIdToName[row.Report.Project]
+    if len(customName) != 0 {
+      project = customName
     }
   }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
+  args = append(args, row.Machine, row.GeneratedTime, project, row.TcBuildId, branch)
+
   if t.config.HasProductField {
     args = append(args, product)
   }
-  args = append(args, row.Machine, buildTimeUnix, row.GeneratedTime, project,
-    row.TcBuildId, row.TcInstallerBuildId, row.TcBuildProperties,
-    branch,
-    row.RawReport, row.BuildC1, row.BuildC2, row.BuildC3)
-
-  if t.dbName == "ij" {
-    err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
+  if t.config.HasInstallerField {
+    buildTimeUnix, err := getBuildTimeFromReport(row.Report, t.config.DbName)
     if err != nil {
       return err
     }
+
+    if buildTimeUnix <= 0 {
+      buildTimeUnix = row.BuildTime
+    }
+
+    if m, ok := row.Machine.(string); ok {
+      if strings.HasPrefix(m, "intellij-linux-hw-compile-hp-blade-") {
+        return nil
+      }
+    }
+    args = append(args, buildTimeUnix, row.TcInstallerBuildId, row.TcBuildProperties, row.BuildC1, row.BuildC2, row.BuildC3, row.RawReport)
+
+    if t.config.DbName == "ij" {
+      err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
+      if err != nil {
+        return err
+      }
+    }
   }
 
-  args = append(args, row.extraFieldData...)
+  args = append(args, row.ExtraFieldData...)
 
   _, err = insertStatement.ExecContext(t.context, args...)
   if err != nil {

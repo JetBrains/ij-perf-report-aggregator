@@ -10,6 +10,11 @@ import (
 func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   report := runResult.Report
 
+  report.TotalDuration = data.GetInt("totalDuration")
+  if report.TotalDuration == 0 {
+    report.TotalDuration = data.GetInt("totalDurationActual")
+  }
+
   traceEvents := data.GetArray("traceEvents")
 
   if version.Compare(report.Version, "12", ">=") && len(traceEvents) == 0 {
@@ -83,7 +88,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
   }
-  runResult.extraFieldData = []interface{}{
+  runResult.ExtraFieldData = []interface{}{
     serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
     clTotal, clSearch, clDefine, clCount, rlTime, rlCount,
     measureName, measureStart, measureDuration, measureThread,

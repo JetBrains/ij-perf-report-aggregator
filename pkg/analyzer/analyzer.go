@@ -2,7 +2,6 @@ package analyzer
 
 import (
   "github.com/develar/errors"
-  "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
   "strings"
@@ -12,15 +11,19 @@ type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value, logge
 type InsertStatementWriter func(sb *strings.Builder)
 
 type DatabaseConfiguration struct {
+  DbName    string
+  TableName string
+
   ReportReader          CustomReportAnalyzer
   insertStatementWriter InsertStatementWriter
 
-  HasProductField bool
-  extraFieldCount int
+  HasProductField   bool
+  HasInstallerField bool
+  extraFieldCount   int
 }
 
-func GetAnalyzer(dbName string) DatabaseConfiguration {
-  if dbName == "ij" {
+func GetAnalyzer(id string) DatabaseConfiguration {
+  if id == "ij" {
     fieldNames := []string{
       "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
       "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount",
@@ -28,9 +31,11 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
       "measure.name", "measure.start", "measure.duration", "measure.thread",
     }
     return DatabaseConfiguration{
-      HasProductField: true,
-      extraFieldCount: len(IjMetricDescriptors) + len(fieldNames),
-      ReportReader:    analyzeIjReport,
+      DbName:            id,
+      HasProductField:   true,
+      HasInstallerField: true,
+      extraFieldCount:   len(IjMetricDescriptors) + len(fieldNames),
+      ReportReader:      analyzeIjReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
           sb.WriteRune(',')
@@ -42,25 +47,39 @@ func GetAnalyzer(dbName string) DatabaseConfiguration {
         }
       },
     }
-  } else if dbName == "sharedIndexes" || strings.HasSuffix(dbName, "perfint") {
+  } else if id == "sharedIndexes" || strings.HasSuffix(id, "perfint") {
     return DatabaseConfiguration{
-      ReportReader:    analyzeSharedIndexesReport,
-      extraFieldCount: 2,
+      DbName:            id,
+      ReportReader:      analyzeSharedIndexesReport,
+      HasInstallerField: true,
+      extraFieldCount:   2,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value")
       },
     }
-  } else if dbName == "fleet" {
+  } else if id == "fleet" {
     return DatabaseConfiguration{
-      ReportReader:    analyzeFleetReport,
-      extraFieldCount: 4,
+      DbName:            "fleet",
+      ReportReader:      analyzeFleetReport,
+      HasInstallerField: true,
+      extraFieldCount:   4,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.start, measures.thread")
       },
     }
 
+  } else if id == "perf_fleet" {
+    return DatabaseConfiguration{
+      DbName:          "fleet",
+      TableName:       "measure",
+      ReportReader:    analyzePerfFleetReport,
+      extraFieldCount: 2,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", name, value")
+      },
+    }
   } else {
-    panic("unknown db: " + dbName)
+    panic("unknown project: " + id)
   }
 }
 
@@ -95,61 +114,6 @@ func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, logg
     return nil
   }
 
-  runResult.extraFieldData = []interface{}{measureNames, measureValues}
-  return nil
-}
-
-func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
-  names := make([]string, 0)
-  values := make([]int, 0)
-  starts := make([]int, 0)
-  threads := make([]string, 0)
-  items := data.GetArray("items")
-  for _, measure := range items {
-    name := string(measure.GetStringBytes("name"))
-    // in milliseconds
-    names = append(names, name)
-    values = append(values, measure.GetInt("duration"))
-    starts = append(starts, measure.GetInt("start"))
-    threads = append(threads, string(measure.GetStringBytes("thread")))
-  }
-
-  mapNameV22 := version.Compare(runResult.Report.Version, "22", "<=")
-  isLessThan36 := version.Compare(runResult.Report.Version, "36", "<")
-
-  for _, groupField := range []string{"items", "prepareAppInitActivities"} {
-    for _, measure := range data.GetArray(groupField) {
-      name := string(measure.GetStringBytes("n"))
-      if len(name) == 0 {
-        continue
-      }
-
-      if mapNameV22 {
-        if name == "create window" {
-          name = "editor appeared"
-        } else if name == "render" {
-          name = "window appeared"
-        }
-      } else if isLessThan36 {
-        if name == "render editor" {
-          name = "editor appeared"
-        } else if name == "render real panels" {
-          name = "window appeared"
-        }
-      }
-
-      // in milliseconds
-      names = append(names, name)
-      values = append(values, measure.GetInt("d"))
-      starts = append(starts, measure.GetInt("s"))
-      threads = append(threads, string(measure.GetStringBytes("t")))
-    }
-  }
-
-  if len(names) == 0 {
-    return nil
-  }
-
-  runResult.extraFieldData = []interface{}{names, values, starts, threads}
+  runResult.ExtraFieldData = []interface{}{measureNames, measureValues}
   return nil
 }

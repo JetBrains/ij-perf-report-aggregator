@@ -11,7 +11,7 @@ import (
 
 var structParsers fastjson.ParserPool
 
-func ReadReport(runResult *RunResult, reader CustomReportAnalyzer, logger *zap.Logger) error {
+func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.Logger) error {
   parser := structParsers.Get()
   defer structParsers.Put(parser)
 
@@ -20,27 +20,22 @@ func ReadReport(runResult *RunResult, reader CustomReportAnalyzer, logger *zap.L
     return errors.WithStack(err)
   }
 
-  totalDuration := report.GetInt("totalDuration")
-  if totalDuration == 0 {
-    totalDuration = report.GetInt("totalDurationActual")
-  }
-
   runResult.Report = &model.Report{
     Version:   string(report.GetStringBytes("version")),
     Generated: string(report.GetStringBytes("generated")),
     Project:   string(report.GetStringBytes("project")),
 
-    Build:     string(report.GetStringBytes("build")),
-    BuildDate: string(report.GetStringBytes("buildDate")),
-
     Os:          string(report.GetStringBytes("os")),
     ProductCode: string(report.GetStringBytes("productCode")),
     Runtime:     string(report.GetStringBytes("runtime")),
-
-    TotalDuration: totalDuration,
   }
 
-  err = reader(runResult, report, logger)
+  if config.HasInstallerField {
+    runResult.Report.Build = string(report.GetStringBytes("build"))
+    runResult.Report.BuildDate = string(report.GetStringBytes("buildDate"))
+  }
+
+  err = config.ReportReader(runResult, report, logger)
   if err != nil {
     return nil
   }

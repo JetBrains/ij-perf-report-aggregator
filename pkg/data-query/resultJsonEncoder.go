@@ -83,6 +83,20 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
         }
       }
 
+    case *proto.ColFloat64:
+      for i, v := range *data {
+        if i != 0 {
+          _ = buffer.WriteByte(',')
+        }
+        n := int64(v)
+        if float64(n) == v {
+          // fast path - just int
+          buffer.B = strconv.AppendInt(buffer.B, n, 10)
+        } else {
+          buffer.B = strconv.AppendFloat(buffer.B, v, 'f', -1, 64)
+        }
+      }
+
     case *proto.ColStr:
       for i, position := range data.Pos {
         if i != 0 {

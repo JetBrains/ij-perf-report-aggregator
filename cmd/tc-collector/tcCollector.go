@@ -75,14 +75,14 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
 func collectFromTeamCity(
   clickHouseUrl string,
   tcUrl string,
-  dbName string,
+  projectId string,
   buildConfigurationIds []string,
   initialSince time.Time,
   userSpecifiedSince time.Time,
   httpClient *http.Client, logger *zap.Logger,
   taskContext context.Context, cancel context.CancelFunc,
 ) error {
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, dbName, analyzer.GetAnalyzer(dbName).ReportReader, taskContext, logger, func() {
+  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, projectId, taskContext, logger, func() {
     logger.Debug("canceled by analyzer")
     cancel()
   })
@@ -101,7 +101,7 @@ func collectFromTeamCity(
 
     installerBuildIdToInfo: make(map[int]*InstallerInfo),
 
-    logger: logger,
+    logger:                 logger,
     reportExistenceChecker: &ReportExistenceChecker{},
   }
 
@@ -139,7 +139,7 @@ func collectFromTeamCity(
 
     logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
 
-    err = collector.reportExistenceChecker.reset(dbName, buildTypeId, reportAnalyzer, taskContext, since)
+    err = collector.reportExistenceChecker.reset(projectId, buildTypeId, reportAnalyzer, taskContext, since)
     if err != nil {
       return err
     }
@@ -259,7 +259,7 @@ func getTcSessionIdCookie(cookies []*http.Cookie) string {
   return ""
 }
 
-func (t *Collector) storeSessionIdCookie  (response *http.Response) {
+func (t *Collector) storeSessionIdCookie(response *http.Response) {
   cookie := getTcSessionIdCookie(response.Cookies())
   // TC doesn't set cookie if it was already set for request
   if len(cookie) > 0 {

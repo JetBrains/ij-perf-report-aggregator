@@ -48,7 +48,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
         groupName = "windows-blade"
       }
       else if (value.startsWith("intellij-windows-hw-munit-")) {
-        groupName = "Windows Munich"
+        groupName = "Windows Munich i7-3770, 32Gb"
       }
       else {
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
@@ -64,7 +64,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
           groupName = "EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
         }
         else if (value.startsWith("intellij-linux-hw-munit-")) {
-          groupName = "Linux Munich"
+          groupName = "Linux Munich i7-3770, 32 Gb"
         }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
@@ -174,12 +174,12 @@ function getValueToGroup() {
   const macMiniM1 = "macMini M1 2020"
 
   // Core i7-3770 16Gb, Intel SSD 535
-  const win = "Windows: i7-3770, 16Gb, Intel SSD 535"
+  const win = "Windows Space i7-3770, 16Gb"
 
   // old RAM	RAM	RAM type	CPU	CPU CLOCK	MotherBoard	HDDs
 
   // 16384 Mb	16384 Mb	2xDDR3-12800 1600MHz 8Gb(8192Mb)	Core i7-3770	3400 Mhz	Intel DH77EB	240 Gb
-  const linux = "Linux: i7-3770, 16Gb (12800 1600MHz), SSD"
+  const linux = "Linux Space i7-3770, 16Gb"
 
   const blade = "linux-blade"
 

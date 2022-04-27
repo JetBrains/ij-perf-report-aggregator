@@ -26,25 +26,51 @@ func executeQuery(
       return err
     }
 
-    //goland:noinspection GoDeferInLoop
-    defer dbResource.Release()
-
-    var result proto.Results
-    err = dbResource.Value().Do(ctx, ch.Query{
-      Body:   sqlQuery,
-      Result: result.Auto(),
-      OnResult: func(ctx context.Context, block proto.Block) error {
-        return resultHandler(ctx, block, &result)
-      },
-    })
-
-    if !errors.Is(err, syscall.EPIPE) && !errors.Is(err, syscall.ETIMEDOUT) {
+    err, done := doExecution(sqlQuery, dbResource, ctx, resultHandler)
+    if err != nil {
       return err
     }
 
-    // EPIPE - connection was closed due to inactivity, close it and acquire a new one
-    dbResource.Destroy()
+    if done {
+      return nil
+    }
   }
 
   return errors.New("cannot acquire database")
+}
+
+func doExecution(
+  sqlQuery string,
+  dbResource *puddleg.Resource[*ch.Client],
+  ctx context.Context,
+  resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
+) (error, bool) {
+  isDestroyed := false
+  defer func() {
+    if !isDestroyed {
+      dbResource.Release()
+    }
+  }()
+
+  var result proto.Results
+  err := dbResource.Value().Do(ctx, ch.Query{
+    Body:   sqlQuery,
+    Result: result.Auto(),
+    OnResult: func(ctx context.Context, block proto.Block) error {
+      return resultHandler(ctx, block, &result)
+    },
+  })
+
+  if err == nil {
+    return nil, true
+  }
+
+  if !(errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ETIMEDOUT)) {
+    return err, true
+  }
+
+  // EPIPE - connection was closed due to inactivity, close it and acquire a new one
+  isDestroyed = true
+  dbResource.Destroy()
+  return nil, false
 }

@@ -60,7 +60,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 
   configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
-    const producers = configuration.extraQueryProducers
+    const producers = configuration.queryProducers
     if (producers.length !== 0) {
       return configureWithQueryProducers(dataList, configuration, this.chartStyle)
     }

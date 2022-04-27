@@ -15,13 +15,13 @@ function test(): void {
   const serverConfigurator = new ServerConfigurator("ij", "http://server")
 
   const project = new DimensionConfigurator("project", serverConfigurator, null, true)
-  project.value.value = ["community/indexing", "java/indexing"]
+  project.selected.value = ["community/indexing", "java/indexing"]
 
   const branch = new DimensionConfigurator("branch", serverConfigurator, null, true)
-  branch.value.value = ["master", "221"]
+  branch.selected.value = ["master", "221"]
 
   const machine = new DimensionConfigurator("machine", serverConfigurator, null, true)
-  machine.value.value = ["mac", "linux", "win"]
+  machine.selected.value = ["mac", "linux", "win"]
 
   const configurators = [project, branch, machine]
   for (const configurator of configurators) {

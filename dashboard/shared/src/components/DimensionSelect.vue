@@ -63,7 +63,7 @@ const props = defineProps({
 const multiple = computed(() => props.dimension.multiple)
 const loading = computed(() => props.dimension.loading.value)
 
-const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.value.value)
+const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
 
 const value = computed<string | Array<string> | null>({
   get() {
@@ -72,7 +72,7 @@ const value = computed<string | Array<string> | null>({
       return null
     }
 
-    const value = props.dimension.value.value
+    const value = props.dimension.selected.value
     if (props.dimension.multiple) {
       if (Array.isArray(value)) {
         return value
@@ -93,11 +93,11 @@ const value = computed<string | Array<string> | null>({
   set(value) {
     if (value == null || value.length === 0) {
       // eslint-disable-next-line vue/no-mutating-props
-      props.dimension.value.value = null
+      props.dimension.selected.value = null
     }
     else {
       // eslint-disable-next-line vue/no-mutating-props
-      props.dimension.value.value = value
+      props.dimension.selected.value = value
     }
   },
 })

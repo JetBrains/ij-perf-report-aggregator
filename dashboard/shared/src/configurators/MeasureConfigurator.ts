@@ -85,7 +85,11 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length !== 0) {
-          selectedRef.value = selected.filter(it => this.data.value.includes(it))
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const filtered = selected.filter(it => data!.includes(it))
+          if (filtered.length !== selected.length) {
+            selectedRef.value = filtered
+          }
         }
       })
   }
@@ -119,7 +123,7 @@ function getLoadMeasureListUrl(structureName: string,
   if (filters.length !== 0) {
     for (const parent of filters) {
       if (parent instanceof DimensionConfigurator) {
-        const value = parent.value.value
+        const value = parent.selected.value
         if (value == null || value.length === 0) {
           return null
         }
@@ -224,7 +228,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
       query.addFilter(filter)
     }
 
-    configuration.extraQueryProducers.push({
+    configuration.queryProducers.push({
       size(): number {
         return measureNames.length
       },
@@ -283,7 +287,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
-  configuration.extraQueryProducers.push({
+  configuration.queryProducers.push({
     size(): number {
       return values.length
     },

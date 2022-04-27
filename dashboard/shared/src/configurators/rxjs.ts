@@ -1,16 +1,19 @@
+import { deepEqual } from "fast-equals"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
-import { catchError, delay, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
+import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
 import { fromFetch } from "rxjs/fetch"
 import { Ref, watch } from "vue"
 
 export function refToObservable<T>(ref: Ref<T>, deep: boolean = false): Observable<T> {
-  return new Observable(context => {
+  return new Observable<T>(context => {
     watch(ref, value => {
       return context.next(value)
     }, {deep})
     context.next(ref.value)
-  })
+  }).pipe(
+    deep ? distinctUntilChanged(deepEqual) : distinctUntilChanged(), 
+  )
 }
 
 const serverNotAvailableMessage = {

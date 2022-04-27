@@ -2,7 +2,7 @@ import { Observable } from "rxjs"
 import { Ref, ref, watch } from "vue"
 
 import { PersistentStateManager } from "../PersistentStateManager"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, toArray } from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"
 import { BaseDimensionConfigurator } from "./DimensionConfigurator"
 import { refToObservable } from "./rxjs"
 
@@ -18,7 +18,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
 
   private static readonly valueToGroup: { [key: string]: string } = getValueToGroup()
 
-  constructor(dimension: BaseDimensionConfigurator, persistentStateManager: PersistentStateManager) {
+  constructor(dimension: BaseDimensionConfigurator, persistentStateManager: PersistentStateManager, readonly multiple: boolean = false) {
     persistentStateManager.add("machine", this.value)
 
     this.loading = dimension.loading
@@ -92,31 +92,71 @@ export class MachineConfigurator implements DataQueryConfigurator {
     return grouped
   }
 
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    const selectedValues = toArray(this.value.value)
-    if (selectedValues.length === 0) {
+  configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
+    const selected = toArray(this.value.value)
+    if (selected.length === 0) {
       console.debug("machine is not configured")
       return false
     }
 
-    const values: Array<string> = []
-    for (const value of selectedValues) {
-      const groupItem = this.groupNameToItem.get(value)
-      if (groupItem == null) {
-        values.push(value)
-      }
-      else {
-        // it's group
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        for (const child of groupItem.children!) {
-          values.push(child.value)
+    if (this.multiple) {
+      const groupNameToItem = this.groupNameToItem
+
+      const values: Array<string> = []
+      const filter: DataQueryFilter = {f: "machine", v: values}
+      query.addFilter(filter)
+      configuration.queryProducers.push({
+        size(): number {
+          return selected.length
+        },
+
+        mutate(index: number): void {
+          const value = selected[index]
+          const groupItem = groupNameToItem.get(value)
+          values.length = 0
+          if (groupItem == null) {
+            values.push(value)
+          }
+          else {
+            // it's group
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            for (const child of groupItem.children!) {
+              values.push(child.value)
+            }
+            values.sort()
+          }
+        },
+
+        getSeriesName(index: number): string {
+          return selected[index]
+        },
+
+        getMeasureName(index: number): string {
+          return selected[index]
+        }
+      })
+    }
+    else {
+      const values: Array<string> = []
+      for (const value of selected) {
+        const groupItem = this.groupNameToItem.get(value)
+        if (groupItem == null) {
+          values.push(value)
+        }
+        else {
+          // it's group
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          for (const child of groupItem.children!) {
+            values.push(child.value)
+          }
         }
       }
-    }
-    if (values.length > 0) {
-      // stable order of fields in query (caching)
-      values.sort()
-      query.addFilter({f: "machine", v: values})
+
+      if (values.length > 0) {
+        // stable order of fields in query (caching)
+        values.sort()
+        query.addFilter({f: "machine", v: values})
+      }
     }
     return true
   }

@@ -92,15 +92,17 @@ export interface DataQueryConfigurator {
   /**
    * Return null if no need to observe — a fully static configurator that doesn't trigger query reconfiguration.
    * Observable must emit at least one value.
+   *
+   * Do not emit duplicated values - use distinctUntilChanged operator if needed.
    */
   createObservable(): Observable<unknown> | null
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean
 
-  createDimension?(): ExtraQueryProducer
+  createDimension?(): QueryProducer
 }
 
-export interface ExtraQueryProducer {
+export interface QueryProducer {
   size(): number
 
   /**
@@ -127,7 +129,7 @@ export class DataQueryExecutorConfiguration {
     return result
   }
 
-  readonly extraQueryProducers: Array<ExtraQueryProducer> = []
+  readonly queryProducers: Array<QueryProducer> = []
 
   private _chartConfigurator: ChartConfigurator | null = null
   get chartConfigurator(): ChartConfigurator {

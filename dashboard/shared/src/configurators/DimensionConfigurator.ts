@@ -1,5 +1,4 @@
-import { deepEqual } from "fast-equals"
-import { debounceTime, distinctUntilChanged, Observable, of, switchMap } from "rxjs"
+import { finalize, Observable, of, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
@@ -7,19 +6,24 @@ import { ServerConfigurator } from "./ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export abstract class BaseDimensionConfigurator implements DataQueryConfigurator {
-  readonly value = shallowRef<string | Array<string> | null>(null)
+  readonly selected = shallowRef<string | Array<string> | null>(null)
   readonly values = shallowRef<Array<string>>([])
   readonly loading = shallowRef(false)
 
+  private readonly observable: Observable<string | Array<string> | null>
+
   protected constructor(readonly name: string, readonly multiple: boolean) {
+    this.observable = refToObservable(this.selected, true).pipe(
+      shareReplay(1),
+    )
   }
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.value, true)
+    return this.observable
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const value = this.value.value
+    const value = this.selected.value
     if (value == null || value.length === 0) {
       return false
     }
@@ -52,12 +56,10 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
               multiple: boolean = false) {
     super(name, multiple)
 
-    persistentStateManager?.add(name, this.value)
+    persistentStateManager?.add(name, this.selected)
 
     this.serverConfigurator.createObservable()
       .pipe(
-        debounceTime(100),
-        distinctUntilChanged(deepEqual),
         switchMap(() => {
           const query = this.createQuery()
           const configuration = new DataQueryExecutorConfiguration()
@@ -66,11 +68,15 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
           }
 
           this.loading.value = true
-          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`)
+          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`).pipe(
+            finalize(() => {
+              this.loading.value = false
+            }),
+          )
         }),
       )
       .subscribe(data => {
-        this.loading.value = false
+        console.log("data for " + name)
         if (data != null) {
           this.values.value = data
         }
@@ -79,7 +85,7 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
-  configuration.extraQueryProducers.push({
+  configuration.queryProducers.push({
       size(): number {
         return values.length
       },

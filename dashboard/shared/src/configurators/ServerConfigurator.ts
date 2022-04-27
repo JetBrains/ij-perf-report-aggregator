@@ -1,4 +1,4 @@
-import { concat, connect, debounceTime, Observable, OperatorFunction, shareReplay, take } from "rxjs"
+import { Observable, shareReplay } from "rxjs"
 import { inject, ref, Ref } from "vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { serverUrlKey } from "../injectionKeys"
@@ -24,8 +24,6 @@ export class ServerConfigurator implements DataQueryConfigurator {
     }
 
     this.observable = refToObservable(this.value).pipe(
-      // custom delay - in addition to a generic one (as typing of server may take longer time)
-      debounceTimeAfterFirst(900),
       shareReplay(1),
     )
   }
@@ -46,16 +44,4 @@ export class ServerConfigurator implements DataQueryConfigurator {
     query.db = this.databaseName
     return true
   }
-}
-
-function debounceTimeAfter<T>(amount: number, dueTime: number): OperatorFunction<T, T> {
-  return connect(value =>
-    concat(
-      value.pipe(take(amount)),
-      value.pipe(debounceTime(dueTime))),
-  )
-}
-
-export function debounceTimeAfterFirst<T>(dueTime: number): OperatorFunction<T, T> {
-  return debounceTimeAfter(1, dueTime)
 }

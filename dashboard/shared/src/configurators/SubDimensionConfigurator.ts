@@ -1,10 +1,9 @@
-import { deepEqual } from "fast-equals"
-import { debounceTime, distinctUntilChanged, of, switchMap } from "rxjs"
+import { debounceTime, of, switchMap } from "rxjs"
 import { watch } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQueryExecutorConfiguration, encodeQuery } from "../dataQuery"
 import { BaseDimensionConfigurator, DimensionConfigurator } from "./DimensionConfigurator"
-import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { fromFetchWithRetryAndErrorHandling } from "./rxjs"
 
 /**
  * Dimension, that depends on another dimension to get filtered data.
@@ -17,15 +16,14 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
     super(name, false)
 
     if (persistentStateManager != null) {
-      persistentStateManager.add(name, this.value)
+      persistentStateManager.add(name, this.selected)
     }
 
-    refToObservable(parentDimensionConfigurator.value, true)
+    parentDimensionConfigurator.createObservable()
       .pipe(
         debounceTime(100),
-        distinctUntilChanged(deepEqual),
         switchMap(() => {
-          const filterValue = parentDimensionConfigurator.value.value
+          const filterValue = parentDimensionConfigurator.selected.value
           if (filterValue == null || filterValue.length === 0) {
             return of(null)
           }
@@ -54,16 +52,22 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
         this.values.value = data
       })
     watch(this.values, values => {
-      const value = this.value
+      const selectedRef = this.selected
       if (values.length === 0) {
         // do not update value - don't unset if values temporary not set
         console.debug(`[subDimensionConfigurator(name=${name})] value list is empty`)
       }
-      else if (value.value == null || value.value.length === 0 ||
-        !values.includes(value.value as string /* multiple selection not supported yet */)) {
-        const newValue = values[0]
-        console.debug(`[subDimensionConfigurator(name=${name})] values loaded and selected value is set to ${newValue}`)
-        this.value.value = newValue
+      else {
+        const selected = selectedRef.value
+        if (Array.isArray(selected) && selected.length !== 0) {
+          const filtered = selected.filter(it => values.includes(it))
+          if (filtered.length !== selected.length) {
+            selectedRef.value = filtered
+          }
+        }
+        else if (selected == null || selected.length === 0 || !values.includes(selected as string)) {
+          this.selected.value = values[0]
+        }
       }
     })
   }

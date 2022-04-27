@@ -1,8 +1,6 @@
-import { deepEqual } from "fast-equals"
 import {
   combineLatest,
   debounceTime,
-  distinctUntilChanged,
   filter,
   forkJoin,
   map,
@@ -45,7 +43,6 @@ export class DataQueryExecutor {
       // combineLatest will not emit an initial value until each observable emits at least one value, so, null observer simply emits one null value
       return (configurator.createObservable() ?? of(null))
         .pipe(
-          distinctUntilChanged(deepEqual),
           map(_ => configurator),
         )
     }))
@@ -111,7 +108,7 @@ function computeCartesian<T>(input: Array<Array<T>>): Array<Array<T>> {
 }
 
 export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): Array<string> {
-  let producers = configuration.extraQueryProducers
+  let producers = configuration.queryProducers
   if (producers.length === 0) {
     producers = [{
       size(): number {

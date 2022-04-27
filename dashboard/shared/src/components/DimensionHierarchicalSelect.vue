@@ -2,9 +2,10 @@
   <!-- https://github.com/primefaces/primevue/issues/1725 loading is not supported -->
   <TreeSelect
     v-model="value"
-    selection-mode="single"
+    :selection-mode="props.dimension.multiple ? 'multiple' : 'single'"
     :options="values"
     :placeholder="placeholder"
+    class="max-w-lg"
   />
 </template>
 <script setup lang="ts">
@@ -21,16 +22,10 @@ function convertItemToTreeSelectModel(item: GroupedDimensionValue): unknown {
   }
 }
 
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  dimension: {
-    type: MachineConfigurator,
-    required: true,
-  },
-})
+const props = defineProps<{
+  label: string
+  dimension: MachineConfigurator
+}>()
 
 interface SelectedValue {
   [key: string]: boolean

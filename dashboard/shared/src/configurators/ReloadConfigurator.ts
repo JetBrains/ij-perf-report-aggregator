@@ -8,7 +8,7 @@ export class ReloadConfigurator implements DataQueryConfigurator {
     return true
   }
 
-  createObservable(): Observable<unknown> | null {
+  createObservable(): Observable<unknown> {
     return this.subject
   }
 }

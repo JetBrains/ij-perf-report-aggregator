@@ -5,7 +5,7 @@ importers:
   .:
     specifiers:
       '@nabla/vite-plugin-eslint': 1.4.0
-      '@tailwindcss/line-clamp': ^0.3.1
+      '@tailwindcss/line-clamp': ^0.4.0
       '@tailwindcss/typography': ^0.5.2
       '@typescript-eslint/eslint-plugin': 5.21.0
       '@typescript-eslint/parser': 5.21.0
@@ -28,7 +28,7 @@ importers:
       vue: 3.2.33
     devDependencies:
       '@nabla/vite-plugin-eslint': 1.4.0_eslint@8.14.0+vite@2.9.6
-      '@tailwindcss/line-clamp': 0.3.1_tailwindcss@3.0.24
+      '@tailwindcss/line-clamp': 0.4.0_tailwindcss@3.0.24
       '@tailwindcss/typography': 0.5.2_tailwindcss@3.0.24
       '@typescript-eslint/eslint-plugin': 5.21.0_829e74f28e9c9eb05edda582d47d45b8
       '@typescript-eslint/parser': 5.21.0_eslint@8.14.0+typescript@4.6.3
@@ -57,7 +57,7 @@ importers:
       ij: workspace:*
       jb: workspace:*
       primeicons: 5.0.0
-      primevue: 3.12.5
+      primevue: 3.12.6
       report-visualizer: workspace:*
       shared: workspace:*
       vue: 3.2.33
@@ -68,7 +68,7 @@ importers:
       ij: link:../ij
       jb: link:../../jb/dashboard
       primeicons: 5.0.0
-      primevue: 3.12.5_primeicons@5.0.0+vue@3.2.33
+      primevue: 3.12.6_primeicons@5.0.0+vue@3.2.33
       report-visualizer: link:../report-visualizer
       shared: link:../shared
       vue: 3.2.33
@@ -77,13 +77,13 @@ importers:
   dashboard/ij:
     specifiers:
       primeicons: ^5.0.0
-      primevue: ^3.12.5
+      primevue: ^3.12.6
       shared: workspace:*
       vue: 3.2.33
       vue-router: 4.0.14
     dependencies:
       primeicons: 5.0.0
-      primevue: 3.12.5_primeicons@5.0.0+vue@3.2.33
+      primevue: 3.12.6_primeicons@5.0.0+vue@3.2.33
       shared: link:../shared
       vue: 3.2.33
       vue-router: 4.0.14_vue@3.2.33
@@ -94,7 +94,7 @@ importers:
       echarts: 5.3.2
       fast-equals: 3.0.1
       primeicons: 5.0.0
-      primevue: 3.12.5
+      primevue: 3.12.6
       rison-node: ^2.1.1
       rxjs: 7.5.5
       shared: workspace:*
@@ -105,7 +105,7 @@ importers:
       echarts: 5.3.2
       fast-equals: 3.0.1
       primeicons: 5.0.0
-      primevue: 3.12.5_primeicons@5.0.0+vue@3.2.33
+      primevue: 3.12.6_primeicons@5.0.0+vue@3.2.33
       rison-node: 2.1.1
       rxjs: 7.5.5
       shared: link:../shared
@@ -120,7 +120,7 @@ importers:
       fast-equals: 3.0.1
       humanize-duration: 3.27.1
       primeicons: 5.0.0
-      primevue: 3.12.5
+      primevue: 3.12.6
       rison-node: 2.1.1
       rxjs: 7.5.5
       vue: 3.2.33
@@ -131,7 +131,7 @@ importers:
       fast-equals: 3.0.1
       humanize-duration: 3.27.1
       primeicons: 5.0.0
-      primevue: 3.12.5_primeicons@5.0.0+vue@3.2.33
+      primevue: 3.12.6_primeicons@5.0.0+vue@3.2.33
       rison-node: 2.1.1
       rxjs: 7.5.5
       vue: 3.2.33
@@ -142,13 +142,13 @@ importers:
   jb/dashboard:
     specifiers:
       primeicons: 5.0.0
-      primevue: 3.12.5
+      primevue: 3.12.6
       shared: workspace:*
       vue: 3.2.33
       vue-router: 4.0.14
     dependencies:
       primeicons: 5.0.0
-      primevue: 3.12.5_primeicons@5.0.0+vue@3.2.33
+      primevue: 3.12.6_primeicons@5.0.0+vue@3.2.33
       shared: link:../../dashboard/shared
       vue: 3.2.33
       vue-router: 4.0.14_vue@3.2.33
@@ -253,8 +253,8 @@ packages:
       picomatch: 2.3.1
     dev: true
 
-  /@tailwindcss/line-clamp/0.3.1_tailwindcss@3.0.24:
-    resolution: {integrity: sha512-pNr0T8LAc3TUx/gxCfQZRe9NB2dPEo/cedPHzUGIPxqDMhgjwNm6jYxww4W5l0zAsAddxr+XfZcqttGiFDgrGg==}
+  /@tailwindcss/line-clamp/0.4.0_tailwindcss@3.0.24:
+    resolution: {integrity: sha512-HQZo6gfx1D0+DU3nWlNLD5iA6Ef4JAXh0LeD8lOGrJwEDBwwJNKQza6WoXhhY1uQrxOuU8ROxV7CqiQV4CoiLw==}
     peerDependencies:
       tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
@@ -2077,8 +2077,8 @@ packages:
     resolution: {integrity: sha512-heygWF0X5HFI1otlZE62pp6ye7sZ8om78J9au2BRkg8O7Y8AHTZ9qKMRzchZUHLe8zUAvdi6hZzzm9XxgwIExw==}
     dev: false
 
-  /primevue/3.12.5_primeicons@5.0.0+vue@3.2.33:
-    resolution: {integrity: sha512-WijT/EL/K4t1WQEr0eHPNkLhXxg7OgmHSzgpKZLqa56nel6uN2koVGVZ/7iZsmDtqoCtBu+xotzQSUc0nk/uXw==}
+  /primevue/3.12.6_primeicons@5.0.0+vue@3.2.33:
+    resolution: {integrity: sha512-gyO1+063+JwMvcuc+F2BrIL1TWL0y3xJgLAhgKUxqMlZLLoRUF4EzOBSKnzKfr+W+33YTsh6veysZ8iQAt13xg==}
     peerDependencies:
       primeicons: ^5.0.0
       vue: ^3.0.0

@@ -41,9 +41,9 @@
 </template>
 
 <script lang="ts" setup>
-import { initDataComponent } from "shared/src/DataQueryExecutor"
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { DEFAULT_LINE_CHART_HEIGHT } from "shared/src/chart"
+import { initDataComponent } from "src/DataQueryExecutor"
+import { PersistentStateManager } from "src/PersistentStateManager"
+import { DEFAULT_LINE_CHART_HEIGHT } from "src/chart"
 import BarChartCard from "shared/src/components/BarChartCard.vue"
 import Dashboard from "shared/src/components/Dashboard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
@@ -51,23 +51,31 @@ import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
-import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
-import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
-import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide } from "vue"
+import { AggregationOperatorConfigurator } from "src/configurators/AggregationOperatorConfigurator"
+import { DimensionConfigurator } from "src/configurators/DimensionConfigurator"
+import { MachineConfigurator } from "src/configurators/MachineConfigurator"
+import { MeasureConfigurator } from "src/configurators/MeasureConfigurator"
+import { ServerConfigurator } from "src/configurators/ServerConfigurator"
+import { TimeRangeConfigurator } from "src/configurators/TimeRangeConfigurator"
+import { aggregationOperatorConfiguratorKey } from "src/injectionKeys"
+import { provideReportUrlProvider } from "src/lineChartTooltipLinkProvider"
+import { provide, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 
 provideReportUrlProvider()
 
-const props = defineProps<{
+// eslint-disable-next-line no-undef
+const props = withDefaults(defineProps<{
   dbName: string
   defaultMeasures: Array<string>
-}>()
+  urlEnabled: boolean
+}>(), {
+  urlEnabled: true
+})
+
+if(props.urlEnabled){
+  provideReportUrlProvider()
+}
 
 const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
   machine: "linux-blade",

@@ -16,9 +16,9 @@
             :href="tooltipData.linkUrl"
             target="_blank"
           >
-            {{ tooltipData.linkText }}
+            {{ linkText }}
           </a>
-          <span v-else>{{ tooltipData.linkText }}</span>
+          <span v-else>{{ linkText }}</span>
         </div>
 
         <a
@@ -72,13 +72,36 @@
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
+import { reportInfoProviderKey } from "../injectionKeys"
 
 const tooltipData = ref<TooltipData | null>(null)
 const panel = ref<OverlayPanel | null>()
+
+const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+})
+
+const linkText = computed(() => {
+  const data = tooltipData.value?.firstSeriesData
+  if (data == null) {
+    return ""
+  }
+
+  const generatedTime = data[0]
+  let result = timeFormatWithoutSeconds.format(generatedTime)
+  if (data[4] && data[5]) {
+    result += ` (${data[4]}.${data[5]}${data[6] === 0 ? "" : `.${data[6]}`})`
+  }
+  return result
+})
 
 let currentTarget: EventTarget | null
 

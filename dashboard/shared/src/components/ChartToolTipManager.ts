@@ -11,7 +11,6 @@ export interface ReportInfoProvider {
 }
 
 export interface TooltipData {
-  linkText: string
   linkUrl: string | null
   items: Array<TooltipDataItem>
   firstSeriesData: Array<number>
@@ -23,19 +22,11 @@ interface TooltipDataItem {
   readonly color: string
 }
 
-const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-})
-
 export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
-  readonly reportTooltipData = reactive<TooltipData>({items: [], linkText: "", linkUrl: null, firstSeriesData: []})
+  readonly reportTooltipData = reactive<TooltipData>({items: [], linkUrl: null, firstSeriesData: []})
 
   paused = false
 
@@ -64,14 +55,12 @@ export class ChartToolTipManager {
     })
     const firstSeriesData = params[0].value as Array<number>
     // same for all series
-    const generatedTime = firstSeriesData[0]
-    data.linkText = timeFormatWithoutSeconds.format(generatedTime) + ` (${firstSeriesData[4]}.${firstSeriesData[5]}${firstSeriesData[6] === 0 ? "" : `.${firstSeriesData[6]}`})`
     data.firstSeriesData = firstSeriesData
     if (this.reportInfoProvider == null) {
       data.linkUrl = null
     }
     else {
-      data.linkUrl = this.reportInfoProvider.createReportUrl(generatedTime, query)
+      data.linkUrl = this.reportInfoProvider.createReportUrl(firstSeriesData[0], query)
     }
     return null
   }

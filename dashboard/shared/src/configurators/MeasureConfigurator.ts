@@ -174,7 +174,7 @@ export function measureNameToLabel(key: string): string {
     return key.replace(/_[a-z]$/g, "")
   }
   else {
-    return key.substring(0, metricPathEndDotIndex)
+    return key
   }
 }
 

@@ -59,15 +59,21 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide } from "vue"
+import { provide, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 
-provideReportUrlProvider()
 // eslint-disable-next-line no-undef
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   dbName: string
   defaultMeasures: Array<string>
-}>()
+  urlEnabled: boolean
+}>(), {
+  urlEnabled: true
+})
+
+if(props.urlEnabled){
+  provideReportUrlProvider()
+}
 
 const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
   machine: "linux-blade",

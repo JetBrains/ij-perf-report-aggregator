@@ -157,7 +157,7 @@ func listenAndServe(port string, mux http.Handler, logger *zap.Logger) *http.Ser
     Addr:    ":" + port,
     Handler: cors.Default().Handler(mux),
 
-    ReadTimeout:  4 * time.Second,
+    ReadTimeout:  30 * time.Second,
     WriteTimeout: 60 * time.Second,
 
     TLSConfig: &tls.Config{

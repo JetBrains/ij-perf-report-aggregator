@@ -6,7 +6,8 @@ import (
   "github.com/go-faster/ch"
   "github.com/go-faster/ch/proto"
   "github.com/jackc/puddle/puddleg"
-  "syscall"
+  "io"
+  "net"
 )
 
 type DatabaseConnectionSupplier interface {
@@ -65,12 +66,27 @@ func doExecution(
     return nil, true
   }
 
-  if !(errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ETIMEDOUT)) {
+  // if net error or io error - connection was closed due to inactivity, destroy it and acquire a new one
+  if !isNetError(err) {
     return err, true
   }
 
-  // EPIPE - connection was closed due to inactivity, close it and acquire a new one
   isDestroyed = true
   dbResource.Destroy()
   return nil, false
+}
+
+func isNetError(err error) bool {
+  for err != nil {
+    if err == io.ErrUnexpectedEOF {
+      return true
+    }
+
+    if _, ok := err.(net.Error); ok {
+      return true
+    }
+
+    err = errors.Unwrap(err)
+  }
+  return false
 }

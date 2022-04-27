@@ -79,7 +79,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/sharedIndexes/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => import("./GenericMetricDashboard.vue"),
           props: {
             dbName: "sharedIndexes",
             defaultMeasures: [],
@@ -92,7 +92,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/performanceIntegration/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => import("./GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
             defaultMeasures: [],
@@ -105,7 +105,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       children: [
         {
           path: "/rubyMinePerformanceIntegration/dashboard",
-          component: () => import("./SharedIndexesDashboard.vue"),
+          component: () => import("./GenericMetricDashboard.vue"),
           props: {
             dbName: "rubymineperfint",
             defaultMeasures: [],

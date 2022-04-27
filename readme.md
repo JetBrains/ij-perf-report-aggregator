@@ -15,7 +15,7 @@ Directory `dashboard` contains Vue.js application built using [Element Plus](htt
  * `pnpm run dev` to start a dev server with hot module replacement.
  * Change _Server_ to `http://localhost:9044`
 
-To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `SharedIndexesDashboard.vue`.
+To change dashboard, edit your dashboard page `*Dashboard.vue`, for example `IntelliJDashboard.vue` or `GenericMetricDashboard.vue`.
 
 `LineChartCard` or `BarChartCard` supports `measures` property. 
 Specify desired metric. Multiple metrics are supported, but keep in mind that each metric means chart series and overuse can make chart unreadable. 

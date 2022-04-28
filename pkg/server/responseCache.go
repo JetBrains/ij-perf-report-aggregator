@@ -73,10 +73,21 @@ func generateKey(request *http.Request, isBrotliSupported bool) []byte {
   }
 
   u := request.URL
-  _, _ = io.WriteString(buffer, u.Path)
-  // do not complicate, use RawQuery as is without sorting
-  if len(u.RawQuery) > 0 {
-    _, _ = io.WriteString(buffer, u.RawQuery)
+
+  b, err := io.ReadAll(request.Body)
+  if err != nil {
+    return nil
+  }
+  defer request.Body.Close()
+
+  if len(b) > 0 {
+    _, _ = io.WriteString(buffer, string(b))
+  } else {
+    _, _ = io.WriteString(buffer, u.Path)
+    // do not complicate, use RawQuery as is without sorting
+    if len(u.RawQuery) > 0 {
+      _, _ = io.WriteString(buffer, u.RawQuery)
+    }
   }
 
   result := make([]byte, len(buffer.B))

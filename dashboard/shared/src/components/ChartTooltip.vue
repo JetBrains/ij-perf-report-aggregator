@@ -76,7 +76,6 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
-import { reportInfoProviderKey } from "../injectionKeys"
 
 const tooltipData = ref<TooltipData | null>(null)
 const panel = ref<OverlayPanel | null>()

@@ -154,13 +154,17 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       const index = item[i]
       producer.mutate(index)
       if (i !== 0) {
-        seriesName += " - "
+        measureName += " – "
       }
-      if (i !== 0) {
-        measureName += " - "
-      }
-      seriesName += producer.getSeriesName(index)
       measureName += producer.getMeasureName(index)
+
+      const title = producer.getSeriesName(index)
+      if (title.length !== 0) {
+        if (seriesName.length !== 0) {
+          seriesName += " – "
+        }
+        seriesName += title
+      }
     }
 
     if (serializedQuery.length !== 0) {

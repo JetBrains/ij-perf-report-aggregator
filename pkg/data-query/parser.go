@@ -90,12 +90,21 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
     return nil, err
   }
 
-  for _, v := range value.GetArray("order") {
-    field := string(v.GetStringBytes())
+  orderValue := value.Get("order")
+  if orderValue.Type() == fastjson.TypeString {
+    field := string(orderValue.GetStringBytes())
     if !reNestedFieldName.MatchString(field) {
       return nil, http_error.NewHttpError(400, fmt.Sprintf("Order %s is not a valid field name", field))
     }
-    query.Order = append(query.Order, field)
+    query.Order = []string{field}
+  } else {
+    for _, v := range value.GetArray("order") {
+      field := string(v.GetStringBytes())
+      if !reNestedFieldName.MatchString(field) {
+        return nil, http_error.NewHttpError(400, fmt.Sprintf("Order %s is not a valid field name", field))
+      }
+      query.Order = append(query.Order, field)
+    }
   }
 
   query.Aggregator = string(value.GetStringBytes("aggregator"))

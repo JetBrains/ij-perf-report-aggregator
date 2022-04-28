@@ -150,7 +150,13 @@ func NewInsertReportManager(
 
 // checks that not duplicated, warn if metrics cannot be computed
 func (t *InsertReportManager) Insert(runResult *RunResult) error {
-  logger := t.Logger.With(zap.String("product", runResult.Product), zap.String("generatedTime", time.Unix(runResult.GeneratedTime, 0).Format(time.RFC1123)))
+  logger := t.Logger
+  if t.config.HasProductField {
+    logger = logger.With(zap.String("product", runResult.Product))
+  } else {
+    logger = logger.With(zap.String("project", t.config.DbName))
+  }
+  logger = logger.With(zap.String("generatedTime", time.Unix(runResult.GeneratedTime, 0).Format(time.RFC1123)))
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
   if t.IsCheckThatNotAlreadyAddedNeeded && runResult.GeneratedTime <= t.MaxGeneratedTime {

@@ -11,7 +11,7 @@ export class ServerConfigurator implements DataQueryConfigurator {
 
   private readonly observable: Observable<string>
 
-  constructor(readonly databaseName: string, serverUrl: string | null = null) {
+  constructor(readonly db: string, readonly table: string | null = null, serverUrl: string | null = null) {
     if (serverUrl == null) {
       const value = inject(serverUrlKey, ref(ServerConfigurator.DEFAULT_SERVER_URL))
       if (value === undefined) {
@@ -41,7 +41,10 @@ export class ServerConfigurator implements DataQueryConfigurator {
     }
 
     configuration.serverUrl = serverUrl
-    query.db = this.databaseName
+    query.db = this.db
+    if (this.table != null) {
+      query.table = this.table
+    }
     return true
   }
 }

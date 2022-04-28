@@ -1,5 +1,9 @@
 import humanizeDuration, { HumanizerOptions } from "humanize-duration"
 
+export function nsToMs(v: number) {
+  return v / 1_000_000
+}
+
 // https://github.com/apache/echarts/issues/8294
 export const numberFormat = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 0,

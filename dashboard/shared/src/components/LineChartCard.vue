@@ -8,28 +8,29 @@
   />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, PropType, shallowRef, toRef, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect, withDefaults } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { DEFAULT_LINE_CHART_HEIGHT } from "../chart"
-import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
+import { ChartType, PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryExecutorConfiguration } from "../dataQuery"
 import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
-const props = defineProps({
-  skipZeroValues: {
-    type: Boolean,
-    default: true,
-  },
-  dataZoom: {
-    type: Boolean,
-    default: false,
-  },
-  measures: {
-    type: Array as PropType<Array<string> | null>,
-    default: () => null,
-  },
+const props = withDefaults(defineProps<{
+  skipZeroValues?: boolean
+  compoundTooltip?: boolean
+  dataZoom?: boolean
+  measures: Array<string> | null
+  chartType?: ChartType
+  valueUnit?: ValueUnit
+}>(), {
+  skipZeroValues: true,
+  compoundTooltip: true,
+  dataZoom: false,
+  measures: null,
+  chartType: "line",
+  valueUnit: "ms",
 })
 
 const chartElement = shallowRef<HTMLElement | null>(null)
@@ -59,7 +60,7 @@ watchEffect(function () {
 
   // static list of measures is provided - create sub data query executor
   if (props.measures != null) {
-    configurators = configurators.concat(new PredefinedMeasureConfigurator(props.measures, skipZeroValues))
+    configurators = configurators.concat(new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit))
     const infoFields = chartToolTipManager.reportInfoProvider?.infoFields ?? []
     if (infoFields.length !== 0) {
       configurators.push({
@@ -89,7 +90,8 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     dataQueryExecutor!,
     toRef(props, "dataZoom"),
-    chartToolTipManager.formatArrayValue.bind(chartToolTipManager),
+    props.compoundTooltip ? chartToolTipManager.formatArrayValue.bind(chartToolTipManager) : null,
+    props.valueUnit,
   )
 })
 onUnmounted(() => {

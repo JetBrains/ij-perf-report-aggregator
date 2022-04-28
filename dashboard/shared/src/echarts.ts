@@ -1,4 +1,4 @@
-import { BarSeriesOption, LineSeriesOption, TreemapSeriesOption, SunburstSeriesOption, CustomSeriesOption } from "echarts/charts"
+import { BarSeriesOption, LineSeriesOption, TreemapSeriesOption, SunburstSeriesOption, CustomSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import {
   DatasetComponentOption,
   GridComponentOption,
@@ -11,6 +11,10 @@ export type SunburstChartOptions = ComposeOption<SunburstSeriesOption>
 
 export type LineChartOptions = ComposeOption<
   TooltipComponentOption | LineSeriesOption | GridComponentOption | DatasetComponentOption
+>
+
+export type ScatterChartOptions = ComposeOption<
+  TooltipComponentOption | ScatterSeriesOption | GridComponentOption | DatasetComponentOption
 >
 
 export type BarChartOptions = ComposeOption<

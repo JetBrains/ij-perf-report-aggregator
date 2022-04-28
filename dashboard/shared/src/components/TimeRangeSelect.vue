@@ -1,6 +1,7 @@
 <template>
   <Dropdown
     v-model="value"
+    title="Time Range"
     :options="timeRanges"
     option-label="label"
     option-value="value"

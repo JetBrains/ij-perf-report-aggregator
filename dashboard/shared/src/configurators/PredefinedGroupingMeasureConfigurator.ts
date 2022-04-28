@@ -2,15 +2,17 @@ import { BarSeriesOption } from "echarts/charts"
 import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
 import { Ref } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
-import { ChartConfigurator, ChartStyle } from "../chart"
+import { ChartConfigurator, ChartStyle, ValueUnit } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { BarChartOptions } from "../echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberFormat } from "../formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, private readonly timeRange: Ref<TimeRange>, private readonly chartStyle: ChartStyle) {
+  constructor(private readonly measures: Array<string>,
+              private readonly timeRange: Ref<TimeRange>,
+              private readonly chartStyle: ChartStyle) {
   }
 
   createObservable() {
@@ -45,14 +47,24 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       }
     }
     else {
-      query.addField({n: "measures", subName: "value"})
-      query.addFilter({f: "measures.name", v: measureNames})
       if (measureNames.length > 1) {
         throw new Error("multiple measures are not supported")
       }
+
+      if (query.table === "measure") {
+        query.addField({n: "value"})
+        query.addFilter({f: "name", v: measureNames[0]})
+      }
+      else {
+        query.addField({n: "measures", subName: "value"})
+        query.addFilter({f: "measures.name", v: measureNames})
+        if (measureNames.length > 1) {
+          throw new Error("multiple measures are not supported")
+        }
+      }
     }
 
-    query.order = ["t"]
+    query.order = "t"
 
     configuration.measures = measureNames
     configuration.chartConfigurator = this
@@ -69,13 +81,13 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     const data = dataList[0]
 
     const series = new Array<BarSeriesOption>(data[0].length)
+    const formatter = this.chartStyle.valueUnit == "ms" ? formatBarSeriesLabel : formatBarSeriesLabelNs
     for (let i = 0; i < series.length; i++) {
       series[i] = {
         type: "bar",
         label: {
           show: true,
-          // mostly all values in ms, no need to increase noise
-          formatter: formatBarSeriesLabel,
+          formatter,
           position: this.chartStyle.barSeriesLabelPosition,
         },
       }
@@ -121,12 +133,13 @@ function configureWithQueryProducers(dataList: Array<Array<Array<string | number
   }
 
   const series = new Array<BarSeriesOption>(dimensions.length - 1)
+  const formatter = getSeriesLabelFormatter(useDurationFormatter, chartStyle.valueUnit)
   for (let i = 0; i < series.length; i++) {
     series[i] = {
       type: "bar",
       label: {
         show: true,
-        formatter: useDurationFormatter ? formatterForFieldData : formatterForFieldNumericData,
+        formatter,
         position: chartStyle.barSeriesLabelPosition,
       },
     }
@@ -141,24 +154,27 @@ function configureWithQueryProducers(dataList: Array<Array<Array<string | number
   }
 }
 
-const formatterForFieldData = function (data: CallbackDataParams) {
-  const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
-  if (value > 10_000) {
-    return durationAxisPointerFormatter(value)
-  }
-  else {
-    return numberFormat.format(value)
+function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: ValueUnit): (p: CallbackDataParams) => string {
+  const converter: (it: number) => number = valueUnit === "ns" ? nsToMs : it => it
+  return function (data: CallbackDataParams): string {
+    const value = converter((data.value as { [key: string]: string | number })[data.seriesName as string] as number)
+    return useDurationFormatter && value > 10_000 ? durationAxisPointerFormatter(value) : numberFormat.format(value)
   }
 }
 
-const formatterForFieldNumericData = function (data: CallbackDataParams) {
-  const value = (data.value as { [key: string]: string | number })[data.seriesName as string] as number
-  return numberFormat.format(value)
+function extractValue(data: CallbackDataParams): number {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return (data.value as Array<number>)[data.seriesIndex! + 1]
 }
 
 function formatBarSeriesLabel(data: CallbackDataParams): string {
+  // mostly all values in ms, no need to increase noise and use humanized formatter
+  return numberFormat.format(extractValue(data))
+}
+
+function formatBarSeriesLabelNs(data: CallbackDataParams): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return numberFormat.format((data.value as Array<number>)[data.seriesIndex! + 1])
+  return numberFormat.format(nsToMs(extractValue(data)))
 }
 
 function getClickHouseIntervalByDuration(range: TimeRange) {

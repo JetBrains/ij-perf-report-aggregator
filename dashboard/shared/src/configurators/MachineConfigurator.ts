@@ -18,7 +18,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
 
   private static readonly valueToGroup: { [key: string]: string } = getValueToGroup()
 
-  constructor(dimension: BaseDimensionConfigurator, persistentStateManager: PersistentStateManager, readonly multiple: boolean = false) {
+  constructor(dimension: BaseDimensionConfigurator, persistentStateManager: PersistentStateManager, readonly multiple: boolean = true) {
     persistentStateManager.add("machine", this.value)
 
     this.loading = dimension.loading
@@ -65,6 +65,10 @@ export class MachineConfigurator implements DataQueryConfigurator {
         }
         else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
+        }
+        else if (value.startsWith("intellij-linux-hw-EXC")) {
+          // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
+          groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
         }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
@@ -137,28 +141,32 @@ export class MachineConfigurator implements DataQueryConfigurator {
       })
     }
     else {
-      const values: Array<string> = []
-      for (const value of selected) {
-        const groupItem = this.groupNameToItem.get(value)
-        if (groupItem == null) {
-          values.push(value)
-        }
-        else {
-          // it's group
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          for (const child of groupItem.children!) {
-            values.push(child.value)
-          }
-        }
-      }
-
-      if (values.length > 0) {
-        // stable order of fields in query (caching)
-        values.sort()
-        query.addFilter({f: "machine", v: values})
-      }
+      this.configureQueryFilter(selected, query)
     }
     return true
+  }
+
+  configureQueryFilter(selected: Array<string>, query: DataQuery) {
+    const values: Array<string> = []
+    for (const value of selected) {
+      const groupItem = this.groupNameToItem.get(value)
+      if (groupItem == null) {
+        values.push(value)
+      }
+      else {
+        // it's group
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        for (const child of groupItem.children!) {
+          values.push(child.value)
+        }
+      }
+    }
+
+    if (values.length > 0) {
+      // stable order of fields in query (caching)
+      values.sort()
+      query.addFilter({f: "machine", v: values})
+    }
   }
 }
 

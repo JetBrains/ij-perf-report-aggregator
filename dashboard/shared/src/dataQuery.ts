@@ -15,7 +15,7 @@ export class DataQuery {
   private readonly fields: Array<string | DataQueryDimension> = []
   private filters?: Array<DataQueryFilter>
 
-  order?: Array<string>
+  order?: Array<string> | string
 
   // used only for grouped query
   aggregator?: string

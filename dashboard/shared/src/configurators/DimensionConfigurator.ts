@@ -42,7 +42,7 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
   protected createQuery(): DataQuery {
     const query = new DataQuery()
     query.addField({n: this.name, sql: `distinct ${this.name}`})
-    query.order = [this.name]
+    query.order = this.name
     query.table = "report"
     query.flat = true
     return query
@@ -76,7 +76,6 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
         }),
       )
       .subscribe(data => {
-        console.log("data for " + name)
         if (data != null) {
           this.values.value = data
         }

@@ -1,17 +1,20 @@
-import { LineSeriesOption } from "echarts/charts"
-import { DatasetOption } from "echarts/types/dist/shared"
+import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
+import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { deepEqual } from "fast-equals"
 import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator, collator } from "../chart"
-import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toMutableArray } from "../dataQuery"
-import { LineChartOptions } from "../echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter, numberFormat } from "../formatter"
+import { ChartConfigurator, collator, ValueUnit } from "../chart"
+import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toArray, toMutableArray } from "../dataQuery"
+import { LineChartOptions, ScatterChartOptions } from "../echarts"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
 import { DimensionConfigurator } from "./DimensionConfigurator"
+import { MachineConfigurator } from "./MachineConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+
+export type ChartType = "line" | "scatter"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   public readonly data = shallowRef<Array<string>>([])
@@ -36,17 +39,18 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   constructor(serverConfigurator: ServerConfigurator,
               private readonly persistentStateManager: PersistentStateManager,
               filters: Array<DataQueryConfigurator> = [],
-              readonly skipZeroValues: boolean = true) {
+              readonly skipZeroValues: boolean = true,
+              readonly chartType: ChartType = "line") {
     this.persistentStateManager.add("measure", this._selected)
 
-    const isIj = serverConfigurator.databaseName === "ij";
+    const isIj = serverConfigurator.db === "ij";
 
     (filters.length === 0 ? serverConfigurator.createObservable() : combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable())))
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),
         switchMap(() => {
-          const loadMeasureListUrl = getLoadMeasureListUrl(isIj ? "measure" : "measures", serverConfigurator, filters)
+          const loadMeasureListUrl = getLoadMeasureListUrl(serverConfigurator, filters)
           if (loadMeasureListUrl == null) {
             return of(null)
           }
@@ -58,7 +62,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             }
 
             return forkJoin([
-              fromFetchWithRetryAndErrorHandling<Array<string>>(`${server}/api/v1/meta/measure?db=${serverConfigurator.databaseName}`),
+              fromFetchWithRetryAndErrorHandling<Array<string>>(`${server}/api/v1/meta/measure?db=${serverConfigurator.db}`),
               fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
             ])
               .pipe(
@@ -106,14 +110,12 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): LineChartOptions {
-    return configureChart(configuration, data)
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
+    return configureChart(configuration, data, this.chartType)
   }
 }
 
-function getLoadMeasureListUrl(structureName: string,
-                               serverConfigurator: ServerConfigurator,
-                               filters: Array<DataQueryConfigurator>): string | null {
+function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: Array<DataQueryConfigurator>): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {
@@ -130,6 +132,13 @@ function getLoadMeasureListUrl(structureName: string,
 
         query.addFilter({f: parent.name, v: value})
       }
+      else if (parent instanceof MachineConfigurator) {
+        const value = toArray(parent.value.value)
+        if (value == null || value.length === 0) {
+          return null
+        }
+        parent.configureQueryFilter(value, query)
+      }
       else {
         // well, so, it is a filter configurator (e.g. MachineConfigurator)
         if (!parent.configureQuery(query, configuration)) {
@@ -139,16 +148,27 @@ function getLoadMeasureListUrl(structureName: string,
     }
   }
 
+  let fieldPrefix: string
+  if (serverConfigurator.db === "ij") {
+    fieldPrefix = "measure"
+  }
+  else {
+    fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
+  }
+
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
-  query.addDimension({n: structureName, subName: "name"})
-  query.order = [`${structureName}.name`]
-  query.table = "report"
+  query.addDimension(fieldPrefix.length === 0 ? {n: "name"} : {n: fieldPrefix, subName: "name"})
+  query.order = fieldPrefix.length === 0 ? "name" :`${fieldPrefix}.name`
+  query.table = serverConfigurator.table ?? "report"
   query.flat = true
   return `${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>, readonly skipZeroValues: Ref<boolean> = shallowRef(true)) {
+  constructor(private readonly measures: Array<string>,
+              readonly skipZeroValues: Ref<boolean> = shallowRef(true),
+              private readonly chartType: ChartType = "line",
+              private readonly valueUnit: ValueUnit = "ms") {
   }
 
   createObservable(): Observable<unknown> {
@@ -162,8 +182,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): LineChartOptions {
-    return configureChart(configuration, data)
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
+    return configureChart(configuration, data, this.chartType, this.valueUnit)
   }
 }
 
@@ -178,33 +198,6 @@ export function measureNameToLabel(key: string): string {
   }
 }
 
-function configureMeasureInANewFormat(measureNames: Array<string>,
-                                      configuration: DataQueryExecutorConfiguration,
-                                      query: DataQuery,
-                                      structureName: string,
-                                      valueName: string,
-                                      skipZeroValues: boolean) {
-  const pureNames = measureNames.map(it => it.endsWith(".end") ? it.substring(0, it.length - ".end".length) : it)
-  const filter: DataQueryFilter = {f: `${structureName}.name`, v: pureNames[0]}
-  if (measureNames.length > 1) {
-    configureQueryProducer(configuration, null, filter, pureNames)
-  }
-
-  if (measureNames.some(it => it.endsWith(".end"))) {
-    query.insertField({n: structureName, subName: "end", sql: `(${structureName}.start + ${structureName}.${valueName})`}, 1)
-  }
-  else {
-    query.insertField({n: structureName, subName: valueName}, 1)
-  }
-
-  query.addFilter(filter)
-
-  if (skipZeroValues) {
-    // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
-    query.addFilter({f: `${structureName}.${valueName}`, o: "!=", v: 0})
-  }
-}
-
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
@@ -215,105 +208,83 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   }, 0)
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  if (query.db === "ij") {
-    const structureName = "measure"
-    const valueName = "duration"
-    const field: DataQueryDimension = {n: ""}
-    query.insertField(field, 1)
+  const isIj = query.db === "ij"
+  const structureName = isIj ? "measure" : "measures"
+  const valueName = isIj ? "duration" : "value"
+  const field: DataQueryDimension = {n: ""}
+  query.insertField(field, 1)
 
-    const prevFilters: Array<DataQueryFilter> = []
+  const prevFilters: Array<DataQueryFilter> = []
 
-    const addFilter = (filter: DataQueryFilter): void => {
-      prevFilters.push(filter)
-      query.addFilter(filter)
-    }
+  const addFilter = (filter: DataQueryFilter): void => {
+    prevFilters.push(filter)
+    query.addFilter(filter)
+  }
 
-    configuration.queryProducers.push({
-      size(): number {
-        return measureNames.length
-      },
-      mutate(index: number): void {
-        const measure = measureNames[index]
+  configuration.queryProducers.push({
+    size(): number {
+      return measureNames.length
+    },
+    mutate(index: number): void {
+      const measure = measureNames[index]
 
-        delete field.sql
-        delete field.subName
+      delete field.sql
+      delete field.subName
 
-        if (prevFilters.length > 0) {
-          query.removeFilters(prevFilters)
-          prevFilters.length = 0
-        }
+      if (prevFilters.length > 0) {
+        query.removeFilters(prevFilters)
+        prevFilters.length = 0
+      }
 
-        if (measure.includes(" ")) {
-          if (measure.endsWith(".end")) {
-            field.n = structureName
-            field.subName = "end"
-            field.sql = `(${structureName}.start + ${structureName}.${valueName})`
-          }
-          else {
-            field.n = structureName
-            field.subName = valueName
-          }
-
-          addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.substring(0, measure.length - ".end".length) : measure})
-
-          if (skipZeroValues) {
-            // for end we also filter by raw value and not by sum of start + duration (that stored under "value" name)
-            addFilter({f: `${structureName}.${valueName}`, o: "!=", v: 0})
-          }
+      let valueFieldName: string
+      if (query.table === "measure") {
+        field.n = "value"
+        field.resultKey = measure.replaceAll(".", "_")
+        addFilter({f: "name", v: measure})
+        valueFieldName = "value"
+      }
+      else if (isIj && !measure.includes(" ")) {
+        field.n = measure
+        valueFieldName = measure
+      }
+      else {
+        if (measure.endsWith(".end")) {
+          field.n = structureName
+          field.subName = "end"
+          field.sql = `(${structureName}.start + ${structureName}.${valueName})`
         }
         else {
-          field.n = measure
-          if (skipZeroValues) {
-            addFilter({f: measure, o: "!=", v: 0})
-          }
+          field.n = structureName
+          field.subName = valueName
         }
-      },
-      getSeriesName(index: number): string {
-        return measureNameToLabel(measureNames[index])
-      },
-      getMeasureName(index: number): string {
-        return measureNames[index]
+
+        addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.substring(0, measure.length - ".end".length) : measure})
+        valueFieldName = `${structureName}.${valueName}`
       }
-    })
-  }
-  else {
-    configureMeasureInANewFormat(measureNames, configuration, query, "measures", "value", skipZeroValues)
-  }
+
+      if (skipZeroValues) {
+        addFilter({f: valueFieldName, o: "!=", v: 0})
+      }
+    },
+    getSeriesName(index: number): string {
+      return measureNameToLabel(measureNames[index])
+    },
+    getMeasureName(index: number): string {
+      return measureNames[index]
+    }
+  })
 
   if (query.order != null) {
     throw new Error("order must be configured only by MetricLoader")
   }
-  query.order = ["t"]
+  query.order = "t"
 }
 
-function configureQueryProducer(configuration: DataQueryExecutorConfiguration, field: DataQueryDimension | null, filter: DataQueryFilter | null, values: Array<string>): void {
-  configuration.queryProducers.push({
-    size(): number {
-      return values.length
-    },
-
-    mutate(index: number): void {
-      if (field != null) {
-        field.n = values[index]
-        if (filter != null) {
-          filter.f = field.n
-        }
-      }
-      else if (filter != null) {
-        filter.v = values[index]
-      }
-    },
-    getSeriesName(index: number): string {
-      return measureNameToLabel(values[index])
-    },
-    getMeasureName(index: number): string {
-      return values[index]
-    }
-  })
-}
-
-function configureChart(configuration: DataQueryExecutorConfiguration, dataList: DataQueryResult): LineChartOptions {
-  const series = new Array<LineSeriesOption>()
+function configureChart(configuration: DataQueryExecutorConfiguration,
+                        dataList: DataQueryResult,
+                        chartType: ChartType,
+                        valueUnit: ValueUnit = "ms"): LineChartOptions | ScatterChartOptions {
+  const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
 
   const dataset: Array<DatasetOption> = []
@@ -322,16 +293,17 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
     const measureName = configuration.measureNames[dataIndex]
     const seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
-    const symbolSize = Math.min(800 / seriesData[0].length, 9)
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
-      type: "line",
+      type: chartType,
       showSymbol: seriesData[0].length < 100,
-      symbolSize,
+      // 10 is a default value for scatter (undefined doesn't work to unset)
+      symbolSize: chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10,
       symbol: "circle",
       legendHoverLink: true,
+      // applicable only for line chart
       sampling: "lttb",
       seriesLayoutBy: "row",
       datasetIndex: dataIndex,
@@ -348,21 +320,49 @@ function configureChart(configuration: DataQueryExecutorConfiguration, dataList:
     })
   }
 
+  // if (chartType == "scatter") {
+  //   dataset.push({
+  //     fromDatasetIndex: 0,
+  //     transform: {
+  //       type: "ecStat:regression",
+  //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //       // @ts-ignore
+  //       config: {
+  //         method: "polynomial",
+  //         dimensions: [1],
+  //       },
+  //     },
+  //   })
+  //   series.push({
+  //     silent: true,
+  //     type: "line",
+  //     smooth: true,
+  //     datasetIndex: dataset.length - 1,
+  //     // symbolSize: 0.1,
+  //     // symbol: "circle",
+  //     // label: {show: false, fontSize: 16},
+  //     // labelLayout: {dx: -20},
+  //     // encode: {label: 2, tooltip: 1},
+  //   })
+  // }
+
+  const isNs = valueUnit == "ns"
+  const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
+  const formatter: (valueInMs: number) => string = isNs ? v => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter
   return {
     dataset,
     yAxis: {
       axisLabel: {
-        formatter: useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter,
+        formatter,
       },
       axisPointer: {
         label: {
           formatter(data): string {
-            const value = data["value"] as number
-            return useDurationFormatter ? durationAxisPointerFormatter(value) : numberFormat.format(value)
+            return formatter(data["value"] as number)
           },
         },
       },
     },
-    series,
+    series: series as LineSeriesOption,
   }
 }

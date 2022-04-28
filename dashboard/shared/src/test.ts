@@ -12,7 +12,7 @@ function test(): void {
 
   const query = new DataQuery()
 
-  const serverConfigurator = new ServerConfigurator("ij", "http://server")
+  const serverConfigurator = new ServerConfigurator("ij", null, "http://server")
 
   const project = new DimensionConfigurator("project", serverConfigurator, null, true)
   project.selected.value = ["community/indexing", "java/indexing"]

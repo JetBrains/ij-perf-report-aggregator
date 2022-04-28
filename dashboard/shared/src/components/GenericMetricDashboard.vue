@@ -3,6 +3,7 @@
     <template #toolbar>
       <DimensionSelect
         label="Scenarios"
+        tooltip="Scenarios"
         :dimension="scenarioConfigurator"
       />
       <DimensionSelect
@@ -26,6 +27,9 @@
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-8">
           <LineChartCard
+            :compound-tooltip="compoundTooltip"
+            :chart-type="chartType"
+            :value-unit="valueUnit"
             :measures="[metric]"
           />
         </div>
@@ -41,39 +45,49 @@
 </template>
 
 <script lang="ts" setup>
-import { initDataComponent } from "src/DataQueryExecutor"
-import { PersistentStateManager } from "src/PersistentStateManager"
-import { DEFAULT_LINE_CHART_HEIGHT } from "src/chart"
-import BarChartCard from "shared/src/components/BarChartCard.vue"
-import Dashboard from "shared/src/components/Dashboard.vue"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import LineChartCard from "shared/src/components/LineChartCard.vue"
-import MeasureSelect from "shared/src/components/MeasureSelect.vue"
-import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
-import { AggregationOperatorConfigurator } from "src/configurators/AggregationOperatorConfigurator"
-import { DimensionConfigurator } from "src/configurators/DimensionConfigurator"
-import { MachineConfigurator } from "src/configurators/MachineConfigurator"
-import { MeasureConfigurator } from "src/configurators/MeasureConfigurator"
-import { ServerConfigurator } from "src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "src/configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey } from "src/injectionKeys"
-import { provideReportUrlProvider } from "src/lineChartTooltipLinkProvider"
 import { provide, withDefaults } from "vue"
 import { useRouter } from "vue-router"
+import { initDataComponent } from "../DataQueryExecutor"
+import { PersistentStateManager } from "../PersistentStateManager"
+import { chartDefaultStyle, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
+import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
+import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
+import { MachineConfigurator } from "../configurators/MachineConfigurator"
+import { ChartType, MeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { ServerConfigurator } from "../configurators/ServerConfigurator"
+import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
+import { aggregationOperatorConfiguratorKey, chartStyleKey } from "../injectionKeys"
+import { provideReportUrlProvider } from "../lineChartTooltipLinkProvider"
+import BarChartCard from "./BarChartCard.vue"
+import Dashboard from "./Dashboard.vue"
+import DimensionHierarchicalSelect from "./DimensionHierarchicalSelect.vue"
+import DimensionSelect from "./DimensionSelect.vue"
+import LineChartCard from "./LineChartCard.vue"
+import MeasureSelect from "./MeasureSelect.vue"
+import TimeRangeSelect from "./TimeRangeSelect.vue"
 
-provideReportUrlProvider()
-
-// eslint-disable-next-line no-undef
 const props = withDefaults(defineProps<{
   dbName: string
+  table?: string
+  compoundTooltip?: boolean
+  chartType?: ChartType
   defaultMeasures: Array<string>
-  urlEnabled: boolean
+  urlEnabled?: boolean
+  valueUnit?: ValueUnit
 }>(), {
-  urlEnabled: true
+  compoundTooltip: true,
+  urlEnabled: true,
+  table: undefined,
+  chartType: "line",
+  valueUnit: "ms",
 })
 
-if(props.urlEnabled){
+provide(chartStyleKey, {
+  ...chartDefaultStyle,
+  valueUnit: props.valueUnit,
+})
+
+if (props.urlEnabled) {
   provideReportUrlProvider()
 }
 
@@ -84,13 +98,22 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-das
   measure: props.defaultMeasures.slice(),
 }, useRouter())
 
-const serverConfigurator = new ServerConfigurator(props.dbName)
+const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
 const branchConfigurator = new DimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 
-const machineConfigurator = new MachineConfigurator(new DimensionConfigurator("machine", serverConfigurator, persistentStateManager), persistentStateManager)
+const machineConfigurator = new MachineConfigurator(
+  new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),
+  persistentStateManager,
+)
 
-const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, machineConfigurator])
+const measureConfigurator = new MeasureConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [scenarioConfigurator, branchConfigurator, machineConfigurator],
+  true,
+  props.chartType,
+)
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
 // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)

@@ -30,10 +30,15 @@ export const timeFormat = new Intl.DateTimeFormat(undefined, {
 })
 
 export const chartDefaultStyle: ChartStyle = {
-  barSeriesLabelPosition: "insideRight"
+  barSeriesLabelPosition: "insideRight",
+  valueUnit: "ms",
 }
+
+export type ValueUnit = "ms" | "ns"
 
 export interface ChartStyle {
   barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |
     "insideBottom" | "insideTopLeft" | "insideTopRight" | "insideBottomLeft" | "insideBottomRight"
+
+  valueUnit: ValueUnit
 }

@@ -6,7 +6,7 @@
   />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, Ref, shallowRef } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef } from "vue"
 import { BarChartManager } from "../BarChartManager"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { chartDefaultStyle } from "../chart"
@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<{
   measures: Array<string>
 }>(), {
   height: 440,
+  valueUnit: "ms",
   measures: () => [],
 })
 
@@ -36,12 +37,13 @@ if (aggregationOperatorConfigurator === undefined) {
   throw new Error("aggregationOperatorConfigurator is not injected but required")
 }
 
-const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, inject(chartStyleKey, chartDefaultStyle))
+const chartStyle = inject(chartStyleKey, chartDefaultStyle)
+const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, chartStyle)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const dataQueryExecutor = new DataQueryExecutor(inject(configuratorListKey)!.concat(aggregationOperatorConfigurator, measureConfigurator))
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor)
+  chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor, chartStyle)
 })
 onUnmounted(() => {
   const it = chartManager

@@ -4,8 +4,9 @@ import { use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ChartManagerHelper } from "./ChartManagerHelper"
 import { DataQueryExecutor } from "./DataQueryExecutor"
+import { ChartStyle } from "./chart"
 import { LineChartOptions } from "./echarts"
-import { durationFormatterInOneWord } from "./formatter"
+import { durationFormatterInOneWord, nsToMs } from "./formatter"
 
 use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, BarChart, LegendComponent, CanvasRenderer])
 
@@ -14,7 +15,7 @@ export class BarChartManager {
 
   private readonly unsubscribe: () => void
 
-  constructor(container: HTMLElement, dataQueryExecutor: DataQueryExecutor) {
+  constructor(container: HTMLElement, dataQueryExecutor: DataQueryExecutor, chartStyle: ChartStyle) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<LineChartOptions>({
       animation: false,
@@ -31,7 +32,7 @@ export class BarChartManager {
         type: "value",
         axisLabel: {
           hideOverlap: true,
-          formatter: durationFormatterInOneWord,
+          formatter: chartStyle.valueUnit == "ms" ? durationFormatterInOneWord : (it: number) => durationFormatterInOneWord(nsToMs(it)),
         },
       },
       yAxis: {

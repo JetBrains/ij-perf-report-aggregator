@@ -2,6 +2,7 @@
   <MultiSelect
     v-model="value"
     :options="items"
+    title="Metrics"
     placeholder="Metrics"
     :filter="true"
     :option-label="it => it"

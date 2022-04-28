@@ -2,6 +2,7 @@
   <!-- https://github.com/primefaces/primevue/issues/1725 loading is not supported -->
   <TreeSelect
     v-model="value"
+    title="Machine"
     :selection-mode="props.dimension.multiple ? 'multiple' : 'single'"
     :options="values"
     :placeholder="placeholder"

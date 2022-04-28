@@ -11,7 +11,8 @@
     "rison-node": "2.1.1",
     "rxjs": "7.5.5",
     "vue": "3.2.33",
-    "vue-router": "4.0.14"
+    "vue-router": "4.0.14",
+    "echarts-stat": "1.2.0"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1"

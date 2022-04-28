@@ -2,6 +2,7 @@
   <MultiSelect
     v-if="valueToGroup == null && multiple"
     v-model="value"
+    :title="label"
     :loading="loading"
     :options="items"
     :placeholder="placeholder"
@@ -13,6 +14,7 @@
   <Dropdown
     v-else-if="valueToGroup == null && !multiple"
     v-model="value"
+    :title="label"
     :loading="loading"
     :options="items"
     :placeholder="placeholder"
@@ -23,6 +25,7 @@
   <MultiSelect
     v-else
     v-model="value"
+    :title="label"
     :loading="loading"
     :options="items"
     :placeholder="placeholder"
@@ -36,29 +39,17 @@
   />
 </template>
 <script setup lang="ts">
-import { computed, PropType } from "vue"
+import { computed } from "vue"
 import { BaseDimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
 
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  dimension: {
-    type: Object as PropType<BaseDimensionConfigurator>,
-    required: true,
-  },
-  valueToLabel: {
-    type: Function as PropType<(v: string) => string>,
-    default: null,
-  },
+const props = defineProps<{
+  label: string
+  dimension: BaseDimensionConfigurator
+  valueToLabel?: (v: string) => string
   // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-  valueToGroup: {
-    type: Function as PropType<(v: string) => string>,
-    default: null,
-  },
-})
+  valueToGroup?: (v: string) => string
+}>()
 
 const multiple = computed(() => props.dimension.multiple)
 const loading = computed(() => props.dimension.loading.value)

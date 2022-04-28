@@ -8,6 +8,7 @@ import (
   "github.com/sakura-internet/go-rison/v4"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
+  "io"
   "math"
   "net/http"
   "strconv"
@@ -50,11 +51,20 @@ type DataQueryDimension struct {
 }
 
 func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
-  path := request.URL.Path
+  payload := request.URL.Path
+  b, err := io.ReadAll(request.Body)
+  if err != nil {
+    return nil, false, errors.WithStack(err)
+  }
+  defer request.Body.Close()
+  if len(b) > 0 {
+    payload = string(b)
+  }
+
   // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
   // array?
-  arrayStart := strings.IndexRune(path, '!')
-  objectStart := strings.IndexRune(path, '(')
+  arrayStart := strings.IndexRune(payload, '!')
+  objectStart := strings.IndexRune(payload, '(')
   var index int
   wrappedAsArray := arrayStart < objectStart
   if wrappedAsArray {
@@ -66,7 +76,7 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
     return nil, false, errors.New("query not found")
   }
 
-  jsonData, err := rison.ToJSON([]byte(path[index:]), rison.Rison)
+  jsonData, err := rison.ToJSON([]byte(payload[index:]), rison.Rison)
   if err != nil {
     return nil, false, errors.WithStack(err)
   }

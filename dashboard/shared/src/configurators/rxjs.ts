@@ -23,8 +23,24 @@ const serverNotAvailableMessage = {
   life: 3_000,
 }
 
+function getRequest(url: string) {
+  const searchString = "/!("
+  if (url.length > 2_000 && url.indexOf(searchString) > 0) {
+    return new Request(url.substring(0, url.indexOf(searchString) + 1), {
+      method: "POST",
+      body: url.substring(url.indexOf(searchString) + 1),
+    })
+  }
+  else {
+    return new Request(url, {
+      method: "GET",
+    })
+  }
+}
+
 export function fromFetchWithRetryAndErrorHandling<T>(url: string, unavailableErrorMessage: ({summary: string; detail: string}) | null = null): Observable<T> {
-  return fromFetch(url)
+  const request = getRequest(url)
+  return fromFetch(request)
     .pipe(
       // promise to result
       mergeMap(response => {

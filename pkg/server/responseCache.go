@@ -58,9 +58,10 @@ func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request)
 }
 
 var jsonMarker = []byte("j:")
+var postMarker = []byte("p:")
 var uncompressedMarker = []byte("u:")
 
-func generateKey(request *http.Request, isBrotliSupported bool) []byte {
+func generateKey(request *http.Request, isBrotliSupported bool, logger *zap.Logger) []byte {
   buffer := bytebufferpool.Get()
   defer bytebufferpool.Put(buffer)
 
@@ -73,17 +74,15 @@ func generateKey(request *http.Request, isBrotliSupported bool) []byte {
   }
 
   u := request.URL
+  _, _ = io.WriteString(buffer, u.Path)
 
-  b, err := io.ReadAll(request.Body)
-  if err != nil {
-    return nil
-  }
-  defer request.Body.Close()
-
-  if len(b) > 0 {
-    _, _ = io.WriteString(buffer, string(b))
+  if request.Method == "POST" {
+    _, _ = buffer.Write(postMarker)
+    _, err := io.Copy(buffer, request.Body)
+    if err != nil {
+      return nil
+    }
   } else {
-    _, _ = io.WriteString(buffer, u.Path)
     // do not complicate, use RawQuery as is without sorting
     if len(u.RawQuery) > 0 {
       _, _ = io.WriteString(buffer, u.RawQuery)
@@ -103,7 +102,7 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
 
   isBrotliSupported := strings.Contains(request.Header.Get("Accept-Encoding"), "br")
 
-  cacheKey := generateKey(request, isBrotliSupported)
+  cacheKey := generateKey(request, isBrotliSupported, t.logger)
   value, found := t.cache.Get(cacheKey)
   var result []byte
   if found {

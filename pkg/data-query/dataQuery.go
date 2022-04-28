@@ -56,7 +56,6 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   if err != nil {
     return nil, false, errors.WithStack(err)
   }
-  defer request.Body.Close()
   if len(b) > 0 {
     payload = string(b)
   }

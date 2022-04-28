@@ -1,7 +1,6 @@
 package main
 
 import (
-  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/ideaLog"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -25,7 +24,7 @@ func main() {
 
 	_, err := app.Parse(os.Args[1:])
 	if err != nil {
-		log.Fatal(fmt.Sprintf("%+v", err))
+		log.Fatalf("%+v", err)
 	}
 }
 

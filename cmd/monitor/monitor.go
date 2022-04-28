@@ -29,7 +29,7 @@ func main() {
 
   err := analyzeTotal(*serverUrl, logger)
   if err != nil {
-    log.Fatal(fmt.Sprintf("%+v", err))
+    log.Fatalf("%+v", err)
   }
 }
 

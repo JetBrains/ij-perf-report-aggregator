@@ -1,7 +1,6 @@
 package main
 
 import (
-  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -14,7 +13,7 @@ import (
 func main() {
   err := analyzeTotal("127.0.0.1:9900", "master", "2019-11-04 00:00:00")
   if err != nil {
-    log.Fatal(fmt.Sprintf("%+v", err))
+    log.Fatalf("%+v", err)
   }
 }
 

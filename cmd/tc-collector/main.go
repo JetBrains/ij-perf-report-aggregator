@@ -1,20 +1,19 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	e "errors"
-	"flag"
-	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"github.com/araddon/dateparse"
-	"github.com/develar/errors"
-	"go.uber.org/zap"
-	"log"
-	"net/http"
-	"os"
-	"strings"
-	"time"
+  "context"
+  "encoding/json"
+  e "errors"
+  "flag"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/araddon/dateparse"
+  "github.com/develar/errors"
+  "go.uber.org/zap"
+  "log"
+  "net/http"
+  "os"
+  "strings"
+  "time"
 )
 
 //1. You need to provide CONFIG env variable that may look like:
@@ -32,7 +31,7 @@ func main() {
 		if e.Is(err, context.Canceled) {
 			os.Exit(78)
 		}
-		log.Fatal(fmt.Sprintf("%+v", err))
+		log.Fatalf("%+v", err)
 	}
 }
 

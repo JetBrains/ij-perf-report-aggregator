@@ -118,7 +118,7 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
       }
       if err != nil {
         t.logger.Error("cannot compress result", zap.Error(err))
-        http.Error(w, err.Error(), 503)
+        http.Error(w, err.Error(), http.StatusServiceUnavailable)
         return
       }
     } else {
@@ -141,7 +141,7 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
   _, err := w.Write(result)
   if err != nil {
     t.logger.Error("cannot write cached result", zap.Error(err))
-    http.Error(w, err.Error(), 503)
+    http.Error(w, err.Error(), http.StatusServiceUnavailable)
   }
 }
 
@@ -157,7 +157,7 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
       http.Error(w, err.Error(), 499)
     } else {
       t.logger.Error("cannot handle http request", zap.Error(err))
-      http.Error(w, err.Error(), 503)
+      http.Error(w, err.Error(), http.StatusServiceUnavailable)
     }
   }
 }

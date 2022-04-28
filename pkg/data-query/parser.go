@@ -11,14 +11,14 @@ import (
 )
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
-var reFieldName = regexp.MustCompile("^[a-zA-Z_]\\w*$")
+var reFieldName = regexp.MustCompile(`^[a-zA-Z_]\w*$`)
 
 // opposite to reFieldName, dot is supported for nested fields
-var reNestedFieldName = regexp.MustCompile("^[a-zA-Z_][.\\da-zA-Z_]*$")
-var reMetricName = regexp.MustCompile("^[a-zA-Z\\d _]+$")
+var reNestedFieldName = regexp.MustCompile(`^[a-zA-Z_][.\da-zA-Z_]*$`)
+var reMetricName = regexp.MustCompile(`^[a-zA-Z\d _]+$`)
 
 // add ().space,'*
-var reAggregator = regexp.MustCompile("^[a-zA-Z_(][\\da-zA-Z_(). ,'*<>/+]*$")
+var reAggregator = regexp.MustCompile(`^[a-zA-Z_(][\da-zA-Z_(). ,'*<>/+]*$`)
 
 // for db name the same validation rules as for field name
 var reDbName = reFieldName
@@ -214,7 +214,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
 
     if len(t.Sql) == 0 {
       if value == nil {
-        return errors.Errorf("Filter value is not specified", value)
+        return errors.New("Filter value is not specified")
       } else if value.Type() == fastjson.TypeString {
         t.Value = string(value.GetStringBytes())
       } else if value.Type() == fastjson.TypeNumber {

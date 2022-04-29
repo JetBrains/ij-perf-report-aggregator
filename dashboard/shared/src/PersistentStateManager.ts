@@ -78,7 +78,7 @@ export class PersistentStateManager {
     const query: LocationQueryRaw = {...currentRoute.query}
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
-      if (name !== "serverUrl" && typeof value === "string" || Array.isArray(value)) {
+      if (name !== "serverUrl" && typeof value === "string" || Array.isArray(value) || value == null) {
         if (isChanged || query[name] !== value) {
           query[name] = value
           isChanged = true

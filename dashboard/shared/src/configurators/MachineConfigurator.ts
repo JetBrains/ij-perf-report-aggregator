@@ -132,7 +132,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
         },
 
         getSeriesName(index: number): string {
-          return selected[index]
+          return selected.length > 1 ? selected[index] : ""
         },
 
         getMeasureName(index: number): string {

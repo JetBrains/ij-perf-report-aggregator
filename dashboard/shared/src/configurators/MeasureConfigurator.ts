@@ -267,7 +267,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
       }
     },
     getSeriesName(index: number): string {
-      return measureNameToLabel(measureNames[index])
+      return measureNames.length > 1 ? measureNameToLabel(measureNames[index]) : ""
     },
     getMeasureName(index: number): string {
       return measureNames[index]

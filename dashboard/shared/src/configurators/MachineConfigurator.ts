@@ -103,50 +103,50 @@ export class MachineConfigurator implements DataQueryConfigurator {
       return false
     }
 
-    if (this.multiple) {
-      const groupNameToItem = this.groupNameToItem
+    if (!this.multiple) {
+      this.configureQueryAsFilter(selected, query)
+      return true
+    }
 
-      const values: Array<string> = []
-      const filter: DataQueryFilter = {f: "machine", v: values}
-      query.addFilter(filter)
-      configuration.queryProducers.push({
-        size(): number {
-          return selected.length
-        },
+    const groupNameToItem = this.groupNameToItem
 
-        mutate(index: number): void {
-          const value = selected[index]
-          const groupItem = groupNameToItem.get(value)
-          values.length = 0
-          if (groupItem == null) {
-            values.push(value)
-          }
-          else {
-            // it's group
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            for (const child of groupItem.children!) {
-              values.push(child.value)
-            }
-            values.sort()
-          }
-        },
+    const values: Array<string> = []
+    const filter: DataQueryFilter = {f: "machine", v: values}
+    query.addFilter(filter)
+    configuration.queryProducers.push({
+      size(): number {
+        return selected.length
+      },
 
-        getSeriesName(index: number): string {
-          return selected.length > 1 ? selected[index] : ""
-        },
-
-        getMeasureName(index: number): string {
-          return selected[index]
+      mutate(index: number): void {
+        const value = selected[index]
+        const groupItem = groupNameToItem.get(value)
+        values.length = 0
+        if (groupItem == null) {
+          values.push(value)
         }
-      })
-    }
-    else {
-      this.configureQueryFilter(selected, query)
-    }
+        else {
+          // it's group
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          for (const child of groupItem.children!) {
+            values.push(child.value)
+          }
+          values.sort()
+        }
+      },
+
+      getSeriesName(index: number): string {
+        return selected.length > 1 ? selected[index] : ""
+      },
+
+      getMeasureName(index: number): string {
+        return selected[index]
+      },
+    })
     return true
   }
 
-  configureQueryFilter(selected: Array<string>, query: DataQuery) {
+  configureQueryAsFilter(selected: Array<string>, query: DataQuery) {
     const values: Array<string> = []
     for (const value of selected) {
       const groupItem = this.groupNameToItem.get(value)

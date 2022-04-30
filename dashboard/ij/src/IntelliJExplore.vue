@@ -51,7 +51,6 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
 const machineConfigurator = new MachineConfigurator(
   new SubDimensionConfigurator("machine", productConfigurator),
   persistentStateManager,
-  true
 )
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 

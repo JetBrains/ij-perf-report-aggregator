@@ -1,5 +1,5 @@
 import { provide } from "vue"
-import { DataQuery, DataQueryFilter, encodeQuery } from "./dataQuery"
+import { DataQuery, DataQueryFilter, serializeQuery } from "./dataQuery"
 import { reportInfoProviderKey } from "./injectionKeys"
 
 export function provideReportUrlProvider(): void {
@@ -25,5 +25,5 @@ function createReportUrl(generatedTime: number, query: DataQuery): string {
       break
     }
   }
-  return `/report?reportUrl=${encodeURIComponent(`/api/v1/report/${encodeQuery(q as never)}`)}`
+  return `/report?reportUrl=${encodeURIComponent(`/api/v1/report/${serializeQuery(q as never)}`)}`
 }

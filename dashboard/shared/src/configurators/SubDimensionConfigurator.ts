@@ -1,7 +1,7 @@
 import { debounceTime, of, switchMap } from "rxjs"
 import { watch } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { DataQueryExecutorConfiguration, encodeQuery } from "../dataQuery"
+import { DataQueryExecutorConfiguration, serializeAndEncodeQueryForUrl } from "../dataQuery"
 import { BaseDimensionConfigurator, DimensionConfigurator } from "./DimensionConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./rxjs"
 
@@ -36,7 +36,7 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
           }
 
           this.loading.value = true
-          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`)
+          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`)
         }),
       )
       .subscribe(data => {

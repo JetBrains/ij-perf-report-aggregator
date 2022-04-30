@@ -7,8 +7,8 @@ import (
   "github.com/go-faster/ch/proto"
   "github.com/sakura-internet/go-rison/v4"
   "github.com/valyala/bytebufferpool"
+  "github.com/valyala/fastjson"
   "github.com/valyala/quicktemplate"
-  "io"
   "math"
   "net/http"
   "strconv"
@@ -50,17 +50,50 @@ type DataQueryDimension struct {
   arrayJoin string
 }
 
-func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
-  payload := request.URL.Path
-  b, err := io.ReadAll(request.Body)
+func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
+  s := request.URL.Path[len("/api/q/"):]
+  payload := uncrush(s)
+
+  if len(payload) == 0 {
+    rawPath := request.URL.RawPath
+    return nil, false, errors.New("query not found: " + rawPath)
+  }
+
+  wrappedAsArray := payload[0] == '['
+  parser := queryParsers.Get()
+  defer queryParsers.Put(parser)
+
+  value, err := parser.Parse(payload)
   if err != nil {
     return nil, false, errors.WithStack(err)
   }
-  if len(b) > 0 {
-    payload = string(b)
+
+  var queries []DataQuery
+
+  if value.Type() == fastjson.TypeArray {
+    for _, v := range value.GetArray() {
+      query, err := readQueryValue(v)
+      if err != nil {
+        return queries, wrappedAsArray, err
+      }
+
+      queries = append(queries, *query)
+    }
+  } else {
+    query, err := readQueryValue(value)
+    if err != nil {
+      return queries, wrappedAsArray, err
+    }
+
+    queries = append(queries, *query)
   }
 
-  // rison doesn't escape /, so, client should use object notation (i.e. wrap into ())
+  return queries, wrappedAsArray, nil
+}
+
+func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
+  payload := request.URL.Path
+
   // array?
   arrayStart := strings.IndexRune(payload, '!')
   objectStart := strings.IndexRune(payload, '(')

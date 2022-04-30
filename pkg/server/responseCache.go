@@ -58,10 +58,9 @@ func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request)
 }
 
 var jsonMarker = []byte("j:")
-var postMarker = []byte("p:")
 var uncompressedMarker = []byte("u:")
 
-func generateKey(request *http.Request, isBrotliSupported bool, logger *zap.Logger) []byte {
+func generateKey(request *http.Request, isBrotliSupported bool) []byte {
   buffer := bytebufferpool.Get()
   defer bytebufferpool.Put(buffer)
 
@@ -76,17 +75,9 @@ func generateKey(request *http.Request, isBrotliSupported bool, logger *zap.Logg
   u := request.URL
   _, _ = io.WriteString(buffer, u.Path)
 
-  if request.Method == "POST" {
-    _, _ = buffer.Write(postMarker)
-    _, err := io.Copy(buffer, request.Body)
-    if err != nil {
-      return nil
-    }
-  } else {
-    // do not complicate, use RawQuery as is without sorting
-    if len(u.RawQuery) > 0 {
-      _, _ = io.WriteString(buffer, u.RawQuery)
-    }
+  // do not complicate, use RawQuery as is without sorting
+  if len(u.RawQuery) > 0 {
+    _, _ = io.WriteString(buffer, u.RawQuery)
   }
 
   result := make([]byte, len(buffer.B))
@@ -97,12 +88,12 @@ func generateKey(request *http.Request, isBrotliSupported bool, logger *zap.Logg
 func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) {
   w.Header().Set("Content-Type", "application/json")
   w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set("Cache-Control", "public, must-revalidate, max-age=15")
+  w.Header().Set("Cache-Control", "public, must-revalidate, max-age=30")
   w.Header().Set("Vary", "Accept-Encoding")
 
   isBrotliSupported := strings.Contains(request.Header.Get("Accept-Encoding"), "br")
 
-  cacheKey := generateKey(request, isBrotliSupported, t.logger)
+  cacheKey := generateKey(request, isBrotliSupported)
   value, found := t.cache.Get(cacheKey)
   var result []byte
   if found {
@@ -175,9 +166,8 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 // we don't add here salt like "when server was started" to reflect changes in a new server logic,
 // because if no data in cache (server restarted), in any case data will be recomputed
 func computeEtag(result []byte) string {
-  // add length to reduce chance of collision
   hash := xxh3.Hash128(result)
-  return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36) + "-" + strconv.FormatUint(uint64(len(result)), 36)
+  return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36)
 }
 
 func (t *ResponseCacheManager) brotliData(value []byte) ([]byte, error) {

@@ -1,11 +1,46 @@
-import { encode as risonEncode } from "rison-node"
 import { Observable } from "rxjs"
 import { ChartConfigurator } from "./chart"
+import { crush } from "./json-crush"
 
-export function encodeQuery(query: DataQuery): string {
-  // console.debug(`data-query: ${JSON.stringify(query, null, 2)}`)
-  return risonEncode(query)
+export function serializeQuery(query: DataQuery): string {
+  // const encoded = encodeRison(query)
+  return JSON.stringify(query)
 }
+
+export function serializeAndEncodeQueryForUrl(query: DataQuery): string {
+  return encodeQueryForUrl(serializeQuery(query))
+}
+
+export function encodeQueryForUrl(s: string): string {
+  return crush(s)
+}
+
+// function uncrush(string: string) {
+//   // remove last character
+//   // string = string.substring(0, string.length - 1);
+//
+//   // unsplit the string using the delimiter
+//   const stringParts = string.split("\u0001")
+//
+//   // JSUncrush algorithm
+//   let uncrushedString = stringParts[0]
+//   if (stringParts.length > 1) {
+//     const splitString = stringParts[1]
+//     for (const character of splitString) {
+//       // split the string using the current splitCharacter
+//       const splitArray = uncrushedString.split(character)
+//       // rejoin the string with the last element from the split
+//       const last = splitArray.pop()
+//
+//       // console.log(splitArray.length + " " + character + " " + last)
+//
+//       uncrushedString = splitArray.join(last)
+//     }
+//   }
+//
+//   // unswap the json characters in reverse direction
+//   return uncrushedString
+// }
 
 export class DataQuery {
   db?: string

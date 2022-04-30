@@ -8,12 +8,24 @@ import (
   "net/http"
 )
 
+func (t *StatsServer) handleLoadRequestV2(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+  dataQueries, wrappedAsArray, err := data_query.ReadQueryV2(request)
+  if err != nil {
+    return nil, false, err
+  }
+  return t.load(request, dataQueries, wrappedAsArray, err)
+}
+
 func (t *StatsServer) handleLoadRequest(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
   dataQueries, wrappedAsArray, err := data_query.ReadQuery(request)
   if err != nil {
     return nil, false, err
   }
 
+  return t.load(request, dataQueries, wrappedAsArray, err)
+}
+
+func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQuery, wrappedAsArray bool, err error) (*bytebufferpool.ByteBuffer, bool, error) {
   buffer := byteBufferPool.Get()
   isOk := false
   defer func() {

@@ -1,20 +1,10 @@
-import {
-  combineLatest,
-  debounceTime,
-  filter,
-  forkJoin,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-} from "rxjs"
+import { combineLatest, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { provide } from "vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { measureNameToLabel } from "./configurators/MeasureConfigurator"
 import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, encodeQuery } from "./dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery, encodeQueryForUrl } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
@@ -59,24 +49,13 @@ export class DataQueryExecutor {
           }
 
           const queries = generateQueries(query, configuration)
-          if (queries.length == 1) {
-            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(computeUrl(configuration, queries[0]))
-              .pipe(
-                // pass context along with data
-                map((data): Result => {
-                  return {query, configuration, data}
-                }),
-              )
-          }
-          else {
-            return forkJoin(queries.map(it => fromFetchWithRetryAndErrorHandling<DataQueryResult>(computeUrl(configuration, it))))
-              .pipe(
-                // pass context along with data and flatten result
-                map((data): Result => {
-                  return {query, configuration, data: data.flat(1)}
-                }),
-              )
-          }
+          return forkJoin(queries.map(it => fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${configuration.getServerUrl()}/api/q/${encodeQueryForUrl(`[${it}]`)}`)))
+            .pipe(
+              // pass context along with data and flatten result
+              map((data): Result => {
+                return {query, configuration, data: data.flat(1)}
+              }),
+            )
         }),
         filter((it: Result | null): it is Result => it !== null),
         shareReplay(1),
@@ -92,10 +71,6 @@ export class DataQueryExecutor {
     })
     return () => subscription.unsubscribe()
   }
-}
-
-function computeUrl(configuration: DataQueryExecutorConfiguration, query: string): string {
-  return `${configuration.getServerUrl()}/api/v1/load/${query}`
 }
 
 // https://stackoverflow.com/a/43053803
@@ -170,7 +145,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     if (serializedQuery.length !== 0) {
       serializedQuery += ","
     }
-    serializedQuery += encodeQuery(query)
+    serializedQuery += serializeQuery(query)
 
     if (item.length > 1) {
       let equal = true
@@ -185,7 +160,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       }
 
       if (!equal) {
-        result.push("!(" + serializedQuery + ")")
+        result.push(serializedQuery)
         serializedQuery = ""
       }
     }
@@ -195,7 +170,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
   }
 
   if (serializedQuery.length !== 0) {
-    result.push(`!(${serializedQuery})`)
+    result.push(serializedQuery)
   }
   return result
 }

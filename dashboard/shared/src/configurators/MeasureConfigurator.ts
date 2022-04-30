@@ -6,7 +6,16 @@ import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, collator, ValueUnit } from "../chart"
-import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery, toArray, toMutableArray } from "../dataQuery"
+import {
+  DataQuery,
+  DataQueryConfigurator,
+  DataQueryDimension,
+  DataQueryExecutorConfiguration,
+  DataQueryFilter,
+  serializeAndEncodeQueryForUrl,
+  toArray,
+  toMutableArray,
+} from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
 import { DimensionConfigurator } from "./DimensionConfigurator"
@@ -137,7 +146,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
         if (value == null || value.length === 0) {
           return null
         }
-        parent.configureQueryFilter(value, query)
+        parent.configureQueryAsFilter(value, query)
       }
       else {
         // well, so, it is a filter configurator (e.g. MachineConfigurator)
@@ -161,7 +170,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   query.order = fieldPrefix.length === 0 ? "name" :`${fieldPrefix}.name`
   query.table = serverConfigurator.table ?? "report"
   query.flat = true
-  return `${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`
+  return `${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
@@ -204,7 +213,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
 
   query.insertField({
     n: "t",
-    sql: "toUnixTimestamp(generated_time) * 1000",
+    sql: "toUnixTimestamp(generated_time)*1000",
   }, 0)
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
@@ -251,7 +260,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
         if (measure.endsWith(".end")) {
           field.n = structureName
           field.subName = "end"
-          field.sql = `(${structureName}.start + ${structureName}.${valueName})`
+          field.sql = `(${structureName}.start+${structureName}.${valueName})`
         }
         else {
           field.n = structureName

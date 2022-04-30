@@ -71,7 +71,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
-  //mux.Handle("/api/v1/compareMetrics", cacheManager.CreateHandler(statsServer.handleStatusRequest))
+  mux.Handle("/api/q/", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
   mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {

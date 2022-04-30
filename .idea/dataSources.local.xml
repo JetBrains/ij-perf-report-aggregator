@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="GO-213.7172.22">
-    <data-source name="@localhost" uuid="2557058b-5f52-497f-8a1d-9cfd03894455">
-      <database-info product="ClickHouse" version="22.4.1.1" jdbc-version="0.1" driver-name="ru.yandex.clickhouse-jdbc" driver-version="0.3.1-patch" dbms="CLICKHOUSE" exact-version="22.4.1.1" exact-driver-version="0.3">
+  <component name="dataSourceStorageLocal" created-in="IU-222.SNAPSHOT">
+    <data-source name="ij@localhost" uuid="2557058b-5f52-497f-8a1d-9cfd03894455">
+      <database-info product="ClickHouse" version="22.3.2.1" jdbc-version="0.1" driver-name="ru.yandex.clickhouse-jdbc" driver-version="0.3.1-patch" dbms="CLICKHOUSE" exact-version="22.3.2.1" exact-driver-version="0.3">
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
       <schema-mapping>
         <introspection-scope>
-          <node kind="schema" negative="1" />
+          <node kind="schema">
+            <name qname="@" />
+            <name qname="default" />
+            <name qname="fleet" />
+            <name qname="sharedIndexes" />
+          </node>
         </introspection-scope>
       </schema-mapping>
     </data-source>

@@ -37,8 +37,11 @@ export class TimeRangeConfigurator implements DataQueryConfigurator {
     if (duration === "all") {
       return true
     }
+    if (typeof duration !== "string") {
+      return false
+    }
 
-    const sql = `> ${toClickhouseSql(parseDuration(duration))}`
+    const sql = `>${toClickhouseSql(parseDuration(duration))}`
     query.addFilter({f: "generated_time", q: sql})
     return true
   }
@@ -59,7 +62,7 @@ function toClickhouseSql(duration: DurationParseResult): string {
     else {
       expression += result
     }
-    expression += `, ${value})`
+    expression += `,${value})`
     result = expression
   }
   return result

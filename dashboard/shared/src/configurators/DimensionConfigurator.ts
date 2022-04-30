@@ -1,7 +1,7 @@
 import { finalize, Observable, of, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, encodeQuery } from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeAndEncodeQueryForUrl } from "../dataQuery"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
@@ -68,7 +68,7 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
           }
 
           this.loading.value = true
-          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/v1/load/${encodeQuery(query)}`).pipe(
+          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`).pipe(
             finalize(() => {
               this.loading.value = false
             }),

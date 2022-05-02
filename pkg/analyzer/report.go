@@ -17,7 +17,9 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
 
   report, err := parser.ParseBytes(runResult.RawReport)
   if err != nil {
-    return errors.WithStack(err)
+    logger.Warn("invalid report - corrupted JSON, report will be skipped", zap.Int("id", runResult.TcBuildId), zap.ByteString("rawReport", runResult.RawReport))
+    runResult.Report = nil
+    return nil
   }
 
   runResult.Report = &model.Report{

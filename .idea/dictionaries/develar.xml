@@ -11,6 +11,7 @@
       <w>fontend</w>
       <w>gocyclo</w>
       <w>gosu</w>
+      <w>heapu</w>
       <w>ijplatform</w>
       <w>inputtext</w>
       <w>intelli</w>
@@ -21,6 +22,7 @@
       <w>liveness</w>
       <w>lttb</w>
       <w>macos</w>
+      <w>memcpy</w>
       <w>minifier</w>
       <w>minio</w>
       <w>nats</w>

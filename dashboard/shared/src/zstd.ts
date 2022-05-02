@@ -1,68 +1,59 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment */
 import { from, shareReplay } from "rxjs"
-import Module from "../zstd.js"
-import zstdWasmUrl from "../zstd.wasm?url"
+import { _free, _malloc, _ZSTD_compress, _ZSTD_compressBound, _ZSTD_isError, HEAPU8, zstdReady } from "./zstd-module"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function initZstd(): Promise<void> {
-  Module.init(zstdWasmUrl)
-  return new Promise(resolve => {
-    Module.onRuntimeInitialized = resolve
-  })
+  return zstdReady
 }
 
 export const initZstdObservable = from(initZstd()).pipe(shareReplay(1))
 
-function isError(code: number): number {
-  const _isError = Module["_ZSTD_isError"]
-  return _isError(code) as number
+function isError(code: number): boolean {
+  return _ZSTD_isError(code)
 }
 
 function compressBound(size: number): number {
-  const bound = Module["_ZSTD_compressBound"]
-  return bound(size) as number
+  return _ZSTD_compressBound(size)
 }
 
-const zstdCompressionLevel = 1
+const zstdCompressionLevel = 3
 
 // https://github.com/bokuweb/zstd-wasm
 export function compressZstdToUrlSafeBase64(s: string) {
   // see https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto#buffer_sizing about computing the output space needed for full conversion of string to bytes
   const maxUncompressedSize = s.length * 3
   // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
-  const malloc = Module._malloc
-  const uncompressedOffset = malloc(maxUncompressedSize) as number
+  const uncompressedOffset = _malloc(maxUncompressedSize)
 
-  const free = Module._free
   try {
-    const heapU8 = Module.HEAPU8 as Uint8Array
+    const heapU8 = HEAPU8
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const sourceSize = new TextEncoder().encodeInto(s, heapU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
 
     const maxCompressedSize = compressBound(sourceSize)
-    const compressedOffset = malloc(maxCompressedSize) as number
+    const compressedOffset = _malloc(maxCompressedSize)
     try {
       // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress/
       // size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel)
       // console.time("zstd")
-      const sizeOrError = Module._ZSTD_compress(compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, zstdCompressionLevel) as number
+      const sizeOrError = _ZSTD_compress(compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, zstdCompressionLevel)
       if (isError(sizeOrError)) {
         // noinspection ExceptionCaughtLocallyJS
         throw new Error(`Failed to compress with code ${sizeOrError}`)
       }
 
       const result = bytesToBase64(heapU8, compressedOffset, sizeOrError)
-      free(compressedOffset, maxCompressedSize)
-      free(uncompressedOffset, maxUncompressedSize)
+      _free(compressedOffset, maxCompressedSize)
+      _free(uncompressedOffset, maxUncompressedSize)
       // console.timeEnd("zstd")
       return result
     }
     finally {
-      free(compressedOffset, maxCompressedSize)
+      _free(compressedOffset, maxCompressedSize)
     }
   }
   catch (e) {
-    free(uncompressedOffset, maxUncompressedSize)
+    _free(uncompressedOffset, maxUncompressedSize)
     throw e
   }
 }

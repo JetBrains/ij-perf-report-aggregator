@@ -178,8 +178,10 @@ export interface GroupedDimensionValue {
 function getValueToGroup() {
   // Mac mini Space Gray/3.0 GHz 6C/8GB/256GB
   const macMini = "macMini 2018"
+  const macMiniIntel = "macMini Intel 3.2, 16GB"
   // Mac Mini M1 Chip with 8‑Core CPU und 8‑Core GPU, SSD 256Gb, RAM 16Gb
   const macMiniM1 = "macMini M1 2020"
+  const macMiniM1_16 = "macMini M1, 16GB"
 
   // Core i7-3770 16Gb, Intel SSD 535
   const win = "Windows Space i7-3770, 16Gb"
@@ -197,11 +199,18 @@ function getValueToGroup() {
     "intellij-macos-hw-unit-1772": macMini,
     "intellij-macos-hw-unit-1773": macMini,
 
+    "intellij-macos-hw-munit-716": macMiniIntel,
+    "intellij-macos-hw-munit-721": macMiniIntel,
+    "intellij-macos-hw-munit-722": macMiniIntel,
+    "intellij-macos-hw-munit-723": macMiniIntel,
+
+    "intellij-macos-hw-munit-608": macMiniM1_16,
+    "intellij-macos-hw-munit-692": macMiniM1_16,
+
     "intellij-macos-hw-unit-2204": macMiniM1,
     "intellij-macos-hw-unit-2205": macMiniM1,
     "intellij-macos-hw-unit-2206": macMiniM1,
     "intellij-macos-hw-unit-2207": macMiniM1,
-    "intellij-macos-hw-munit-608": macMiniM1,
 
     "intellij-macos-unit-2200-large-10298": macLarge,
 

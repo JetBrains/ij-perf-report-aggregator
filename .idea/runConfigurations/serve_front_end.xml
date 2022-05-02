@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="serve front-end" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="report-aggregator" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="KO_DATA_PATH" value="$PROJECT_DIR$/cmd/frontend/kodata" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/JetBrains/ij-perf-report-aggregator/cmd/frontend" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/frontend/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

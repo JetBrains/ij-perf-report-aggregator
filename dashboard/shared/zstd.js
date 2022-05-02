@@ -21,9 +21,6 @@ let tempRet0 = 0
 const setTempRet0 = function (value) {
   tempRet0 = value
 }
-if (typeof WebAssembly !== 'object') {
-  abort('no native wasm support detected');
-}
 let wasmMemory
 let ABORT = false
 
@@ -45,7 +42,6 @@ function updateGlobalBufferAndViews(buf) {
   Module['HEAPU8'] = HEAPU8 = new Uint8Array(buf);
 }
 
-const INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 16777216
 let wasmTable
 const __ATPRERUN__ = []
 const __ATINIT__ = []
@@ -120,7 +116,6 @@ function abort(what) {
   what += '';
   err(what);
   ABORT = true;
-  EXITSTATUS = 1;
   what = 'abort(' + what + ').';
   const e = new WebAssembly.RuntimeError(what)
   throw e;

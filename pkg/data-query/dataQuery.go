@@ -2,12 +2,13 @@ package data_query
 
 import (
   "context"
+  "encoding/base64"
   "github.com/develar/errors"
   "github.com/go-faster/ch"
   "github.com/go-faster/ch/proto"
+  "github.com/klauspost/compress/zstd"
   "github.com/sakura-internet/go-rison/v4"
   "github.com/valyala/bytebufferpool"
-  "github.com/valyala/fastjson"
   "github.com/valyala/quicktemplate"
   "math"
   "net/http"
@@ -50,45 +51,45 @@ type DataQueryDimension struct {
   arrayJoin string
 }
 
-func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
-  s := request.URL.Path[len("/api/q/"):]
-  payload := uncrush(s)
-
-  if len(payload) == 0 {
-    rawPath := request.URL.RawPath
-    return nil, false, errors.New("query not found: " + rawPath)
+func decodeQuery(encoded string) ([]byte, error) {
+  compressed, err := base64.RawURLEncoding.DecodeString(encoded)
+  if err != nil {
+    return nil, errors.WithStack(err)
   }
 
-  wrappedAsArray := payload[0] == '['
-  parser := queryParsers.Get()
-  defer queryParsers.Put(parser)
+  reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0))
+  defer reader.Close()
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
 
-  value, err := parser.Parse(payload)
+  decompressed, err := reader.DecodeAll(compressed, nil)
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+  return decompressed, nil
+}
+
+func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
+  decompressed, err := decodeQuery(request.URL.Path[len("/api/q/"):])
   if err != nil {
     return nil, false, errors.WithStack(err)
   }
 
-  var queries []DataQuery
-
-  if value.Type() == fastjson.TypeArray {
-    for _, v := range value.GetArray() {
-      query, err := readQueryValue(v)
-      if err != nil {
-        return queries, wrappedAsArray, err
-      }
-
-      queries = append(queries, *query)
-    }
-  } else {
-    query, err := readQueryValue(value)
-    if err != nil {
-      return queries, wrappedAsArray, err
-    }
-
-    queries = append(queries, *query)
+  if len(decompressed) == 0 {
+    rawPath := request.URL.RawPath
+    return nil, false, errors.New("query not found: " + rawPath)
   }
 
-  return queries, wrappedAsArray, nil
+  wrappedAsArray := decompressed[0] == '['
+  parser := queryParsers.Get()
+  defer queryParsers.Put(parser)
+
+  list, err := readQuery(decompressed)
+  if err != nil {
+    return nil, false, err
+  }
+  return list, wrappedAsArray, nil
 }
 
 func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {

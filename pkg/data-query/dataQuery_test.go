@@ -27,3 +27,11 @@ func TestAdvancedFilter(t *testing.T) {
   }
   assert.Equal("select from test where generated_time > subtractMonths(now(), 1)", sql)
 }
+
+func TestDecode(t *testing.T) {
+  query, err := decodeQuery("KLUv_SAMYQAASGVsbG8genN0ZCEh")
+
+  a := assert.New(t)
+  a.NoError(err)
+  a.Equal("Hello zstd!!", string(query))
+}

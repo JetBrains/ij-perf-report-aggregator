@@ -18,6 +18,7 @@ import {
 } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
+import { initZstdObservable } from "../zstd"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 import { MachineConfigurator } from "./MachineConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -52,9 +53,16 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
               readonly chartType: ChartType = "line") {
     this.persistentStateManager.add("measure", this._selected)
 
-    const isIj = serverConfigurator.db === "ij";
+    const isIj = serverConfigurator.db === "ij"
 
-    (filters.length === 0 ? serverConfigurator.createObservable() : combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable())))
+    let observable: Observable<unknown>
+    if (filters.length === 0) {
+      observable = combineLatest([serverConfigurator.createObservable(), initZstdObservable])
+    }
+    else {
+      observable = combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable(), initZstdObservable))
+    }
+    observable
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),

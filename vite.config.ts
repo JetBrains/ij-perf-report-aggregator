@@ -42,8 +42,8 @@ export default defineConfig({
       ],
     }),
   ],
-  root: "dashboard/app",
-  publicDir: "dashboard/app/public",
+  root:  "dashboard/app",
+  publicDir: path.resolve(__dirname, "dashboard/app/public"),
   server: {
     host: "localhost",
     port: 8080,

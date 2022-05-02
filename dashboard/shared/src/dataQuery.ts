@@ -1,6 +1,6 @@
 import { Observable } from "rxjs"
 import { ChartConfigurator } from "./chart"
-import { crush } from "./json-crush"
+import { compressZstdToUrlSafeBase64 } from "./zstd"
 
 export function serializeQuery(query: DataQuery): string {
   // const encoded = encodeRison(query)
@@ -8,39 +8,8 @@ export function serializeQuery(query: DataQuery): string {
 }
 
 export function serializeAndEncodeQueryForUrl(query: DataQuery): string {
-  return encodeQueryForUrl(serializeQuery(query))
+  return compressZstdToUrlSafeBase64(serializeQuery(query))
 }
-
-export function encodeQueryForUrl(s: string): string {
-  return crush(s)
-}
-
-// function uncrush(string: string) {
-//   // remove last character
-//   // string = string.substring(0, string.length - 1);
-//
-//   // unsplit the string using the delimiter
-//   const stringParts = string.split("\u0001")
-//
-//   // JSUncrush algorithm
-//   let uncrushedString = stringParts[0]
-//   if (stringParts.length > 1) {
-//     const splitString = stringParts[1]
-//     for (const character of splitString) {
-//       // split the string using the current splitCharacter
-//       const splitArray = uncrushedString.split(character)
-//       // rejoin the string with the last element from the split
-//       const last = splitArray.pop()
-//
-//       // console.log(splitArray.length + " " + character + " " + last)
-//
-//       uncrushedString = splitArray.join(last)
-//     }
-//   }
-//
-//   // unswap the json characters in reverse direction
-//   return uncrushedString
-// }
 
 export class DataQuery {
   db?: string

@@ -1,7 +1,8 @@
-import { finalize, Observable, of, shareReplay, switchMap } from "rxjs"
+import { finalize, Observable, of, shareReplay, switchMap, combineLatest } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeAndEncodeQueryForUrl } from "../dataQuery"
+import { initZstdObservable } from "../zstd"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
@@ -18,7 +19,7 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
     )
   }
 
-  createObservable(): Observable<unknown> {
+  createObservable(): Observable<string | Array<string> | null> {
     return this.observable
   }
 
@@ -58,7 +59,7 @@ export class DimensionConfigurator extends BaseDimensionConfigurator {
 
     persistentStateManager?.add(name, this.selected)
 
-    this.serverConfigurator.createObservable()
+    combineLatest([this.serverConfigurator.createObservable(), initZstdObservable])
       .pipe(
         switchMap(() => {
           const query = this.createQuery()

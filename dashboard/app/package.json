@@ -2,8 +2,8 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "4.5.7",
-    "@fontsource/jetbrains-mono": "4.5.5",
+    "@fontsource/inter": "4.5.10",
+    "@fontsource/jetbrains-mono": "4.5.8",
     "ij": "workspace:*",
     "jb": "workspace:*",
     "primeicons": "5.0.0",

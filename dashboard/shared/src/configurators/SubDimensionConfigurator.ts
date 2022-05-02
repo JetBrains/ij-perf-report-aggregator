@@ -1,7 +1,8 @@
-import { debounceTime, of, switchMap } from "rxjs"
+import { combineLatest, debounceTime, finalize, of, switchMap } from "rxjs"
 import { watch } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQueryExecutorConfiguration, serializeAndEncodeQueryForUrl } from "../dataQuery"
+import { initZstdObservable } from "../zstd"
 import { BaseDimensionConfigurator, DimensionConfigurator } from "./DimensionConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./rxjs"
 
@@ -19,11 +20,10 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
       persistentStateManager.add(name, this.selected)
     }
 
-    parentDimensionConfigurator.createObservable()
+    combineLatest([parentDimensionConfigurator.createObservable(), initZstdObservable])
       .pipe(
         debounceTime(100),
-        switchMap(() => {
-          const filterValue = parentDimensionConfigurator.selected.value
+        switchMap(([filterValue, _]) => {
           if (filterValue == null || filterValue.length === 0) {
             return of(null)
           }
@@ -37,11 +37,14 @@ export class SubDimensionConfigurator extends BaseDimensionConfigurator {
 
           this.loading.value = true
           return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`)
+            .pipe(
+              finalize(() => {
+                this.loading.value = false
+              }),
+            )
         }),
       )
       .subscribe(data => {
-        this.loading.value = false
-
         if (data == null) {
           return
         }

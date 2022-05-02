@@ -1,11 +1,12 @@
-import { combineLatest, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
+import { combineLatest, debounceTime, filter, forkJoin, from, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { provide } from "vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { measureNameToLabel } from "./configurators/MeasureConfigurator"
 import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery, encodeQueryForUrl } from "./dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
+import { compressZstdToUrlSafeBase64, initZstd, initZstdObservable } from "./zstd"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
 export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
@@ -49,12 +50,15 @@ export class DataQueryExecutor {
           }
 
           const queries = generateQueries(query, configuration)
-          return forkJoin(queries.map(it => fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${configuration.getServerUrl()}/api/q/${encodeQueryForUrl(`[${it}]`)}`)))
+          return initZstdObservable
             .pipe(
-              // pass context along with data and flatten result
-              map((data): Result => {
-                return {query, configuration, data: data.flat(1)}
+              switchMap(() => {
+                return forkJoin(queries.map(it => {
+                  return fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${configuration.getServerUrl()}/api/q/${compressZstdToUrlSafeBase64(`[${it}]`)}`)
+                }))
               }),
+              // pass context along with data and flatten result
+              map((data): Result => ({query, configuration, data: data.flat(1)})),
             )
         }),
         filter((it: Result | null): it is Result => it !== null),

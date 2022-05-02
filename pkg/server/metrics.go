@@ -13,7 +13,7 @@ func (t *StatsServer) handleLoadRequestV2(request *http.Request) (*bytebufferpoo
   if err != nil {
     return nil, false, err
   }
-  return t.load(request, dataQueries, wrappedAsArray, err)
+  return t.load(request, dataQueries, wrappedAsArray)
 }
 
 func (t *StatsServer) handleLoadRequest(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
@@ -22,10 +22,10 @@ func (t *StatsServer) handleLoadRequest(request *http.Request) (*bytebufferpool.
     return nil, false, err
   }
 
-  return t.load(request, dataQueries, wrappedAsArray, err)
+  return t.load(request, dataQueries, wrappedAsArray)
 }
 
-func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQuery, wrappedAsArray bool, err error) (*bytebufferpool.ByteBuffer, bool, error) {
+func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQuery, wrappedAsArray bool) (*bytebufferpool.ByteBuffer, bool, error) {
   buffer := byteBufferPool.Get()
   isOk := false
   defer func() {
@@ -47,7 +47,7 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
       jsonWriter.S(",")
     }
 
-    err = t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
+    err := t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
     if err != nil {
       return nil, false, err
     }

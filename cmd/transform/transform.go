@@ -197,7 +197,7 @@ rowLoop:
       BuildC3: row.BuildC3,
     }
 
-    err = analyzer.ReadReport(runResult, config.ReportReader, logger)
+    err = analyzer.ReadReport(runResult, config, logger)
     if err != nil {
       return err
     }

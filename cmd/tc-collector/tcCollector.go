@@ -208,10 +208,6 @@ func collectFromTeamCity(
         if err != nil {
           return err
         }
-
-        // break select and continue to process next build type chunk
-        break
-
       case <-taskContext.Done():
         return nil
       }

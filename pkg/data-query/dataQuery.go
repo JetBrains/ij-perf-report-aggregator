@@ -58,10 +58,10 @@ func decodeQuery(encoded string) ([]byte, error) {
   }
 
   reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0))
-  defer reader.Close()
   if err != nil {
     return nil, errors.WithStack(err)
   }
+  defer reader.Close()
 
   decompressed, err := reader.DecodeAll(compressed, nil)
   if err != nil {

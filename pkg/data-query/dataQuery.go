@@ -85,6 +85,8 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   parser := queryParsers.Get()
   defer queryParsers.Put(parser)
 
+  //println(string(decompressed))
+
   list, err := readQuery(decompressed)
   if err != nil {
     return nil, false, err

@@ -1,19 +1,21 @@
-import { finalize, Observable, of, shareReplay, switchMap, combineLatest } from "rxjs"
+import { Observable, of, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, serializeAndEncodeQueryForUrl } from "../dataQuery"
-import { initZstdObservable } from "../zstd"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter } from "../dataQuery"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { ComponentState, createComponentState, updateComponentState } from "./componentState"
+import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
-export abstract class BaseDimensionConfigurator implements DataQueryConfigurator {
+export class DimensionConfigurator implements DataQueryConfigurator, FilterConfigurator {
+  readonly state = createComponentState()
+
   readonly selected = shallowRef<string | Array<string> | null>(null)
   readonly values = shallowRef<Array<string>>([])
-  readonly loading = shallowRef(false)
 
   private readonly observable: Observable<string | Array<string> | null>
 
-  protected constructor(readonly name: string, readonly multiple: boolean) {
+  constructor(readonly name: string, readonly multiple: boolean) {
     this.observable = refToObservable(this.selected, true).pipe(
       shareReplay(1),
     )
@@ -40,48 +42,75 @@ export abstract class BaseDimensionConfigurator implements DataQueryConfigurator
     return true
   }
 
-  protected createQuery(): DataQuery {
-    const query = new DataQuery()
-    query.addField({n: this.name, sql: `distinct ${this.name}`})
-    query.order = this.name
-    query.table = "report"
-    query.flat = true
-    return query
+  configureFilter(query: DataQuery): boolean {
+    const value = this.selected.value
+    if (value == null || value.length === 0) {
+      return false
+    }
+
+    query.addFilter({f: this.name, v: value})
+    return true
   }
 }
 
-export class DimensionConfigurator extends BaseDimensionConfigurator {
-  constructor(name: string,
-              readonly serverConfigurator: ServerConfigurator,
-              persistentStateManager: PersistentStateManager | null,
-              multiple: boolean = false) {
-    super(name, multiple)
+export function loadDimension(name: string, serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>, state: ComponentState) {
+  const query = new DataQuery()
+  query.addField({n: name, sql: `distinct ${name}`})
+  query.order = name
+  query.flat = true
 
-    persistentStateManager?.add(name, this.selected)
-
-    combineLatest([this.serverConfigurator.createObservable(), initZstdObservable])
-      .pipe(
-        switchMap(() => {
-          const query = this.createQuery()
-          const configuration = new DataQueryExecutorConfiguration()
-          if (!serverConfigurator.configureQuery(query, configuration)) {
-            return of(null)
-          }
-
-          this.loading.value = true
-          return fromFetchWithRetryAndErrorHandling<Array<string>>(`${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`).pipe(
-            finalize(() => {
-              this.loading.value = false
-            }),
-          )
-        }),
-      )
-      .subscribe(data => {
-        if (data != null) {
-          this.values.value = data
-        }
-      })
+  const configuration = new DataQueryExecutorConfiguration()
+  if (!serverConfigurator.configureQuery(query, configuration) || !configureQueryFilters(query, filters)) {
+    return of(null)
   }
+
+  state.loading = true
+  return fromFetchWithRetryAndErrorHandling<Array<string>>(serverConfigurator.computeQueryUrl(query))
+}
+
+export function dimensionConfigurator(name: string,
+                                      serverConfigurator: ServerConfigurator,
+                                      persistentStateManager: PersistentStateManager | null,
+                                      multiple: boolean = false,
+                                      filters: Array<FilterConfigurator> = [],
+                                      customValueSort: ((a: string, b: string) => number) | null = null): DimensionConfigurator {
+  const configurator = new DimensionConfigurator(name, multiple)
+  persistentStateManager?.add(name, configurator.selected)
+
+  createFilterObservable(serverConfigurator, filters)
+    .pipe(
+      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
+      updateComponentState(configurator.state),
+    )
+    .subscribe(data => {
+      if (data == null) {
+        return
+      }
+
+      if (customValueSort != null) {
+        data.sort(customValueSort)
+      }
+      configurator.values.value = data
+
+      const selectedRef = configurator.selected
+      if (data.length === 0) {
+        // do not update value - don't unset if values temporary not set
+        console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
+      }
+      else {
+        const selected = selectedRef.value
+        if (selected instanceof Array && selected.length !== 0) {
+          const filtered = selected.filter(it => data.includes(it))
+          if (filtered.length !== selected.length) {
+            selectedRef.value = filtered
+          }
+        }
+        else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
+          selectedRef.value = data[0]
+        }
+      }
+    })
+  return configurator
 }
 
 function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {

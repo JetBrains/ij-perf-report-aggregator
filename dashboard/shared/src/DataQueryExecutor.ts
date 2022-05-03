@@ -1,12 +1,12 @@
-import { combineLatest, debounceTime, filter, forkJoin, from, map, Observable, of, shareReplay, switchMap } from "rxjs"
+import { combineLatest, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { provide } from "vue"
-import { PersistentStateManager } from "./PersistentStateManager"
 import { measureNameToLabel } from "./configurators/MeasureConfigurator"
 import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
+import { ServerConfigurator } from "./configurators/ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
-import { compressZstdToUrlSafeBase64, initZstd, initZstdObservable } from "./zstd"
+import { compressZstdToUrlSafeBase64, initZstdObservable } from "./zstd"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
 export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
@@ -29,16 +29,18 @@ export class DataQueryExecutor {
   /**
    * `isGroup = true` means that this DataQueryExecutor only manages dependent executors but doesn't load data itself.
    */
-  constructor(private readonly configurators: Array<DataQueryConfigurator>) {
-    this.observable = combineLatest(this.configurators.map(configurator => {
+  constructor(configurators: Array<DataQueryConfigurator>) {
+    const serverConfigurator = configurators.find(it => it instanceof ServerConfigurator) as ServerConfigurator
+    this.observable = combineLatest(configurators.map(configurator => {
       // combineLatest will not emit an initial value until each observable emits at least one value, so, null observer simply emits one null value
       return (configurator.createObservable() ?? of(null))
         .pipe(
-          map(_ => configurator),
+          map(() => configurator),
         )
     }))
       .pipe(
         debounceTime(100),
+        switchMap(configurators => initZstdObservable.pipe(map(() => configurators))),
         switchMap(configurators => {
           const configuration = new DataQueryExecutorConfiguration()
           const query = new DataQuery()
@@ -50,16 +52,12 @@ export class DataQueryExecutor {
           }
 
           const queries = generateQueries(query, configuration)
-          return initZstdObservable
-            .pipe(
-              switchMap(() => {
-                return forkJoin(queries.map(it => {
-                  return fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${configuration.getServerUrl()}/api/q/${compressZstdToUrlSafeBase64(`[${it}]`)}`)
-                }))
-              }),
-              // pass context along with data and flatten result
-              map((data): Result => ({query, configuration, data: data.flat(1)})),
-            )
+          return forkJoin(queries.map(it => {
+            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${serverConfigurator.serverUrl}/api/q/${compressZstdToUrlSafeBase64(`[${it}]`)}`)
+          })).pipe(
+            // pass context along with data and flatten result
+            map((data): Result => ({query, configuration, data: data.flat(1)})),
+          )
         }),
         filter((it: Result | null): it is Result => it !== null),
         shareReplay(1),
@@ -179,7 +177,6 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
   return result
 }
 
-export function initDataComponent(persistentStateManager: PersistentStateManager, configurators: Array<DataQueryConfigurator>): void {
-  persistentStateManager.init()
+export function initDataComponent(configurators: Array<DataQueryConfigurator>): void {
   provide(configuratorListKey, configurators.concat(new ReloadConfigurator()))
 }

@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
   skipZeroValues?: boolean
   compoundTooltip?: boolean
   dataZoom?: boolean
-  measures: Array<string> | null
+  measures?: Array<string> | null
   chartType?: ChartType
   valueUnit?: ValueUnit
 }>(), {

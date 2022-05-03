@@ -38,14 +38,13 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
-import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { SubDimensionConfigurator } from "shared/src/configurators/SubDimensionConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref } from "vue"
+import { provide } from "vue"
 import { useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
@@ -68,17 +67,14 @@ const persistentStateManager = new PersistentStateManager("ij-dashboard", {
   machine: "macMini 2018",
 }, useRouter())
 const serverConfigurator = new ServerConfigurator("ij")
-const productConfigurator = new DimensionConfigurator("product", serverConfigurator, persistentStateManager)
-const projectConfigurator = createProjectConfigurator(productConfigurator, persistentStateManager)
-const machineConfigurator = new MachineConfigurator(
-  new SubDimensionConfigurator("machine", productConfigurator),
-  persistentStateManager,
-)
+const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager)
+const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [productConfigurator])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
-initDataComponent(persistentStateManager, [
+initDataComponent([
   serverConfigurator,
   productConfigurator,
   projectConfigurator,
@@ -86,7 +82,7 @@ initDataComponent(persistentStateManager, [
   timeRangeConfigurator,
 ])
 
-const tabs = ref<Array<Tab>>([
+const tabs: Array<Tab> = [
   {
     label: "Pulse",
     to: "pulse",
@@ -101,5 +97,5 @@ const tabs = ref<Array<Tab>>([
   },
 ].map(it => {
   return {...it, to: `/ij/${it.to}`}
-}))
+})
 </script>

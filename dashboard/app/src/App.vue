@@ -30,24 +30,27 @@
   </main>
 </template>
 <script setup lang="ts">
-/// <reference types="vite-svg-loader" />
-
+import { shareReplay } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { serverUrlKey } from "shared/src/injectionKeys"
-import { provide, ref, watch } from "vue"
+import { refToObservable } from "shared/src/configurators/rxjs"
+import { serverUrlObservableKey } from "shared/src/injectionKeys"
+import { provide, ref, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
 import PrimeToast from "./PrimeToast.vue"
-
 import logoUrl from "./jb_square.svg?url"
 import { getItems } from "./route"
 
-const serverUrl = ref("")
+const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
+// shallow ref doesn't work - items are modified by primevue
 const items = ref(getItems())
-provide(serverUrlKey, serverUrl)
+provide(serverUrlObservableKey, refToObservable(serverUrl).pipe(
+    shareReplay(1),
+  ),
+)
 
-const activePath = ref("")
+const activePath = shallowRef("")
 const _route = useRoute()
 watch(() => _route.path, p => {
   activePath.value = p
@@ -55,5 +58,4 @@ watch(() => _route.path, p => {
 
 const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
 persistentStateManager.add("serverUrl", serverUrl)
-persistentStateManager.init()
 </script>

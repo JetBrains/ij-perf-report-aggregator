@@ -1,46 +1,37 @@
-import { Observable, shareReplay } from "rxjs"
-import { inject, ref, Ref } from "vue"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { serverUrlKey } from "../injectionKeys"
-import { refToObservable } from "./rxjs"
+import { Observable } from "rxjs"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeAndEncodeQueryForUrl } from "../dataQuery"
+import { injectOrError, serverUrlObservableKey } from "../injectionKeys"
 
 export class ServerConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
 
-  readonly value: Ref<string>
-
   private readonly observable: Observable<string>
+  private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL
 
-  constructor(readonly db: string, readonly table: string | null = null, serverUrl: string | null = null) {
-    if (serverUrl == null) {
-      const value = inject(serverUrlKey, ref(ServerConfigurator.DEFAULT_SERVER_URL))
-      if (value === undefined) {
-        throw new Error("Server URL is not provided")
-      }
-      this.value = value
-    }
-    else {
-      this.value = ref(serverUrl)
-    }
+  constructor(readonly db: string, readonly table: string | null = null) {
+    this.observable = injectOrError(serverUrlObservableKey)
+    this.observable.subscribe(value => {
+      this._serverUrl = value
+    })
+  }
 
-    this.observable = refToObservable(this.value).pipe(
-      shareReplay(1),
-    )
+  get serverUrl(): string {
+    return this._serverUrl
+  }
+
+  computeQueryUrl(query: DataQuery): string {
+    return `${this._serverUrl}/api/q/${serializeAndEncodeQueryForUrl(query)}`
   }
 
   createObservable(): Observable<unknown> {
     return this.observable
   }
 
-  configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const serverUrl = this.value.value ?? ServerConfigurator.DEFAULT_SERVER_URL
-    // noinspection HttpUrlsUsage
-    if (serverUrl.length === 0 || !(serverUrl.startsWith("http://") || serverUrl.startsWith("https://"))) {
-      console.debug(`[serverConfigurator] server url is not correct (url=${serverUrl})`)
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    if (this._serverUrl == null || this._serverUrl.length === 0) {
       return false
     }
 
-    configuration.serverUrl = serverUrl
     query.db = this.db
     if (this.table != null) {
       query.table = this.table

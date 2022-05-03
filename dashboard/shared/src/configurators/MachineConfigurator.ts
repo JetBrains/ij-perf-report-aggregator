@@ -1,40 +1,58 @@
-import { Observable } from "rxjs"
-import { Ref, ref, watch } from "vue"
-
+import { deepEqual } from "fast-equals"
+import { combineLatest, distinctUntilChanged, Observable, switchMap } from "rxjs"
+import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"
-import { BaseDimensionConfigurator } from "./DimensionConfigurator"
+import { loadDimension } from "./DimensionConfigurator"
+import { ServerConfigurator } from "./ServerConfigurator"
+import { createComponentState, updateComponentState } from "./componentState"
+import { createFilterObservable, FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
 // todo what is it?
 const macLarge = "mac large"
 
-export class MachineConfigurator implements DataQueryConfigurator {
-  public readonly value = ref<string | Array<string>>("")
-  public readonly values = ref<Array<GroupedDimensionValue>>([])
+export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
+  readonly selected = shallowRef<Array<string>>([])
+  readonly values = shallowRef<Array<GroupedDimensionValue>>([])
 
-  public readonly loading: Ref<boolean>
+  private readonly observable: Observable<unknown>
+  readonly state = createComponentState()
   private readonly groupNameToItem = new Map<string, GroupedDimensionValue>()
 
   private static readonly valueToGroup: { [key: string]: string } = getValueToGroup()
 
-  constructor(dimension: BaseDimensionConfigurator, persistentStateManager: PersistentStateManager, readonly multiple: boolean = true) {
-    persistentStateManager.add("machine", this.value)
+  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: Array<FilterConfigurator> = [], readonly multiple: boolean = true) {
+    const name = "machine"
+    persistentStateManager.add(name, this.selected, it => toArray(it as never))
+    const listObservable = createFilterObservable(serverConfigurator, filters)
+      .pipe(
+        switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
+        updateComponentState(this.state),
+      )
+    listObservable.subscribe(data => {
+      if (data == null) {
+        return
+      }
 
-    this.loading = dimension.loading
+      this.groupNameToItem.clear()
+      this.values.value = this.groupValues(data)
+    })
+
+    // selected value may be a group name, so, we must re-execute query on machine list update
+    this.observable = combineLatest([
+      refToObservable(this.selected, true),
+      listObservable,
+    ]).pipe(
+      distinctUntilChanged(deepEqual),
+    )
 
     // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart
     this.groupValues(Object.keys(MachineConfigurator.valueToGroup))
-
-    watch(dimension.values, values => {
-      this.groupNameToItem.clear()
-      this.values.value = this.groupValues(values)
-      // yes, validation and updating of this.value.value is not performed - to be done someday
-    })
   }
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.value, true)
+    return this.observable
   }
 
   private groupValues(values: Array<string>): Array<GroupedDimensionValue> {
@@ -97,7 +115,7 @@ export class MachineConfigurator implements DataQueryConfigurator {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const selected = toArray(this.value.value)
+    const selected = this.selected.value
     if (selected.length === 0) {
       console.debug("machine is not configured")
       return false
@@ -146,7 +164,17 @@ export class MachineConfigurator implements DataQueryConfigurator {
     return true
   }
 
-  configureQueryAsFilter(selected: Array<string>, query: DataQuery) {
+  configureFilter(query: DataQuery): boolean {
+    const value = this.selected.value
+    if (value == null || value.length === 0) {
+      return false
+    }
+
+    this.configureQueryAsFilter(value, query)
+    return true
+  }
+
+  private configureQueryAsFilter(selected: Array<string>, query: DataQuery) {
     const values: Array<string> = []
     for (const value of selected) {
       const groupItem = this.groupNameToItem.get(value)

@@ -11,12 +11,9 @@
 import { computed, shallowRef } from "vue"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
 
-const props = defineProps({
-  configurator: {
-    type: TimeRangeConfigurator,
-    required: true,
-  },
-})
+const props =  defineProps<{
+  configurator: TimeRangeConfigurator
+}>()
 
 const value = computed({
   get() {

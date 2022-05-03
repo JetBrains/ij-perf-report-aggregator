@@ -3,7 +3,8 @@
     v-if="valueToGroup == null && multiple"
     v-model="value"
     :title="label"
-    :loading="loading"
+    :loading="dimension.state.loading"
+    :disabled="dimension.state.disabled"
     :options="items"
     :placeholder="placeholder"
     option-label="label"
@@ -15,7 +16,8 @@
     v-else-if="valueToGroup == null && !multiple"
     v-model="value"
     :title="label"
-    :loading="loading"
+    :loading="dimension.state.loading"
+    :disabled="dimension.state.disabled"
     :options="items"
     :placeholder="placeholder"
     option-label="label"
@@ -26,7 +28,8 @@
     v-else
     v-model="value"
     :title="label"
-    :loading="loading"
+    :loading="dimension.state.loading"
+    :disabled="dimension.state.disabled"
     :options="items"
     :placeholder="placeholder"
     option-label="label"
@@ -40,19 +43,18 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue"
-import { BaseDimensionConfigurator } from "../configurators/DimensionConfigurator"
+import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
 
 const props = defineProps<{
   label: string
-  dimension: BaseDimensionConfigurator
+  dimension: DimensionConfigurator
   valueToLabel?: (v: string) => string
   // todo not working correctly for now (if value is set to not existing value, runtime error on select)
   valueToGroup?: (v: string) => string
 }>()
 
 const multiple = computed(() => props.dimension.multiple)
-const loading = computed(() => props.dimension.loading.value)
 
 const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
 

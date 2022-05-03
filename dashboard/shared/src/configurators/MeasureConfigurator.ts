@@ -1,7 +1,7 @@
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { deepEqual } from "fast-equals"
-import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
+import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
@@ -12,23 +12,21 @@ import {
   DataQueryDimension,
   DataQueryExecutorConfiguration,
   DataQueryFilter,
-  serializeAndEncodeQueryForUrl,
-  toArray,
   toMutableArray,
 } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
-import { initZstdObservable } from "../zstd"
-import { DimensionConfigurator } from "./DimensionConfigurator"
-import { MachineConfigurator } from "./MachineConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { createComponentState, updateComponentState } from "./componentState"
+import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export type ChartType = "line" | "scatter"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  public readonly data = shallowRef<Array<string>>([])
+  readonly data = shallowRef<Array<string>>([])
   private readonly _selected = shallowRef<Array<string> | string | null>(null)
+  readonly state = createComponentState()
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.selected, true)
@@ -38,7 +36,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     this._selected.value = value
   }
 
-  public get selected() {
+  get selected(): Ref<Array<string> | null> {
     const ref = this._selected
     if (typeof ref.value === "string") {
       ref.value = [ref.value]
@@ -47,22 +45,15 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   constructor(serverConfigurator: ServerConfigurator,
-              private readonly persistentStateManager: PersistentStateManager,
-              filters: Array<DataQueryConfigurator> = [],
+              persistentStateManager: PersistentStateManager,
+              filters: Array<FilterConfigurator> = [],
               readonly skipZeroValues: boolean = true,
               readonly chartType: ChartType = "line") {
-    this.persistentStateManager.add("measure", this._selected)
+    persistentStateManager.add("measure", this._selected)
 
     const isIj = serverConfigurator.db === "ij"
 
-    let observable: Observable<unknown>
-    if (filters.length === 0) {
-      observable = combineLatest([serverConfigurator.createObservable(), initZstdObservable])
-    }
-    else {
-      observable = combineLatest(filters.map(it => it.createObservable()).concat(serverConfigurator.createObservable(), initZstdObservable))
-    }
-    observable
+    createFilterObservable(serverConfigurator, filters)
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),
@@ -72,14 +63,10 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             return of(null)
           }
 
+          this.state.loading = true
           if (isIj) {
-            const server = serverConfigurator.value.value
-            if (server == null || server.length === 0) {
-              return of(null)
-            }
-
             return forkJoin([
-              fromFetchWithRetryAndErrorHandling<Array<string>>(`${server}/api/v1/meta/measure?db=${serverConfigurator.db}`),
+              fromFetchWithRetryAndErrorHandling<Array<string>>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
               fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
             ])
               .pipe(
@@ -92,6 +79,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             return fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
           }
         }),
+        updateComponentState(this.state),
       )
       .subscribe(data => {
         if (data == null) {
@@ -132,37 +120,15 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 }
 
-function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: Array<DataQueryConfigurator>): string | null {
+function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {
     return null
   }
 
-  if (filters.length !== 0) {
-    for (const parent of filters) {
-      if (parent instanceof DimensionConfigurator) {
-        const value = parent.selected.value
-        if (value == null || value.length === 0) {
-          return null
-        }
-
-        query.addFilter({f: parent.name, v: value})
-      }
-      else if (parent instanceof MachineConfigurator) {
-        const value = toArray(parent.value.value)
-        if (value == null || value.length === 0) {
-          return null
-        }
-        parent.configureQueryAsFilter(value, query)
-      }
-      else {
-        // well, so, it is a filter configurator (e.g. MachineConfigurator)
-        if (!parent.configureQuery(query, configuration)) {
-          return null
-        }
-      }
-    }
+  if (!configureQueryFilters(query, filters)) {
+    return null
   }
 
   let fieldPrefix: string
@@ -178,7 +144,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   query.order = fieldPrefix.length === 0 ? "name" :`${fieldPrefix}.name`
   query.table = serverConfigurator.table ?? "report"
   query.flat = true
-  return `${configuration.getServerUrl()}/api/q/${serializeAndEncodeQueryForUrl(query)}`
+  return serverConfigurator.computeQueryUrl(query)
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {

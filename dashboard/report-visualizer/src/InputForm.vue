@@ -39,20 +39,16 @@
 <script setup lang="ts">
 import { debounceTime, finalize, of, Subject, switchMap } from "rxjs"
 import { fromFetchWithRetryAndErrorHandling } from "shared/src/configurators/rxjs"
-import { serverUrlKey } from "shared/src/injectionKeys"
-import { inject, ref, watch } from "vue"
-import { RouteLocationNormalizedLoaded, useRoute } from "vue-router"
+import { shallowRef, watch } from "vue"
+import { LocationQuery, useRoute } from "vue-router"
 import { recentlyUsedIdePort, reportData } from "./state"
 
 const route = useRoute()
 
 // we can set this flag using reference to button, but "[Vue warn]: Avoid mutating a prop directly...",
 // so, it seems that data property it is the only recommended way
-const isFetching = ref(false)
-const isFetchingDev = ref(false)
-
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const serverUrl = inject(serverUrlKey)!
+const isFetching = shallowRef(false)
+const isFetchingDev = shallowRef(false)
 
 const subject = new Subject<{url: string; isDev: boolean}>()
 // distinctUntilChanged is not used here because report maybe loaded from the same instance multiple times
@@ -82,17 +78,15 @@ subject
     }
   })
 
-function loadReportUrlIfSpecified(location: RouteLocationNormalizedLoaded) {
-  const reportUrl = location.query["reportUrl"]
+function loadReportUrlIfSpecified(query: LocationQuery) {
+  const reportUrl = query["reportUrl"]
   if (reportUrl != null && reportUrl.length > 0) {
-    subject.next({url: `${serverUrl.value}${(reportUrl as string)}`, isDev: false})
+    subject.next({url: reportUrl as string, isDev: false})
   }
 }
 
-loadReportUrlIfSpecified(route)
-watch(route, location => {
-  loadReportUrlIfSpecified(location)
-})
+loadReportUrlIfSpecified(route.query)
+watch(() => route.query, loadReportUrlIfSpecified)
 
 const inputData = reportData
 const portNumber = recentlyUsedIdePort

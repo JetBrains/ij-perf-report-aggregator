@@ -12,8 +12,8 @@
       <div class="flex gap-x-2 justify-end">
         <div class="w-full">
           <a
-            v-if="tooltipData.linkUrl != null"
-            :href="tooltipData.linkUrl"
+            v-if="linkUrl != null"
+            :href="linkUrl"
             target="_blank"
           >
             {{ linkText }}
@@ -72,13 +72,13 @@
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { computed, inject, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
 
-const tooltipData = ref<TooltipData | null>(null)
-const panel = ref<OverlayPanel | null>()
+const tooltipData = shallowRef<TooltipData | null>(null)
+const panel = shallowRef<OverlayPanel | null>()
 
 const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
@@ -100,6 +100,15 @@ const linkText = computed(() => {
     result += ` (${data[4]}.${data[5]}${data[6] === 0 ? "" : `.${data[6]}`})`
   }
   return result
+})
+
+const linkUrl = computed(() => {
+  const data = tooltipData?.value
+  const query = data?.query
+  if (query == null) {
+    return null
+  }
+  return data?.reportInfoProvider?.createReportUrl(data.firstSeriesData[0], query)
 })
 
 let currentTarget: EventTarget | null

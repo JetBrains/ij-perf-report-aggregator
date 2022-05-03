@@ -1,5 +1,5 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, reactive } from "vue"
+import { inject, shallowReactive } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DataQuery } from "../dataQuery"
 import { reportInfoProviderKey } from "../injectionKeys"
@@ -11,9 +11,10 @@ export interface ReportInfoProvider {
 }
 
 export interface TooltipData {
-  linkUrl: string | null
   items: Array<TooltipDataItem>
   firstSeriesData: Array<number>
+  reportInfoProvider: ReportInfoProvider | null
+  query: DataQuery | null
 }
 
 interface TooltipDataItem {
@@ -26,7 +27,7 @@ export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
-  readonly reportTooltipData = reactive<TooltipData>({items: [], linkUrl: null, firstSeriesData: []})
+  readonly reportTooltipData = shallowReactive<TooltipData>({items: [], firstSeriesData: [], reportInfoProvider: null, query: null})
 
   paused = false
 
@@ -53,15 +54,10 @@ export class ChartToolTipManager {
         color: measure.color as string,
       }
     })
-    const firstSeriesData = params[0].value as Array<number>
     // same for all series
-    data.firstSeriesData = firstSeriesData
-    if (this.reportInfoProvider == null) {
-      data.linkUrl = null
-    }
-    else {
-      data.linkUrl = this.reportInfoProvider.createReportUrl(firstSeriesData[0], query)
-    }
+    data.firstSeriesData = params[0].value as Array<number>
+    data.reportInfoProvider = this.reportInfoProvider
+    data.query = query
     return null
   }
 }

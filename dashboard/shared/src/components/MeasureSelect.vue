@@ -2,6 +2,8 @@
   <MultiSelect
     v-model="value"
     :options="items"
+    :loading="configurator.state.loading"
+    :disabled="configurator.state.disabled"
     title="Metrics"
     placeholder="Metrics"
     :filter="true"

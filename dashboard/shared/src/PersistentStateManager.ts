@@ -7,9 +7,8 @@ declare type State = { [key: string]: number | string | Array<string> | unknown 
 export class PersistentStateManager {
   private readonly state: State
 
-  private readonly initializers: Array<() => void> = []
-
   private readonly saveSubject = new Subject<null>()
+  private readonly updateUrlSubject = new Subject<null>()
 
   private readonly route: RouteLocationNormalizedLoaded | null
 
@@ -49,23 +48,15 @@ export class PersistentStateManager {
 
         this.updateUrlQuery()
       })
+
+    this.updateUrlSubject.pipe(
+      debounceTime(300),
+    )
+      .subscribe(() => this.updateUrlQuery())
   }
 
   private getKey(): string {
     return `${this.id}-state-v2`
-  }
-
-  /**
-   * Initialization cannot be performed as part of `add`, because at the moment of add,
-   * not every other possible user of data maybe yet created and therefore data is not being watched
-   * (avoid explicit `scheduleLoad` or `load` calls).
-   */
-  init(): void {
-    for (const initializer of this.initializers) {
-      initializer()
-    }
-    this.initializers.length = 0
-    this.updateUrlQuery()
   }
 
   private updateUrlQuery() {
@@ -78,7 +69,7 @@ export class PersistentStateManager {
     const query: LocationQueryRaw = {...currentRoute.query}
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
-      if (name !== "serverUrl" && typeof value === "string" || Array.isArray(value) || value === null) {
+      if ((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) {
         if (isChanged || query[name] !== value) {
           query[name] = value
           isChanged = true
@@ -92,7 +83,7 @@ export class PersistentStateManager {
     }
   }
 
-  add(name: string, value: Ref<unknown>): void {
+  add(name: string, value: Ref<unknown>, existingValueTransformer: ((v: unknown) => unknown) | null = null): void {
     if (value == null) {
       throw new Error("value must be not null")
     }
@@ -105,20 +96,11 @@ export class PersistentStateManager {
       }
     })
 
-    let existingValue = this.state[name]
+    const existingValue = this.state[name]
     if (existingValue != null && (typeof existingValue !== "string" || existingValue.length !== 0)) {
-      // noinspection SpellCheckingInspection
-      if (existingValue === "73YWaW9bytiPDGuKvwNIYMK5CKI") {
-        existingValue = "simple for IJ"
-      }
-      // noinspection SpellCheckingInspection
-      if (existingValue === "nC4MRRFMVYUSQLNIvPgDt+B3JqA") {
-        existingValue = "idea"
-      }
-      this.initializers.push(() => {
-        // console.debug(`[persistentState] set ${name} to ${existingValue}`)
-        value.value = existingValue
-      })
+      // console.debug(`[persistentState] set ${name} to ${existingValue}`)
+      value.value = existingValueTransformer == null ? existingValue : existingValueTransformer(existingValue)
+      this.updateUrlSubject.next(null)
     }
   }
 }

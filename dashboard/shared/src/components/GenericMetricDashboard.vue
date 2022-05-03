@@ -51,7 +51,7 @@ import { initDataComponent } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { chartDefaultStyle, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
-import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
+import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../configurators/MachineConfigurator"
 import { ChartType, MeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
@@ -91,7 +91,7 @@ if (props.urlEnabled) {
   provideReportUrlProvider()
 }
 
-const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-dashboard`, {
+const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(props.table == null ? "" : `${props.table}-`)}dashboard`, {
   machine: "linux-blade",
   project: [],
   branch: "master",
@@ -99,28 +99,27 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-das
 }, useRouter())
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
-const scenarioConfigurator = new DimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
-const branchConfigurator = new DimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 
-const machineConfigurator = new MachineConfigurator(
-  new DimensionConfigurator("machine", serverConfigurator, persistentStateManager),
-  persistentStateManager,
-)
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 
 const measureConfigurator = new MeasureConfigurator(
   serverConfigurator,
   persistentStateManager,
-  [scenarioConfigurator, branchConfigurator, machineConfigurator],
+  [scenarioConfigurator, branchConfigurator],
   true,
   props.chartType,
 )
+
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator])
+
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
 // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
-initDataComponent(persistentStateManager, [
+initDataComponent([
   serverConfigurator,
   scenarioConfigurator,
   branchConfigurator,

@@ -1,15 +1,17 @@
+import { Observable } from "rxjs"
 import { provide } from "vue"
 import { DataQuery, DataQueryFilter, serializeQuery } from "./dataQuery"
-import { reportInfoProviderKey } from "./injectionKeys"
+import { injectOrError, reportInfoProviderKey, serverUrlObservableKey } from "./injectionKeys"
 
 export function provideReportUrlProvider(): void {
+  const serverUrl = injectOrError(serverUrlObservableKey)
   provide(reportInfoProviderKey, {
     infoFields: ["tc_installer_build_id", "tc_build_id", "build_c1", "build_c2", "build_c3", "machine"],
-    createReportUrl,
+    createReportUrl: (generatedTime, query) => createReportUrl(generatedTime, query, serverUrl),
   })
 }
 
-function createReportUrl(generatedTime: number, query: DataQuery): string {
+function createReportUrl(generatedTime: number, query: DataQuery, serverUrl: Observable<string>): string {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const q: Record<string, unknown> = {
     ...query
@@ -25,5 +27,10 @@ function createReportUrl(generatedTime: number, query: DataQuery): string {
       break
     }
   }
-  return `/report?reportUrl=${encodeURIComponent(`/api/v1/report/${serializeQuery(q as never)}`)}`
+
+  let v
+  serverUrl.subscribe(value => {
+    v = value
+  }).unsubscribe()
+  return `/report?reportUrl=${encodeURIComponent(`${v}/api/v1/report/${serializeQuery(q as never)}`)}`
 }

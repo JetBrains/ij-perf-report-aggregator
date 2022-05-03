@@ -120,18 +120,8 @@ export interface QueryProducer {
 }
 
 export class DataQueryExecutorConfiguration {
-  serverUrl: string | null = null
-
   readonly seriesNames: Array<string> = []
   readonly measureNames: Array<string> = []
-
-  getServerUrl(): string {
-    const result = this.serverUrl
-    if (result == null) {
-      throw new Error("serverUrl is not configured")
-    }
-    return result
-  }
 
   readonly queryProducers: Array<QueryProducer> = []
 

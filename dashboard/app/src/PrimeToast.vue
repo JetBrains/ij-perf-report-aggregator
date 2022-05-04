@@ -28,6 +28,7 @@
 import ToastMessage from "primevue/toast/ToastMessage.vue"
 import ToastEventBus from "primevue/toasteventbus"
 import {UniqueComponentId, ZIndexUtils} from "primevue/utils"
+import {toRaw} from "vue"
 
 // https://github.com/primefaces/primevue/issues/1763
 
@@ -105,7 +106,8 @@ export default {
     },
     remove(message) {
       for (let i = 0; i < this.messages.length; i++) {
-        if (this.messages[i] === message) {
+        if (toRaw(this.messages[i]) === toRaw(message)) {
+          console.log("REEEEMOOOVED")
           this.messages.splice(i, 1)
           break
         }

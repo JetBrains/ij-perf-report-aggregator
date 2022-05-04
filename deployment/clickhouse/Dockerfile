@@ -7,7 +7,7 @@ ARG CH_URL
 
 RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/$CH_URL | tar xvz --strip-components=3
 
-FROM ubuntu:21.10
+FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 

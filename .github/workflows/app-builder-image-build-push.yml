@@ -1,15 +1,15 @@
-name: Build and push ClickHouse image
+name: Build and push image to build application
 
 on:
   workflow_dispatch:
   push:
     paths: 
-      - "deployment/clickhouse/**"
+      - "deployment/app-builder/**"
     branches: [ master ]
 
 jobs:
   build:
     uses: jetbrains/ij-perf-report-aggregator/.github/workflows/reusable-image-build-push.yml@master
     with:
-      imageName: jetbrains/ij-perf-report-aggregator/clickhouse
+      imageName: jetbrains/ij-perf-report-aggregator/app-builder
     secrets: inherit

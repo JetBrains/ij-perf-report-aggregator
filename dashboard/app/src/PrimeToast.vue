@@ -107,7 +107,6 @@ export default {
     remove(message) {
       for (let i = 0; i < this.messages.length; i++) {
         if (toRaw(this.messages[i]) === toRaw(message)) {
-          console.log("REEEEMOOOVED")
           this.messages.splice(i, 1)
           break
         }

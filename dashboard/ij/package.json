@@ -6,6 +6,6 @@
     "primevue": "^3.12.6",
     "shared": "workspace:*",
     "vue": "3.2.33",
-    "vue-router": "4.0.14"
+    "vue-router": "4.0.15"
   }
 }

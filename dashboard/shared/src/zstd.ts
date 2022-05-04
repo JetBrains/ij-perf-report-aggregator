@@ -1,12 +1,18 @@
 import { from, shareReplay } from "rxjs"
-import { _free, _malloc, _ZSTD_compress, _ZSTD_compressBound, _ZSTD_isError, HEAPU8, zstdReady } from "./zstd-module"
+import {
+  _free,
+  _malloc,
+  _ZSTD_compress_usingCDict,
+  _ZSTD_compressBound,
+  _ZSTD_createCCtx,
+  _ZSTD_createCDict, _ZSTD_freeCCtx,
+  _ZSTD_freeCDict,
+  _ZSTD_isError,
+  HEAPU8,
+  zstdReady,
+} from "./zstd-module"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function initZstd(): Promise<void> {
-  return zstdReady
-}
-
-export const initZstdObservable = from(initZstd()).pipe(shareReplay(1))
+export const initZstdObservable = from(zstdReady).pipe(shareReplay(1))
 
 function isError(code: number): boolean {
   return _ZSTD_isError(code)
@@ -16,47 +22,71 @@ function compressBound(size: number): number {
   return _ZSTD_compressBound(size)
 }
 
-const zstdCompressionLevel = 3
+const zstdCompressionLevel = 7
 
-// https://github.com/bokuweb/zstd-wasm
-export function compressZstdToUrlSafeBase64(s: string) {
-  // see https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto#buffer_sizing about computing the output space needed for full conversion of string to bytes
-  const maxUncompressedSize = s.length * 3
-  // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
-  const uncompressedOffset = _malloc(maxUncompressedSize)
+export class CompressorUsingDictionary {
+  private readonly zstdDictionaryPointer: number
+  private readonly zstdDictionarySize:number
+  private readonly dict: number
+  private readonly context: number
 
-  try {
-    const heapU8 = HEAPU8
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const sourceSize = new TextEncoder().encodeInto(s, heapU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
+  constructor(dictionaryData: ArrayBuffer) {
+    this.zstdDictionaryPointer = _malloc(dictionaryData.byteLength)
+    this.zstdDictionarySize = dictionaryData.byteLength
+    HEAPU8.set(new Uint8Array(dictionaryData), this.zstdDictionaryPointer)
+    this.dict = _ZSTD_createCDict(this.zstdDictionaryPointer, this.zstdDictionarySize, zstdCompressionLevel)
 
-    const maxCompressedSize = compressBound(sourceSize)
-    const compressedOffset = _malloc(maxCompressedSize)
+    this.context = _ZSTD_createCCtx()
+  }
+
+  compress(s: string): string {
+    // see https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto#buffer_sizing about computing the output space needed for full conversion of string to bytes
+    const maxUncompressedSize = s.length * 3
+    // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
+    const uncompressedOffset = _malloc(maxUncompressedSize)
+
     try {
-      // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress/
-      // size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel)
-      // console.time("zstd")
-      const sizeOrError = _ZSTD_compress(compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, zstdCompressionLevel)
-      if (isError(sizeOrError)) {
-        // noinspection ExceptionCaughtLocallyJS
-        throw new Error(`Failed to compress with code ${sizeOrError}`)
-      }
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
 
-      const result = bytesToBase64(heapU8, compressedOffset, sizeOrError)
-      _free(compressedOffset, maxCompressedSize)
-      _free(uncompressedOffset, maxUncompressedSize)
-      // console.timeEnd("zstd")
-      return result
+      const maxCompressedSize = compressBound(sourceSize)
+      const compressedOffset = _malloc(maxCompressedSize)
+      try {
+        // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress/
+        // size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel)
+        console.time("zstd")
+        const sizeOrError = _ZSTD_compress_usingCDict(this.context, compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, this.dict)
+        if (isError(sizeOrError)) {
+          // noinspection ExceptionCaughtLocallyJS
+          throw new Error(`Failed to compress with code ${sizeOrError}`)
+        }
+
+        const result = bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
+        _free(compressedOffset, maxCompressedSize)
+        _free(uncompressedOffset, maxUncompressedSize)
+        console.timeEnd("zstd")
+        return result
+      }
+      finally {
+        _free(compressedOffset, maxCompressedSize)
+      }
     }
-    finally {
-      _free(compressedOffset, maxCompressedSize)
+    catch (e) {
+      _free(uncompressedOffset, maxUncompressedSize)
+      throw e
     }
   }
-  catch (e) {
-    _free(uncompressedOffset, maxUncompressedSize)
-    throw e
+
+  dispose() {
+    _ZSTD_freeCDict(this.dict)
+    _ZSTD_freeCCtx(this.context)
+    _free(this.zstdDictionaryPointer, this.zstdDictionarySize)
   }
 }
+
+// export function compressZstdToUrlSafeBase64(s: string) {
+//
+// }
 
 const base64UrlSafe = [
   "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",

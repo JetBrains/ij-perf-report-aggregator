@@ -1,14 +1,9 @@
 import { Observable } from "rxjs"
 import { ChartConfigurator } from "./chart"
-import { compressZstdToUrlSafeBase64 } from "./zstd"
 
 export function serializeQuery(query: DataQuery): string {
   // const encoded = encodeRison(query)
   return JSON.stringify(query)
-}
-
-export function serializeAndEncodeQueryForUrl(query: DataQuery): string {
-  return compressZstdToUrlSafeBase64(serializeQuery(query))
 }
 
 export class DataQuery {

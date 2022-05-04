@@ -4,12 +4,14 @@ import (
   "context"
   "crypto/tls"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/go-faster/ch"
   "github.com/jackc/puddle/puddleg"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
+  "github.com/valyala/bytebufferpool"
   "go.uber.org/zap"
   "net/http"
   "os"
@@ -72,7 +74,14 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   mux.Handle("/api/q/", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-  mux.Handle("/api/v1/report/", cacheManager.CreateHandler(statsServer.handleReportRequest))
+  var r http.Handler = &CachingHandler{
+    handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+      return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil
+    },
+    manager:     cacheManager,
+    contentType: "application/octet-stream",
+  }
+  mux.Handle("/api/zstd-dictionary", r)
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
     writer.WriteHeader(200)

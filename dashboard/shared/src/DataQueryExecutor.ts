@@ -6,7 +6,6 @@ import { ServerConfigurator } from "./configurators/ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
-import { compressZstdToUrlSafeBase64, initZstdObservable } from "./zstd"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
 export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
@@ -40,7 +39,6 @@ export class DataQueryExecutor {
     }))
       .pipe(
         debounceTime(100),
-        switchMap(configurators => initZstdObservable.pipe(map(() => configurators))),
         switchMap(configurators => {
           const configuration = new DataQueryExecutorConfiguration()
           const query = new DataQuery()
@@ -53,7 +51,7 @@ export class DataQueryExecutor {
 
           const queries = generateQueries(query, configuration)
           return forkJoin(queries.map(it => {
-            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(`${serverConfigurator.serverUrl}/api/q/${compressZstdToUrlSafeBase64(`[${it}]`)}`)
+            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`))
           })).pipe(
             // pass context along with data and flatten result
             map((data): Result => ({query, configuration, data: data.flat(1)})),

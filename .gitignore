@@ -8,7 +8,9 @@ db/
 /deployment/overlays/
 
 node_modules/
-cmd/frontend/kodata/
+cmd/frontend/resources/assets/
+cmd/frontend/resources/favicon.svg
+cmd/frontend/resources/index.html
 values-resolved.yaml
 
 .eslintcache

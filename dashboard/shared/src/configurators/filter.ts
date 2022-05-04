@@ -1,14 +1,17 @@
 import { combineLatest, Observable } from "rxjs"
 import { DataQuery } from "../dataQuery"
-import { initZstdObservable } from "../zstd"
 import { ServerConfigurator } from "./ServerConfigurator"
 
 export function createFilterObservable(serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>): Observable<unknown> {
-  const filterObservables: Array<Observable<unknown>> = [initZstdObservable, serverConfigurator.createObservable()]
-  if (filters.length !== 0) {
-    filterObservables.push(...filters.map(it => it.createObservable()).filter((it: Observable<unknown> | null): it is Observable<unknown> => it !== null))
+  if (filters.length === 0) {
+    return serverConfigurator.createObservable()
   }
-  return combineLatest(filterObservables)
+
+  return combineLatest(
+    filters
+      .map(it => it.createObservable()).filter((it: Observable<unknown> | null): it is Observable<unknown> => it !== null)
+      .concat(serverConfigurator.createObservable()),
+  )
 }
 
 /**

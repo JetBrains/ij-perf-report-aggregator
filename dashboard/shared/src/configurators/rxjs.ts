@@ -23,13 +23,17 @@ const serverNotAvailableMessage = {
   life: 3_000,
 }
 
-export function fromFetchWithRetryAndErrorHandling<T>(request: Request | string, unavailableErrorMessage: ({summary: string; detail: string}) | null = null): Observable<T> {
+export function fromFetchWithRetryAndErrorHandling<T>(
+  request: Request | string,
+  unavailableErrorMessage: ({ summary: string; detail: string }) | null = null,
+  bodyConsumer: (response: Response) => Promise<T> = it => it.json() as Promise<T>
+): Observable<T> {
   return fromFetch(request)
     .pipe(
       // promise to result
       mergeMap(response => {
         if (response.ok) {
-          return response.json() as Promise<T>
+          return bodyConsumer(response)
         }
         else {
           throw new Error(`cannot load (status=${response.status})`)

@@ -8,10 +8,10 @@
     "jb": "workspace:*",
     "primeicons": "5.0.0",
     "primevue": "3.12.6",
-    "rxjs": "8.0.0-alpha.3",
     "report-visualizer": "workspace:*",
+    "rxjs": "8.0.0-alpha.3",
     "shared": "workspace:*",
     "vue": "3.2.33",
-    "vue-router": "4.0.14"
+    "vue-router": "4.0.15"
   }
 }

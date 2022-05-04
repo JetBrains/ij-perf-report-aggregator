@@ -2,6 +2,7 @@ package data_query
 
 import (
   "context"
+  _ "embed"
   "encoding/base64"
   "github.com/develar/errors"
   "github.com/go-faster/ch"
@@ -51,13 +52,16 @@ type DataQueryDimension struct {
   arrayJoin string
 }
 
+//go:embed zstd.dictionary
+var ZstdDictionary []byte
+
 func decodeQuery(encoded string) ([]byte, error) {
   compressed, err := base64.RawURLEncoding.DecodeString(encoded)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0))
+  reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0), zstd.WithDecoderDicts(ZstdDictionary))
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -85,7 +89,8 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   parser := queryParsers.Get()
   defer queryParsers.Put(parser)
 
-  //println(string(decompressed))
+  //fileName := strconv.FormatUint(xxh3.HashString(request.URL.Path), 36) + ".json"
+  //_ = ioutil.WriteFile("/Volumes/data/queries/"+fileName, decompressed, 0644)
 
   list, err := readQuery(decompressed)
   if err != nil {
@@ -423,3 +428,18 @@ func writeString(sb *strings.Builder, s string) {
   _, _ = stringEscaper.WriteString(sb, s)
   sb.WriteByte('\'')
 }
+
+//var fileLogger *zap.Logger
+//
+//func init() {
+//  var cfg = zap.NewDevelopmentConfig()
+//  cfg.EncoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+//  }
+//  cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
+//  }
+//  cfg.DisableCaller = true
+//  cfg.OutputPaths = []string{
+//    "",
+//  }
+//  fileLogger, _ = cfg.Build()
+//}

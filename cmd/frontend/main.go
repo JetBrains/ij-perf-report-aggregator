@@ -1,11 +1,16 @@
 package main
 
 import (
+  "embed"
+  "io/fs"
   "log"
   "net/http"
-  "os"
-  "path"
   "strings"
+)
+
+var (
+  //go:embed resources
+  res embed.FS
 )
 
 func main() {
@@ -16,19 +21,15 @@ func main() {
 }
 
 func run() error {
-  publicDir := http.Dir(os.Getenv("KO_DATA_PATH"))
-  indexHtml := path.Join(string(publicDir), "/index.html")
-  indexHtmlV2 := path.Join(string(publicDir), "/v2/index.html")
-  fileServer := http.FileServer(publicDir)
-  return http.ListenAndServe(":8080", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+  sub, _ := fs.Sub(res, "resources")
+  fileServer := http.FileServer(http.FS(sub))
+  return http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
     urlPath := request.URL.Path
     if strings.ContainsRune(urlPath, '.') || urlPath == "/" {
-      fileServer.ServeHTTP(writer, request)
-    } else if strings.HasPrefix(urlPath, "/v2/") || urlPath == "/v2" {
-      http.ServeFile(writer, request, indexHtmlV2)
+      fileServer.ServeHTTP(w, request)
     } else {
       // vue router HTML5 mode (https://next.router.vuejs.org/guide/essentials/history-mode.html#html5-mode)
-      http.ServeFile(writer, request, indexHtml)
+      http.ServeFile(w, request, "/index.html")
     }
   }))
 }

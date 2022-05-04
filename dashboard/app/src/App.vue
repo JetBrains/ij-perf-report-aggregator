@@ -30,7 +30,7 @@
   </main>
 </template>
 <script setup lang="ts">
-import { shareReplay } from "rxjs"
+import { filter, shareReplay } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
@@ -46,9 +46,9 @@ const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
 const items = ref(getItems())
 provide(serverUrlObservableKey, refToObservable(serverUrl).pipe(
-    shareReplay(1),
-  ),
-)
+  filter((it: string | null): it is string => it !== null && it.length !== 0),
+  shareReplay(1),
+))
 
 const activePath = shallowRef("")
 const _route = useRoute()

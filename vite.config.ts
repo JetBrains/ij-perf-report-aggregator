@@ -54,7 +54,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    outDir: path.resolve(__dirname, "cmd/frontend/kodata"),
+    outDir: path.resolve(__dirname, "cmd/frontend/resources"),
   },
 })
 

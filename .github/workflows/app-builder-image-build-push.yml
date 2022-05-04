@@ -12,4 +12,5 @@ jobs:
     uses: jetbrains/ij-perf-report-aggregator/.github/workflows/reusable-image-build-push.yml@master
     with:
       imageName: jetbrains/ij-perf-report-aggregator/app-builder
+      dockerContextDir: deployment/app-builder
     secrets: inherit

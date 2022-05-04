@@ -31,7 +31,12 @@ func main() {
 }
 
 func requestClearCache() {
-  nc, err := nats.Connect(nats.DefaultURL, nats.Name("NATS Sample Publisher"))
+  url := os.Getenv("NATS")
+  if len(url) == 0 {
+    url = "nats://nats:4222"
+  }
+
+  nc, err := nats.Connect(url, nats.Name("NATS Sample Publisher"))
   if err != nil {
     log.Fatal(err)
   }

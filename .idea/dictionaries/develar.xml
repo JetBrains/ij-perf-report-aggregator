@@ -2,6 +2,7 @@
   <dictionary name="develar">
     <words>
       <w>amazonaws</w>
+      <w>buildx</w>
       <w>cascader</w>
       <w>certmanager</w>
       <w>clickhouse</w>
@@ -9,6 +10,8 @@
       <w>enterable</w>
       <w>escaper</w>
       <w>fontend</w>
+      <w>fulcio</w>
+      <w>ghcr</w>
       <w>gocyclo</w>
       <w>gosu</w>
       <w>heapu</w>
@@ -34,6 +37,7 @@
       <w>rison</w>
       <w>rowid</w>
       <w>semibold</w>
+      <w>sigstore</w>
       <w>sqlite</w>
       <w>tcsessionid</w>
       <w>toasteventbus</w>

@@ -1,11 +1,9 @@
-FROM golang:1.18 AS builder
+FROM golang:1.18.1 AS builder
 WORKDIR /project/src
 ADD https://raw.githubusercontent.com/nats-io/nats.go/8dd5ec6c97bccaf8fc09b45a76d5694f0f6ae403/examples/nats-pub/main.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/nats-pub .
 
-ARG CH_URL
-
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/$CH_URL | tar xvz --strip-components=3
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.4.4.7-stable/clickhouse-server-22.4.4.7-amd64.tgz | tar xvz --strip-components=3
 
 FROM ubuntu:22.04
 

@@ -73,6 +73,8 @@ spec:
             - name: UPLOAD_PART_SIZE
               value: "64"
           {{- include "clickhouseVolumeMounts" . | nindent 10 }}
+      imagePullSecrets:
+        - name: ghcr
       volumes:
         - name: clickhouse-data
           emptyDir: {}

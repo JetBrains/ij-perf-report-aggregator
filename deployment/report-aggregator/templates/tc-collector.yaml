@@ -43,3 +43,5 @@ spec:
                   value: "clickhouse:9000"
                 - name: CONFIG
                   value: {{ .Values.collector | toJson | quote }}
+          imagePullSecrets:
+            - name: ghcr

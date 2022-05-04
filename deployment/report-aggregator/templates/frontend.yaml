@@ -29,6 +29,8 @@ spec:
               memory: 192Mi
           ports:
             - containerPort: 8080
+      imagePullSecrets:
+        - name: ghcr
 ---
 apiVersion: v1
 kind: Service

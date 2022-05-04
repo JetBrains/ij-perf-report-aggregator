@@ -44,6 +44,8 @@ spec:
             httpGet:
               path: /health-check
               port: 8080
+      imagePullSecrets:
+        - name: ghcr
 ---
 apiVersion: v1
 kind: Service

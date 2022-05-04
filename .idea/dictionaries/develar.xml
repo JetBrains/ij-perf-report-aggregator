@@ -29,11 +29,13 @@
       <w>minifier</w>
       <w>minio</w>
       <w>nats</w>
+      <w>nerdctl</w>
       <w>perfint</w>
       <w>pinia</w>
       <w>pnpm</w>
       <w>primevue</w>
       <w>quantile</w>
+      <w>rekor</w>
       <w>rison</w>
       <w>rowid</w>
       <w>semibold</w>

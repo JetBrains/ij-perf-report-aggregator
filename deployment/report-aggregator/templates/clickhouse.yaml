@@ -17,9 +17,7 @@ spec:
         {{- include "common.selectorLabels" . | nindent 8 }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        fsGroup: 65532
       initContainers:
         - name: restore-clickhouse-backup
           image: {{ .Values.images.clickhouseRestore }}
@@ -43,11 +41,11 @@ spec:
             requests:
               cpu: "0.5"
               memory: "1Gi"
-              ephemeral-storage: "4Gi"
+              ephemeral-storage: "5Gi"
             limits:
               cpu: "1"
               memory: "4Gi"
-              ephemeral-storage: "4Gi"
+              ephemeral-storage: "5Gi"
           image: {{ .Values.images.clickhouse }}
           volumeMounts:
             - name: clickhouse-data

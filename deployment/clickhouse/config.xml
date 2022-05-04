@@ -1,7 +1,7 @@
-<yandex>
+<clickhouse>
   <logger>
-    <level>debug</level>
-    <console>1</console>
+    <level>information</level>
+    <console>true</console>
   </logger>
 
   <!-- get rid of "Updating DNS cache" -->
@@ -15,7 +15,8 @@
   <interserver_http_port>9009</interserver_http_port>
 
   <max_connections>4096</max_connections>
-  <keep_alive_timeout>3</keep_alive_timeout>
+  <!-- ch pool -->
+  <keep_alive_timeout>120</keep_alive_timeout>
 
   <!-- Maximum number of concurrent queries. -->
   <max_concurrent_queries>100</max_concurrent_queries>
@@ -125,4 +126,4 @@
        The directory will be created if it doesn't exist.
     -->
   <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
-</yandex>
+</clickhouse>

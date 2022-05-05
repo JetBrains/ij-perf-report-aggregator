@@ -1,8 +1,7 @@
-import { forkJoin, map, Observable, shareReplay, switchMap } from "rxjs"
+import { combineLatest, map, Observable, shareReplay } from "rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "../dataQuery"
-import { injectOrError, serverUrlObservableKey } from "../injectionKeys"
-import { CompressorUsingDictionary, initZstdObservable } from "../zstd"
-import { fromFetchWithRetryAndErrorHandling } from "./rxjs"
+import { compressorObservableKey, injectOrError, serverUrlObservableKey } from "../injectionKeys"
+import { CompressorUsingDictionary } from "../zstd"
 
 export class ServerConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
@@ -13,22 +12,17 @@ export class ServerConfigurator implements DataQueryConfigurator {
   private compressor: CompressorUsingDictionary | null = null
 
   constructor(readonly db: string, readonly table: string | null = null) {
-    this.observable = injectOrError(serverUrlObservableKey).pipe(
-      switchMap(url => {
+    injectOrError(compressorObservableKey).subscribe(it => {
+      this.compressor = it
+    })
+
+    this.observable = combineLatest([injectOrError(serverUrlObservableKey), injectOrError(compressorObservableKey)]).pipe(
+      map(([url, compressor]) => {
         this._serverUrl = url
-        return forkJoin([
-          fromFetchWithRetryAndErrorHandling<ArrayBuffer>(`${url}/api/zstd-dictionary`, null, it => it.arrayBuffer()),
-          initZstdObservable,
-        ])
-      }),
-      map(([dictionaryData, _]) => {
-        if (this.compressor !== null) {
-          this.compressor.dispose()
-        }
-        this.compressor = new CompressorUsingDictionary(dictionaryData)
+        this.compressor = compressor
         return null
       }),
-      shareReplay(1)
+      shareReplay(1),
     )
   }
 

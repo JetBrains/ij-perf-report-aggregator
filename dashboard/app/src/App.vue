@@ -30,25 +30,53 @@
   </main>
 </template>
 <script setup lang="ts">
-import { filter, shareReplay } from "rxjs"
+import { filter, forkJoin, map, shareReplay, switchMap } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
-import { serverUrlObservableKey } from "shared/src/injectionKeys"
-import { provide, ref, shallowRef, watch } from "vue"
+import { fromFetchWithRetryAndErrorHandling, refToObservable } from "shared/src/configurators/rxjs"
+import { compressorObservableKey, serverUrlObservableKey } from "shared/src/injectionKeys"
+import { CompressorUsingDictionary, initZstdObservable } from "shared/src/zstd"
+import { onBeforeUnmount, provide, ref, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
 import PrimeToast from "./PrimeToast.vue"
 import logoUrl from "./jb_square.svg?url"
 import { getItems } from "./route"
 
+let compressor: CompressorUsingDictionary | null = null
+
+onBeforeUnmount(() => {
+  if (compressor !== null) {
+    compressor.dispose()
+    compressor = null
+  }
+})
+
 const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
 const items = ref(getItems())
-provide(serverUrlObservableKey, refToObservable(serverUrl).pipe(
+const serverUrlObservable = refToObservable(serverUrl).pipe(
   filter((it: string | null): it is string => it !== null && it.length !== 0),
   shareReplay(1),
-))
+)
+provide(serverUrlObservableKey, serverUrlObservable)
+provide(compressorObservableKey, serverUrlObservable.pipe(
+    switchMap(url => {
+      return forkJoin([
+        fromFetchWithRetryAndErrorHandling<ArrayBuffer>(`${url}/api/zstd-dictionary`, null, it => it.arrayBuffer()),
+        initZstdObservable,
+      ])
+    }),
+    map(([dictionaryData, _]) => {
+      if (compressor !== null) {
+        compressor.dispose()
+      }
+      compressor = new CompressorUsingDictionary(dictionaryData)
+      return compressor
+    }),
+    shareReplay(1),
+  ),
+)
 
 const activePath = shallowRef("")
 const _route = useRoute()

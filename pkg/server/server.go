@@ -74,14 +74,13 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   mux.Handle("/api/q/", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-  var r http.Handler = &CachingHandler{
+  mux.Handle("/api/zstd-dictionary", &CachingHandler{
     handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
       return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil
     },
     manager:     cacheManager,
     contentType: "application/octet-stream",
-  }
-  mux.Handle("/api/zstd-dictionary", r)
+  })
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
     writer.WriteHeader(200)

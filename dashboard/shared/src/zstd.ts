@@ -5,7 +5,8 @@ import {
   _ZSTD_compress_usingCDict,
   _ZSTD_compressBound,
   _ZSTD_createCCtx,
-  _ZSTD_createCDict, _ZSTD_freeCCtx,
+  _ZSTD_createCDict,
+  _ZSTD_freeCCtx,
   _ZSTD_freeCDict,
   _ZSTD_isError,
   HEAPU8,
@@ -44,7 +45,6 @@ export class CompressorUsingDictionary {
     const maxUncompressedSize = s.length * 3
     // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
     const uncompressedOffset = _malloc(maxUncompressedSize)
-
     try {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
@@ -60,20 +60,15 @@ export class CompressorUsingDictionary {
           // noinspection ExceptionCaughtLocallyJS
           throw new Error(`Failed to compress with code ${sizeOrError}`)
         }
-
-        const result = bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
-        _free(compressedOffset, maxCompressedSize)
-        _free(uncompressedOffset, maxUncompressedSize)
         // console.timeEnd("zstd")
-        return result
+        return bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
       }
       finally {
         _free(compressedOffset, maxCompressedSize)
       }
     }
-    catch (e) {
+    finally {
       _free(uncompressedOffset, maxUncompressedSize)
-      throw e
     }
   }
 

@@ -6,7 +6,6 @@ import (
   "github.com/zeebo/xxh3"
   "io/fs"
   "log"
-  "mime"
   "net/http"
   "path/filepath"
   "strconv"
@@ -77,8 +76,22 @@ func run() error {
       info.data = data
       info.contentLength = lengthAsString
 
-      info.contentType = mime.TypeByExtension(filepath.Ext(path))
-      if len(info.contentType) == 0 {
+      // no mime type on distroless image
+      if strings.HasSuffix(key, ".woff2") {
+        info.contentType = "font/woff2"
+      } else if strings.HasSuffix(key, ".svg") {
+        info.contentType = "image/svg+xml"
+      } else if strings.HasSuffix(key, ".js") {
+        info.contentType = "text/javascript"
+      } else if strings.HasSuffix(key, ".json") {
+        info.contentType = "application/json"
+      } else if strings.HasSuffix(key, ".html") {
+        info.contentType = "text/html"
+      } else if strings.HasSuffix(key, ".css") {
+        info.contentType = "text/css"
+      } else if strings.HasSuffix(key, ".wasm") {
+        info.contentType = "application/wasm"
+      } else {
         return errors.New("cannot determinate content-type by file extension: " + filepath.Ext(path))
       }
 

@@ -11,6 +11,7 @@ import (
 // separate byte buffer pool - different sizes
 var byteBufferPool bytebufferpool.Pool
 
+//nolint:gocyclo
 func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers []*bytebufferpool.ByteBuffer, query DataQuery) error {
   for _, column := range *result {
     columnIndex := columnNameToIndex[column.Name]

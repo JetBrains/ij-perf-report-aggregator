@@ -1,10 +1,11 @@
 linters:
   enable:
-    - bodyclose
     - gocyclo
     - prealloc
     - exportloopref
     - unconvert
-    - unparam
   disable:
     - structcheck
+    - gosimple
+    - staticcheck
+    - unused

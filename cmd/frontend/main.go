@@ -2,18 +2,20 @@ package main
 
 import (
   "embed"
+  "github.com/develar/errors"
   "github.com/zeebo/xxh3"
   "io/fs"
-  "io/ioutil"
   "log"
+  "mime"
   "net/http"
+  "path/filepath"
   "strconv"
   "strings"
 )
 
 var (
   //go:embed resources
-  res embed.FS
+  assetFs embed.FS
 )
 
 func main() {
@@ -23,35 +25,131 @@ func main() {
   }
 }
 
+type assetInfo struct {
+  data            []byte
+  dataBr          []byte
+  eTag            string
+  contentLength   string
+  contentLengthBr string
+
+  contentType string
+}
+
 func run() error {
-  sub, _ := fs.Sub(res, "resources")
-  fileServer := http.FileServer(http.FS(sub))
-  f, _ := res.Open("resources/index.html")
-  indexHtml, _ := ioutil.ReadAll(f)
-  indexHtmlEtag := strconv.FormatUint(xxh3.Hash(indexHtml), 36)
-  indexHtmlLength := strconv.Itoa(len(indexHtml))
-  return http.ListenAndServe(":8080", http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
-    urlPath := request.URL.Path
-    if strings.ContainsRune(urlPath, '.') || urlPath == "/" {
-      fileServer.ServeHTTP(w, request)
+  var pathToAsset = map[string]*assetInfo{}
+
+  err := fs.WalkDir(assetFs, "resources", func(path string, d fs.DirEntry, err error) error {
+    if err != nil {
+      return err
+    }
+
+    if !strings.ContainsRune(path, '.') {
+      // is a directory
+      return nil
+    }
+
+    data, err := assetFs.ReadFile(path)
+    if err != nil {
+      return err
+    }
+
+    if path == "resources" {
+      return nil
+    }
+
+    key := strings.TrimPrefix(path, "resources")
+    isBr := strings.HasSuffix(key, ".br")
+    if isBr {
+      key = strings.TrimSuffix(key, ".br")
+    }
+
+    info := pathToAsset[key]
+    if info == nil {
+      info = &assetInfo{}
+      pathToAsset[key] = info
+    }
+
+    lengthAsString := strconv.Itoa(len(data))
+    if isBr {
+      info.dataBr = data
+      info.contentLengthBr = lengthAsString
     } else {
-      // vue router HTML5 mode (https://next.router.vuejs.org/guide/essentials/history-mode.html#html5-mode)
+      info.data = data
+      info.contentLength = lengthAsString
 
-      header := w.Header()
-      header.Set("Content-Type", "text/html")
-      header.Set("Content-Length", indexHtmlLength)
-      header.Set("Vary", "Accept-Encoding")
-      header.Set("Cache-Control", "public, must-revalidate, max-age=30")
-      header.Set("ETag", indexHtmlEtag)
+      info.contentType = mime.TypeByExtension(filepath.Ext(path))
+      if len(info.contentType) == 0 {
+        return errors.New("cannot determinate content-type by file extension: " + filepath.Ext(path))
+      }
 
-      prevEtag := request.Header.Get("If-None-Match")
-      if prevEtag == indexHtmlEtag {
-        w.WriteHeader(http.StatusNotModified)
+      // assets are immutable
+      if !strings.HasPrefix(key, "/assets/") {
+        hash := xxh3.Hash128(data)
+        info.eTag = strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36)
+      }
+    }
+
+    return nil
+  })
+  if err != nil {
+    return err
+  }
+
+  // no need to keep it anymore
+  assetFs = embed.FS{}
+
+  indexHtml := pathToAsset["/index.html"]
+  pathToAsset["/"] = indexHtml
+
+  http.Handle("/index.html", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+    newPath := "./"
+    q := request.URL.RawQuery
+    if q != "" {
+      newPath += "?" + q
+    }
+    writer.Header().Set("Location", newPath)
+    writer.WriteHeader(http.StatusMovedPermanently)
+  }))
+  http.Handle("/", http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+    header := writer.Header()
+
+    path := request.URL.Path
+    asset := pathToAsset[path]
+    if asset == nil {
+      if strings.ContainsRune(path, '.') {
+        http.NotFound(writer, request)
         return
       }
 
-      w.WriteHeader(http.StatusOK)
-      _, _ = w.Write(indexHtml)
+      // vue router HTML5 mode (https://next.router.vuejs.org/guide/essentials/history-mode.html#html5-mode)
+      asset = indexHtml
+    }
+
+    header.Set("Vary", "Accept-Encoding")
+    header.Set("Content-Type", asset.contentType)
+
+    // https://medium.com/adobetech/an-http-caching-strategy-for-static-assets-configuring-the-server-1192452ce06a
+    if len(asset.eTag) == 0 {
+      header.Set("Cache-Control", "public,max-age=31536000,immutable")
+    } else {
+      header.Set("Cache-Control", "no-cache")
+
+      if request.Header.Get("If-None-Match") == asset.eTag {
+        writer.WriteHeader(http.StatusNotModified)
+        return
+      }
+
+      header.Set("ETag", asset.eTag)
+    }
+
+    if len(asset.dataBr) != 0 && strings.Contains(request.Header.Get("Accept-Encoding"), "br") {
+      header.Set("Content-Length", asset.contentLengthBr)
+      header.Set("Content-Encoding", "br")
+      _, _ = writer.Write(asset.dataBr)
+    } else {
+      header.Set("Content-Length", asset.contentLength)
+      _, _ = writer.Write(asset.data)
     }
   }))
+  return http.ListenAndServe(":8080", nil)
 }

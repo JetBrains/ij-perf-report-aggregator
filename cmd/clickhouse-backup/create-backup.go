@@ -7,18 +7,19 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
-  "github.com/segmentio/ksuid"
   "go.uber.org/zap"
   "io/ioutil"
   "os"
   "path/filepath"
+  "strconv"
+  "time"
 )
 
 func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, table clickhouse.TableInfo, backupDir string, logger *zap.Logger) error {
   shadowDir := filepath.Join(t.ClickhouseDir, "shadow")
-  dirName := ksuid.New().String()
+  dirName := strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + strconv.FormatInt(int64(os.Getpid()), 36)
   logger.Info("freeze table", zap.String("shadowDir", dirName))
-  _, err := db.Exec(fmt.Sprintf("alter table `%s`.`%s` freeze with name '" + dirName + "'", table.Database, table.Name))
+  _, err := db.Exec(fmt.Sprintf("alter table `%s`.`%s` freeze with name '"+dirName+"'", table.Database, table.Name))
   if err != nil {
     return errors.WithStack(err)
   }

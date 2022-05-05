@@ -2,7 +2,6 @@
   "name": "ij",
   "private": true,
   "dependencies": {
-    "primeicons": "^5.0.0",
     "primevue": "^3.12.6",
     "shared": "workspace:*",
     "vue": "3.2.33",

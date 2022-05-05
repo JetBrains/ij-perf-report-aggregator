@@ -1,5 +1,4 @@
 import { getIjItems, getIjRoutes } from "ij/src/route"
-import { getJbItems, getJbRoutes } from "jb/src/route"
 import { MenuItem } from "primevue/menuitem"
 import { getReportVisualizerItems, getReportVisualizerRoutes } from "report-visualizer/src/route"
 import { ParentRouteRecord } from "shared/src/route"
@@ -13,11 +12,11 @@ function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRa
 }
 
 export function getItems(): Array<MenuItem> {
-  return [...getIjItems(), ...getJbItems(), ...getReportVisualizerItems()]
+  return [...getIjItems(), ...getReportVisualizerItems()]
 }
 
 function getRoutes(): Array<ParentRouteRecord> {
-  return [...getIjRoutes(), ...getJbRoutes(), ...getReportVisualizerRoutes()]
+  return [...getIjRoutes(), ...getReportVisualizerRoutes()]
 }
 
 export function createAndConfigureRouter(): Router {

@@ -1,7 +1,7 @@
 <template>
   <div
     ref="chartContainer"
-    class="activityChart"
+    class="w-full h-[450px]"
   />
   <small v-show="descriptor.id === 'serviceTimeline' || descriptor.id === 'timeline'">
     Dotted border area — async preloading. Solid border area — sync preloading.
@@ -75,9 +75,3 @@ export default defineComponent({
   }
 })
 </script>
-<style scoped>
-.activityChart {
-  width: 100%;
-  height: 450px;
-}
-</style>

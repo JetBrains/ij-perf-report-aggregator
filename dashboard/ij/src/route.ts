@@ -36,6 +36,23 @@ export function getIjItems(): Array<MenuItem> {
       label: "RubyMine Integration Performance",
       to: "/rubyMinePerformanceIntegration/dashboard",
     },
+    {
+      label: "Fleet",
+      items: [
+        {
+          to: "/fleet/dashboard",
+          label: "Dashboard",
+        },
+        {
+          to: "/fleet/perf",
+          label: "Performance Tests",
+        },
+        {
+          to: "/fleet/explore",
+          label: "Explore",
+        },
+      ],
+    },
   ]
 }
 
@@ -113,6 +130,34 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "RubyMine Integration Performance Dashboard"},
         },
       ]
+    },
+    {
+      children: [
+        {
+          path: "/fleet/dashboard",
+          meta: {pageTitle: "Fleet Dashboard", menuTitle: "Dashboard"},
+          component: () => import("./fleet/FleetDashboard.vue"),
+        },
+        {
+          path: "/fleet/perf",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "fleet",
+            table: "measure",
+            defaultMeasures: [],
+            urlEnabled: false,
+            compoundTooltip: false,
+            chartType: "scatter",
+            valueUnit: "ns",
+          },
+          meta: {pageTitle: "Fleet Performance Tests"},
+        },
+        {
+          path: "/fleet/explore",
+          component: () => import("./fleet/FleetExplore.vue"),
+          meta: {pageTitle: "Fleet Explore"},
+        },
+      ],
     },
   ]
 }

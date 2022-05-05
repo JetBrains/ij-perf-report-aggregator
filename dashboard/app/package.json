@@ -5,8 +5,6 @@
     "@fontsource/inter": "4.5.10",
     "@fontsource/jetbrains-mono": "4.5.8",
     "ij": "workspace:*",
-    "jb": "workspace:*",
-    "primeicons": "5.0.0",
     "primevue": "3.12.6",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.3",

@@ -68,7 +68,7 @@ func restoreMain(logger *zap.Logger) error {
     }
 
     defer util.Close(file, logger)
-    return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger)
+    return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger, nil)
   } else {
     baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
     if err != nil {
@@ -83,7 +83,16 @@ func restoreMain(logger *zap.Logger) error {
     if err != nil {
       return err
     }
-    return backupManager.download(remoteFile, dataDir, true)
+
+    var bar *pb.ProgressBar
+    if !env.GetBool("DISABLE_PROGRESS", false) {
+      bar = pb.Full.New(0)
+      bar.Set(pb.Bytes, true)
+      bar.SetRefreshRate(time.Second)
+      defer bar.Finish()
+    }
+
+    return backupManager.download(remoteFile, dataDir, true, bar)
   }
 }
 
@@ -91,15 +100,53 @@ type BackupManager struct {
   *clickhouse.BaseBackupManager
 }
 
-func restore(file string, outputRootDirectory string, isExtractMetadataNeeded bool, proxyReader io.Reader, clickhouseDir string, backupManager *BackupManager, logger *zap.Logger) error {
+// Reader it's a wrapper for given reader, but with progress handle
+type ProxyReader struct {
+  io.Reader
+  bar *pb.ProgressBar
+}
+
+// Read reads bytes from wrapped reader and add amount of bytes to progress bar
+func (r *ProxyReader) Read(p []byte) (n int, err error) {
+  n, err = r.Reader.Read(p)
+  r.bar.Add(n)
+  return
+}
+
+// Close the wrapped reader when it implements io.Closer
+func (r *ProxyReader) Close() (err error) {
+  if closer, ok := r.Reader.(io.Closer); ok {
+    return closer.Close()
+  }
+  return
+}
+
+func restore(
+  file string,
+  outputRootDirectory string,
+  isExtractMetadataNeeded bool,
+  r io.ReadCloser,
+  clickhouseDir string,
+  backupManager *BackupManager,
+  logger *zap.Logger,
+  bar *pb.ProgressBar,
+) error {
   copyBuffer := make([]byte, 32*1024)
   createdDirs := make(map[string]bool)
 
-  tarReader := tar.NewReader(proxyReader)
+  if bar != nil {
+    r = &ProxyReader{
+      Reader: r,
+      bar:    bar,
+    }
+  }
+
+  tarReader := tar.NewReader(r)
   var metafile clickhouse.MetaFile
   var info *clickhouse.MappingInfo
   for {
     header, err := tarReader.Next()
+
     if err == io.EOF {
       break
     } else if err != nil {
@@ -125,16 +172,20 @@ func restore(file string, outputRootDirectory string, isExtractMetadataNeeded bo
       return err
     }
   }
+  err := r.Close()
+  if err != nil {
+    return err
+  }
 
   logger.Debug("move metadata", zap.String("backup", file), zap.String("outputRootDirectory", outputRootDirectory))
   currentMetadataDir := filepath.Join(outputRootDirectory, "_metadata_")
   if isExtractMetadataNeeded {
-    err := extractMetadata(clickhouseDir, info, currentMetadataDir)
+    err = extractMetadata(clickhouseDir, info, currentMetadataDir)
     if err != nil {
       return err
     }
   } else {
-    err := os.RemoveAll(currentMetadataDir)
+    err = os.RemoveAll(currentMetadataDir)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -146,7 +197,7 @@ func restore(file string, outputRootDirectory string, isExtractMetadataNeeded bo
 
   logger.Info("download required parts", zap.String("requiredBackup", metafile.RequiredBackup), zap.String("currentBackup", file))
   previousBackupDir := filepath.Join(clickhouseDir, "backup", metafile.RequiredBackup)
-  err := backupManager.download(metafile.RequiredBackup+".tar", previousBackupDir, false)
+  err = backupManager.download(metafile.RequiredBackup+".tar", previousBackupDir, false, bar)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -222,7 +273,7 @@ func (t *BackupManager) findBackup(bucket string) (string, error) {
   return candidate, nil
 }
 
-func (t *BackupManager) download(file string, outputRootDirectory string, extractMetadata bool) error {
+func (t *BackupManager) download(file string, outputRootDirectory string, extractMetadata bool, bar *pb.ProgressBar) error {
   object, err := t.Client.GetObject(t.TaskContext, t.Bucket, file, minio.GetObjectOptions{})
   if err != nil {
     return errors.WithStack(err)
@@ -230,21 +281,18 @@ func (t *BackupManager) download(file string, outputRootDirectory string, extrac
 
   defer util.Close(object, t.Logger)
 
-  var proxyReader io.Reader
-  if env.GetBool("DISABLE_PROGRESS", false) {
-    proxyReader = object
-  } else {
+  if bar != nil {
     objectInfo, err := t.Client.StatObject(t.TaskContext, t.Bucket, file, minio.StatObjectOptions{})
     if err != nil {
       return errors.WithStack(err)
     }
-    bar := pb.Full.Start64(objectInfo.Size)
-    bar.SetRefreshRate(time.Second)
-    proxyReader = bar.NewProxyReader(object)
-    defer bar.Finish()
+    bar.AddTotal(objectInfo.Size)
+    if !bar.IsStarted() {
+      bar.Start()
+    }
   }
 
-  return restore(file, outputRootDirectory, extractMetadata, proxyReader, t.ClickhouseDir, t, t.Logger)
+  return restore(file, outputRootDirectory, extractMetadata, object, t.ClickhouseDir, t, t.Logger, bar)
 }
 
 func decompressTarFile(tarReader *tar.Reader, header *tar.Header, outputRootDirectory string, copyBuffer []byte, createdDirs map[string]bool) error {

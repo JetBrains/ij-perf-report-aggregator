@@ -54,7 +54,7 @@ export class CompressorUsingDictionary {
       try {
         // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress/
         // size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel)
-        console.time("zstd")
+        // console.time("zstd")
         const sizeOrError = _ZSTD_compress_usingCDict(this.context, compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, this.dict)
         if (isError(sizeOrError)) {
           // noinspection ExceptionCaughtLocallyJS
@@ -64,7 +64,7 @@ export class CompressorUsingDictionary {
         const result = bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
         _free(compressedOffset, maxCompressedSize)
         _free(uncompressedOffset, maxUncompressedSize)
-        console.timeEnd("zstd")
+        // console.timeEnd("zstd")
         return result
       }
       finally {

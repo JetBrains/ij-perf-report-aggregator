@@ -104,10 +104,3 @@ onUnmounted(() => {
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
 </script>
-<style scoped>
-
-a {
-  text-decoration: none;
-}
-
-</style>

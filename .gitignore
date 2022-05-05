@@ -11,6 +11,7 @@ node_modules/
 cmd/frontend/resources/assets/
 cmd/frontend/resources/favicon.svg
 cmd/frontend/resources/index.html
+cmd/frontend/resources/*.br
 values-resolved.yaml
 
 .eslintcache

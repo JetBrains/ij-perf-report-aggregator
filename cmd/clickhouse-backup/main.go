@@ -282,4 +282,3 @@ func getDbList(db *sqlx.DB, t *BackupManager, dbNames []string) ([]clickhouse.Db
   }
   return result, nil
 }
-

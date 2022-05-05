@@ -22,7 +22,7 @@ module.exports = {
   parser: "vue-eslint-parser",
   parserOptions: {
     ecmaVersion: 2020,
-    project: ["./dashboard/**/tsconfig.json", "./jb/dashboard/tsconfig.json"],
+    project: ["./dashboard/**/tsconfig.json"],
     parser: "@typescript-eslint/parser"
   },
   rules: {

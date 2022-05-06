@@ -22,6 +22,7 @@ export default defineConfig({
     // visualizer({template: "sunburst"}),
     svgLoader(),
     Components({
+      dts: path.resolve(__dirname, "dashboard/shared/src/components.d.ts"),
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),

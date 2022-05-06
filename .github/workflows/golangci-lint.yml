@@ -14,6 +14,7 @@ jobs:
         with:
           go-version: 1.18
       - uses: actions/checkout@v3
+      - run: mkdir cmd/frontend/resources && touch cmd/frontend/resources/make-typecheck-happy.txt
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:

@@ -42,7 +42,7 @@ func run() error {
       return err
     }
 
-    if !strings.ContainsRune(path, '.') {
+    if !strings.ContainsRune(path, '.') || strings.HasPrefix(path, "/.") {
       // is a directory
       return nil
     }

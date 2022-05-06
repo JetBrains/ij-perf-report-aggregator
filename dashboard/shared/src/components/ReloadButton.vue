@@ -8,7 +8,7 @@
   />
 </template>
 <script setup lang="ts">
-import { take, takeLast } from "rxjs"
+import { take } from "rxjs"
 import { computed, inject, PropType, shallowRef } from "vue"
 import { ReloadConfigurator } from "../configurators/ReloadConfigurator"
 import { configuratorListKey } from "../injectionKeys"
@@ -37,7 +37,7 @@ const doLoad = computed(() => {
   let counter = 0
   return () => {
     loading.value = true
-    trigger.subject.asObservable().pipe(take(1)).subscribe(value => {
+    trigger.subject.asObservable().pipe(take(1)).subscribe(() => {
       setTimeout(() => {
         loading.value = false
       }, 2000)

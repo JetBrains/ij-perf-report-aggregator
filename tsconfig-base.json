@@ -4,6 +4,7 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "strict": true,
+    "allowJs": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,

@@ -7,11 +7,10 @@
     "dev": "vite serve",
     "build": "vite build --emptyOutDir",
     "preview": "vite preview",
-    "lint": "NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
+    "lint": "pnpm vue-tsc --noEmit && NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
     "update-deps": "pnpm update -i -r --latest"
   },
   "devDependencies": {
-    "@nabla/vite-plugin-eslint": "1.4.0",
     "@tailwindcss/line-clamp": "^0.4.0",
     "@tailwindcss/typography": "^0.5.2",
     "@typescript-eslint/eslint-plugin": "5.22.0",
@@ -19,6 +18,7 @@
     "@vitejs/plugin-vue": "2.3.2",
     "@vue/compiler-sfc": "3.2.33",
     "@vue/eslint-config-typescript": "10.0.0",
+    "add": "^2.0.6",
     "autoprefixer": "^10.4.7",
     "eslint": "8.14.0",
     "eslint-plugin-import": "2.26.0",
@@ -32,11 +32,14 @@
     "unplugin-vue-components": "0.19.3",
     "vite": "2.9.8",
     "vite-svg-loader": "^3.3.0",
-    "vue": "3.2.33"
+    "vue": "3.2.33",
+    "vue-tsc": "^0.34.11"
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["primeicons"]
+      "ignoreMissing": [
+        "primeicons"
+      ]
     }
   },
   "engines": {

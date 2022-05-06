@@ -123,7 +123,6 @@ function resetState() {
     value.items.length = 0
   }
 
-  isMetaPressed = false
   if (lastManager != null) {
     lastManager.paused = false
   }
@@ -136,6 +135,8 @@ const hide = debounceSync(() => {
   resetState()
 }, 2_000)
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 function panelClosedExplicitly() {
   hide.clear()
   currentTarget = null
@@ -153,12 +154,10 @@ function cancelHide() {
   hide.clear()
 }
 
-let isMetaPressed = false
 let metaKey = ""
 let lastManager: ChartToolTipManager | null = null
 const keyDown = (event: KeyboardEvent) => {
   if (event.metaKey) {
-    isMetaPressed = true
     metaKey = event.code
     if (lastManager != null) {
       lastManager.paused = true
@@ -167,7 +166,6 @@ const keyDown = (event: KeyboardEvent) => {
 }
 const keyUp = (event: KeyboardEvent) => {
   if (event.code == metaKey) {
-    isMetaPressed = false
     if (lastManager != null) {
       lastManager.paused = false
     }

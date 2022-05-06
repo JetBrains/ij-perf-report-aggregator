@@ -17,15 +17,16 @@ export class AggregationOperatorConfigurator implements DataQueryConfigurator {
   }
 
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    const aggregator = this.value.value ?? AggregationOperatorConfigurator.DEFAULT_OPERATOR
-    if (aggregator.operator === "median" || aggregator.operator.length === 0) {
+    const aggregator = this.value.value
+    const operator = aggregator.operator
+    if (operator === "median" || operator.length === 0) {
       query.aggregator = "quantileTDigest(0.5)"
     }
-    else if (aggregator.operator === "quantile") {
-      query.aggregator = `quantileTDigest(${aggregator.quantile / 100})`
+    else if (operator === "quantile") {
+      query.aggregator = `quantileTDigest(${(aggregator.quantile ?? 50) / 100})`
     }
     else {
-      query.aggregator = aggregator.operator
+      query.aggregator = operator
     }
     return true
   }

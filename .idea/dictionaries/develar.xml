@@ -14,6 +14,7 @@
       <w>fulcio</w>
       <w>ghcr</w>
       <w>gocyclo</w>
+      <w>golangci</w>
       <w>gosu</w>
       <w>heapu</w>
       <w>ijplatform</w>
@@ -44,6 +45,7 @@
       <w>sqlite</w>
       <w>tcsessionid</w>
       <w>toasteventbus</w>
+      <w>typecheck</w>
       <w>uindex</w>
       <w>uncrush</w>
       <w>uncrushed</w>

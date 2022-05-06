@@ -222,10 +222,13 @@ export class TimeLineChartManager implements ChartManager {
             },
             data: [],
           }
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           rowToItems.set(rowName, series)
         }
 
-        (series.data as Array<ChartDataItem>).push(chartItem)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        (series!.data as Array<ChartDataItem>).push(chartItem)
 
         const newEnd = item.s + item.d
         const info = rowToEnd.get(rowIndex)

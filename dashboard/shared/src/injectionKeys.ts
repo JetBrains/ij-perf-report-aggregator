@@ -6,7 +6,6 @@ import ChartTooltip from "./components/ChartTooltip.vue"
 import { AggregationOperatorConfigurator } from "./configurators/AggregationOperatorConfigurator"
 import { TimeRange } from "./configurators/TimeRangeConfigurator"
 import { DataQueryConfigurator } from "./dataQuery"
-import { CompressorUsingDictionary } from "./zstd"
 
 // inject is used instead of prop because on dashboard page there are a lot of chart cards and it is tedious to set property for each
 export const configuratorListKey: InjectionKey<Array<DataQueryConfigurator>> = Symbol("dataQueryExecutor")
@@ -15,7 +14,6 @@ export const timeRangeKey: InjectionKey<Ref<TimeRange>> = Symbol("timeRange")
 export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("tooltipUrlProvider")
 
 export const serverUrlObservableKey: InjectionKey<Observable<string>> = Symbol("serverUrlObservable")
-export const compressorObservableKey: InjectionKey<Observable<CompressorUsingDictionary>> = Symbol("compressorObservable")
 
 export const chartStyleKey: InjectionKey<ChartStyle> = Symbol("chartStyle")
 

@@ -8,7 +8,7 @@
       :cols="80"
       class="!font-mono"
     />
-    <div class="grid grid-cols-1 gap-2 place-content-start justify-items-start w-fit">
+    <div class="grid gap-2 place-content-start">
       <Button
         class="p-button-sm"
         :loading="isFetching"
@@ -27,7 +27,7 @@
       />
       <Button
         :loading="isFetchingDev"
-        class="col-span-2 p-button-sm w-full"
+        class="col-span-2 p-button-sm"
         icon="pi pi-download"
         label="Get from instance on port 63343"
         @click="getFromRunningDevInstance"

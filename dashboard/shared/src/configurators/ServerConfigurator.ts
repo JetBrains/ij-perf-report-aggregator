@@ -1,7 +1,7 @@
 import { combineLatest, map, Observable, shareReplay } from "rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "../dataQuery"
-import { compressorObservableKey, injectOrError, serverUrlObservableKey } from "../injectionKeys"
-import { CompressorUsingDictionary } from "../zstd"
+import { injectOrError, serverUrlObservableKey } from "../injectionKeys"
+import { getCompressor, initZstdObservable } from "../zstd"
 
 export class ServerConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
@@ -9,17 +9,10 @@ export class ServerConfigurator implements DataQueryConfigurator {
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL
 
-  private compressor: CompressorUsingDictionary | null = null
-
   constructor(readonly db: string, readonly table: string | null = null) {
-    injectOrError(compressorObservableKey).subscribe(it => {
-      this.compressor = it
-    })
-
-    this.observable = combineLatest([injectOrError(serverUrlObservableKey), injectOrError(compressorObservableKey)]).pipe(
-      map(([url, compressor]) => {
+    this.observable = combineLatest([injectOrError(serverUrlObservableKey), initZstdObservable]).pipe(
+      map(([url, _]) => {
         this._serverUrl = url
-        this.compressor = compressor
         return null
       }),
       shareReplay(1),
@@ -31,13 +24,11 @@ export class ServerConfigurator implements DataQueryConfigurator {
   }
 
   computeQueryUrl(query: DataQuery): string {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return `${this._serverUrl}/api/q/${this.compressor!.compress(serializeQuery(query))}`
+    return `${this._serverUrl}/api/q/${getCompressor().compress(serializeQuery(query))}`
   }
 
   computeSerializedQueryUrl(url: string): string {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return `${this._serverUrl}/api/q/${this.compressor!.compress(url)}`
+    return `${this._serverUrl}/api/q/${getCompressor().compress(url)}`
   }
 
   createObservable(): Observable<unknown> {

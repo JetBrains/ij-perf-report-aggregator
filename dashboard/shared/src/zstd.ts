@@ -1,26 +1,61 @@
-import { from, shareReplay } from "rxjs"
+import { forkJoin, map, shareReplay } from "rxjs"
+import zstdDictionaryUrl from "../../../pkg/data-query/zstd.dictionary?url"
+import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
 import {
-  _free,
-  _malloc,
-  _ZSTD_compress_usingCDict,
-  _ZSTD_compressBound,
-  _ZSTD_createCCtx,
-  _ZSTD_createCDict,
-  _ZSTD_freeCCtx,
-  _ZSTD_freeCDict,
-  _ZSTD_isError,
+  free,
+  malloc,
+  ZSTD_compress_usingCDict,
+  ZSTD_compressBound,
+  ZSTD_createCCtx,
+  ZSTD_createCDict,
+  ZSTD_freeCCtx,
+  ZSTD_freeCDict,
+  ZSTD_isError,
   HEAPU8,
   zstdReady,
 } from "./zstd-module"
 
-export const initZstdObservable = from(zstdReady).pipe(shareReplay(1))
+let compressor: CompressorUsingDictionary | null = null
+
+export function getCompressor(): CompressorUsingDictionary {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return compressor!
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (import.meta.hot) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  import.meta.hot.dispose(() => {
+    if (compressor !== null) {
+      compressor.dispose()
+      compressor = null
+    }
+  })
+}
+
+// zstdDictionaryUrl - if zstd dictionary will be changed on a server side, then server must introduce a new endpoint for query (currently, `/api/q`)
+export const initZstdObservable = forkJoin([
+  fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, null, it => it.arrayBuffer()),
+  zstdReady,
+]).pipe(
+  map(([dictionaryData, _]) => {
+    if (compressor !== null) {
+      compressor.dispose()
+    }
+    compressor = new CompressorUsingDictionary(dictionaryData)
+    return null
+  }),
+  shareReplay(1),
+)
 
 function isError(code: number): boolean {
-  return _ZSTD_isError(code)
+  return ZSTD_isError(code)
 }
 
 function compressBound(size: number): number {
-  return _ZSTD_compressBound(size)
+  return ZSTD_compressBound(size)
 }
 
 const zstdCompressionLevel = 7
@@ -32,30 +67,30 @@ export class CompressorUsingDictionary {
   private readonly context: number
 
   constructor(dictionaryData: ArrayBuffer) {
-    this.zstdDictionaryPointer = _malloc(dictionaryData.byteLength)
+    this.zstdDictionaryPointer = malloc(dictionaryData.byteLength)
     this.zstdDictionarySize = dictionaryData.byteLength
     HEAPU8.set(new Uint8Array(dictionaryData), this.zstdDictionaryPointer)
-    this.dict = _ZSTD_createCDict(this.zstdDictionaryPointer, this.zstdDictionarySize, zstdCompressionLevel)
+    this.dict = ZSTD_createCDict(this.zstdDictionaryPointer, this.zstdDictionarySize, zstdCompressionLevel)
 
-    this.context = _ZSTD_createCCtx()
+    this.context = ZSTD_createCCtx()
   }
 
   compress(s: string): string {
     // see https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder/encodeInto#buffer_sizing about computing the output space needed for full conversion of string to bytes
     const maxUncompressedSize = s.length * 3
     // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
-    const uncompressedOffset = _malloc(maxUncompressedSize)
+    const uncompressedOffset = malloc(maxUncompressedSize)
     try {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
 
       const maxCompressedSize = compressBound(sourceSize)
-      const compressedOffset = _malloc(maxCompressedSize)
+      const compressedOffset = malloc(maxCompressedSize)
       try {
-        // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress/
+        // compress - https://zstd.docsforge.com/dev/api/ZSTD_compress_usingCDict/
         // size_t ZSTD_compress(void *dst, size_t dstCapacity, const void *src, size_t srcSize, int compressionLevel)
         // console.time("zstd")
-        const sizeOrError = _ZSTD_compress_usingCDict(this.context, compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, this.dict)
+        const sizeOrError = ZSTD_compress_usingCDict(this.context, compressedOffset, maxCompressedSize, uncompressedOffset, sourceSize, this.dict)
         if (isError(sizeOrError)) {
           // noinspection ExceptionCaughtLocallyJS
           throw new Error(`Failed to compress with code ${sizeOrError}`)
@@ -64,24 +99,20 @@ export class CompressorUsingDictionary {
         return bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
       }
       finally {
-        _free(compressedOffset, maxCompressedSize)
+        free(compressedOffset, maxCompressedSize)
       }
     }
     finally {
-      _free(uncompressedOffset, maxUncompressedSize)
+      free(uncompressedOffset, maxUncompressedSize)
     }
   }
 
   dispose() {
-    _ZSTD_freeCDict(this.dict)
-    _ZSTD_freeCCtx(this.context)
-    _free(this.zstdDictionaryPointer, this.zstdDictionarySize)
+    ZSTD_freeCDict(this.dict)
+    ZSTD_freeCCtx(this.context)
+    free(this.zstdDictionaryPointer, this.zstdDictionarySize)
   }
 }
-
-// export function compressZstdToUrlSafeBase64(s: string) {
-//
-// }
 
 const base64UrlSafe = [
   "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",

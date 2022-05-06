@@ -91,6 +91,8 @@ func run() error {
         info.contentType = "text/css"
       } else if strings.HasSuffix(key, ".wasm") {
         info.contentType = "application/wasm"
+      } else if strings.HasSuffix(key, ".dictionary") {
+        info.contentType = "application/octet-stream"
       } else {
         return errors.New("cannot determinate content-type by file extension: " + filepath.Ext(path))
       }

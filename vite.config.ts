@@ -8,7 +8,6 @@ import Components from "unplugin-vue-components/vite"
 import { defineConfig, PluginOption } from "vite"
 import svgLoader from "vite-svg-loader"
 // import visualizer from "rollup-plugin-visualizer"
-import eslintPlugin from "@nabla/vite-plugin-eslint"
 import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
 import { OutputAsset, OutputChunk } from "rollup"
@@ -17,7 +16,6 @@ import { OutputAsset, OutputChunk } from "rollup"
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
 export default defineConfig({
   plugins: [
-    eslintPlugin(),
     vue(),
     // visualizer({template: "sunburst"}),
     svgLoader(),
@@ -64,11 +62,10 @@ export default defineConfig({
 })
 
 function brotli(): PluginOption {
-  let dir = ""
   return {
     name: "offline-compression",
     writeBundle(outputOptions, bundle) {
-      const outDir = outputOptions.dir
+      const outDir = outputOptions.dir!
       return Promise.all(Object.values(bundle).map(it => brotliCompressFile(it, outDir))) as Promise<never>
     },
     apply: "build",

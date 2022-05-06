@@ -1,3 +1,4 @@
+import { from, map, shareReplay } from "rxjs"
 import zstdWasmUrl from "./zstd.wasm?url"
 
 function abort(what: string): void {
@@ -44,41 +45,46 @@ const imports = {
   "a": asmLibraryArg,
 }
 
-export let _malloc: (size: number) => number
-export let _free: (offset: number, size: number) => void
-export let _ZSTD_isError: (size: number) => boolean
+export let malloc: (size: number) => number
+export let free: (offset: number, size: number) => void
 
-export let _ZSTD_compressBound: (size: number) => number
+export let ZSTD_isError: (size: number) => boolean
 
-export let _ZSTD_createCCtx: () => number
-export let _ZSTD_freeCCtx: (cCtx: number) => void
+export let ZSTD_compressBound: (size: number) => number
 
-export let _ZSTD_createCDict: (dictBuffer: number, dictSize: number, compressionLevel: number) => number
-export let _ZSTD_freeCDict: (cDict: number) => void
+export let ZSTD_createCCtx: () => number
+export let ZSTD_freeCCtx: (cCtx: number) => void
 
-export let _ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: number, src: number, srcSize: number, cDict: number) => number
+export let ZSTD_createCDict: (dictBuffer: number, dictSize: number, compressionLevel: number) => number
+export let ZSTD_freeCDict: (cDict: number) => void
+
+export let ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: number, src: number, srcSize: number, cDict: number) => number
 
 // let stackSave
 // let stackRestore
 // let stackAlloc
 
-export const zstdReady = WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports).then(function (output) {
-  const asm = (output.instance || output).exports as Record<string, never>
-  _malloc = asm["f"]
-  _free = asm["g"]
-  _ZSTD_isError = asm["h"]
-  _ZSTD_compressBound = asm["i"]
-  _ZSTD_createCCtx = asm["j"]
-  _ZSTD_freeCCtx = asm["k"]
-  _ZSTD_freeCDict = asm["l"]
-  _ZSTD_createCDict = asm["m"]
-  _ZSTD_compress_usingCDict = asm["n"]
-  // stackSave = asm["o"];
-  // stackRestore = asm["p"];
-  // stackAlloc = asm["q"];
-  // wasmTable = asm["n"];
-  const wasmMemory = asm["d"] as { buffer: ArrayBuffer }
-  buffer = wasmMemory.buffer
-  HEAPU8 = new Uint8Array(buffer)
-  initRuntime(asm)
-})
+export const zstdReady = from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
+  map(output => {
+    const asm = (output.instance || output).exports as Record<string, never>
+    malloc = asm["f"]
+    free = asm["g"]
+    ZSTD_isError = asm["h"]
+    ZSTD_compressBound = asm["i"]
+    ZSTD_createCCtx = asm["j"]
+    ZSTD_freeCCtx = asm["k"]
+    ZSTD_freeCDict = asm["l"]
+    ZSTD_createCDict = asm["m"]
+    ZSTD_compress_usingCDict = asm["n"]
+    // stackSave = asm["o"];
+    // stackRestore = asm["p"];
+    // stackAlloc = asm["q"];
+    // wasmTable = asm["n"];
+    const wasmMemory = asm["d"] as { buffer: ArrayBuffer }
+    buffer = wasmMemory.buffer
+    HEAPU8 = new Uint8Array(buffer)
+    initRuntime(asm)
+    return null
+  }),
+  shareReplay(1)
+)

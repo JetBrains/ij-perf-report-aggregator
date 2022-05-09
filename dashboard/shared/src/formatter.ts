@@ -41,7 +41,8 @@ export function numberAxisLabelFormatter(value: number): string {
 export function isDurationFormatterApplicable(measureName: string): boolean {
   return !(
     measureName.includes("number") || measureName.includes("Number") ||
-    measureName.includes("count") || measureName.includes("Count")
+    measureName.includes("count") || measureName.includes("Count") ||
+    measureName.endsWith("_sources")
   )
 }
 

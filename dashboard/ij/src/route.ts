@@ -4,7 +4,7 @@ import { ParentRouteRecord } from "shared/src/route"
 export function getIjItems(): Array<MenuItem> {
   return [
     {
-      label: "IJ",
+      label: "IJ Startup",
       items: [
         {
           to: "/ij/pulse",
@@ -25,16 +25,34 @@ export function getIjItems(): Array<MenuItem> {
       ],
     },
     {
-      label: "Shared Indexes",
-      to: "/sharedIndexes/dashboard",
+      label: "IntelliJ",
+      items: [
+        {
+          label: "Shared Indexes",
+          to: "/intellij/sharedIndexes/dashboard",
+        },
+        {
+          label: "Performance Tests",
+          to: "/intellij/performanceTests",
+        },
+      ]
     },
     {
-      label: "Integration Performance",
-      to: "/performanceIntegration/dashboard",
+      label: "PhpStorm",
+      items: [
+        {
+          label: "Performance Tests",
+          to: "/phpstorm/performanceTests",
+        },
+      ]
     },
     {
-      label: "RubyMine Integration Performance",
-      to: "/rubyMinePerformanceIntegration/dashboard",
+      label: "RubyMine",
+      to: "/rubymine/performanceTests",
+    },
+    {
+      label: "GoLand",
+      to: "/goland/performanceTests",
     },
     {
       label: "Fleet",
@@ -93,41 +111,68 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
       ]
     },
     {
-      children: [
+      children:[
         {
-          path: "/sharedIndexes/dashboard",
-          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
-          props: {
-            dbName: "sharedIndexes",
-            defaultMeasures: [],
-          },
-          meta: {pageTitle: "Shared Indexes Dashboard"},
-        },
-      ]
-    },
-    {
-      children: [
-        {
-          path: "/performanceIntegration/dashboard",
+          path: "/intellij/sharedIndexes/dashboard",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
+            table: "ideaSharedIndices",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "Integration Performance Dashboard"},
+          meta: {pageTitle: "IntelliJ Shared Indexes Dashboard"},
+        },
+        {
+          path: "/intellij/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "IntelliJ Integration Performance Tests"},
+        }
+      ],
+    },
+    {
+      children: [
+        {
+          path: "/rubymine/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "RubyMine Integration Performance Tests"},
         },
       ]
     },
     {
       children: [
         {
-          path: "/rubyMinePerformanceIntegration/dashboard",
+          path: "/goland/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
-            dbName: "rubymineperfint",
+            dbName: "perfint",
+            table: "goland",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "RubyMine Integration Performance Dashboard"},
+          meta: {pageTitle: "GoLand Integration Performance Tests"},
+        },
+      ]
+    },
+    {
+      children: [
+        {
+          path: "/phpstorm/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "PhpStorm Integration Performance Tests"},
         },
       ]
     },

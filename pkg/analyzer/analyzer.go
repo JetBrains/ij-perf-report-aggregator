@@ -47,10 +47,12 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         }
       },
     }
-  } else if id == "sharedIndexes" || strings.HasSuffix(id, "perfint") {
+  } else if strings.HasPrefix(id, "perfint") {
+    dbName, tableName := splitID(id)
     return DatabaseConfiguration{
-      DbName:            id,
-      ReportReader:      analyzeSharedIndexesReport,
+      DbName:            dbName,
+      TableName:         tableName,
+      ReportReader:      analyzePerfReport,
       HasInstallerField: true,
       extraFieldCount:   2,
       insertStatementWriter: func(sb *strings.Builder) {
@@ -82,8 +84,12 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     panic("unknown project: " + id)
   }
 }
+func splitID(id string) (string, string) {
+  x := strings.SplitN(id, "_", 2)
+  return x[0], x[1]
+}
 
-func analyzeSharedIndexesReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
+func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   measureNames := make([]string, 0)
   measureValues := make([]int, 0)
   for _, measure := range data.GetArray("metrics") {

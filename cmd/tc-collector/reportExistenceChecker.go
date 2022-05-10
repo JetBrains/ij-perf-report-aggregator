@@ -3,6 +3,7 @@ package main
 import (
   "context"
   "database/sql"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
@@ -34,7 +35,12 @@ func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, report
     // don't filter by machine - product is enough to reduce set
     rows, err = reportAnalyzer.Db.QueryContext(taskContext, "select tc_build_id from report where product = ? and generated_time > ? order by tc_build_id", product, since)
   } else {
-    rows, err = reportAnalyzer.Db.QueryContext(taskContext, "select tc_build_id from report where generated_time > ? order by tc_build_id", since)
+    table := "report"
+    if reportAnalyzer.InsertReportManager.TableName != "" {
+      table = reportAnalyzer.InsertReportManager.TableName
+    }
+    query := fmt.Sprintf("select tc_build_id from %s where generated_time > ? order by tc_build_id", table)
+    rows, err = reportAnalyzer.Db.QueryContext(taskContext, query, since)
   }
 
   if err != nil {

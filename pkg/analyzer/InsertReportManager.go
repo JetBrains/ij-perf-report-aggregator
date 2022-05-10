@@ -55,7 +55,7 @@ type InsertReportManager struct {
   config                           DatabaseConfiguration
   nonMetricFieldCount              int
   insertInstallerManager           *InsertInstallerManager
-  tableName                        string
+  TableName                        string
 }
 
 func NewInsertReportManager(
@@ -130,7 +130,7 @@ func NewInsertReportManager(
   manager := &InsertReportManager{
     nonMetricFieldCount: len(metaFields),
     config:              config,
-    tableName:           tableName,
+    TableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
       Db: db,
 

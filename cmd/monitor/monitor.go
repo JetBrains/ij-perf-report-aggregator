@@ -8,7 +8,6 @@ import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
-  "io/ioutil"
   "log"
   "net/http"
   "net/url"
@@ -109,7 +108,7 @@ func getResult(host string, goldWeekStart string, logger *zap.Logger) (*server.A
   }()
 
   if response.StatusCode >= 400 {
-    responseBytes, _ := ioutil.ReadAll(response.Body)
+    responseBytes, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("status: %s, response: %s", response.Status, responseBytes)
   }
 

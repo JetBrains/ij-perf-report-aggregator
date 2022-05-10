@@ -90,7 +90,7 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   defer queryParsers.Put(parser)
 
   //fileName := strconv.FormatUint(xxh3.HashString(request.URL.Path), 36) + ".json"
-  //_ = ioutil.WriteFile("/Volumes/data/queries/"+fileName, decompressed, 0644)
+  //_ = os.WriteFile("/Volumes/data/queries/"+fileName, decompressed, 0644)
 
   list, err := readQuery(decompressed)
   if err != nil {

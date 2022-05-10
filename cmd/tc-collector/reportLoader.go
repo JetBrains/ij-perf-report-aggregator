@@ -12,7 +12,6 @@ import (
   "github.com/json-iterator/go"
   "go.uber.org/zap"
   "go.uber.org/zap/zapcore"
-  "io/ioutil"
   "net/url"
   "runtime"
   "strconv"
@@ -199,7 +198,7 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error)
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
-    responseBody, _ := ioutil.ReadAll(response.Body)
+    responseBody, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 

@@ -1,7 +1,6 @@
 package tc_properties
 
 import (
-  "io/ioutil"
   "os"
   "testing"
 )
@@ -13,7 +12,7 @@ func TestFilter(t *testing.T) {
     t.Error(err)
   }
 
-  data, err := ioutil.ReadFile("/Volumes/data/Downloads/build.finish.properties copy")
+  data, err := os.ReadFile("/Volumes/data/Downloads/build.finish.properties copy")
   if err != nil {
     t.Error(err)
   }
@@ -22,7 +21,7 @@ func TestFilter(t *testing.T) {
     t.Error(err)
   }
 
-  err = ioutil.WriteFile("/Volumes/data/Downloads/build.finish.properties", properties, 0777)
+  err = os.WriteFile("/Volumes/data/Downloads/build.finish.properties", properties, 0777)
   if err != nil {
     t.Error(err)
   }

@@ -41,7 +41,7 @@ func main() {
 }
 
 type BackupManager struct {
-  *clickhouse.BaseBackupManager
+  *clickhouse.BackupManager
 
   backupParentDir string
 }
@@ -50,13 +50,13 @@ func start(natsUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
+  baseBackupManager, err := clickhouse.CreateBackupManager(taskContext, logger)
   if err != nil {
     return errors.WithStack(err)
   }
   backupManager := &BackupManager{
-    BaseBackupManager: baseBackupManager,
-    backupParentDir:   filepath.Join(baseBackupManager.ClickhouseDir, "backup"),
+    BackupManager:   baseBackupManager,
+    backupParentDir: filepath.Join(baseBackupManager.ClickhouseDir, "backup"),
   }
 
   if env.GetBool("DO_BACKUP") {

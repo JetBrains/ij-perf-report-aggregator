@@ -10,7 +10,6 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
-  "io/ioutil"
   "log"
   "os"
   "path/filepath"
@@ -70,7 +69,7 @@ func restoreMain(logger *zap.Logger) error {
     defer util.Close(file, logger)
     return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger, nil)
   } else {
-    baseBackupManager, err := clickhouse.CreateBaseBackupManager(taskContext, logger)
+    baseBackupManager, err := clickhouse.CreateBackupManager(taskContext, logger)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -97,7 +96,7 @@ func restoreMain(logger *zap.Logger) error {
 }
 
 type BackupManager struct {
-  *clickhouse.BaseBackupManager
+  *clickhouse.BackupManager
 }
 
 // Reader it's a wrapper for given reader, but with progress handle
@@ -232,15 +231,22 @@ func findLocalBackup() (string, error) {
   var candidate string
   var lastModified time.Time
   downloadDir := filepath.Join(homeDir, "Downloads")
-  files, err := ioutil.ReadDir(downloadDir)
+  files, err := os.ReadDir(downloadDir)
   if err != nil {
     return "", errors.WithStack(err)
   }
+
   for _, file := range files {
     if strings.HasSuffix(file.Name(), ".tar") {
-      if lastModified.Before(file.ModTime()) {
+      info, err := file.Info()
+      if err != nil {
+        return "", errors.WithStack(err)
+      }
+
+      modTime := info.ModTime()
+      if lastModified.Before(modTime) {
         candidate = file.Name()
-        lastModified = file.ModTime()
+        lastModified = modTime
       }
     }
   }

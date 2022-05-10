@@ -1,14 +1,16 @@
 package clickhouse
 
 import (
+  "bytes"
   "context"
   "github.com/develar/errors"
   "github.com/minio/minio-go/v7"
   "github.com/minio/minio-go/v7/pkg/credentials"
+  "github.com/valyala/fastjson"
   "go.deanishe.net/env"
   "go.uber.org/zap"
-  "io/ioutil"
   "os"
+  "os/exec"
   "path/filepath"
   "strings"
 )
@@ -33,7 +35,7 @@ type MappingInfo struct {
   Db     []DbInfo    `json:"db"`
 }
 
-type BaseBackupManager struct {
+type BackupManager struct {
   Bucket        string
   Client        *minio.Client
   TaskContext   context.Context
@@ -42,10 +44,33 @@ type BaseBackupManager struct {
   Logger *zap.Logger
 }
 
-func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*BaseBackupManager, error) {
+func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*BackupManager, error) {
+  // do not try to use doppler on K8S
+  if len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0 {
+    cmd := exec.Command("doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
+    stdout, err := cmd.Output()
+    if err != nil {
+      logger.Warn("failed to use doppler to retrieve credentials", zap.Error(err))
+    } else {
+      excludePrefix := []byte("DOPPLER_")
+      fastjson.MustParseBytes(stdout).GetObject().Visit(func(key []byte, v *fastjson.Value) {
+        if !bytes.HasPrefix(key, excludePrefix) {
+          err = os.Setenv(string(key), string(v.GetStringBytes()))
+          if err != nil {
+            logger.Fatal("cannot set env", zap.Error(err))
+          }
+        }
+      })
+    }
+  }
+
   endpoint, err := getEnvOrFile("S3_ENDPOINT", "/etc/s3/endpoint")
   if err != nil {
-    return nil, errors.WithStack(err)
+    if os.IsNotExist(err) {
+      endpoint = "s3.amazonaws.com"
+    } else {
+      return nil, errors.WithStack(err)
+    }
   }
 
   endpoint = strings.TrimSuffix(strings.TrimPrefix(endpoint, "https://"), "/")
@@ -68,7 +93,7 @@ func CreateBaseBackupManager(taskContext context.Context, logger *zap.Logger) (*
     return nil, errors.WithStack(err)
   }
 
-  return &BaseBackupManager{
+  return &BackupManager{
     Bucket:        os.Getenv("S3_BUCKET"),
     Client:        client,
     TaskContext:   taskContext,
@@ -90,9 +115,9 @@ func GetClickhouseDir() string {
 func getEnvOrFile(envName string, file string) (string, error) {
   v := os.Getenv(envName)
   if len(v) == 0 {
-    b, err := ioutil.ReadFile(file)
+    b, err := os.ReadFile(file)
     if err != nil {
-      return "", errors.WithStack(err)
+      return "", err
     }
     return string(b), err
   }

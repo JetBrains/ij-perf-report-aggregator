@@ -5,7 +5,7 @@ import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
-  "io/ioutil"
+  "io"
 )
 
 type BuildList struct {
@@ -73,7 +73,7 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
-    responseBody, _ := ioutil.ReadAll(response.Body)
+    responseBody, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 

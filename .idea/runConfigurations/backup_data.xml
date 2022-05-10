@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="backup-data" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="report-aggregator" />
+    <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="CLICKHOUSE" value="localhost:9000" />
+      <env name="CLICKHOUSE_DATA_PATH" value="$USER_HOME$/ij-perf-db/clickhouse" />
+      <env name="DO_BACKUP" value="true" />
+      <env name="NATS" value="localhost:4222" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/cmd/clickhouse-backup/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

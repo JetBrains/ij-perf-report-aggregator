@@ -7,7 +7,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.uber.org/zap"
-  "io/ioutil"
+  "io"
   "net/url"
   "path"
   "strconv"
@@ -74,14 +74,14 @@ func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string,
       t.logger.Warn("no report", zap.Int("id", build.Id), zap.String("status", build.Status))
       return nil, err
     }
-    responseBody, _ := ioutil.ReadAll(response.Body)
+    responseBody, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)
 
   // ReadAll is used because report not only required to be decoded, but also stored as is (after minification)
-  data, err := ioutil.ReadAll(response.Body)
+  data, err := io.ReadAll(response.Body)
   if err != nil {
     return nil, err
   }
@@ -102,7 +102,7 @@ func (t *Collector) downloadBuildProperties(build Build, ctx context.Context) ([
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
-    responseBody, _ := ioutil.ReadAll(response.Body)
+    responseBody, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 
@@ -113,7 +113,7 @@ func (t *Collector) downloadBuildProperties(build Build, ctx context.Context) ([
     return nil, err
   }
 
-  data, err := ioutil.ReadAll(gzipReader)
+  data, err := io.ReadAll(gzipReader)
   if err != nil {
     return nil, err
   }

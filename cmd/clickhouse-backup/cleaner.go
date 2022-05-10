@@ -3,7 +3,6 @@ package main
 import (
   "github.com/develar/errors"
   "go.uber.org/zap"
-  "io/ioutil"
   "os"
   "sort"
   "time"
@@ -19,7 +18,7 @@ func (t *LocalBackupFile) String() string {
 }
 
 func (t *BackupManager) collectLocalBackups(backupParentDir string) ([]string, error) {
-  unfilteredFiles, err := ioutil.ReadDir(backupParentDir)
+  unfilteredFiles, err := os.ReadDir(backupParentDir)
   if err != nil {
     if os.IsNotExist(err) {
       return nil, nil
@@ -41,7 +40,12 @@ func (t *BackupManager) collectLocalBackups(backupParentDir string) ([]string, e
     modTimeFromName, err := time.Parse(timeFormat, entry.name)
     if err != nil {
       t.Logger.Warn("cannot infer modification time from directory name", zap.Error(err))
-      entry.modified = f.ModTime()
+      info, err := f.Info()
+      if err != nil {
+        t.Logger.Error("cannot get modification time", zap.Error(err))
+        continue
+      }
+      entry.modified = info.ModTime()
     } else {
       entry.modified = modTimeFromName
     }

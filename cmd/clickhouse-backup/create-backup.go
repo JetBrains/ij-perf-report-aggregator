@@ -8,7 +8,6 @@ import (
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
-  "io/ioutil"
   "os"
   "path/filepath"
   "strconv"
@@ -27,7 +26,7 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, table clickhouse.T
   tableShadowDir := filepath.Join(shadowDir, dirName)
 
   storeDir := filepath.Join(tableShadowDir, "store")
-  storeDirs, err := ioutil.ReadDir(storeDir)
+  storeDirs, err := os.ReadDir(storeDir)
   if err != nil {
     return errors.WithStack(err)
   }

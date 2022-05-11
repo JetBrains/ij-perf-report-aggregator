@@ -41,7 +41,11 @@ export function getIjItems(): Array<MenuItem> {
       label: "PhpStorm",
       items: [
         {
-          label: "Performance Tests",
+          label: "Dashboard",
+          to: "/phpstorm/dashboard",
+        },
+        {
+          label: "Explore",
           to: "/phpstorm/performanceTests",
         },
       ]
@@ -172,7 +176,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             table: "phpstorm",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "PhpStorm Integration Performance Tests"},
+          meta: {pageTitle: "Explore PhpStorm Tests"},
+        },
+        {
+          path: "/phpstorm/dashboard",
+          component: () => import("./phpstorm/PhpStormDashboard.vue"),
+          meta: {pageTitle: "PhpStorm Dashboard"},
         },
       ]
     },

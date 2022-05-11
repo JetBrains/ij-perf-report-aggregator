@@ -12,7 +12,7 @@ import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect, withDef
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { ChartType, PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
-import { DataQuery, DataQueryExecutorConfiguration } from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
@@ -24,6 +24,7 @@ const props = withDefaults(defineProps<{
   measures?: Array<string> | null
   chartType?: ChartType
   valueUnit?: ValueUnit
+  configurators?: Array<DataQueryConfigurator>|null
 }>(), {
   skipZeroValues: true,
   compoundTooltip: true,
@@ -31,11 +32,15 @@ const props = withDefaults(defineProps<{
   measures: null,
   chartType: "line",
   valueUnit: "ms",
+  configurators: null
 })
 
 const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: LineChartManager | null = null
-const providedConfigurators = inject(configuratorListKey, null)
+let providedConfigurators = props.configurators
+if(providedConfigurators === null){
+  providedConfigurators = inject(configuratorListKey, null)
+}
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager()
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

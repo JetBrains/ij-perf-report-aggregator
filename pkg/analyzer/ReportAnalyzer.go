@@ -113,7 +113,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 
     TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
     TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
-    TcBuildProperties:  extraData.TcBuildProperties,
     ReportFileName:     extraData.ReportFile,
   }
 

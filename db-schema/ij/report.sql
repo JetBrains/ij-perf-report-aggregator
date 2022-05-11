@@ -7,7 +7,6 @@ create table report2
   `project`                    LowCardinality(String) CODEC(ZSTD(20)),
   `tc_build_id`                UInt32 CODEC(Gorilla, ZSTD(20)),
   `tc_installer_build_id`      UInt32 CODEC(Gorilla, ZSTD(20)),
-  `tc_build_properties`        String CODEC(ZSTD(22)),
   `branch`                     LowCardinality(String) CODEC(ZSTD(20)),
   `raw_report`                 String CODEC(ZSTD(22)),
 

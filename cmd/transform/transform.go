@@ -2,10 +2,8 @@ package main
 
 import (
   "context"
-  "encoding/json"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/jmoiron/sqlx"
@@ -42,9 +40,8 @@ type ReportRow struct {
 
   RawReport []byte `db:"raw_report"`
 
-  TcBuildId          int    `db:"tc_build_id"`
-  TcInstallerBuildId int    `db:"tc_installer_build_id"`
-  TcBuildProperties  []byte `db:"tc_build_properties"`
+  TcBuildId          int `db:"tc_build_id"`
+  TcInstallerBuildId int `db:"tc_installer_build_id"`
 
   BuildC1 int `db:"build_c1"`
   BuildC2 int `db:"build_c2"`
@@ -140,7 +137,7 @@ func process(
     rows, err = db.QueryxContext(taskContext, `
       select product, machine, branch,
              toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
-             tc_build_id, tc_installer_build_id, tc_build_properties,
+             tc_build_id, tc_installer_build_id,
              build_c1, build_c2, build_c3, project,
              service.name, service.start, service.duration, service.thread, service.plugin
       from report
@@ -151,7 +148,7 @@ func process(
     rows, err = db.QueryxContext(taskContext, `
       select machine, branch,
              toUnixTimestamp(generated_time) as generated_time, toUnixTimestamp(build_time) as build_time, raw_report,
-             tc_build_id, tc_installer_build_id, tc_build_properties,
+             tc_build_id, tc_installer_build_id,
              build_c1, build_c2, build_c3, project
       from report
       where generated_time >= ? and generated_time < ?
@@ -164,20 +161,12 @@ func process(
 
   defer util.Close(rows, logger)
 
-  isCleanUpTcProperties := env.GetBool("UPDATE_TC_PROPERTIES")
   var row ReportRow
 rowLoop:
   for rows.Next() {
     err = rows.StructScan(&row)
     if err != nil {
       return errors.WithStack(err)
-    }
-
-    if isCleanUpTcProperties {
-      err = cleanTcProperties(&row)
-      if err != nil {
-        return errors.WithStack(err)
-      }
     }
 
     runResult := &analyzer.RunResult{
@@ -190,7 +179,6 @@ rowLoop:
 
       TcBuildId:          row.TcBuildId,
       TcInstallerBuildId: row.TcInstallerBuildId,
-      TcBuildProperties:  row.TcBuildProperties,
 
       BuildC1: row.BuildC1,
       BuildC2: row.BuildC2,
@@ -226,33 +214,5 @@ rowLoop:
     return errors.WithStack(err)
   }
 
-  return nil
-}
-
-func cleanTcProperties(row *ReportRow) error {
-  if len(row.TcBuildProperties) == 0 {
-    return nil
-  }
-
-  var m map[string]interface{}
-  err := json.Unmarshal(row.TcBuildProperties, &m)
-  if err != nil {
-    return errors.WithStack(err)
-  }
-
-  modified := false
-  for key := range m {
-    if tc_properties.IsExcludedProperty(key) {
-      delete(m, key)
-      modified = true
-    }
-  }
-
-  if modified {
-    row.TcBuildProperties, err = json.Marshal(m)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-  }
   return nil
 }

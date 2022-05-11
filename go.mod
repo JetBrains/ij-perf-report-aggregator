@@ -17,7 +17,7 @@ require (
 	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/json-iterator/go v1.1.12
-	github.com/klauspost/compress v1.15.3
+	github.com/klauspost/compress v1.15.4
 	github.com/magiconair/properties v1.8.6
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/minio-go/v7 v7.0.26

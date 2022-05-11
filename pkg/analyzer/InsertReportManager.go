@@ -29,7 +29,6 @@ type RunResult struct {
 
   TcBuildId          int
   TcInstallerBuildId int
-  TcBuildProperties  []byte
 
   RawReport []byte
 
@@ -89,7 +88,7 @@ func NewInsertReportManager(
     metaFields = append(metaFields, "product")
   }
   if config.HasInstallerField {
-    metaFields = append(metaFields, "build_time", "tc_installer_build_id", "tc_build_properties", "build_c1", "build_c2", "build_c3", "raw_report")
+    metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3", "raw_report")
   }
 
   var sb strings.Builder
@@ -245,7 +244,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
         return nil
       }
     }
-    args = append(args, buildTimeUnix, row.TcInstallerBuildId, row.TcBuildProperties, row.BuildC1, row.BuildC2, row.BuildC3, row.RawReport)
+    args = append(args, buildTimeUnix, row.TcInstallerBuildId, row.BuildC1, row.BuildC2, row.BuildC3, row.RawReport)
 
     if t.config.DbName == "ij" {
       err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)

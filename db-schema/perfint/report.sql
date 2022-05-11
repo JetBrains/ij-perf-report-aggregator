@@ -6,14 +6,11 @@ create table report
   `project`               LowCardinality(String) CODEC (ZSTD(20)),
   `tc_build_id`           UInt32 CODEC (DoubleDelta, ZSTD(20)),
   `tc_installer_build_id` UInt32 CODEC (DoubleDelta, ZSTD(20)),
-  `tc_build_properties`   String CODEC (ZSTD(20)),
   `branch`                LowCardinality(String) CODEC (ZSTD(20)),
   `raw_report`            String CODEC (ZSTD(20)),
 
-  measures Nested(
-    name LowCardinality(String),
-    value Int32
-  ) CODEC (ZSTD(20)),
+  `measures.name` LowCardinality(String) CODEC(ZSTD(20)),
+  `measures.value` Int32 CODEC(Gorilla, ZSTD(20)),
 
   `build_c1`              UInt8 CODEC (DoubleDelta, ZSTD(20)),
   `build_c2`              UInt16 CODEC (DoubleDelta, ZSTD(20)),

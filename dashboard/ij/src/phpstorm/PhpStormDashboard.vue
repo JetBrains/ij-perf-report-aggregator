@@ -14,10 +14,10 @@
     <GroupLineChart
       label="Slow Inspections"
       :measures="['inspection_execution_time']"
-      :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection', 'laravel-io/inspection']"
+      :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection',
+                  'laravel-io/inspection']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Fast Inspections"
@@ -25,7 +25,6 @@
       :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Slow Local Inspections"
@@ -33,7 +32,6 @@
       :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Fast Local Inspections"
@@ -41,7 +39,6 @@
       :projects="['WI_59961/localInspection', 'bitrix/localInspection']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Slow Indexing"
@@ -50,7 +47,6 @@
                   'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Medium Indexing"
@@ -59,7 +55,6 @@
                   'shopware/indexing', 'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Fast Indexing"
@@ -67,7 +62,6 @@
       :projects="['phpcs/indexing','empty_project/indexing','complex_meta/indexing','broken_phpdoc/indexing','WI_53502/indexing','heredoc/indexing']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Completion"
@@ -76,7 +70,6 @@
                   'WI_58807/completion', 'WI_58306/completion']"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Typing Time"
@@ -87,7 +80,6 @@
       ]"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Typing Average Responsiveness"
@@ -98,7 +90,6 @@
       ]"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
     <GroupLineChart
       label="Typing Responsiveness"
@@ -109,7 +100,6 @@
       ]"
       :configurators="configurators"
       :server-configurator="serverConfigurator"
-      :persistent-manager="persistentStateManager"
     />
   </Dashboard>
 </template>

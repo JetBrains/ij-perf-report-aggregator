@@ -16,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { PersistentStateManager } from "../PersistentStateManager"
 import { dimensionConfigurator} from "../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { DataQueryConfigurator } from "../dataQuery"
@@ -29,9 +28,8 @@ const props = defineProps<{
   projects: Array<string>
   configurators: Array<DataQueryConfigurator>
   serverConfigurator: ServerConfigurator
-  persistentManager: PersistentStateManager
 }>()
-const scenarioConfigurator = dimensionConfigurator("project", props.serverConfigurator, props.persistentManager, true)
+const scenarioConfigurator = dimensionConfigurator("project", props.serverConfigurator, null, true)
 scenarioConfigurator.selected.value = props.projects
 const allConfigurators = props.configurators.concat(scenarioConfigurator)
 

@@ -16,7 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import { dimensionConfigurator} from "../configurators/DimensionConfigurator"
+import { onMounted } from "vue"
+import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { DataQueryConfigurator } from "../dataQuery"
 import LineChartCard from "./LineChartCard.vue"
@@ -30,7 +31,8 @@ const props = defineProps<{
   serverConfigurator: ServerConfigurator
 }>()
 const scenarioConfigurator = dimensionConfigurator("project", props.serverConfigurator, null, true)
-scenarioConfigurator.selected.value = props.projects
 const allConfigurators = props.configurators.concat(scenarioConfigurator)
-
+onMounted(() => {
+  scenarioConfigurator.selected.value = props.projects
+})
 </script>

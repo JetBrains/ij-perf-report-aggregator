@@ -8,6 +8,7 @@ import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
+  "io"
   "log"
   "net/http"
   "net/url"

@@ -12,6 +12,7 @@ import (
   "github.com/json-iterator/go"
   "go.uber.org/zap"
   "go.uber.org/zap/zapcore"
+  "io"
   "net/url"
   "runtime"
   "strconv"

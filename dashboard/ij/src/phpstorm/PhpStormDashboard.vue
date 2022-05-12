@@ -13,92 +13,81 @@
     </template>
     <GroupLineChart
       label="Slow Inspections"
-      :measures="['inspection_execution_time']"
+      measure="inspection_execution_time"
       :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection',
                   'laravel-io/inspection']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Fast Inspections"
-      :measures="['inspection_execution_time']"
+      measure="inspection_execution_time"
       :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Slow Local Inspections"
-      :measures="['local_inspection_execution_time']"
+      measure="local_inspection_execution_time"
       :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Fast Local Inspections"
-      :measures="['local_inspection_execution_time']"
+      measure="local_inspection_execution_time"
       :projects="['WI_59961/localInspection', 'bitrix/localInspection']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Slow Indexing"
-      :measures="['indexing']"
+      measure="indexing"
       :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
                   'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Medium Indexing"
-      :measures="['indexing']"
+      measure="indexing"
       :projects="['WI_39333/indexing','many_array_access/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing', 
                   'shopware/indexing', 'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Fast Indexing"
-      :measures="['indexing']"
+      measure="indexing"
       :projects="['phpcs/indexing','empty_project/indexing','complex_meta/indexing','broken_phpdoc/indexing','WI_53502/indexing','heredoc/indexing']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Completion"
-      :measures="['completion_execution_time']"
+      measure="completion_execution_time"
       :projects="['many_classes/completion/classes','magento2/completion/function_var','magento2/completion/classes','dql/completion','WI_64694/completion','WI_58919/completion',
                   'WI_58807/completion', 'WI_58306/completion']"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Typing Time"
-      :measures="['typing_total_time']"
+      measure="typing_total_time"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing', 
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
       ]"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Typing Average Responsiveness"
-      :measures="['average_responsiveness_time']"
+      measure="average_responsiveness_time"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
       ]"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Typing Responsiveness"
-      :measures="['responsiveness_time']"
+      measure="responsiveness_time"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
       ]"
-      :configurators="configurators"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>

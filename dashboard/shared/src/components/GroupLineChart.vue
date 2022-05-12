@@ -8,30 +8,32 @@
         :compound-tooltip="true"
         :chart-type="'line'"
         :value-unit="'ms'"
-        :measures="measures"
-        :configurators="allConfigurators"
+        :measures="[measure]"
+        :configurators="configurators"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { inject, onMounted } from "vue"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
-import { DataQueryConfigurator } from "../dataQuery"
 import LineChartCard from "./LineChartCard.vue"
-
+import { configuratorListKey } from "../injectionKeys"
 
 const props = defineProps<{
   label: string
-  measures: Array<string>
+  measure: string
   projects: Array<string>
-  configurators: Array<DataQueryConfigurator>
   serverConfigurator: ServerConfigurator
 }>()
+const providedConfigurators = inject(configuratorListKey, null)
+if (providedConfigurators == null) {
+  throw new Error("`dataQueryExecutor` is not provided")
+}
 const scenarioConfigurator = dimensionConfigurator("project", props.serverConfigurator, null, true)
-const allConfigurators = props.configurators.concat(scenarioConfigurator)
+const configurators = providedConfigurators.concat(scenarioConfigurator)
 onMounted(() => {
   scenarioConfigurator.selected.value = props.projects
 })

@@ -1,0 +1,60 @@
+.p-dropdown-panel,
+.p-treeselect-panel,
+.p-multiselect-panel,
+.p-autocomplete-panel {
+  background: var(--input-overlay-bg);
+  /* No space between element and pop-up in PrimeVue, but TailwindUI uses mt-1 and that's looks better */
+  @apply rounded-md shadow-lg mt-1 ring-1 ring-black ring-opacity-5 text-gray-900 focus:outline-none overflow-auto text-sm;
+}
+
+/* here filter for multiselect is located */
+.p-multiselect-panel .p-multiselect-header {
+  @apply py-2 px-3;
+}
+
+.p-dropdown-panel .p-dropdown-items, .p-multiselect .p-multiselect-items,
+.p-multiselect-panel .p-multiselect-items, .p-multiselect .p-multiselect-items,
+.p-autocomplete-panel .p-autocomplete-items {
+  @apply py-1;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+  @apply py-2 px-3;
+}
+
+.p-treeselect-panel .p-tree .p-treenode .p-treenode-content {
+  @apply py-2 px-3;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
+.p-tree .p-treenode .p-treenode-content.p-highlight,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
+  background: var(--highlight-bg);
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover,
+.p-tree .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover,
+.p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
+  background: var(--input-list-item-hover-bg);
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item .p-checkbox,
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox {
+  @apply mr-2;
+}
+
+.p-tree-toggler-icon {
+  /* same color as p-treeselect-trigger */
+  @apply text-gray-400 pr-4 w-5 text-sm;
+}
+
+.p-tree-toggler-icon:hover {
+  @apply text-gray-500
+}
+
+.p-treenode-label {
+}

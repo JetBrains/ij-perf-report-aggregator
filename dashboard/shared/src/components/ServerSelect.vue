@@ -1,5 +1,5 @@
 <template>
-  <label>Server:
+  <label class="text-sm">Server:
     <AutoComplete
       v-model="value"
       class="small"

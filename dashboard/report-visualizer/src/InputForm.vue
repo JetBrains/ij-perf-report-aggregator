@@ -10,7 +10,6 @@
     />
     <div class="grid gap-2 place-content-start">
       <Button
-        class="p-button-sm"
         :loading="isFetching"
         icon="pi pi-download"
         label="Get from instance"
@@ -19,7 +18,6 @@
       <InputNumber
         v-model="portNumber"
         :show-buttons="true"
-        class="p-inputtext-sm"
         :min="1024"
         :max="65535"
         size="5"
@@ -27,7 +25,7 @@
       />
       <Button
         :loading="isFetchingDev"
-        class="col-span-2 p-button-sm"
+        class="col-span-2"
         icon="pi pi-download"
         label="Get from instance on port 63343"
         @click="getFromRunningDevInstance"

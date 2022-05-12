@@ -1,0 +1,8 @@
+.p-toolbar {
+  /*background: var(--panel-header-bg);*/
+  @apply rounded-lg border border-gray-300 py-2 px-3 bg-gray-50 text-sm;
+}
+
+.p-toolbar .p-toolbar-group-left, .p-toolbar .p-toolbar-group-right {
+  @apply gap-x-2;
+}

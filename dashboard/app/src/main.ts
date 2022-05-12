@@ -12,6 +12,10 @@ import "./primevue.css"
 import "./primeicons.css"
 import "../../../jb/prime-theme/themes/saga/saga-blue/theme.scss"
 
+import "shared/src/primevue-theme/select.css"
+import "shared/src/primevue-theme/select-panel.css"
+import "shared/src/primevue-theme/misc.css"
+
 async function initApp() {
   const app = createApp(App)
   const router = createAndConfigureRouter()

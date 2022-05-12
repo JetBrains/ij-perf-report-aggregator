@@ -4,6 +4,7 @@
       <w>amazonaws</w>
       <w>buildx</w>
       <w>cascader</w>
+      <w>cascadeselect</w>
       <w>certmanager</w>
       <w>clickhouse</w>
       <w>clusterize</w>
@@ -19,6 +20,7 @@
       <w>gosu</w>
       <w>heapu</w>
       <w>ijplatform</w>
+      <w>inputnumber</w>
       <w>inputtext</w>
       <w>intelli</w>
       <w>kodata</w>
@@ -33,6 +35,7 @@
       <w>minio</w>
       <w>nats</w>
       <w>nerdctl</w>
+      <w>overlaypanel</w>
       <w>perfint</w>
       <w>pinia</w>
       <w>pnpm</w>
@@ -45,8 +48,13 @@
       <w>semibold</w>
       <w>sigstore</w>
       <w>sqlite</w>
+      <w>tabmenu</w>
+      <w>tabmenuitem</w>
       <w>tcsessionid</w>
       <w>toasteventbus</w>
+      <w>toggler</w>
+      <w>treenode</w>
+      <w>treeselect</w>
       <w>typecheck</w>
       <w>uindex</w>
       <w>uncrush</w>

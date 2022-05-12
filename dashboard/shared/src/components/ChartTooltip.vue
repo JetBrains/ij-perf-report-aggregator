@@ -6,6 +6,7 @@
     :show-close-icon="true"
   >
     <div
+      class="text-sm"
       @mouseenter="cancelHide"
       @mouseleave="hide"
     >
@@ -56,7 +57,8 @@
           <span class="font-mono place-self-end">{{ getValueFormatterByMeasureName(item.name)(item.value) }}</span>
         </template>
       </div>
-      <Divider class="!my-2" />
+      <!-- default for divider py-4, but in our case data is related to each other, reduce height of panel -->
+      <Divider class="!py-2" />
       <div
         v-if="tooltipData.firstSeriesData.length >= 8"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
@@ -165,7 +167,7 @@ const keyDown = (event: KeyboardEvent) => {
   }
 }
 const keyUp = (event: KeyboardEvent) => {
-  if (event.code == metaKey) {
+  if (event.code === metaKey) {
     if (lastManager != null) {
       lastManager.paused = false
     }

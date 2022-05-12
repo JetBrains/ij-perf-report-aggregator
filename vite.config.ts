@@ -111,13 +111,13 @@ const components = new Set<string>([
   "Avatar",
   "AvatarGroup",
   "Badge",
-  "BlockUI",
+  // "BlockUI",
   "Breadcrumb",
   "Button",
-  "Calendar",
-  "Card",
-  "Carousel",
-  "CascadeSelect",
+  // "Calendar",
+  // "Card",
+  // "Carousel",
+  // "CascadeSelect",
   "Chart",
   "Checkbox",
   "Chip",
@@ -128,22 +128,21 @@ const components = new Set<string>([
   // 'ConfirmDialog',
   // 'ConfirmPopup',
   // These must be registered globally in order for the confirm service to work properly
-  "ContextMenu",
+  // "ContextMenu",
   "DataTable",
   "DataView",
   "DataViewLayoutOptions",
   "DeferredContent",
   "Dialog",
-  "Divider",
   "Dock",
   "Dropdown",
-  "Editor",
-  "Fieldset",
+  // "Editor",
+  // "Fieldset",
   "FileUpload",
-  "FullCalendar",
-  "Galleria",
-  "Image",
-  "InlineMessage",
+  // "FullCalendar",
+  // "Galleria",
+  // "Image",
+  // "InlineMessage",
   "Inplace",
   "InputMask",
   "InputNumber",
@@ -153,7 +152,6 @@ const components = new Set<string>([
   "Listbox",
   "MegaMenu",
   "Menu",
-  "Menubar",
   "Message",
   "MultiSelect",
   "OrderList",
@@ -168,7 +166,7 @@ const components = new Set<string>([
   "ProgressSpinner",
   "RadioButton",
   "Rating",
-  "ScrollPanel",
+  // "ScrollPanel",
   "ScrollTop",
   "SelectButton",
   "Sidebar",
@@ -181,7 +179,7 @@ const components = new Set<string>([
   "Steps",
   "TabMenu",
   "TabPanel",
-  "TabView",
+  // "TabView",
   "Tag",
   "Terminal",
   "TerminalService",
@@ -192,7 +190,6 @@ const components = new Set<string>([
   // 'Toast',
   // Toast must be registered globally in order for the toast service to work properly
   "ToggleButton",
-  "Toolbar",
   // 'Tooltip',
   // Tooltip must be registered globally in order for the tooltip service to work properly
   "Tree",
@@ -202,13 +199,27 @@ const components = new Set<string>([
   "VirtualScroller",
 ])
 
+const componentWithStyles = new Set<string>([
+  "Divider",
+  "Toolbar",
+  "Menubar",
+  "Button",
+])
+
+// SFC compilation saves 200KB (2.65 vs 2.67 MB)
 function PrimeVueResolver(): ComponentResolver {
+  const styleDir = path.join(__dirname, "dashboard/shared/src/primevue-theme")
   return {
     type: "component",
-    resolve: (name: string) => {
-      if (components.has(name)) {
+    resolve(name: string) {
+      if (componentWithStyles.has(name)) {
         return {
-          // SFC compilation saves 200KB (2.65 vs 2.67 MB)
+          path: `primevue/${name.toLowerCase()}/sfc`,
+          sideEffects: [path.join(styleDir, `${name.toLowerCase()}.css`)],
+        }
+      }
+      else if (components.has(name)) {
+        return {
           path: `primevue/${name.toLowerCase()}/sfc`,
         }
       }

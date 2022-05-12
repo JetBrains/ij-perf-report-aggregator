@@ -1,0 +1,60 @@
+.p-dropdown, .p-multiselect, .p-cascadeselect, .p-treeselect, .p-inputtext {
+  /*border-color: var(--input-border-color);*/
+  background-color: var(--input-bg-color);
+  @apply rounded-md border shadow-sm border-gray-300 text-sm;
+}
+
+.p-dropdown:not(.p-disabled).p-focus,
+.p-multiselect:not(.p-disabled).p-focus,
+.p-cascadeselect:not(.p-disabled).p-focus,
+.p-treeselect:not(.p-disabled).p-focus,
+.p-inputtext:enabled:focus {
+  /*
+  PrimeVue select is much worse than TailwindUI — focus is not native because PrimeVue uses div instead of button behaviour is not so good.
+  Just compare -
+   * on close focus is not removed,
+   * on closed but focused a pop-up is not opened on keyboard navigation
+   * on keyboard navigation the selected element is applied immediately without explicit enter
+      (questionable behaviour, but in this case we don't try to load data for element that was not actually selected)
+
+   So, not ring-1 as in TailwindUI, but ring-0 used used, because 2px focus ring is too visible and also too bug for autocomplete (where trigger it is a button with a border)
+   */
+  @apply outline-none ring-0;
+  border-color: var(--input-focus-border-color);
+  --tw-ring-color: var(--input-focus-border-color);
+}
+
+.p-inputtext,
+.p-multiselect .p-multiselect-label,
+.p-cascadeselect .p-cascadeselect-label,
+.p-treeselect .p-treeselect-label {
+  color: var(--input-text-color);
+  @apply pl-3 pr-2 py-2;
+}
+
+.p-dropdown .p-dropdown-trigger,
+.p-multiselect .p-multiselect-trigger,
+.p-treeselect .p-treeselect-trigger {
+  @apply text-gray-400 rounded-r-md pr-2 w-5;
+}
+
+.p-dropdown .p-dropdown-label, .p-cascadeselect .p-cascadeselect-label {
+  /* shadow-none is required because label also has .p-inputtext class */
+  @apply border-none shadow-none;
+}
+
+.p-dropdown .p-dropdown-label.p-placeholder,
+.p-multiselect .p-multiselect-label.p-placeholder,
+.p-cascadeselect-label .p-cascadeselect-label.p-placeholder,
+.p-treeselect .p-treeselect-label.p-placeholder {
+  color: var(--input-placeholder-text-color)
+}
+
+.p-inputtext.p-invalid.p-component,
+.p-dropdown.p-invalid.p-component,
+.p-cascadeselect.p-invalid.p-component,
+.p-treeselect.p-invalid.p-component,
+.p-multiselect.p-invalid.p-component,
+.p-autocomplete.p-invalid.p-component > .p-inputtext {
+  border-color: var(--input-error-border-color);
+}

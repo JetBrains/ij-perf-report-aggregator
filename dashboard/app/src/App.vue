@@ -2,7 +2,7 @@
   <PrimeToast />
   <Menubar
     :model="items"
-    class="!rounded-none !border-0 !border-b !bg-inherit"
+    class="px-6 border-b"
   >
     <template #start>
       <img

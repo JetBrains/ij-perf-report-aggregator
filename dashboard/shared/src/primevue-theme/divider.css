@@ -1,0 +1,16 @@
+.p-divider .p-divider-content {
+  /* otherwise border strikes out the text */
+  @apply bg-white text-gray-500 text-sm;
+}
+
+.p-divider.p-divider-horizontal {
+  @apply py-4;
+}
+
+.p-divider.p-divider-horizontal:before {
+  @apply border-t border-gray-300;
+}
+
+.p-divider.p-divider-horizontal .p-divider-content {
+  @apply px-2;
+}

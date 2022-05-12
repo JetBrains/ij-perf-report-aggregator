@@ -2,14 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  font-size: 14px;
-}
-
-.p-toolbar-group-left, .p-toolbar-group-right {
-  @apply gap-x-2;
-}
-
-.p-toast-detail {
-  @apply line-clamp-6 overflow-hidden max-w-sm w-full break-words;
-}
+/*
+PrimeVue is designed for 14px, but TailwindUI and TailwindCss assume default 16 px.
+We use custom theme for PrimeVue, so, we don't set em to 14px as is required in general for PrimeVue.
+It allows us to use TailwindUI as is without any changes in sizes.
+*/

@@ -24,6 +24,12 @@ interface TooltipDataItem {
 }
 
 export class ChartToolTipManager {
+  private valueUnit: "ms" | "ns"
+  constructor(valueUnit: "ms" | "ns") {
+    this.valueUnit = valueUnit
+
+  }
+
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
@@ -45,7 +51,7 @@ export class ChartToolTipManager {
     const data = this.reportTooltipData
     data.items = params.map(measure => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]]
+      const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: measure.seriesName!,

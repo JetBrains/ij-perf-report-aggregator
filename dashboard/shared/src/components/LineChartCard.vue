@@ -42,7 +42,7 @@ if(providedConfigurators === null){
   providedConfigurators = inject(configuratorListKey, null)
 }
 const skipZeroValues = toRef(props, "skipZeroValues")
-const chartToolTipManager = new ChartToolTipManager()
+const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = inject(chartToolTipKey)!
 

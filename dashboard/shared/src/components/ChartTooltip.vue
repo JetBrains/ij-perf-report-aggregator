@@ -23,9 +23,9 @@
         </div>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 3"
+          v-if="tooltipData.firstSeriesData.length >= 5"
           title="Changes"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[2]}&tab=buildChangesDiv`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=buildChangesDiv`"
           target="_blank"
           class="info"
         >
@@ -60,11 +60,11 @@
       <!-- default for divider py-4, but in our case data is related to each other, reduce height of panel -->
       <Divider class="!py-2" />
       <div
-        v-if="tooltipData.firstSeriesData.length >= 8"
+        v-if="tooltipData.firstSeriesData.length >= 3"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
       >
         <ServerIcon class="w-5 h-5" />
-        <span>{{ tooltipData.firstSeriesData[7] }}</span>
+        <span>{{ tooltipData.firstSeriesData[2] }}</span>
       </div>
       <div class="text-xs pt-3">
         Hold {{ metaKeySymbol }} to prevent popup refresh
@@ -98,8 +98,8 @@ const linkText = computed(() => {
 
   const generatedTime = data[0]
   let result = timeFormatWithoutSeconds.format(generatedTime)
-  if (data[4] && data[5]) {
-    result += ` (${data[4]}.${data[5]}${data[6] === 0 ? "" : `.${data[6]}`})`
+  if (data[5] && data[6]) {
+    result += ` (${data[5]}.${data[6]}${data[7] === 0 ? "" : `.${data[7]}`})`
   }
   return result
 })

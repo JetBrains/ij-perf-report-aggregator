@@ -5,7 +5,10 @@ import { injectOrError, reportInfoProviderKey, serverUrlObservableKey } from "./
 
 export function provideReportUrlProvider(isInstallerExists: boolean = true): void {
   const serverUrl = injectOrError(serverUrlObservableKey)
-  const infoFields = isInstallerExists ? ["tc_installer_build_id", "tc_build_id", "build_c1", "build_c2", "build_c3", "machine"] :  ["tc_build_id"]
+  const infoFields = ["machine", "tc_build_id"]
+  if (isInstallerExists) {
+    infoFields.push("tc_installer_build_id", "build_c1", "build_c2", "build_c3")
+  }
   provide(reportInfoProviderKey, {
     infoFields,
     createReportUrl: (generatedTime, query) => createReportUrl(generatedTime, query, serverUrl),

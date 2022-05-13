@@ -73,6 +73,7 @@ const props = withDefaults(defineProps<{
   chartType?: ChartType
   defaultMeasures: Array<string>
   urlEnabled?: boolean
+  installerExists?: boolean
   valueUnit?: ValueUnit
 }>(), {
   compoundTooltip: true,
@@ -80,6 +81,7 @@ const props = withDefaults(defineProps<{
   table: undefined,
   chartType: "line",
   valueUnit: "ms",
+  installerExists: true
 })
 
 provide(chartStyleKey, {
@@ -88,7 +90,7 @@ provide(chartStyleKey, {
 })
 
 if (props.urlEnabled) {
-  provideReportUrlProvider()
+  provideReportUrlProvider(props.installerExists)
 }
 
 const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(props.table == null ? "" : `${props.table}-`)}dashboard`, {

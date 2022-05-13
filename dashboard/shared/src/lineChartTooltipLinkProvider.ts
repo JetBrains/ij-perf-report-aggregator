@@ -3,10 +3,11 @@ import { provide } from "vue"
 import { DataQuery, DataQueryFilter, serializeQuery } from "./dataQuery"
 import { injectOrError, reportInfoProviderKey, serverUrlObservableKey } from "./injectionKeys"
 
-export function provideReportUrlProvider(): void {
+export function provideReportUrlProvider(isInstallerExists: boolean = true): void {
   const serverUrl = injectOrError(serverUrlObservableKey)
+  const infoFields = isInstallerExists ? ["tc_installer_build_id", "tc_build_id", "build_c1", "build_c2", "build_c3", "machine"] :  ["tc_build_id"]
   provide(reportInfoProviderKey, {
-    infoFields: ["tc_installer_build_id", "tc_build_id", "build_c1", "build_c2", "build_c3", "machine"],
+    infoFields,
     createReportUrl: (generatedTime, query) => createReportUrl(generatedTime, query, serverUrl),
   })
 }

@@ -41,7 +41,19 @@ spec:
                   value: "nats:4222"
                 - name: CLICKHOUSE
                   value: "clickhouse:9000"
-                - name: CONFIG
-                  value: {{ .Values.collector | toJson | quote }}
+              volumeMounts:
+                - mountPath: /etc/config
+                  name: test-volume
           imagePullSecrets:
             - name: ghcr
+          volumes:
+            - name: config
+              configMap:
+                name: tc-collector-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tc-collector-config
+data:
+  config.json: {{ .Values.collector | toJson | quote }}

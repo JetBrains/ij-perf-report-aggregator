@@ -6,7 +6,7 @@ import (
   e "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+  sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
@@ -122,7 +122,7 @@ func collectFromTeamCity(
     if since.IsZero() {
       since = initialSince
       if since.IsZero() {
-        query := "select last_time from collector_state where build_type_id = '" + sql_util.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
+        query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
         err = reportAnalyzer.InsertReportManager.InsertManager.Db.QueryRow(taskContext, query).Scan(&since)
         if err != nil && err != sql.ErrNoRows {
           return errors.WithStack(err)

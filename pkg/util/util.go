@@ -47,11 +47,11 @@ func CreateLogger() *zap.Logger {
 }
 
 func GetEnvOrPanic(name string) string {
- value := os.Getenv(name)
- if len(value) == 0 {
-   panic("env " + name + " is not set")
- }
- return value
+  value := os.Getenv(name)
+  if len(value) == 0 {
+    panic("env " + name + " is not set")
+  }
+  return value
 }
 
 func GetEnv(name string, defaultValue string) string {
@@ -60,4 +60,16 @@ func GetEnv(name string, defaultValue string) string {
     return defaultValue
   }
   return value
+}
+
+func GetEnvOrFile(envName string, file string) (string, error) {
+  v := os.Getenv(envName)
+  if len(v) == 0 {
+    b, err := os.ReadFile(file)
+    if err != nil {
+      return "", err
+    }
+    return string(b), err
+  }
+  return v, nil
 }

@@ -48,7 +48,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       },
     }
   } else if strings.HasPrefix(id, "perfint") {
-    dbName, tableName := splitID(id)
+    dbName, tableName := splitId(id)
     return DatabaseConfiguration{
       DbName:            dbName,
       TableName:         tableName,
@@ -84,9 +84,10 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     panic("unknown project: " + id)
   }
 }
-func splitID(id string) (string, string) {
-  x := strings.SplitN(id, "_", 2)
-  return x[0], x[1]
+
+func splitId(id string) (string, string) {
+  result := strings.SplitN(id, "_", 2)
+  return result[0], result[1]
 }
 
 func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {

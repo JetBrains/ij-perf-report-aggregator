@@ -3,6 +3,7 @@ package clickhouse
 import (
   "bytes"
   "context"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/minio/minio-go/v7"
   "github.com/minio/minio-go/v7/pkg/credentials"
@@ -64,7 +65,7 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
     }
   }
 
-  endpoint, err := getEnvOrFile("S3_ENDPOINT", "/etc/s3/endpoint")
+  endpoint, err := util.GetEnvOrFile("S3_ENDPOINT", "/etc/s3/endpoint")
   if err != nil {
     if os.IsNotExist(err) {
       endpoint = "s3.amazonaws.com"
@@ -75,12 +76,12 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
 
   endpoint = strings.TrimSuffix(strings.TrimPrefix(endpoint, "https://"), "/")
 
-  accessKey, err := getEnvOrFile("S3_ACCESS_KEY", "/etc/s3/accessKey")
+  accessKey, err := util.GetEnvOrFile("S3_ACCESS_KEY", "/etc/s3/accessKey")
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  secretKey, err := getEnvOrFile("S3_SECRET_KEY", "/etc/s3/secretKey")
+  secretKey, err := util.GetEnvOrFile("S3_SECRET_KEY", "/etc/s3/secretKey")
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -110,18 +111,6 @@ func GetClickhouseDir() string {
   } else {
     return s
   }
-}
-
-func getEnvOrFile(envName string, file string) (string, error) {
-  v := os.Getenv(envName)
-  if len(v) == 0 {
-    b, err := os.ReadFile(file)
-    if err != nil {
-      return "", err
-    }
-    return string(b), err
-  }
-  return v, nil
 }
 
 type MetaFile struct {

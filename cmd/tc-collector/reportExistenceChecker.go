@@ -2,11 +2,11 @@ package main
 
 import (
   "context"
-  "database/sql"
-  "fmt"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
+  "strconv"
   "strings"
   "time"
 )
@@ -18,7 +18,7 @@ type ReportExistenceChecker struct {
 func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, reportAnalyzer *analyzer.ReportAnalyzer, taskContext context.Context, since time.Time) error {
   t.ids.Clear()
 
-  var rows *sql.Rows
+  var rows driver.Rows
   var err error
   if dbName == "ij" {
     var product string
@@ -33,14 +33,15 @@ func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, report
     }
 
     // don't filter by machine - product is enough to reduce set
-    rows, err = reportAnalyzer.Db.QueryContext(taskContext, "select tc_build_id from report where product = ? and generated_time > ? order by tc_build_id", product, since)
+    query := "select tc_build_id from report where product = $1 and generated_time > $2 order by tc_build_id"
+    rows, err = reportAnalyzer.InsertReportManager.InsertManager.Db.Query(taskContext, query, product, since)
   } else {
     table := "report"
     if reportAnalyzer.InsertReportManager.TableName != "" {
       table = reportAnalyzer.InsertReportManager.TableName
     }
-    query := fmt.Sprintf("select tc_build_id from %s where generated_time > ? order by tc_build_id", table)
-    rows, err = reportAnalyzer.Db.QueryContext(taskContext, query, since)
+    query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " order by tc_build_id"
+    rows, err = reportAnalyzer.InsertReportManager.InsertManager.Db.Query(taskContext, query, since)
   }
 
   if err != nil {
@@ -48,13 +49,14 @@ func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, report
   }
 
   for rows.Next() {
-    var id int
+    // clickhouse requires explicit type
+    var id uint32
     err = rows.Scan(&id)
     if err != nil {
       return errors.WithStack(err)
     }
 
-    t.ids.Insert(id)
+    t.ids.Insert(int(id))
   }
 
   if rows.Err() != nil {

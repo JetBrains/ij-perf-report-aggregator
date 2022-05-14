@@ -2,10 +2,9 @@ package analyzer
 
 import (
   "context"
-  _ "github.com/ClickHouse/clickhouse-go"
+  "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "go.deanishe.net/env"
   "go.uber.org/atomic"
   "go.uber.org/multierr"
@@ -13,6 +12,7 @@ import (
   "strconv"
   "strings"
   "sync"
+  "time"
 )
 
 type ReportAnalyzer struct {
@@ -28,8 +28,6 @@ type ReportAnalyzer struct {
   waitGroup sync.WaitGroup
   closeOnce sync.Once
 
-  Db *sqlx.DB
-
   InsertReportManager *InsertReportManager
 
   logger *zap.Logger
@@ -44,9 +42,21 @@ func CreateReportAnalyzer(
 ) (*ReportAnalyzer, error) {
   config := GetAnalyzer(projectId)
 
-  // https://github.com/ClickHouse/ClickHouse/issues/2833
-  // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
-  db, err := sqlx.Open("clickhouse", "tcp://"+clickHouseUrl+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000&database="+config.DbName)
+  // well, go-faster/ch is not so easy to use for such a generic case as our code (each column should be created in advance, no API to simply pass slice of any values)
+  db, err := clickhouse.Open(&clickhouse.Options{
+    Addr: []string{clickHouseUrl},
+    Auth: clickhouse.Auth{
+      Database: config.DbName,
+    },
+    DialTimeout:     10 * time.Second,
+    ConnMaxLifetime: time.Hour,
+    Settings: map[string]interface{}{
+      // https://github.com/ClickHouse/ClickHouse/issues/2833
+      // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
+      "send_timeout":    30_000,
+      "receive_timeout": 3000,
+    },
+  })
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -66,10 +76,7 @@ func CreateReportAnalyzer(
     waitGroup: sync.WaitGroup{},
 
     InsertReportManager: insertReportManager,
-
-    Db: db,
-
-    logger: logger,
+    logger:              logger,
   }
 
   go func() {
@@ -141,7 +148,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   runResult.Product = extraData.ProductCode
   runResult.Machine = extraData.Machine
 
-  if runResult.GeneratedTime == 0 {
+  if runResult.GeneratedTime.IsZero() {
     runResult.GeneratedTime, err = computeGeneratedTime(runResult.Report, extraData)
     if err != nil {
       return err
@@ -229,18 +236,18 @@ type ReportInfo struct {
   runResult *RunResult
 }
 
-func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (int64, error) {
+func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time.Time, error) {
   if report.Generated == "" {
-    if extraData.LastGeneratedTime <= 0 {
-      return -1, errors.New("generated time not in report and not provided explicitly")
+    if extraData.LastGeneratedTime.IsZero() {
+      return time.Time{}, errors.New("generated time not in report and not provided explicitly")
     }
     return extraData.LastGeneratedTime, nil
   } else {
     parsedTime, err := parseTime(report.Generated)
     if err != nil {
-      return -1, err
+      return time.Time{}, err
     }
-    return parsedTime.Unix(), nil
+    return parsedTime, nil
   }
 }
 
@@ -248,7 +255,8 @@ func (t *ReportAnalyzer) Close() error {
   t.closeOnce.Do(func() {
     close(t.insertQueue)
   })
-  return errors.WithStack(multierr.Combine(t.InsertReportManager.insertInstallerManager.Close(), t.InsertReportManager.Close(), t.Db.Close()))
+  insertManager := t.InsertReportManager.InsertManager
+  return errors.WithStack(multierr.Combine(insertManager.Close(), insertManager.Db.Close()))
 }
 
 func (t *ReportAnalyzer) WaitAndCommit() <-chan error {
@@ -259,7 +267,7 @@ func (t *ReportAnalyzer) WaitAndCommit() <-chan error {
       return
     }
 
-    err := t.InsertReportManager.InsertManager.CommitAndWait()
+    err := t.InsertReportManager.InsertManager.SendAndWait()
     t.DoneChannel <- err
   }()
   return t.DoneChannel

@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Report struct {
   Version string `json:"version"`
 
@@ -23,8 +25,8 @@ type Report struct {
 }
 
 type ExtraData struct {
-  LastGeneratedTime int64
-  BuildTime         int64
+  LastGeneratedTime time.Time
+  BuildTime         time.Time
 
   ProductCode string
   BuildNumber string
@@ -34,7 +36,7 @@ type ExtraData struct {
   TcBuildId          int
   TcInstallerBuildId int
   TcBuildProperties  []byte
-  Changes            [][]byte
+  Changes            []string
 
   // for logging only
   ReportFile string

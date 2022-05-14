@@ -2,38 +2,31 @@ package analyzer
 
 import (
   "context"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
   "golang.org/x/tools/container/intsets"
+  "strconv"
 )
 
 type InsertInstallerManager struct {
   sql_util.InsertDataManager
 
-  maxId       int
+  maxId       uint32
   insertedIds intsets.Sparse
 }
 
-func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logger *zap.Logger) (*InsertInstallerManager, error) {
-  selectStatement, err := db.Prepare("select 1 from installer where id = ? limit 1")
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
+func NewInstallerInsertManager(db driver.Conn, insertContext context.Context, logger *zap.Logger) (*InsertInstallerManager, error) {
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer(id, changes) values(?, ?)", 1, logger.Named("installer"))
+  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer", 1, logger.Named("installer"))
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
   manager := &InsertInstallerManager{
     InsertDataManager: sql_util.InsertDataManager{
-      Db: db,
-
-      SelectStatement: selectStatement,
-      InsertManager:   insertManager,
+      InsertManager: insertManager,
 
       Logger: logger,
     },
@@ -42,7 +35,7 @@ func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logge
   }
 
   //noinspection SqlResolve
-  err = db.QueryRow("select max(id) from installer").Scan(&manager.maxId)
+  err = db.QueryRow(insertContext, "select max(id) from installer").Scan(&manager.maxId)
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -50,13 +43,13 @@ func NewInstallerInsertManager(db *sqlx.DB, insertContext context.Context, logge
   return manager, nil
 }
 
-func (t *InsertInstallerManager) Insert(id int, changes [][]byte) error {
+func (t *InsertInstallerManager) Insert(id int, changes []string) error {
   if t.insertedIds.Has(id) {
     return nil
   }
 
-  if id <= t.maxId {
-    exists, err := t.CheckExists(t.SelectStatement.QueryRow(id))
+  if id <= int(t.maxId) {
+    exists, err := t.CheckExists(t.InsertManager.Db.QueryRow(t.InsertManager.InsertContext, "select 1 from installer where id = "+strconv.Itoa(id)+" limit 1"))
     if err != nil {
       return err
     }
@@ -66,12 +59,12 @@ func (t *InsertInstallerManager) Insert(id int, changes [][]byte) error {
     }
   }
 
-  statement, err := t.InsertManager.PrepareForInsert()
+  batch, err := t.InsertManager.PrepareForAppend()
   if err != nil {
     return err
   }
 
-  _, err = statement.ExecContext(t.InsertManager.InsertContext, id, changes)
+  err = batch.Append(uint32(id), changes)
   if err != nil {
     return errors.WithStack(err)
   }

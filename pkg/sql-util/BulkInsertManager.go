@@ -2,20 +2,16 @@ package sql_util
 
 import (
   "context"
-  "database/sql"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
-  "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
   "runtime"
   "sync"
 )
 
-type BulkInsertManager struct {
-  transaction     *sql.Tx
-  insertStatement *sql.Stmt
-  Db              *sqlx.DB
+type BatchInsertManager struct {
+  batch driver.Batch
+  Db    driver.Conn
 
   insertSql string
 
@@ -25,15 +21,21 @@ type BulkInsertManager struct {
   logger *zap.Logger
 
   waitGroup sync.WaitGroup
-  pool      *ants.Pool
   Error     error
 
   InsertContext context.Context
 
-  dependencies []*BulkInsertManager
+  dependencies []*BatchInsertManager
+  batches      chan driver.Batch
 }
 
-func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql string, insertWorkerCount int, logger *zap.Logger) (*BulkInsertManager, error) {
+func NewBulkInsertManager(
+  db driver.Conn,
+  insertContext context.Context,
+  insertSql string,
+  insertWorkerCount int,
+  logger *zap.Logger,
+) (*BatchInsertManager, error) {
   poolCapacity := insertWorkerCount
   if insertWorkerCount == -1 {
     // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
@@ -45,14 +47,12 @@ func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql 
     poolCapacity = 99
   }
 
+  // send batches to clickhouse in order, don't use pool here
+  batches := make(chan driver.Batch)
+
   logger.Info("insert pool capacity", zap.Int("count", poolCapacity))
 
-  pool, err := ants.NewPool(poolCapacity)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
-  return &BulkInsertManager{
+  manager := &BatchInsertManager{
     queuedItems:   0,
     Db:            db,
     InsertContext: insertContext,
@@ -62,148 +62,114 @@ func NewBulkInsertManager(db *sqlx.DB, insertContext context.Context, insertSql 
     // large inserts leads to large memory usage, so, insert by 2000 items
     BatchSize: 2000,
 
-    pool: pool,
-  }, nil
+    batches: batches,
+  }
+
+  for i := 0; i < poolCapacity; i++ {
+    go func() {
+      manager.processQueue(batches)
+    }()
+  }
+
+  return manager, nil
 }
 
-func (t *BulkInsertManager) AddDependency(dependency *BulkInsertManager) {
+func (t *BatchInsertManager) processQueue(batches chan driver.Batch) {
+  for {
+    select {
+    case batch, ok := <-batches:
+      if !ok {
+        return
+      }
+
+      if t.Error != nil {
+        return
+      }
+
+      for _, dependency := range t.dependencies {
+        err := dependency.SendAndWait()
+        if err != nil {
+          t.logger.Error("cannot commit dependency", zap.Error(err))
+          t.Error = err
+          t.waitGroup.Done()
+          return
+        }
+      }
+
+      t.logger.Info("send batch")
+      err := batch.Send()
+      if err != nil {
+        t.logger.Error("cannot send batch", zap.Error(err))
+        t.Error = err
+        t.waitGroup.Done()
+        return
+      }
+
+    case <-t.InsertContext.Done():
+      return
+    }
+  }
+}
+
+func (t *BatchInsertManager) AddDependency(dependency *BatchInsertManager) {
   t.dependencies = append(t.dependencies, dependency)
 }
 
-func (t *BulkInsertManager) GetUncommittedTransactionCount() int {
-  return t.pool.Running()
+func (t *BatchInsertManager) GetUncommittedBatchCount() int {
+  return len(t.batches)
 }
 
-func (t *BulkInsertManager) CommitAndWait() error {
-  uncommittedTransactionCount := t.GetUncommittedTransactionCount()
-  if uncommittedTransactionCount > 0 {
-    t.logger.Info("waiting inserting", zap.Int("transactions", uncommittedTransactionCount))
+func (t *BatchInsertManager) SendAndWait() error {
+  uncommittedCount := t.GetUncommittedBatchCount()
+  if uncommittedCount > 0 {
+    t.logger.Info("waiting sending", zap.Int("batches", uncommittedCount))
   }
 
-  err := t.Commit()
-  if err != nil {
-    return err
-  }
-
+  t.Flush()
   t.waitGroup.Wait()
   return t.Error
 }
 
-func (t *BulkInsertManager) Commit() error {
-  transaction := t.transaction
-  if transaction == nil {
-    return nil
+func (t *BatchInsertManager) Flush() {
+  batch := t.batch
+  if batch == nil {
+    return
   }
 
-  insertStatement := t.insertStatement
-
-  t.transaction = nil
-  t.insertStatement = nil
+  t.batch = nil
   queuedItems := t.queuedItems
   t.queuedItems = 0
 
-  var err error
-  if t.pool.Cap() == 1 {
-    t.logger.Info("commit", zap.Int("count", queuedItems))
-    err = t.doInsert(insertStatement, transaction, queuedItems)
-    if err != nil {
-      return err
-    }
-  } else {
-    t.logger.Info("add committing of insert transaction to queue", zap.Int("count", queuedItems))
-    t.waitGroup.Add(1)
-    err = t.pool.Submit(func() {
-      defer t.waitGroup.Done()
-      err := t.doInsert(insertStatement, transaction, queuedItems)
-      if err != nil {
-        t.Error = err
-      }
-    })
-
-    if err != nil {
-      t.waitGroup.Done()
-      return err
-    }
-  }
-  return nil
+  t.logger.Info("items scheduled to be sent", zap.Int("count", queuedItems))
+  t.batches <- batch
 }
 
-func (t *BulkInsertManager) doInsert(insertStatement *sql.Stmt, transaction *sql.Tx, queuedItems int) error {
-  defer util.Close(insertStatement, t.logger)
-
-  if t.Error != nil {
-    t.logger.Error("rollback transaction", zap.String("reason", "previous transaction failed to be committed"), zap.NamedError("prevError", t.Error))
-    t.rollbackTransaction(transaction)
-    return nil
-  }
-
-  for _, dependency := range t.dependencies {
-    err := dependency.CommitAndWait()
-    if err != nil {
-      t.Error = err
-      t.logger.Info("cannot commit dependency", zap.Error(err))
-      return nil
-    }
-  }
-
-  err := transaction.Commit()
-  if err != nil {
-    t.logger.Info("cannot commit", zap.Error(err))
-    return errors.WithStack(err)
-  }
-
-  t.logger.Info("items were inserted", zap.Int("count", queuedItems))
-  return nil
-}
-
-func (t *BulkInsertManager) PrepareForInsert() (*sql.Stmt, error) {
+func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
   if t.queuedItems >= t.BatchSize {
-    if t.transaction != nil {
-      err := t.Commit()
-      if err != nil {
-        return nil, err
-      }
-    }
+    t.Flush()
   } else {
     t.queuedItems++
   }
 
-  if t.insertStatement == nil {
+  if t.batch == nil {
     var err error
-    t.transaction, err = t.Db.Begin()
-    if err != nil {
-      return nil, errors.WithStack(err)
-    }
-
-    t.insertStatement, err = t.transaction.Prepare(t.insertSql)
+    t.batch, err = t.Db.PrepareBatch(t.InsertContext, t.insertSql)
     if err != nil {
       return nil, errors.WithStack(err)
     }
   }
-  return t.insertStatement, nil
+  return t.batch, nil
 }
 
-func (t *BulkInsertManager) Close() error {
-  t.pool.Release()
+func (t *BatchInsertManager) Close() error {
+  close(t.batches)
 
   var err error
-  if t.insertStatement != nil {
-    err = t.insertStatement.Close()
-  }
-
-  transaction := t.transaction
-  if transaction != nil {
-    t.logger.Error("rollback transaction", zap.String("reason", "was not committed, but close is called"))
-    t.transaction = nil
-    t.rollbackTransaction(transaction)
+  if t.batch != nil {
+    t.logger.Error("abort batch", zap.String("reason", "was not sent, but close is called"))
+    err = t.batch.Abort()
+    t.batch = nil
   }
 
   return err
-}
-
-func (t *BulkInsertManager) rollbackTransaction(transaction *sql.Tx) {
-  err := transaction.Rollback()
-  if err != nil {
-    t.logger.Error("cannot rollback", zap.Error(err))
-  }
 }

@@ -6,6 +6,7 @@ import (
   "github.com/json-iterator/go"
   "go.uber.org/zap"
   "io"
+  "time"
 )
 
 type BuildList struct {
@@ -30,8 +31,8 @@ type Build struct {
 
 type InstallerInfo struct {
   id        int
-  changes   [][]byte
-  buildTime int64
+  changes   []string
+  buildTime time.Time
 }
 
 type Artifacts struct {

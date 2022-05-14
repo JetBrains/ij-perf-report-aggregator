@@ -2,13 +2,13 @@ package analyzer
 
 import (
   "context"
-  "database/sql"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "go.deanishe.net/env"
   "go.uber.org/zap"
+  "strconv"
   "strings"
   "time"
 )
@@ -21,11 +21,10 @@ var ErrMetricsCannotBeComputed = errors.New("metrics cannot be computed")
 type RunResult struct {
   Product string
 
-  // or uint8 as enum id, or string as enum value
-  Machine interface{}
+  Machine string
 
-  BuildTime     int64
-  GeneratedTime int64
+  BuildTime     time.Time
+  GeneratedTime time.Time
 
   TcBuildId          int
   TcInstallerBuildId int
@@ -49,7 +48,7 @@ type InsertReportManager struct {
   sql_util.InsertDataManager
 
   context                          context.Context
-  MaxGeneratedTime                 int64
+  MaxGeneratedTime                 time.Time
   IsCheckThatNotAlreadyAddedNeeded bool
   config                           DatabaseConfiguration
   nonMetricFieldCount              int
@@ -58,27 +57,17 @@ type InsertReportManager struct {
 }
 
 func NewInsertReportManager(
-  db *sqlx.DB,
+  db driver.Conn,
   config DatabaseConfiguration,
   context context.Context,
   tableName string,
   insertWorkerCount int,
   logger *zap.Logger,
 ) (*InsertReportManager, error) {
-  var selectStatement *sql.Stmt
   var err error
 
   if len(config.TableName) != 0 {
     tableName = config.TableName
-  }
-
-  if config.HasProductField {
-    selectStatement, err = db.Prepare("select 1 from " + tableName + " where product = ? and machine = ? and project = ? and generated_time = ? limit 1")
-  } else {
-    selectStatement, err = db.Prepare("select 1 from " + tableName + " where machine = ? and project = ? and generated_time = ? limit 1")
-  }
-  if err != nil {
-    return nil, errors.WithStack(err)
   }
 
   metaFields := make([]string, 0, 16)
@@ -119,7 +108,7 @@ func NewInsertReportManager(
   }
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
-  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 1_000)
+  insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
 
   installerManager, err := NewInstallerInsertManager(db, context, logger)
   if err != nil {
@@ -131,10 +120,7 @@ func NewInsertReportManager(
     config:              config,
     TableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
-      Db: db,
-
-      SelectStatement: selectStatement,
-      InsertManager:   insertManager,
+      InsertManager: insertManager,
 
       Logger: logger,
     },
@@ -155,11 +141,19 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
   } else {
     logger = logger.With(zap.String("project", t.config.DbName))
   }
-  logger = logger.With(zap.String("generatedTime", time.Unix(runResult.GeneratedTime, 0).Format(time.RFC1123)))
+  logger = logger.With(zap.String("generatedTime", runResult.GeneratedTime.Format(time.RFC1123)))
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
-  if t.IsCheckThatNotAlreadyAddedNeeded && runResult.GeneratedTime <= t.MaxGeneratedTime {
-    exists, err := t.CheckExists(t.SelectStatement.QueryRow(runResult.Product, runResult.Machine, runResult.Report.Project, runResult.GeneratedTime))
+  if t.IsCheckThatNotAlreadyAddedNeeded && !runResult.GeneratedTime.After(t.MaxGeneratedTime) {
+    selectStatement := "select 1 from " + t.config.TableName + " where "
+    if t.config.HasProductField {
+      selectStatement = "product = '" + sql_util.StringEscaper.Replace(runResult.Product) + "' and "
+    }
+    selectStatement += "machine = '" + sql_util.StringEscaper.Replace(runResult.Machine) +
+      "' and project = '" + sql_util.StringEscaper.Replace(runResult.Report.Project) +
+      "' and generated_time = " + strconv.FormatInt(runResult.GeneratedTime.Unix(), 10)
+
+    exists, err := t.CheckExists(t.InsertManager.Db.QueryRow(t.context, selectStatement))
     if err != nil {
       return err
     }
@@ -208,7 +202,7 @@ var projectIdToName = map[string]string{
 }
 
 func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *zap.Logger) error {
-  insertStatement, err := t.InsertManager.PrepareForInsert()
+  batch, err := t.InsertManager.PrepareForAppend()
   if err != nil {
     return err
   }
@@ -224,7 +218,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
-  args = append(args, row.Machine, row.GeneratedTime, project, row.TcBuildId, branch)
+  args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch)
 
   if t.config.HasProductField {
     args = append(args, product)
@@ -235,16 +229,14 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
       return err
     }
 
-    if buildTimeUnix <= 0 {
+    if buildTimeUnix.IsZero() {
       buildTimeUnix = row.BuildTime
     }
 
-    if m, ok := row.Machine.(string); ok {
-      if strings.HasPrefix(m, "intellij-linux-hw-compile-hp-blade-") {
-        return nil
-      }
+    if strings.HasPrefix(row.Machine, "intellij-linux-hw-compile-hp-blade-") {
+      return nil
     }
-    args = append(args, buildTimeUnix, row.TcInstallerBuildId, row.BuildC1, row.BuildC2, row.BuildC3, row.RawReport)
+    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport))
 
     if t.config.DbName == "ij" {
       err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
@@ -256,7 +248,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 
   args = append(args, row.ExtraFieldData...)
 
-  _, err = insertStatement.ExecContext(t.context, args...)
+  err = batch.Append(args...)
   if err != nil {
     return errors.WithStack(err)
   }

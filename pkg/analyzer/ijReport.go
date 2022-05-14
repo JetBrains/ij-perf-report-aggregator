@@ -5,7 +5,23 @@ import (
   "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
+  "sort"
 )
+
+type measureItem struct {
+  name     string
+  start    uint32
+  duration uint32
+  thread   string
+}
+
+type serviceItem struct {
+  name     string
+  start    uint32
+  duration uint32
+  thread   string
+  plugin   string
+}
 
 func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   report := runResult.Report
@@ -32,34 +48,28 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     })
   }
 
-  serviceName := make([]string, 0)
-  serviceStart := make([]int, 0)
-  serviceDuration := make([]int, 0)
-  serviceThread := make([]string, 0)
-  servicePlugin := make([]string, 0)
+  var clTotal int32
+  var clSearch int32
+  var clDefine int32
+  var clCount int32
 
-  clTotal := 0
-  clSearch := 0
-  clDefine := 0
-  clCount := 0
+  var rlTime int32
+  var rlCount int32
 
-  rlTime := 0
-  rlCount := 0
-
-  measureName := make([]string, 0)
-  measureStart := make([]int, 0)
-  measureDuration := make([]int, 0)
-  measureThread := make([]string, 0)
+  services := make([]serviceItem, 0)
+  measures := make([]measureItem, 0)
 
   if version.Compare(report.Version, "20", ">=") {
     if version.Compare(report.Version, "32", ">=") {
       report.Activities = readActivities("items", data)
 
       for _, activity := range report.Activities {
-        measureName = append(measureName, activity.Name)
-        measureStart = append(measureStart, activity.Start)
-        measureDuration = append(measureDuration, activity.Duration)
-        measureThread = append(measureThread, activity.Thread)
+        measures = append(measures, measureItem{
+          name:     activity.Name,
+          start:    uint32(activity.Start),
+          duration: uint32(activity.Duration),
+          thread:   activity.Thread,
+        })
       }
     } else {
       report.Activities = readActivitiesInOldFormat("items", data)
@@ -70,24 +80,56 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
       classLoading := data.Get("classLoading")
       resourceLoading := data.Get("resourceLoading")
       if classLoading != nil && resourceLoading != nil {
-        clTotal = classLoading.GetInt("time")
-        clSearch = classLoading.GetInt("searchTime")
-        clDefine = classLoading.GetInt("defineTime")
-        clCount = classLoading.GetInt("count")
+        clTotal = int32(classLoading.GetInt("time"))
+        clSearch = int32(classLoading.GetInt("searchTime"))
+        clDefine = int32(classLoading.GetInt("defineTime"))
+        clCount = int32(classLoading.GetInt("count"))
 
-        rlTime = resourceLoading.GetInt("time")
-        rlCount = resourceLoading.GetInt("count")
+        rlTime = int32(resourceLoading.GetInt("time"))
+        rlCount = int32(resourceLoading.GetInt("count"))
       }
     }
 
-    readServices(data, "appComponents", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
-    readServices(data, "appServices", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
-    readServices(data, "projectComponents", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
-    readServices(data, "projectServices", &serviceName, &serviceStart, &serviceDuration, &serviceThread, &servicePlugin)
+    readServices(data, "appComponents", &services)
+    readServices(data, "appServices", &services)
+    readServices(data, "projectComponents", &services)
+    readServices(data, "projectServices", &services)
   } else {
     report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
   }
+
+  // Sort for better compression (same data pattern across column values). It is confirmed by experiment.
+  sort.Slice(measures, func(i, j int) bool {
+    return measures[i].name < measures[j].name
+  })
+
+  measureCount := len(measures)
+  measureName := make([]string, measureCount, measureCount)
+  measureStart := make([]uint32, measureCount, measureCount)
+  measureDuration := make([]uint32, measureCount, measureCount)
+  measureThread := make([]string, measureCount, measureCount)
+  for i, info := range measures {
+    measureName[i] = info.name
+    measureStart[i] = info.start
+    measureDuration[i] = info.duration
+    measureThread[i] = info.thread
+  }
+
+  serviceCount := len(services)
+  serviceName := make([]string, serviceCount, serviceCount)
+  serviceStart := make([]uint32, serviceCount, serviceCount)
+  serviceDuration := make([]uint32, serviceCount, serviceCount)
+  serviceThread := make([]string, serviceCount, serviceCount)
+  servicePlugin := make([]string, serviceCount, serviceCount)
+  for i, info := range services {
+    serviceName[i] = info.name
+    serviceStart[i] = info.start
+    serviceDuration[i] = info.duration
+    serviceThread[i] = info.thread
+    servicePlugin[i] = info.plugin
+  }
+
   runResult.ExtraFieldData = []interface{}{
     serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
     clTotal, clSearch, clDefine, clCount, rlTime, rlCount,
@@ -99,18 +141,16 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
 func readServices(
   data *fastjson.Value,
   category string,
-  name *[]string,
-  start *[]int,
-  duration *[]int,
-  thread *[]string,
-  plugin *[]string,
+  services *[]serviceItem,
 ) {
   for _, measure := range data.GetArray(category) {
-    *name = append(*name, string(measure.GetStringBytes("n")))
-    *start = append(*start, measure.GetInt("s"))
-    *duration = append(*duration, measure.GetInt("d"))
-    *thread = append(*thread, string(measure.GetStringBytes("t")))
-    *plugin = append(*plugin, string(measure.GetStringBytes("p")))
+    *services = append(*services, serviceItem{
+      name:     string(measure.GetStringBytes("n")),
+      start:    uint32(measure.GetInt("s")),
+      duration: uint32(measure.GetInt("d")),
+      thread:   string(measure.GetStringBytes("t")),
+      plugin:   string(measure.GetStringBytes("p")),
+    })
   }
 
   // remove to reduce size of raw report

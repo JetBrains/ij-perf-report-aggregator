@@ -4,10 +4,10 @@ import (
   "context"
   "database/sql"
   e "errors"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  sql_util "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
@@ -122,7 +122,8 @@ func collectFromTeamCity(
     if since.IsZero() {
       since = initialSince
       if since.IsZero() {
-        err = reportAnalyzer.Db.QueryRow("select last_time from collector_state where build_type_id = ? order by last_time desc limit 1", buildTypeId).Scan(&since)
+        query := "select last_time from collector_state where build_type_id = '" + sql_util.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
+        err = reportAnalyzer.InsertReportManager.InsertManager.Db.QueryRow(taskContext, query).Scan(&since)
         if err != nil && err != sql.ErrNoRows {
           return errors.WithStack(err)
         }
@@ -204,7 +205,7 @@ func collectFromTeamCity(
 
         // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
         // set last collect time to 1 second after last build in chunk
-        err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), reportAnalyzer.Db, logger)
+        err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), reportAnalyzer.InsertReportManager.InsertManager.Db, taskContext)
         if err != nil {
           return err
         }
@@ -225,21 +226,18 @@ func buildTeamCityQuery() string {
   return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)))"
 }
 
-func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db *sqlx.DB, logger *zap.Logger) error {
-  tx, _ := db.Begin()
-  stmt, err := tx.Prepare("insert into collector_state values (?, ?)")
+func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn, ctx context.Context) error {
+  batch, err := db.PrepareBatch(ctx, "insert into collector_state values")
   if err != nil {
     return errors.WithStack(err)
   }
 
-  defer util.Close(stmt, logger)
-
-  _, err = stmt.Exec(buildTypeId, lastCollectTimeToSet)
+  err = batch.Append(buildTypeId, lastCollectTimeToSet)
   if err != nil {
     return errors.WithStack(err)
   }
 
-  err = tx.Commit()
+  err = batch.Send()
   if err != nil {
     return errors.WithStack(err)
   }

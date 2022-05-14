@@ -4,8 +4,8 @@ import (
   "context"
   _ "embed"
   "encoding/base64"
+  sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
-  "github.com/go-faster/ch"
   "github.com/go-faster/ch/proto"
   "github.com/klauspost/compress/zstd"
   "github.com/sakura-internet/go-rison/v4"
@@ -167,27 +167,6 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
     totalWriter.S("]")
   }
   return nil
-}
-
-func SelectString(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, context context.Context) ([]byte, error) {
-  sqlQuery, _, err := buildSql(query, table)
-  if err != nil {
-    return nil, err
-  }
-
-  dbResource, err := dbSupplier.AcquireDatabase(query.Database, context)
-  if err != nil {
-    return nil, err
-  }
-
-  var res proto.ColStr
-  err = dbResource.Value().Do(context, ch.Query{Body: sqlQuery, Result: proto.ResultColumn{Data: &res}})
-  if err != nil {
-    return nil, err
-  }
-
-  defer dbResource.Release()
-  return res.Buf[res.Pos[0].Start:res.Pos[0].End], nil
 }
 
 func buildSql(query DataQuery, table string) (string, map[string]int, error) {
@@ -358,9 +337,6 @@ func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
   }
 }
 
-// https://clickhouse.com/docs/en/sql-reference/syntax/#syntax-string-literal
-var stringEscaper = strings.NewReplacer("\\", "\\\\", "'", "''")
-
 func writeWhereClause(sb *strings.Builder, query DataQuery) error {
   sb.WriteString(" where")
 loop:
@@ -425,7 +401,7 @@ loop:
 
 func writeString(sb *strings.Builder, s string) {
   sb.WriteByte('\'')
-  _, _ = stringEscaper.WriteString(sb, s)
+  _, _ = sqlutil.StringEscaper.WriteString(sb, s)
   sb.WriteByte('\'')
 }
 

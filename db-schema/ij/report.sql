@@ -53,7 +53,7 @@ create table report2
 
   `service.name` Array(LowCardinality(String)) CODEC (ZSTD(20)),
   `service.start` Array(UInt32) CODEC (Gorilla, ZSTD(20)),
-  `service.duration` Array(Int32) CODEC (ZSTD(20)),
+  `service.duration` Array(UInt32) CODEC (ZSTD(20)),
   `service.thread` Array(LowCardinality(String)) CODEC (ZSTD(20)),
   `service.plugin` Array(LowCardinality(String)) CODEC (ZSTD(20)),
 

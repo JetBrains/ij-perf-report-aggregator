@@ -2,27 +2,18 @@ package sql_util
 
 import (
   "database/sql"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
-  "go.uber.org/multierr"
   "go.uber.org/zap"
 )
 
 type InsertDataManager struct {
-  Db *sqlx.DB
-
-  InsertManager   *BulkInsertManager
-  SelectStatement *sql.Stmt
-
-  Logger *zap.Logger
+  InsertManager *BatchInsertManager
+  Logger        *zap.Logger
 }
 
-func (t *InsertDataManager) Close() error {
-  return errors.WithStack(multierr.Combine(t.InsertManager.Close(), t.SelectStatement.Close()))
-}
-
-func (t *InsertDataManager) CheckExists(row *sql.Row) (bool, error) {
-  fakeResult := -1
+func (t *InsertDataManager) CheckExists(row driver.Row) (bool, error) {
+  var fakeResult uint8
   err := row.Scan(&fakeResult)
   switch {
   case err == nil:

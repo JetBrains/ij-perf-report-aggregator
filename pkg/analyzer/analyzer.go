@@ -91,7 +91,7 @@ func splitID(id string) (string, string) {
 
 func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   measureNames := make([]string, 0)
-  measureValues := make([]int, 0)
+  measureValues := make([]int32, 0)
   for _, measure := range data.GetArray("metrics") {
     measureName := string(measure.GetStringBytes("n"))
 
@@ -105,7 +105,7 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
     }
 
     floatValue := value.GetFloat64()
-    intValue := int(floatValue)
+    intValue := int32(floatValue)
     if floatValue != float64(intValue) {
       return errors.WithMessagef(nil, "int expected, but got float %f", floatValue)
     }

@@ -171,21 +171,21 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
   return nil
 }
 
-func computeBuildDate(build *Build) (int, int64, error) {
+func computeBuildDate(build *Build) (int, time.Time, error) {
   for _, dependencyBuild := range build.ArtifactDependencies.Builds {
     if strings.Contains(dependencyBuild.BuildTypeId, "Installer") {
       result, err := time.Parse(tcTimeFormat, dependencyBuild.FinishDate)
       if err != nil {
-        return -1, -1, err
+        return -1, time.Time{}, err
       }
 
-      return dependencyBuild.Id, result.Unix(), nil
+      return dependencyBuild.Id, result, nil
     }
   }
-  return -1, -1, nil
+  return -1, time.Time{}, nil
 }
 
-func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error) {
+func (t *Collector) loadInstallerChanges(installerBuildId int) ([]string, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
   if err != nil {
     return nil, err
@@ -211,8 +211,10 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error)
     return nil, errors.WithStack(err)
   }
 
+  encoding := base64.RawStdEncoding
+
   var b bytes.Buffer
-  result := make([][]byte, len(changeList.List))
+  result := make([]string, len(changeList.List))
   for index, change := range changeList.List {
     data, err := hex.DecodeString(change.Version)
     if err != nil {
@@ -221,10 +223,9 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([][]byte, error)
 
     b.Reset()
 
-    encoding := base64.RawStdEncoding
     buf := make([]byte, encoding.EncodedLen(len(data)))
     encoding.Encode(buf, data)
-    result[index] = buf
+    result[index] = string(buf)
   }
 
   return result, nil

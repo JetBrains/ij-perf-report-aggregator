@@ -153,13 +153,13 @@ func (t *BackupManager) backup(backupDir string, backupName string) (err error) 
 
   err = t.createBackup(&task)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   logger.Info("upload", zap.String("backup", backupDir))
   err = t.upload(backupName+".tar", task)
   if err != nil {
-    return errors.WithStack(err)
+    return err
   }
 
   if t.TaskContext.Err() != nil {

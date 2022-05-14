@@ -20,7 +20,7 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value, logger *
   }
 
   first := values[0]
-  runResult.GeneratedTime = time.Unix(0, first.GetInt64("epochNanos")).Unix()
+  runResult.GeneratedTime = time.Unix(0, first.GetInt64("epochNanos"))
   runResult.Report.Project = string(first.GetStringBytes("attributes", "test.name"))
 
   measureName := strings.TrimSuffix(filepath.Base(runResult.ReportFileName), ".json")
@@ -33,16 +33,16 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value, logger *
 
 func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
   names := make([]string, 0)
-  values := make([]int, 0)
-  starts := make([]int, 0)
+  values := make([]int32, 0)
+  starts := make([]int32, 0)
   threads := make([]string, 0)
   items := data.GetArray("items")
   for _, measure := range items {
     name := string(measure.GetStringBytes("name"))
     // in milliseconds
     names = append(names, name)
-    values = append(values, measure.GetInt("duration"))
-    starts = append(starts, measure.GetInt("start"))
+    values = append(values, int32(measure.GetInt("duration")))
+    starts = append(starts, int32(measure.GetInt("start")))
     threads = append(threads, string(measure.GetStringBytes("thread")))
   }
 
@@ -72,8 +72,8 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logge
 
       // in milliseconds
       names = append(names, name)
-      values = append(values, measure.GetInt("d"))
-      starts = append(starts, measure.GetInt("s"))
+      values = append(values, int32(measure.GetInt("d")))
+      starts = append(starts, int32(measure.GetInt("s")))
       threads = append(threads, string(measure.GetStringBytes("t")))
     }
   }

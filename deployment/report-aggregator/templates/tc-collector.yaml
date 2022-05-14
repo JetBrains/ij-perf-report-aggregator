@@ -43,7 +43,7 @@ spec:
                   value: "clickhouse:9000"
               volumeMounts:
                 - mountPath: /etc/config
-                  name: test-volume
+                  name: tc-collector-config
           imagePullSecrets:
             - name: ghcr
           volumes:

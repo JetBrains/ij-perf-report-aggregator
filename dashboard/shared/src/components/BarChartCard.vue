@@ -11,7 +11,7 @@ import { BarChartManager } from "../BarChartManager"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { chartDefaultStyle } from "../chart"
 import { PredefinedGroupingMeasureConfigurator } from "../configurators/PredefinedGroupingMeasureConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, timeRangeKey } from "../injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, injectOrError, timeRangeKey } from "../injectionKeys"
 
 const props = withDefaults(defineProps<{
   height?: number
@@ -32,15 +32,12 @@ if (timeRange === undefined) {
   throw new Error("timeRange is not injected but required")
 }
 
-const aggregationOperatorConfigurator = inject(aggregationOperatorConfiguratorKey)
-if (aggregationOperatorConfigurator === undefined) {
-  throw new Error("aggregationOperatorConfigurator is not injected but required")
-}
+const aggregationOperatorConfigurator = injectOrError(aggregationOperatorConfiguratorKey)
 
 const chartStyle = inject(chartStyleKey, chartDefaultStyle)
 const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, chartStyle)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const dataQueryExecutor = new DataQueryExecutor(inject(configuratorListKey)!.concat(aggregationOperatorConfigurator, measureConfigurator))
+const dataQueryExecutor = new DataQueryExecutor(injectOrError(configuratorListKey).concat(aggregationOperatorConfigurator, measureConfigurator))
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor, chartStyle)

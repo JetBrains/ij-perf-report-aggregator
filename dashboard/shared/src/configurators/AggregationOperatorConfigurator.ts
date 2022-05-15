@@ -1,29 +1,33 @@
-import { Observable } from "rxjs"
-import { ref } from "vue"
+import { combineLatest, Observable, shareReplay } from "rxjs"
+import { computed, ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { refToObservable } from "./rxjs"
 
 export class AggregationOperatorConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_OPERATOR = "median"
-  readonly value = ref({operator: AggregationOperatorConfigurator.DEFAULT_OPERATOR, quantile: 50})
 
-  createObservable(): Observable<unknown> {
-    return refToObservable(this.value, true)
-  }
+  readonly operator = ref(AggregationOperatorConfigurator.DEFAULT_OPERATOR)
+  readonly quantile = ref(50)
+
+  private readonly observable: Observable<unknown>
 
   constructor(persistentStateManager: PersistentStateManager) {
-    persistentStateManager.add("aggregationOperator", this.value)
+    persistentStateManager.add("aggregationOperator", computed(() => ({operator: this.operator.value, quantile: this.quantile.value})))
+    this.observable = combineLatest([refToObservable(this.operator), refToObservable(this.quantile)]).pipe(shareReplay(1))
+  }
+
+  createObservable(): Observable<unknown> {
+    return this.observable
   }
 
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    const aggregator = this.value.value
-    const operator = aggregator.operator
+    const operator = this.operator.value
     if (operator === "median" || operator.length === 0) {
       query.aggregator = "quantileTDigest(0.5)"
     }
     else if (operator === "quantile") {
-      query.aggregator = `quantileTDigest(${(aggregator.quantile ?? 50) / 100})`
+      query.aggregator = `quantileTDigest(${(this.quantile.value ?? 50) / 100})`
     }
     else {
       query.aggregator = operator

@@ -177,7 +177,6 @@ const components = new Set<string>([
   "Splitter",
   "SplitterPanel",
   "Steps",
-  "TabMenu",
   "TabPanel",
   // "TabView",
   "Tag",
@@ -200,10 +199,10 @@ const components = new Set<string>([
 ])
 
 const componentWithStyles = new Set<string>([
-  "Divider",
   "Toolbar",
   "Menubar",
   "Button",
+  "TabMenu",
 ])
 
 // SFC compilation saves 200KB (2.65 vs 2.67 MB)

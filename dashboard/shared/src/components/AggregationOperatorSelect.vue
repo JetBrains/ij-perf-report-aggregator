@@ -1,18 +1,16 @@
 <template>
-  <div class="flex-initial space-x-2 py-4">
-    <label>
-      <Dropdown
-        v-model="value"
-        title="Aggregate by"
-        :options="operators"
-        class="p-inputtext-sm"
-        placeholder="Operator"
-      />
-    </label>
+  <div class="flex-initial space-x-2">
+    <Dropdown
+      v-model="value"
+      title="Aggregate by"
+      :options="operators"
+      option-label="label"
+      option-value="value"
+      placeholder="Operator"
+    />
     <InputNumber
       v-if="value === 'quantile'"
       v-model="quantile"
-      class="p-inputtext-sm"
       size="3"
       :min="0"
       :max="100"
@@ -21,46 +19,37 @@
     />
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent, inject, ref } from "vue"
+<script setup lang="ts">
+import { computed, inject } from "vue"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
 import { aggregationOperatorConfiguratorKey } from "../injectionKeys"
 
-export default defineComponent({
-  name: "AggregationOperatorSelect",
-  props: {
-    configurator: {
-      type: AggregationOperatorConfigurator,
-      default: null,
-    },
+const props =  defineProps<{
+  configurator?: AggregationOperatorConfigurator
+}>()
+
+const providedConfigurator = inject(aggregationOperatorConfiguratorKey, null)
+
+function getConfigurator(): AggregationOperatorConfigurator {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return props.configurator ?? providedConfigurator!
+}
+
+const operators = ["median", "min", "max", "quantile"].map(it => ({label: it, value: it}))
+const value = computed({
+  get() {
+    return getConfigurator().operator.value
   },
-  setup(props) {
-    const providedConfigurator = inject(aggregationOperatorConfiguratorKey, null)
-
-    function getConfigurator(): AggregationOperatorConfigurator {
-      return props.configurator ?? providedConfigurator
-    }
-
-    const operators = ref<Array<string>>(["median", "min", "max", "quantile"])
-    return {
-      operators,
-      value: computed({
-        get() {
-          return getConfigurator().value.value.operator
-        },
-        set(value: string) {
-          getConfigurator().value.value.operator = value
-        },
-      }),
-      quantile: computed({
-        get() {
-          return getConfigurator().value.value.quantile
-        },
-        set(value: number) {
-          getConfigurator().value.value.quantile = value
-        },
-      }),
-    }
+  set(value: string) {
+    getConfigurator().operator.value = value
+  },
+})
+const quantile = computed({
+  get() {
+    return getConfigurator().quantile.value
+  },
+  set(value: number) {
+    getConfigurator().quantile.value = value
   },
 })
 </script>

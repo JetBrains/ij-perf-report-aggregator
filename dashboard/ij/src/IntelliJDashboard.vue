@@ -18,8 +18,9 @@
     </template>
 
     <TabMenu
+      v-once
+      class="mb-2"
       :model="tabs"
-      class="mb-1"
     />
     <router-view v-slot="{ Component }">
       <keep-alive>
@@ -44,6 +45,7 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import TabMenu from "tailwind-ui/src/TabMenu.vue"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"

@@ -19,9 +19,7 @@
 
    So, not ring-1 as in TailwindUI, but ring-0 used used, because 2px focus ring is too visible and also too bug for autocomplete (where trigger it is a button with a border)
    */
-  @apply outline-none ring-0;
-  border-color: var(--input-focus-border-color);
-  --tw-ring-color: var(--input-focus-border-color);
+  @apply outline-none ring-0 border-primary-500 ring-primary-500;
 }
 
 .p-inputtext,
@@ -47,7 +45,7 @@
 .p-multiselect .p-multiselect-label.p-placeholder,
 .p-cascadeselect-label .p-cascadeselect-label.p-placeholder,
 .p-treeselect .p-treeselect-label.p-placeholder {
-  color: var(--input-placeholder-text-color)
+  color: var(--input-placeholder-text-color);
 }
 
 .p-inputtext.p-invalid.p-component,

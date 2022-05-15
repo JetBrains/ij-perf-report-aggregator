@@ -3,7 +3,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.vue",
-    "src/shims-vue.d.ts",
-    "src/components.d.ts"
+    "../shared/src/shims-vue.d.ts"
   ]
 }

@@ -57,8 +57,8 @@
           <span class="font-mono place-self-end">{{ getValueFormatterByMeasureName(item.name)(item.value) }}</span>
         </template>
       </div>
-      <!-- default for divider py-4, but in our case data is related to each other, reduce height of panel -->
-      <Divider class="!py-2" />
+      <!-- in our case data is related to each other, reduce height of panel -->
+      <Divider class="my-2" />
       <div
         v-if="tooltipData.firstSeriesData.length >= 3"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
@@ -74,6 +74,7 @@
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
+import Divider from "tailwind-ui/src/Divider.vue"
 import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"
 import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"

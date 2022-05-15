@@ -2,18 +2,6 @@
   @apply line-clamp-6 overflow-hidden max-w-sm w-full break-words text-sm;
 }
 
-.p-tabmenu .p-tabmenu-nav {
-  @apply border-solid border-b border-gray-200;
-}
-
-.p-tabmenu .p-menuitem-link {
-  @apply text-gray-500 font-medium text-sm;
-}
-
-.p-tabmenu .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
-  @apply text-gray-700 border-gray-300;
-}
-
 /* https://tailwindui.com/components/marketing/elements/flyout-menus Simple */
 .p-overlaypanel {
   @apply rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white;

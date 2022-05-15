@@ -10,7 +10,8 @@
     "primevue": "3.12.6",
     "rxjs": "8.0.0-alpha.3",
     "vue": "3.2.33",
-    "vue-router": "4.0.15"
+    "vue-router": "4.0.15",
+    "tailwind-ui": "workspace:*"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1"

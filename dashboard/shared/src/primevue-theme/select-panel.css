@@ -4,7 +4,7 @@
 .p-autocomplete-panel {
   background: var(--input-overlay-bg);
   /* No space between element and pop-up in PrimeVue, but TailwindUI uses mt-1 and that's looks better */
-  @apply rounded-md shadow-lg mt-1 ring-1 ring-black ring-opacity-5 text-gray-900 focus:outline-none overflow-auto text-sm;
+  @apply rounded-md shadow-lg mt-1 ring-1 ring-black ring-opacity-5 text-gray-900 focus:outline-none overflow-auto text-sm cursor-default select-none;
 }
 
 /* here filter for multiselect is located */
@@ -28,6 +28,12 @@
   @apply py-2 px-3;
 }
 
+/*
+PrimeVue doesn't have active property - meaning that on first open we cannot style element as "hover".
+It is not a big deal, but also TailwindUI uses checkbox on the left to indicate the selected element.
+
+Styling in Tailwind UI way requires as result a lot of efforts, but PrimeVue design language is also good, so, here we follow PrimeVue language.
+*/
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
 .p-tree .p-treenode .p-treenode-content.p-highlight,

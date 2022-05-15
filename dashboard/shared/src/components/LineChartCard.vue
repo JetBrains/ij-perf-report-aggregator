@@ -13,7 +13,7 @@ import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { ChartType, PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
+import { chartToolTipKey, configuratorListKey, injectOrError } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
@@ -37,10 +37,7 @@ const props = withDefaults(defineProps<{
 
 const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: LineChartManager | null = null
-let providedConfigurators = props.configurators
-if(providedConfigurators === null){
-  providedConfigurators = inject(configuratorListKey, null)
-}
+
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -58,11 +55,7 @@ const hide = () => {
 let dataQueryExecutor: DataQueryExecutor | null
 
 watchEffect(function () {
-  let configurators = providedConfigurators
-  if (configurators == null) {
-    throw new Error("`dataQueryExecutor` is not provided")
-  }
-
+  let configurators = props.configurators ?? injectOrError(configuratorListKey)
   // static list of measures is provided - create sub data query executor
   if (props.measures != null) {
     configurators = configurators.concat(new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit))

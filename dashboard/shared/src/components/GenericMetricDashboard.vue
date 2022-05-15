@@ -21,9 +21,7 @@
       v-for="metric in measureConfigurator.selected.value"
       :key="metric"
     >
-      <Divider align="center">
-        {{ metric }}
-      </Divider>
+      <Divider :label="metric" />
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-8">
           <LineChartCard
@@ -45,6 +43,7 @@
 </template>
 
 <script lang="ts" setup>
+import Divider from "tailwind-ui/src/Divider.vue"
 import { provide, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 import { initDataComponent } from "../DataQueryExecutor"

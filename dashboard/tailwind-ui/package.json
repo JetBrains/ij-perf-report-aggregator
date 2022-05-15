@@ -1,0 +1,7 @@
+{
+  "name": "tailwind-ui",
+  "private": true,
+  "dependencies": {
+    "vue": "3.2.33"
+  }
+}

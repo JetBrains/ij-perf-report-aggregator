@@ -1,7 +1,5 @@
 <template>
-  <Divider align="center">
-    {{ label }}
-  </Divider>
+  <Divider :label="label" />
   <div class="grid grid-cols-12 gap-4">
     <div class="col-span-12">
       <LineChartCard
@@ -16,11 +14,12 @@
 </template>
 
 <script setup lang="ts">
+import Divider from "tailwind-ui/src/Divider.vue"
 import { inject, onMounted } from "vue"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
-import LineChartCard from "./LineChartCard.vue"
 import { configuratorListKey } from "../injectionKeys"
+import LineChartCard from "./LineChartCard.vue"
 
 const props = defineProps<{
   label: string

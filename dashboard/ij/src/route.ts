@@ -35,6 +35,10 @@ export function getIjItems(): Array<MenuItem> {
           label: "Performance Tests",
           to: "/intellij/performanceTests",
         },
+        {
+          label: "Performance Tests Dashboard",
+          to: "/intellij/dashboard",
+        },
       ]
     },
     {
@@ -135,7 +139,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
           },
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
-        }
+        },
+        {
+          path: "/intellij/dashboard",
+          component: () => import("./idea/IdeaPerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests Dashboard"},
+        },
       ],
     },
     {

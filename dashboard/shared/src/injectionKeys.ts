@@ -8,7 +8,7 @@ import { TimeRange } from "./configurators/TimeRangeConfigurator"
 import { DataQueryConfigurator } from "./dataQuery"
 
 // inject is used instead of prop because on dashboard page there are a lot of chart cards and it is tedious to set property for each
-export const configuratorListKey: InjectionKey<Array<DataQueryConfigurator>> = Symbol("dataQueryExecutor")
+export const configuratorListKey: InjectionKey<Array<DataQueryConfigurator>> = Symbol("configuratorList")
 export const aggregationOperatorConfiguratorKey: InjectionKey<AggregationOperatorConfigurator> = Symbol("aggregationOperatorConfigurator")
 export const timeRangeKey: InjectionKey<Ref<TimeRange>> = Symbol("timeRange")
 export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("tooltipUrlProvider")

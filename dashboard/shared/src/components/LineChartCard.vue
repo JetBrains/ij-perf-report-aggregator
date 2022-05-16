@@ -13,7 +13,7 @@ import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { ChartType, PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
-import { chartToolTipKey, configuratorListKey, injectOrError } from "../injectionKeys"
+import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager } from "./LineChartManager"
 
@@ -54,8 +54,13 @@ const hide = () => {
 
 let dataQueryExecutor: DataQueryExecutor | null
 
+const providedConfigurators = inject(configuratorListKey)
 watchEffect(function () {
-  let configurators = props.configurators ?? injectOrError(configuratorListKey)
+  let configurators = props.configurators ?? providedConfigurators
+  if (configurators == null) {
+    throw new Error(`${configurators} is not provided`)
+  }
+
   // static list of measures is provided - create sub data query executor
   if (props.measures != null) {
     configurators = configurators.concat(new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit))

@@ -87,9 +87,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         else if (value.startsWith("intellij-linux-hw-EXC")) {
           // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
           groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-        } else if(value.startsWith("intellij-macos-hw")){
-          //https://youtrack.jetbrains.com/issue/ADM-68723
-          groupName = "Mac Mini M1"
         } else if(value.startsWith("intellij-linux-hw-hetzner")){
           // slack #it-hetzner
           groupName = "linux-blade-hetzner"
@@ -237,9 +234,19 @@ function getValueToGroup() {
     "intellij-macos-hw-munit-721": macMiniIntel,
     "intellij-macos-hw-munit-722": macMiniIntel,
     "intellij-macos-hw-munit-723": macMiniIntel,
+    "intellij-macos-hw-munit-724": macMiniIntel,
 
     "intellij-macos-hw-munit-608": macMiniM1_16,
+    "intellij-macos-hw-munit-689": macMiniM1_16,
+    "intellij-macos-hw-munit-690": macMiniM1_16,
+    "intellij-macos-hw-munit-691": macMiniM1_16,
     "intellij-macos-hw-munit-692": macMiniM1_16,
+    "intellij-macos-hw-munit-693": macMiniM1_16,
+    "intellij-macos-hw-munit-694": macMiniM1_16,
+    "intellij-macos-hw-munit-695": macMiniM1_16,
+    "intellij-macos-hw-munit-696": macMiniM1_16,
+    "intellij-macos-hw-munit-697": macMiniM1_16,
+    "intellij-macos-hw-munit-698": macMiniM1_16,
 
     "intellij-macos-hw-unit-2204": macMiniM1,
     "intellij-macos-hw-unit-2205": macMiniM1,

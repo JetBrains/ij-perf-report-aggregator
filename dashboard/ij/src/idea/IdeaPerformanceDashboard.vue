@@ -50,7 +50,7 @@
     <GroupLineChart
       label="Find Usages Kotlin"
       measure="find_usages_execution_time"
-      :projects="['community/findUsages/LanguageInjectionCondition_Before', 'community/findUsages/LanguageInjectionCondition_After']"
+      :projects="['community/findUsages/LanguageInjectionCondition_getId_Before', 'community/findUsages/LanguageInjectionCondition_getId_After']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

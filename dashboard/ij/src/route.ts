@@ -36,7 +36,7 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/performanceTests",
         },
         {
-          label: "Performance Tests Dashboard",
+          label: "Performance Dashboard",
           to: "/intellij/dashboard",
         },
       ]

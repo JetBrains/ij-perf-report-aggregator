@@ -24,6 +24,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.26
 	github.com/nats-io/nats.go v1.15.0
 	github.com/olekukonko/tablewriter v0.0.5
+	github.com/panjf2000/ants/v2 v2.5.0
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.7.1

@@ -124,9 +124,8 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     if id == -1 {
       if t.reportAnalyzer.Config.HasInstallerField {
         t.logger.Error("cannot find installer build", zap.Int("buildId", build.Id))
-      } else {
-        continue
       }
+      continue
     }
 
     installerInfo := t.installerBuildIdToInfo[id]

@@ -103,7 +103,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
 
   insertManager := insertReportManager.InsertManager
   // we send batch in the end of each iteration
-  insertManager.BatchSize = 999_999_999_999
+  insertManager.BatchSize = 50_000
 
   // the whole select result in memory - so, limit
   var minTime time.Time
@@ -135,15 +135,20 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
 
     current = next
 
-    insertManager.Flush()
+    if insertManager.GetQueuedItemCount() > 10_000 {
+      err = insertManager.ScheduleSendBatch()
+      if err != nil {
+        return err
+      }
+    }
   }
 
-  err = insertManager.SendAndWait()
+  err = insertReportManager.InsertManager.SendAndWait()
   if err != nil {
     return err
   }
 
-  err = insertManager.Close()
+  err = insertReportManager.InsertManager.Close()
   if err != nil {
     return err
   }

@@ -105,10 +105,10 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   })
 
   measureCount := len(measures)
-  measureName := make([]string, measureCount, measureCount)
-  measureStart := make([]uint32, measureCount, measureCount)
-  measureDuration := make([]uint32, measureCount, measureCount)
-  measureThread := make([]string, measureCount, measureCount)
+  measureName := make([]string, measureCount)
+  measureStart := make([]uint32, measureCount)
+  measureDuration := make([]uint32, measureCount)
+  measureThread := make([]string, measureCount)
   for i, info := range measures {
     measureName[i] = info.name
     measureStart[i] = info.start
@@ -117,11 +117,11 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   }
 
   serviceCount := len(services)
-  serviceName := make([]string, serviceCount, serviceCount)
-  serviceStart := make([]uint32, serviceCount, serviceCount)
-  serviceDuration := make([]uint32, serviceCount, serviceCount)
-  serviceThread := make([]string, serviceCount, serviceCount)
-  servicePlugin := make([]string, serviceCount, serviceCount)
+  serviceName := make([]string, serviceCount)
+  serviceStart := make([]uint32, serviceCount)
+  serviceDuration := make([]uint32, serviceCount)
+  serviceThread := make([]string, serviceCount)
+  servicePlugin := make([]string, serviceCount)
   for i, info := range services {
     serviceName[i] = info.name
     serviceStart[i] = info.start

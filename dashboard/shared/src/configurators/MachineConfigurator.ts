@@ -87,6 +87,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         else if (value.startsWith("intellij-linux-hw-EXC")) {
           // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
           groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
+        } else if(value.startsWith("intellij-macos-hw")){
+          //https://youtrack.jetbrains.com/issue/ADM-68723
+          groupName = "Mac Mini M1"
+        } else if(value.startsWith("intellij-linux-hw-hetzner")){
+          // slack #it-hetzner
+          groupName = "linux-blade-hetzner"
         }
         else {
           groupName = MachineConfigurator.valueToGroup[value]

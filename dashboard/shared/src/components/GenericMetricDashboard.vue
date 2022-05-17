@@ -130,8 +130,11 @@ let configurators = [
   machineConfigurator,
   timeRangeConfigurator,
 ]
+
+let releaseConfigurator = null
 if (props.supportReleases) {
-  configurators.push(new ReleaseNightlyConfigurator(persistentStateManager))
+  releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
+  configurators.push(releaseConfigurator)
 }
 // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))

@@ -137,6 +137,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "idea",
             defaultMeasures: [],
+            supportReleases: true,
           },
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
         },

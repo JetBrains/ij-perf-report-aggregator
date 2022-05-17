@@ -9,6 +9,10 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
+      <DimensionSelect
+        label="Nightly/Release"
+        :dimension="releaseConfigurator"
+      />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
@@ -59,7 +63,6 @@
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
-
   </Dashboard>
 </template>
 
@@ -74,6 +77,7 @@ import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
+import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { chartStyleKey } from "shared/src/injectionKeys"
@@ -97,11 +101,14 @@ const serverConfigurator = new ServerConfigurator("perfint", "idea")
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
+
 const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
+  releaseConfigurator
 ]
 initDataComponent(configurators)
 </script>

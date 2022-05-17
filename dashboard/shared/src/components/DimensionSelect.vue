@@ -9,8 +9,9 @@
     :placeholder="placeholder"
     option-label="label"
     option-value="value"
-    :max-selected-labels="1"
-    :filter="true"
+    :max-selected-labels="hasManyElements ? 1 : 2"
+    :filter="hasManyElements"
+    :show-toggle-all="hasManyElements"
   />
   <Dropdown
     v-else-if="valueToGroup == null && !multiple"
@@ -93,6 +94,10 @@ const value = computed<string | Array<string> | null>({
       props.dimension.selected.value = value
     }
   },
+})
+
+const hasManyElements = computed(()=>{
+  return items.value.length > 2
 })
 
 const items = computed(() => {

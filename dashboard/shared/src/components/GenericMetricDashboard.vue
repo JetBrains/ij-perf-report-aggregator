@@ -15,6 +15,11 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
+      <DimensionSelect
+        v-if="supportReleases"
+        label="Nightly/Release"
+        :dimension="releaseConfigurator"
+      />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
@@ -53,6 +58,7 @@ import { AggregationOperatorConfigurator } from "../configurators/AggregationOpe
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../configurators/MachineConfigurator"
 import { ChartType, MeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { ReleaseNightlyConfigurator } from "../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey } from "../injectionKeys"
@@ -73,6 +79,7 @@ const props = withDefaults(defineProps<{
   defaultMeasures: Array<string>
   urlEnabled?: boolean
   installerExists?: boolean
+  supportReleases?: boolean
   valueUnit?: ValueUnit
 }>(), {
   compoundTooltip: true,
@@ -80,7 +87,8 @@ const props = withDefaults(defineProps<{
   table: undefined,
   chartType: "line",
   valueUnit: "ms",
-  installerExists: true
+  installerExists: true,
+  supportReleases: false,
 })
 
 provide(chartStyleKey, {
@@ -115,16 +123,19 @@ const measureConfigurator = new MeasureConfigurator(
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator])
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-
-// median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
-provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
-
-const chartHeight = DEFAULT_LINE_CHART_HEIGHT
-initDataComponent([
+let configurators = [
   serverConfigurator,
   scenarioConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-])
+]
+if (props.supportReleases) {
+  configurators.push(new ReleaseNightlyConfigurator(persistentStateManager))
+}
+// median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
+provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
+
+const chartHeight = DEFAULT_LINE_CHART_HEIGHT
+initDataComponent(configurators)
 </script>

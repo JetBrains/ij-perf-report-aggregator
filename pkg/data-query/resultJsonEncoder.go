@@ -55,11 +55,6 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
           _ = buffer.WriteByte(',')
         }
         buffer.B = strconv.AppendBool(buffer.B, v)
-        //if v {
-        //  buffer.B = strconv.AppendUint(buffer.B, 1, 10)
-        //} else {
-        //  buffer.B = strconv.AppendUint(buffer.B, 0, 10)
-        //}
       }
 
     case *proto.ColUInt16:

@@ -116,7 +116,7 @@ func collectFromTeamCity(
     }
 
     q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),count:500"
+    locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,branch:(default:true),count:500"
 
     since := userSpecifiedSince
     if since.IsZero() {
@@ -223,7 +223,7 @@ func buildTeamCityQuery() string {
   for i := 0; i < 3; i++ {
     q = "file(href,children(href," + q + "))"
   }
-  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)))"
+  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
 }
 
 func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn, ctx context.Context) error {

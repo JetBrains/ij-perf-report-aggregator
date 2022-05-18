@@ -14,7 +14,9 @@ create table report
 
   `build_c1`              UInt8 CODEC (DoubleDelta, ZSTD(20)),
   `build_c2`              UInt16 CODEC (DoubleDelta, ZSTD(20)),
-  `build_c3`              UInt16 CODEC (DoubleDelta, ZSTD(20))
+  `build_c3`              UInt16 CODEC (DoubleDelta, ZSTD(20)),
+
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))

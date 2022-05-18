@@ -20,6 +20,10 @@
         label="Nightly/Release"
         :dimension="releaseConfigurator"
       />
+      <DimensionSelect
+        label="Triggered by"
+        :dimension="triggeredByConfigurator"
+      />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
@@ -58,6 +62,7 @@ import { AggregationOperatorConfigurator } from "../configurators/AggregationOpe
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../configurators/MachineConfigurator"
 import { ChartType, MeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { privateBuildConfigurator } from "../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
@@ -111,6 +116,7 @@ const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
 
 const measureConfigurator = new MeasureConfigurator(
   serverConfigurator,
@@ -129,6 +135,7 @@ let configurators = [
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
+  triggeredByConfigurator
 ]
 
 let releaseConfigurator = null

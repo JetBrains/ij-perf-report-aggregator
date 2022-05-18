@@ -113,7 +113,7 @@ export function dimensionConfigurator(name: string,
   return configurator
 }
 
-function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
   configuration.queryProducers.push({
       size(): number {
         return values.length

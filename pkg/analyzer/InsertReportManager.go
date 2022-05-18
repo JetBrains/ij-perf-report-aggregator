@@ -35,11 +35,11 @@ type RunResult struct {
   Report         *model.Report
   ReportFileName string
 
-  BuildC1 int `db:"build_c1"`
-  BuildC2 int `db:"build_c2"`
-  BuildC3 int `db:"build_c3"`
+  BuildC1 int
+  BuildC2 int
+  BuildC3 int
 
-  TriggeredBy string `db:"triggeredBy"`
+  TriggeredBy string
 
   ExtraFieldData []interface{}
 

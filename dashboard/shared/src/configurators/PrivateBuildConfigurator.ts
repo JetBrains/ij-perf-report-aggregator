@@ -1,10 +1,10 @@
-import { PersistentStateManager } from "../PersistentStateManager"
-import { configureQueryProducer, DimensionConfigurator, loadDimension } from "./DimensionConfigurator"
-import { ServerConfigurator } from "./ServerConfigurator"
-import { createFilterObservable, FilterConfigurator } from "./filter"
 import { switchMap } from "rxjs"
-import { updateComponentState } from "./componentState"
+import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter } from "../dataQuery"
+import { configureQueryProducer, DimensionConfigurator, filterSelected, loadDimension } from "./DimensionConfigurator"
+import { ServerConfigurator } from "./ServerConfigurator"
+import { updateComponentState } from "./componentState"
+import { createFilterObservable, FilterConfigurator } from "./filter"
 
 export class PrivateBuildConfigurator extends DimensionConfigurator {
 
@@ -30,11 +30,12 @@ export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
                                          persistentStateManager: PersistentStateManager | null,
                                          filters: Array<FilterConfigurator> = []): DimensionConfigurator {
   const configurator = new PrivateBuildConfigurator()
-  persistentStateManager?.add("triggeredBy", configurator.selected)
+  const name = "triggeredBy"
+  persistentStateManager?.add(name, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
     .pipe(
-      switchMap(() => loadDimension("triggeredBy", serverConfigurator, filters, configurator.state)),
+      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
       updateComponentState(configurator.state),
     )
     .subscribe(data => {
@@ -44,23 +45,7 @@ export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
 
       configurator.values.value = data.filter((value, _n, _a) => !(value == ""))
 
-      const selectedRef = configurator.selected
-      if (data.length === 0) {
-        // do not update value - don't unset if values temporary not set
-        console.debug("[dimensionConfigurator(name=triggeredBy)] value list is empty")
-      }
-      else {
-        const selected = selectedRef.value
-        if (selected instanceof Array && selected.length !== 0) {
-          const filtered = selected.filter(it => data.includes(it))
-          if (filtered.length !== selected.length) {
-            selectedRef.value = filtered
-          }
-        }
-        else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
-          selectedRef.value = data[0]
-        }
-      }
+      filterSelected(configurator, data, name)
     })
   return configurator
 }

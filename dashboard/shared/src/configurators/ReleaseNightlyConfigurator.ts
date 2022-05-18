@@ -20,9 +20,13 @@ export class ReleaseNightlyConfigurator extends DimensionConfigurator {
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    let filter = getFilter(this.selected.value)
     const value = this.selected.value
-    if (value != null && Array.isArray(value) && value.length > 1) {
+    if (value == null || value.length === 0) {
+      return false
+    }
+    let filter = getFilter(value)
+
+    if (Array.isArray(value) && value.length > 1) {
       configuration.queryProducers.push({
           size(): number {
             return value.length

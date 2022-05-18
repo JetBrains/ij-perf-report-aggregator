@@ -35,9 +35,11 @@ type RunResult struct {
   Report         *model.Report
   ReportFileName string
 
-  BuildC1 int `db:"build_c1"`
-  BuildC2 int `db:"build_c2"`
-  BuildC3 int `db:"build_c3"`
+  BuildC1 int
+  BuildC2 int
+  BuildC3 int
+
+  TriggeredBy string
 
   ExtraFieldData []interface{}
 
@@ -79,7 +81,7 @@ func NewInsertReportManager(
   if config.HasInstallerField {
     metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3", "raw_report")
   }
-
+  metaFields = append(metaFields, "triggeredBy")
   var sb strings.Builder
   sb.WriteString("insert into ")
   sb.WriteString(tableName)
@@ -236,7 +238,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     if strings.HasPrefix(row.Machine, "intellij-linux-hw-compile-hp-blade-") {
       return nil
     }
-    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport))
+    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport), row.TriggeredBy)
 
     if t.config.DbName == "ij" {
       err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)

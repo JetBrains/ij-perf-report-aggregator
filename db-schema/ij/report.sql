@@ -14,6 +14,8 @@ create table report2
   `build_c2`                   UInt16 CODEC(Gorilla, ZSTD(20)),
   `build_c3`                   UInt16 CODEC(Gorilla, ZSTD(20)),
 
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
+
   `bootstrap_d`          UInt32 CODEC (Gorilla, ZSTD(20)),
   `appInitPreparation_d` Int32 CODEC (Gorilla, ZSTD(20)),
   `appInit_d`            Int32 CODEC (Gorilla, ZSTD(20)),

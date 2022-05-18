@@ -80,6 +80,10 @@ func (t *Collector) loadReports(builds []*Build) error {
           ReportFile:        artifact.path,
         }
 
+        if build.Private && build.TriggeredBy.User != nil {
+          data.TriggeredBy = build.TriggeredBy.User.Email
+        }
+
         if t.reportAnalyzer.Config.HasInstallerField {
           installerInfo := build.installerInfo
           data.BuildTime = installerInfo.buildTime
@@ -215,6 +219,10 @@ func (t *Collector) loadInstallerChanges(installerBuildId int) ([]string, error)
   var b bytes.Buffer
   result := make([]string, len(changeList.List))
   for index, change := range changeList.List {
+    if strings.Contains(change.Version, " ") {
+      //private build with custom change, format: 13 04 2022 12:14
+      continue
+    }
     data, err := hex.DecodeString(change.Version)
     if err != nil {
       return nil, errors.WithStack(err)

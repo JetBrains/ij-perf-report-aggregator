@@ -37,6 +37,7 @@ type ExtraData struct {
   TcInstallerBuildId int
   TcBuildProperties  []byte
   Changes            []string
+  TriggeredBy        string
 
   // for logging only
   ReportFile string

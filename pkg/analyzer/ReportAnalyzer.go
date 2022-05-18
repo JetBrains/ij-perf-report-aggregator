@@ -121,6 +121,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TcBuildId:          getNullIfEmpty(extraData.TcBuildId),
     TcInstallerBuildId: getNullIfEmpty(extraData.TcInstallerBuildId),
     ReportFileName:     extraData.ReportFile,
+    TriggeredBy:        extraData.TriggeredBy,
   }
 
   err = ReadReport(runResult, t.Config, t.logger)

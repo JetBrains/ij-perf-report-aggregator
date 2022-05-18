@@ -25,8 +25,18 @@ type Build struct {
 
   ArtifactDependencies ArtifactDependencies `json:"artifact-dependencies"`
   Artifacts            Artifacts            `json:"artifacts"`
+  Private              bool                 `json:"personal"`
+  TriggeredBy          *TriggeredBy         `json:"triggered"`
 
   installerInfo *InstallerInfo
+}
+
+type TriggeredBy struct {
+  User *User `json:"user"`
+}
+
+type User struct {
+  Email string `json:"email"`
 }
 
 type InstallerInfo struct {

@@ -92,28 +92,32 @@ export function dimensionConfigurator(name: string,
       }
       configurator.values.value = data
 
-      const selectedRef = configurator.selected
-      if (data.length === 0) {
-        // do not update value - don't unset if values temporary not set
-        console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
-      }
-      else {
-        const selected = selectedRef.value
-        if (selected instanceof Array && selected.length !== 0) {
-          const filtered = selected.filter(it => data.includes(it))
-          if (filtered.length !== selected.length) {
-            selectedRef.value = filtered
-          }
-        }
-        else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
-          selectedRef.value = data[0]
-        }
-      }
+      filterSelected(configurator, data, name)
     })
   return configurator
 }
 
-function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+export function filterSelected(configurator: DimensionConfigurator, data: Array<string>, name: string) {
+  const selectedRef = configurator.selected
+  if (data.length === 0) {
+    // do not update value - don't unset if values temporary not set
+    console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
+  }
+  else {
+    const selected = selectedRef.value
+    if (selected instanceof Array && selected.length !== 0) {
+      const filtered = selected.filter(it => data.includes(it))
+      if (filtered.length !== selected.length) {
+        selectedRef.value = filtered
+      }
+    }
+    else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
+      selectedRef.value = data[0]
+    }
+  }
+}
+
+export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
   configuration.queryProducers.push({
       size(): number {
         return values.length

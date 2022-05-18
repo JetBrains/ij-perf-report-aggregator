@@ -239,7 +239,11 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
           t.Value = number
         }
       } else if value.Type() == fastjson.TypeArray {
-        t.Value = readStringList(value)
+        t.Value = readArray(value)
+      } else if value.Type() == fastjson.TypeFalse {
+        t.Value = value.GetBool()
+      } else if value.Type() == fastjson.TypeTrue {
+        t.Value = value.GetBool()
       } else {
         return errors.Errorf("Filter value %v is not supported", value)
       }
@@ -264,10 +268,16 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
   return nil
 }
 
-func readStringList(parentValue *fastjson.Value) []string {
-  list := make([]string, 0)
+func readArray(parentValue *fastjson.Value) []interface{} {
+  list := make([]interface{}, 0)
   for _, v := range parentValue.GetArray() {
-    list = append(list, string(v.GetStringBytes()))
+    if v.Type() == fastjson.TypeFalse {
+      list = append(list, false)
+    } else if v.Type() == fastjson.TypeTrue {
+      list = append(list, true)
+    } else {
+      list = append(list, string(v.GetStringBytes()))
+    }
   }
   return list
 }

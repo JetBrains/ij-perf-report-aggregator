@@ -11,7 +11,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   readonly state = createComponentState()
 
   readonly selected = shallowRef<string | Array<string> | null>(null)
-  readonly values = shallowRef<Array<string>>([])
+  readonly values = shallowRef<Array<string|boolean>>([])
 
   private readonly observable: Observable<string | Array<string> | null>
 

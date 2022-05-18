@@ -12,7 +12,7 @@ export function usePlaceholder(
     if ((values == null || values.length === 0)) {
       const value = selected()
       if (value != null && value.length != 0) {
-        return Array.isArray(value) ? value.join(", ") : value
+        return Array.isArray(value) ? value.join(", ") : value.toString()
       }
     }
     return props.label

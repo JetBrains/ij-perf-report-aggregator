@@ -371,6 +371,9 @@ loop:
       } else {
         sb.WriteString(strconv.FormatFloat(v, 'f', -1, 64))
       }
+    case bool:
+      sb.WriteString(filter.Operator)
+      sb.WriteString(strconv.FormatBool(v))
     case string:
       sb.WriteString(filter.Operator)
       writeString(sb, v)
@@ -389,7 +392,14 @@ loop:
         if j != 0 {
           sb.WriteRune(',')
         }
-        writeString(sb, v[j].(string))
+        switch v[j].(type) {
+        case string:
+          writeString(sb, v[j].(string))
+        case bool:
+          sb.WriteString(strconv.FormatBool(v[j].(bool)))
+        default:
+          return errors.Errorf("Filter value type [%T] is not supported", v[j])
+        }
       }
       sb.WriteRune(')')
     default:

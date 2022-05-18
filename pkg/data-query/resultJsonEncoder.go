@@ -48,6 +48,20 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
         }
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
+
+    case *proto.ColBool:
+      for i, v := range *data {
+        if i != 0 {
+          _ = buffer.WriteByte(',')
+        }
+        buffer.B = strconv.AppendBool(buffer.B, v)
+        //if v {
+        //  buffer.B = strconv.AppendUint(buffer.B, 1, 10)
+        //} else {
+        //  buffer.B = strconv.AppendUint(buffer.B, 0, 10)
+        //}
+      }
+
     case *proto.ColUInt16:
       for i, v := range *data {
         if i != 0 {

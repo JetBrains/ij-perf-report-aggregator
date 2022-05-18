@@ -36,7 +36,11 @@ export class PersistentStateManager {
       const route = this.route
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
-        this.state[name] = value
+        if(Array.isArray(value)){
+          this.state[name] = (value as Array<string>).map(boolFromString)
+        } else{
+          this.state[name] = boolFromString(value)
+        }
       }
     }
 
@@ -103,4 +107,10 @@ export class PersistentStateManager {
       this.updateUrlSubject.next(null)
     }
   }
+}
+
+function boolFromString(s: string|null) {
+  if (s == "true") return true
+  if (s == "false") return false
+  return s
 }

@@ -72,7 +72,7 @@ export class DataQuery {
 
 export interface DataQueryFilter {
   f: string
-  v?: number | string | Array<string>
+  v?: number | string | Array<string> | boolean
   q?: string
   // `=` by default
   // operator

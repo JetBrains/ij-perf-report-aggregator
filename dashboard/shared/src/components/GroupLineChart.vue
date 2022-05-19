@@ -8,6 +8,7 @@
         :value-unit="'ms'"
         :measures="[measure]"
         :configurators="configurators"
+        :skip-zero-values="false"
       />
     </div>
   </div>

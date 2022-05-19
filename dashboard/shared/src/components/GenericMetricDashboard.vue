@@ -38,6 +38,7 @@
             :chart-type="chartType"
             :value-unit="valueUnit"
             :measures="[metric]"
+            :skip-zero-values="false"
           />
         </div>
         <div class="col-span-4">

@@ -9,6 +9,10 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
+      <DimensionSelect
+        label="Triggered by"
+        :dimension="triggeredByConfigurator"
+      />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
@@ -110,6 +114,7 @@ import { chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
+import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 
 provide(chartStyleKey, {
   ...chartDefaultStyle,
@@ -127,11 +132,13 @@ const serverConfigurator = new ServerConfigurator("perfint", "phpstorm")
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
 const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
+  triggeredByConfigurator
 ]
 initDataComponent(configurators)
 </script>

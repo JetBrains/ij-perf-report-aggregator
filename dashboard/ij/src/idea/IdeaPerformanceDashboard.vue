@@ -13,6 +13,10 @@
         label="Nightly/Release"
         :dimension="releaseConfigurator"
       />
+      <DimensionSelect
+        label="Triggered by"
+        :dimension="triggeredByConfigurator"
+      />
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
@@ -84,6 +88,7 @@ import { chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
+import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 
 provide(chartStyleKey, {
   ...chartDefaultStyle,
@@ -102,13 +107,15 @@ const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, p
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
 
 const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  releaseConfigurator
+  releaseConfigurator,
+  triggeredByConfigurator,
 ]
 initDataComponent(configurators)
 </script>

@@ -74,6 +74,7 @@ func start(natsUrl string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
+  lastBackupTime := time.Time{}
   for taskContext.Err() == nil {
     _, err = sub.NextMsgWithContext(taskContext)
     if err != nil {
@@ -89,8 +90,15 @@ func start(natsUrl string, logger *zap.Logger) error {
       return nil
     }
 
+    if time.Now().Sub(lastBackupTime) < 4*time.Hour {
+      // do not create backups too often
+      logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
+      return nil
+    }
+
     logger.Info("backup requested")
     _ = executeBackup(backupManager)
+    lastBackupTime = time.Now()
   }
 
   return nil

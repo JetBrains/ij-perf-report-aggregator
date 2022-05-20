@@ -38,12 +38,12 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logge
   threads := make([]string, 0)
   items := data.GetArray("items")
   for _, measure := range items {
-    name := string(measure.GetStringBytes("name"))
+    name := string(measure.GetStringBytes("n"))
     // in milliseconds
     names = append(names, name)
-    values = append(values, int32(measure.GetInt("duration")))
-    starts = append(starts, int32(measure.GetInt("start")))
-    threads = append(threads, string(measure.GetStringBytes("thread")))
+    values = append(values, int32(measure.GetInt("d")))
+    starts = append(starts, int32(measure.GetInt("s")))
+    threads = append(threads, string(measure.GetStringBytes("t")))
   }
 
   mapNameV22 := version.Compare(runResult.Report.Version, "22", "<=")

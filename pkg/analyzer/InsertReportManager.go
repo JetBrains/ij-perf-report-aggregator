@@ -220,7 +220,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
-  args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch, row.TriggeredBy)
+  args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch)
 
   if t.config.HasProductField {
     args = append(args, product)
@@ -238,7 +238,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     if strings.HasPrefix(row.Machine, "intellij-linux-hw-compile-hp-blade-") {
       return nil
     }
-    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport))
+    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport), row.TriggeredBy)
 
     if t.config.DbName == "ij" {
       err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
@@ -246,6 +246,8 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
         return err
       }
     }
+  } else {
+    args = append(args, row.TriggeredBy)
   }
 
   args = append(args, row.ExtraFieldData...)

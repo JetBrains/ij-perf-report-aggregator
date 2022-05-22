@@ -3,10 +3,11 @@ package main
 import (
   "encoding/json"
   "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
+  "github.com/ClickHouse/clickhouse-go/v2"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "github.com/minio/minio-go/v7"
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
@@ -41,7 +42,7 @@ func main() {
 }
 
 type BackupManager struct {
-  *clickhouse.BackupManager
+  *clickhousebackup.BackupManager
 
   backupParentDir string
 }
@@ -50,7 +51,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  baseBackupManager, err := clickhouse.CreateBackupManager(taskContext, logger)
+  baseBackupManager, err := clickhousebackup.CreateBackupManager(taskContext, logger)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -208,7 +209,20 @@ func (t *BackupManager) createBackup(task *Task) error {
     return errors.Errorf("backup '%s' already exists", backupDir)
   }
 
-  db, err := sqlx.Open("clickhouse", "tcp://"+env.Get("CLICKHOUSE", "clickhouse:9000")+"?read_timeout=600&write_timeout=600&debug=0&compress=1&send_timeout=30000&receive_timeout=3000")
+  db, err := clickhouse.Open(&clickhouse.Options{
+    Addr: []string{env.Get("CLICKHOUSE", "clickhouse:9000")},
+    //Auth: clickhouse.Auth{
+    //  Database: config.DbName,
+    //},
+    DialTimeout:     10 * time.Second,
+    ConnMaxLifetime: time.Hour,
+    Settings: map[string]interface{}{
+      // https://github.com/ClickHouse/ClickHouse/issues/2833
+      // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
+      "send_timeout":    30_000,
+      "receive_timeout": 3000,
+    },
+  })
   if err != nil {
     return errors.WithStack(err)
   }
@@ -251,8 +265,10 @@ func (t *BackupManager) createBackup(task *Task) error {
     }
   }
 
-  var estimatedTarSize int64
-  err = db.GetContext(t.TaskContext, &estimatedTarSize, "select sum(bytes_on_disk) + (count() * 345) from system.parts where active and database in (?)", dbNames)
+  var estimatedTarSize []struct {
+    Size uint64
+  }
+  err = db.Select(t.TaskContext, &estimatedTarSize, "select (sum(bytes_on_disk) + (count() * 345)) as Size from system.parts where active and database in ("+inClause(dbNames)+")")
   if err != nil {
     return errors.WithStack(err)
   }
@@ -264,9 +280,9 @@ func (t *BackupManager) createBackup(task *Task) error {
 
   task.db = dbList
   task.tables = tables
-  task.estimatedTarSize += estimatedTarSize
+  task.estimatedTarSize += int64(estimatedTarSize[0].Size)
 
-  infoJson, err := json.Marshal(clickhouse.MappingInfo{
+  infoJson, err := json.Marshal(clickhousebackup.MappingInfo{
     Tables: tables,
     Db:     dbList,
   })
@@ -274,7 +290,7 @@ func (t *BackupManager) createBackup(task *Task) error {
   if err != nil {
     return errors.WithStack(err)
   }
-  err = os.WriteFile(filepath.Join(backupDir, clickhouse.InfoFileName), infoJson, os.ModePerm)
+  err = os.WriteFile(filepath.Join(backupDir, clickhousebackup.InfoFileName), infoJson, os.ModePerm)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -282,9 +298,9 @@ func (t *BackupManager) createBackup(task *Task) error {
   return nil
 }
 
-func getDbList(db *sqlx.DB, t *BackupManager, dbNames []string) ([]clickhouse.DbInfo, error) {
-  var result []clickhouse.DbInfo
-  err := db.SelectContext(t.TaskContext, &result, "select name, uuid from system.databases where name in (?) order by name", dbNames)
+func getDbList(db driver.Conn, t *BackupManager, dbNames []string) ([]clickhousebackup.DbInfo, error) {
+  var result []clickhousebackup.DbInfo
+  err := db.Select(t.TaskContext, &result, "select name from system.databases where name in ("+inClause(dbNames)+") order by name", dbNames)
   if err != nil {
     return nil, errors.WithStack(err)
   }

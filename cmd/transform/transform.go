@@ -136,16 +136,8 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
     current = next
 
     if insertManager.GetQueuedItemCount() > 10_000 {
-      err = insertManager.ScheduleSendBatch()
-      if err != nil {
-        return err
-      }
+      insertManager.ScheduleSendBatch()
     }
-  }
-
-  err = insertReportManager.InsertManager.SendAndWait()
-  if err != nil {
-    return err
   }
 
   err = insertReportManager.InsertManager.Close()

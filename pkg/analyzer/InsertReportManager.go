@@ -140,10 +140,12 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
   logger := t.Logger
   if t.config.HasProductField {
     logger = logger.With(zap.String("product", runResult.Product))
-  } else {
-    logger = logger.With(zap.String("project", t.config.DbName))
   }
-  logger = logger.With(zap.String("generatedTime", runResult.GeneratedTime.Format(time.RFC1123)))
+  logger = logger.With(
+    zap.String("db", t.config.DbName),
+    zap.String("table", t.config.TableName),
+    zap.String("generatedTime", runResult.GeneratedTime.Format(time.RFC1123)),
+  )
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
   if t.IsCheckThatNotAlreadyAddedNeeded && !runResult.GeneratedTime.After(t.MaxGeneratedTime) {

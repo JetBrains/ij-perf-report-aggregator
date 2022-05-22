@@ -196,9 +196,8 @@ func collectFromTeamCity(
         return err
       }
 
-      // commit each chunk to ensure that if later will be some error, we don't start from the beginning
       select {
-      case analyzeError := <-reportAnalyzer.WaitAndCommit():
+      case analyzeError := <-reportAnalyzer.WaitAnalyzer():
         if analyzeError != nil {
           return analyzeError
         }
@@ -215,7 +214,8 @@ func collectFromTeamCity(
     }
   }
 
-  return nil
+  err = reportAnalyzer.Close()
+  return err
 }
 
 func buildTeamCityQuery() string {

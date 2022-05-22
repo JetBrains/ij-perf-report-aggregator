@@ -2,7 +2,7 @@ package main
 
 import (
   "archive/tar"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
   "github.com/develar/errors"
@@ -33,7 +33,7 @@ func restoreMain(logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  clickhouseDir := clickhouse.GetClickhouseDir()
+  clickhouseDir := clickhousebackup.GetClickhouseDir()
   dataDir := filepath.Join(clickhouseDir, "store")
   _, err := os.Stat(dataDir)
   if err == nil {
@@ -69,7 +69,7 @@ func restoreMain(logger *zap.Logger) error {
     defer util.Close(file, logger)
     return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger, nil)
   } else {
-    baseBackupManager, err := clickhouse.CreateBackupManager(taskContext, logger)
+    baseBackupManager, err := clickhousebackup.CreateBackupManager(taskContext, logger)
     if err != nil {
       return errors.WithStack(err)
     }
@@ -96,7 +96,7 @@ func restoreMain(logger *zap.Logger) error {
 }
 
 type BackupManager struct {
-  *clickhouse.BackupManager
+  *clickhousebackup.BackupManager
 }
 
 // Reader it's a wrapper for given reader, but with progress handle
@@ -141,8 +141,8 @@ func restore(
   }
 
   tarReader := tar.NewReader(r)
-  var metafile clickhouse.MetaFile
-  var info *clickhouse.MappingInfo
+  var metafile clickhousebackup.MetaFile
+  var info *clickhousebackup.MappingInfo
   for {
     header, err := tarReader.Next()
 
@@ -152,13 +152,13 @@ func restore(
       return errors.WithStack(err)
     }
 
-    if header.Name == clickhouse.MetaFileName {
+    if header.Name == clickhousebackup.MetaFileName {
       metafile, err = readMetaFile(tarReader, logger)
       if err != nil {
         return err
       }
       continue
-    } else if header.Name == clickhouse.InfoFileName {
+    } else if header.Name == clickhousebackup.InfoFileName {
       info, err = readInfoMappingFile(tarReader)
       if err != nil {
         return err

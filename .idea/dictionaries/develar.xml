@@ -7,6 +7,7 @@
       <w>cascadeselect</w>
       <w>certmanager</w>
       <w>clickhouse</w>
+      <w>clickhousebackup</w>
       <w>clusterize</w>
       <w>dataquery</w>
       <w>distroless</w>

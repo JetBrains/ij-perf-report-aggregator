@@ -1,4 +1,4 @@
-package clickhouse
+package clickhouse_backup
 
 import (
   "bytes"
@@ -20,20 +20,19 @@ const MetaFileName = "meta.json.gz"
 const InfoFileName = "info.json"
 
 type TableInfo struct {
-  Name         string `json:"name"`
-  Uuid         string `json:"uuid"`
-  MetadataPath string `db:"metadata_path" json:"metadataPath"`
-  Database     string `json:"db"`
+  Name         string `ch:"name" json:"name"`
+  Uuid         string `ch:"uuid" json:"uuid"`
+  MetadataPath string `ch:"metadata_path" json:"metadataPath"`
+  Database     string `ch:"database" json:"db"`
 }
 
 type DbInfo struct {
-  Name string `json:"name"`
-  Uuid string `json:"uuid"`
+  Name string `ch:"name" json:"name"`
 }
 
 type MappingInfo struct {
-  Tables []TableInfo `json:"tables"`
-  Db     []DbInfo    `json:"db"`
+  Tables []TableInfo `ch:"tables" json:"tables"`
+  Db     []DbInfo    `ch:"db" json:"db"`
 }
 
 type BackupManager struct {

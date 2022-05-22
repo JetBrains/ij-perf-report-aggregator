@@ -4,8 +4,8 @@ import (
   "context"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/develar/errors"
-  "github.com/panjf2000/ants/v2"
   "go.uber.org/zap"
+  "golang.org/x/sync/errgroup"
   "runtime"
   "sync"
 )
@@ -23,9 +23,7 @@ type BatchInsertManager struct {
 
   logger *zap.Logger
 
-  waitGroup sync.WaitGroup
-  pool      *ants.PoolWithFunc
-  Error     error
+  errorGroup *errgroup.Group
 
   InsertContext context.Context
 
@@ -52,48 +50,21 @@ func NewBulkInsertManager(
 
   logger.Info("insert pool capacity", zap.Int("count", poolCapacity))
 
+  errorGroup, ctx := errgroup.WithContext(insertContext)
+  errorGroup.SetLimit(poolCapacity)
   manager := &BatchInsertManager{
     queuedItems:   0,
     Db:            db,
-    InsertContext: insertContext,
+    InsertContext: ctx,
     insertSql:     insertSql,
     logger:        logger,
+
+    errorGroup: errorGroup,
 
     // large inserts leads to large memory usage, so, insert by 2000 items
     BatchSize: 2000,
   }
-
-  var err error
-  manager.pool, err = ants.NewPoolWithFunc(poolCapacity, func(b interface{}) {
-    manager.doSendBatch(b.(driver.Batch))
-  })
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
   return manager, nil
-}
-
-func (t *BatchInsertManager) doSendBatch(batch driver.Batch) {
-  defer t.waitGroup.Done()
-
-  for _, dependency := range t.dependencies {
-    err := dependency.SendAndWait()
-    if err != nil {
-      t.logger.Error("cannot commit dependency", zap.Error(err))
-      t.Error = err
-      t.waitGroup.Done()
-      return
-    }
-  }
-
-  t.logger.Info("send batch")
-  err := batch.Send()
-  if err != nil {
-    t.logger.Error("cannot send batch", zap.Error(err))
-    t.Error = err
-    return
-  }
 }
 
 func (t *BatchInsertManager) AddDependency(dependency *BatchInsertManager) {
@@ -105,47 +76,51 @@ func (t *BatchInsertManager) GetQueuedItemCount() int {
 }
 
 func (t *BatchInsertManager) SendAndWait() error {
-  uncommittedCount := t.pool.Running()
-  if uncommittedCount > 0 {
-    t.logger.Info("waiting sending", zap.Int("batches", uncommittedCount))
-  }
-
-  err := t.ScheduleSendBatch()
-  if err != nil {
-    return err
-  }
-
-  t.waitGroup.Wait()
-  return t.Error
+  t.ScheduleSendBatch()
+  return t.errorGroup.Wait()
 }
 
-func (t *BatchInsertManager) ScheduleSendBatch() error {
-  batch, err := t.prepareForFlush()
-  if err != nil {
-    return err
+func (t *BatchInsertManager) ScheduleSendBatch() {
+  batch := t.prepareForFlush()
+  if batch != nil {
+    t.errorGroup.Go(func() error {
+      return t.sendBatch(batch)
+    })
   }
-  if batch == nil {
-    return nil
-  }
-
-  t.waitGroup.Add(1)
-  return t.pool.Invoke(batch)
 }
 
-func (t *BatchInsertManager) prepareForFlush() (driver.Batch, error) {
+func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
+  for _, dependency := range t.dependencies {
+    err := dependency.SendAndWait()
+    if err != nil {
+      t.logger.Error("cannot commit dependency", zap.Error(err))
+      return err
+    }
+  }
+
+  t.logger.Info("send batch")
+  err := batch.Send()
+  if err != nil {
+    t.logger.Error("cannot send batch", zap.Error(err))
+    return err
+  }
+  return nil
+}
+
+func (t *BatchInsertManager) prepareForFlush() driver.Batch {
   t.mutex.Lock()
   defer t.mutex.Unlock()
 
   batch := t.batch
   if batch == nil {
-    return nil, nil
+    return nil
   }
 
   t.batch = nil
   queuedItems := t.queuedItems
   t.queuedItems = 0
   t.logger.Info("items scheduled to be sent", zap.Int("count", queuedItems))
-  return batch, nil
+  return batch
 }
 
 func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
@@ -153,10 +128,7 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
   defer t.mutex.Unlock()
 
   if t.queuedItems >= t.BatchSize {
-    err := t.ScheduleSendBatch()
-    if err != nil {
-      return nil, err
-    }
+    t.ScheduleSendBatch()
   } else {
     t.queuedItems++
   }
@@ -172,14 +144,22 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
 }
 
 func (t *BatchInsertManager) Close() error {
-  t.pool.Release()
+  // flush
+  t.ScheduleSendBatch()
+  err := t.errorGroup.Wait()
 
-  var err error
   if t.batch != nil {
     t.logger.Error("abort batch", zap.String("reason", "was not sent, but close is called"))
-    err = t.batch.Abort()
+    abortErr := t.batch.Abort()
     t.batch = nil
+    if err == nil {
+      err = abortErr
+    }
   }
 
+  dbError := t.Db.Close()
+  if err == nil {
+    err = dbError
+  }
   return err
 }

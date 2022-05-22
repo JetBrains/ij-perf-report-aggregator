@@ -4,7 +4,7 @@ import (
   "archive/tar"
   "compress/gzip"
   "encoding/json"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
+  clickhouse_backup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.uber.org/zap"
@@ -12,8 +12,8 @@ import (
   "path/filepath"
 )
 
-func readInfoMappingFile(tarReader *tar.Reader) (*clickhouse.MappingInfo, error) {
-  var info clickhouse.MappingInfo
+func readInfoMappingFile(tarReader *tar.Reader) (*clickhouse_backup.MappingInfo, error) {
+  var info clickhouse_backup.MappingInfo
   err := json.NewDecoder(tarReader).Decode(&info)
   if err != nil {
     return nil, errors.WithStack(err)
@@ -21,8 +21,8 @@ func readInfoMappingFile(tarReader *tar.Reader) (*clickhouse.MappingInfo, error)
   return &info, nil
 }
 
-func readMetaFile(tarReader *tar.Reader, logger *zap.Logger) (clickhouse.MetaFile, error) {
-  var metafile clickhouse.MetaFile
+func readMetaFile(tarReader *tar.Reader, logger *zap.Logger) (clickhouse_backup.MetaFile, error) {
+  var metafile clickhouse_backup.MetaFile
 
   gzipReader, err := gzip.NewReader(tarReader)
   if err != nil {
@@ -39,7 +39,7 @@ func readMetaFile(tarReader *tar.Reader, logger *zap.Logger) (clickhouse.MetaFil
 }
 
 // metadata/db/table symlink is not restored - not needed, clickhouse creates these symlinks automatically
-func extractMetadata(clickhouseDir string, info *clickhouse.MappingInfo, currentMetadataDir string) error {
+func extractMetadata(clickhouseDir string, info *clickhouse_backup.MappingInfo, currentMetadataDir string) error {
   // move metadata to root
   metadataDir := filepath.Join(clickhouseDir, "metadata")
   err := os.RemoveAll(metadataDir)

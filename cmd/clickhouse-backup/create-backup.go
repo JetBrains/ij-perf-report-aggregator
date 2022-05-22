@@ -3,22 +3,32 @@ package main
 import (
   "archive/tar"
   "fmt"
-  _ "github.com/ClickHouse/clickhouse-go"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/develar/errors"
-  "github.com/jmoiron/sqlx"
   "go.uber.org/zap"
   "os"
   "path/filepath"
   "strconv"
+  "strings"
   "time"
 )
 
-func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, table clickhouse.TableInfo, backupDir string, logger *zap.Logger) error {
+func inClause(names []string) string {
+  return "'" + strings.Join(names, "', '") + "'"
+}
+
+func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhousebackup.TableInfo, backupDir string, logger *zap.Logger) error {
   shadowDir := filepath.Join(t.ClickhouseDir, "shadow")
-  dirName := strconv.FormatInt(time.Now().UnixNano(), 36) + "_" + strconv.FormatInt(int64(os.Getpid()), 36)
+  dirName := strconv.FormatInt(int64(os.Getpid()), 36) + "_" + strconv.FormatInt(time.Now().UnixNano(), 36)
+  logger.Info("optimize table")
+  err := db.Exec(t.TaskContext, fmt.Sprintf("optimize table `%s`.`%s`", table.Database, table.Name))
+  if err != nil {
+    return errors.WithStack(err)
+  }
+
   logger.Info("freeze table", zap.String("shadowDir", dirName))
-  _, err := db.Exec(fmt.Sprintf("alter table `%s`.`%s` freeze with name '"+dirName+"'", table.Database, table.Name))
+  err = db.Exec(t.TaskContext, fmt.Sprintf("alter table `%s`.`%s` freeze with name '"+dirName+"'", table.Database, table.Name))
   if err != nil {
     return errors.WithStack(err)
   }
@@ -47,17 +57,17 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db *sqlx.DB, table clickhouse.T
   return nil
 }
 
-func (t *BackupManager) getTables(db *sqlx.DB, dbNames []string) ([]clickhouse.TableInfo, error) {
+func (t *BackupManager) getTables(db driver.Conn, dbNames []string) ([]clickhousebackup.TableInfo, error) {
   t.Logger.Debug("getting tables")
 
-  tables := make([]clickhouse.TableInfo, 0)
+  tables := make([]clickhousebackup.TableInfo, 0)
   var err error
   if len(dbNames) == 0 {
-    err = db.SelectContext(t.TaskContext, &tables,
-      "select name, uuid, database, metadata_path from system.tables where database != 'system' and is_temporary = 0 and engine like '%MergeTree' order by database, name;")
+    err = db.Select(t.TaskContext, &tables,
+      "select name, toString(uuid) as uuid, database, metadata_path from system.tables where database != 'system' and is_temporary = 0 and engine like '%MergeTree' order by database, name")
   } else {
-    err = db.SelectContext(t.TaskContext, &tables,
-      "select name, uuid, database, metadata_path from system.tables where database in (?) and is_temporary = 0 and engine like '%MergeTree' order by database, name;", dbNames)
+    err = db.Select(t.TaskContext, &tables,
+      "select name, toString(uuid) as uuid, database, metadata_path from system.tables where database in ("+inClause(dbNames)+") and is_temporary = 0 and engine like '%MergeTree' order by database, name;")
   }
   if err != nil {
     return nil, errors.WithStack(err)

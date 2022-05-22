@@ -34,8 +34,6 @@ spec:
                 # memory limit — do not overload server
                 - name: INSERT_WORKER_COUNT
                   value: "1"
-                - name: INSERT_BATCH_SIZE
-                  value: "1000"
                 - name: NATS
                   value: "nats:4222"
                 - name: CLICKHOUSE

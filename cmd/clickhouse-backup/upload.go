@@ -5,7 +5,7 @@ import (
   "bytes"
   "compress/gzip"
   "encoding/json"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
   "github.com/develar/errors"
@@ -27,8 +27,8 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
   var bar *pb.ProgressBar
   putObjectOptions := minio.PutObjectOptions{
     ContentType: "application/x-tar",
-    NumThreads: env.GetUint("UPLOAD_WORKER_COUNT", 0),
-    PartSize: uint64(env.GetUint("UPLOAD_PART_SIZE", 0) * 1024 * 1024),
+    NumThreads:  env.GetUint("UPLOAD_WORKER_COUNT", 0),
+    PartSize:    uint64(env.GetUint("UPLOAD_PART_SIZE", 0) * 1024 * 1024),
   }
   if !env.GetBool("DISABLE_PROGRESS", false) {
     bar = pb.Full.Start64(task.estimatedTarSize)
@@ -71,8 +71,8 @@ type Task struct {
   storeDir         string
   backupDir        string
   diffFromPath     string
-  db               []clickhouse.DbInfo
-  tables           []clickhouse.TableInfo
+  db               []clickhousebackup.DbInfo
+  tables           []clickhousebackup.TableInfo
   estimatedTarSize int64
 
   logger *zap.Logger
@@ -134,7 +134,7 @@ func createTar(writer io.Writer, task Task, progressBar *pb.ProgressBar) (err er
       return errors.WithStack(err)
     }
 
-    err = writeHeader(tarWriter, clickhouse.MetaFileName, int64(len(metaContent)))
+    err = writeHeader(tarWriter, clickhousebackup.MetaFileName, int64(len(metaContent)))
     if err != nil {
       return errors.WithStack(err)
     }
@@ -168,7 +168,7 @@ func writeFile(filePath string, name string, size int64, tarWriter *tar.Writer, 
 }
 
 func serializeMetaFile(task Task, hardlinks []string) ([]byte, error) {
-  metafile := clickhouse.MetaFile{
+  metafile := clickhousebackup.MetaFile{
     RequiredBackup:      filepath.Base(task.diffFromPath),
     EstimatedBackupSize: task.estimatedTarSize,
     Hardlinks:           hardlinks,

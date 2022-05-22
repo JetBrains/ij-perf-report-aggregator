@@ -7,7 +7,6 @@ import (
   "github.com/develar/errors"
   "go.deanishe.net/env"
   "go.uber.org/atomic"
-  "go.uber.org/multierr"
   "go.uber.org/zap"
   "strconv"
   "strings"
@@ -256,20 +255,15 @@ func (t *ReportAnalyzer) Close() error {
   t.closeOnce.Do(func() {
     close(t.insertQueue)
   })
-  insertManager := t.InsertReportManager.InsertManager
-  return errors.WithStack(multierr.Combine(insertManager.Close(), insertManager.Db.Close()))
+  return t.InsertReportManager.InsertManager.Close()
 }
 
-func (t *ReportAnalyzer) WaitAndCommit() <-chan error {
+func (t *ReportAnalyzer) WaitAnalyzer() <-chan error {
   go func() {
     t.waitGroup.Wait()
-
-    if t.firstError.Load() != nil {
-      return
+    if t.firstError.Load() == nil {
+      t.DoneChannel <- nil
     }
-
-    err := t.InsertReportManager.InsertManager.SendAndWait()
-    t.DoneChannel <- err
   }()
   return t.DoneChannel
 }

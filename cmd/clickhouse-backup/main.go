@@ -91,10 +91,10 @@ func start(natsUrl string, logger *zap.Logger) error {
       return nil
     }
 
-    if time.Now().Sub(lastBackupTime) < 4*time.Hour {
+    if time.Now().Sub(lastBackupTime) < 8*time.Hour {
       // do not create backups too often
       logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
-      return nil
+      continue
     }
 
     logger.Info("backup requested")
@@ -259,8 +259,8 @@ func (t *BackupManager) createBackup(task *Task) error {
       return err
     }
 
-    i := sort.Search(len(dbNames), func(i int) bool { return dbNames[i] >= table.Database })
-    if i >= len(dbNames) || dbNames[i] != table.Database {
+    index := sort.Search(len(dbNames), func(i int) bool { return dbNames[i] >= table.Database })
+    if index >= len(dbNames) || dbNames[index] != table.Database {
       dbNames = append(dbNames, table.Database)
     }
   }

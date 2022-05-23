@@ -9,7 +9,7 @@
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.3",
     "shared": "workspace:*",
-    "vue": "3.2.33",
+    "vue": "3.2.36",
     "vue-router": "4.0.15"
   }
 }

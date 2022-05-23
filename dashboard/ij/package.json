@@ -5,7 +5,7 @@
     "primevue": "^3.12.6",
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.33",
+    "vue": "3.2.36",
     "vue-router": "4.0.15"
   }
 }

@@ -67,7 +67,11 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           to: "/fleet/dashboard",
-          label: "Dashboard",
+          label: "Startup Dashboard",
+        },
+        {
+          to: "/fleet/perf/dashboard",
+          label: "Performance Dashboard",
         },
         {
           to: "/fleet/perf",
@@ -214,6 +218,11 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             valueUnit: "ns",
           },
           meta: {pageTitle: "Fleet Performance Tests"},
+        },
+        {
+          path: "/fleet/perf/dashboard",
+          component: () => import("./fleet/FleetPerformanceDashboard.vue"),
+          meta: {pageTitle: "Fleet Performance Dashboard"},
         },
         {
           path: "/fleet/explore",

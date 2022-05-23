@@ -5,7 +5,7 @@
       <LineChartCard
         :compound-tooltip="true"
         :chart-type="'line'"
-        :value-unit="'ms'"
+        :value-unit="props.valueUnit"
         :measures="[measure]"
         :configurators="configurators"
         :skip-zero-values="false"
@@ -22,12 +22,15 @@ import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { configuratorListKey } from "../injectionKeys"
 import LineChartCard from "./LineChartCard.vue"
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label: string
   measure: string
   projects: Array<string>
   serverConfigurator: ServerConfigurator
-}>()
+  valueUnit?: "ns"|"ms"
+}>(), {
+  valueUnit: "ms"
+})
 const providedConfigurators = inject(configuratorListKey, null)
 if (providedConfigurators == null) {
   throw new Error("`dataQueryExecutor` is not provided")

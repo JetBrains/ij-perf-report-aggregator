@@ -9,7 +9,6 @@ import (
   "github.com/araddon/dateparse"
   "github.com/develar/errors"
   "go.uber.org/zap"
-  "log"
   "net/http"
   "os"
   "strings"
@@ -31,7 +30,7 @@ func main() {
     if e.Is(err, context.Canceled) {
       os.Exit(78)
     }
-    log.Fatalf("%+v", err)
+    logger.Fatal("er", zap.Error(err))
   }
 }
 

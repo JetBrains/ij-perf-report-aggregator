@@ -44,6 +44,39 @@
       :projects="['stressHighlighting']"
       :server-configurator="serverConfigurator"
     />
+    <div class="relative flex py-5 items-center">
+      <div class="flex-grow border-t border-gray-400" />
+      <span class="flex-shrink mx-4 text-gray-400 text-lg">PHP</span>
+      <div class="flex-grow border-t border-gray-400" />
+    </div>
+    <GroupLineChart
+      label="Typing (time)"
+      value-unit="ns"
+      measure="fleet.test"
+      :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Typing (average delay)"
+      value-unit="ns"
+      measure="awt.delay"
+      :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Typing (max delay)"
+      value-unit="ns"
+      measure="max.awt.delay"
+      :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Other"
+      value-unit="ns"
+      measure="fleet.test"
+      :projects="['Open mPDF', 'Frontend Completion in mPDF']"
+      :server-configurator="serverConfigurator"
+    />
   </Dashboard>
 </template>
 

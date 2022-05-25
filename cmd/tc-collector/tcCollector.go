@@ -223,7 +223,7 @@ func buildTeamCityQuery() string {
   for i := 0; i < 3; i++ {
     q = "file(href,children(href," + q + "))"
   }
-  return "count,href,nextHref,build(id,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
+  return "count,href,nextHref,build(id,buildTypeId,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
 }
 
 func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn, ctx context.Context) error {

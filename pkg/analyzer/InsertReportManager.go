@@ -27,6 +27,7 @@ type RunResult struct {
   GeneratedTime time.Time
 
   TcBuildId          int
+  TcBuildType        string
   TcInstallerBuildId int
 
   RawReport []byte
@@ -74,7 +75,9 @@ func NewInsertReportManager(
 
   metaFields := make([]string, 0, 16)
   metaFields = append(metaFields, "machine", "generated_time", "project", "tc_build_id", "branch")
-
+  if config.HasBuildTypeField {
+    metaFields = append(metaFields, "tc_build_type")
+  }
   if config.HasProductField {
     metaFields = append(metaFields, "product")
   }
@@ -223,6 +226,9 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 
   args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
   args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch)
+  if t.config.HasBuildTypeField {
+    args = append(args, row.TcBuildType)
+  }
 
   if t.config.HasProductField {
     args = append(args, product)

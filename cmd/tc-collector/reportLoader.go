@@ -76,6 +76,7 @@ func (t *Collector) loadReports(builds []*Build) error {
         data := model.ExtraData{
           Machine:           build.Agent.Name,
           TcBuildId:         build.Id,
+          TcBuildType:       build.Type,
           TcBuildProperties: tcBuildProperties,
           ReportFile:        artifact.path,
         }

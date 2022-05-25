@@ -19,6 +19,7 @@ type DatabaseConfiguration struct {
 
   HasProductField   bool
   HasInstallerField bool
+  HasBuildTypeField bool
   extraFieldCount   int
 }
 
@@ -54,6 +55,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       TableName:         tableName,
       ReportReader:      analyzePerfReport,
       HasInstallerField: true,
+      HasBuildTypeField: true,
       extraFieldCount:   2,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value")

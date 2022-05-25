@@ -19,6 +19,7 @@ type BuildList struct {
 
 type Build struct {
   Id        int    `json:"id"`
+  Type      string `json:"buildTypeId"`
   Status    string `json:"status"`
   Agent     Agent  `json:"agent"`
   StartDate string `json:"startDate"`

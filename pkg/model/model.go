@@ -34,6 +34,7 @@ type ExtraData struct {
   Machine string
 
   TcBuildId          int
+  TcBuildType        string
   TcInstallerBuildId int
   TcBuildProperties  []byte
   Changes            []string

@@ -7,6 +7,7 @@ create table report
   `tc_build_id`           UInt32 CODEC (DoubleDelta, ZSTD(20)),
   `tc_installer_build_id` UInt32 CODEC (DoubleDelta, ZSTD(20)),
   `branch`                LowCardinality(String) CODEC (ZSTD(20)),
+  `tc_build_type`         LowCardinality(String) CODEC (ZSTD(20)),
   `raw_report`            String CODEC (ZSTD(20)),
 
   `measures.name` LowCardinality(String) CODEC(ZSTD(20)),

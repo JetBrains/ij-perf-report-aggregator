@@ -13,14 +13,13 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.8
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.1.0
-	github.com/go-faster/ch v0.32.0
-	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a
+	github.com/go-faster/ch v0.38.0
 	github.com/json-iterator/go v1.1.12
-	github.com/klauspost/compress v1.15.4
+	github.com/klauspost/compress v1.15.5
 	github.com/magiconair/properties v1.8.6
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/minio/minio-go/v7 v7.0.26
-	github.com/nats-io/nats.go v1.15.0
+	github.com/minio/minio-go/v7 v7.0.27
+	github.com/nats-io/nats.go v1.16.0
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.7.1
@@ -52,6 +51,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/go-version v1.5.0 // indirect
+	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a // indirect
 	github.com/klauspost/cpuid/v2 v2.0.12 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -78,13 +78,13 @@ require (
 	go.opentelemetry.io/otel/metric v0.30.0 // indirect
 	go.opentelemetry.io/otel/trace v1.7.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898 // indirect
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
+	golang.org/x/net v0.0.0-20220526153639-5463443f8c37 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/xerrors v0.0.0-20220517211312-f3a8303e98df // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/ini.v1 v1.66.4 // indirect
+	gopkg.in/ini.v1 v1.66.5 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

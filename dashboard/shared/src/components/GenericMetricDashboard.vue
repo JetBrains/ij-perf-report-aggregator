@@ -139,7 +139,7 @@ let configurators = [
   triggeredByConfigurator
 ]
 
-let releaseConfigurator = null
+let releaseConfigurator: ReleaseNightlyConfigurator|null = null
 if (props.supportReleases) {
   releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
   configurators.push(releaseConfigurator)

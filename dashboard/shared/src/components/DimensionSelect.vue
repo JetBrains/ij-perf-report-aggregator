@@ -109,7 +109,7 @@ const items = computed(() => {
   // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
   if (props.valueToGroup == null) {
     const result = values.map(it => {
-      return {label: valueToLabel(it), value: it}
+      return {label: valueToLabel(it.toString()), value: it}
     })
     if (values.length > 20) {
       // put selected values on top
@@ -123,7 +123,7 @@ const items = computed(() => {
     return result
   }
   else {
-    return group(values, props.valueToGroup, valueToLabel)
+    return group(values as Array<string>, props.valueToGroup, valueToLabel)
   }
 })
 

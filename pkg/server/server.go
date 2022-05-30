@@ -8,7 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/go-faster/ch"
-  "github.com/go-faster/ch/chpool"
+  "github.com/jackc/puddle/puddleg"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
@@ -49,8 +49,8 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   defer func() {
     statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
-      p := pool.(*chpool.Client)
-      p.Release()
+      p := pool.(*puddleg.Pool[*ch.Client])
+      p.Close()
       return true
     })
   }()
@@ -94,14 +94,13 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error) {
+func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddleg.Resource[*ch.Client], error) {
   untypedPool, exists := t.nameToDbPool.Load(name)
-  var pool *chpool.Pool
-  var err error
+  var pool *puddleg.Pool[*ch.Client]
   if exists {
-    pool = untypedPool.(*chpool.Pool)
+    pool = untypedPool.(*puddleg.Pool[*ch.Client])
   } else {
-    pool, err = createStoreForDatabaseUnderLock(name, t, ctx)
+    pool = createStoreForDatabaseUnderLock(name, t)
   }
 
   resource, err := pool.Acquire(ctx)
@@ -111,12 +110,12 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool
   return resource, nil
 }
 
-func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Context) (*chpool.Pool, error) {
+func createStoreForDatabaseUnderLock(name string, t *StatsServer) *puddleg.Pool[*ch.Client] {
   t.poolMutex.Lock()
   defer t.poolMutex.Unlock()
-  pool, err := chpool.Dial(ctx, chpool.Options{
-    MaxConns: 16,
-    ClientOptions: ch.Options{
+
+  constructor := func(ctx context.Context) (*ch.Client, error) {
+    return ch.Dial(ctx, ch.Options{
       Address:  t.dbUrl,
       Database: name,
       Settings: []ch.Setting{
@@ -124,10 +123,15 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Co
         ch.SettingInt("max_query_size", 1000000),
         ch.SettingInt("max_memory_usage", 3221225472),
       },
-    },
-  })
+    })
+  }
+  destructor := func(value *ch.Client) {
+    util.Close(value, t.logger)
+  }
+
+  pool := puddleg.NewPool(constructor, destructor, 16)
   t.nameToDbPool.Store(name, pool)
-  return pool, err
+  return pool
 }
 
 func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {

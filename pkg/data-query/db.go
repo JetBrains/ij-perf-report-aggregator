@@ -4,14 +4,14 @@ import (
   "context"
   "errors"
   "github.com/go-faster/ch"
-  "github.com/go-faster/ch/chpool"
   "github.com/go-faster/ch/proto"
+  "github.com/jackc/puddle/puddleg"
   "io"
   "net"
 )
 
 type DatabaseConnectionSupplier interface {
-  AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error)
+  AcquireDatabase(name string, ctx context.Context) (*puddleg.Resource[*ch.Client], error)
 }
 
 func executeQuery(
@@ -42,19 +42,19 @@ func executeQuery(
 
 func doExecution(
   sqlQuery string,
-  client *chpool.Client,
+  dbResource *puddleg.Resource[*ch.Client],
   ctx context.Context,
   resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
 ) (error, bool) {
   isDestroyed := false
   defer func() {
     if !isDestroyed {
-      client.Release()
+      dbResource.Release()
     }
   }()
 
   var result proto.Results
-  err := client.Do(ctx, ch.Query{
+  err := dbResource.Value().Do(ctx, ch.Query{
     Body:   sqlQuery,
     Result: result.Auto(),
     OnResult: func(ctx context.Context, block proto.Block) error {
@@ -72,7 +72,7 @@ func doExecution(
   }
 
   isDestroyed = true
-  client.Release()
+  dbResource.Destroy()
   return nil, false
 }
 

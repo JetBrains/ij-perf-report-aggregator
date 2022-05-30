@@ -56,12 +56,7 @@ function toClickhouseSql(duration: DurationParseResult): string {
     }
 
     let expression = `${unit.subtractFunction}(`
-    if (result.length === 0) {
-      expression += "now()"
-    }
-    else {
-      expression += result
-    }
+    expression += result.length === 0 ? "now()" : result
     expression += `,${value})`
     result = expression
   }
@@ -75,7 +70,7 @@ export interface DurationParseResult {
   years?: number
 }
 
-const duration = /(-?\d*\.?\d+(?:e[-+]?\d+)?)\s*([a-zμ]*)/ig
+const duration = /(-?\d*\.?\d+(?:e[+-]?\d+)?)\s*([a-zμ]*)/gi
 
 interface UnitDescriptor {
   readonly subtractFunction: string
@@ -136,7 +131,7 @@ function parseDuration(s: string): DurationParseResult {
       console.error(`unknown unit: ${unit}`)
     }
     else {
-      unitDescriptor.apply(parseInt(n, 10), result)
+      unitDescriptor.apply(Number.parseInt(n, 10), result)
     }
     return ""
   })

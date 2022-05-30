@@ -168,11 +168,9 @@ const keyDown = (event: KeyboardEvent) => {
   }
 }
 const keyUp = (event: KeyboardEvent) => {
-  if (event.code === metaKey) {
-    if (lastManager != null) {
+  if (event.code === metaKey && lastManager != null) {
       lastManager.paused = false
     }
-  }
 }
 
 onMounted(() => {

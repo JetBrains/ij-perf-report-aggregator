@@ -24,7 +24,12 @@
 </template>
 
 <script>
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import ToastMessage from "primevue/toast/ToastMessage.vue"
 import ToastEventBus from "primevue/toasteventbus"
 import {UniqueComponentId, ZIndexUtils} from "primevue/utils"
@@ -83,7 +88,6 @@ export default {
     ToastEventBus.on("remove-group", this.onRemoveGroup)
     ToastEventBus.on("remove-all-groups", this.onRemoveAllGroups)
     if (this.breakpoints) {
-      // eslint-disable-next-line
       this.createStyle()
     }
   },
@@ -140,7 +144,7 @@ export default {
       if (!this.styleElement) {
         this.styleElement = document.createElement("style")
         this.styleElement.type = "text/css"
-        document.head.appendChild(this.styleElement)
+        document.head.append(this.styleElement)
         let innerHTML = ""
         for (let breakpoint in this.breakpoints) {
           let breakpointStyle = ""
@@ -160,7 +164,7 @@ export default {
     },
     destroyStyle() {
       if (this.styleElement) {
-        document.head.removeChild(this.styleElement)
+        this.styleElement.remove()
         this.styleElement = null
       }
     },

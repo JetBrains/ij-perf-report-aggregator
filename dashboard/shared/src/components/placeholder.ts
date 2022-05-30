@@ -11,7 +11,7 @@ export function usePlaceholder(
     // In our case model is stored on server, but selected value stored locally. So, selected value is resolved much faster.
     if ((values == null || values.length === 0)) {
       const value = selected()
-      if (value != null && value.length != 0) {
+      if (value != null && value.length > 0) {
         return Array.isArray(value) ? value.join(", ") : value.toString()
       }
     }

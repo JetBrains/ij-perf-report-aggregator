@@ -97,11 +97,7 @@ function getAbbreviatedName(name: string): string {
   const names = name.split(".")
   for (let i = 0; i < names.length; i++) {
     const unqualifiedName = names[i]
-    if (i == (names.length - 1)) {
-      abbreviatedName += unqualifiedName
-    } else {
-      abbreviatedName += unqualifiedName.substring(0, 1) + "."
-    }
+    abbreviatedName += i == (names.length - 1) ? unqualifiedName : unqualifiedName.slice(0, 1) + "."
   }
   return abbreviatedName
 }

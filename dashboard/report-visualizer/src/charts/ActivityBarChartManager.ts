@@ -136,9 +136,8 @@ export class ActivityBarChartManager implements ChartManager {
     const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color
 
     const series = new Array<BarSeriesOption>(seriesNames.length)
-    for (let seriesIndex = 0; seriesIndex < seriesNames.length; seriesIndex++){
-      const seriesName = seriesNames[seriesIndex]
-      const seriesData: Array<ChartDataItem | null> = data.slice()
+    for (const [seriesIndex, seriesName] of seriesNames.entries()){
+      const seriesData: Array<ChartDataItem | null> = [...data]
       for (let i = 0; i < seriesData.length; i++){
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (seriesData[i]![3] !== seriesName) {

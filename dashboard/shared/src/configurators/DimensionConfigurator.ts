@@ -105,7 +105,7 @@ export function filterSelected(configurator: DimensionConfigurator, data: Array<
   }
   else {
     const selected = selectedRef.value
-    if (selected instanceof Array && selected.length !== 0) {
+    if (Array.isArray(selected) && selected.length > 0) {
       const filtered = selected.filter(it => data.includes(it))
       if (filtered.length !== selected.length) {
         selectedRef.value = filtered

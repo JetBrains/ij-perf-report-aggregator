@@ -37,7 +37,7 @@ const aggregationOperatorConfigurator = injectOrError(aggregationOperatorConfigu
 const chartStyle = inject(chartStyleKey, chartDefaultStyle)
 const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, timeRange, chartStyle)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const dataQueryExecutor = new DataQueryExecutor(injectOrError(configuratorListKey).concat(aggregationOperatorConfigurator, measureConfigurator))
+const dataQueryExecutor = new DataQueryExecutor([...injectOrError(configuratorListKey), aggregationOperatorConfigurator, measureConfigurator])
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor, chartStyle)

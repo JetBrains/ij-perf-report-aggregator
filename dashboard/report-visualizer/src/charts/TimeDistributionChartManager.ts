@@ -94,8 +94,7 @@ function addServicesOrComponents(dataManager: DataManager,
     name: `app ${statName}s`,
     children: toTreeMapItem(data[appFieldName]),
     count: numberFormat.format(stats.app),
-  })
-  children.push({
+  }, {
     name: `project ${statName}s`,
     children: toTreeMapItem(data[projectFieldName]),
     count: numberFormat.format(stats.project),

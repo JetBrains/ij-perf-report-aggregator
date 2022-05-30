@@ -85,14 +85,8 @@ const value = computed<string | Array<string> | null>({
     }
   },
   set(value) {
-    if (value == null || value.length === 0) {
-      // eslint-disable-next-line vue/no-mutating-props
-      props.dimension.selected.value = null
-    }
-    else {
-      // eslint-disable-next-line vue/no-mutating-props
-      props.dimension.selected.value = value
-    }
+    // eslint-disable-next-line vue/no-mutating-props
+    props.dimension.selected.value = value == null || value.length === 0 ? null : value
   },
 })
 
@@ -117,7 +111,7 @@ const items = computed(() => {
         if (value.value == null || !Array.isArray(value.value)) {
           return 0
         }
-        return value.value.includes(a.label) ? -1 : value.value.includes(b.label) ? 1 : 0
+        return value.value.includes(a.label) ? -1 : (value.value.includes(b.label) ? 1 : 0)
       })
     }
     return result

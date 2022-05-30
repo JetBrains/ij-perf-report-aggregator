@@ -37,7 +37,7 @@ export class PersistentStateManager {
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
         if(Array.isArray(value)){
-          this.state[name] = (value as Array<string>).map(boolFromString)
+          this.state[name] = (value as Array<string>).map(element => boolFromString(element))
         } else{
           this.state[name] = boolFromString(value)
         }
@@ -73,11 +73,9 @@ export class PersistentStateManager {
     const query: LocationQueryRaw = {...currentRoute.query}
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
-      if ((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) {
-        if (isChanged || query[name] !== value) {
-          query[name] = value
-          isChanged = true
-        }
+      if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
+        query[name] = value
+        isChanged = true
       }
     }
 
@@ -101,7 +99,7 @@ export class PersistentStateManager {
     })
 
     const existingValue = this.state[name]
-    if (existingValue != null && (typeof existingValue !== "string" || existingValue.length !== 0)) {
+    if (existingValue != null && (typeof existingValue !== "string" || existingValue.length > 0)) {
       // console.debug(`[persistentState] set ${name} to ${existingValue}`)
       value.value = existingValueTransformer == null ? existingValue : existingValueTransformer(existingValue)
       this.updateUrlSubject.next(null)

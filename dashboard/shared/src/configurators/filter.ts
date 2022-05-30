@@ -8,9 +8,7 @@ export function createFilterObservable(serverConfigurator: ServerConfigurator, f
   }
 
   return combineLatest(
-    filters
-      .map(it => it.createObservable()).filter((it: Observable<unknown> | null): it is Observable<unknown> => it !== null)
-      .concat(serverConfigurator.createObservable()),
+    [...filters.map(it => it.createObservable()).filter((it: Observable<unknown> | null): it is Observable<unknown> => it !== null), serverConfigurator.createObservable()],
   )
 }
 

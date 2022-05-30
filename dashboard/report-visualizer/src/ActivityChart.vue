@@ -38,8 +38,9 @@ export default defineComponent({
       const sourceNames = descriptor.sourceNames
       if (descriptor.chartManagerProducer == null) {
         const names = sourceNames ?? [descriptor.id]
-        const hasALotOfData = !names.some(it => it === "reopeningEditors")
-        return new ((await import("./charts/ActivityBarChartManager")).ActivityBarChartManager)(container, dataManager => {
+        const hasALotOfData = !names.includes("reopeningEditors")
+        const {ActivityBarChartManager: ActivityBarChartManager} = await import("./charts/ActivityBarChartManager")
+        return new ActivityBarChartManager(container, dataManager => {
           const result: GroupedItems = []
           for (const name of names) {
             const data = dataManager.data as never

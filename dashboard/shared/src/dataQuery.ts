@@ -157,7 +157,7 @@ export interface Machine {
 }
 
 export function toMutableArray(value: string | Array<string> | null): Array<string> {
-  return (value == null || value === "") ? [] : (Array.isArray(value) ? value.slice() : [value])
+  return (value == null || value === "") ? [] : (Array.isArray(value) ? [...value] : [value])
 }
 
 export function toArray(value: string | Array<string> | null): Array<string> {

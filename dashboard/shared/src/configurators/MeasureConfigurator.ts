@@ -6,14 +6,7 @@ import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { ChartConfigurator, collator, ValueUnit } from "../chart"
-import {
-  DataQuery,
-  DataQueryConfigurator,
-  DataQueryDimension,
-  DataQueryExecutorConfiguration,
-  DataQueryFilter,
-  toMutableArray,
-} from "../dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -64,20 +57,15 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           }
 
           this.state.loading = true
-          if (isIj) {
-            return forkJoin([
-              fromFetchWithRetryAndErrorHandling<Array<string>>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
-              fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
-            ])
-              .pipe(
-                map(data => {
-                  return data.flat(1)
-                }),
-              )
-          }
-          else {
-            return fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
-          }
+          return isIj ? forkJoin([
+            fromFetchWithRetryAndErrorHandling<Array<string>>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
+            fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
+          ])
+            .pipe(
+              map(data => {
+                return data.flat(1)
+              }),
+            ) : fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
         }),
         updateComponentState(this.state),
       )
@@ -87,13 +75,13 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }
 
         if (isIj) {
-          data = Array.from(new Set(data.map(it => /^c\.i\.ide\.[a-zA-Z]\.[a-zA-Z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))
+          data = [...new Set(data.map(it => /^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it))]
         }
 
         const selectedRef = this.selected
         this.data.value = data
         const selected = selectedRef.value
-        if (selected != null && selected.length !== 0) {
+        if (selected != null && selected.length > 0) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const filtered = selected.filter(it => data!.includes(it))
           if (filtered.length !== selected.length) {
@@ -151,8 +139,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   constructor(private readonly measures: Array<string>,
               readonly skipZeroValues: Ref<boolean> = shallowRef(true),
               private readonly chartType: ChartType = "line",
-              private readonly valueUnit: ValueUnit = "ms") {
-  }
+              private readonly valueUnit: ValueUnit = "ms") {}
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.skipZeroValues)
@@ -171,14 +158,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 }
 
 export function measureNameToLabel(key: string): string {
-  const metricPathEndDotIndex = key.indexOf(".")
-  if (metricPathEndDotIndex == -1) {
-    // remove _d or _i suffix
-    return key.replace(/_[a-z]$/g, "")
-  }
-  else {
-    return key
-  }
+  return !key.includes(".") ? /* remove _d or _i suffix */key.replace(/_[a-z]$/g, "") : key
 }
 
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
@@ -241,7 +221,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
           field.subName = valueName
         }
 
-        addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.substring(0, measure.length - ".end".length) : measure})
+        addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure})
         valueFieldName = `${structureName}.${valueName}`
       }
 

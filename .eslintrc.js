@@ -16,7 +16,8 @@ module.exports = {
     "@vue/typescript/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:unicorn/recommended"
   ],
   // plugins: ["simple-import-sort"],
   parser: "vue-eslint-parser",
@@ -27,6 +28,12 @@ module.exports = {
   },
   rules: {
     // "no-console": process.env.NODE_ENV === "production" ? ["warn", {allow: ["warn", "error"]}] : "off",
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/filename-case": "off",
+    "unicorn/no-null" : "off",
+    "unicorn/numeric-separators-style": "off",
+    "unicorn/consistent-function-scoping" : ["error", {"checkArrowFunctions" : false}],
+    "unicorn/no-new-array": "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "max-len": ["error", {"code": 180}],
     "object-shorthand": ["error", "always", {"avoidExplicitReturnArrows": true}],

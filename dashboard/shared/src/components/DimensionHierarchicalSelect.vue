@@ -50,6 +50,6 @@ const value = computed<SelectedValue>({
   },
 })
 const values = computed(() => {
-  return props.dimension.values.value.map(convertItemToTreeSelectModel)
+  return props.dimension.values.value.map(element => convertItemToTreeSelectModel(element))
 })
 </script>

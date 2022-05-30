@@ -77,6 +77,7 @@ export class DataQueryExecutor {
 function computeCartesian<T>(input: Array<Array<T>>): Array<Array<T>> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
+  // eslint-disable-next-line unicorn/no-array-reduce
   return input.reduce((a, b) => {
     return a.flatMap(d => b.map(e => [d, e].flat()))
   })
@@ -97,36 +98,28 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       },
       mutate(): void {
         // the only value
-      }
+      },
     }]
   }
 
-  let cartesian: Array<Array<number>>
-  if (producers.length === 1) {
-    cartesian = Array.from(new Array<number>(producers[0].size()), (_, i) => [i])
-  }
-  else {
-    cartesian = computeCartesian(producers.map(it => {
-      return Array.from(new Array<number>(it.size()), (_, i) => i)
-    }))
-  }
+  const cartesian: Array<Array<number>> = producers.length === 1 ? [...new Array<number>(producers[0].size())].map((_, i) => [i]) : computeCartesian(producers.map(it => {
+    return [...new Array<number>(it.size())].map((_, i) => i)
+  }))
 
   let serializedQuery = ""
 
   // https://en.wikipedia.org/wiki/Cartesian_product
 
   const result: Array<string> = []
-  const last = Array.from(new Array<number>(producers.length - 1), (_, i) => cartesian[0][i])
-  for (let combinationIndex = 0; combinationIndex < cartesian.length; combinationIndex++) {
-    const item = cartesian[combinationIndex]
+  const last = [...new Array<number>(producers.length - 1)].map((_, i) => cartesian[0][i])
+  for (const item of cartesian) {
     // each column it is a producer
     // each row it is a combination
     // each column value it is an index of producer value
     let seriesName = ""
     let measureName = ""
-    for (let i = 0; i < item.length; i++) {
+    for (const [i, index] of item.entries()) {
       const producer = producers[i]
-      const index = item[i]
       producer.mutate(index)
       if (i !== 0) {
         measureName += " – "
@@ -134,15 +127,15 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       measureName += producer.getMeasureName(index)
 
       const title = producer.getSeriesName(index)
-      if (title.length !== 0) {
-        if (seriesName.length !== 0) {
+      if (title.length > 0) {
+        if (seriesName.length > 0) {
           seriesName += " – "
         }
         seriesName += title
       }
     }
 
-    if (serializedQuery.length !== 0) {
+    if (serializedQuery.length > 0) {
       serializedQuery += ","
     }
     serializedQuery += serializeQuery(query)
@@ -169,12 +162,12 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     configuration.measureNames.push(measureName)
   }
 
-  if (serializedQuery.length !== 0) {
+  if (serializedQuery.length > 0) {
     result.push(serializedQuery)
   }
   return result
 }
 
 export function initDataComponent(configurators: Array<DataQueryConfigurator>): void {
-  provide(configuratorListKey, configurators.concat(new ReloadConfigurator()))
+  provide(configuratorListKey, [...configurators, new ReloadConfigurator()])
 }

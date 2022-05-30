@@ -12,8 +12,7 @@ import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   constructor(private readonly measures: Array<string>,
               private readonly timeRange: Ref<TimeRange>,
-              private readonly chartStyle: ChartStyle) {
-  }
+              private readonly chartStyle: ChartStyle) {}
 
   createObservable() {
     return null
@@ -40,10 +39,10 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 
     // do not sort - bar chart shows series exactly in the same order as provided measure name list
     // reverse because echarts layout from bottom to top, but we need to put first measures to top
-    const measureNames = this.measures.slice().reverse()
+    const measureNames = [...this.measures].reverse()
     if (query.db === "ij") {
-      for (let i = 0; i < measureNames.length; i++) {
-        query.addField(measureNames[i])
+      for (const measureName of measureNames) {
+        query.addField(measureName)
       }
     }
     else {
@@ -73,7 +72,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 
   configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
     const producers = configuration.queryProducers
-    if (producers.length !== 0) {
+    if (producers.length > 0) {
       return configureWithQueryProducers(dataList, configuration, this.chartStyle)
     }
 

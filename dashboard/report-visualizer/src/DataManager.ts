@@ -99,8 +99,8 @@ export class DataManager {
     // JS array is sparse and setting length doesn't pre-fill array
     result.fill(null)
     itemLoop: for (const item of items) {
-      for (let i = 0; i < markerNames.length; i++) {
-        if (result[i] == null && item.name === markerNames[i]) {
+      for (const [i, markerName] of markerNames.entries()) {
+        if (result[i] == null && item.name === markerName) {
           result[i] = item
 
           // stop if all items are found
@@ -111,9 +111,9 @@ export class DataManager {
       }
     }
 
-    for (let i = 0; i < markerNames.length; i++) {
+    for (const [i, markerName] of markerNames.entries()) {
       if (result[i] == null) {
-        console.warn(`Cannot find item for phase "${markerNames[i]}"`)
+        console.warn(`Cannot find item for phase "${markerName}"`)
       }
     }
 
@@ -129,5 +129,5 @@ export class DataManager {
 
 export function getShortName(qualifiedName: string): string {
   const lastDotIndex = qualifiedName.lastIndexOf(".")
-  return lastDotIndex < 0 ? qualifiedName : qualifiedName.substring(lastDotIndex + 1)
+  return lastDotIndex < 0 ? qualifiedName : qualifiedName.slice(lastDotIndex + 1)
 }

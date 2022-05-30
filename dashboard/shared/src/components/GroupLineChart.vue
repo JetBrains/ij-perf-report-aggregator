@@ -36,7 +36,7 @@ if (providedConfigurators == null) {
   throw new Error("`dataQueryExecutor` is not provided")
 }
 const scenarioConfigurator = dimensionConfigurator("project", props.serverConfigurator, null, true)
-const configurators = providedConfigurators.concat(scenarioConfigurator)
+const configurators = [...providedConfigurators, scenarioConfigurator]
 onMounted(() => {
   scenarioConfigurator.selected.value = props.projects
 })

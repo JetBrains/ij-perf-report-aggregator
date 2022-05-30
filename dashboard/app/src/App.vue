@@ -47,7 +47,7 @@ const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
 const items = ref(getItems())
 const serverUrlObservable = refToObservable(serverUrl).pipe(
-  filter((it: string | null): it is string => it !== null && it.length !== 0),
+  filter((it: string | null): it is string => it !== null && it.length > 0),
   shareReplay(1),
 )
 provide(serverUrlObservableKey, serverUrlObservable)

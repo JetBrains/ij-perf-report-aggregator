@@ -36,7 +36,7 @@ const items = computed(() => {
   }
 
   // do not modify original array
-  result = result.slice()
+  result = [...result]
   result.sort((a, b) => {
     if (selectedValue.includes(a)) {
       return selectedValue.includes(b) ? 0 : -1
@@ -56,7 +56,7 @@ const value = computed({
     if (selectedValue != null && selectedValue.length > 0 && !allValues.some(it => selectedValue != null && selectedValue.includes(it))) {
       return null
     }
-    return allValues.length == 0 ? null : selectedValue
+    return allValues.length === 0 ? null : selectedValue
   },
   set(value: Array<string> | null) {
     props.configurator.setSelected(value)

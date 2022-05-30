@@ -43,12 +43,7 @@ export default defineComponent({
     function updateLocation(location: RouteLocationNormalizedLoaded): void {
       const tab = location.query[queryParamName]
       // do not check `location.path === "/"` because if component displayed, so, active
-      if (tab == null) {
-        activeId.value = 0
-      }
-      else {
-        activeId.value = charts.findIndex(it => it.id === tab)
-      }
+      activeId.value = tab == null ? 0 : charts.findIndex(it => it.id === tab)
     }
 
     const route = useRoute()

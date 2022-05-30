@@ -110,7 +110,7 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(
   machine: "linux-blade",
   project: [],
   branch: "master",
-  measure: props.defaultMeasures.slice(),
+  measure: [...props.defaultMeasures],
 }, useRouter())
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)

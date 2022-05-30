@@ -116,8 +116,7 @@ export class UnitConverter {
   static MICROSECONDS = new UnitConverter(1000)
   static MILLISECONDS = new UnitConverter(1)
 
-  private constructor(readonly factor: number) {
-  }
+  private constructor(readonly factor: number) {}
 
   convert(value: number): number {
     return value / this.factor

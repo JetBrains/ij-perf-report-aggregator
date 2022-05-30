@@ -140,17 +140,12 @@ export class TimeLineChartManager implements ChartManager {
       }
     }
 
-    const threadNames = Array.from(data.keys())
+    const threadNames = [...data.keys()]
     threadNames.sort((a, b) => {
       const aW = getThreadOrderWeight(a)
       const bW = getThreadOrderWeight(b)
       const wR = aW - bW
-      if (wR === 0) {
-        return collator.compare(a, b)
-      }
-      else {
-        return wR
-      }
+      return wR === 0 ? collator.compare(a, b) : wR
     })
 
     // compute categories - for each thread maybe several categories as one service can include another one and we render it above each other
@@ -176,7 +171,7 @@ export class TimeLineChartManager implements ChartManager {
       rowToEnd.clear()
       for (const chartItem of list) {
         const item = chartItem[4]
-        if (rowToEnd.size !== 0) {
+        if (rowToEnd.size > 0) {
           const newRowIndex = findRowIndex(rowIndex, rowToEnd, item, rowIndexThreshold)
           if (newRowIndex === -1) {
             // no place
@@ -242,7 +237,7 @@ export class TimeLineChartManager implements ChartManager {
       }
     }
 
-    const series = Array.from(rowToItems.values())
+    const series = [...rowToItems.values()]
 
     this.chart.chart.getDom().style.height = `${rowToItems.size * 24}px`
     // for unknown reasons `replaceMerge: ["series"]` doesn't work and data from previous report can be still rendered,

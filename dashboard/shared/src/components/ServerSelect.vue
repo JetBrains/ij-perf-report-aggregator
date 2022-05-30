@@ -61,15 +61,11 @@ function itemSelected(event: { value: string }): void {
   subject.next(event.value)
 }
 
-const httpRegex = RegExp("http(s)?://")
+const httpRegex = new RegExp("http(s)?://")
 
 function searchServer(event: AutoCompleteCompleteEvent): void {
   const queryString = event.query
-  if (queryString == null || queryString.length === 0) {
-    filteredServer.value = [...suggestedServers]
-  }
-  else {
-    filteredServer.value = [...suggestedServers.filter(it => it.replace(httpRegex, "").startsWith(queryString.toLowerCase()) && it !== queryString)]
-  }
+  filteredServer.value = queryString == null || queryString.length === 0 ? [...suggestedServers]
+    : [...suggestedServers.filter(it => it.replace(httpRegex, "").startsWith(queryString.toLowerCase()) && it !== queryString)]
 }
 </script>

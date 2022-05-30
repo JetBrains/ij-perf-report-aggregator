@@ -49,15 +49,10 @@ export function makeUrlSafe(x: string): string {
 
 function doEncode(value: any) {
   // typeof for array also object
-  if (value instanceof Array) {
-    return array(value)
-  }
-  else {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    return encoders[typeof value](value) as string
-  }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  return Array.isArray(value) ? array(value) : encoders[typeof value](value) as string
 }
 
 function object(x: any): string {
@@ -113,13 +108,7 @@ const encoders = {
     return x ? "!t" : "!f"
   },
   number(x: number): string {
-    if (isFinite(x)) {
-      // strip '+' out of exponent, '-' is ok though
-      return x.toString().replace(/\+/, "")
-    }
-    else {
-      return "!n"
-    }
+    return Number.isFinite(x) ? /* strip '+' out of exponent, '-' is ok though */ x.toString().replace(/\+/, "") : "!n"
   },
   string(x: string): string {
     if (x.length === 0) {
@@ -143,5 +132,5 @@ export function encodeRison(v: unknown): string {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  return v instanceof Array ? array(v) : object(v)
+  return Array.isArray(v) ? array(v) : object(v)
 }

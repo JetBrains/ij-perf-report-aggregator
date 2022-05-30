@@ -103,9 +103,6 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool
   } else {
     pool, err = createStoreForDatabaseUnderLock(name, t, ctx)
   }
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
 
   resource, err := pool.Acquire(ctx)
   if err != nil {

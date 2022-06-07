@@ -216,6 +216,10 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     return "", errors.New("cannot infer branch from TC properties")
   } else {
     //goland:noinspection SpellCheckingInspection
+    branch := props.GetStringBytes("teamcity.build.branch")
+    if len(branch) != 0 && string(branch) != "<default>" {
+      return string(branch), nil
+    }
     var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
     if len(isMaster) == 0 {
       // we check that the property doesn't exist so it is not a master

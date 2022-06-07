@@ -116,7 +116,7 @@ func collectFromTeamCity(
     }
 
     q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,branch:(default:true),count:500"
+    locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:500"
 
     since := userSpecifiedSince
     if since.IsZero() {

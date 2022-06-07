@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<{
   chartType?: ChartType
   valueUnit?: ValueUnit
   configurators?: Array<DataQueryConfigurator>|null
-  trigger: PopupTrigger
+  trigger?: PopupTrigger
 }>(), {
   skipZeroValues: true,
   compoundTooltip: true,

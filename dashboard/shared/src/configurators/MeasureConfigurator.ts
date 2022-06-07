@@ -88,6 +88,9 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             selectedRef.value = filtered
           }
         }
+        if (!isIj && selectedRef.value?.length == 0) {
+          selectedRef.value = data
+        }
       })
   }
 

@@ -1,6 +1,7 @@
 <template>
   <Dashboard>
     <template #toolbar>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -13,7 +14,6 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
       label="Slow Inspections"

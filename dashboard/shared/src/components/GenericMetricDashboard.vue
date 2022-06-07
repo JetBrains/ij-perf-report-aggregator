@@ -1,14 +1,15 @@
 <template>
   <Dashboard>
     <template #toolbar>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
+      <DimensionSelect
+        label="Branch"
+        :dimension="branchConfigurator"
+      />
       <DimensionSelect
         label="Scenarios"
         tooltip="Scenarios"
         :dimension="scenarioConfigurator"
-      />
-      <DimensionSelect
-        label="Branch"
-        :dimension="branchConfigurator"
       />
       <MeasureSelect :configurator="measureConfigurator" />
       <DimensionHierarchicalSelect
@@ -24,7 +25,6 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
       v-for="metric in measureConfigurator.selected.value"

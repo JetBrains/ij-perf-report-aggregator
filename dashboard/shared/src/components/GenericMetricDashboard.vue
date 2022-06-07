@@ -115,10 +115,11 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(
 }, useRouter())
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 
 const measureConfigurator = new MeasureConfigurator(
   serverConfigurator,
@@ -130,7 +131,6 @@ const measureConfigurator = new MeasureConfigurator(
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator])
 
-const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 let configurators = [
   serverConfigurator,
   scenarioConfigurator,

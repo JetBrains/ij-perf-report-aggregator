@@ -103,11 +103,11 @@ const persistentStateManager = new PersistentStateManager("idea_dashboard", {
 }, useRouter())
 
 const serverConfigurator = new ServerConfigurator("perfint", "idea")
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 
 const configurators = [
   serverConfigurator,

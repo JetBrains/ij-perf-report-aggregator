@@ -113,7 +113,7 @@ const persistentStateManager = new PersistentStateManager("fleet_perf_dashboard"
 const serverConfigurator = new ServerConfigurator("fleet", "measure")
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const configurators = [
   serverConfigurator,
   machineConfigurator,

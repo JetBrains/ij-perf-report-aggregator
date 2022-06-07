@@ -129,10 +129,10 @@ const persistentStateManager = new PersistentStateManager("phpstorm_dashboard", 
 }, useRouter())
 
 const serverConfigurator = new ServerConfigurator("perfint", "phpstorm")
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true)
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [
   serverConfigurator,
   branchConfigurator,

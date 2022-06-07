@@ -3,6 +3,7 @@ import { provide, ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { timeRangeKey } from "../injectionKeys"
+import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
 export declare type TimeRange = "1M" | "3M" | "1y" | "all"
@@ -12,7 +13,7 @@ export interface TimeRangeItem {
   value: TimeRange
 }
 
-export class TimeRangeConfigurator implements DataQueryConfigurator {
+export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   static readonly timeRanges: Array<TimeRangeItem> = [
     {label: "Last month", value: "1M"},
     {label: "Last 3 months", value: "3M"},
@@ -32,13 +33,14 @@ export class TimeRangeConfigurator implements DataQueryConfigurator {
     return refToObservable(this.value)
   }
 
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+  configureFilter(query: DataQuery): boolean {
+    return this.configureQuery(query, null)
+  }
+
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration|null): boolean {
     const duration = this.value.value ?? TimeRangeConfigurator.timeRanges[0].value
     if (duration === "all") {
       return true
-    }
-    if (typeof duration !== "string") {
-      return false
     }
 
     const sql = `>${toClickhouseSql(parseDuration(duration))}`

@@ -25,7 +25,7 @@ use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineCh
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
 registerTransform(ecStat["transform"].regression)
-
+export type PopupTrigger = "item" | "axis" | "none"
 export class LineChartManager {
   private readonly chart: ChartManagerHelper
 
@@ -33,7 +33,8 @@ export class LineChartManager {
               private _dataQueryExecutor: DataQueryExecutor,
               dataZoom: Ref<boolean>,
               tooltipFormatter: ToolTipFormatter | null,
-              valueUnit: ValueUnit) {
+              valueUnit: ValueUnit,
+              trigger: PopupTrigger = "axis") {
     this.chart = new ChartManagerHelper(container)
     const isMs = valueUnit == "ms"
     this.chart.chart.setOption<LineChartOptions>({
@@ -49,7 +50,7 @@ export class LineChartManager {
       },
       tooltip: {
         show: true,
-        trigger: "axis",
+        trigger,
         enterable: true,
         // select text in tooltip
         extraCssText: "user-select: text",

@@ -39,6 +39,7 @@
             :value-unit="valueUnit"
             :measures="[metric]"
             :skip-zero-values="false"
+            trigger="item"
           />
         </div>
         <div class="col-span-4">

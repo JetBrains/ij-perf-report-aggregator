@@ -9,6 +9,7 @@
         :measures="[measure]"
         :configurators="configurators"
         :skip-zero-values="false"
+        trigger="item"
       />
     </div>
   </div>

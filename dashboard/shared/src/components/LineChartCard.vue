@@ -15,7 +15,7 @@ import { ChartType, PredefinedMeasureConfigurator } from "../configurators/Measu
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
-import { LineChartManager } from "./LineChartManager"
+import { LineChartManager, PopupTrigger } from "./LineChartManager"
 
 const props = withDefaults(defineProps<{
   skipZeroValues?: boolean
@@ -25,6 +25,7 @@ const props = withDefaults(defineProps<{
   chartType?: ChartType
   valueUnit?: ValueUnit
   configurators?: Array<DataQueryConfigurator>|null
+  trigger: PopupTrigger
 }>(), {
   skipZeroValues: true,
   compoundTooltip: true,
@@ -32,7 +33,8 @@ const props = withDefaults(defineProps<{
   measures: null,
   chartType: "line",
   valueUnit: "ms",
-  configurators: null
+  configurators: null,
+  trigger: "axis"
 })
 
 const chartElement = shallowRef<HTMLElement | null>(null)
@@ -95,6 +97,7 @@ onMounted(() => {
     toRef(props, "dataZoom"),
     props.compoundTooltip ? chartToolTipManager.formatArrayValue.bind(chartToolTipManager) : null,
     props.valueUnit,
+    props.trigger,
   )
 })
 onUnmounted(() => {

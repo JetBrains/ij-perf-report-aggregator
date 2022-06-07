@@ -110,7 +110,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   measureDuration := make([]uint32, measureCount)
   measureThread := make([]string, measureCount)
   for i, info := range measures {
-    measureName[i] = info.name
+    measureName[i] = replaceMetricName(info.name)
     measureStart[i] = info.start
     measureDuration[i] = info.duration
     measureThread[i] = info.thread
@@ -136,6 +136,24 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     measureName, measureStart, measureDuration, measureThread,
   }
   return nil
+}
+
+func replaceMetricName(oldName string) string {
+  metricToNewName := map[string]string{
+    "entities loading":                        "loading entities from files",
+    "project model changes saving (in queue)": "applying loaded changes (in queue)",
+    "project model changes saving":            "applying loaded changes",
+    "project libraries loading":               "libraries instantiation",
+    "events modules added":                    "firing modules_added event",
+    "module cache loading":                    "cache loading",
+    "events sending after modules are loaded": "events sending after modules are loaded",
+  }
+  newName, ok := metricToNewName[oldName]
+  if ok {
+    return newName
+  } else {
+    return oldName
+  }
 }
 
 func readServices(

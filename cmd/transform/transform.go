@@ -11,6 +11,7 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "log"
+  "strings"
   "time"
 )
 
@@ -231,6 +232,26 @@ rowLoop:
       runResult.ExtraFieldData[2] = row.ServiceDuration
       runResult.ExtraFieldData[3] = row.ServiceThread
       runResult.ExtraFieldData[4] = row.ServicePlugin
+    }
+
+    if strings.HasPrefix(row.Project, "2tI") || strings.HasPrefix(row.Project, "dEQ") {
+      continue rowLoop
+    }
+    if row.Project == "73YWaW9bytiPDGuKvwNIYMK5CKI" {
+      runResult.Report.Project = "simple for IJ"
+    }
+    if strings.Contains(row.RawReport, "modules loading with cache") {
+      if row.Project == "A/vsu8PQGaeUtpfB1yz/I4EwVnI" {
+        runResult.Report.Project = "open-telemetry - gradle from cache"
+      } else if row.Project == "cVqhfTfTzoDOzZx2ZbLSKxC2TpM" {
+        runResult.Report.Project = "gradle-500-modules - from cache"
+      }
+    } else if strings.Contains(row.RawReport, "modules loading without cache") {
+      if row.Project == "A/vsu8PQGaeUtpfB1yz/I4EwVnI" {
+        runResult.Report.Project = "open-telemetry - gradle without cache"
+      } else if row.Project == "cVqhfTfTzoDOzZx2ZbLSKxC2TpM" {
+        runResult.Report.Project = "gradle-500-modules - without cache"
+      }
     }
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)

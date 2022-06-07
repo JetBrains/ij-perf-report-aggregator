@@ -116,9 +116,11 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
+  return a.includes("/") ? 1 : -1
+})
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
 
-const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true)
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 
 const measureConfigurator = new MeasureConfigurator(

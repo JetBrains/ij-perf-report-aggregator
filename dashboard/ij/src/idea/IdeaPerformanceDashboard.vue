@@ -104,7 +104,9 @@ const persistentStateManager = new PersistentStateManager("idea_dashboard", {
 
 const serverConfigurator = new ServerConfigurator("perfint", "idea")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator])
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
+  return a.includes("/") ? 1 : -1
+})
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])

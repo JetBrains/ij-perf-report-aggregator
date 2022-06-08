@@ -11,6 +11,7 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "log"
+  "strings"
   "time"
 )
 
@@ -32,7 +33,13 @@ func main() {
     _ = logger.Sync()
   }()
 
-  err = transform("localhost:9000", env.Get("DB"), logger)
+  db := env.Get("DB")
+  table := env.Get("TABLE")
+  split := strings.Split(env.Get("DB"), "_")
+  if len(split) > 1 {
+    table = split[1]
+  }
+  err = transform("localhost:9000", db, table, logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
   }
@@ -67,8 +74,14 @@ type ReportRow struct {
 // set insertWorkerCount to 1 if not enough memory
 const insertWorkerCount = 4
 
-func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
-  logger.Info("start transforming", zap.String("db", dbName))
+func transform(clickHouseUrl string, idName string, tableName string, logger *zap.Logger) error {
+  logger.Info("start transforming", zap.String("db", idName))
+
+  split := strings.Split(idName, "_")
+  dbName := idName
+  if len(split) > 1 {
+    dbName = split[0]
+  }
 
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{clickHouseUrl},
@@ -94,9 +107,10 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  config := analyzer.GetAnalyzer(dbName)
+  config := analyzer.GetAnalyzer(idName)
 
-  insertReportManager, err := analyzer.NewInsertReportManager(db, config, taskContext, "report2", insertWorkerCount, logger)
+  config.TableName = tableName + "2"
+  insertReportManager, err := analyzer.NewInsertReportManager(db, config, taskContext, tableName+"2", insertWorkerCount, logger)
   if err != nil {
     return err
   }
@@ -109,7 +123,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   var minTime time.Time
   var maxTime time.Time
   // use something like (now() - toIntervalMonth(1)) to test the transformer on a fresh data
-  err = db.QueryRow(taskContext, "select min(generated_time) as min, max(generated_time) as max from report").Scan(&minTime, &maxTime)
+  err = db.QueryRow(taskContext, "select min(generated_time) as min, max(generated_time) as max from "+tableName).Scan(&minTime, &maxTime)
   if err != nil {
     return errors.WithStack(err)
   }
@@ -128,7 +142,7 @@ func transform(clickHouseUrl string, dbName string, logger *zap.Logger) error {
   for current := minTime; current.Before(maxTime); {
     // 1 month
     next := current.AddDate(0, 1, 0)
-    err = process(db, config, current, next, insertReportManager, taskContext, logger)
+    err = process(db, config, current, next, insertReportManager, taskContext, tableName, logger)
     if err != nil {
       return err
     }
@@ -156,6 +170,7 @@ func process(
   endTime time.Time,
   insertReportManager *analyzer.InsertReportManager,
   taskContext context.Context,
+  tableName string,
   logger *zap.Logger,
 ) error {
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
@@ -180,7 +195,7 @@ func process(
              generated_time, build_time, raw_report,
              tc_build_id, tc_installer_build_id,
              build_c1, build_c2, build_c3, project
-      from report
+      from `+tableName+`
       where generated_time >= $1 and generated_time < $2
       order by machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
     `, startTime, endTime)

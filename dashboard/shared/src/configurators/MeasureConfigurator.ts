@@ -180,6 +180,10 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   const field: DataQueryDimension = {n: ""}
   query.insertField(field, 1)
 
+  if(query.db === "perfint"){
+    query.insertField({n: "measures", subName: "type"}, 2)
+  }
+
   const prevFilters: Array<DataQueryFilter> = []
 
   const addFilter = (filter: DataQueryFilter): void => {
@@ -259,6 +263,17 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
     const measureName = configuration.measureNames[dataIndex]
     const seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
+
+    if(seriesData.length > 2) {
+      // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
+      const type = seriesData[2][seriesData[2].length - 1]
+      if(type === "c"){
+        useDurationFormatter = false
+      } else if (type === "d"){
+        useDurationFormatter = true
+      }
+    }
+
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
@@ -273,8 +288,9 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
       sampling: "lttb",
       seriesLayoutBy: "row",
       datasetIndex: dataIndex,
-      dimensions: [{name: "time", type: "time"}, {name: seriesName, type: "int"}],
+      dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
     })
+
 
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false

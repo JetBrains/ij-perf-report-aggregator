@@ -56,9 +56,9 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzePerfReport,
       HasInstallerField: true,
       HasBuildTypeField: true,
-      extraFieldCount:   2,
+      extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
-        sb.WriteString(", measures.name, measures.value")
+        sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
   } else if id == "fleet" {
@@ -94,14 +94,17 @@ func splitId(id string) (string, string) {
 
 func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   measureNames := make([]string, 0)
+  measureTypes := make([]string, 0)
   measureValues := make([]int32, 0)
   for _, measure := range data.GetArray("metrics") {
     measureName := string(measure.GetStringBytes("n"))
 
     // in milliseconds
     value := measure.Get("d")
+    measureType := "d"
     if value == nil {
       value = measure.Get("c")
+      measureType = "c"
       if value == nil {
         return nil
       }
@@ -115,6 +118,7 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
 
     measureNames = append(measureNames, measureName)
     measureValues = append(measureValues, intValue)
+    measureTypes = append(measureTypes, measureType)
   }
 
   if len(measureNames) == 0 {
@@ -123,6 +127,6 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
     return nil
   }
 
-  runResult.ExtraFieldData = []interface{}{measureNames, measureValues}
+  runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes}
   return nil
 }

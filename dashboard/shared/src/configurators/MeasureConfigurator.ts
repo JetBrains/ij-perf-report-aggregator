@@ -181,7 +181,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   query.insertField(field, 1)
 
   if(query.db === "perfint"){
-    query.insertField({n: "measures", subName: "type"}, 2)
+    query.addField({n: "measures", subName: "type"})
   }
 
   const prevFilters: Array<DataQueryFilter> = []

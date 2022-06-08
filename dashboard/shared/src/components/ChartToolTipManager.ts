@@ -61,7 +61,8 @@ export class ChartToolTipManager {
       }
     })
     // same for all series
-    data.firstSeriesData = params[0].value as Array<number>
+    const values = params[0].value as Array<number>
+    data.firstSeriesData = query.db === "perfint" ? [...values.slice(0, 2),...values.slice(3)] : values
     data.reportInfoProvider = this.reportInfoProvider
     data.query = query
     return null

@@ -94,7 +94,10 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
 
     return {
       dataset: {
-        source: data.map((it, index) => {
+        source: Object.values(data).map((it, index) => {
+          if (it === undefined) {
+            return "measure"
+          }
           return [index === 0 ? "measure" : measureNameToLabel(measures[index - 1]), ...it]
         }),
       },
@@ -103,7 +106,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 }
 
-function configureWithQueryProducers(dataList: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
+function configureWithQueryProducers(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
   let useDurationFormatter = true
 
   const dimensionNameSet = new Set<string>()
@@ -116,11 +119,13 @@ function configureWithQueryProducers(dataList: Array<Array<Array<string | number
 
     const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
     source.push(column)
-    const result = dataList[dataIndex]
-    for (let i = 0; i < result[0].length; i++) {
-      const valueKey = result[0][i] as string
-      dimensionNameSet.add(valueKey)
-      column[valueKey] = result[1][i]
+    const result = Object.values(dataList[dataIndex])
+    if (result[0] && result[1]) {
+      for (let i = 0; i < result[0].length; i++) {
+        const valueKey = result[0][i] as string
+        dimensionNameSet.add(valueKey)
+        column[valueKey] = result[1][i]
+      }
     }
   }
 

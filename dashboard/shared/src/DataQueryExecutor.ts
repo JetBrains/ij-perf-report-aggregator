@@ -3,11 +3,11 @@ import { provide } from "vue"
 import { measureNameToLabel } from "./configurators/MeasureConfigurator"
 import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
 import { ServerConfigurator } from "./configurators/ServerConfigurator"
-import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
+import { fromFetchWithRetryAndErrorHandling, ServerResponse } from "./configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
 
-export declare type DataQueryResult = Array<Array<Array<string | number>>>
+export declare type DataQueryResult = Array<ServerResponse>
 export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
 
 interface Result {

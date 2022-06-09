@@ -12,7 +12,7 @@ export interface ReportInfoProvider {
 
 export interface TooltipData {
   items: Array<TooltipDataItem>
-  firstSeriesData: Array<number>
+  firstSeriesData: Map<string, number | string>
   reportInfoProvider: ReportInfoProvider | null
   query: DataQuery | null
 }
@@ -33,7 +33,7 @@ export class ChartToolTipManager {
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
-  readonly reportTooltipData = shallowReactive<TooltipData>({items: [], firstSeriesData: [], reportInfoProvider: null, query: null})
+  readonly reportTooltipData = shallowReactive<TooltipData>({items: [], firstSeriesData: new Map<string, number | string>(), reportInfoProvider: null, query: null})
 
   paused = false
 
@@ -55,14 +55,19 @@ export class ChartToolTipManager {
       return {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: measure.seriesName!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         value: measureValue,
         color: measure.color as string,
       }
     })
     // same for all series
-    const values = params[0].value as Array<number>
-    data.firstSeriesData = query.db === "perfint" ? [...values.slice(0, 2),...values.slice(3)] : values
+    const values = params[0].value as Array<number | string>
+    const additionalData = new Map<string, number | string>()
+    for (const [i, value] of values.entries()) {
+      if (params[0]?.dimensionNames !== undefined) {
+        additionalData.set(params[0].dimensionNames[i], value)
+      }
+    }
+    data.firstSeriesData = additionalData
     data.reportInfoProvider = this.reportInfoProvider
     data.query = query
     return null

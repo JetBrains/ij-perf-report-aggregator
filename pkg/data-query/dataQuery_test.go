@@ -21,7 +21,7 @@ func TestAdvancedFilter(t *testing.T) {
   //noinspection GoImportUsedAsName
   assert := assert.New(t)
 
-  sql, _, err := buildSql(queries[0], "test")
+  sql, _, _, err := buildSql(queries[0], "test")
   if err != nil {
     t.Error(err)
   }

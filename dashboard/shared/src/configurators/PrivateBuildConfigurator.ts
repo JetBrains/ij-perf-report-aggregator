@@ -42,10 +42,9 @@ export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
       if (data == null) {
         return
       }
+      configurator.values.value = data[name].filter((value, _n, _a) => !(value == ""))
 
-      configurator.values.value = data.filter((value, _n, _a) => !(value == ""))
-
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, data[name], name)
     })
   return configurator
 }

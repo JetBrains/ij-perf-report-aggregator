@@ -23,9 +23,9 @@
         </div>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 5"
+          v-if="tooltipData.firstSeriesData.get('tc_installer_build_id')"
           title="Changes"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=buildChangesDiv`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData.get('tc_installer_build_id')}&tab=buildChangesDiv`"
           target="_blank"
           class="info"
         >
@@ -33,9 +33,9 @@
         </a>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 4"
+          v-if="tooltipData.firstSeriesData.get('tc_build_id') >= 4"
           title="Test Artifacts"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=artifacts`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData.get('tc_build_id')}&tab=artifacts`"
           target="_blank"
           class="info"
         >
@@ -60,11 +60,11 @@
       <!-- in our case data is related to each other, reduce height of panel -->
       <Divider class="my-2" />
       <div
-        v-if="tooltipData.firstSeriesData.length >= 3"
+        v-if="tooltipData.firstSeriesData.get('machine')"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
       >
         <ServerIcon class="w-5 h-5" />
-        <span>{{ tooltipData.firstSeriesData[2] }}</span>
+        <span>{{ tooltipData.firstSeriesData.get('machine') }}</span>
       </div>
       <div class="text-xs pt-3">
         Hold {{ metaKeySymbol }} to prevent popup refresh
@@ -97,10 +97,10 @@ const linkText = computed(() => {
     return ""
   }
 
-  const generatedTime = data[0]
+  const generatedTime = data.get("t") as number
   let result = timeFormatWithoutSeconds.format(generatedTime)
-  if (data[5] && data[6]) {
-    result += ` (${data[5]}.${data[6]}${data[7] === 0 ? "" : `.${data[7]}`})`
+  if (data.get("build_c1") && data.get("build_c2")) {
+    result += ` (${data.get("build_c1")}.${data.get("build_c2")}${data.get("build_c3") === 0 ? "" : `.${data.get("build_c3")}`})`
   }
   return result
 })
@@ -111,7 +111,7 @@ const linkUrl = computed(() => {
   if (query == null) {
     return null
   }
-  return data?.reportInfoProvider?.createReportUrl(data.firstSeriesData[0], query)
+  return data?.reportInfoProvider?.createReportUrl(data.firstSeriesData.get("t") as number, query)
 })
 
 let currentTarget: EventTarget | null

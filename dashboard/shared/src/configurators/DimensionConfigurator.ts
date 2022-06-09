@@ -5,7 +5,7 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQ
 import { ServerConfigurator } from "./ServerConfigurator"
 import { ComponentState, createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
-import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { fromFetchWithRetryAndErrorHandling, refToObservable, ServerResponse } from "./rxjs"
 
 export class DimensionConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly state = createComponentState()
@@ -65,7 +65,7 @@ export function loadDimension(name: string, serverConfigurator: ServerConfigurat
   }
 
   state.loading = true
-  return fromFetchWithRetryAndErrorHandling<Array<string>>(serverConfigurator.computeQueryUrl(query))
+  return fromFetchWithRetryAndErrorHandling<ServerResponse>(serverConfigurator.computeQueryUrl(query))
 }
 
 export function dimensionConfigurator(name: string,
@@ -86,13 +86,13 @@ export function dimensionConfigurator(name: string,
       if (data == null) {
         return
       }
-
+      const values = data[name] as Array<string>
       if (customValueSort != null) {
-        data.sort(customValueSort)
+        values.sort(customValueSort)
       }
-      configurator.values.value = data
+      configurator.values.value = values
 
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, values, name)
     })
   return configurator
 }

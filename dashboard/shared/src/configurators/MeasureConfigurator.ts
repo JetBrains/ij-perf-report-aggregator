@@ -12,7 +12,7 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
-import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { fromFetchWithRetryAndErrorHandling, refToObservable, ServerResponse } from "./rxjs"
 
 export type ChartType = "line" | "scatter"
 
@@ -58,14 +58,14 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
           this.state.loading = true
           return isIj ? forkJoin([
-            fromFetchWithRetryAndErrorHandling<Array<string>>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
-            fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
+            fromFetchWithRetryAndErrorHandling<ServerResponse>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
+            fromFetchWithRetryAndErrorHandling<ServerResponse>(loadMeasureListUrl),
           ])
             .pipe(
               map(data => {
                 return data.flat(1)
               }),
-            ) : fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
+            ) : fromFetchWithRetryAndErrorHandling<ServerResponse>(loadMeasureListUrl)
         }),
         updateComponentState(this.state),
       )
@@ -73,23 +73,24 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         if (data == null) {
           return
         }
+        const propertyName = (isIj ? "measure" : "measures") + ".name"
+        let values = ((data as ServerResponse)[propertyName]) as Array<string>
 
         if (isIj) {
-          data = [...new Set(data.map(it => /^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it))]
+          values = [...new Set(values.map(it => /^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it))]
         }
 
         const selectedRef = this.selected
-        this.data.value = data
+        this.data.value = values
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const filtered = selected.filter(it => data!.includes(it))
+          const filtered = selected.filter(it => values.includes(it))
           if (filtered.length !== selected.length) {
             selectedRef.value = filtered
           }
         }
         if (!isIj && selectedRef.value?.length == 0) {
-          selectedRef.value = data
+          selectedRef.value = values
         }
       })
   }
@@ -237,7 +238,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
       }
     },
     getSeriesName(index: number): string {
-      return measureNames.length > 1 ? measureNameToLabel(measureNames[index]) : ""
+      return measureNames[index]
     },
     getMeasureName(index: number): string {
       return measureNames[index]
@@ -264,31 +265,37 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
     const seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
 
-    if(seriesData.length > 2) {
+    if (seriesData["measures.type"] !== undefined) {
       // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-      const type = seriesData[2][seriesData[2].length - 1]
-      if(type === "c"){
+      const type = seriesData["measures.type"].at(-1)
+      if (type === "c") {
         useDurationFormatter = false
-      } else if (type === "d"){
+      }
+      else if (type === "d") {
         useDurationFormatter = true
       }
     }
-
+    const otherDimensions = Object.keys(seriesData).splice(2).map(key => ({name: key}))
     series.push({
       // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: chartType,
-      showSymbol: seriesData[0].length < 100,
+      showSymbol: seriesData["t"].length < 100,
       // 10 is a default value for scatter (undefined doesn't work to unset)
-      symbolSize: chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10,
+      symbolSize: chartType === "line" ? Math.min(800 / seriesData["t"].length, 9) : 10,
       symbol: "circle",
       legendHoverLink: true,
       // applicable only for line chart
       sampling: "lttb",
       seriesLayoutBy: "row",
       datasetIndex: dataIndex,
-      dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
+      dimensions: [{name: "t", type: "time", displayName: useDurationFormatter ? "time" : "count"}, {
+        name: Object.keys(seriesData)[1],
+        type: "int",
+        displayName: measureNameToLabel(seriesName),
+      },
+        ...otherDimensions],
     })
 
 
@@ -297,6 +304,8 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
     }
 
     dataset.push({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       source: seriesData,
       sourceHeader: false,
     })

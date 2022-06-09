@@ -34,9 +34,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       if (data == null) {
         return
       }
-
       this.groupNameToItem.clear()
-      this.values.value = this.groupValues(data)
+      this.values.value = this.groupValues(data[name])
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update

@@ -5,6 +5,26 @@ import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, o
 import { fromFetch } from "rxjs/fetch"
 import { Ref, watch } from "vue"
 
+export interface ServerResponse {
+  t: Array<number>
+  machine: Array<string>
+  generated_time: Array<number>
+  tc_build_id: Array<number>
+  triggeredBy: Array<string>
+  branch: Array<string>
+
+  tc_installer_build_id?: Array<string>
+  build_c1?: Array<number>
+  build_c2?: Array<number>
+  build_c3?: Array<number>
+  raw_report?: Array<string>
+  project?: Array<string>
+  "measures.name" : Array<string>
+  "measures.values": Array<number>
+  "measures.type": Array<"c"|"d">
+
+  [index: string]: Array<number|string>|undefined
+}
 export function refToObservable<T>(ref: Ref<T>, deep: boolean = false): Observable<T> {
   return new Observable<T>(context => {
     watch(ref, value => {

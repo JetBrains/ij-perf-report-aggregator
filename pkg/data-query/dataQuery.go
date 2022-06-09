@@ -129,7 +129,7 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
 }
 
 func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter, ctx context.Context) error {
-  sqlQuery, columnNameToIndex, err := buildSql(query, table)
+  sqlQuery, columnNameToIndex, columnIndexToName, err := buildSql(query, table)
   if err != nil {
     return err
   }
@@ -146,15 +146,12 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
     return err
   }
 
-  if !query.Flat {
-    totalWriter.S("[")
-  }
   for columnIndex, buffer := range columnBuffers {
     if columnIndex != 0 {
       totalWriter.S(",")
     }
 
-    totalWriter.S("[")
+    totalWriter.S(`"` + columnIndexToName[columnIndex] + `"` + ": [")
 
     if buffer != nil {
       _, _ = buffer.WriteTo(totalWriter)
@@ -163,13 +160,10 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
 
     totalWriter.S("]")
   }
-  if !query.Flat {
-    totalWriter.S("]")
-  }
   return nil
 }
 
-func buildSql(query DataQuery, table string) (string, map[string]int, error) {
+func buildSql(query DataQuery, table string) (string, map[string]int, map[int]string, error) {
   var sb strings.Builder
 
   sb.WriteString("select")
@@ -187,6 +181,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   }
 
   columnNameToIndex := make(map[string]int, len(query.Dimensions)+len(query.Fields))
+  columnIndexToName := make(map[int]string, len(query.Dimensions)+len(query.Fields))
   columnIndex := 0
 
   if len(query.Dimensions) != 0 {
@@ -197,6 +192,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
       }
 
       columnNameToIndex[dimension.Name] = columnIndex
+      columnIndexToName[columnIndex] = dimension.Name
       columnIndex++
 
       writeDimension(dimension, &sb)
@@ -212,6 +208,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
 
     if len(field.Sql) != 0 {
       columnNameToIndex[field.Name] = columnIndex
+      columnIndexToName[columnIndex] = field.Name
       columnIndex++
       writeDimension(field, &sb)
       continue
@@ -264,6 +261,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
     }
 
     columnNameToIndex[effectiveColumnName] = columnIndex
+    columnIndexToName[columnIndex] = effectiveColumnName
     columnIndex++
   }
 
@@ -287,7 +285,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   if len(query.Filters) != 0 {
     err := writeWhereClause(&sb, query)
     if err != nil {
-      return "", nil, err
+      return "", nil, nil, err
     }
   }
 
@@ -313,7 +311,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
     }
   }
 
-  return sb.String(), columnNameToIndex, nil
+  return sb.String(), columnNameToIndex, columnIndexToName, nil
 }
 
 func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {

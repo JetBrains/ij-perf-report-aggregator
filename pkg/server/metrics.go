@@ -37,10 +37,7 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
   templateWriter := quicktemplate.AcquireWriter(buffer)
   defer quicktemplate.ReleaseWriter(templateWriter)
   jsonWriter := templateWriter.N()
-
-  if len(dataQueries) > 1 || wrappedAsArray {
-    jsonWriter.S("[")
-  }
+  jsonWriter.S("{")
 
   for index, dataQuery := range dataQueries {
     if index != 0 {
@@ -52,10 +49,7 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
       return nil, false, err
     }
   }
-
-  if len(dataQueries) > 1 || wrappedAsArray {
-    jsonWriter.S("]")
-  }
+  jsonWriter.S("}")
   isOk = true
   return buffer, true, nil
 }

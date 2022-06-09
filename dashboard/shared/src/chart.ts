@@ -1,6 +1,7 @@
 import { ECBasicOption } from "echarts/types/dist/shared"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { DataQueryExecutorConfiguration } from "./dataQuery"
+import { DataQueryResult } from "./DataQueryExecutor"
 
 export const DEFAULT_LINE_CHART_HEIGHT = 340
 
@@ -17,7 +18,7 @@ export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: Cal
 }
 
 export interface ChartConfigurator {
-  configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ECBasicOption
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption
 }
 
 export const timeFormat = new Intl.DateTimeFormat(undefined, {

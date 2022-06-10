@@ -28,16 +28,20 @@ export function getIjItems(): Array<MenuItem> {
       label: "IntelliJ",
       items: [
         {
-          label: "Shared Indexes",
-          to: "/intellij/sharedIndexes/dashboard",
-        },
-        {
           label: "Performance Tests",
           to: "/intellij/performanceTests",
         },
         {
           label: "Performance Dashboard",
           to: "/intellij/dashboard",
+        },
+        {
+          label: "Shared Indexes",
+          to: "/intellij/sharedIndexes",
+        },
+        {
+          label: "With Rust Plugin",
+          to: "/intellij/rust/performanceTests",
         },
       ]
     },
@@ -125,14 +129,14 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children:[
         {
-          path: "/intellij/sharedIndexes/dashboard",
+          path: "/intellij/sharedIndexes",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
             table: "ideaSharedIndices",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "IntelliJ Shared Indexes Dashboard"},
+          meta: {pageTitle: "IntelliJ Shared Indexes"},
         },
         {
           path: "/intellij/performanceTests",
@@ -149,6 +153,16 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/intellij/dashboard",
           component: () => import("./idea/IdeaPerformanceDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests Dashboard"},
+        },
+        {
+          path: "/intellij/rust/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "rust",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "IntelliJ with Rust Plugin"},
         },
       ],
     },

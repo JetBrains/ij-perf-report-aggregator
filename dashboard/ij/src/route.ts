@@ -64,7 +64,16 @@ export function getIjItems(): Array<MenuItem> {
     },
     {
       label: "GoLand",
-      to: "/goland/performanceTests",
+      items: [
+        {
+          label: "Dashboard",
+          to: "/goland/dashboard",
+        },
+        {
+          label: "Explore",
+          to: "/goland/performanceTests",
+        },
+      ]
     },
     {
       label: "Fleet",
@@ -190,7 +199,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             table: "goland",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "GoLand Integration Performance Tests"},
+          meta: {pageTitle: "Explore GoLand Tests"},
+        },
+        {
+          path: "/goland/dashboard",
+          component: () => import("./goland/GolandDashboard.vue"),
+          meta: {pageTitle: "GoLand Dashboard"},
         },
       ]
     },

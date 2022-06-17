@@ -132,6 +132,9 @@ function resetState() {
 }
 
 const hide = debounceSync(() => {
+  if (lastManager?.paused) {
+    return
+  }
   currentTarget = null
   debouncedShow.clear()
   panel.value?.hide()

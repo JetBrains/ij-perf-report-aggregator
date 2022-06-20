@@ -140,8 +140,6 @@ const hide = debounceSync(() => {
   resetState()
 }, 2_000)
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 function panelClosedExplicitly() {
   hide.clear()
   currentTarget = null
@@ -187,6 +185,7 @@ onBeforeUnmount(() => {
 
 defineExpose({
   show(event: MouseEvent, manager: ChartToolTipManager) {
+    if(lastManager?.paused) return
     if (lastManager !== manager && lastManager !== null) {
       currentTarget = null
       debouncedShow.clear()

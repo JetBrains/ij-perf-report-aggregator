@@ -5,7 +5,7 @@ go 1.18
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
 
 require (
-	github.com/ClickHouse/clickhouse-go/v2 v2.0.15
+	github.com/ClickHouse/clickhouse-go/v2 v2.1.0
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.4
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -18,7 +18,7 @@ require (
 	github.com/klauspost/compress v1.15.6
 	github.com/magiconair/properties v1.8.6
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/minio/minio-go/v7 v7.0.28
+	github.com/minio/minio-go/v7 v7.0.29
 	github.com/nats-io/nats.go v1.16.0
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
@@ -80,7 +80,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220615171555-694bf12d69de // indirect
+	golang.org/x/net v0.0.0-20220617184016-355a448f1bc9 // indirect
 	golang.org/x/sys v0.0.0-20220615213510-4f61da869c0c // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect

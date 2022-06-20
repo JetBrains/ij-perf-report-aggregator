@@ -1,6 +1,5 @@
 <template>
   <OverlayPanel
-    v-if="tooltipData != null && tooltipData.items.length > 0"
     ref="panel"
     onclose="panelClosedExplicitly"
     :show-close-icon="true"

@@ -112,10 +112,10 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
     floatValue := value.GetFloat64()
     intValue := int32(floatValue)
     if floatValue != float64(intValue) {
-      logger.Warn("int expected, but got float, skipping the metric",
+      logger.Warn("int expected, but got float, setting metric value to zero",
         zap.String("measureName", measureName), zap.Int32("intValue", intValue), zap.Float64("floatValue", floatValue),
         zap.String("reportURL", runResult.ReportFileName))
-      continue
+      intValue = 0
     }
 
     measureNames = append(measureNames, measureName)

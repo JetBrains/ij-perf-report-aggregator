@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-  "github.com/develar/errors"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
   "strings"
@@ -113,7 +112,10 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
     floatValue := value.GetFloat64()
     intValue := int32(floatValue)
     if floatValue != float64(intValue) {
-      return errors.WithMessagef(nil, "int expected, but got float %f", floatValue)
+      logger.Warn("int expected, but got float, skipping the metric",
+        zap.String("measureName", measureName), zap.Int32("intValue", intValue), zap.Float64("floatValue", floatValue),
+        zap.String("reportURL", runResult.ReportFileName))
+      continue
     }
 
     measureNames = append(measureNames, measureName)

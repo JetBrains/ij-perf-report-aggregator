@@ -133,7 +133,7 @@ const measureConfigurator = new MeasureConfigurator(
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator])
 
-let configurators = [
+const configurators = [
   serverConfigurator,
   scenarioConfigurator,
   branchConfigurator,

@@ -17,7 +17,7 @@
         :dimension="machineConfigurator"
       />
       <DimensionSelect
-        v-if="supportReleases"
+        v-if="supportReleases && releaseConfigurator != null"
         label="Nightly/Release"
         :dimension="releaseConfigurator"
       />

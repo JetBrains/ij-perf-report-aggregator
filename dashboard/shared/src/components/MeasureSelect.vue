@@ -7,7 +7,6 @@
     title="Metrics"
     placeholder="Metrics"
     :filter="true"
-    :option-label="it => it"
     :max-selected-labels="1"
   />
 </template>

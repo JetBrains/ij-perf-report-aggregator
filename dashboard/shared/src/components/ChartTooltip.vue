@@ -1,8 +1,9 @@
 <template>
   <OverlayPanel
+    v-if="tooltipData != null"
     ref="panel"
-    onclose="panelClosedExplicitly"
     :show-close-icon="true"
+    @onclose="panelClosedExplicitly"
   >
     <div
       class="text-sm"
@@ -72,6 +73,7 @@
   </OverlayPanel>
 </template>
 <script setup lang="ts">
+
 import OverlayPanel from "primevue/overlaypanel"
 import Divider from "tailwind-ui/src/Divider.vue"
 import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"

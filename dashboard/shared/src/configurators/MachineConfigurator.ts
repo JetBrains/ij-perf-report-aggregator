@@ -96,6 +96,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         else if (value.startsWith("intellij-linux-hw-hetzner")){
           groupName = "linux-blade-hetzner"
         }
+        else if (value.startsWith("intellij-windows-hw-hetzner")){
+          groupName = "windows-blade-hetzner"
+        }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
         }

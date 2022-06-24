@@ -146,9 +146,9 @@ export default {
         this.styleElement.type = "text/css"
         document.head.append(this.styleElement)
         let innerHTML = ""
-        for (let breakpoint in this.breakpoints) {
+        for (const breakpoint in this.breakpoints) {
           let breakpointStyle = ""
-          for (let styleProp in this.breakpoints[breakpoint]) {
+          for (const styleProp in this.breakpoints[breakpoint]) {
             breakpointStyle += styleProp + ":" + this.breakpoints[breakpoint][styleProp] + "!important;"
           }
           innerHTML += `

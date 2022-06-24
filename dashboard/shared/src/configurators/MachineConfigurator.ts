@@ -81,6 +81,11 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // noinspection SpellCheckingInspection
           groupName = "EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
         }
+        else if (value.startsWith("intellij-windows-performance-aws-i-")) {
+          // https://aws.amazon.com/ec2/instance-types/c6id/
+          // noinspection SpellCheckingInspection
+          groupName = "EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
+        }
         else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
         }

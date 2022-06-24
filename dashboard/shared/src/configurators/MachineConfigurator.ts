@@ -74,17 +74,17 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         }
         else if (value.startsWith("intellij-linux-aws-m-i")) {
           // noinspection SpellCheckingInspection
-          groupName = "EC2 m5d.xlarge or 5d.xlarge"
+          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge"
         }
         else if (value.startsWith("intellij-linux-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
-          groupName = "EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+          groupName = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
         }
         else if (value.startsWith("intellij-windows-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6id/
           // noinspection SpellCheckingInspection
-          groupName = "EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
+          groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
         }
         else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"

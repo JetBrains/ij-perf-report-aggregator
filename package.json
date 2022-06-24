@@ -34,7 +34,7 @@
     "vite": "2.9.12",
     "vite-svg-loader": "^3.4.0",
     "vue": "3.2.37",
-    "vue-tsc": "^0.35.2"
+    "vue-tsc": "^0.38.1"
   },
   "pnpm": {
     "peerDependencyRules": {

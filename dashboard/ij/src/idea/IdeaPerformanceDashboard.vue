@@ -20,33 +20,69 @@
       />
     </template>
     <GroupLineChart
-      label="Indexing"
+      label="Indexing Long"
       measure="indexing"
-      :projects="['community/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Scanning"
+      label="Scanning Long"
       measure="scanning"
-      :projects="['community/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Rebuild"
+      label="Indexing Short"
+      measure="indexing"
+      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Scanning Short"
+      measure="scanning"
+      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Rebuild Long"
       measure="build_compilation_duration"
       :projects="['community/rebuild','intellij_sources/rebuild']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Kotlin Builder"
+      label="Kotlin Builder Long"
       measure="kotlin_builder_time"
       :projects="['community/rebuild','intellij_sources/rebuild']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Java Builder Long"
+      measure="java_time"
+      :projects="['community/rebuild','intellij_sources/rebuild']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Rebuild Short"
+      measure="build_compilation_duration"
+      :projects="['grails/rebuild','java/rebuild','spring_boot/rebuild']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Kotlin Builder Short"
+      measure="kotlin_builder_time"
+      :projects="['grails/rebuild','java/rebuild','spring_boot/rebuild']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Java Builder Short"
+      measure="java_time"
+      :projects="['grails/rebuild','java/rebuild','spring_boot/rebuild']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Inspection"
       measure="inspection_execution_time"
-      :projects="['java/inspection', 'grails/inspection']"
+      :projects="['java/inspection', 'grails/inspection', 'spring_boot_maven/inspection', 'spring_boot/inspection', 'kotlin/inspection', 'kotlin_coroutines/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -58,13 +94,19 @@
     <GroupLineChart
       label="Find Usages Kotlin"
       measure="find_usages_execution_time"
-      :projects="['community/findUsages/LanguageInjectionCondition_getId_Before', 'community/findUsages/LanguageInjectionCondition_getId_After']"
+      :projects="['community/findUsages/LocalInspectionTool_getID_Before', 'community/findUsages/LocalInspectionTool_getID_After']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Local Inspection"
       measure="local_inspection_execution_time"
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion"
+      measure="completion_execution_time"
+      :projects="['community/completion/kotlin_file','grails/completion/groovy_file', 'grails/completion/java_file']"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>
@@ -97,7 +139,7 @@ provide(chartStyleKey, {
 provideReportUrlProvider()
 
 const persistentStateManager = new PersistentStateManager("idea_dashboard", {
-  machine: "windows-blade",
+  machine: "macMini Intel 3.2, 16GB",
   project: [],
   branch: "master",
 }, useRouter())

@@ -66,7 +66,7 @@ provide(chartStyleKey, {
 const persistentStateManager = new PersistentStateManager("ij-dashboard", {
   product: "IU",
   project: "simple for IJ",
-  machine: "macMini 2018",
+  machine: "macMini M1, 16GB",
 }, useRouter())
 const serverConfigurator = new ServerConfigurator("ij")
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager)

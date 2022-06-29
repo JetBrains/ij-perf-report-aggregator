@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { provide, ref } from "vue"
+import { ref } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { timeRangeKey } from "../injectionKeys"
@@ -24,9 +24,17 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   readonly value = ref<string>(TimeRangeConfigurator.timeRanges[0].value)
 
   constructor(persistentStateManager: PersistentStateManager) {
-    provide(timeRangeKey, this.value)
-
     persistentStateManager.add("timeRange", this.value)
+  }
+
+  static findItemByValue(selectedValue: string): TimeRangeItem | undefined {
+    if (selectedValue == null || selectedValue.length === 0) {
+      return undefined
+    }
+
+    return TimeRangeConfigurator.timeRanges.find(it => it.value === selectedValue) ??
+      // case-insensitive search
+      TimeRangeConfigurator.timeRanges.find(it => it.value.localeCompare(selectedValue, undefined, {sensitivity: "accent"}) === 0)
   }
 
   createObservable(): Observable<unknown> {
@@ -37,13 +45,17 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return this.configureQuery(query, null)
   }
 
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration|null): boolean {
-    const duration = this.value.value ?? TimeRangeConfigurator.timeRanges[0].value
-    if (duration === "all") {
+  configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration|null): boolean {
+    const item = TimeRangeConfigurator.findItemByValue(this.value.value)
+    const timeRange = item?.value ?? TimeRangeConfigurator.timeRanges[0].value
+
+    configuration.timeRange = timeRange
+
+    if (timeRange === "all") {
       return true
     }
 
-    const sql = `>${toClickhouseSql(parseDuration(duration))}`
+    const sql = `>${toClickhouseSql(parseDuration(timeRange))}`
     query.addFilter({f: "generated_time", q: sql})
     return true
   }

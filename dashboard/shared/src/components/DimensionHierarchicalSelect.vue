@@ -8,9 +8,14 @@
     :options="values"
     :placeholder="placeholder"
     class="max-w-lg"
-  />
+  >
+    <template #indicator>
+      <ChevronDownIcon class="w-5 h-5 text-gray-400" />
+    </template>
+  </TreeSelect>
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/solid"
 import { TreeNode } from "primevue/tree"
 import { computed } from "vue"
 import { GroupedDimensionValue, MachineConfigurator } from "../configurators/MachineConfigurator"

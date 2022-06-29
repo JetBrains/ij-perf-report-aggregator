@@ -24,10 +24,6 @@
   @apply py-2 px-3;
 }
 
-.p-treeselect-panel .p-tree .p-treenode .p-treenode-content {
-  @apply py-2 px-3;
-}
-
 /*
 PrimeVue doesn't have active property - meaning that on first open we cannot style element as "hover".
 It is not a big deal, but also TailwindUI uses checkbox on the left to indicate the selected element.
@@ -51,16 +47,4 @@ Styling in Tailwind UI way requires as result a lot of efforts, but PrimeVue des
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item .p-checkbox,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox {
   @apply mr-2;
-}
-
-.p-tree-toggler-icon {
-  /* same color as p-treeselect-trigger */
-  @apply text-gray-400 pr-4 w-5 text-sm;
-}
-
-.p-tree-toggler-icon:hover {
-  @apply text-gray-500
-}
-
-.p-treenode-label {
 }

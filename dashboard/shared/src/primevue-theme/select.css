@@ -30,10 +30,13 @@
   @apply pl-3 pr-2 py-2;
 }
 
-.p-dropdown .p-dropdown-trigger,
-.p-multiselect .p-multiselect-trigger,
-.p-treeselect .p-treeselect-trigger {
+.p-multiselect .p-multiselect-trigger {
   @apply text-gray-400 rounded-r-md pr-2 w-5;
+}
+
+.p-dropdown-trigger,
+.p-treeselect-trigger {
+  @apply pr-2 pointer-events-none text-gray-400;
 }
 
 .p-dropdown .p-dropdown-label, .p-cascadeselect .p-cascadeselect-label {

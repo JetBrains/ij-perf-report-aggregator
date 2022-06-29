@@ -1,28 +1,28 @@
 <template>
-  <Dropdown
-    v-model="value"
+  <SelectMenu
+    v-model="selected"
     title="Time Range"
-    :options="timeRanges"
-    option-label="label"
-    option-value="value"
+    :items="items"
+    class="w-30"
   />
 </template>
 <script setup lang="ts">
-import { computed, shallowRef } from "vue"
-import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
+import SelectMenu from "tailwind-ui/src/SelectMenu.vue"
+import { computed } from "vue"
+import { TimeRangeConfigurator, TimeRangeItem } from "../configurators/TimeRangeConfigurator"
 
 const props =  defineProps<{
   configurator: TimeRangeConfigurator
 }>()
 
-const value = computed({
+const items = TimeRangeConfigurator.timeRanges
+const selected = computed<TimeRangeItem>({
   get() {
-    return props.configurator.value.value
+    return TimeRangeConfigurator.findItemByValue(props.configurator.value.value) ?? TimeRangeConfigurator.timeRanges[0]
   },
-  set(value: string) {
+  set(value) {
     // eslint-disable-next-line vue/no-mutating-props
-    props.configurator.value.value = value
+    props.configurator.value.value = value?.value
   },
 })
-const timeRanges = shallowRef(TimeRangeConfigurator.timeRanges)
 </script>

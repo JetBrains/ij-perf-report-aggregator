@@ -74,6 +74,7 @@
 </template>
 <script setup lang="ts">
 
+import { ServerIcon, ArchiveIcon, UsersIcon } from "@heroicons/vue/outline"
 import OverlayPanel from "primevue/overlaypanel"
 import Divider from "tailwind-ui/src/Divider.vue"
 import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"

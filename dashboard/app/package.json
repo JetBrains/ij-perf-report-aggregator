@@ -4,6 +4,7 @@
   "dependencies": {
     "@fontsource/inter": "4.5.11",
     "@fontsource/jetbrains-mono": "4.5.9",
+    "@headlessui/vue": "1.6.5",
     "ij": "workspace:*",
     "primevue": "3.15.0",
     "report-visualizer": "workspace:*",

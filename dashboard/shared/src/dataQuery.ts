@@ -1,5 +1,6 @@
 import { Observable } from "rxjs"
 import { ChartConfigurator } from "./chart"
+import { TimeRange } from "./configurators/TimeRangeConfigurator"
 
 export function serializeQuery(query: DataQuery): string {
   // const encoded = encodeRison(query)
@@ -115,6 +116,8 @@ export interface QueryProducer {
 }
 
 export class DataQueryExecutorConfiguration {
+  timeRange: TimeRange | null = null
+
   readonly seriesNames: Array<string> = []
   readonly measureNames: Array<string> = []
 

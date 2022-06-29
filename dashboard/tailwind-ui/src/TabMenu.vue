@@ -31,7 +31,7 @@
 </template>
 <script setup lang="ts">
 
-import { TabItem } from "./tabModel"
+import { TabItem } from "./model"
 
 const props = defineProps<{
   model: Array<TabItem>

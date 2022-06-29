@@ -1,0 +1,8 @@
+/* tree select panel is styled as part of generic select panel */
+.p-treeselect-panel .p-tree .p-treenode .p-treenode-content {
+  @apply py-2 px-3;
+}
+
+.p-treenode-children {
+  @apply pl-2;
+}

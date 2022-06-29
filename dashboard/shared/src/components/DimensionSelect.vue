@@ -12,7 +12,11 @@
     :max-selected-labels="hasManyElements ? 1 : 2"
     :filter="hasManyElements"
     :show-toggle-all="hasManyElements"
-  />
+  >
+    <template #indicator>
+      <ChevronDownIcon class="w-5 h-5 text-gray-400" />
+    </template>
+  </MultiSelect>
   <Dropdown
     v-else-if="valueToGroup == null && !multiple"
     v-model="value"
@@ -24,7 +28,11 @@
     option-label="label"
     option-value="value"
     :filter="true"
-  />
+>
+    <template #indicator>
+      <ChevronDownIcon class="w-5 h-5 text-gray-400" />
+    </template>
+  </Dropdown>
   <MultiSelect
     v-else
     v-model="value"
@@ -43,6 +51,7 @@
   />
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/solid"
 import { computed } from "vue"
 import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"

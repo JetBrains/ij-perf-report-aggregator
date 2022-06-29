@@ -1,6 +1,6 @@
 <template>
   <div class="flex-initial space-x-2">
-    <Dropdown
+    <SelectMenu
       v-model="value"
       title="Aggregate by"
       :options="operators"

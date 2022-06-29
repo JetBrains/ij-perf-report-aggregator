@@ -1,25 +1,23 @@
 import { BarSeriesOption } from "echarts/charts"
 import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
-import { Ref } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { ChartConfigurator, ChartStyle, ValueUnit } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { BarChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat } from "../formatter"
 import { measureNameToLabel } from "./MeasureConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
+import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>,
-              private readonly timeRange: Ref<TimeRange>,
-              private readonly chartStyle: ChartStyle) {}
+  constructor(private readonly measures: Array<string>, private readonly chartStyle: ChartStyle) {}
 
   createObservable() {
     return null
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const timeRange = this.timeRange.value || TimeRangeConfigurator.timeRanges[0].value
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const timeRange = configuration.timeRange!
     const interval = getClickHouseIntervalByDuration(timeRange)
     query.addDimension({
       n: "t",

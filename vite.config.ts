@@ -52,6 +52,7 @@ export default defineConfig({
     port: 8080,
   },
   build: {
+    reportCompressedSize: false,
     // sourcemap: true,
     emptyOutDir: true,
     chunkSizeWarningLimit: 600,
@@ -192,7 +193,6 @@ const components = new Set<string>([
   // 'Tooltip',
   // Tooltip must be registered globally in order for the tooltip service to work properly
   "Tree",
-  "TreeSelect",
   "TreeTable",
   "TriStateCheckbox",
   "VirtualScroller",
@@ -203,6 +203,7 @@ const componentWithStyles = new Set<string>([
   "Menubar",
   "Button",
   "TabMenu",
+  "TreeSelect",
 ])
 
 // SFC compilation saves 200KB (2.65 vs 2.67 MB)

@@ -16,7 +16,7 @@
     "@tailwindcss/typography": "^0.5.2",
     "@typescript-eslint/eslint-plugin": "5.29.0",
     "@typescript-eslint/parser": "5.29.0",
-    "@vitejs/plugin-vue": "2.3.3",
+    "@vitejs/plugin-vue": "3.0.0-beta.0",
     "@vue/compiler-sfc": "3.2.37",
     "@vue/eslint-config-typescript": "11.0.0",
     "add": "^2.0.6",
@@ -30,8 +30,8 @@
     "sass": "^1.53.0",
     "tailwindcss": "^3.1.4",
     "typescript": "4.7.4",
-    "unplugin-vue-components": "0.19.9",
-    "vite": "2.9.12",
+    "unplugin-vue-components": "0.20.1",
+    "vite": "3.0.0-beta.5",
     "vite-svg-loader": "^3.4.0",
     "vue": "3.2.37",
     "vue-tsc": "^0.38.1"
@@ -39,7 +39,10 @@
   "pnpm": {
     "peerDependencyRules": {
       "ignoreMissing": [
-        "primeicons"
+        "primeicons",
+        "eslint-plugin-vue",
+        "vite",
+        "unplugin-vue-components"
       ]
     }
   },

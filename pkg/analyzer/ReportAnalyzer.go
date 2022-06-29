@@ -205,7 +205,6 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     return "", errors.WithStack(err)
   }
 
-  //noinspection SpellCheckingInspection
   branch := string(props.GetStringBytes("vcsroot.branch"))
   if len(branch) != 0 {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
@@ -216,9 +215,9 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     return "", errors.New("cannot infer branch from TC properties")
   } else {
     //goland:noinspection SpellCheckingInspection
-    branch := props.GetStringBytes("teamcity.build.branch")
-    if len(branch) != 0 && string(branch) != "<default>" {
-      return string(branch), nil
+    branch = string(props.GetStringBytes("teamcity.build.branch"))
+    if len(branch) != 0 && branch != "<default>" {
+      return branch, nil
     }
     var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
     if len(isMaster) == 0 {

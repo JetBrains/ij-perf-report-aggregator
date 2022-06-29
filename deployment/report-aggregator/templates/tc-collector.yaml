@@ -46,11 +46,11 @@ spec:
           volumes:
             - name: config
               configMap:
-                name: tc-collector-config
+                name: tc-collector-config-{{ .Values.collector | toYaml | sha256sum }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: tc-collector-config
+  name: tc-collector-config-{{ .Values.collector | toYaml | sha256sum }}
 data:
   config.json: {{ .Values.collector | toJson | quote }}

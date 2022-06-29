@@ -30,7 +30,7 @@ func main() {
     if e.Is(err, context.Canceled) {
       os.Exit(78)
     }
-    logger.Fatal("er", zap.Error(err))
+    logger.Fatal("cannot collect", zap.Error(err))
   }
 }
 

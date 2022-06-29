@@ -6,7 +6,6 @@ import path from "path"
 import { ComponentResolver } from "unplugin-vue-components"
 import Components from "unplugin-vue-components/vite"
 import { defineConfig, PluginOption } from "vite"
-import svgLoader from "vite-svg-loader"
 // import visualizer from "rollup-plugin-visualizer"
 import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
@@ -18,7 +17,6 @@ export default defineConfig({
   plugins: [
     vue(),
     // visualizer({template: "sunburst"}),
-    svgLoader(),
     Components({
       dts: path.resolve(__dirname, "dashboard/shared/src/components.d.ts"),
       resolvers: [
@@ -53,6 +51,7 @@ export default defineConfig({
   },
   build: {
     // sourcemap: true,
+    reportCompressedSize: false,
     emptyOutDir: true,
     chunkSizeWarningLimit: 600,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

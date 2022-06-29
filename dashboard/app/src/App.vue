@@ -5,12 +5,10 @@
     class="px-6 border-b"
   >
     <template #start>
-      <img
-        width="70"
-        height="70"
-        :src="logoUrl"
-        alt="JetBrains Black Box Logo logo."
-      >
+      <!-- eslint-disable vue/no-v-html -->
+      <span
+        v-html="logoUrl"
+      />
     </template>
     <template #end>
       <ServerSelect
@@ -40,7 +38,7 @@ import { serverUrlObservableKey } from "shared/src/injectionKeys"
 import { provide, ref, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
 import PrimeToast from "./PrimeToast.vue"
-import logoUrl from "./jb_square.svg?url"
+import logoUrl from "./jb_square.svg?raw"
 import { getItems } from "./route"
 
 const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)

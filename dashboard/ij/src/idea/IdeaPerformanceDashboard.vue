@@ -22,25 +22,29 @@
     <GroupLineChart
       label="Indexing Long"
       measure="indexing"
-      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 
+                  'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Scanning Long"
       measure="scanning"
-      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 
+                  'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Indexing Short"
       measure="indexing"
-      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing']"
+      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
+                  'spring_boot/indexing', 'spring_boot_maven/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Scanning Short"
       measure="scanning"
-      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing']"
+      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
+                  'spring_boot/indexing', 'spring_boot_maven/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

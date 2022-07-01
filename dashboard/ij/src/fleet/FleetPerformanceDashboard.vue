@@ -105,7 +105,7 @@ provide(chartStyleKey, {
 provideReportUrlProvider(false)
 
 const persistentStateManager = new PersistentStateManager("fleet_perf_dashboard", {
-  machine: "linux-blade",
+  machine: "linux-blade-hetzner",
   project: [],
   branch: "master",
 }, useRouter())

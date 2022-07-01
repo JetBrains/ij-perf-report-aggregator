@@ -22,7 +22,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Indexing: Lightweight projects"
+      label="Number Of Indexed Files: Lightweight projects"
       measure="numberOfIndexedFiles"
       :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
       :server-configurator="serverConfigurator"
@@ -34,49 +34,49 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Indexing: Heavyweight projects"
+      label="Number Of Indexed Files: Heavyweight projects"
       measure="numberOfIndexedFiles"
       :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Inspection: Lightweight projects"
+      label="Inspection execution time: Lightweight projects"
       measure="inspection_execution_time"
       :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Inspection: Heavyweight projects"
+      label="Inspection execution time: Heavyweight projects"
       measure="inspection_execution_time"
       :projects="['cockroach/inspection', 'kubernetes/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Local inspection"
+      label="Local inspection execution time"
       measure="local_inspection_execution_time"
       :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Typing"
+      label="Typing: average responsiveness time"
       measure="average_responsiveness_time"
       :projects="['mattermost-server/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Typing"
+      label="Typing: total time"
       measure="typing_total_time"
       :projects="['mattermost-server/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Find Usages"
+      label="Find Usages execution time"
       measure="find_usages_execution_time"
       :projects="['vault/findUsage']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Find Usages"
+      label="Find Usages number of found usages"
       measure="find_usages_number_of_found_usages"
       :projects="['vault/findUsage']"
       :server-configurator="serverConfigurator"
@@ -110,7 +110,7 @@ provide(chartStyleKey, {
 provideReportUrlProvider()
 
 const persistentStateManager = new PersistentStateManager("goland_dashboard", {
-  machine: "linux-blade",
+  machine: "linux-blade-hetzner",
   project: [],
   branch: "master",
 }, useRouter())

@@ -144,7 +144,7 @@ provide(chartStyleKey, {
 provideReportUrlProvider()
 
 const persistentStateManager = new PersistentStateManager("phpstorm_dashboard", {
-  machine: "linux-blade",
+  machine: "linux-blade-hetzner",
   project: [],
   branch: "master",
 }, useRouter())

@@ -19,15 +19,16 @@
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import Dashboard from "shared/src/components/Dashboard.vue"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
-import MeasureSelect from "shared/src/components/MeasureSelect.vue"
-import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import DimensionHierarchicalSelect from "../../../shared/src/components/DimensionHierarchicalSelect.vue"
+import MeasureSelect from "../../../shared/src/components/MeasureSelect.vue"
+import TimeRangeSelect from "../../../shared/src/components/TimeRangeSelect.vue"
+
 
 provideReportUrlProvider()
 

@@ -27,5 +27,6 @@ async function initApp() {
     .then(() => app.mount("#app"))
 }
 
+// eslint-disable-next-line unicorn/prefer-top-level-await
 void initApp()
 

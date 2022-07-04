@@ -7,21 +7,22 @@
     "dev": "vite serve",
     "build": "vite build --emptyOutDir",
     "preview": "vite preview",
-    "lint": "pnpm vue-tsc --noEmit && NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
+    "//": "pnpm vue-tsc --noEmit && ",
+    "lint": "NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
     "update-deps": "pnpm update -i -r --latest"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",
     "@tailwindcss/line-clamp": "^0.4.0",
     "@tailwindcss/typography": "^0.5.2",
-    "@typescript-eslint/eslint-plugin": "^5.30.0",
-    "@typescript-eslint/parser": "^5.30.0",
+    "@typescript-eslint/eslint-plugin": "^5.30.4",
+    "@typescript-eslint/parser": "^5.30.4",
     "@vitejs/plugin-vue": "^3.0.0-beta.0",
     "@vue/compiler-sfc": "^3.2.37",
     "@vue/eslint-config-typescript": "^11.0.0",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.7",
-    "eslint": "^8.18.0",
+    "eslint": "^8.19.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-vue": "^9.1.1",
     "postcss": "^8.4.14",
@@ -30,7 +31,7 @@
     "sass": "^1.53.0",
     "tailwindcss": "^3.1.4",
     "typescript": "^4.7.4",
-    "unplugin-vue-components": "^0.20.1",
+    "unplugin-vue-components": "^0.21.0",
     "vite": "^3.0.0-beta.5",
     "vue": "^3.2.37",
     "vue-tsc": "^0.38.2"
@@ -50,7 +51,7 @@
   },
   "packageManager": "pnpm@7.0.0",
   "dependencies": {
-    "@types/node": "^18.0.0",
-    "eslint-plugin-unicorn": "^42.0.0"
+    "@types/node": "^18.0.1",
+    "eslint-plugin-unicorn": "^43.0.0"
   }
 }

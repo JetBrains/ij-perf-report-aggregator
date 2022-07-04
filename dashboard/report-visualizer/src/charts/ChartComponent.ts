@@ -1,8 +1,9 @@
 import { ToastSeverity } from "primevue/api"
 import { ToastServiceMethods } from "primevue/toastservice"
 import { useToast } from "primevue/usetoast"
-import { debounceSync } from "shared/src/util/debounce"
-import { onBeforeUnmount, onMounted, watch } from "vue"
+import { combineLatest, debounceTime, Subject } from "rxjs"
+import { refToObservable } from "shared/src/configurators/rxjs"
+import { onBeforeUnmount, onMounted, Ref, watch } from "vue"
 import { DataManager } from "../DataManager"
 import { InputData } from "../data"
 import { reportData } from "../state"
@@ -17,29 +18,43 @@ export class ChartComponent {
   chartManager: ChartManager | null = null
   private readonly toast: ToastServiceMethods
 
-  private readonly renderDataIfAvailableDebounced = debounceSync(() => this.renderDataIfAvailable(), 10)
+  private readonly subject = new Subject<void>()
 
-  constructor(private readonly createChartManager: () => Promise<ChartManager>) {
+  constructor(containerRef: Ref<HTMLElement | null>, private readonly createChartManager: (container: HTMLElement) => Promise<ChartManager>) {
+    const containerObservable = refToObservable(containerRef)
+
     onBeforeUnmount(() => {
       const chartManager = this.chartManager
       if (chartManager != null) {
         this.chartManager = null
         chartManager.dispose()
+        console.log("DISPOSED!!")
       }
     })
 
-    onMounted(() => {
-      this.renderDataIfAvailableDebounced()
+    watch(reportData, () => {
+      this.requestRender()
     })
 
-    watch(reportData, () => {
-      this.renderDataIfAvailableDebounced()
+    onMounted(() => {
+      this.requestRender()
+    })
+
+    combineLatest([this.subject, containerObservable]).pipe(debounceTime(10)).subscribe(value => {
+      const container = value[1]
+      if (container != null) {
+        this.renderDataIfAvailable(container)
+      }
     })
 
     this.toast = useToast()
   }
 
-  renderDataIfAvailable(): void {
+  requestRender() {
+    this.subject.next()
+  }
+
+  private renderDataIfAvailable(container: HTMLElement): void {
     const data = reportData.value
     if (data == null || data.length === 0) {
       // do not re-render as empty - null value not expected to be set in valid cases
@@ -49,7 +64,7 @@ export class ChartComponent {
     const dataManager = new DataManager(JSON.parse(data) as InputData)
     const chartManager = this.chartManager
     if (chartManager == null) {
-      this.createChartManager()
+      this.createChartManager(container)
         .then(chartManager => {
           this.chartManager = chartManager
           chartManager.render(dataManager)

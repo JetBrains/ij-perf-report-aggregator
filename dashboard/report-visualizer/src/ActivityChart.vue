@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import { debounceSync } from "shared/src/util/debounce"
-import { PropType , defineComponent, shallowRef, toRef, watch } from "vue"
+import { PropType, defineComponent, shallowRef, toRef, watch } from "vue"
 import { ActivityChartDescriptor } from "./ActivityChartDescriptor"
 import { GroupedItems } from "./DataManager"
 import { ChartComponent, ChartManager } from "./charts/ChartComponent"
@@ -28,12 +28,8 @@ export default defineComponent({
     const descriptorRef = toRef(props, "descriptor")
     const chartContainer = shallowRef<HTMLElement | null>(null)
 
-    const chartHelper = new ChartComponent(async function(): Promise<ChartManager> {
+    const chartHelper = new ChartComponent(chartContainer, async function(container): Promise<ChartManager> {
       const descriptor = descriptorRef.value
-      const container = chartContainer.value
-      if (container == null) {
-        throw new Error("container is not created")
-      }
 
       const sourceNames = descriptor.sourceNames
       if (descriptor.chartManagerProducer == null) {
@@ -60,14 +56,15 @@ export default defineComponent({
         return await descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)
       }
     })
-    watch(descriptorRef, debounceSync(() => {
+
+    watch([descriptorRef, chartContainer], debounceSync(() => {
       const oldChartManager = chartHelper.chartManager
       if (oldChartManager != null) {
         oldChartManager.dispose()
         chartHelper.chartManager = null
       }
 
-      chartHelper.renderDataIfAvailable()
+      chartHelper.requestRender()
     }, 0))
 
     return {

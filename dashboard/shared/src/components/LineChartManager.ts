@@ -56,6 +56,7 @@ export class LineChartManager {
         extraCssText: "user-select: text",
         axisPointer: {
           type: "cross",
+          snap: true
         },
         formatter: tooltipFormatter == null ? undefined : adaptToolTipFormatter(tooltipFormatter),
         valueFormatter: tooltipFormatter == null ? it => (numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms") : undefined

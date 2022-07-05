@@ -47,6 +47,18 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         }
       },
     }
+  } else if strings.HasPrefix(id, "perfintDev") {
+    dbName, tableName := splitId(id)
+    return DatabaseConfiguration{
+      DbName:            dbName,
+      TableName:         tableName,
+      ReportReader:      analyzePerfReport,
+      HasBuildTypeField: true,
+      extraFieldCount:   3,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", measures.name, measures.value, measures.type")
+      },
+    }
   } else if strings.HasPrefix(id, "perfint") {
     dbName, tableName := splitId(id)
     return DatabaseConfiguration{

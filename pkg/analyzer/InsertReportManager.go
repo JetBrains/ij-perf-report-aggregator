@@ -115,9 +115,12 @@ func NewInsertReportManager(
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
   insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
 
-  installerManager, err := NewInstallerInsertManager(db, context, logger)
-  if err != nil {
-    return nil, err
+  var installerManager *InsertInstallerManager = nil
+  if config.HasInstallerField {
+    installerManager, err = NewInstallerInsertManager(db, context, logger)
+    if err != nil {
+      return nil, err
+    }
   }
 
   manager := &InsertReportManager{
@@ -134,7 +137,9 @@ func NewInsertReportManager(
     insertInstallerManager: installerManager,
   }
 
-  insertManager.AddDependency(installerManager.InsertManager)
+  if installerManager != nil {
+    insertManager.AddDependency(installerManager.InsertManager)
+  }
   return manager, nil
 }
 

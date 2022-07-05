@@ -32,8 +32,16 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/performanceTests",
         },
         {
+          label: "Performance Tests (Dev Server)",
+          to: "/intellij/performanceTestsDev",
+        },
+        {
           label: "Performance Dashboard",
           to: "/intellij/dashboard",
+        },
+        {
+          label: "Performance Dashboard (Dev Server)",
+          to: "/intellij/dashboardDev",
         },
         {
           label: "Shared Indexes",
@@ -157,6 +165,22 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             supportReleases: true,
           },
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
+        },
+        {
+          path: "/intellij/performanceTestsDev",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "idea",
+            defaultMeasures: [],
+            installerExists: false,
+          },
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Dev Server"},
+        },
+        {
+          path: "/intellij/dashboardDev",
+          component: () => import("./idea/IdeaPerformanceDevDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests On Dev Server Dashboard"},
         },
         {
           path: "/intellij/dashboard",

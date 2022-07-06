@@ -15,7 +15,12 @@ var byteBufferPool bytebufferpool.Pool
 func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers []*bytebufferpool.ByteBuffer, query DataQuery) error {
   for _, column := range *result {
     columnIndex := columnNameToIndex[column.Name]
-    buffer := columnBuffers[columnIndex]
+    var buffer *bytebufferpool.ByteBuffer
+    if columnIndex < len(columnBuffers) {
+      buffer = columnBuffers[columnIndex]
+    } else {
+      return errors.Errorf("invalid columnIndex = %d, it is > len(columnBuffers) = %d", columnIndex, len(columnBuffers))
+    }
     if buffer == nil {
       buffer = byteBufferPool.Get()
       columnBuffers[columnIndex] = buffer

@@ -126,10 +126,10 @@ import { chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
-import DimensionHierarchicalSelect from "../../../shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "../../../shared/src/components/DimensionSelect.vue"
-import GroupLineChart from "../../../shared/src/components/GroupLineChart.vue"
-import TimeRangeSelect from "../../../shared/src/components/TimeRangeSelect.vue"
+import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
+import DimensionSelect from "shared/src/components/DimensionSelect.vue"
+import GroupLineChart from "shared/src/components/GroupLineChart.vue"
+import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 
 provide(chartStyleKey, {
   ...chartDefaultStyle,

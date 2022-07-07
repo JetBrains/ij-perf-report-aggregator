@@ -26,15 +26,14 @@
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import Dashboard from "shared/src/components/Dashboard.vue"
+import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
+import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { useRouter } from "vue-router"
-import DimensionHierarchicalSelect from "../../../shared/src/components/DimensionHierarchicalSelect.vue"
-import TimeRangeSelect from "../../../shared/src/components/TimeRangeSelect.vue"
-
 
 const persistentStateManager = new PersistentStateManager("fleet-dashboard", {
   machine: "macMini 2018",

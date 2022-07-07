@@ -26,6 +26,7 @@ const props = withDefaults(defineProps<{
   valueUnit?: ValueUnit
   configurators?: Array<DataQueryConfigurator>|null
   trigger?: PopupTrigger
+  aggregatedMeasure: string | null
 }>(), {
   skipZeroValues: true,
   compoundTooltip: true,
@@ -34,7 +35,8 @@ const props = withDefaults(defineProps<{
   chartType: "line",
   valueUnit: "ms",
   configurators: null,
-  trigger: "axis"
+  trigger: "axis",
+  aggregatedMeasure: null,
 })
 
 const chartElement = shallowRef<HTMLElement | null>(null)
@@ -80,6 +82,20 @@ watchEffect(function () {
         }
       })
     }
+  }
+
+  if (props.aggregatedMeasure != null) {
+    configurators = [...configurators]
+    configurators.push({
+      configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+        if (props.aggregatedMeasure != null) {
+          query.addFilter({f: "measures.name", v: props.aggregatedMeasure})
+        }
+        return true
+      }, createObservable() {
+        return null
+      },
+    })
   }
   dataQueryExecutor = new DataQueryExecutor(configurators)
   chartToolTipManager.dataQueryExecutor = dataQueryExecutor

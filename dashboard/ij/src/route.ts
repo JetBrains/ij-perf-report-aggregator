@@ -104,6 +104,19 @@ export function getIjItems(): Array<MenuItem> {
         },
       ],
     },
+    {
+      label: "Aggregates",
+      items: [
+        {
+          label: "PhpStorm",
+          to: "/aggregates/phpstorm",
+        },
+        {
+          label: "IDEA",
+          to: "/aggregates/idea",
+        },
+      ]
+    }
   ]
 }
 
@@ -280,6 +293,28 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/fleet/explore",
           component: () => import("./fleet/FleetExplore.vue"),
           meta: {pageTitle: "Fleet Explore"},
+        },
+      ],
+    },
+    {
+      children: [
+        {
+          path: "/aggregates/phpstorm",
+          component: () => import("shared/src/components/GenericAggregatedDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm"
+          },
+          meta: {pageTitle: "PhpStorm Aggregated Dashboard"},
+        },
+        {
+          path: "/aggregates/idea",
+          component: () => import("shared/src/components/GenericAggregatedDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea"
+          },
+          meta: {pageTitle: "IDEA Aggregated Dashboard"},
         },
       ],
     },

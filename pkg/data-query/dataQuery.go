@@ -169,6 +169,7 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
   return nil
 }
 
+//gocyclo:ignore
 func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   var sb strings.Builder
 
@@ -189,23 +190,33 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   columnNameToIndex := make(map[string]int, len(query.Dimensions)+len(query.Fields))
   columnIndex := 0
 
-  if len(query.Dimensions) != 0 {
-    sb.WriteRune(' ')
-    for i, dimension := range query.Dimensions {
-      if i != 0 {
+  dimensionWritten := false
+  for _, dimension := range query.Dimensions {
+    //check that the field with the same name doesn't exists
+    fieldExist := false
+    for _, field := range query.Fields {
+      if field.Name == dimension.Name {
+        fieldExist = true
+        break
+      }
+    }
+    if !fieldExist {
+      if !dimensionWritten {
+        sb.WriteRune(' ')
+      } else {
         sb.WriteRune(',')
       }
-
       columnNameToIndex[dimension.Name] = columnIndex
       columnIndex++
 
       writeDimension(dimension, &sb)
+      dimensionWritten = true
     }
   }
 
   // write extra fields to the end, so, it maybe skipped during serialization
   for i, field := range query.Fields {
-    if i != 0 || len(query.Dimensions) != 0 {
+    if i != 0 || dimensionWritten {
       sb.WriteRune(',')
     }
     sb.WriteRune(' ')

@@ -11,7 +11,6 @@ assets:
 
 lint:
 	golangci-lint run
-	vue-tsc --noEmit
 	eslint . --ext .js,.vue,.ts
 
 build-server:

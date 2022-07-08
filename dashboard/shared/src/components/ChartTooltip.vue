@@ -23,9 +23,9 @@
         </div>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 5"
+          v-if="tooltipData.firstSeriesData.length >= 4"
           title="Changes"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=buildChangesDiv`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=buildChangesDiv`"
           target="_blank"
           class="info"
         >

@@ -19,6 +19,7 @@ type DatabaseConfiguration struct {
   HasProductField   bool
   HasInstallerField bool
   HasBuildTypeField bool
+  HasRawReport      bool
   extraFieldCount   int
 }
 
@@ -34,6 +35,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       DbName:            id,
       HasProductField:   true,
       HasInstallerField: true,
+      HasRawReport:      true,
       extraFieldCount:   len(IjMetricDescriptors) + len(fieldNames),
       ReportReader:      analyzeIjReport,
       insertStatementWriter: func(sb *strings.Builder) {
@@ -53,6 +55,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       DbName:            dbName,
       TableName:         tableName,
       ReportReader:      analyzePerfReport,
+      HasRawReport:      true,
       HasBuildTypeField: true,
       extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
@@ -67,6 +70,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzePerfReport,
       HasInstallerField: true,
       HasBuildTypeField: true,
+      HasRawReport:      true,
       extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")
@@ -77,6 +81,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       DbName:            "fleet",
       ReportReader:      analyzeFleetReport,
       HasInstallerField: true,
+      HasRawReport:      true,
       extraFieldCount:   4,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.start, measures.thread")

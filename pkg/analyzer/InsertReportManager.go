@@ -82,7 +82,10 @@ func NewInsertReportManager(
     metaFields = append(metaFields, "product")
   }
   if config.HasInstallerField {
-    metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3", "raw_report")
+    metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3")
+  }
+  if config.HasRawReport {
+    metaFields = append(metaFields, "raw_report")
   }
   metaFields = append(metaFields, "triggeredBy")
   var sb strings.Builder
@@ -251,16 +254,18 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     if strings.HasPrefix(row.Machine, "intellij-linux-hw-compile-hp-blade-") {
       return nil
     }
-    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3), string(row.RawReport), row.TriggeredBy)
+    args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3))
+  }
+  if t.config.HasRawReport {
+    args = append(args, string(row.RawReport))
+  }
+  args = append(args, row.TriggeredBy)
 
-    if t.config.DbName == "ij" {
-      err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
-      if err != nil {
-        return err
-      }
+  if t.config.DbName == "ij" {
+    err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
+    if err != nil {
+      return err
     }
-  } else {
-    args = append(args, row.TriggeredBy)
   }
 
   args = append(args, row.ExtraFieldData...)

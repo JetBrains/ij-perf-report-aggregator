@@ -39,6 +39,9 @@ func main() {
   if len(split) > 1 {
     table = split[1]
   }
+  if db == "" || table == "" {
+    logger.Fatal("Missing db or table, don't forget to set env variables DB and/or TABLE")
+  }
   err = transform("localhost:9000", db, table, logger)
   if err != nil {
     logger.Fatal(fmt.Sprintf("%+v", err))
@@ -190,15 +193,23 @@ func process(
       order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
     `, startTime, endTime)
   } else {
+    buildFields := ""
+    if config.HasInstallerField {
+      buildFields = "build_c1, build_c2, build_c3,"
+    }
+    installerFields := ""
+    if config.HasInstallerField {
+      installerFields = "tc_installer_build_id, " + buildFields
+    }
     rows, err = db.Query(taskContext, `
       select machine, branch,
              generated_time, build_time, raw_report,
-             tc_build_id, tc_installer_build_id,
-             build_c1, build_c2, build_c3, project
+             tc_build_id,`+installerFields+` project
       from `+tableName+`
       where generated_time >= $1 and generated_time < $2
-      order by machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
+      order by machine, branch, project, `+buildFields+` build_time, generated_time
     `, startTime, endTime)
+
   }
   if err != nil {
     return errors.WithStack(err)
@@ -215,19 +226,20 @@ rowLoop:
     }
 
     runResult := &analyzer.RunResult{
-      RawReport: []byte(row.RawReport),
-
-      Machine: row.Machine,
-
+      Machine:       row.Machine,
       GeneratedTime: row.GeneratedTime,
       BuildTime:     row.BuildTime,
+      TcBuildId:     int(row.TcBuildId),
+    }
 
-      TcBuildId:          int(row.TcBuildId),
-      TcInstallerBuildId: int(row.TcInstallerBuildId),
-
-      BuildC1: int(row.BuildC1),
-      BuildC2: int(row.BuildC2),
-      BuildC3: int(row.BuildC3),
+    if config.HasRawReport {
+      runResult.RawReport = []byte(row.RawReport)
+    }
+    if config.HasInstallerField {
+      runResult.TcInstallerBuildId = int(row.TcInstallerBuildId)
+      runResult.BuildC1 = int(row.BuildC1)
+      runResult.BuildC2 = int(row.BuildC2)
+      runResult.BuildC3 = int(row.BuildC3)
     }
 
     err = analyzer.ReadReport(runResult, config, logger)
@@ -247,6 +259,9 @@ rowLoop:
       runResult.ExtraFieldData[3] = row.ServiceThread
       runResult.ExtraFieldData[4] = row.ServicePlugin
     }
+
+    //transform runResult here
+    // Example: runResult.Report.Project = strings.TrimPrefix(runResult.Report.Project, "devServer-")
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
     if err != nil {

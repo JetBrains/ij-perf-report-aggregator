@@ -41,8 +41,8 @@ const persistentStateManager = new PersistentStateManager("fleet-dashboard", {
 const serverConfigurator = new ServerConfigurator("fleet")
 provideReportUrlProvider()
 
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 
 initDataComponent([
   serverConfigurator,

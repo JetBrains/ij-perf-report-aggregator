@@ -131,7 +131,7 @@ const measureConfigurator = new MeasureConfigurator(
   props.chartType,
 )
 
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, timeRangeConfigurator])
 
 const configurators = [
   serverConfigurator,

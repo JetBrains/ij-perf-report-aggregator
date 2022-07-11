@@ -120,7 +120,7 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
   return a.includes("/") ? 1 : -1
 })
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [
   serverConfigurator,

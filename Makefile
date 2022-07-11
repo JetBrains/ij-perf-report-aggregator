@@ -16,9 +16,6 @@ lint:
 build-server:
 	go build -tags -ldflags='-s -w' -o dist/server ./cmd/backend
 
-build-monitor:
-	go build -tags -ldflags='-s -w' -o dist/monitor ./cmd/monitor
-
 build-tc-collector:
 	go build -tags -ldflags='-s -w' -o dist/tc-collector ./cmd/tc-collector
 
@@ -27,7 +24,7 @@ build-transform:
 
 update-deps:
 	touch node_modules/go.mod
-	go get -d -u ./...
+	go get -u ./...
 	go mod tidy
 	unlink node_modules/go.mod
 	#cd dashboard && npm-check-updates -u && pnpm i && pnpm update

@@ -3,9 +3,9 @@ package data_query
 import (
   "context"
   "errors"
-  "github.com/go-faster/ch"
-  "github.com/go-faster/ch/chpool"
-  "github.com/go-faster/ch/proto"
+  "github.com/ClickHouse/ch-go"
+  "github.com/ClickHouse/ch-go/chpool"
+  "github.com/ClickHouse/ch-go/proto"
   "io"
   "net"
 )

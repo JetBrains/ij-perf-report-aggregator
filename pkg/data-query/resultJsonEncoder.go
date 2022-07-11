@@ -1,8 +1,8 @@
 package data_query
 
 import (
+  "github.com/ClickHouse/ch-go/proto"
   "github.com/develar/errors"
-  "github.com/go-faster/ch/proto"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "strconv"
@@ -121,51 +121,19 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
       }
 
     case *proto.ColDateTime:
-      for i, v := range *data {
+      for i, v := range data.Data {
         if i != 0 {
           _ = buffer.WriteByte(',')
         }
         jsonWriter.Q(v.Time().Format(query.TimeDimensionFormat))
       }
 
-    case *proto.ColLowCardinality:
-      str := data.Index.(*proto.ColStr)
-
-      switch data.Key {
-      case proto.KeyUInt8:
-        for i, key := range data.Keys8 {
-          if i != 0 {
-            _ = buffer.WriteByte(',')
-          }
-          position := str.Pos[key]
-          jsonWriter.Q(string(str.Buf[position.Start:position.End]))
+    case *proto.ColLowCardinality[string]:
+      for i, t := range data.Values {
+        if i != 0 {
+          _ = buffer.WriteByte(',')
         }
-      case proto.KeyUInt16:
-        for i, key := range data.Keys16 {
-          if i != 0 {
-            _ = buffer.WriteByte(',')
-          }
-          position := str.Pos[key]
-          jsonWriter.Q(string(str.Buf[position.Start:position.End]))
-        }
-      case proto.KeyUInt32:
-        for i, key := range data.Keys32 {
-          if i != 0 {
-            _ = buffer.WriteByte(',')
-          }
-          position := str.Pos[key]
-          jsonWriter.Q(string(str.Buf[position.Start:position.End]))
-        }
-      case proto.KeyUInt64:
-        for i, key := range data.Keys64 {
-          if i != 0 {
-            _ = buffer.WriteByte(',')
-          }
-          position := str.Pos[key]
-          jsonWriter.Q(string(str.Buf[position.Start:position.End]))
-        }
-      default:
-        return errors.Errorf("unsupported key %d", data.Key)
+        jsonWriter.Q(t)
       }
 
     default:

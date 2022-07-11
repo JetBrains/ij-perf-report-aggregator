@@ -1,7 +1,7 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -15,7 +15,7 @@
       v-for="metric in aggregatedMetrics"
       :key="metric"
     >
-      <Divider :label="metric"/>
+      <Divider :label="metric" />
       <div class="grid grid-cols-12 gap-4">
         <div class="col-span-12">
           <LineChartCard

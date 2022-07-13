@@ -62,7 +62,7 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
   return a.includes("/") ? 1 : -1
 })
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
 const timeAverageConfigurator = new TimeAverageConfigurator()
 

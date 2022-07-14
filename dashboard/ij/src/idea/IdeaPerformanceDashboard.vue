@@ -22,15 +22,13 @@
     <GroupLineChart
       label="Indexing Long"
       measure="indexing"
-      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 
-                  'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'lock-free-vfs-record-storage-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Scanning Long"
       measure="scanning"
-      :projects="['community/indexing', 'separateThreadIndexing-intellij_sources/indexing', 'bigIndexingJobs-intellij_sources/indexing', 
-                  'maxIndexingThread-intellij_sources/indexing', 'intellij_sources/indexing']"
+      :projects="['community/indexing', 'lock-free-vfs-record-storage-intellij_sources/indexing', 'intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

@@ -41,43 +41,43 @@
     />
     <GroupLineChart
       label="Inspection execution time: Lightweight projects"
-      measure="inspection_execution_time"
+      measure="globalInspections"
       :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Inspection execution time: Heavyweight projects"
-      measure="inspection_execution_time"
+      measure="globalInspections"
       :projects="['cockroach/inspection', 'kubernetes/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Local inspection execution time"
-      measure="local_inspection_execution_time"
+      measure="localInspections"
       :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Typing: average responsiveness time"
-      measure="average_responsiveness_time"
+      measure="test#average_awt_delay"
       :projects="['mattermost-server/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Typing: total time"
-      measure="typing_total_time"
+      measure="typing"
       :projects="['mattermost-server/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages execution time"
-      measure="find_usages_execution_time"
+      measure="findUsages"
       :projects="['vault/findUsage']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages number of found usages"
-      measure="find_usages_number_of_found_usages"
+      measure="findUsages#number"
       :projects="['vault/findUsage']"
       :server-configurator="serverConfigurator"
     />

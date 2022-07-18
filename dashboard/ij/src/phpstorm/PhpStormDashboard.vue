@@ -17,26 +17,26 @@
     </template>
     <GroupLineChart
       label="Slow Inspections"
-      measure="inspection_execution_time"
+      measure="globalInspections"
       :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection',
                   'laravel-io/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Fast Inspections"
-      measure="inspection_execution_time"
+      measure="globalInspections"
       :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Slow Local Inspections"
-      measure="local_inspection_execution_time"
+      measure="localInspections"
       :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Fast Local Inspections"
-      measure="local_inspection_execution_time"
+      measure="localInspections"
       :projects="['WI_59961/localInspection', 'bitrix/localInspection', 'WI_65893/localInspection']"
       :server-configurator="serverConfigurator"
     />
@@ -62,14 +62,14 @@
     />
     <GroupLineChart
       label="Completion"
-      measure="completion_execution_time"
+      measure="completion"
       :projects="['many_classes/completion/classes','magento2/completion/function_var', 'magento2/completion/function_stlr', 'magento2/completion/classes','dql/completion',
                   'WI_64694/completion','WI_58919/completion', 'WI_58807/completion', 'WI_58306/completion']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="PHP Typing Time"
-      measure="typing_total_time"
+      measure="typing"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing', 
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
@@ -78,7 +78,7 @@
     />
     <GroupLineChart
       label="PHP Typing Average Responsiveness"
-      measure="average_responsiveness_time"
+      measure="test#average_awt_delay"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
@@ -87,7 +87,7 @@
     />
     <GroupLineChart
       label="PHP Typing Responsiveness"
-      measure="responsiveness_time"
+      measure="test#max_awt_delay"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                   'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                   'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing'
@@ -96,21 +96,21 @@
     />
     <GroupLineChart
       label="Blade Typing Time"
-      measure="typing_total_time"
+      measure="typing"
       :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                   'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Blade Average Responsiveness"
-      measure="average_responsiveness_time"
+      measure="test#average_awt_delay"
       :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                   'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Blade Responsiveness"
-      measure="responsiveness_time"
+      measure="test#max_awt_delay"
       :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                   'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
       :server-configurator="serverConfigurator"

@@ -83,31 +83,31 @@
     />
     <GroupLineChart
       label="Inspection"
-      measure="inspection_execution_time"
+      measure="globalInspections"
       :projects="['java/inspection', 'grails/inspection', 'spring_boot_maven/inspection', 'spring_boot/inspection', 'kotlin/inspection', 'kotlin_coroutines/inspection']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages Java"
-      measure="find_usages_execution_time"
+      measure="findUsages"
       :projects="['community/findUsages/PsiManager_getInstance_Before', 'community/findUsages/PsiManager_getInstance_After']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages Kotlin"
-      measure="find_usages_execution_time"
+      measure="findUsages"
       :projects="['community/findUsages/LocalInspectionTool_getID_Before', 'community/findUsages/LocalInspectionTool_getID_After']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Local Inspection"
-      measure="local_inspection_execution_time"
+      measure="localInspections"
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Completion"
-      measure="completion_execution_time"
+      measure="completion"
       :projects="['community/completion/kotlin_file','grails/completion/groovy_file', 'grails/completion/java_file']"
       :server-configurator="serverConfigurator"
     />

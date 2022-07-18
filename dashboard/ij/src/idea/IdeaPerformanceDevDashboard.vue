@@ -48,13 +48,15 @@
     <GroupLineChart
       label="Find Usages Java"
       measure="find_usages_execution_time"
-      :projects="['intellij_sources/findUsages/Application_runReadAction', 'intellij_sources/findUsages/LocalInspectionTool_getID', 'intellij_sources/findUsages/PsiManager_getInstance', 'intellij_sources/findUsages/PropertyMapping_value']"
+      :projects="['intellij_sources/findUsages/Application_runReadAction', 'intellij_sources/findUsages/LocalInspectionTool_getID',
+                  'intellij_sources/findUsages/PsiManager_getInstance', 'intellij_sources/findUsages/PropertyMapping_value']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages Kotlin"
       measure="find_usages_execution_time"
-      :projects="['intellij_sources/findUsages/ActionsKt_runReadAction', 'intellij_sources/findUsages/DynamicPluginListener_TOPIC', 'intellij_sources/findUsages/Path_div', 'intellij_sources/findUsages/Persistent_absolutePath', 'intellij_sources/findUsages/RelativeTextEdit_rangeTo']"
+      :projects="['intellij_sources/findUsages/ActionsKt_runReadAction', 'intellij_sources/findUsages/DynamicPluginListener_TOPIC', 'intellij_sources/findUsages/Path_div',
+                  'intellij_sources/findUsages/Persistent_absolutePath', 'intellij_sources/findUsages/RelativeTextEdit_rangeTo']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

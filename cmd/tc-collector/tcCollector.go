@@ -152,7 +152,8 @@ func collectFromTeamCity(
 
     buildList, err := collector.loadBuilds(serverUrl.String())
     if err != nil {
-      return err
+      logger.Warn(err.Error())
+      continue
     }
 
     buildsToLoad = append(buildsToLoad, buildList.Builds)

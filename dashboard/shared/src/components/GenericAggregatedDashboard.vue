@@ -66,7 +66,7 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 
 const timeAverageConfigurator = new TimeAverageConfigurator()
 
-const aggregatedMetrics = ["responsiveness_time", "completion_execution_time"]
+const aggregatedMetrics = ["test#max_awt_delay", "test#average_awt_delay"]
 
 const configurators = [
   serverConfigurator,

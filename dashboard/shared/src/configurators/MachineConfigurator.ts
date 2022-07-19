@@ -99,6 +99,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         else if (value.startsWith("intellij-windows-hw-hetzner")){
           groupName = "windows-blade-hetzner"
         }
+        else if (value.startsWith("intellij-macos-munit-741-large")){
+          //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
+          groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
+        }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
         }

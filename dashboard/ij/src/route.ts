@@ -64,6 +64,14 @@ export function getIjItems(): Array<MenuItem> {
           label: "Explore",
           to: "/phpstorm/performanceTests",
         },
+        {
+          label: "Dashboard With Plugins",
+          to: "/phpstorm/dashboardWithPlugins",
+        },
+        {
+          label: "Explore With Plugins",
+          to: "/phpstorm/performanceTestsWithPlugins",
+        },
       ]
     },
     {
@@ -261,6 +269,21 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/phpstorm/dashboard",
           component: () => import("./phpstorm/PhpStormDashboard.vue"),
           meta: {pageTitle: "PhpStorm Dashboard"},
+        },
+        {
+          path: "/phpstorm/performanceTestsWithPlugins",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstormWithPlugins",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore PhpStorm Tests With Plugins"},
+        },
+        {
+          path: "/phpstorm/dashboardWithPlugins",
+          component: () => import("./phpstorm/PhpStormDashboardWithPlugins.vue"),
+          meta: {pageTitle: "PhpStorm With Plugins Dashboard"},
         },
       ]
     },

@@ -41,6 +41,16 @@
         >
           <ArchiveIcon class="w-5 h-5" />
         </a>
+
+        <a
+          v-if="tooltipData.firstSeriesData.length >= 5"
+          title="Installer Artifacts"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=artifacts`"
+          target="_blank"
+          class="info"
+        >
+          <DownloadIcon class="w-5 h-5" />
+        </a>
       </div>
       <div
         class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose"

@@ -32,10 +32,6 @@
 <script lang="ts" setup>
 import Divider from "tailwind-ui/src/Divider.vue"
 import { useRouter } from "vue-router"
-import DimensionHierarchicalSelect from "../../../shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "../../../shared/src/components/DimensionSelect.vue"
-import LineChartCard from "../../../shared/src/components/LineChartCard.vue"
-import TimeRangeSelect from "../../../shared/src/components/TimeRangeSelect.vue"
 import { initDataComponent } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
@@ -44,12 +40,15 @@ import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { TimeAverageConfigurator } from "../configurators/TimeAverageConfigurator"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
 import Dashboard from "./Dashboard.vue"
+import DimensionHierarchicalSelect from "./DimensionHierarchicalSelect.vue"
+import DimensionSelect from "./DimensionSelect.vue"
+import LineChartCard from "./LineChartCard.vue"
+import TimeRangeSelect from "./TimeRangeSelect.vue"
 
 const props = defineProps<{
   dbName: string
   table?: string
 }>()
-
 
 const persistentStateManager = new PersistentStateManager(`${props.dbName}_${props.table == null ? "" : props.table}_aggregated_dashboard`, {
   machine: "linux-blade-hetzner",

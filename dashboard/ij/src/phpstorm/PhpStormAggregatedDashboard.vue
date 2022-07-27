@@ -40,11 +40,10 @@ import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageCon
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import Divider from "tailwind-ui/src/Divider.vue"
 import { useRouter } from "vue-router"
-import DimensionHierarchicalSelect from "../../../shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "../../../shared/src/components/DimensionSelect.vue"
-import LineChartCard from "../../../shared/src/components/LineChartCard.vue"
-import TimeRangeSelect from "../../../shared/src/components/TimeRangeSelect.vue"
-
+import DimensionHierarchicalSelect from "/shared/src/components/DimensionHierarchicalSelect.vue"
+import DimensionSelect from "shared/src/components/DimensionSelect.vue"
+import LineChartCard from "shared/src/components/LineChartCard.vue"
+import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 
 const persistentStateManager = new PersistentStateManager("phpstorm_dashboard", {
   machine: "linux-blade-hetzner",

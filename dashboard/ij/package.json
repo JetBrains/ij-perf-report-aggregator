@@ -6,6 +6,6 @@
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
     "vue": "3.2.37",
-    "vue-router": "4.1.1"
+    "vue-router": "4.1.2"
   }
 }

@@ -3,6 +3,7 @@ package main
 import (
   "context"
   "database/sql"
+  "encoding/json"
   e "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
@@ -11,10 +12,12 @@ import (
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
+  "io"
   "net/http"
   "net/url"
   "os"
   "sort"
+  "strings"
   "time"
 )
 
@@ -277,6 +280,81 @@ func (t *Collector) get(url string, ctx context.Context) (*http.Response, error)
     }
   }
   return response, nil
+}
+
+func (t *Collector) getSnapshots(configuration string, ctx context.Context) ([]string, error) {
+  isComposite, err := t.isComposite(configuration, ctx)
+  if err != nil {
+    return nil, err
+  }
+  if !isComposite {
+    return []string{configuration}, nil
+  }
+  configurations := make([]string, 0)
+  err = t.getSnapshotsRecursive(configuration, &configurations, ctx)
+  return configurations, err
+}
+
+func (t *Collector) getSnapshotsRecursive(configuration string, configurations *[]string, ctx context.Context) error {
+  isComposite, err := t.isComposite(configuration, ctx)
+  if err != nil {
+    return nil
+  }
+  if strings.Contains(configuration, "Installers") {
+    return nil
+  }
+  if !isComposite {
+    *configurations = append(*configurations, configuration)
+    return nil
+  }
+
+  response, err := t.get(t.serverUrl+"/buildTypes/"+configuration+"/snapshot-dependencies", ctx)
+  if err != nil {
+    return err
+  }
+  responseBody, _ := io.ReadAll(response.Body)
+  if response.StatusCode > 300 {
+    return errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+  }
+
+  type Dependency struct {
+    Id string
+  }
+  type AllDependencies struct {
+    Dependencies []Dependency `json:"snapshot-dependency"`
+  }
+
+  dependency := &AllDependencies{}
+  err = json.Unmarshal(responseBody, dependency)
+  if err != nil {
+    return err
+  }
+
+  for _, dependency := range dependency.Dependencies {
+    err := t.getSnapshotsRecursive(dependency.Id, configurations, ctx)
+    if err != nil {
+      t.logger.Warn(err.Error())
+    }
+  }
+  return nil
+}
+
+func (t *Collector) isComposite(configuration string, ctx context.Context) (bool, error) {
+  response, err := t.get(t.serverUrl+"/buildTypes/"+configuration+"/settings/buildConfigurationType", ctx)
+  if err != nil {
+    return false, err
+  }
+  responseBody, _ := io.ReadAll(response.Body)
+  if response.StatusCode > 300 {
+    return false, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+  }
+  type BuildType struct {
+    Name  string
+    Value string
+  }
+  var buildType BuildType
+  err = json.Unmarshal(responseBody, &buildType)
+  return buildType.Value == "COMPOSITE", err
 }
 
 func (t *Collector) createRequest(url string, ctx context.Context) (*http.Request, error) {

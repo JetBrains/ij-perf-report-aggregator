@@ -5,6 +5,7 @@ import (
   "encoding/json"
   e "errors"
   "flag"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
   "github.com/develar/errors"
@@ -92,17 +93,19 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
       if len(chunk.Products) != 0 {
         return errors.New("Must be specified either configurations or products, but not both")
       }
-      branches := []string{"master", "221"}
       for _, configuration := range chunk.Configurations {
-        if strings.Contains(configuration, "<branch>") {
-          for _, branch := range branches {
-            buildConfigurationIds = append(buildConfigurationIds, strings.ReplaceAll(configuration, "<branch>", branch))
-          }
-        } else {
-          buildConfigurationIds = append(buildConfigurationIds, configuration)
+        collector := &Collector{
+          serverUrl:  config.TeamcityUrl + "/app/rest",
+          httpClient: httpClient,
+          logger:     logger,
         }
+        configurations, err := collector.getSnapshots(configuration, taskContext)
+        logger.Info(fmt.Sprintf("Configurations %v", configurations))
+        if err != nil {
+          logger.Warn(err.Error())
+        }
+        buildConfigurationIds = append(buildConfigurationIds, configurations...)
       }
-      buildConfigurationIds = chunk.Configurations
     }
 
     if len(chunk.InitialSince) != 0 {

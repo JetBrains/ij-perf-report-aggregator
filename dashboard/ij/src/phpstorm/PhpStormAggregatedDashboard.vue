@@ -33,6 +33,9 @@
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import Dashboard from "shared/src/components/Dashboard.vue"
+import DimensionSelect from "shared/src/components/DimensionSelect.vue"
+import LineChartCard from "shared/src/components/LineChartCard.vue"
+import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
@@ -41,9 +44,6 @@ import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigu
 import Divider from "tailwind-ui/src/Divider.vue"
 import { useRouter } from "vue-router"
 import DimensionHierarchicalSelect from "/shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import LineChartCard from "shared/src/components/LineChartCard.vue"
-import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 
 const persistentStateManager = new PersistentStateManager("phpstorm_dashboard", {
   machine: "linux-blade-hetzner",

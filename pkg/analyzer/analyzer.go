@@ -220,8 +220,12 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
   }
 
   mappedMeasureNames := make([]string, 0)
-  for _, measure := range measureNames {
-    mappedMeasureNames = append(mappedMeasureNames, MapPerfMeasureName(measure, measureNames, logger))
+  if runResult.branch <= "222" {
+    for _, measure := range measureNames {
+      mappedMeasureNames = append(mappedMeasureNames, MapPerfMeasureName(measure, measureNames, logger))
+    }
+  } else {
+    mappedMeasureNames = measureNames
   }
 
   if len(mappedMeasureNames) == 0 {

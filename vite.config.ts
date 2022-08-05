@@ -18,7 +18,7 @@ export default defineConfig({
     vue(),
     // visualizer({template: "sunburst"}),
     Components({
-      dts: path.resolve(__dirname, "dashboard/shared/src/components.d.ts"),
+      dts: path.resolve(__dirname, "dashboard/src/shared/components.d.ts"),
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),
@@ -43,8 +43,8 @@ export default defineConfig({
     }),
     brotli(),
   ],
-  root:  "dashboard/app",
-  publicDir: path.resolve(__dirname, "dashboard/app/public"),
+  root:  "dashboard",
+  publicDir: path.resolve(__dirname, "dashboard/public"),
   server: {
     host: "localhost",
     port: 8080,
@@ -206,7 +206,7 @@ const componentWithStyles = new Set<string>([
 
 // SFC compilation saves 200KB (2.65 vs 2.67 MB)
 function PrimeVueResolver(): ComponentResolver {
-  const styleDir = path.join(__dirname, "dashboard/shared/src/primevue-theme")
+  const styleDir = path.join(__dirname, "dashboard/src/shared/primevue-theme")
   return {
     type: "component",
     resolve(name: string) {

@@ -1,7 +1,7 @@
 FROM buildpack-deps:curl
 
 ENV NODE_VERSION 16.17.0
-ENV GOLANG_VERSION 1.19.0
+ENV GOLANG_VERSION 1.19
 
 RUN cd /usr/local/bin && \
   curl -L https://github.com/google/ko/releases/download/v0.11.2/ko_0.11.2_Linux_x86_64.tar.gz | tar xvz ko && \

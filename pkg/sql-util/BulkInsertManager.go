@@ -75,11 +75,6 @@ func (t *BatchInsertManager) GetQueuedItemCount() int {
   return t.queuedItems
 }
 
-func (t *BatchInsertManager) SendAndWait() error {
-  t.ScheduleSendBatch()
-  return t.errorGroup.Wait()
-}
-
 func (t *BatchInsertManager) ScheduleSendBatch() {
   batch := t.prepareForFlush()
   if batch != nil {
@@ -89,9 +84,18 @@ func (t *BatchInsertManager) ScheduleSendBatch() {
   }
 }
 
+func (t *BatchInsertManager) SendBatchNow() error {
+  batch := t.prepareForFlush()
+  if batch != nil {
+    return t.sendBatch(batch)
+  } else {
+    return nil
+  }
+}
+
 func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
   for _, dependency := range t.dependencies {
-    err := dependency.SendAndWait()
+    err := dependency.SendBatchNow()
     if err != nil {
       t.logger.Error("cannot commit dependency", zap.Error(err))
       return err
@@ -155,11 +159,6 @@ func (t *BatchInsertManager) Close() error {
     if err == nil {
       err = abortErr
     }
-  }
-
-  dbError := t.Db.Close()
-  if err == nil {
-    err = dbError
   }
   return err
 }

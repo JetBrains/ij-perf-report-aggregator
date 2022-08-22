@@ -5,7 +5,6 @@ import (
   "encoding/json"
   e "errors"
   "flag"
-  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
   "github.com/develar/errors"
@@ -100,9 +99,9 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
           logger:     logger,
         }
         configurations, err := collector.getSnapshots(configuration, taskContext)
-        logger.Info(fmt.Sprintf("Configurations %v", configurations))
+        logger.Info("get snapshots", zap.Strings("configurations", configurations))
         if err != nil {
-          logger.Warn(err.Error())
+          logger.Warn("cannot get snapshots", zap.Error(err))
         }
         buildConfigurationIds = append(buildConfigurationIds, configurations...)
       }

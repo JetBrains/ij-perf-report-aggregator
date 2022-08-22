@@ -52,6 +52,8 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   var clSearch int32
   var clDefine int32
   var clCount int32
+  var clPreparedCount int32
+  var clLoadedCount int32
 
   var rlTime int32
   var rlCount int32
@@ -85,6 +87,11 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
         clDefine = int32(classLoading.GetInt("defineTime"))
         clCount = int32(classLoading.GetInt("count"))
 
+        if version.Compare(report.Version, "38", ">=") {
+          clPreparedCount = int32(classLoading.GetInt("preparedCount"))
+          clLoadedCount = int32(classLoading.GetInt("loadedCount"))
+        }
+
         rlTime = int32(resourceLoading.GetInt("time"))
         rlCount = int32(resourceLoading.GetInt("count"))
       }
@@ -97,6 +104,15 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   } else {
     report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
+  }
+
+  if version.Compare(report.Version, "37", ">=") {
+    measures = append(measures, measureItem{
+      name:     "elementTypeCount",
+      start:    0,
+      duration: uint32(data.GetInt("langLoading", "elementTypeCount")),
+      thread:   "",
+    })
   }
 
   // Sort for better compression (same data pattern across column values). It is confirmed by experiment.
@@ -132,7 +148,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
 
   runResult.ExtraFieldData = []interface{}{
     serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
-    clTotal, clSearch, clDefine, clCount, rlTime, rlCount,
+    clTotal, clSearch, clDefine, clCount, clPreparedCount, clLoadedCount, rlTime, rlCount,
     measureName, measureStart, measureDuration, measureThread,
   }
   return nil

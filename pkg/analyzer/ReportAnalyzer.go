@@ -3,8 +3,10 @@ package analyzer
 import (
   "context"
   "github.com/ClickHouse/clickhouse-go/v2"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
+  errors2 "github.com/pkg/errors"
   "go.deanishe.net/env"
   "go.uber.org/atomic"
   "go.uber.org/zap"
@@ -33,33 +35,12 @@ type ReportAnalyzer struct {
 }
 
 func CreateReportAnalyzer(
-  clickHouseUrl string,
-  projectId string,
+  db driver.Conn,
+  config DatabaseConfiguration,
   analyzeContext context.Context,
   logger *zap.Logger,
   cancelOnError context.CancelFunc,
 ) (*ReportAnalyzer, error) {
-  config := GetAnalyzer(projectId)
-
-  // well, go-faster/ch is not so easy to use for such a generic case as our code (each column should be created in advance, no API to simply pass slice of any values)
-  db, err := clickhouse.Open(&clickhouse.Options{
-    Addr: []string{clickHouseUrl},
-    Auth: clickhouse.Auth{
-      Database: config.DbName,
-    },
-    DialTimeout:     10 * time.Second,
-    ConnMaxLifetime: time.Hour,
-    Settings: map[string]interface{}{
-      // https://github.com/ClickHouse/ClickHouse/issues/2833
-      // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
-      "send_timeout":    30_000,
-      "receive_timeout": 3000,
-    },
-  })
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
   insertReportManager, err := NewInsertReportManager(db, config, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
@@ -105,6 +86,25 @@ func CreateReportAnalyzer(
     }
   }()
   return analyzer, nil
+}
+
+func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, error) {
+  // well, go-faster/ch is not so easy to use for such a generic case as our code (each column should be created in advance, no API to simply pass slice of any values)
+  db, err := clickhouse.Open(&clickhouse.Options{
+    Addr: []string{clickHouseUrl},
+    Auth: clickhouse.Auth{
+      Database: config.DbName,
+    },
+    DialTimeout:     10 * time.Second,
+    ConnMaxLifetime: time.Hour,
+    Settings: map[string]interface{}{
+      // https://github.com/ClickHouse/ClickHouse/issues/2833
+      // ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
+      "send_timeout":    30_000,
+      "receive_timeout": 3000,
+    },
+  })
+  return db, err
 }
 
 func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
@@ -286,7 +286,11 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 
   err := t.InsertReportManager.Insert(runResult)
   if err != nil {
-    return errors.WithMessagef(err, "cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
+    if errors2.Is(err, context.Canceled) {
+      return err
+    } else {
+      return errors.WithMessagef(err, "cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
+    }
   }
   return nil
 }

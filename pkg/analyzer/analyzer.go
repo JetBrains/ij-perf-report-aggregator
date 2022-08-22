@@ -28,7 +28,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
   if id == "ij" {
     fieldNames := []string{
       "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
-      "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount",
+      "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
       "resourceLoadingTime", "resourceLoadingCount",
       "measure.name", "measure.start", "measure.duration", "measure.thread",
     }

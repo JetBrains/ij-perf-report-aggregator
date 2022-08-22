@@ -8,6 +8,7 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
@@ -82,144 +83,183 @@ func collectFromTeamCity(
   buildConfigurationIds []string,
   initialSince time.Time,
   userSpecifiedSince time.Time,
-  httpClient *http.Client, logger *zap.Logger,
-  taskContext context.Context, cancel context.CancelFunc,
+  httpClient *http.Client,
+  logger *zap.Logger,
+  taskContext context.Context,
+  cancel context.CancelFunc,
 ) error {
-  reportAnalyzer, err := analyzer.CreateReportAnalyzer(clickHouseUrl, projectId, taskContext, logger, func() {
-    logger.Debug("canceled by analyzer")
-    cancel()
-  })
+  serverUrl := tcUrl + "/app/rest"
+
+  serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
   if err != nil {
     return err
   }
 
-  serverHost := tcUrl
-  collector := &Collector{
-    serverUrl: serverHost + "/app/rest",
+  config := analyzer.GetAnalyzer(projectId)
 
-    reportAnalyzer: reportAnalyzer,
-
-    httpClient:  httpClient,
-    taskContext: taskContext,
-
-    installerBuildIdToInfo: make(map[int]*InstallerInfo),
-
-    logger:                 logger,
-    reportExistenceChecker: &ReportExistenceChecker{},
-  }
-
-  serverUrl, err := url.Parse(collector.serverUrl + "/builds/")
+  db, err := analyzer.OpenDb(clickHouseUrl, config)
   if err != nil {
-    return err
+    return errors.WithStack(err)
   }
+
+  defer util.Close(db, logger)
 
   for _, buildTypeId := range buildConfigurationIds {
-    if taskContext.Err() != nil {
-      return errors.WithStack(taskContext.Err())
-    }
-
-    q := serverUrl.Query()
-    locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:500"
-
-    since := userSpecifiedSince
-    if since.IsZero() {
-      since = initialSince
-      if since.IsZero() {
-        query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
-        err = reportAnalyzer.InsertReportManager.InsertManager.Db.QueryRow(taskContext, query).Scan(&since)
-        if err != nil && err != sql.ErrNoRows {
-          return errors.WithStack(err)
-        }
-      }
-    }
-
-    if !since.IsZero() {
-      locator += ",sinceDate:" + since.Format(tcTimeFormat)
-    }
-
-    q.Set("locator", locator)
-    q.Set("fields", buildTeamCityQuery())
-    serverUrl.RawQuery = q.Encode()
-
-    logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
-
-    err = collector.reportExistenceChecker.reset(projectId, buildTypeId, reportAnalyzer, taskContext, since)
+    reportAnalyzer, err := analyzer.CreateReportAnalyzer(db, config, taskContext, logger, func() {
+      logger.Debug("canceled by analyzer")
+      cancel()
+    })
     if err != nil {
       return err
     }
 
-    // TC returns from newest to oldest, but we need
-    // 1) to insert in opposite order (less merge work for ClickHouse)
-    //2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
-    var buildsToLoad [][]*Build
+    collector := &Collector{
+      serverUrl: serverUrl,
 
-    buildList, err := collector.loadBuilds(serverUrl.String())
+      reportAnalyzer: reportAnalyzer,
+
+      httpClient:  httpClient,
+      taskContext: taskContext,
+
+      installerBuildIdToInfo: make(map[int]*InstallerInfo),
+
+      logger:                 logger,
+      reportExistenceChecker: &ReportExistenceChecker{},
+    }
+
+    err = collectBuildConfiguration(buildTypeId, collector, serverBuildUrl, tcUrl, userSpecifiedSince, initialSince, projectId, logger)
     if err != nil {
-      logger.Warn(err.Error())
-      continue
+      return err
     }
+  }
+  return err
+}
 
-    buildsToLoad = append(buildsToLoad, buildList.Builds)
+func collectBuildConfiguration(
+  buildTypeId string,
+  collector *Collector,
+  serverUrl *url.URL,
+  serverHost string,
+  userSpecifiedSince time.Time,
+  initialSince time.Time,
+  projectId string,
+  logger *zap.Logger,
+) error {
+  taskContext := collector.taskContext
+  if taskContext.Err() != nil {
+    return errors.WithStack(taskContext.Err())
+  }
 
-    totalCount := len(buildList.Builds)
-    nextHref := buildList.NextHref
-    for len(buildList.NextHref) != 0 {
-      if taskContext.Err() != nil {
-        return errors.WithStack(taskContext.Err())
-      }
+  q := serverUrl.Query()
+  locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:500"
 
-      buildList, err = collector.loadBuilds(serverHost + nextHref)
-      if err != nil {
-        return err
-      }
-
-      nextHref = buildList.NextHref
-      buildsToLoad = append(buildsToLoad, buildList.Builds)
-      totalCount += len(buildList.Builds)
-    }
-
-    logger.Info("load reports", zap.Int("buildCount", totalCount), zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
-
-    for i := len(buildsToLoad) - 1; i >= 0; i-- {
-      builds := buildsToLoad[i]
-      if len(builds) == 0 {
-        continue
-      }
-
-      sort.Slice(builds, func(i, j int) bool {
-        return builds[i].Id < builds[j].Id
-      })
-
-      lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
-      if err != nil {
+  since := userSpecifiedSince
+  insertManager := collector.reportAnalyzer.InsertReportManager.InsertManager
+  if since.IsZero() {
+    since = initialSince
+    if since.IsZero() {
+      //goland:noinspection SqlResolve
+      query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
+      err := insertManager.Db.QueryRow(taskContext, query).Scan(&since)
+      if err != nil && err != sql.ErrNoRows {
         return errors.WithStack(err)
-      }
-
-      err = collector.loadReports(builds)
-      if err != nil {
-        return err
-      }
-
-      select {
-      case analyzeError := <-reportAnalyzer.WaitAnalyzer():
-        if analyzeError != nil {
-          return analyzeError
-        }
-
-        // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
-        // set last collect time to 1 second after last build in chunk
-        err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), reportAnalyzer.InsertReportManager.InsertManager.Db, taskContext)
-        if err != nil {
-          return err
-        }
-      case <-taskContext.Done():
-        return nil
       }
     }
   }
 
-  err = reportAnalyzer.Close()
-  return err
+  if !since.IsZero() {
+    locator += ",sinceDate:" + since.Format(tcTimeFormat)
+  }
+
+  q.Set("locator", locator)
+  q.Set("fields", buildTeamCityQuery())
+  serverUrl.RawQuery = q.Encode()
+
+  logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+
+  err := collector.reportExistenceChecker.reset(projectId, buildTypeId, collector.reportAnalyzer, taskContext, since)
+  if err != nil {
+    return err
+  }
+
+  // TC returns from newest to oldest, but we need
+  // 1) to insert in opposite order (less merge work for ClickHouse)
+  //2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
+  var buildsToLoad [][]*Build
+
+  buildList, err := collector.loadBuilds(serverUrl.String())
+  if err != nil {
+    logger.Warn(err.Error())
+    return nil
+  }
+
+  buildsToLoad = append(buildsToLoad, buildList.Builds)
+
+  totalCount := len(buildList.Builds)
+  nextHref := buildList.NextHref
+  for len(buildList.NextHref) != 0 {
+    if taskContext.Err() != nil {
+      return errors.WithStack(taskContext.Err())
+    }
+
+    buildList, err = collector.loadBuilds(serverHost + nextHref)
+    if err != nil {
+      return err
+    }
+
+    nextHref = buildList.NextHref
+    buildsToLoad = append(buildsToLoad, buildList.Builds)
+    totalCount += len(buildList.Builds)
+  }
+
+  logger.Info("load reports", zap.Int("buildCount", totalCount), zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+
+  for i := len(buildsToLoad) - 1; i >= 0; i-- {
+    builds := buildsToLoad[i]
+    if len(builds) == 0 {
+      continue
+    }
+
+    sort.Slice(builds, func(i, j int) bool {
+      return builds[i].Id < builds[j].Id
+    })
+
+    logger.Debug("load reports", zap.Int("chunk", i))
+
+    lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
+    if err != nil {
+      return errors.WithStack(err)
+    }
+
+    err = collector.loadReports(builds)
+    if err != nil {
+      return err
+    }
+
+    select {
+    case analyzeError := <-collector.reportAnalyzer.WaitAnalyzer():
+      if analyzeError != nil {
+        return analyzeError
+      }
+
+      // ensure that data is written
+      logger.Debug("wait for insert", zap.Int("chunk", i))
+      err = collector.reportAnalyzer.Close()
+      if err != nil {
+        return err
+      }
+
+      // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
+      // set last collect time to 1 second after last build in chunk
+      err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), insertManager.Db, taskContext)
+      if err != nil {
+        return err
+      }
+    case <-taskContext.Done():
+      return nil
+    }
+  }
+  return nil
 }
 
 func buildTeamCityQuery() string {
@@ -231,6 +271,7 @@ func buildTeamCityQuery() string {
 }
 
 func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn, ctx context.Context) error {
+  //goland:noinspection SqlResolve
   batch, err := db.PrepareBatch(ctx, "insert into collector_state values")
   if err != nil {
     return errors.WithStack(err)
@@ -331,7 +372,7 @@ func (t *Collector) getSnapshotsRecursive(configuration string, configurations *
   }
 
   for _, dependency := range dependency.Dependencies {
-    err := t.getSnapshotsRecursive(dependency.Id, configurations, ctx)
+    err = t.getSnapshotsRecursive(dependency.Id, configurations, ctx)
     if err != nil {
       t.logger.Warn(err.Error())
     }

@@ -13,7 +13,7 @@
       :measures='["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]'
     />
     <LineChartCard
-      :measures='["classLoadingCount", "resourceLoadingCount"]'
+      :measures='["classLoadingCount", "resourceLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount"]'
     />
   </ChartRow>
 
@@ -38,5 +38,4 @@
 </template>
 <script setup lang="ts">
 import LineChartCard from "shared/src/components/LineChartCard.vue"
-import ChartRow from "./ChartRow.vue"
-</script>
+import ChartRow from "./ChartRow.vue"</script>

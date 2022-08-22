@@ -49,6 +49,8 @@ create table report2
   `classLoadingSearchTime` Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingDefineTime` Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingPreparedCount` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20)),
 
   `resourceLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
   `resourceLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),

@@ -6,7 +6,7 @@ go 1.18
 
 require (
 	github.com/ClickHouse/ch-go v0.47.3
-	github.com/ClickHouse/clickhouse-go/v2 v2.2.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.3.0
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.4
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -20,6 +20,7 @@ require (
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/minio/minio-go/v7 v7.0.34
 	github.com/nats-io/nats.go v1.16.0
+	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.8.0
@@ -29,7 +30,7 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.10.0
-	go.uber.org/zap v1.22.0
+	go.uber.org/zap v1.23.0
 	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde
 	golang.org/x/tools v0.1.12
 )
@@ -53,6 +54,7 @@ require (
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/jackc/puddle v1.2.2-0.20220404125616-4e959849469a // indirect
 	github.com/klauspost/cpuid/v2 v2.1.0 // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
@@ -66,7 +68,6 @@ require (
 	github.com/pascaldekloe/name v1.0.1 // indirect
 	github.com/paulmach/orb v0.7.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rivo/uniseg v0.3.4 // indirect
 	github.com/rs/xid v1.4.0 // indirect
@@ -77,10 +78,10 @@ require (
 	go.opentelemetry.io/otel/metric v0.31.0 // indirect
 	go.opentelemetry.io/otel/trace v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8 // indirect
+	golang.org/x/crypto v0.0.0-20220824171710-5757bc0c5503 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
-	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
+	golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c // indirect
+	golang.org/x/sys v0.0.0-20220823224334-20c2bfdbfe24 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

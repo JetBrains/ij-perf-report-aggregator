@@ -3,7 +3,7 @@ WORKDIR /project/src
 ADD entrypoint.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/entrypoint .
 
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.7.3.5-stable/clickhouse-common-static-22.7.3.5-amd64.tgz | tar xvz --strip-components=3
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.8.2.11-lts/clickhouse-common-static-22.8.2.11-amd64.tgz | tar xvz --strip-components=3
 
 RUN mkdir /var/lib/clickhouse
 

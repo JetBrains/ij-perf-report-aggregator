@@ -51,6 +51,10 @@ export function getIjItems(): Array<MenuItem> {
           label: "With Rust Plugin",
           to: "/intellij/rust/performanceTests",
         },
+        {
+          label: "Scala Plugin",
+          to: "/intellij/scala/performanceTests",
+        },
       ]
     },
     {
@@ -217,6 +221,16 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
           },
           meta: {pageTitle: "IntelliJ with Rust Plugin"},
+        },
+        {
+          path: "/intellij/scala/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "scala",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Scala Plugin"},
         },
       ],
     },

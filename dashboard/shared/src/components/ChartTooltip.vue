@@ -39,7 +39,7 @@
           target="_blank"
           class="info"
         >
-          <ArchiveIcon class="w-5 h-5" />
+          <ArchiveBoxIcon class="w-5 h-5" />
         </a>
 
         <a
@@ -49,7 +49,7 @@
           target="_blank"
           class="info"
         >
-          <DownloadIcon class="w-5 h-5" />
+          <ArrowDownTray class="w-5 h-5" />
         </a>
       </div>
       <div

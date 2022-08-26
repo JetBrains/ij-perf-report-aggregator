@@ -5,9 +5,9 @@
     "@fontsource/inter": "4.5.12",
     "@fontsource/jetbrains-mono": "4.5.10",
     "ij": "workspace:*",
-    "primevue": "3.16.1",
+    "primevue": "3.16.2",
     "report-visualizer": "workspace:*",
-    "rxjs": "8.0.0-alpha.3",
+    "rxjs": "8.0.0-alpha.4",
     "shared": "workspace:*",
     "vue": "3.2.37",
     "vue-router": "4.1.4"

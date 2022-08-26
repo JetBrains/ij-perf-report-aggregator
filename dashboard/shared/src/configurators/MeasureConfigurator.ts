@@ -213,7 +213,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
         addFilter({f: "name", v: measure})
         valueFieldName = "value"
       }
-      else if (isIj && !measure.includes(" ")) {
+      else if (isIj && !measure.includes(" ") && measure != "elementTypeCount") {
         field.n = measure
         valueFieldName = measure
       }

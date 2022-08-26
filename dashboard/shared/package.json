@@ -2,13 +2,13 @@
   "name": "shared",
   "private": true,
   "dependencies": {
-    "@heroicons/vue": "1.0.6",
+    "@heroicons/vue": "2.0.7",
     "echarts": "5.3.3",
     "echarts-stat": "1.2.0",
-    "fast-equals": "4.0.1",
+    "fast-equals": "4.0.3",
     "humanize-duration": "3.27.2",
-    "primevue": "3.16.1",
-    "rxjs": "8.0.0-alpha.3",
+    "primevue": "3.16.2",
+    "rxjs": "8.0.0-alpha.4",
     "tailwind-ui": "workspace:*",
     "vue": "3.2.37",
     "vue-router": "4.1.4"

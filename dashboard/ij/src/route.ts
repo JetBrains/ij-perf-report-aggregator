@@ -80,7 +80,16 @@ export function getIjItems(): Array<MenuItem> {
     },
     {
       label: "RubyMine",
-      to: "/rubymine/performanceTests",
+      items: [
+        {
+          label: "Dashboard",
+          to: "/rubymine/dashboard",
+        },
+        {
+          label: "Explore",
+          to: "/rubymine/performanceTests",
+        },
+      ]
     },
     {
       label: "GoLand",
@@ -244,7 +253,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             table: "ruby",
             defaultMeasures: [],
           },
-          meta: {pageTitle: "RubyMine Integration Performance Tests"},
+          meta: {pageTitle: "Explore RubyMine Tests"},
+        },
+        {
+          path: "/rubymine/dashboard",
+          component: () => import("./rubymine/RubyMineDashboard.vue"),
+          meta: {pageTitle: "RubyMine Dashboard"},
         },
       ]
     },

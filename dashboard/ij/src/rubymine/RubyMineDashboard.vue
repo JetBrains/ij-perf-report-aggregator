@@ -116,7 +116,7 @@ provide(chartStyleKey, {
 provideReportUrlProvider()
 
 const persistentStateManager = new PersistentStateManager("rubymine_dashboard", {
-  machine: "Linux Munich i7-3770, 32 Gb",
+  machine: "macMini Intel 3.2, 16GB",
   project: [],
   branch: "master",
 }, useRouter())

@@ -28,6 +28,18 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Git Log Indexing: execution time"
+      measure="indexing"
+      :projects="['intellij_sources/gitLogIndexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Git Log Indexing: number of commits"
+      measure="indexing#number"
+      :projects="['intellij_sources/gitLogIndexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Rebuild"
       measure="build_compilation_duration"
       :projects="['intellij_sources/rebuild']"
@@ -63,6 +75,18 @@
       label="Local Inspection"
       measure="localInspections"
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion: execution time"
+      measure="completion"
+      :projects="['intellij_sources/completion/java_file','intellij_sources/completion/kotlin_file']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion: awt delay"
+      measure="completion#average_awt_delay"
+      :projects="['intellij_sources/completion/java_file','intellij_sources/completion/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>

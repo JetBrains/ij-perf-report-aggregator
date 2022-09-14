@@ -126,6 +126,19 @@ export function getIjItems(): Array<MenuItem> {
       ],
     },
     {
+      label: "Kotlin",
+      items: [
+        {
+          label: "Dashboard",
+          to: "/kotlin/pluginDashboard",
+        },
+        {
+          label: "Explore",
+          to: "/kotlin/performanceKotlinPluginTests",
+        },
+      ]
+    },
+    {
       label: "Aggregates",
       items: [
         {
@@ -259,6 +272,25 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/rubymine/dashboard",
           component: () => import("./rubymine/RubyMineDashboard.vue"),
           meta: {pageTitle: "RubyMine Dashboard"},
+        },
+      ]
+    },
+    {
+      children: [
+        {
+          path: "/kotlin/performanceKotlinPluginTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "kotlin",
+            table: "kotlinPlugin",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore Kotlin plugin Tests"},
+        },
+        {
+          path: "/kotlin/pluginDashboard",
+          component: () => import("./kotlin/KotlinPluginDashboard.vue"),
+          meta: {pageTitle: "Kotlin plugin Dashboard"},
         },
       ]
     },

@@ -281,8 +281,8 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/kotlin/performanceKotlinPluginTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
-            dbName: "kotlin",
-            table: "kotlinPlugin",
+            dbName: "perfint",
+            table: "kotlin",
             defaultMeasures: [],
           },
           meta: {pageTitle: "Explore Kotlin plugin Tests"},

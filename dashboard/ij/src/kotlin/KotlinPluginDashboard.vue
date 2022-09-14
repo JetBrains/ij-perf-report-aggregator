@@ -79,7 +79,7 @@ const persistentStateManager = new PersistentStateManager("kotlinplugin_dashboar
   branch: "master",
 }, useRouter())
 
-const serverConfigurator = new ServerConfigurator("kotlin", "kotlinPlugin")
+const serverConfigurator = new ServerConfigurator("perfint", "kotlin")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
   return a.includes("/") ? 1 : -1

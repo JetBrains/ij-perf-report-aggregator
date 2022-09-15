@@ -49,7 +49,7 @@
           target="_blank"
           class="info"
         >
-          <ArrowDownTray class="w-5 h-5" />
+          <ArrowDownTrayIcon class="w-5 h-5" />
         </a>
       </div>
       <div

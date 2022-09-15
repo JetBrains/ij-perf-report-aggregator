@@ -85,7 +85,7 @@
     />
     <GroupLineChart
       label="Completion: awt delay"
-      measure="completion#average_awt_delay"
+      measure="test#average_awt_delay"
       :projects="['intellij_sources/completion/java_file','intellij_sources/completion/kotlin_file']"
       :server-configurator="serverConfigurator"
     />

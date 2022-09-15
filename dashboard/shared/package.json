@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@heroicons/vue": "2.0.7",
-    "echarts": "5.3.3",
+    "echarts": "5.4.0-rc.1",
     "echarts-stat": "1.2.0",
     "fast-equals": "4.0.3",
     "humanize-duration": "3.27.2",

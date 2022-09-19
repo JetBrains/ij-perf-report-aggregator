@@ -19,14 +19,14 @@
       label="Completion with Library cache"
       measure="completion"
       :projects="[
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_after_dot_with_library_cache_k1',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_on_empty_place_with_library_cache_k1',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_after_parameter_with_library_cache_k1',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_on_empty_placer_with_library_cache_k1',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_after_dot_with_library_cache_k2',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_on_empty_place_with_library_cache_k2',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_after_parameter_with_library_cache_k2',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_on_empty_placer_with_library_cache_k2'
+        'intellij_commit/completion/empty_place_with_library_cache_k1',
+        'intellij_commit/completion/after_parameter_with_library_cache_k1',
+        'kotlin_lang/completion/after_parameter_with_library_cache_k1',
+        'kotlin_lang/completion/empty_place_with_library_cache_k1',
+        'intellij_commit/completion/empty_place_with_library_cache_k2',
+        'intellij_commit/completion/after_parameter_with_library_cache_k2',
+        'kotlin_lang/completion/after_parameter_with_library_cache_k2',
+        'kotlin_lang/completion/empty_place_with_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -34,14 +34,122 @@
       label="Completion without Library cache"
       measure="completion"
       :projects="[
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_after_dot_without_library_cache_k1',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_on_empty_place_without_library_cache_k1',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_after_parameter_without_library_cache_k1',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_on_empty_placer_without_library_cache_k1',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_after_dot_without_library_cache_k2',
-        'intellij_sources_specific_commit/completion/intellij_completion_in_method_on_empty_place_without_library_cache_k2',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_after_parameter_without_library_cache_k2',
-        'kotlin_lang/completion/kotlin_lang_completion_in_method_on_empty_placer_without_library_cache_k2',
+        'intellij_commit/completion/empty_place_without_library_cache_k1',
+        'intellij_commit/completion/after_parameter_without_library_cache_k1',
+        'kotlin_lang/completion/after_parameter_without_library_cache_k1',
+        'kotlin_lang/completion/empty_place_without_library_cache_k1',
+        'intellij_commit/completion/empty_place_without_library_cache_k2',
+        'intellij_commit/completion/after_parameter_without_library_cache_k2',
+        'kotlin_lang/completion/after_parameter_without_library_cache_k2',
+        'kotlin_lang/completion/empty_place_without_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight with Library cache"
+      measure="highlighting"
+      :projects="[
+        'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
+        'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
+        'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
+        'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
+        'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
+        'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k2',
+        'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k2',
+        'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',
+        'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
+        'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
+        'kotlin_lang/highlight/_Arrays_with_library_cache_k1',
+        'kotlin_lang/highlight/_Arrays_with_library_cache_k2',
+        'kotlin_lang/highlight/_UArrays_with_library_cache_k1',
+        'kotlin_lang/highlight/_UArrays_with_library_cache_k2',
+        'kotlin_lang/highlight/kotlin.collections_with_library_cache_k1',
+        'kotlin_lang/highlight/kotlin.collections_with_library_cache_k2',
+        'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
+        'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
+        'kotlin_lang/highlight/org.w3c.dom_with_library_cache_k1',
+        'kotlin_lang/highlight/org.w3c.dom_with_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight without Library cache"
+      measure="highlighting"
+      :projects="[
+        'intellij_commit/highlight/DexInlineCallStackComparisonTest_without_library_cache_k1',
+        'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_without_library_cache_k1',
+        'intellij_commit/highlight/OraIntrospector_without_library_cache_k1',
+        'intellij_commit/highlight/SolutionModel.Generated_without_library_cache_k1',
+        'intellij_commit/highlight/UIAutomationInteractionModel.Generated_without_library_cache_k1',
+        'intellij_commit/highlight/DexInlineCallStackComparisonTest_without_library_cache_k2',
+        'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_without_library_cache_k2',
+        'intellij_commit/highlight/OraIntrospector_without_library_cache_k2',
+        'intellij_commit/highlight/SolutionModel.Generated_without_library_cache_k2',
+        'intellij_commit/highlight/UIAutomationInteractionModel.Generated_without_library_cache_k2',
+        'kotlin_lang/highlight/_Arrays_without_library_cache_k1',
+        'kotlin_lang/highlight/_Arrays_without_library_cache_k2',
+        'kotlin_lang/highlight/_UArrays_without_library_cache_k1',
+        'kotlin_lang/highlight/_UArrays_without_library_cache_k2',
+        'kotlin_lang/highlight/kotlin.collections_without_library_cache_k1',
+        'kotlin_lang/highlight/kotlin.collections_without_library_cache_k2',
+        'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k1',
+        'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k2',
+        'kotlin_lang/highlight/org.w3c.dom_without_library_cache_k1',
+        'kotlin_lang/highlight/org.w3c.dom_without_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="FindUsages with Library cache"
+      measure="findUsages"
+      :projects="[
+        'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k1',
+        'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
+        'intellij_commit/findUsages/OraIntrospector_with_library_cache_k1',
+        'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k1',
+        'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k1',
+        'kotlin_lang/findUsages/FirErrors_with_library_cache_k1',
+        'kotlin_lang/findUsages/Primitives_with_library_cache_k1',
+        'kotlin_lang/findUsages/Duration_with_library_cache_k1',
+        'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
+        'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
+        'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
+        'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
+        'intellij_commit/findUsages/OraIntrospector_with_library_cache_k2',
+        'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k2',
+        'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k2',
+        'kotlin_lang/findUsages/FirErrors_with_library_cache_k2',
+        'kotlin_lang/findUsages/Primitives_with_library_cache_k2',
+        'kotlin_lang/findUsages/Duration_with_library_cache_k2',
+        'kotlin_lang/findUsages/SymbolTable_with_library_cache_k2',
+        'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="FindUsages without Library cache"
+      measure="findUsages"
+      :projects="[
+        'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k1',
+        'intellij_commit/findUsages/SqlBlock_without_library_cache_k1',
+        'intellij_commit/findUsages/OraIntrospector_without_library_cache_k1',
+        'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_without_library_cache_k1',
+        'intellij_commit/findUsages/SolutionModel.Generated_without_library_cache_k1',
+        'kotlin_lang/findUsages/FirErrors_without_library_cache_k1',
+        'kotlin_lang/findUsages/Primitives_without_library_cache_k1',
+        'kotlin_lang/findUsages/Duration_without_library_cache_k1',
+        'kotlin_lang/findUsages/SymbolTable_without_library_cache_k1',
+        'kotlin_lang/findUsages/DefaultArgumentStubGenerator_without_library_cache_k1',
+        'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k2',
+        'intellij_commit/findUsages/SqlBlock_without_library_cache_k2',
+        'intellij_commit/findUsages/OraIntrospector_without_library_cache_k2',
+        'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_without_library_cache_k2',
+        'intellij_commit/findUsages/SolutionModel.Generated_without_library_cache_k2',
+        'kotlin_lang/findUsages/FirErrors_without_library_cache_k2',
+        'kotlin_lang/findUsages/Primitives_without_library_cache_k2',
+        'kotlin_lang/findUsages/Duration_without_library_cache_k2',
+        'kotlin_lang/findUsages/SymbolTable_without_library_cache_k2',
+        'kotlin_lang/findUsages/DefaultArgumentStubGenerator_without_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />

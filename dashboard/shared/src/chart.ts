@@ -36,6 +36,8 @@ export const chartDefaultStyle: ChartStyle = {
 
 export type ValueUnit = "ms" | "ns"
 
+export type ChartSymbolType = "circle" | "none"
+
 export interface ChartStyle {
   barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |
     "insideBottom" | "insideTopLeft" | "insideTopRight" | "insideBottomLeft" | "insideBottomRight"

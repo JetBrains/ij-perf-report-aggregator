@@ -23,6 +23,7 @@ async function initApp() {
   app.use(router)
   app.use(PrimeVue)
   app.use(ToastService)
+
   await router.isReady()
     .then(() => app.mount("#app"))
 }

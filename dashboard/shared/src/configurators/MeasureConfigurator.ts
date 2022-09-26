@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, swit
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator, collator, ValueUnit } from "../chart"
+import { ChartConfigurator, collator, ChartSymbolType, ValueUnit } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
@@ -15,6 +15,12 @@ import { configureQueryFilters, createFilterObservable, FilterConfigurator } fro
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export type ChartType = "line" | "scatter"
+
+type SymbolOptions = {
+  symbol?: ChartSymbolType
+  symbolSize?: number
+  showSymbol?: boolean
+}
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   readonly data = shallowRef<Array<string>>([])
@@ -37,11 +43,14 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return ref as Ref<Array<string> | null>
   }
 
-  constructor(serverConfigurator: ServerConfigurator,
-              persistentStateManager: PersistentStateManager,
-              filters: Array<FilterConfigurator> = [],
-              readonly skipZeroValues: boolean = true,
-              readonly chartType: ChartType = "line") {
+  constructor(
+    serverConfigurator: ServerConfigurator,
+    persistentStateManager: PersistentStateManager,
+    filters: Array<FilterConfigurator> = [],
+    readonly skipZeroValues: boolean = true,
+    readonly chartType: ChartType = "line",
+    readonly symbolOptions: SymbolOptions = {},
+  ) {
     persistentStateManager.add("measure", this._selected)
 
     const isIj = serverConfigurator.db === "ij"
@@ -107,7 +116,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType)
+    return configureChart(configuration, data, this.chartType, "ms", this.symbolOptions)
   }
 }
 
@@ -132,7 +141,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
 
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
   query.addDimension(fieldPrefix.length === 0 ? {n: "name"} : {n: fieldPrefix, subName: "name"})
-  query.order = fieldPrefix.length === 0 ? "name" :`${fieldPrefix}.name`
+  query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
   query.table = serverConfigurator.table ?? "report"
   query.flat = true
   return serverConfigurator.computeQueryUrl(query)
@@ -142,7 +151,9 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   constructor(private readonly measures: Array<string>,
               readonly skipZeroValues: Ref<boolean> = shallowRef(true),
               private readonly chartType: ChartType = "line",
-              private readonly valueUnit: ValueUnit = "ms") {}
+              private readonly valueUnit: ValueUnit = "ms",
+              readonly symbolOptions: SymbolOptions = {},
+  ) {}
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.skipZeroValues)
@@ -156,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions)
   }
 }
 
@@ -180,7 +191,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   const field: DataQueryDimension = {n: ""}
   query.insertField(field, 1)
 
-  if(query.db === "perfint"){
+  if (query.db === "perfint") {
     query.addField({n: "measures", subName: "type"})
   }
 
@@ -241,7 +252,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
     },
     getMeasureName(index: number): string {
       return measureNames[index]
-    }
+    },
   })
 
   if (query.order != null) {
@@ -250,13 +261,16 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
   query.order = "t"
 }
 
-function configureChart(configuration: DataQueryExecutorConfiguration,
-                        dataList: DataQueryResult,
-                        chartType: ChartType,
-                        valueUnit: ValueUnit = "ms"): LineChartOptions | ScatterChartOptions {
+function configureChart(
+  configuration: DataQueryExecutorConfiguration,
+  dataList: DataQueryResult,
+  chartType: ChartType,
+  valueUnit: ValueUnit = "ms",
+  symbolOptions: SymbolOptions = {},
+): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
-
+  console.log("symbolOptions:", symbolOptions)
   const dataset: Array<DatasetOption> = []
 
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
@@ -264,12 +278,13 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
     const seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
 
-    if(seriesData.length > 2) {
+    if (seriesData.length > 2) {
       // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
       const type = seriesData[2][seriesData[2].length - 1]
-      if(type === "c"){
+      if (type === "c") {
         useDurationFormatter = false
-      } else if (type === "d"){
+      }
+      else if (type === "d") {
         useDurationFormatter = true
       }
     }
@@ -279,11 +294,15 @@ function configureChart(configuration: DataQueryExecutorConfiguration,
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: chartType,
-      showSymbol: seriesData[0].length < 100,
-      // 10 is a default value for scatter (undefined doesn't work to unset)
-      symbolSize: chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10,
-      symbol: "circle",
+      showSymbol: symbolOptions.showSymbol != undefined ?
+        symbolOptions.showSymbol :
+        seriesData[0].length < 100,
+      // 10 is a default value for scatter (  undefined doesn't work to unset)
+      symbolSize: symbolOptions.symbolSize ||
+        (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
+      symbol: symbolOptions.symbol || "circle",
       legendHoverLink: true,
+      triggerLineEvent: true,
       // applicable only for line chart
       sampling: "lttb",
       seriesLayoutBy: "row",

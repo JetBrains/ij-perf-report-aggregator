@@ -105,6 +105,15 @@ export function getIjItems(): Array<MenuItem> {
       ]
     },
     {
+      label: "DataGrip",
+      items: [
+        {
+          label: "Explore",
+          to: "/datagrip/performanceTests",
+        },
+      ]
+    },
+    {
       label: "Fleet",
       items: [
         {
@@ -291,6 +300,20 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/kotlin/pluginDashboard",
           component: () => import("./kotlin/KotlinPluginDashboard.vue"),
           meta: {pageTitle: "Kotlin plugin Dashboard"},
+        },
+      ]
+    },
+    {
+      children: [
+        {
+          path: "/datagrip/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "datagrip",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore DataGrip Tests"},
         },
       ]
     },

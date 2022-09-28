@@ -206,7 +206,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   }
 
   branch := string(props.GetStringBytes("vcsroot.branch"))
-  if len(branch) != 0 {
+  if len(branch) != 0 && projectId != "fleet" {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
   }
 

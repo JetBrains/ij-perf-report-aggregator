@@ -2,6 +2,10 @@
   <Dashboard>
     <template #toolbar>
       <TimeRangeSelect :configurator="timeRangeConfigurator" />
+      <DimensionSelect
+        label="Branch"
+        :dimension="branchConfigurator"
+      />
       <DimensionHierarchicalSelect
         label="Machine"
         :dimension="machineConfigurator"
@@ -97,6 +101,7 @@ import { chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 
 provide(chartStyleKey, {
   ...chartDefaultStyle,
@@ -114,8 +119,12 @@ const serverConfigurator = new ServerConfigurator("fleet", "measure")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
+const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
+  return a.includes("/") ? 1 : -1
+})
 const configurators = [
   serverConfigurator,
+  branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator

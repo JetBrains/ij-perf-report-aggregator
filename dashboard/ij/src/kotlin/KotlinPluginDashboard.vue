@@ -16,8 +16,8 @@
       />
     </template>
     <GroupLineChart
-      label="Completion with Library cache"
-      measure="completion"
+      label="Completion mean value with Library cache"
+      measure="completion#mean_value"
       :projects="[
         'intellij_commit/completion/empty_place_with_library_cache_k1',
         'intellij_commit/completion/after_parameter_with_library_cache_k1',
@@ -31,8 +31,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Completion without Library cache"
-      measure="completion"
+      label="Completion mean value without Library cache"
+      measure="completion#mean_value"
       :projects="[
         'intellij_commit/completion/empty_place_without_library_cache_k1',
         'intellij_commit/completion/after_parameter_without_library_cache_k1',
@@ -46,8 +46,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Highlight with Library cache"
-      measure="highlighting"
+      label="Highlight mean value with Library cache"
+      measure="highlighting#mean_value"
       :projects="[
         'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
@@ -59,22 +59,22 @@
         'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',
         'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
-        'kotlin_lang/highlight/_Arrays_with_library_cache_k1',
-        'kotlin_lang/highlight/_Arrays_with_library_cache_k2',
-        'kotlin_lang/highlight/_UArrays_with_library_cache_k1',
-        'kotlin_lang/highlight/_UArrays_with_library_cache_k2',
-        'kotlin_lang/highlight/kotlin.collections_with_library_cache_k1',
-        'kotlin_lang/highlight/kotlin.collections_with_library_cache_k2',
+        'kotlin_lang/highlight/CommonParser_with_library_cache_k1',
+        'kotlin_lang/highlight/CommonParser_with_library_cache_k2',
+        'kotlin_lang/highlight/FirErrors_with_library_cache_k1',
+        'kotlin_lang/highlight/FirErrors_with_library_cache_k2',
+        'kotlin_lang/highlight/Flag_with_library_cache_k1',
+        'kotlin_lang/highlight/Flag_with_library_cache_k2',
         'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
         'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
-        'kotlin_lang/highlight/org.w3c.dom_with_library_cache_k1',
-        'kotlin_lang/highlight/org.w3c.dom_with_library_cache_k2',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Highlight without Library cache"
-      measure="highlighting"
+      label="Highlight mean value without Library cache"
+      measure="highlighting#mean_value"
       :projects="[
         'intellij_commit/highlight/DexInlineCallStackComparisonTest_without_library_cache_k1',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_without_library_cache_k1',
@@ -86,16 +86,16 @@
         'intellij_commit/highlight/OraIntrospector_without_library_cache_k2',
         'intellij_commit/highlight/SolutionModel.Generated_without_library_cache_k2',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_without_library_cache_k2',
-        'kotlin_lang/highlight/_Arrays_without_library_cache_k1',
-        'kotlin_lang/highlight/_Arrays_without_library_cache_k2',
-        'kotlin_lang/highlight/_UArrays_without_library_cache_k1',
-        'kotlin_lang/highlight/_UArrays_without_library_cache_k2',
-        'kotlin_lang/highlight/kotlin.collections_without_library_cache_k1',
-        'kotlin_lang/highlight/kotlin.collections_without_library_cache_k2',
+        'kotlin_lang/highlight/CommonParser_without_library_cache_k1',
+        'kotlin_lang/highlight/CommonParser_without_library_cache_k2',
+        'kotlin_lang/highlight/FirErrors_without_library_cache_k1',
+        'kotlin_lang/highlight/FirErrors_without_library_cache_k2',
+        'kotlin_lang/highlight/Flag_without_library_cache_k1',
+        'kotlin_lang/highlight/Flag_without_library_cache_k2',
         'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k1',
         'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k2',
-        'kotlin_lang/highlight/org.w3c.dom_without_library_cache_k1',
-        'kotlin_lang/highlight/org.w3c.dom_without_library_cache_k2',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_without_library_cache_k1',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_without_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -109,8 +109,8 @@
         'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k1',
         'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k1',
         'kotlin_lang/findUsages/FirErrors_with_library_cache_k1',
-        'kotlin_lang/findUsages/Primitives_with_library_cache_k1',
-        'kotlin_lang/findUsages/Duration_with_library_cache_k1',
+        'kotlin_lang/findUsages/Flag_with_library_cache_k1',
+        'kotlin_lang/findUsages/CommonParser_with_library_cache_k1',
         'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
         'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
@@ -119,8 +119,8 @@
         'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k2',
         'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k2',
         'kotlin_lang/findUsages/FirErrors_with_library_cache_k2',
-        'kotlin_lang/findUsages/Primitives_with_library_cache_k2',
-        'kotlin_lang/findUsages/Duration_with_library_cache_k2',
+        'kotlin_lang/findUsages/Flag_with_library_cache_k2',
+        'kotlin_lang/findUsages/CommonParser_with_library_cache_k2',
         'kotlin_lang/findUsages/SymbolTable_with_library_cache_k2',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
       ]"
@@ -136,8 +136,8 @@
         'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_without_library_cache_k1',
         'intellij_commit/findUsages/SolutionModel.Generated_without_library_cache_k1',
         'kotlin_lang/findUsages/FirErrors_without_library_cache_k1',
-        'kotlin_lang/findUsages/Primitives_without_library_cache_k1',
-        'kotlin_lang/findUsages/Duration_without_library_cache_k1',
+        'kotlin_lang/findUsages/Flag_without_library_cache_k1',
+        'kotlin_lang/findUsages/CommonParser_without_library_cache_k1',
         'kotlin_lang/findUsages/SymbolTable_without_library_cache_k1',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_without_library_cache_k1',
         'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k2',
@@ -146,8 +146,8 @@
         'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_without_library_cache_k2',
         'intellij_commit/findUsages/SolutionModel.Generated_without_library_cache_k2',
         'kotlin_lang/findUsages/FirErrors_without_library_cache_k2',
-        'kotlin_lang/findUsages/Primitives_without_library_cache_k2',
-        'kotlin_lang/findUsages/Duration_without_library_cache_k2',
+        'kotlin_lang/findUsages/Flag_without_library_cache_k2',
+        'kotlin_lang/findUsages/CommonParser_without_library_cache_k2',
         'kotlin_lang/findUsages/SymbolTable_without_library_cache_k2',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_without_library_cache_k2',
       ]"

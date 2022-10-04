@@ -1,5 +1,9 @@
 <template>
-  <TabView class="text-sm">
+  <TabView
+    class="text-sm"
+    :active-index="0"
+    @tab-click="handleClick"
+  >
     <TabPanel
       header="Performance dashboard"
     >
@@ -22,4 +26,5 @@
 import TabPanel from "primevue/tabpanel"
 import TabView from "primevue/tabview"
 import PerformanceDashboard from "./inteliJ/PerformanceDashboard.vue"
+const path = "/new/ij/tests"
 </script>

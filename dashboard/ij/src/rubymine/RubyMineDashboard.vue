@@ -36,7 +36,8 @@
     <GroupLineChart
       label="Inspection"
       measure="globalInspections"
-      :projects="['diaspora-project-inspections-test/inspection-RubyResolve-app', 'diaspora-project-inspections-test/inspection-app', 'gitlab-project-inspections-test/inspection-RubyResolve-app', 'gitlab-project-inspections-test/inspection-app']"
+      :projects="['diaspora-project-inspections-test/inspection-RubyResolve-app', 'diaspora-project-inspections-test/inspection-app',
+                  'gitlab-project-inspections-test/inspection-RubyResolve-app', 'gitlab-project-inspections-test/inspection-app']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -78,13 +79,15 @@
     <GroupLineChart
       label="Get Symbol Members: execution time"
       measure="getSymbolMembers"
-      :projects="['diaspora-project-test/getSymbolMembers-ApplicationController-false', 'diaspora-project-test/getSymbolMembers-ApplicationController-true', 'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true']"
+      :projects="['diaspora-project-test/getSymbolMembers-ApplicationController-false', 'diaspora-project-test/getSymbolMembers-ApplicationController-true',
+                  'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Get Symbol Members: number"
       measure="getSymbolMembers#number"
-      :projects="['diaspora-project-test/getSymbolMembers-ApplicationController-false', 'diaspora-project-test/getSymbolMembers-ApplicationController-true', 'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true']"
+      :projects="['diaspora-project-test/getSymbolMembers-ApplicationController-false', 'diaspora-project-test/getSymbolMembers-ApplicationController-true',
+                  'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true']"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>
@@ -133,7 +136,7 @@ const configurators = [
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  triggeredByConfigurator
+  triggeredByConfigurator,
 ]
 initDataComponent(configurators)
 </script>

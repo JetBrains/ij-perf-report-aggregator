@@ -93,6 +93,7 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
@@ -101,7 +102,6 @@ import { chartStyleKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 
 provide(chartStyleKey, {
   ...chartDefaultStyle,

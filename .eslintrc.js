@@ -30,6 +30,7 @@ module.exports = {
     // "no-console": process.env.NODE_ENV === "production" ? ["warn", {allow: ["warn", "error"]}] : "off",
     "unicorn/prevent-abbreviations": "off",
     "unicorn/filename-case": "off",
+    "unicorn/switch-case-braces": "off",
     "unicorn/no-null" : "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/consistent-function-scoping" : ["error", {"checkArrowFunctions" : false}],

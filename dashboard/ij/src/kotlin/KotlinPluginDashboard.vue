@@ -46,6 +46,17 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Completion empty kotlin project"
+      measure="completion#mean_value"
+      :projects="[
+        'kotlin_empty/completion/empty_place_with_library_cache_k1',
+        'kotlin_empty/completion/empty_place_without_library_cache_k1',
+        'kotlin_empty/completion/empty_place_with_library_cache_k2',
+        'kotlin_empty/completion/empty_place_without_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Highlight mean value with Library cache"
       measure="highlighting#mean_value"
       :projects="[

@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, swit
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator, collator, ChartSymbolType, ValueUnit } from "../chart"
+import { ChartConfigurator, collator, ChartType, ValueUnit, SymbolOptions } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
@@ -13,14 +13,6 @@ import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
-
-export type ChartType = "line" | "scatter"
-
-type SymbolOptions = {
-  symbol?: ChartSymbolType
-  symbolSize?: number
-  showSymbol?: boolean
-}
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   readonly data = shallowRef<Array<string>>([])
@@ -270,7 +262,7 @@ function configureChart(
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
-  console.log("symbolOptions:", symbolOptions)
+
   const dataset: Array<DatasetOption> = []
 
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {

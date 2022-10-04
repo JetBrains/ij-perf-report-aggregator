@@ -1,4 +1,3 @@
-import { LineSeriesOption } from "echarts"
 import * as ecStat from "echarts-stat"
 import { LineChart, ScatterChart } from "echarts/charts"
 import { DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
@@ -7,7 +6,7 @@ import { CanvasRenderer } from "echarts/renderers"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ChartSymbolType, ValueUnit } from "shared/src/chart"
+import { ValueUnit } from "shared/src/chart"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
 
@@ -29,9 +28,7 @@ use([
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
 registerTransform(ecStat["transform"].regression)
 
-export class LineChartVm {
-  private isTooltipShown = false
-
+export class LineChartVM {
   constructor(
     private readonly eChart: ChartManagerHelper,
     private readonly dataQuery: DataQueryExecutor,
@@ -69,23 +66,31 @@ export class LineChartVm {
           type: "cross",
           snap: true
         },
+        renderMode: "html",
+        position: (pointerCoords, _, tooltipElement) => {
+          const [pointerLeft, pointerTop] = pointerCoords
+          const element = (tooltipElement as HTMLDivElement)
+          const charLeft = this.eChart.chart.getDom().getBoundingClientRect().left
+          const isOverflowWindow = (charLeft + pointerLeft + element.offsetWidth) > window.innerWidth
+
+          return [
+            isOverflowWindow ? (pointerLeft - element.offsetWidth) : pointerLeft,
+            pointerTop - element.clientHeight - 10,
+          ]
+        },
         // Formatting
-        formatter: (params: CallbackDataParams[]) => {
-          if (this.isTooltipShown) {
-            const [data] = params
-            const element = document.createElement("div")
-            const [dateMs, durationMs] = data.value as OptionDataValue[]
+        formatter(params: CallbackDataParams[]) {
+          const [data] = params
+          const element = document.createElement("div")
+          const [dateMs, durationMs] = data.value as OptionDataValue[]
 
-            element.append(
-              durationAxisPointerFormatter(durationMs as number),
-              document.createElement("br"),
-              timeFormatWithoutSeconds.format(dateMs as number),
-            )
+          element.append(
+            durationAxisPointerFormatter(durationMs as number),
+            document.createElement("br"),
+            timeFormatWithoutSeconds.format(dateMs as number),
+          )
 
-            return element
-          }
-          
-          return ""
+          return element
         },
         valueFormatter(it) {
           return numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms"
@@ -108,36 +113,6 @@ export class LineChartVm {
         },
       },
     })
-
-    this.eChart.chart.on("mouseover", params => {
-      // Check if it's hovering a line
-      if (params.componentSubType == "line") {
-        this.isTooltipShown = true
-      }
-
-    })
-
-    this.eChart.chart.on("mouseout", () => {
-      this.isTooltipShown = false
-    })
-  }
-  
-  private setPointsSymbol(type: ChartSymbolType) {
-    const options = this.eChart.chart.getOption()
-    const series = (options["series"] as LineSeriesOption[])
-      .map(line => Object.assign(line, {
-        symbol: type,
-      }))
-
-    this.eChart.chart.setOption({ series }, {replaceMerge: ["series"]})
-  }
-
-  showPoints() {
-    this.setPointsSymbol("circle")
-  }
-
-  hidePoints() {
-    this.setPointsSymbol("none")
   }
 
   subscribe(): () => void {

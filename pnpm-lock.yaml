@@ -97,6 +97,7 @@ importers:
 
   dashboard/new-dashboard:
     specifiers:
+      '@heroicons/vue': 2.0.7
       echarts: 5.3.3
       echarts-stat: 1.2.0
       ij: workspace:*
@@ -107,6 +108,7 @@ importers:
       vue: 3.2.37
       vue-router: 4.1.4
     dependencies:
+      '@heroicons/vue': 2.0.7_vue@3.2.37
       echarts: 5.3.3
       echarts-stat: 1.2.0
       ij: link:../ij
@@ -2529,6 +2531,18 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
+  /primevue/3.16.1_vue@3.2.37:
+    resolution: {integrity: sha512-vNrCOj6uUe8aqWoT+x9ZOCgApar5n26UipK+y9HO4rwcsm5jYyRBgGHGqS3QQW5CSBCD6fzy56boMvSr19Ukhw==}
+    peerDependencies:
+      primeicons: ^5.0.0
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      primeicons:
+        optional: true
+    dependencies:
+      vue: 3.2.37
+    dev: false
+
   /primevue/3.16.2_vue@3.2.37:
     resolution: {integrity: sha512-wvZj0kEnpVFZDb3vLy7SFrjZaPBjrznt4iq/CiLmofcPETwxQjbr7E+8ZFtPiQR1oUvhXyQ/Lyu9yTj9TjA0+g==}
     peerDependencies:
@@ -2666,6 +2680,12 @@ packages:
     resolution: {integrity: sha512-5l4VyZR86LZ/lDxZTR6jqL8AFE2S0IFLMP26AbjsLVADxHdhB/c0GUsH+y39UfCi3dzz8OlQuPmnaJOMoDHQBA==}
     dependencies:
       queue-microtask: 1.2.3
+
+  /rxjs/8.0.0-alpha.3:
+    resolution: {integrity: sha512-zEogsNPN2z3NMwi7+ByszR+Jq250w0MDPdkiw55G0qVs1wfc0KdEQ5LQzuMFvcqPeLO53mkwGZk3E3D8X/E3bg==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
 
   /rxjs/8.0.0-alpha.4:
     resolution: {integrity: sha512-Uabsjq+bvPxXehjd1MIU1sHXaimJZUcM1+D3NX5XE51owh+JKTBcegLOmbf66IYx92JzW6N3pfxiovwkPi/X3w==}

@@ -25,11 +25,12 @@ import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, ValueUnit } from "shared/src/chart"
 import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { onMounted, onUnmounted, ref, shallowRef, withDefaults } from "vue"
+import { inject, onMounted, onUnmounted, ref, shallowRef, withDefaults } from "vue"
 import { AggregationChartVM } from "./AggregationChartVM"
 import { LineSeriesOption } from "echarts/charts"
 import { DatasetOption } from "echarts/types/dist/shared"
 import { OptionSourceData } from "echarts/types/src/util/types"
+import { containerKey } from "../../shared/keys"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
@@ -57,10 +58,11 @@ const configurators = [...props.configurators, timeAverageConfigurator, measures
 const queryExecutor = new DataQueryExecutor(configurators)
 const element = shallowRef<HTMLElement>()
 const vm = new AggregationChartVM(queryExecutor, props.chartColor)
+const container = inject(containerKey)
 
 let dispose: () => void
 onMounted(() => {
-  dispose = vm.initChart(element.value!)
+  dispose = vm.initChart(element.value!, container?.value)
 })
 
 onUnmounted(() => {

@@ -62,7 +62,6 @@ importers:
       '@fontsource/inter': 4.5.12
       '@fontsource/jetbrains-mono': 4.5.10
       ij: workspace:*
-      new-dashboard: workspace:*
       primevue: 3.16.2
       report-visualizer: workspace:*
       rxjs: 8.0.0-alpha.4
@@ -73,7 +72,6 @@ importers:
       '@fontsource/inter': 4.5.12
       '@fontsource/jetbrains-mono': 4.5.10
       ij: link:../ij
-      new-dashboard: link:../new-dashboard
       primevue: 3.16.2_vue@3.2.37
       report-visualizer: link:../report-visualizer
       rxjs: 8.0.0-alpha.4
@@ -92,28 +90,6 @@ importers:
       primevue: 3.16.2_vue@3.2.37
       shared: link:../shared
       tailwind-ui: link:../tailwind-ui
-      vue: 3.2.37
-      vue-router: 4.1.4_vue@3.2.37
-
-  dashboard/new-dashboard:
-    specifiers:
-      echarts: 5.3.3
-      echarts-stat: 1.2.0
-      ij: workspace:*
-      primevue: 3.16.1
-      report-visualizer: workspace:*
-      rxjs: 8.0.0-alpha.3
-      shared: workspace:*
-      vue: 3.2.37
-      vue-router: 4.1.4
-    dependencies:
-      echarts: 5.3.3
-      echarts-stat: 1.2.0
-      ij: link:../ij
-      primevue: 3.16.1_vue@3.2.37
-      report-visualizer: link:../report-visualizer
-      rxjs: 8.0.0-alpha.3
-      shared: link:../shared
       vue: 3.2.37
       vue-router: 4.1.4_vue@3.2.37
 

@@ -20,7 +20,7 @@ const durationFormatOptions: HumanizerOptions = {
       w: () => "w",
       d: () => "d",
       h: () => "h",
-      m: () => "min",
+      m: () => "m",
       s: () => "s",
       ms: () => "ms",
     },
@@ -28,14 +28,6 @@ const durationFormatOptions: HumanizerOptions = {
 }
 
 export const durationAxisPointerFormatter: (valueInMs: number) => string = humanizeDuration.humanizer(durationFormatOptions)
-
-export const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-})
 
 export const durationFormatterInOneWord: (valueInMs: number) => string = humanizeDuration.humanizer({
   ...durationFormatOptions,

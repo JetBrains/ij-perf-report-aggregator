@@ -4,7 +4,6 @@ import { getReportVisualizerItems, getReportVisualizerRoutes } from "report-visu
 import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
-import { getNewDashboardRoutes } from "new-dashboard/src/routes"
 
 function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRaw>) {
   for (const route of routes) {
@@ -17,18 +16,14 @@ export function getItems(): Array<MenuItem> {
 }
 
 function getRoutes(): Array<ParentRouteRecord> {
-  return [...getIjRoutes(), ...getReportVisualizerRoutes(), getNewDashboardRoutes()]
+  return [...getIjRoutes(), ...getReportVisualizerRoutes()]
 }
 
 export function createAndConfigureRouter(): Router {
   const routes: Array<RouteRecordRaw> = [
     {
       path: "",
-      redirect: "/ij/pulse",
-    },
-    {
-      path: "/dashboard",
-      redirect: "dashboard/ij",
+      redirect: "/ij/dashboard",
     },
     {
       path: "/:catchAll(.*)",

@@ -4,6 +4,9 @@ export function getDashboardMenuItems() {
   return [{
     path: "/new/ij/dashboard",
     name: "InteliJ"
+  }, {
+    path: "/",
+    name: "Back to old"
   }]
 }
 

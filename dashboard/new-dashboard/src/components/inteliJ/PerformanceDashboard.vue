@@ -15,6 +15,14 @@
           label="Machine"
           :dimension="machineConfigurator"
         />
+        <DimensionSelect
+          label="Nightly/Release"
+          :dimension="releaseConfigurator"
+        />
+        <DimensionSelect
+          label="Triggered by"
+          :dimension="triggeredByConfigurator"
+        />
       </template>
     </Toolbar>
 

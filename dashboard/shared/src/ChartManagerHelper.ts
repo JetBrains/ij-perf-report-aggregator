@@ -5,8 +5,8 @@ export class ChartManagerHelper {
   readonly chart: EChartsType
   private readonly resizeObserver: ResizeObserver
 
-  constructor(chatContainer: HTMLElement, resizeContainer: HTMLElement = document.body) {
-    this.chart = initChart(chatContainer)
+  constructor(chartContainer: HTMLElement, private resizeContainer: HTMLElement = document.body) {
+    this.chart = initChart(chartContainer)
 
     this.resizeObserver = new ResizeObserver(throttle(() => {
       this.chart.resize()
@@ -28,7 +28,7 @@ export class ChartManagerHelper {
   }
 
   dispose(): void {
-    this.resizeObserver.unobserve(this.chart.getDom())
+    this.resizeObserver.unobserve(this.resizeContainer)
     this.chart.dispose()
   }
 }

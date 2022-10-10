@@ -1,12 +1,12 @@
 import * as ecStat from "echarts-stat"
 import { LineChart, ScatterChart } from "echarts/charts"
-import { DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
+import { GridComponent, DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { registerTransform, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ValueUnit } from "shared/src/chart"
+import { timeFormat, ValueUnit } from "shared/src/chart"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
 
@@ -53,14 +53,14 @@ export class LineChartVM {
       animation: false,
       grid: {
         left: 8,
-        right: 0,
+        right: 8,
         bottom: 16,
         containLabel: true,
       },
       // @ts-ignore
       tooltip: {
         show: true,
-        trigger: "axis",
+        trigger: "item",
         enterable: true,
         axisPointer: {
           type: "cross",
@@ -70,8 +70,8 @@ export class LineChartVM {
         position: (pointerCoords, _, tooltipElement) => {
           const [pointerLeft, pointerTop] = pointerCoords
           const element = (tooltipElement as HTMLDivElement)
-          const charLeft = this.eChart.chart.getDom().getBoundingClientRect().left
-          const isOverflowWindow = (charLeft + pointerLeft + element.offsetWidth) > window.innerWidth
+          const chartRect = this.eChart.chart.getDom().getBoundingClientRect()
+          const isOverflowWindow = (chartRect.left + pointerLeft + element.offsetWidth) > chartRect.right
 
           return [
             isOverflowWindow ? (pointerLeft - element.offsetWidth) : pointerLeft,
@@ -79,10 +79,10 @@ export class LineChartVM {
           ]
         },
         // Formatting
-        formatter(params: CallbackDataParams[]) {
-          const [data] = params
+        formatter(params: CallbackDataParams) {
+          // console.log("HOVER:", params)
           const element = document.createElement("div")
-          const [dateMs, durationMs] = data.value as OptionDataValue[]
+          const [dateMs, durationMs] = params.value as OptionDataValue[]
 
           element.append(
             durationAxisPointerFormatter(durationMs as number),
@@ -105,9 +105,20 @@ export class LineChartVM {
       },
       xAxis: {
         type: "time",
+        axisPointer: {
+          snap: true,
+          label: {
+            formatter(data) {
+              return timeFormat.format(data["value"] as number)
+            },
+          },
+        },
       },
       yAxis: {
         type: "value",
+        axisPointer: {
+          snap: true,
+        },
         splitLine: {
           show: false,
         },

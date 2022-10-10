@@ -18,8 +18,8 @@
       </template>
     </Toolbar>
 
-    <main class="flex">
-      <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
+    <main>
+      <div class="flex flex-1 flex-col gap-6">
         <section class="flex gap-6">
           <div class="flex-1">
             <AggregationChart
@@ -71,6 +71,7 @@
               :projects="['community/rebuild','intellij_sources/rebuild']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :container="container"
             />
           </div>
           <div class="flex-1">
@@ -80,11 +81,11 @@
               :projects="['community/rebuild','intellij_sources/rebuild']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :container="container"
             />
           </div>
         </section>
       </div>
-      <InfoSidebar />
     </main>
   </div>
 </template>
@@ -100,26 +101,20 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref, shallowRef } from "vue"
+import { shallowRef } from "vue"
 import { useRouter } from "vue-router"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupChart from "../charts/GroupChart.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import InfoSidebar from "../InfoSidebar.vue"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 
 provideReportUrlProvider()
 
 const dbName = "perfint"
 const dbTable = "idea"
 const initialMachine = "macMini Intel 3.2, 16GB"
-const container = ref<HTMLElement>()
+const container = shallowRef<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
-
-provide(containerKey, container)
-provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistenceForDashboard = new PersistentStateManager("idea_performance_dashboard", {
@@ -129,6 +124,7 @@ const persistenceForDashboard = new PersistentStateManager("idea_performance_das
 }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+const timeAverageConfigurator = new TimeAverageConfigurator()
 
 const branchConfigurator = dimensionConfigurator(
   "branch",

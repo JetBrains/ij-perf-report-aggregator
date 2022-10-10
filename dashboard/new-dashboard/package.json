@@ -2,7 +2,6 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@heroicons/vue": "2.0.7",
     "echarts": "5.3.3",
     "echarts-stat": "1.2.0",
     "ij": "workspace:*",

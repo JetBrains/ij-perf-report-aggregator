@@ -2,6 +2,7 @@
   <TabView
     class="text-sm"
     :active-index="0"
+    @tab-click="handleClick"
   >
     <TabPanel
       header="Performance dashboard"
@@ -10,13 +11,11 @@
     </TabPanel>
     <TabPanel
       header="Performance tests"
-      :disabled="true"
     >
       Content II
     </TabPanel>
     <TabPanel
       header="Compare branches"
-      :disabled="true"
     >
       Content III
     </TabPanel>

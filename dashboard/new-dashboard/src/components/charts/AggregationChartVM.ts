@@ -1,9 +1,9 @@
 import { LineSeriesOption } from "echarts/charts"
+import { EChartsType, init as initChart } from "echarts/core"
 import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } from "echarts/types/src/util/types"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { ref } from "vue"
-import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 
 // LabelFormatterParams isn't exported from lib
 type LabelFormatterParams = {
@@ -19,19 +19,19 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 })
 
 export class AggregationChartVM {
-  average = ref(0)
+  chart?: EChartsType
 
-  private chartManager?: ChartManagerHelper
+  average = ref(0)
 
   constructor(
     private readonly query: DataQueryExecutor,
     private readonly color: string = "#4B84EE",
   ) {}
 
-  initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
-    this.chartManager = new ChartManagerHelper(element, resizeContainer)
+  initChart(element: HTMLElement): () => void {
+    this.chart = initChart(element)
 
-    this.chartManager.chart.setOption({
+    this.chart.setOption({
       legend: {
         show: false,
       },
@@ -84,7 +84,7 @@ export class AggregationChartVM {
     const unsubscribe = this.dataSubscribe()
 
     return () => {
-      this.chartManager?.dispose()
+      this.chart?.dispose()
       unsubscribe()
     }
   }
@@ -119,7 +119,7 @@ export class AggregationChartVM {
       }))
     }
 
-    this.chartManager?.chart.setOption(options, { replaceMerge: ["dataset", "series"] })
+    this.chart?.setOption(options, { replaceMerge: ["dataset", "series"] })
 
     const dataset = options['dataset'] as DatasetOption[]
     const [_, values] = dataset[0].source as OptionSourceData[]

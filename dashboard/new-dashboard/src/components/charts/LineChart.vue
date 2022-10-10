@@ -10,13 +10,9 @@ import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
+import { DataQueryConfigurator } from "shared/src/dataQuery"
+import { onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { LineChartVM } from "./LineChartVM"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { CallbackDataParams } from "echarts/types/src/util/types"
-import { reportInfoProviderKey } from "shared/src/injectionKeys"
-import { getInfoDataFrom } from "../InfoSidebarVm"
 
 interface LineChartProps {
   measures: Array<string>
@@ -33,7 +29,6 @@ const props = withDefaults(defineProps<LineChartProps>(), {
 
 const chartElement = shallowRef<HTMLElement>()
 const skipZeroValues = toRef(props, "skipZeroValues")
-const reportInfoProvider = inject(reportInfoProviderKey, null)
 const measureConfigurator = new PredefinedMeasureConfigurator(
   props.measures,
   skipZeroValues,
@@ -45,50 +40,29 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   },
 )
 
-const infoFieldsConfigurator = reportInfoProvider && reportInfoProvider.infoFields.length > 0 ?
-  {
-    createObservable() {
-      return null
-    },
-    configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-      for (const infoField of reportInfoProvider.infoFields) {
-        query.addField(infoField)
-      }
-      return true
-    },
-  } : null
-const dataQueryExecutor = new DataQueryExecutor([
+const dataQueryExecutor = new DataQueryExecutor( [
   ...props.configurators,
   measureConfigurator,
-  infoFieldsConfigurator,
-].filter((item): item is DataQueryConfigurator => Boolean(item)))
+])
 
-const container = inject(containerKey)
-const sidebarVm = inject(sidebarVmKey)
 
-let chartManager: ChartManagerHelper
+let chart: ChartManagerHelper
 let chartVm: LineChartVM
 
 onMounted(() => {
-  chartManager = new ChartManagerHelper(chartElement.value!, container?.value)
+  chart = new ChartManagerHelper(chartElement.value!)
   chartVm = new LineChartVM(
-    chartManager,
+    chart,
     dataQueryExecutor,
     props.valueUnit,
   )
 
   chartVm.subscribe()
-
-  chartManager.chart.on("click", (params: CallbackDataParams) => {
-    if (params.dataIndex != undefined) {
-      sidebarVm?.show(getInfoDataFrom(params))
-    }
-  })
 })
 
 onUnmounted(() => {
   // TODO: Make them lifetimed for auto-dispose
-  chartManager.dispose()
+  chart.dispose()
   chartVm.dispose()
 })
 

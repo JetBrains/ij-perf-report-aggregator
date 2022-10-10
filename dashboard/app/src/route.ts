@@ -17,7 +17,7 @@ export function getItems(): Array<MenuItem> {
 }
 
 function getRoutes(): Array<ParentRouteRecord> {
-  return [...getIjRoutes(), ...getReportVisualizerRoutes(), ...getNewDashboardRoutes()]
+  return [...getIjRoutes(), ...getReportVisualizerRoutes(), getNewDashboardRoutes()]
 }
 
 export function createAndConfigureRouter(): Router {
@@ -27,8 +27,8 @@ export function createAndConfigureRouter(): Router {
       redirect: "/ij/pulse",
     },
     {
-      path: "/new",
-      redirect: "/new/ij/dashboard",
+      path: "/dashboard",
+      redirect: "dashboard/ij",
     },
     {
       path: "/:catchAll(.*)",

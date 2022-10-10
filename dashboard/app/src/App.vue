@@ -73,6 +73,6 @@ const persistentStateManager = new PersistentStateManager("common", {serverUrl: 
 persistentStateManager.add("serverUrl", serverUrl)
 
 function isNewDashboardRoute(route: RouteLocationNormalizedLoaded): boolean {
-  return route.path.startsWith("/new")
+  return route.path.startsWith("/dashboard")
 }
 </script>

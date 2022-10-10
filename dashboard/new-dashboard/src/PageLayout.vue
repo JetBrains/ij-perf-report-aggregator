@@ -1,14 +1,18 @@
 <template>
   <PageHeader />
   <slot />
+
+  <ChartTooltip
+    ref="tooltip"
+  />
 </template>
 <script setup lang="ts">
+import ChartTooltip from "shared/src/components/ChartTooltip.vue"
+import { chartToolTipKey } from "shared/src/injectionKeys"
 import { provide, ref } from "vue"
 import PageHeader from "./PageHeader.vue"
-import { InfoSidebarVmImpl } from "./components/InfoSidebarVm"
-import {sidebarVmKey } from "./shared/keys"
 
-const sidebarVm = new InfoSidebarVmImpl()
+const tooltip = ref<typeof ChartTooltip>()
 
-provide(sidebarVmKey, sidebarVm)
+provide(chartToolTipKey, tooltip)
 </script>

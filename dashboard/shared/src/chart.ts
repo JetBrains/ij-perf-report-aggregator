@@ -16,14 +16,6 @@ export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: Cal
   }
 }
 
-export type ChartType = "line" | "scatter"
-
-export type SymbolOptions = {
-  symbol?: ChartSymbolType
-  symbolSize?: number
-  showSymbol?: boolean
-}
-
 export interface ChartConfigurator {
   configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ECBasicOption
 }

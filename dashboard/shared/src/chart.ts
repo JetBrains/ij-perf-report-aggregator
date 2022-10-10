@@ -16,6 +16,14 @@ export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: Cal
   }
 }
 
+export type ChartType = "line" | "scatter"
+
+export type SymbolOptions = {
+  symbol?: ChartSymbolType
+  symbolSize?: number
+  showSymbol?: boolean
+}
+
 export interface ChartConfigurator {
   configureChart(data: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): ECBasicOption
 }
@@ -35,6 +43,8 @@ export const chartDefaultStyle: ChartStyle = {
 }
 
 export type ValueUnit = "ms" | "ns"
+
+export type ChartSymbolType = "circle" | "none"
 
 export interface ChartStyle {
   barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |

@@ -87,12 +87,20 @@
 import OverlayPanel from "primevue/overlaypanel"
 import Divider from "tailwind-ui/src/Divider.vue"
 import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"
-import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
+import { getValueFormatterByMeasureName } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
 const panel = shallowRef<OverlayPanel | null>()
+
+const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+})
 
 const linkText = computed(() => {
   const data = tooltipData.value?.firstSeriesData

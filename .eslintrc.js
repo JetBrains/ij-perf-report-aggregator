@@ -53,7 +53,6 @@ module.exports = {
         "delimiter": "none",
       },
     }],
-    "@typescript-eslint/ban-ts-comment": "off",
     "vue/html-quotes": ["error", "double", {"avoidEscape": true}],
     "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared", "rxjs/operators"],
     "vue/multi-word-component-names": ["error", {

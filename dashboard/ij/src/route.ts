@@ -40,10 +40,6 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/dashboard",
         },
         {
-          label: "Performance Dashboard (New)",
-          to: "/new",
-        },
-        {
           label: "Performance Dashboard (Dev Server)",
           to: "/intellij/dashboardDev",
         },

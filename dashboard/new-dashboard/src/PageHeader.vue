@@ -20,16 +20,15 @@
 
 <script setup lang="ts">
 import Menu from "primevue/menu"
-import { MenuItem } from "primevue/menuitem"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { ref, shallowRef } from "vue"
 import { useRoute } from "vue-router"
-import { getDashboardMenuItems, getNewDashboardRoutes } from "./routes"
+import { getDashboardMenuItems } from "./routes"
 
 const route = useRoute()
 const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
-const menuItems: MenuItem[] = getDashboardMenuItems().map(({ path, name }) => ({
+const menuItems = getDashboardMenuItems().map(({ path, name }) => ({
     label: name,
     to: path,
 }))

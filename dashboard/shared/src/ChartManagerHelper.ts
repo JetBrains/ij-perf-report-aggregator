@@ -5,13 +5,13 @@ export class ChartManagerHelper {
   readonly chart: EChartsType
   private readonly resizeObserver: ResizeObserver
 
-  constructor(container: HTMLElement) {
-    this.chart = initChart(container)
+  constructor(chartContainer: HTMLElement, private resizeContainer: HTMLElement = document.body) {
+    this.chart = initChart(chartContainer)
 
     this.resizeObserver = new ResizeObserver(throttle(() => {
       this.chart.resize()
     }, 300))
-    this.resizeObserver.observe(this.chart.getDom())
+    this.resizeObserver.observe(resizeContainer)
   }
 
   enableZoomTool(): void {
@@ -28,7 +28,7 @@ export class ChartManagerHelper {
   }
 
   dispose(): void {
-    this.resizeObserver.unobserve(this.chart.getDom())
+    this.resizeObserver.unobserve(this.resizeContainer)
     this.chart.dispose()
   }
 }

@@ -6,7 +6,6 @@
   />
 </template>
 <script setup lang="ts">
-import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
@@ -17,6 +16,7 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { getInfoDataFrom } from "../InfoSidebarVm"
+import { ChartManager } from "./ChartManager"
 
 interface LineChartProps {
   measures: Array<string>
@@ -66,11 +66,11 @@ const dataQueryExecutor = new DataQueryExecutor([
 const container = inject(containerKey)
 const sidebarVm = inject(sidebarVmKey)
 
-let chartManager: ChartManagerHelper
+let chartManager: ChartManager
 let chartVm: LineChartVM
 
 onMounted(() => {
-  chartManager = new ChartManagerHelper(chartElement.value!, container?.value)
+  chartManager = new ChartManager(chartElement.value!, container?.value)
   chartVm = new LineChartVM(
     chartManager,
     dataQueryExecutor,

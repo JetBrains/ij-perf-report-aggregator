@@ -1,27 +1,13 @@
 import * as ecStat from "echarts-stat"
-import { LineChart, ScatterChart } from "echarts/charts"
-import { GridComponent, DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
-import { registerTransform, use } from "echarts/core"
-import { CanvasRenderer } from "echarts/renderers"
+import { registerTransform} from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "shared/src/chart"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
+import { ChartManager } from "./ChartManager"
 
-use([
-  DatasetComponent,
-  ToolboxComponent,
-  TooltipComponent,
-  GridComponent,
-  LineChart,
-  ScatterChart,
-  LegendComponent,
-  CanvasRenderer,
-  DataZoomInsideComponent,
-  DataZoomSliderComponent,
-])
+
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -30,7 +16,7 @@ registerTransform(ecStat["transform"].regression)
 
 export class LineChartVM {
   constructor(
-    private readonly eChart: ChartManagerHelper,
+    private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
   ) {
@@ -129,7 +115,7 @@ export class LineChartVM {
   subscribe(): () => void {
     return this.dataQuery.subscribe(
       (data, configuration) => {
-        this.eChart.replaceDataSetAndSeries(
+        this.eChart.updateChart(
           configuration.chartConfigurator.configureChart(data, configuration)
         )
       })

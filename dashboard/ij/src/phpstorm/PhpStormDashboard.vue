@@ -77,6 +77,12 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="PHP SearchEverywhere Class"
+      measure="searchEverywhere_class"
+      :projects="['bitrix/go-to-class/BCCo', 'magento/go-to-class/MaAdMUser']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="PHP Typing Average Responsiveness"
       measure="test#average_awt_delay"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',

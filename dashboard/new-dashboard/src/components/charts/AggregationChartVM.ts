@@ -38,7 +38,7 @@ export class AggregationChartVM {
       animation: false,
       grid: {
         top: 0,
-        bottom: 0,
+        bottom: 10,
         left: 5,
         right: 5,
       },

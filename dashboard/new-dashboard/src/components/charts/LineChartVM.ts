@@ -50,7 +50,6 @@ export class LineChartVM {
         enterable: true,
         axisPointer: {
           type: "cross",
-          snap: true
         },
         renderMode: "html",
         position: (pointerCoords, _, tooltipElement) => {
@@ -102,9 +101,6 @@ export class LineChartVM {
       },
       yAxis: {
         type: "value",
-        axisPointer: {
-          snap: true,
-        },
         splitLine: {
           show: false,
         },

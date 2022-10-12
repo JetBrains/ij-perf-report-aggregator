@@ -79,7 +79,7 @@
     <GroupLineChart
       label="PHP SearchEverywhere Class"
       measure="searchEverywhere_class"
-      :projects="['bitrix/go-to-class/BCCo', 'magento/go-to-class/MaAdMUser']"
+      :projects="['bitrix/go-to-class/BCCo', 'magento2/go-to-class/MaAdMUser']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

@@ -3,7 +3,7 @@ import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } 
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { ref } from "vue"
-import { ChartManagerHelper } from "shared/src/ChartManagerHelper"
+import { ChartManager } from "./ChartManager"
 
 // LabelFormatterParams isn't exported from lib
 type LabelFormatterParams = {
@@ -21,7 +21,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 export class AggregationChartVM {
   average = ref(0)
 
-  private chartManager?: ChartManagerHelper
+  private chartManager?: ChartManager
 
   constructor(
     private readonly query: DataQueryExecutor,
@@ -29,7 +29,7 @@ export class AggregationChartVM {
   ) {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
-    this.chartManager = new ChartManagerHelper(element, resizeContainer)
+    this.chartManager = new ChartManager(element, resizeContainer)
 
     this.chartManager.chart.setOption({
       legend: {

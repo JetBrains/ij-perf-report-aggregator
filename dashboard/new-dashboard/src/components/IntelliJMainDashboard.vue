@@ -27,5 +27,5 @@
 import TabPanel from "primevue/tabpanel"
 import TabView from "primevue/tabview"
 import PerformanceDashboard from "./inteliJ/PerformanceDashboard.vue"
-const path = "/new/ij/tests"
+
 </script>

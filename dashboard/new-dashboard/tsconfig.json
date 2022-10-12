@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig-base.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "../shared/src/shims-vue.d.ts",
+    "../shared/src/toast-event-bus.d.ts",
+    "../shared/src/components.d.ts"
+  ]
+}

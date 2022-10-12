@@ -177,7 +177,7 @@ const components = new Set<string>([
   "SplitterPanel",
   "Steps",
   "TabPanel",
-  // "TabView",
+  "TabView",
   "Tag",
   "Terminal",
   "TerminalService",

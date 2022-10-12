@@ -18,6 +18,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: "/new/ij/dashboard",
           name: "InteliJ",
           component: () => import("./components/IntelliJMainDashboard.vue"),
+          meta: {pageTitle: "InteliJ Performance Dashboard"}
         },
       ]
     },

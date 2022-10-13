@@ -37,7 +37,17 @@
 
     <main class="flex">
       <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
-
+        <template
+          v-for="measure in measureConfigurator.selected.value"
+          :key="measure"
+        >
+          <LineChart
+            :title="measure"
+            :measures="[measure]"
+            :configurators="configurators"
+            :skip-zero-values="false"
+          />
+        </template>
       </div>
       <InfoSidebar/>
     </main>
@@ -63,6 +73,7 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
+import LineChart from '../charts/LineChart.vue'
 
 provideReportUrlProvider()
 
@@ -81,10 +92,10 @@ const persistentStateManager = new PersistentStateManager(
   `${dbName}-${dbTable}-dashboard`,
   {
     machine: initialMachine,
-    project: [],
     branch: "master",
-  },
-  router)
+    project: [],
+    measure: [],
+  }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator(
@@ -101,18 +112,17 @@ const machineConfigurator = new MachineConfigurator(
   persistentStateManager,
   [timeRangeConfigurator, branchConfigurator],
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [branchConfigurator, timeRangeConfigurator],
-)
 const scenarioConfigurator = dimensionConfigurator(
   "project",
   serverConfigurator,
   persistentStateManager,
   true,
-  [branchConfigurator, timeRangeConfigurator]
+  [branchConfigurator, timeRangeConfigurator],
+)
+const triggeredByConfigurator = privateBuildConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [branchConfigurator, timeRangeConfigurator],
 )
 const measureConfigurator = new MeasureConfigurator(
   serverConfigurator,
@@ -121,14 +131,16 @@ const measureConfigurator = new MeasureConfigurator(
   true,
   "line",
 )
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 
 const configurators = [
   serverConfigurator,
+  scenarioConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  releaseConfigurator,
   triggeredByConfigurator,
+  releaseConfigurator,
 ]
 
 function onChangeRange(value: string) {

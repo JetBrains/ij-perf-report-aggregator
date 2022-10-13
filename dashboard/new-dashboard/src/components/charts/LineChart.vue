@@ -1,9 +1,14 @@
 <template>
-  <div
-    ref="chartElement"
-    class="bg-white"
-    :style="{height: `${chartHeight}px`}"
-  />
+  <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
+    <h3 class="uppercase m-0 text-sm">
+      {{ props.title }}
+    </h3>
+    <div
+      ref="chartElement"
+      class="bg-white"
+      :style="{height: `${chartHeight}px`}"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
@@ -19,6 +24,7 @@ import { getInfoDataFrom } from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
 
 interface LineChartProps {
+  title: string,
   measures: Array<string>
   configurators: Array<DataQueryConfigurator>
   skipZeroValues?: boolean

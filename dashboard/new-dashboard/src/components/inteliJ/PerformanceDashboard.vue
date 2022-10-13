@@ -62,7 +62,7 @@
           </div>
         </section>
         <section>
-          <GroupChart
+          <GroupProjectsChart
             label="Indexing Long"
             measure="indexing"
             :projects="['community/indexing', 'lock-free-vfs-record-storage-intellij_sources/indexing', 'intellij_sources/indexing']"
@@ -73,7 +73,7 @@
 
         <section class="flex gap-x-6">
           <div class="flex-1">
-            <GroupChart
+            <GroupProjectsChart
               label="Kotlin Builder Long"
               measure="kotlin_builder_time"
               :projects="['community/rebuild','intellij_sources/rebuild']"
@@ -82,7 +82,7 @@
             />
           </div>
           <div class="flex-1">
-            <GroupChart
+            <GroupProjectsChart
               label="Rebuild Long"
               measure="build_compilation_duration"
               :projects="['community/rebuild','intellij_sources/rebuild']"
@@ -111,7 +111,7 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { provide, ref, shallowRef } from "vue"
 import { useRouter } from "vue-router"
 import AggregationChart from "../charts/AggregationChart.vue"
-import GroupChart from "../charts/GroupChart.vue"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import InfoSidebar from "../InfoSidebar.vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"

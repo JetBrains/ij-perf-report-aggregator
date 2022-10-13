@@ -4,21 +4,43 @@
     :options="items"
     :loading="configurator.state.loading"
     :disabled="configurator.state.disabled"
-    title="Metrics"
-    placeholder="Metrics"
+    :title="title"
+    :placeholder="title"
     :filter="true"
     :option-label="(it: string) => it"
     :max-selected-labels="1"
-  />
+  >
+    <template #value="slotProps">
+      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
+         <slot name="icon"/>
+          {{ title }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1">
+         <slot name="icon"/>
+         {{ slotProps.value[0] }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
+         <slot name="icon"/>
+         {{ props.selectedLabel(slotProps.value) }}
+      </span>
+    </template>
+  </MultiSelect>
 </template>
 <script setup lang="ts">
 import { computed } from "vue"
 
 import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
 
-const props = defineProps<{
+interface Props {
   configurator: MeasureConfigurator
-}>()
+  selectedLabel?: (items: string[]) => string
+  title?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  title: "Metrics",
+  selectedLabel: (items: string[]) => `${items.length} items selected`
+})
 
 // const items = props.configurator.data
 // put selected values on top

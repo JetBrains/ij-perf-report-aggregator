@@ -6,23 +6,56 @@
           :ranges="TimeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="calendar" />
+            </div>
+          </template>
+        </TimeRangeSelect>
         <DimensionSelect
           label="Branch"
+          :selected-label="branchesLabel"
           :dimension="branchConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="branches" />
+            </div>
+          </template>
+        </DimensionSelect>
         <DimensionSelect
-          label="Scenarios"
-          tooltip="Scenarios"
+          label="Metrics"
+          :selected-label="metricsLabel"
           :dimension="scenarioConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="metrics" />
+            </div>
+          </template>
+        </DimensionSelect>
         <MeasureSelect
+          title="Tests"
+          :selected-label="testsLabel"
           :configurator="measureConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="tests" />
+            </div>
+          </template>
+        </MeasureSelect>
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="computer" />
+            </div>
+          </template>
+        </DimensionHierarchicalSelect>
         <DimensionSelect
           v-if="releaseConfigurator != null"
           label="Nightly/Release"
@@ -74,6 +107,7 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 import LineChart from '../charts/LineChart.vue'
+import SvgIcon from "../common/SvgIcon.vue"
 
 provideReportUrlProvider()
 
@@ -146,6 +180,11 @@ const configurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const branchesLabel = (items: string[]) => `${items.length} branches selected`
+const metricsLabel = (items: string[]) => `${items.length} metrics selected`
+const testsLabel = (items: string[]) => `${items.length} tests selected`
+
 </script>
 
 <style>

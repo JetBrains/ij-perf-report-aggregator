@@ -12,7 +12,22 @@
     :max-selected-labels="hasManyElements ? 1 : 2"
     :filter="hasManyElements"
     :show-toggle-all="hasManyElements"
-  />
+  >
+    <template #value="slotProps">
+      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
+         <slot name="icon"/>
+          {{ placeholder }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1">
+         <slot name="icon"/>
+         {{ slotProps.value[0] }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
+         <slot name="icon"/>
+         {{ props.selectedLabel(slotProps.value) }}
+      </span>
+    </template>
+  </MultiSelect>
   <Dropdown
     v-else-if="valueToGroup == null && !multiple"
     v-model="value"
@@ -40,20 +55,38 @@
     :selection-limit="multiple ? null : 1"
     :max-selected-labels="1"
     :filter="true"
-  />
+  >
+    <template #value="slotProps">
+      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
+         <slot name="icon"/>
+          {{ placeholder }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1 max-w-[200px] truncate">
+         <slot name="icon"/>
+         {{ slotProps.value[0] }}
+      </span>
+      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
+         <slot name="icon"/>
+         {{ props.selectedLabel(slotProps.value) }}
+      </span>
+    </template>
+  </MultiSelect>
 </template>
 <script setup lang="ts">
 import { computed } from "vue"
 import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   label: string
   dimension: DimensionConfigurator
   valueToLabel?: (v: string) => string
   // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-  valueToGroup?: (v: string) => string
-}>()
+  valueToGroup?: (v: string) => string,
+  selectedLabel?: (items: string[]) => string
+}>(), {
+  selectedLabel: (items: string[]) => `${items.length} items selected`
+})
 
 const multiple = computed(() => props.dimension.multiple)
 

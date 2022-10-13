@@ -1,15 +1,11 @@
 <template>
-  <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
-    <h3 class="uppercase m-0 text-sm">
-      {{ label }}
-    </h3>
-    <LineChart
-      :value-unit="props.valueUnit"
-      :measures="[measure]"
-      :configurators="configurators"
-      :skip-zero-values="false"
-    />
-  </div>
+  <LineChart
+    :title="props.label"
+    :value-unit="props.valueUnit"
+    :measures="[measure]"
+    :configurators="configurators"
+    :skip-zero-values="false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -19,7 +15,7 @@ import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { onMounted } from "vue"
 import LineChart from "./LineChart.vue"
 
-interface GroupChartProps {
+interface Props {
   label: string
   measure: string
   projects: Array<string>
@@ -28,7 +24,7 @@ interface GroupChartProps {
   valueUnit?: "ns" | "ms"
 }
 
-const props = withDefaults(defineProps<GroupChartProps>(), {
+const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms"
 })
 

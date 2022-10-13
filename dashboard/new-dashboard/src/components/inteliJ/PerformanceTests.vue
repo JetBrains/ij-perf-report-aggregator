@@ -11,11 +11,20 @@
           label="Branch"
           :dimension="branchConfigurator"
         />
+        <DimensionSelect
+          label="Scenarios"
+          tooltip="Scenarios"
+          :dimension="scenarioConfigurator"
+        />
+        <MeasureSelect
+          :configurator="measureConfigurator"
+        />
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
         />
         <DimensionSelect
+          v-if="releaseConfigurator != null"
           label="Nightly/Release"
           :dimension="releaseConfigurator"
         />
@@ -28,71 +37,9 @@
 
     <main class="flex">
       <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
-        <section class="flex gap-6">
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'completion'"
-              :title="'Completion'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'typing'"
-              :title="'Typing'"
-              :chart-color="'#9B51E0'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'indexing'"
-              :title="'Indexing'"
-              :chart-color="'#219653'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'test#max_awt_delay'"
-              :title="'UI responsiveness'"
-              :chart-color="'#F2994A'"
-            />
-          </div>
-        </section>
-        <section>
-          <GroupChart
-            label="Indexing Long"
-            measure="indexing"
-            :projects="['community/indexing', 'lock-free-vfs-record-storage-intellij_sources/indexing', 'intellij_sources/indexing']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
 
-        <section class="flex gap-x-6">
-          <div class="flex-1">
-            <GroupChart
-              label="Kotlin Builder Long"
-              measure="kotlin_builder_time"
-              :projects="['community/rebuild','intellij_sources/rebuild']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-            />
-          </div>
-          <div class="flex-1">
-            <GroupChart
-              label="Rebuild Long"
-              measure="build_compilation_duration"
-              :projects="['community/rebuild','intellij_sources/rebuild']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-            />
-          </div>
-        </section>
       </div>
-      <InfoSidebar />
+      <InfoSidebar/>
     </main>
   </div>
 </template>
@@ -108,14 +55,14 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref, shallowRef } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import AggregationChart from "../charts/AggregationChart.vue"
-import GroupChart from "../charts/GroupChart.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import InfoSidebar from "../InfoSidebar.vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
+import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 
 provideReportUrlProvider()
 
@@ -130,18 +77,20 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("idea_dashboard", {
-  machine: initialMachine,
-  project: [],
-  branch: "master",
-}, router)
+const persistentStateManager = new PersistentStateManager(
+  `${dbName}-${dbTable}-dashboard`,
+  {
+    machine: initialMachine,
+    project: [],
+    branch: "master",
+  },
+  router)
 
-const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
-
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator(
   "branch",
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
   true,
   [timeRangeConfigurator],
   (a, _) => {
@@ -149,24 +98,31 @@ const branchConfigurator = dimensionConfigurator(
   })
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
   [timeRangeConfigurator, branchConfigurator],
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
   [branchConfigurator, timeRangeConfigurator],
 )
-
-const averagesConfigurators = [
+const scenarioConfigurator = dimensionConfigurator(
+  "project",
   serverConfigurator,
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-]
+  persistentStateManager,
+  true,
+  [branchConfigurator, timeRangeConfigurator]
+)
+const measureConfigurator = new MeasureConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [scenarioConfigurator, branchConfigurator],
+  true,
+  "line",
+)
 
-const dashboardConfigurators = [
+const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,

@@ -5,7 +5,7 @@
       type="button"
       @click="toggle"
     >
-      {{ route.name }}
+      {{ menuItems[0]?.label }}
       <div class="pi pi-chevron-down text-sm ml-1.5" />
     </button>
     <Menu
@@ -23,14 +23,12 @@ import Menu from "primevue/menu"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { ref, shallowRef } from "vue"
-import { useRoute } from "vue-router"
-import { getDashboardMenuItems } from "./routes"
+import { topNavigationItems } from "./routes"
 
-const route = useRoute()
 const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
-const menuItems = getDashboardMenuItems().map(({ path, name }) => ({
+const menuItems = topNavigationItems.map(({ path, name }) => ({
     label: name,
-    to: path,
+    url: path,
 }))
 const items = ref(menuItems)
 const menu = ref<Menu | null>(null)

@@ -8,7 +8,22 @@
     :options="values"
     :placeholder="placeholder"
     class="max-w-lg"
-  />
+  >
+    <template #value="{value}">
+      <template v-if="value && value.length > 0">
+        <span class="flex items-center gap-1">
+          <slot name="icon"/>
+          {{ value[0].label }}
+        </span>
+      </template>
+      <template v-if="!value || value.length === 0">
+        <span class="flex items-center gap-1">
+          <slot name="icon"/>
+          {{ placeholder }}
+        </span>
+      </template>
+    </template>
+  </TreeSelect>
 </template>
 <script setup lang="ts">
 import { TreeNode } from "primevue/tree"

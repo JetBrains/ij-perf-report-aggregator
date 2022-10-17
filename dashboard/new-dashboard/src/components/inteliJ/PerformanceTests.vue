@@ -6,16 +6,58 @@
           :ranges="TimeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="calendar" />
+            </div>
+          </template>
+        </TimeRangeSelect>
         <DimensionSelect
           label="Branch"
+          :selected-label="branchesLabel"
           :dimension="branchConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="branches" />
+            </div>
+          </template>
+        </DimensionSelect>
+        <DimensionSelect
+          label="Metrics"
+          :selected-label="metricsLabel"
+          :dimension="scenarioConfigurator"
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="metrics" />
+            </div>
+          </template>
+        </DimensionSelect>
+        <MeasureSelect
+          title="Tests"
+          :selected-label="testsLabel"
+          :configurator="measureConfigurator"
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="tests" />
+            </div>
+          </template>
+        </MeasureSelect>
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <div class="w-4 h-4 text-gray-500">
+              <SvgIcon name="computer" />
+            </div>
+          </template>
+        </DimensionHierarchicalSelect>
         <DimensionSelect
+          v-if="releaseConfigurator != null"
           label="Nightly/Release"
           :dimension="releaseConfigurator"
         />
@@ -28,71 +70,19 @@
 
     <main class="flex">
       <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
-        <section class="flex gap-6">
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'completion'"
-              :title="'Completion'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'typing'"
-              :title="'Typing'"
-              :chart-color="'#9B51E0'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'indexing'"
-              :title="'Indexing'"
-              :chart-color="'#219653'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'test#max_awt_delay'"
-              :title="'UI responsiveness'"
-              :chart-color="'#F2994A'"
-            />
-          </div>
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Indexing Long"
-            measure="indexing"
-            :projects="['community/indexing', 'lock-free-vfs-record-storage-intellij_sources/indexing', 'intellij_sources/indexing']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
+        <template
+          v-for="measure in measureConfigurator.selected.value"
+          :key="measure"
+        >
+          <LineChart
+            :title="measure"
+            :measures="[measure]"
+            :configurators="configurators"
+            :skip-zero-values="false"
           />
-        </section>
-
-        <section class="flex gap-x-6">
-          <div class="flex-1">
-            <GroupProjectsChart
-              label="Kotlin Builder Long"
-              measure="kotlin_builder_time"
-              :projects="['community/rebuild','intellij_sources/rebuild']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-            />
-          </div>
-          <div class="flex-1">
-            <GroupProjectsChart
-              label="Rebuild Long"
-              measure="build_compilation_duration"
-              :projects="['community/rebuild','intellij_sources/rebuild']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-            />
-          </div>
-        </section>
+        </template>
       </div>
-      <InfoSidebar />
+      <InfoSidebar/>
     </main>
   </div>
 </template>
@@ -108,14 +98,16 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref, shallowRef } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import AggregationChart from "../charts/AggregationChart.vue"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import InfoSidebar from "../InfoSidebar.vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
+import MeasureSelect from "shared/src/components/MeasureSelect.vue"
+import LineChart from '../charts/LineChart.vue'
+import SvgIcon from "../common/SvgIcon.vue"
 
 provideReportUrlProvider()
 
@@ -130,18 +122,20 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("idea_dashboard", {
-  machine: initialMachine,
-  project: [],
-  branch: "master",
-}, router)
+const persistentStateManager = new PersistentStateManager(
+  `${dbName}-${dbTable}-dashboard`,
+  {
+    machine: initialMachine,
+    branch: "master",
+    project: [],
+    measure: [],
+  }, router)
 
-const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
-
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator(
   "branch",
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
   true,
   [timeRangeConfigurator],
   (a, _) => {
@@ -149,35 +143,48 @@ const branchConfigurator = dimensionConfigurator(
   })
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
   [timeRangeConfigurator, branchConfigurator],
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
-const triggeredByConfigurator = privateBuildConfigurator(
+const scenarioConfigurator = dimensionConfigurator(
+  "project",
   serverConfigurator,
-  persistenceForDashboard,
+  persistentStateManager,
+  true,
   [branchConfigurator, timeRangeConfigurator],
 )
-
-const averagesConfigurators = [
+const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
+  persistentStateManager,
+  [branchConfigurator, timeRangeConfigurator],
+)
+const measureConfigurator = new MeasureConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [scenarioConfigurator, branchConfigurator],
+  true,
+  "line",
+)
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
+
+const configurators = [
+  serverConfigurator,
+  scenarioConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-]
-
-const dashboardConfigurators = [
-  serverConfigurator,
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  releaseConfigurator,
   triggeredByConfigurator,
+  releaseConfigurator,
 ]
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const branchesLabel = (items: string[]) => `${items.length} branches selected`
+const metricsLabel = (items: string[]) => `${items.length} metrics selected`
+const testsLabel = (items: string[]) => `${items.length} tests selected`
+
 </script>
 
 <style>

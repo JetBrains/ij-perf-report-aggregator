@@ -6,15 +6,31 @@
           :ranges="TimeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
-        />
+        >
+          <template v-slot:icon>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </TimeRangeSelect>
         <DimensionSelect
           label="Branch"
+          :selected-label="branchesSelectLabelFormat"
           :dimension="branchConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <!--Temporary use custom icon, heroicons or primevue don't have such-->
+            <div class="w-4 h-4 text-gray-500">
+              <BranchIcon />
+            </div>
+          </template>
+        </DimensionSelect>
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
-        />
+        >
+          <template v-slot:icon>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </DimensionHierarchicalSelect>
         <DimensionSelect
           label="Nightly/Release"
           :dimension="releaseConfigurator"
@@ -116,6 +132,8 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import InfoSidebar from "../InfoSidebar.vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { branchesSelectLabelFormat } from "../../shared/labels"
+import BranchIcon from "../common/BranchIcon.vue"
 
 provideReportUrlProvider()
 

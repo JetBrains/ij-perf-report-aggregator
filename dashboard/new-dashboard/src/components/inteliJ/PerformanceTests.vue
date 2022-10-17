@@ -8,42 +8,37 @@
           :on-change="onChangeRange"
         >
           <template v-slot:icon>
-            <div class="w-4 h-4 text-gray-500">
-              <SvgIcon name="calendar" />
-            </div>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
         <DimensionSelect
           label="Branch"
-          :selected-label="branchesLabel"
+          :selected-label="branchesSelectLabelFormat"
           :dimension="branchConfigurator"
         >
           <template v-slot:icon>
+            <!--Temporary use custom icon, heroicons or primevue don't have such-->
             <div class="w-4 h-4 text-gray-500">
-              <SvgIcon name="branches" />
+              <BranchIcon />
             </div>
           </template>
         </DimensionSelect>
         <DimensionSelect
           label="Metrics"
-          :selected-label="metricsLabel"
+          :selected-label="metricsSelectLabelFormat"
           :dimension="scenarioConfigurator"
         >
           <template v-slot:icon>
-            <div class="w-4 h-4 text-gray-500">
-              <SvgIcon name="metrics" />
-            </div>
+            <ChartBarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionSelect>
         <MeasureSelect
           title="Tests"
-          :selected-label="testsLabel"
+          :selected-label="testsSelectLabelFormat"
           :configurator="measureConfigurator"
         >
           <template v-slot:icon>
-            <div class="w-4 h-4 text-gray-500">
-              <SvgIcon name="tests" />
-            </div>
+            <BeakerIcon class="w-4 h-4 text-gray-500" />
           </template>
         </MeasureSelect>
         <DimensionHierarchicalSelect
@@ -51,9 +46,7 @@
           :dimension="machineConfigurator"
         >
           <template v-slot:icon>
-            <div class="w-4 h-4 text-gray-500">
-              <SvgIcon name="computer" />
-            </div>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
         <DimensionSelect
@@ -107,7 +100,8 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 import LineChart from '../charts/LineChart.vue'
-import SvgIcon from "../common/SvgIcon.vue"
+import { branchesSelectLabelFormat, testsSelectLabelFormat, metricsSelectLabelFormat } from '../../shared/labels'
+import BranchIcon from "../common/BranchIcon.vue"
 
 provideReportUrlProvider()
 
@@ -180,10 +174,6 @@ const configurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
-
-const branchesLabel = (items: string[]) => `${items.length} branches selected`
-const metricsLabel = (items: string[]) => `${items.length} metrics selected`
-const testsLabel = (items: string[]) => `${items.length} tests selected`
 
 </script>
 

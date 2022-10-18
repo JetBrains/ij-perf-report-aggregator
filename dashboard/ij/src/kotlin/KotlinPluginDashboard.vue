@@ -139,8 +139,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages with Library cache K1"
-      measure="findUsages"
+      label="FindUsages mean value with Library cache K1"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k1',
         'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
@@ -156,8 +156,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages with Library cache K2"
-      measure="findUsages"
+      label="FindUsages mean value with Library cache K2"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
         'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
@@ -173,8 +173,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages without Library cache K1"
-      measure="findUsages"
+      label="FindUsages mean value without Library cache K1"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k1',
         'intellij_commit/findUsages/SqlBlock_without_library_cache_k1',
@@ -190,8 +190,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages without Library cache K2"
-      measure="findUsages"
+      label="FindUsages mean value without Library cache K2"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k2',
         'intellij_commit/findUsages/SqlBlock_without_library_cache_k2',

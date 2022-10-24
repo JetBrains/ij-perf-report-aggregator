@@ -66,8 +66,8 @@
           </div>
           <div class="flex-1">
             <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'typing#average_awt_delay'"
+              :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+              :aggregated-measure="'test#average_awt_delay'"
               :title="'UI responsiveness during typing'"
               :chart-color="'#F2994A'"
             />
@@ -119,6 +119,7 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -188,6 +189,16 @@ const dashboardConfigurators = [
   releaseConfigurator,
   triggeredByConfigurator,
 ]
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({f: "project", v: "%typing", o: "like"})
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

@@ -7,7 +7,7 @@
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
         >
-          <template v-slot:icon>
+          <template #icon>
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
@@ -16,7 +16,7 @@
           :selected-label="branchesSelectLabelFormat"
           :dimension="branchConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <!--Temporary use custom icon, heroicons or primevue don't have such-->
             <div class="w-4 h-4 text-gray-500">
               <BranchIcon />
@@ -28,7 +28,7 @@
           :selected-label="metricsSelectLabelFormat"
           :dimension="scenarioConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <ChartBarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionSelect>
@@ -37,7 +37,7 @@
           :selected-label="testsSelectLabelFormat"
           :configurator="measureConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <BeakerIcon class="w-4 h-4 text-gray-500" />
           </template>
         </MeasureSelect>
@@ -45,7 +45,7 @@
           label="Machine"
           :dimension="machineConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
@@ -62,7 +62,10 @@
     </Toolbar>
 
     <main class="flex">
-      <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
+      <div
+        ref="container"
+        class="flex flex-1 flex-col gap-6 overflow-hidden"
+      >
         <template
           v-for="measure in measureConfigurator.selected.value"
           :key="measure"
@@ -75,7 +78,7 @@
           />
         </template>
       </div>
-      <InfoSidebar/>
+      <InfoSidebar />
     </main>
   </div>
 </template>
@@ -84,8 +87,10 @@
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
+import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
+import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
@@ -93,15 +98,13 @@ import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigu
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import InfoSidebar from "../InfoSidebar.vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { branchesSelectLabelFormat, testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
-import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import MeasureSelect from "shared/src/components/MeasureSelect.vue"
-import LineChart from '../charts/LineChart.vue'
-import { branchesSelectLabelFormat, testsSelectLabelFormat, metricsSelectLabelFormat } from '../../shared/labels'
+import LineChart from "../charts/LineChart.vue"
 import BranchIcon from "../common/BranchIcon.vue"
+import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider()
 

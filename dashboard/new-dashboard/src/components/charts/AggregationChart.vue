@@ -22,19 +22,16 @@
 </template>
 <script setup lang="ts">
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ChartType, ValueUnit } from "shared/src/chart"
+import { ValueUnit } from "shared/src/chart"
 import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { inject, onMounted, onUnmounted, ref, shallowRef, withDefaults } from "vue"
-import { AggregationChartVM } from "./AggregationChartVM"
-import { LineSeriesOption } from "echarts/charts"
-import { DatasetOption } from "echarts/types/dist/shared"
-import { OptionSourceData } from "echarts/types/src/util/types"
 import { containerKey } from "../../shared/keys"
+import { AggregationChartVM } from "./AggregationChartVM"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
-  chartColor?: string;
+  chartColor?: string
   configurators: Array<DataQueryConfigurator>
   aggregatedMeasure: string
   isLike?: boolean

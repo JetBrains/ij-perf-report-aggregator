@@ -1,14 +1,14 @@
 <template>
   <div
-    class="infoSidebar p-5 ml-5 border border-solid rounded-md border-zinc-200 text-gray-500 flex flex-col gap-4"
     v-show="vm.visible.value"
+    class="infoSidebar p-5 ml-5 border border-solid rounded-md border-zinc-200 text-gray-500 flex flex-col gap-4"
   >
     <span class="flex justify-between uppercase text-xs">
-      {{vm.data.value?.title}}
+      {{ vm.data.value?.title }}
 
       <span
-        @click="handleCloseClick"
         class="infoSidebar_icon text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition duration-150 ease-out relative"
+        @click="handleCloseClick"
       />
     </span>
 
@@ -17,21 +17,21 @@
         class="w-3 h-3 rounded-full"
         :style="{ backgroundColor: vm.data.value?.color }"
       />
-      {{vm.data.value?.projectName}}
+      {{ vm.data.value?.projectName }}
     </div>
 
     <div class="flex flex-col gap-2">
       <span class="flex gap-1.5 text-sm items-center">
-        <CalendarIcon class="w-4 h-4"/>
-        {{vm.data.value?.date}} build {{vm.data.value?.build}}
+        <CalendarIcon class="w-4 h-4" />
+        {{ vm.data.value?.date }} build {{ vm.data.value?.build }}
       </span>
       <span class="flex gap-1.5 text-sm items-center">
-        <ClockIcon class="w-4 h-4"/>
-        {{vm.data.value?.duration}}
+        <ClockIcon class="w-4 h-4" />
+        {{ vm.data.value?.duration }}
       </span>
       <span class="flex gap-1.5 text-sm items-center">
-        <ComputerDesktopIcon class="w-4 h-4"/>
-        {{vm.data.value?.machineName}}
+        <ComputerDesktopIcon class="w-4 h-4" />
+        {{ vm.data.value?.machineName }}
       </span>
     </div>
 
@@ -39,7 +39,7 @@
       <a
         :href="vm.data.value?.changesUrl"
         target="_blank"
-         class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+        class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
       >
         <ArrowPathIcon class="w-4 h-4" /> Changes
       </a>
@@ -61,10 +61,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, ref, shallowRef } from "vue"
+import { inject } from "vue"
 import { sidebarVmKey } from "../shared/keys"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
-import { durationAxisPointerFormatter, timeFormatWithoutSeconds } from "shared/src/formatter"
 
 const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
 

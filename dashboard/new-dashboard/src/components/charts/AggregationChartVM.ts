@@ -1,7 +1,7 @@
 import { LineSeriesOption } from "echarts/charts"
+import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } from "echarts/types/src/util/types"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { ref } from "vue"
 import { ChartManager } from "./ChartManager"
 
@@ -121,7 +121,7 @@ export class AggregationChartVM {
 
     this.chartManager?.chart.setOption(options, { replaceMerge: ["dataset", "series"] })
 
-    const dataset = options['dataset'] as DatasetOption[]
+    const dataset = options["dataset"] as DatasetOption[]
     const [_, values] = dataset[0].source as OptionSourceData[]
 
     this.average.value = this.calculateAverage(values as number[])

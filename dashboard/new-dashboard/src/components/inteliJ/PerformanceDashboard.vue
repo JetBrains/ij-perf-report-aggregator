@@ -7,7 +7,7 @@
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
         >
-          <template v-slot:icon>
+          <template #icon>
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
@@ -16,7 +16,7 @@
           :selected-label="branchesSelectLabelFormat"
           :dimension="branchConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <!--Temporary use custom icon, heroicons or primevue don't have such-->
             <div class="w-4 h-4 text-gray-500">
               <BranchIcon />
@@ -27,7 +27,7 @@
           label="Machine"
           :dimension="machineConfigurator"
         >
-          <template v-slot:icon>
+          <template #icon>
             <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
@@ -43,7 +43,10 @@
     </Toolbar>
 
     <main class="flex">
-      <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
+      <div
+        ref="container"
+        class="flex flex-1 flex-col gap-6 overflow-hidden"
+      >
         <section class="flex gap-6">
           <div class="flex-1">
             <AggregationChart
@@ -125,16 +128,16 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref, shallowRef } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { branchesSelectLabelFormat } from "../../shared/labels"
+import InfoSidebar from "../InfoSidebar.vue"
+import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import InfoSidebar from "../InfoSidebar.vue"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
-import { branchesSelectLabelFormat } from "../../shared/labels"
 import BranchIcon from "../common/BranchIcon.vue"
+import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider()
 

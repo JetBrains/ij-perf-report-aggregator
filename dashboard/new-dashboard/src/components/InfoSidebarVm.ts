@@ -1,6 +1,6 @@
-import { computed, ShallowRef, shallowRef } from "vue"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { durationAxisPointerFormatter, timeFormatWithoutSeconds } from "shared/src/formatter"
+import { computed, ShallowRef, shallowRef } from "vue"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>

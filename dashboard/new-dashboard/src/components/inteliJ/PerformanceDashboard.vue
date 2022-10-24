@@ -48,7 +48,8 @@
           <div class="flex-1">
             <AggregationChart
               :configurators="averagesConfigurators"
-              :aggregated-measure="'completion'"
+              :aggregated-measure="'completion\_%'"
+              :is-like="true"
               :title="'Completion'"
             />
           </div>

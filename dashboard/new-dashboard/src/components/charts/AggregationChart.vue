@@ -6,7 +6,7 @@
 
     <div class="mb-3 flex flex-col text-center">
       <span class="text-3xl text-black font-bold">
-        {{vm.average}}
+        {{ vm.average }}
       </span>
       <div class="text-sm text-neutral-500 font-normal">
         Avg, ms
@@ -37,6 +37,7 @@ interface AggregationChartProps {
   chartColor?: string;
   configurators: Array<DataQueryConfigurator>
   aggregatedMeasure: string
+  isLike?: boolean
   title: string
 }
 
@@ -47,7 +48,7 @@ const props = withDefaults(defineProps<AggregationChartProps>(), {
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "measures.name", v: props.aggregatedMeasure})
+    query.addFilter({f: "measures.name", v: props.aggregatedMeasure, o: props.isLike ? "like" : "="})
     return true
   },
   createObservable() {

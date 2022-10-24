@@ -59,14 +59,6 @@
           <div class="flex-1">
             <AggregationChart
               :configurators="averagesConfigurators"
-              :aggregated-measure="'typing'"
-              :title="'Typing'"
-              :chart-color="'#9B51E0'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
               :aggregated-measure="'indexing'"
               :title="'Indexing'"
               :chart-color="'#219653'"
@@ -75,8 +67,8 @@
           <div class="flex-1">
             <AggregationChart
               :configurators="averagesConfigurators"
-              :aggregated-measure="'test#max_awt_delay'"
-              :title="'UI responsiveness'"
+              :aggregated-measure="'typing#average_awt_delay'"
+              :title="'UI responsiveness during typing'"
               :chart-color="'#F2994A'"
             />
           </div>

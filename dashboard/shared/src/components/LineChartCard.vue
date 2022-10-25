@@ -10,8 +10,8 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect, withDefaults } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
-import { ChartType, PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
+import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../dataQuery"
 import { chartToolTipKey, configuratorListKey } from "../injectionKeys"
 import { ChartToolTipManager } from "./ChartToolTipManager"
@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<{
   valueUnit?: ValueUnit
   configurators?: Array<DataQueryConfigurator>|null
   trigger?: PopupTrigger
-  aggregatedMeasure: string | null
+  aggregatedMeasure?: string | null
 }>(), {
   skipZeroValues: true,
   compoundTooltip: true,

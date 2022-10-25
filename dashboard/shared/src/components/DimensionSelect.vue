@@ -14,17 +14,26 @@
     :show-toggle-all="hasManyElements"
   >
     <template #value="slotProps">
-      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
-         <slot name="icon"/>
-          {{ placeholder }}
+      <span
+        v-if="!slotProps.value || slotProps.value.length === 0"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ placeholder }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1">
-         <slot name="icon"/>
-         {{ slotProps.value[0] }}
+      <span
+        v-if="slotProps.value && slotProps.value.length === 1"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ slotProps.value[0] }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
-         <slot name="icon"/>
-         {{ props.selectedLabel(slotProps.value) }}
+      <span
+        v-if="slotProps.value && slotProps.value.length > 1"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ props.selectedLabel(slotProps.value) }}
       </span>
     </template>
   </MultiSelect>
@@ -39,6 +48,7 @@
     option-label="label"
     option-value="value"
     :filter="true"
+    :auto-filter-focus="true"
   />
   <MultiSelect
     v-else
@@ -55,19 +65,29 @@
     :selection-limit="multiple ? null : 1"
     :max-selected-labels="1"
     :filter="true"
+    :auto-filter-focus="true"
   >
     <template #value="slotProps">
-      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
-         <slot name="icon"/>
-          {{ placeholder }}
+      <span
+        v-if="!slotProps.value || slotProps.value.length === 0"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ placeholder }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1 max-w-[200px] truncate">
-         <slot name="icon"/>
-         {{ slotProps.value[0] }}
+      <span
+        v-if="slotProps.value && slotProps.value.length === 1"
+        class="flex items-center gap-1 max-w-[200px] truncate"
+      >
+        <slot name="icon" />
+        {{ slotProps.value[0] }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
-         <slot name="icon"/>
-         {{ props.selectedLabel(slotProps.value) }}
+      <span
+        v-if="slotProps.value && slotProps.value.length > 1"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ props.selectedLabel(slotProps.value) }}
       </span>
     </template>
   </MultiSelect>
@@ -82,10 +102,12 @@ const props = withDefaults(defineProps<{
   dimension: DimensionConfigurator
   valueToLabel?: (v: string) => string
   // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-  valueToGroup?: (v: string) => string,
+  valueToGroup?: ((v: string) => string) | null
   selectedLabel?: (items: string[]) => string
 }>(), {
-  selectedLabel: (items: string[]) => `${items.length} items selected`
+  selectedLabel: (items: string[]) => `${items.length} items selected`,
+  valueToLabel: (v: string) => v,
+  valueToGroup: null,
 })
 
 const multiple = computed(() => props.dimension.multiple)
@@ -128,10 +150,7 @@ const hasManyElements = computed(()=>{
 })
 
 const items = computed(() => {
-  const valueToLabel = props.valueToLabel ?? function (v) {
-    return v
-  }
-
+  const valueToLabel = props.valueToLabel
   const values = props.dimension.values.value
   // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
   if (props.valueToGroup == null) {

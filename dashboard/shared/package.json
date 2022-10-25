@@ -7,11 +7,11 @@
     "echarts-stat": "1.2.0",
     "fast-equals": "4.0.3",
     "humanize-duration": "3.27.3",
-    "primevue": "3.17.0",
+    "primevue": "3.18.0",
     "rxjs": "8.0.0-alpha.5",
     "tailwind-ui": "workspace:*",
     "vue": "3.2.41",
-    "vue-router": "4.1.5"
+    "vue-router": "4.1.6"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.1"

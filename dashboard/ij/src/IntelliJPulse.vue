@@ -4,7 +4,7 @@
       :measures='["bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "euaShowing_d", "appStarter_d"]'
     />
     <LineChartCard
-      :measures='["pluginDescriptorInitV18_d", "appComponentCreation_d", "projectComponentCreation_d"]'
+      :measures='["pluginDescriptorInitV18_d", "RunManager initialization"]'
     />
   </ChartRow>
 
@@ -19,11 +19,11 @@
 
   <ChartRow title="Services">
     <LineChartCard
-      :measures='["appComponentCreation_d", "serviceSyncPreloading_d", "serviceAsyncPreloading_d"]'
+      :measures='["appComponentCreation_d", "projectComponentCreation_d"]'
     />
     <LineChartCard
       :skip-zero-values="false"
-      :measures='["projectComponentCreation_d", "projectServiceSyncPreloading_d", "projectServiceAsyncPreloading_d"]'
+      :measures='["serviceSyncPreloading_d", "serviceAsyncPreloading_d", "projectServiceSyncPreloading_d", "projectServiceAsyncPreloading_d"]'
     />
   </ChartRow>
 

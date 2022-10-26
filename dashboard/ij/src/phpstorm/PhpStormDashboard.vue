@@ -83,6 +83,12 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Code Vision (PhpReferencesCodeVisionProvider)"
+      measure="PhpReferencesCodeVisionProvider"
+      :projects="['mpdf/localInspection', 'WI_65655/localInspection', 'laravel-io/localInspection/HasAuthor', 'laravel-io/localInspection/Tag']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="PHP Typing Average Responsiveness"
       measure="test#average_awt_delay"
       :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',

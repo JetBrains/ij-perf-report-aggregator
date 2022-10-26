@@ -7,21 +7,31 @@
     :title="title"
     :placeholder="title"
     :filter="true"
+    :auto-filter-focus="true"
     :option-label="(it: string) => it"
     :max-selected-labels="1"
   >
     <template #value="slotProps">
-      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1">
-         <slot name="icon"/>
-          {{ title }}
+      <span
+        v-if="!slotProps.value || slotProps.value.length === 0"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ title }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1">
-         <slot name="icon"/>
-         {{ slotProps.value[0] }}
+      <span
+        v-if="slotProps.value && slotProps.value.length === 1"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ slotProps.value[0] }}
       </span>
-      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
-         <slot name="icon"/>
-         {{ props.selectedLabel(slotProps.value) }}
+      <span
+        v-if="slotProps.value && slotProps.value.length > 1"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
+        {{ props.selectedLabel(slotProps.value) }}
       </span>
     </template>
   </MultiSelect>

@@ -1,6 +1,6 @@
-import { EChartsType, throttle, use, init as initChart  } from "echarts/core"
-import { DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { LineChart, ScatterChart } from "echarts/charts"
+import { DatasetComponent, DataZoomInsideComponent, DataZoomSliderComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
+import { EChartsType, throttle, use, init as initChart  } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ECBasicOption } from "echarts/types/dist/shared"
 

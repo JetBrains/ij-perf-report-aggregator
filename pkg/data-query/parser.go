@@ -253,7 +253,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
 
       if len(t.Operator) == 0 {
         t.Operator = "="
-      } else if len(t.Operator) > 2 || (t.Operator != ">" && t.Operator != "<" && t.Operator != "=" && t.Operator != "!=") {
+      } else if t.Operator != ">" && t.Operator != "<" && t.Operator != "=" && t.Operator != "!=" && t.Operator != "like" {
         return errors.Errorf("Operator %s is not supported", t.Operator)
       }
     } else {

@@ -16,36 +16,6 @@
       />
     </template>
     <GroupLineChart
-      label="Completion mean value with Library cache"
-      measure="completion#mean_value"
-      :projects="[
-        'intellij_commit/completion/empty_place_with_library_cache_k1',
-        'intellij_commit/completion/after_parameter_with_library_cache_k1',
-        'kotlin_lang/completion/after_parameter_with_library_cache_k1',
-        'kotlin_lang/completion/empty_place_with_library_cache_k1',
-        'intellij_commit/completion/empty_place_with_library_cache_k2',
-        'intellij_commit/completion/after_parameter_with_library_cache_k2',
-        'kotlin_lang/completion/after_parameter_with_library_cache_k2',
-        'kotlin_lang/completion/empty_place_with_library_cache_k2',
-      ]"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Completion mean value without Library cache"
-      measure="completion#mean_value"
-      :projects="[
-        'intellij_commit/completion/empty_place_without_library_cache_k1',
-        'intellij_commit/completion/after_parameter_without_library_cache_k1',
-        'kotlin_lang/completion/after_parameter_without_library_cache_k1',
-        'kotlin_lang/completion/empty_place_without_library_cache_k1',
-        'intellij_commit/completion/empty_place_without_library_cache_k2',
-        'intellij_commit/completion/after_parameter_without_library_cache_k2',
-        'kotlin_lang/completion/after_parameter_without_library_cache_k2',
-        'kotlin_lang/completion/empty_place_without_library_cache_k2',
-      ]"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
       label="Completion empty kotlin project"
       measure="completion#mean_value"
       :projects="[
@@ -57,34 +27,85 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Highlight mean value with Library cache"
+      label="Completion mean value with Library cache K1"
+      measure="completion#mean_value"
+      :projects="[
+        'intellij_commit/completion/empty_place_with_library_cache_k1',
+        'intellij_commit/completion/after_parameter_with_library_cache_k1',
+        'kotlin_lang/completion/after_parameter_with_library_cache_k1',
+        'kotlin_lang/completion/empty_place_with_library_cache_k1'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion mean value with Library cache K2"
+      measure="completion#mean_value"
+      :projects="[
+        'intellij_commit/completion/empty_place_with_library_cache_k2',
+        'intellij_commit/completion/after_parameter_with_library_cache_k2',
+        'kotlin_lang/completion/after_parameter_with_library_cache_k2',
+        'kotlin_lang/completion/empty_place_with_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion mean value without Library cache K1"
+      measure="completion#mean_value"
+      :projects="[
+        'intellij_commit/completion/empty_place_without_library_cache_k1',
+        'intellij_commit/completion/after_parameter_without_library_cache_k1',
+        'kotlin_lang/completion/after_parameter_without_library_cache_k1',
+        'kotlin_lang/completion/empty_place_without_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Completion mean value without Library cache K2"
+      measure="completion#mean_value"
+      :projects="[
+        'intellij_commit/completion/empty_place_without_library_cache_k2',
+        'intellij_commit/completion/after_parameter_without_library_cache_k2',
+        'kotlin_lang/completion/after_parameter_without_library_cache_k2',
+        'kotlin_lang/completion/empty_place_without_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight mean value with Library cache K1"
       measure="highlighting#mean_value"
       :projects="[
-        'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
+       'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
         'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
         'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
+        'kotlin_lang/highlight/CommonParser_with_library_cache_k1',
+        'kotlin_lang/highlight/FirErrors_with_library_cache_k1',
+        'kotlin_lang/highlight/Flag_with_library_cache_k1',
+        'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight mean value with Library cache K2"
+      measure="highlighting#mean_value"
+      :projects="[
         'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k2',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k2',
         'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',
         'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
-        'kotlin_lang/highlight/CommonParser_with_library_cache_k1',
         'kotlin_lang/highlight/CommonParser_with_library_cache_k2',
-        'kotlin_lang/highlight/FirErrors_with_library_cache_k1',
         'kotlin_lang/highlight/FirErrors_with_library_cache_k2',
-        'kotlin_lang/highlight/Flag_with_library_cache_k1',
         'kotlin_lang/highlight/Flag_with_library_cache_k2',
-        'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
         'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
-        'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
         'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Highlight mean value without Library cache"
+      label="Highlight mean value without Library cache K1"
       measure="highlighting#mean_value"
       :projects="[
         'intellij_commit/highlight/DexInlineCallStackComparisonTest_without_library_cache_k1',
@@ -92,27 +113,34 @@
         'intellij_commit/highlight/OraIntrospector_without_library_cache_k1',
         'intellij_commit/highlight/SolutionModel.Generated_without_library_cache_k1',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_without_library_cache_k1',
+        'kotlin_lang/highlight/CommonParser_without_library_cache_k1',
+        'kotlin_lang/highlight/FirErrors_without_library_cache_k1',
+        'kotlin_lang/highlight/Flag_without_library_cache_k1',
+        'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k1',
+        'kotlin_lang/highlight/DefaultArgumentStubGenerator_without_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight mean value without Library cache K2"
+      measure="highlighting#mean_value"
+      :projects="[
         'intellij_commit/highlight/DexInlineCallStackComparisonTest_without_library_cache_k2',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_without_library_cache_k2',
         'intellij_commit/highlight/OraIntrospector_without_library_cache_k2',
         'intellij_commit/highlight/SolutionModel.Generated_without_library_cache_k2',
         'intellij_commit/highlight/UIAutomationInteractionModel.Generated_without_library_cache_k2',
-        'kotlin_lang/highlight/CommonParser_without_library_cache_k1',
         'kotlin_lang/highlight/CommonParser_without_library_cache_k2',
-        'kotlin_lang/highlight/FirErrors_without_library_cache_k1',
         'kotlin_lang/highlight/FirErrors_without_library_cache_k2',
-        'kotlin_lang/highlight/Flag_without_library_cache_k1',
         'kotlin_lang/highlight/Flag_without_library_cache_k2',
-        'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k1',
         'kotlin_lang/highlight/KtFirDataClassConverters_without_library_cache_k2',
-        'kotlin_lang/highlight/DefaultArgumentStubGenerator_without_library_cache_k1',
         'kotlin_lang/highlight/DefaultArgumentStubGenerator_without_library_cache_k2',
       ]"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages with Library cache"
-      measure="findUsages"
+      label="FindUsages mean value with Library cache K1"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k1',
         'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
@@ -124,6 +152,13 @@
         'kotlin_lang/findUsages/CommonParser_with_library_cache_k1',
         'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="FindUsages mean value with Library cache K2"
+      measure="findUsages#mean_value"
+      :projects="[
         'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
         'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
         'intellij_commit/findUsages/OraIntrospector_with_library_cache_k2',
@@ -138,8 +173,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="FindUsages without Library cache"
-      measure="findUsages"
+      label="FindUsages mean value without Library cache K1"
+      measure="findUsages#mean_value"
       :projects="[
         'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k1',
         'intellij_commit/findUsages/SqlBlock_without_library_cache_k1',
@@ -151,6 +186,13 @@
         'kotlin_lang/findUsages/CommonParser_without_library_cache_k1',
         'kotlin_lang/findUsages/SymbolTable_without_library_cache_k1',
         'kotlin_lang/findUsages/DefaultArgumentStubGenerator_without_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="FindUsages mean value without Library cache K2"
+      measure="findUsages#mean_value"
+      :projects="[
         'intellij_commit/findUsages/loadModuleEntity_without_library_cache_k2',
         'intellij_commit/findUsages/SqlBlock_without_library_cache_k2',
         'intellij_commit/findUsages/OraIntrospector_without_library_cache_k2',

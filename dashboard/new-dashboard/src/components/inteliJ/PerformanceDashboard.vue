@@ -6,15 +6,31 @@
           :ranges="TimeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
-        />
+        >
+          <template #icon>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </TimeRangeSelect>
         <DimensionSelect
           label="Branch"
+          :selected-label="branchesSelectLabelFormat"
           :dimension="branchConfigurator"
-        />
+        >
+          <template #icon>
+            <!--Temporary use custom icon, heroicons or primevue don't have such-->
+            <div class="w-4 h-4 text-gray-500">
+              <BranchIcon />
+            </div>
+          </template>
+        </DimensionSelect>
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
-        />
+        >
+          <template #icon>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </DimensionHierarchicalSelect>
         <DimensionSelect
           label="Nightly/Release"
           :dimension="releaseConfigurator"
@@ -27,21 +43,17 @@
     </Toolbar>
 
     <main class="flex">
-      <div class="flex flex-1 flex-col gap-6 overflow-hidden" ref="container">
+      <div
+        ref="container"
+        class="flex flex-1 flex-col gap-6 overflow-hidden"
+      >
         <section class="flex gap-6">
           <div class="flex-1">
             <AggregationChart
               :configurators="averagesConfigurators"
-              :aggregated-measure="'completion'"
+              :aggregated-measure="'completion\_%'"
+              :is-like="true"
               :title="'Completion'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'typing'"
-              :title="'Typing'"
-              :chart-color="'#9B51E0'"
             />
           </div>
           <div class="flex-1">
@@ -54,9 +66,9 @@
           </div>
           <div class="flex-1">
             <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'test#max_awt_delay'"
-              :title="'UI responsiveness'"
+              :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+              :aggregated-measure="'test#average_awt_delay'"
+              :title="'UI responsiveness during typing'"
               :chart-color="'#F2994A'"
             />
           </div>
@@ -107,15 +119,18 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref, shallowRef } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { branchesSelectLabelFormat } from "../../shared/labels"
+import InfoSidebar from "../InfoSidebar.vue"
+import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import BranchIcon from "../common/BranchIcon.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import InfoSidebar from "../InfoSidebar.vue"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 
 provideReportUrlProvider()
 
@@ -174,6 +189,16 @@ const dashboardConfigurators = [
   releaseConfigurator,
   triggeredByConfigurator,
 ]
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({f: "project", v: "%typing", o: "like"})
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

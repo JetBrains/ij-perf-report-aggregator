@@ -386,7 +386,9 @@ loop:
       sb.WriteString(filter.Operator)
       sb.WriteString(strconv.FormatBool(v))
     case string:
+      sb.WriteString(" ")
       sb.WriteString(filter.Operator)
+      sb.WriteString(" ")
       writeString(sb, v)
     case []string:
       sb.WriteString(" in (")

@@ -7,13 +7,19 @@
     option-value="value"
   >
     <template #value="slotProps">
-      <span class="flex items-center gap-1" v-if="slotProps.value">
-        <slot name="icon"/>
+      <span
+        v-if="slotProps.value"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
         {{ currentValue?.label }}
       </span>
 
-      <span class="flex items-center gap-1" v-if="!slotProps.value">
-        <slot name="icon"/>
+      <span
+        v-if="!slotProps.value"
+        class="flex items-center gap-1"
+      >
+        <slot name="icon" />
         Select range
       </span>
     </template>

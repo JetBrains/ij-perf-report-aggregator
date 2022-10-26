@@ -11,20 +11,20 @@
   </div>
 </template>
 <script setup lang="ts">
+import { CallbackDataParams } from "echarts/types/src/util/types"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
-import { LineChartVM } from "./LineChartVM"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { CallbackDataParams } from "echarts/types/src/util/types"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
+import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { getInfoDataFrom } from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
+import { LineChartVM } from "./LineChartVM"
 
 interface LineChartProps {
-  title: string,
+  title: string
   measures: Array<string>
   configurators: Array<DataQueryConfigurator>
   skipZeroValues?: boolean

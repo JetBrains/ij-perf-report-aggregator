@@ -90,7 +90,8 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           }
         }
         if (!isIj && selectedRef.value?.length == 0) {
-          selectedRef.value = data
+          selectedRef.value
+            = data.filter(it => !it.includes("#") && !it.includes("|") && it != "cpuLoad75th" && it != "pageHit" && it != "pageLoad" && it != "pageMiss" && !/.*_\d+/.test(it))
         }
       })
   }

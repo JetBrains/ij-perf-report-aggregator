@@ -11,18 +11,11 @@
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
-        <DimensionSelect
-          label="Branch"
-          :selected-label="branchesSelectLabelFormat"
-          :dimension="branchConfigurator"
-        >
-          <template #icon>
-            <!--Temporary use custom icon, heroicons or primevue don't have such-->
-            <div class="w-4 h-4 text-gray-500">
-              <BranchIcon />
-            </div>
-          </template>
-        </DimensionSelect>
+        <BranchSelect
+          :branchConfigurator="branchConfigurator"
+          :releaseConfigurator="releaseConfigurator"
+          :triggeredByConfigurator="triggeredByConfigurator"
+        />
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
@@ -31,14 +24,6 @@
             <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
-        <DimensionSelect
-          label="Nightly/Release"
-          :dimension="releaseConfigurator"
-        />
-        <DimensionSelect
-          label="Triggered by"
-          :dimension="triggeredByConfigurator"
-        />
       </template>
     </Toolbar>
 
@@ -112,7 +97,6 @@
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
-import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
@@ -124,12 +108,11 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { branchesSelectLabelFormat } from "../../shared/labels"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import BranchIcon from "../common/BranchIcon.vue"
+import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider()

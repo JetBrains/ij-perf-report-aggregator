@@ -37,19 +37,29 @@
       <div class="border-t border-solid border-neutral-200 relative">
         <ul class="p-multiselect-items p-component">
           <li
-            class="p-multiselect-item flex items-center"
+            class="p-multiselect-item flex items-center gap-2"
             @click="openVersionSubmenu"
             v-if="versionItems.length > 0"
           >
-            Version type
+            <span class="flex items-center gap-1 overflow-hidden">
+              Version type
+              <span class="text-gray-500 truncate" v-if="versionValue !== null && versionValue.length > 0">
+                {{ versionValue?.length < 2 ? versionValue[0] : `Selected ${versionValue?.length }` }}
+              </span>
+            </span>
             <span class="pi pi-angle-right ml-[auto]" />
           </li>
           <li
-            class="p-multiselect-item flex items-center"
+            class="p-multiselect-item flex items-center gap-2"
             @click="openTriggeredSubmenu"
             v-if="triggeredItems.length > 0"
           >
-            Triggered by
+            <span class="flex items-center gap-1 overflow-hidden">
+              Triggered by
+              <span class="text-gray-500 truncate" v-if="triggeredValue !== null && triggeredValue.length > 0">
+                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
+              </span>
+            </span>
             <span class="pi pi-angle-right ml-[auto]" />
           </li>
         </ul>
@@ -57,6 +67,7 @@
         <div
           v-if="activeSubMenu === SubMenu.VERSION_TYPE && versionItems.length > 0"
           class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
+          style="left: 100%;"
         >
           <ul class="p-multiselect-items p-component">
             <li v-for="item in versionItems">
@@ -75,6 +86,7 @@
         <div
           v-if="activeSubMenu === SubMenu.TRIGGERED_BY && triggeredItems.length > 0"
           class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
+          style="left: 100%;"
         >
           <ul class="p-multiselect-items p-component">
             <div v-if="triggeredItems.length === 0">
@@ -99,7 +111,6 @@
 <style>
 .branch-select-dropdown {
   top: 0;
-  left: 100%;
   margin-top: 0;
   border-top-left-radius: 0;
 }

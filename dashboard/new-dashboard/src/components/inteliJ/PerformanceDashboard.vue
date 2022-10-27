@@ -38,7 +38,7 @@
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#JAVA'"
               :title="'Indexing Java (kB/s)'"
-              :chart-color="'#bb2083'"
+              :chart-color="'#219653'"
             />
           </div>
           <div class="flex-1">
@@ -55,14 +55,6 @@
               :aggregated-measure="'completion\_%'"
               :is-like="true"
               :title="'Completion'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'indexing'"
-              :title="'Indexing'"
-              :chart-color="'#219653'"
             />
           </div>
           <div class="flex-1">

@@ -11,18 +11,11 @@
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
-        <DimensionSelect
-          label="Branch"
-          :selected-label="branchesSelectLabelFormat"
-          :dimension="branchConfigurator"
-        >
-          <template #icon>
-            <!--Temporary use custom icon, heroicons or primevue don't have such-->
-            <div class="w-4 h-4 text-gray-500">
-              <BranchIcon />
-            </div>
-          </template>
-        </DimensionSelect>
+        <BranchSelect
+          :branchConfigurator="branchConfigurator"
+          :releaseConfigurator="releaseConfigurator"
+          :triggeredByConfigurator="triggeredByConfigurator"
+        />
         <DimensionSelect
           label="Metrics"
           :selected-label="metricsSelectLabelFormat"
@@ -49,15 +42,6 @@
             <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
-        <DimensionSelect
-          v-if="releaseConfigurator != null"
-          label="Nightly/Release"
-          :dimension="releaseConfigurator"
-        />
-        <DimensionSelect
-          label="Triggered by"
-          :dimension="triggeredByConfigurator"
-        />
       </template>
     </Toolbar>
 
@@ -99,12 +83,12 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { branchesSelectLabelFormat, testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
-import BranchIcon from "../common/BranchIcon.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import BranchSelect from "../common/BranchSelect.vue"
 
 provideReportUrlProvider()
 

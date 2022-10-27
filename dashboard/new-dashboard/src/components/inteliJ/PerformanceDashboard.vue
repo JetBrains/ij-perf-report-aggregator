@@ -36,6 +36,22 @@
           <div class="flex-1">
             <AggregationChart
               :configurators="averagesConfigurators"
+              :aggregated-measure="'processingSpeed#JAVA'"
+              :title="'Indexing Java (kB/s)'"
+              :chart-color="'#bb2083'"
+            />
+          </div>
+          <div class="flex-1">
+            <AggregationChart
+              :configurators="averagesConfigurators"
+              :aggregated-measure="'processingSpeed#Kotlin'"
+              :title="'Indexing Kotlin (kB/s)'"
+              :chart-color="'#9B51E0'"
+            />
+          </div>
+          <div class="flex-1">
+            <AggregationChart
+              :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
               :is-like="true"
               :title="'Completion'"

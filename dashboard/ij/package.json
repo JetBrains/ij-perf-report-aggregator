@@ -2,10 +2,10 @@
   "name": "ij",
   "private": true,
   "dependencies": {
-    "primevue": "^3.16.2",
+    "primevue": "^3.18.0",
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.37",
-    "vue-router": "4.1.4"
+    "vue": "3.2.41",
+    "vue-router": "4.1.6"
   }
 }

@@ -6,7 +6,7 @@
 
     <div class="mb-3 flex flex-col text-center">
       <span class="text-3xl text-black font-bold">
-        {{vm.average}}
+        {{ vm.average }}
       </span>
       <div class="text-sm text-neutral-500 font-normal">
         Avg, ms
@@ -22,21 +22,19 @@
 </template>
 <script setup lang="ts">
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ChartType, ValueUnit } from "shared/src/chart"
+import { ValueUnit } from "shared/src/chart"
 import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { inject, onMounted, onUnmounted, ref, shallowRef, withDefaults } from "vue"
-import { AggregationChartVM } from "./AggregationChartVM"
-import { LineSeriesOption } from "echarts/charts"
-import { DatasetOption } from "echarts/types/dist/shared"
-import { OptionSourceData } from "echarts/types/src/util/types"
 import { containerKey } from "../../shared/keys"
+import { AggregationChartVM } from "./AggregationChartVM"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
-  chartColor?: string;
+  chartColor?: string
   configurators: Array<DataQueryConfigurator>
   aggregatedMeasure: string
+  isLike?: boolean
   title: string
 }
 
@@ -47,7 +45,7 @@ const props = withDefaults(defineProps<AggregationChartProps>(), {
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "measures.name", v: props.aggregatedMeasure})
+    query.addFilter({f: "measures.name", v: props.aggregatedMeasure, o: props.isLike ? "like" : "="})
     return true
   },
   createObservable() {

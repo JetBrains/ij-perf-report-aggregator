@@ -93,8 +93,8 @@ import BranchSelect from "../common/BranchSelect.vue"
 provideReportUrlProvider()
 
 const dbName = "perfint"
-const dbTable = "idea"
-const initialMachine = "macMini Intel 3.2, 16GB"
+const dbTable = "phpstorm"
+const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

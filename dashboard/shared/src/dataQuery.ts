@@ -76,7 +76,7 @@ export interface DataQueryFilter {
   q?: string
   // `=` by default
   // operator
-  o?: "=" | "!=" | ">"
+  o?: "=" | "!=" | ">" | "like"
 }
 
 export interface DataQueryDimension {

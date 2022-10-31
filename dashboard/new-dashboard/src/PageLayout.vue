@@ -11,13 +11,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide } from "vue"
+import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
 import { InfoSidebarVmImpl } from "./components/InfoSidebarVm"
-import {sidebarVmKey } from "./shared/keys"
-import { useRouter } from "vue-router"
 import NavigationTabs from "./components/NavigationTabs.vue"
 import { tabNavigationItems } from './routes'
+import {sidebarVmKey } from "./shared/keys"
 
 const sidebarVm = new InfoSidebarVmImpl()
 const router = useRouter()

@@ -24,8 +24,8 @@
 import { NavigationItems } from "../routes"
 
 interface Props {
-  items: NavigationItems[],
-  currentPath: String
+  items: NavigationItems[]
+  currentPath: string
 }
 const props = defineProps<Props>()
 </script>

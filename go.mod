@@ -5,7 +5,7 @@ go 1.18
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
 
 require (
-	github.com/ClickHouse/ch-go v0.48.0
+	github.com/ClickHouse/ch-go v0.49.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.3.0
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.4
@@ -15,15 +15,15 @@ require (
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/json-iterator/go v1.1.12
-	github.com/klauspost/compress v1.15.11
+	github.com/klauspost/compress v1.15.12
 	github.com/magiconair/properties v1.8.6
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/minio/minio-go/v7 v7.0.42
-	github.com/nats-io/nats.go v1.18.0
+	github.com/minio/minio-go/v7 v7.0.43
+	github.com/nats-io/nats.go v1.19.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.3
 	github.com/valyala/quicktemplate v1.7.0

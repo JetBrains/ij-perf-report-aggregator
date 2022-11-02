@@ -17,7 +17,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV TZ UTC
 
-COPY config.xml /etc/clickhouse-server/config.xml
 COPY users.xml /etc/clickhouse-server/users.xml
 COPY --from=builder --chown=nonroot:nonroot /var/lib/clickhouse /var/lib/clickhouse
 

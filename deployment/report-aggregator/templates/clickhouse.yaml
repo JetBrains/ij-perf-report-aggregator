@@ -31,8 +31,6 @@ spec:
           env:
             - name: REMOVE_OLD_DATA_DIR
               value: "true"
-            - name: SUBSTITUTE_CONFIG_FILE
-              value: "true"
             - name: DISABLE_PROGRESS
               value: "true"
             {{- include "s3Env" . | nindent 12 }}
@@ -52,6 +50,8 @@ spec:
           volumeMounts:
             - name: clickhouse-data
               mountPath: /var/lib/clickhouse
+          env:
+            {{- include "s3Env" . | nindent 12 }}
         # backup requires access to volume, so, it cannot be done using k8s cron job
         - name: clickhouse-backup
           image: {{ .Values.images.clickhouseBackup }}

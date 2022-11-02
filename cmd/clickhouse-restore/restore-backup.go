@@ -11,16 +11,12 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
-  "io/fs"
   "log"
   "os"
   "path/filepath"
   "strings"
   "time"
 )
-
-//go:embed config.xml
-var clickhouseConfig []byte
 
 func main() {
   logger := util.CreateLogger()
@@ -99,24 +95,6 @@ func restoreMain(logger *zap.Logger) error {
     err = backupManager.download(remoteFile, dataDir, true, bar)
     if err != nil {
       return err
-    }
-
-    if env.GetBool("SUBSTITUTE_CONFIG_FILE", false) {
-      s := strings.NewReplacer(
-        "$S3_ENDPOINT", os.Getenv("S3_ENDPOINT"),
-        "$S3_BUCKET", os.Getenv("S3_BUCKET"),
-        "$S3_ACCESS_KEY", os.Getenv("S3_ACCESS_KEY"),
-        "$S3_SECRET_KEY", os.Getenv("S3_SECRET_KEY"),
-      ).Replace(string(clickhouseConfig))
-      err = os.MkdirAll("/etc/clickhouse-server", fs.ModePerm)
-      if err != nil {
-        return err
-      }
-
-      err = os.WriteFile("/etc/clickhouse-server/config.xml", []byte(s), 0666)
-      if err != nil {
-        return err
-      }
     }
 
     return nil

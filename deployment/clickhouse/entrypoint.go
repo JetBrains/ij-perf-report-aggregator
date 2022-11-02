@@ -1,19 +1,38 @@
 package main
 
 import (
+  _ "embed"
   "github.com/nats-io/nats.go"
   "log"
   "os"
   "os/exec"
+  "strings"
   "time"
 )
 
+//go:embed config.xml
+var clickhouseConfig []byte
+
 func main() {
-  cmd := exec.Command("/usr/bin/clickhouse", "server", "--config-file=/etc/clickhouse-server/config.xml")
+  s := strings.NewReplacer(
+    "$S3_ENDPOINT", os.Getenv("S3_ENDPOINT"),
+    "$S3_BUCKET", os.Getenv("S3_BUCKET"),
+    "$S3_ACCESS_KEY", os.Getenv("S3_ACCESS_KEY"),
+    "$S3_SECRET_KEY", os.Getenv("S3_SECRET_KEY"),
+  ).Replace(string(clickhouseConfig))
+
+  // /etc is not writeable
+  configFile := "/var/lib/clickhouse/config.xml"
+  err := os.WriteFile(configFile, []byte(s), 0666)
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  cmd := exec.Command("/usr/bin/clickhouse", "server", "--config-file="+configFile)
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
 
-  err := cmd.Start()
+  err = cmd.Start()
   if err != nil {
     log.Fatal(err)
   }

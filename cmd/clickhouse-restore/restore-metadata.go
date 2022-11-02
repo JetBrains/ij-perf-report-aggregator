@@ -81,7 +81,7 @@ func extractMetadata(clickhouseDir string, info *clickhouse_backup.MappingInfo, 
     dbDir := filepath.Join(clickhouseDir, "data", table.Database)
 
     err = os.Symlink(filepath.Join(clickhouseDir, "store", table.Uuid[0:3], table.Uuid), filepath.Join(dbDir, table.Name))
-    if err != nil {
+    if err != nil && !os.IsExist(err) {
       return errors.WithStack(err)
     }
   }

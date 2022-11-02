@@ -112,9 +112,9 @@ func executeBackup(backupManager *BackupManager) error {
   if err != nil {
     backupManager.Logger.Error("cannot backup", zap.Error(err))
 
-    err = os.RemoveAll(backupDir)
-    if err != nil {
-      backupManager.Logger.Error("cannot remove", zap.Error(err))
+    removeErr := os.RemoveAll(backupDir)
+    if removeErr != nil {
+      backupManager.Logger.Error("cannot remove", zap.Error(removeErr))
     }
   }
   return err

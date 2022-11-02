@@ -53,52 +53,34 @@ func restoreMain(logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
-  if len(os.Args) > 1 {
-    filePath := os.Args[1]
-    if filePath == "local" {
-      filePath, err = findLocalBackup()
-      if err != nil {
-        return err
-      }
-    }
-
-    file, err := os.Open(filePath)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    defer util.Close(file, logger)
-    return restore(filePath, dataDir, true, file, clickhouseDir, nil, logger, nil)
-  } else {
-    baseBackupManager, err := clickhousebackup.CreateBackupManager(taskContext, logger)
-    if err != nil {
-      return errors.WithStack(err)
-    }
-
-    backupManager := &BackupManager{
-      baseBackupManager,
-    }
-
-    remoteFile, err := backupManager.findBackup(util.GetEnvOrPanic("S3_BUCKET"))
-    if err != nil {
-      return err
-    }
-
-    var bar *pb.ProgressBar
-    if !env.GetBool("DISABLE_PROGRESS", false) {
-      bar = pb.Full.New(0)
-      bar.Set(pb.Bytes, true)
-      bar.SetRefreshRate(time.Second)
-      defer bar.Finish()
-    }
-
-    err = backupManager.download(remoteFile, dataDir, true, bar)
-    if err != nil {
-      return err
-    }
-
-    return nil
+  baseBackupManager, err := clickhousebackup.CreateBackupManager(taskContext, logger)
+  if err != nil {
+    return errors.WithStack(err)
   }
+
+  backupManager := &BackupManager{
+    baseBackupManager,
+  }
+
+  remoteFile, err := backupManager.findBackup(util.GetEnvOrPanic("S3_BUCKET"))
+  if err != nil {
+    return err
+  }
+
+  var bar *pb.ProgressBar
+  if !env.GetBool("DISABLE_PROGRESS", false) {
+    bar = pb.Full.New(0)
+    bar.Set(pb.Bytes, true)
+    bar.SetRefreshRate(time.Second)
+    defer bar.Finish()
+  }
+
+  err = backupManager.download(remoteFile, clickhouseDir, true, bar)
+  if err != nil {
+    return err
+  }
+
+  return nil
 }
 
 type BackupManager struct {
@@ -151,7 +133,6 @@ func restore(
   var info *clickhousebackup.MappingInfo
   for {
     header, err := tarReader.Next()
-
     if err == io.EOF {
       break
     } else if err != nil {
@@ -226,41 +207,6 @@ func restore(
   }
 
   return nil
-}
-
-func findLocalBackup() (string, error) {
-  homeDir, err := os.UserHomeDir()
-  if err != nil {
-    return "", errors.WithStack(err)
-  }
-
-  var candidate string
-  var lastModified time.Time
-  downloadDir := filepath.Join(homeDir, "Downloads")
-  files, err := os.ReadDir(downloadDir)
-  if err != nil {
-    return "", errors.WithStack(err)
-  }
-
-  for _, file := range files {
-    if strings.HasSuffix(file.Name(), ".tar") {
-      info, err := file.Info()
-      if err != nil {
-        return "", errors.WithStack(err)
-      }
-
-      modTime := info.ModTime()
-      if lastModified.Before(modTime) {
-        candidate = file.Name()
-        lastModified = modTime
-      }
-    }
-  }
-
-  if len(candidate) == 0 {
-    return "", errors.Errorf("local backup not found (downloadDir=%s)", downloadDir)
-  }
-  return filepath.Join(downloadDir, candidate), nil
 }
 
 func (t *BackupManager) findBackup(bucket string) (string, error) {

@@ -7,6 +7,7 @@ import (
   clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/develar/errors"
   "go.uber.org/zap"
+  "io/fs"
   "os"
   "path/filepath"
   "strconv"
@@ -19,40 +20,47 @@ func inClause(names []string) string {
 }
 
 func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhousebackup.TableInfo, backupDir string, logger *zap.Logger) error {
-  shadowDir := filepath.Join(t.ClickhouseDir, "shadow")
-  dirName := strconv.FormatInt(int64(os.Getpid()), 36) + "_" + strconv.FormatInt(time.Now().UnixNano(), 36)
-  logger.Info("optimize table")
-  err := db.Exec(t.TaskContext, fmt.Sprintf("optimize table `%s`.`%s`", table.Database, table.Name))
-  if err != nil {
-    return errors.WithStack(err)
-  }
+  dirName := strconv.FormatInt(int64(os.Getpid()), 36) + "-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+  //logger.Info("optimize table")
+  //err := db.Exec(t.TaskContext, fmt.Sprintf("optimize table `%s`.`%s`", table.Database, table.Name))
+  //if err != nil {
+  //  return errors.WithStack(err)
+  //}
 
   logger.Info("freeze table", zap.String("shadowDir", dirName))
-  err = db.Exec(t.TaskContext, fmt.Sprintf("alter table `%s`.`%s` freeze with name '"+dirName+"'", table.Database, table.Name))
+  err := db.Exec(t.TaskContext, fmt.Sprintf("alter table `%s`.`%s` freeze with name '"+dirName+"'", table.Database, table.Name))
   if err != nil {
     return errors.WithStack(err)
   }
 
-  tableShadowDir := filepath.Join(shadowDir, dirName)
+  for _, diskPath := range []string{"", "disks/s3_disk"} {
+    diskDir := filepath.Join(t.ClickhouseDir, diskPath)
+    tableShadowDir := filepath.Join(diskDir, "shadow", dirName)
+    storeDir := filepath.Join(tableShadowDir, "store")
+    storeDirs, err := os.ReadDir(storeDir)
+    if err != nil && !os.IsNotExist(err) {
+      return errors.WithStack(err)
+    }
 
-  storeDir := filepath.Join(tableShadowDir, "store")
-  storeDirs, err := os.ReadDir(storeDir)
-  if err != nil && !os.IsNotExist(err) {
-    return errors.WithStack(err)
-  }
+    diskBackupDir := filepath.Join(backupDir, diskPath, "store")
+    err = os.MkdirAll(diskBackupDir, fs.ModePerm)
+    if err != nil {
+      return errors.WithStack(err)
+    }
 
-  for _, f := range storeDirs {
-    if f.IsDir() {
-      err = os.Rename(filepath.Join(storeDir, f.Name()), filepath.Join(backupDir, f.Name()))
-      if err != nil {
-        return errors.WithStack(err)
+    for _, f := range storeDirs {
+      if f.IsDir() {
+        err = os.Rename(filepath.Join(storeDir, f.Name()), filepath.Join(diskBackupDir, f.Name()))
+        if err != nil {
+          return errors.WithStack(err)
+        }
       }
     }
-  }
 
-  err = os.RemoveAll(tableShadowDir)
-  if err != nil {
-    return errors.WithStack(err)
+    err = os.RemoveAll(tableShadowDir)
+    if err != nil {
+      return errors.WithStack(err)
+    }
   }
   return nil
 }

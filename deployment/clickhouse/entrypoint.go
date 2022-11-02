@@ -14,7 +14,7 @@ import (
 var clickhouseConfig []byte
 
 func main() {
-  s3Url := "https://" + os.Getenv("S3_BUCKET") + ".eu.s3.eu-west-1.amazonaws.com/data/"
+  s3Url := "https://" + os.Getenv("S3_BUCKET") + ".s3.eu-west-1.amazonaws.com/data/"
 
   s := strings.NewReplacer(
     "$S3_URL", s3Url,

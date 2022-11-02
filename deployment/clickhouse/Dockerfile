@@ -1,5 +1,6 @@
-FROM golang:1.19.0 AS builder
+FROM golang:1.19.3 AS builder
 WORKDIR /project/src
+ADD config.xml .
 ADD entrypoint.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/entrypoint .
 

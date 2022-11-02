@@ -31,6 +31,8 @@ spec:
           env:
             - name: REMOVE_OLD_DATA_DIR
               value: "true"
+            - name: SUBSTITUTE_CONFIG_FILE
+              value: "true"
             - name: DISABLE_PROGRESS
               value: "true"
             {{- include "s3Env" . | nindent 12 }}

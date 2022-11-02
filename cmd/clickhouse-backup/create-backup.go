@@ -37,7 +37,7 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhous
 
   storeDir := filepath.Join(tableShadowDir, "store")
   storeDirs, err := os.ReadDir(storeDir)
-  if err != nil {
+  if err != nil && !os.IsNotExist(err) {
     return errors.WithStack(err)
   }
 

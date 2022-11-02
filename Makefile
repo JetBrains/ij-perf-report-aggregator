@@ -48,4 +48,6 @@ update-deps:
 # nats-server
 # /Volumes/data/nats-pub db.backup "test"
 
-# minio server minio --console-address ":9001" --address "127.0.0.1:9002"
+# MINIO_ROOT_USER=minio MINIO_ROOT_PASSWORD=minio123 minio server --console-address ":9001" --address "127.0.0.1:9002" ~/ij-perf-db/s3
+
+# doppler run --project s3 --config prd -- rclone sync --dry-run --progress /Volumes/data/ij-perf-db/s3/ij-perf/data :s3,region=eu-west-1,provider=AWS,env_auth:eks-eu-west-1-idea-ij-perf-data-zznrqycixv/data

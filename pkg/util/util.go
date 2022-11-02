@@ -2,6 +2,7 @@ package util
 
 import (
   "context"
+  "errors"
   "go.uber.org/zap"
   "io"
   "log"
@@ -12,7 +13,7 @@ import (
 
 func Close(c io.Closer, log *zap.Logger) {
   err := c.Close()
-  if err != nil && err != os.ErrClosed && err != io.ErrClosedPipe {
+  if err != nil && !errors.Is(err, os.ErrClosed) && errors.Is(err, io.ErrClosedPipe) {
     if e, ok := err.(*os.PathError); ok && e.Err == os.ErrClosed {
       return
     }

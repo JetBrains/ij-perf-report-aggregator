@@ -92,23 +92,6 @@ func main() {
 }
 
 func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3SecretKey string, configFile string) error {
-  if !isLocalRun {
-    s3Url := "https://" + bucket + ".s3.eu-west-1.amazonaws.com/data/"
-    log.Print("S3 URL: " + s3Url)
-
-    s := strings.NewReplacer(
-      "$S3_URL", s3Url,
-      "$S3_ACCESS_KEY", s3AccessKey,
-      "$S3_SECRET_KEY", s3SecretKey,
-    ).Replace(string(clickhouseConfig))
-
-    // /etc is not writeable
-    err := os.WriteFile(configFile, []byte(s), 0666)
-    if err != nil {
-      return err
-    }
-  }
-
   chDir := "/var/lib/clickhouse"
   if isLocalRun {
     chDir = "/Volumes/data/ij-perf-db/clickhouse"
@@ -125,6 +108,23 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
       if err != nil && !os.IsNotExist(err) {
         return err
       }
+    }
+  }
+
+  if !isLocalRun {
+    s3Url := "https://" + bucket + ".s3.eu-west-1.amazonaws.com/data/"
+    log.Print("S3 URL: " + s3Url)
+
+    s := strings.NewReplacer(
+      "$S3_URL", s3Url,
+      "$S3_ACCESS_KEY", s3AccessKey,
+      "$S3_SECRET_KEY", s3SecretKey,
+    ).Replace(string(clickhouseConfig))
+
+    // /etc is not writeable
+    err := os.WriteFile(configFile, []byte(s), 0666)
+    if err != nil {
+      return err
     }
   }
   return nil
@@ -205,7 +205,12 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
 }
 
 func configureBackupToolEnv(cmd *exec.Cmd, s3AccessKey string, s3SecretKey string, bucket string, logOnlyErrors bool) {
-  cmd.Env = os.Environ()
+  cmd.Env = []string{}
+  for _, s := range os.Environ() {
+    if !strings.HasPrefix(s, "S3_") && !strings.HasPrefix(s, "CLICKHOUSE_") {
+      cmd.Env = append(cmd.Env, s)
+    }
+  }
   if logOnlyErrors {
     cmd.Env = append(cmd.Env, "LOG_LEVEL=error")
   }

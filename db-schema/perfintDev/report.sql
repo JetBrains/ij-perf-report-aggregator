@@ -18,4 +18,3 @@ create table idea2
   engine = MergeTree
     partition by (toYYYYMM(generated_time))
     order by (machine, branch, project, build_time, generated_time)
-    settings old_parts_lifetime = 10;

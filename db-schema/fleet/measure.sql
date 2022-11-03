@@ -13,4 +13,3 @@ create table measure
   engine = MergeTree
     partition by toYYYYMM(generated_time)
     order by (branch, machine, project, generated_time)
-    settings old_parts_lifetime = 10;

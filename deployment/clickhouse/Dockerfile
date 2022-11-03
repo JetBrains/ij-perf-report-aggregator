@@ -4,7 +4,7 @@ ADD config.xml .
 ADD entrypoint.go .
 RUN GO111MODULE=off go get -d && GO111MODULE=off GOOS=linux go build -ldflags='-s -w' -trimpath -o /tmp/entrypoint .
 
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.10.2.11-stable/clickhouse-common-static-22.10.2.11-amd64.tgz | tar xvz --strip-components=3
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.7.2.15-stable/clickhouse-common-static-22.7.2.15-amd64.tgz | tar xvz --strip-components=3
 RUN cd /tmp && curl -L https://github.com/AlexAkulov/clickhouse-backup/releases/download/v2.1.2/clickhouse-backup-linux-amd64.tar.gz | tar xvz --strip-components=3
 
 RUN mkdir /var/lib/clickhouse

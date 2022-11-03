@@ -9,6 +9,7 @@ import (
   "log"
   "os"
   "os/exec"
+  "path/filepath"
   "strings"
   "syscall"
   "time"
@@ -35,19 +36,10 @@ func main() {
   configFile := "/var/lib/clickhouse/config.xml"
   if isLocalRun {
     configFile = "/Volumes/data/Documents/report-aggregator/deployment/ch-local-config.xml"
-  } else if restoreData {
-    s3Url := "https://" + bucket + ".s3.eu-west-1.amazonaws.com/data/"
+  }
 
-    log.Print("S3 URL: " + s3Url)
-
-    s := strings.NewReplacer(
-      "$S3_URL", s3Url,
-      "$S3_ACCESS_KEY", s3AccessKey,
-      "$S3_SECRET_KEY", s3SecretKey,
-    ).Replace(string(clickhouseConfig))
-
-    // /etc is not writeable
-    err := os.WriteFile(configFile, []byte(s), 0666)
+  if restoreData {
+    err := prepareConfigAndDir(isLocalRun, bucket, s3AccessKey, s3SecretKey, configFile)
     if err != nil {
       log.Fatal(err)
     }
@@ -63,13 +55,6 @@ func main() {
   }
 
   if restoreData {
-    if !isLocalRun {
-      err = os.RemoveAll("/var/lib/clickhouse")
-      if err != nil && !os.IsNotExist(err) {
-        log.Fatal(err)
-      }
-    }
-
     defer func() {
       err = cmd.Process.Signal(syscall.SIGTERM)
       if err != nil {
@@ -104,6 +89,45 @@ func main() {
   if err != nil {
     log.Fatal(err)
   }
+}
+
+func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3SecretKey string, configFile string) error {
+  if !isLocalRun {
+    s3Url := "https://" + bucket + ".s3.eu-west-1.amazonaws.com/data/"
+    log.Print("S3 URL: " + s3Url)
+
+    s := strings.NewReplacer(
+      "$S3_URL", s3Url,
+      "$S3_ACCESS_KEY", s3AccessKey,
+      "$S3_SECRET_KEY", s3SecretKey,
+    ).Replace(string(clickhouseConfig))
+
+    // /etc is not writeable
+    err := os.WriteFile(configFile, []byte(s), 0666)
+    if err != nil {
+      return err
+    }
+  }
+
+  chDir := "/var/lib/clickhouse"
+  if isLocalRun {
+    chDir = "/Volumes/data/ij-perf-db/clickhouse"
+  }
+
+  entries, err := os.ReadDir(chDir)
+  if err != nil && !os.IsNotExist(err) {
+    return err
+  }
+
+  if entries != nil {
+    for _, entry := range entries {
+      err = os.RemoveAll(filepath.Join(chDir, entry.Name()))
+      if err != nil && !os.IsNotExist(err) {
+        return err
+      }
+    }
+  }
+  return nil
 }
 
 func setS3EnvForLocalRun() {

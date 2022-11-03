@@ -63,6 +63,13 @@ func main() {
   }
 
   if restoreData {
+    if !isLocalRun {
+      err = os.RemoveAll("/var/lib/clickhouse")
+      if err != nil && !os.IsNotExist(err) {
+        log.Fatal(err)
+      }
+    }
+
     defer func() {
       err = cmd.Process.Signal(syscall.SIGTERM)
       if err != nil {
@@ -121,6 +128,20 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
   // wait a little bit for clickhouse start
   time.Sleep(1 * time.Second)
 
+  // just for debug
+  cmd := exec.Command(chBackupExecutable, "list", "remote")
+  configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
+  cmd.Stdout = os.Stdout
+  cmd.Stderr = os.Stderr
+  err := cmd.Start()
+  if err != nil {
+    return err
+  }
+  err = cmd.Wait()
+  if err != nil {
+    return err
+  }
+
   var backupName string
   for i := 0; i < 3; i++ {
     cmd := exec.Command(chBackupExecutable, "list", "remote", "latest")
@@ -146,11 +167,11 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
     return errors.New("no remote backup")
   }
 
-  cmd := exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
+  cmd = exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
   configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
-  err := cmd.Run()
+  err = cmd.Run()
   if err != nil {
     return err
   }

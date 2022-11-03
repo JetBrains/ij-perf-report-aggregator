@@ -29,8 +29,6 @@ spec:
               cpu: "0.4"
               memory: "512Mi"
           env:
-            - name: REMOVE_OLD_DATA_DIR
-              value: "true"
             - name: RESTORE_DB
               value: "true"
             - name: DISABLE_PROGRESS

@@ -85,6 +85,11 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
     return nil, errors.WithStack(err)
   }
 
+  bucket, err := util.GetEnvOrFile("S3_BUCKET", "/etc/s3/bucket")
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
   client, err := minio.New(endpoint, &minio.Options{
     Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
     Secure: !strings.HasPrefix(endpoint, "127.0.0.1:"),
@@ -94,7 +99,7 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
   }
 
   return &BackupManager{
-    Bucket:        os.Getenv("S3_BUCKET"),
+    Bucket:        bucket,
     Client:        client,
     TaskContext:   taskContext,
     ClickhouseDir: GetClickhouseDir(),

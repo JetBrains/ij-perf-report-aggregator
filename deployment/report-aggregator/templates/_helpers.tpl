@@ -11,22 +11,3 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/name: report-aggregator
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{- define "s3Env" -}}
-- name: S3_ENDPOINT
-  value: "s3.amazonaws.com"
-- name: S3_BUCKET
-  valueFrom:
-    secretKeyRef:
-      name: ij-perf-data-s3-rw
-      key: bucket-name
-{{- end }}
-
-{{- define "clickhouseVolumeMounts" -}}
-volumeMounts:
-  - name: clickhouse-data
-    mountPath: /var/lib/clickhouse
-  - name: s3
-    mountPath: /etc/s3
-    readOnly: true
-{{- end }}

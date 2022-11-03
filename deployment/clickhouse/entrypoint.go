@@ -18,8 +18,8 @@ func main() {
 
   s := strings.NewReplacer(
     "$S3_URL", s3Url,
-    "$S3_ACCESS_KEY", os.Getenv("S3_ACCESS_KEY"),
-    "$S3_SECRET_KEY", os.Getenv("S3_SECRET_KEY"),
+    "$S3_ACCESS_KEY", getEnvOrFile("S3_ACCESS_KEY", "/etc/s3/accessKey"),
+    "$S3_SECRET_KEY", getEnvOrFile("S3_SECRET_KEY", "/etc/s3/secretKey"),
   ).Replace(string(clickhouseConfig))
 
   log.Print("S3 URL: " + s3Url)
@@ -73,4 +73,16 @@ func requestClearCache() {
   if err != nil {
     log.Fatal(err)
   }
+}
+
+func getEnvOrFile(envName string, file string) string {
+  v := os.Getenv(envName)
+  if len(v) == 0 {
+    b, err := os.ReadFile(file)
+    if err != nil {
+      log.Fatal(err)
+    }
+    return string(b)
+  }
+  return v
 }

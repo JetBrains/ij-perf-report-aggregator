@@ -62,7 +62,7 @@ func restoreMain(logger *zap.Logger) error {
     baseBackupManager,
   }
 
-  remoteFile, err := backupManager.findBackup(util.GetEnvOrPanic("S3_BUCKET"))
+  remoteFile, err := backupManager.findBackup(backupManager.Bucket)
   if err != nil {
     return err
   }

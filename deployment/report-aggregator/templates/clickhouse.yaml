@@ -33,25 +33,23 @@ spec:
               value: "true"
             - name: DISABLE_PROGRESS
               value: "true"
-            {{- include "s3Env" . | nindent 12 }}
-        {{- include "clickhouseVolumeMounts" . | nindent 10 }}
+          volumeMounts: &clickhouseVolumeMounts
+            - name: clickhouse-data
+              mountPath: /var/lib/clickhouse
+            - name: s3
+              mountPath: /etc/s3
+              readOnly: true
       containers:
         - name: clickhouse
           resources:
             requests:
               cpu: "0.5"
               memory: "1Gi"
-              ephemeral-storage: "5Gi"
             limits:
               cpu: "1"
               memory: "4Gi"
-              ephemeral-storage: "5Gi"
           image: {{ .Values.images.clickhouse }}
-          volumeMounts:
-            - name: clickhouse-data
-              mountPath: /var/lib/clickhouse
-          env:
-            {{- include "s3Env" . | nindent 12 }}
+          volumeMounts: *clickhouseVolumeMounts
         # backup requires access to volume, so, it cannot be done using k8s cron job
         - name: clickhouse-backup
           image: {{ .Values.images.clickhouseBackup }}
@@ -68,13 +66,12 @@ spec:
               value: "true"
             - name: CLICKHOUSE
               value: "127.0.0.1:9000"
-            {{- include "s3Env" . | nindent 12 }}
             # reduce memory usage - default part size is 128
             - name: UPLOAD_WORKER_COUNT
               value: "2"
             - name: UPLOAD_PART_SIZE
               value: "64"
-          {{- include "clickhouseVolumeMounts" . | nindent 10 }}
+          volumeMounts: *clickhouseVolumeMounts
       imagePullSecrets:
         - name: ghcr
       volumes:
@@ -88,6 +85,10 @@ spec:
                 path: accessKey
               - key: AWS_SECRET_ACCESS_KEY
                 path: secretKey
+              - key: AWS_SECRET_ACCESS_KEY
+                path: secretKey
+              - key: bucket-name
+                path: bucket
 ---
 apiVersion: v1
 kind: Service

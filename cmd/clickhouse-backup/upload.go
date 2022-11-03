@@ -58,7 +58,7 @@ func (t *BackupManager) upload(remoteFilePath string, task Task) error {
     _ = writer.CloseWithError(errors.WithStack(err))
   }()
 
-  _, err := t.Client.PutObject(t.TaskContext, os.Getenv("S3_BUCKET"), remoteFilePath, reader, -1, putObjectOptions)
+  _, err := t.Client.PutObject(t.TaskContext, t.Bucket, remoteFilePath, reader, -1, putObjectOptions)
   if err != nil {
     return errors.WithStack(err)
   }

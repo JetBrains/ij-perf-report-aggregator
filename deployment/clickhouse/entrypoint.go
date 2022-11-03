@@ -118,12 +118,14 @@ func setS3EnvForLocalRun() {
 }
 
 func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string, bucket string) error {
+  // wait a little bit for clickhouse start
+  time.Sleep(1 * time.Second)
+
   var backupName string
   for i := 0; i < 3; i++ {
     cmd := exec.Command(chBackupExecutable, "list", "remote", "latest")
-    cmd.Env = os.Environ()
-    cmd.Env = append(cmd.Env, "LOG_LEVEL=error")
-    cmd.Env = append(cmd.Env, "REMOTE_STORAGE=s3")
+    configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, true)
+
     cmd.Stderr = os.Stderr
     result, err := cmd.Output()
     if err != nil {
@@ -145,13 +147,7 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
   }
 
   cmd := exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
-  cmd.Env = os.Environ()
-  cmd.Env = append(cmd.Env, "S3_ALLOW_MULTIPART_DOWNLOAD=true")
-  cmd.Env = append(cmd.Env, "REMOTE_STORAGE=s3")
-  cmd.Env = append(cmd.Env, "S3_ACCESS_KEY="+s3AccessKey)
-  cmd.Env = append(cmd.Env, "S3_SECRET_KEY="+s3SecretKey)
-  cmd.Env = append(cmd.Env, "S3_BUCKET="+bucket)
-  cmd.Env = append(cmd.Env, "S3_REGION=eu-west-1")
+  configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
   err := cmd.Run()
@@ -161,6 +157,19 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
 
   log.Println("DB is restored (backup=" + backupName + ")")
   return nil
+}
+
+func configureBackupToolEnv(cmd *exec.Cmd, s3AccessKey string, s3SecretKey string, bucket string, logOnlyErrors bool) {
+  cmd.Env = os.Environ()
+  if logOnlyErrors {
+    cmd.Env = append(cmd.Env, "LOG_LEVEL=error")
+  }
+  cmd.Env = append(cmd.Env, "S3_ALLOW_MULTIPART_DOWNLOAD=true")
+  cmd.Env = append(cmd.Env, "REMOTE_STORAGE=s3")
+  cmd.Env = append(cmd.Env, "S3_ACCESS_KEY="+s3AccessKey)
+  cmd.Env = append(cmd.Env, "S3_SECRET_KEY="+s3SecretKey)
+  cmd.Env = append(cmd.Env, "S3_BUCKET="+bucket)
+  cmd.Env = append(cmd.Env, "S3_REGION=eu-west-1")
 }
 
 func requestClearCache() {

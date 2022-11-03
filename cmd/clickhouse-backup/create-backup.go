@@ -20,7 +20,8 @@ func inClause(names []string) string {
 }
 
 func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhousebackup.TableInfo, backupDir string, logger *zap.Logger) error {
-  dirName := strconv.FormatInt(int64(os.Getpid()), 36) + "-" + strconv.FormatInt(time.Now().UnixNano(), 36)
+  // `-` is unsafe symbol for Clickhouse SQL, don't use it, use "_" instead
+  dirName := strconv.FormatInt(int64(os.Getpid()), 36) + "_" + strconv.FormatInt(time.Now().UnixNano()-1667453551749247000, 36)
   //logger.Info("optimize table")
   //err := db.Exec(t.TaskContext, fmt.Sprintf("optimize table `%s`.`%s`", table.Database, table.Name))
   //if err != nil {
@@ -34,8 +35,7 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhous
   }
 
   for _, diskPath := range []string{"", "disks/s3_disk"} {
-    diskDir := filepath.Join(t.ClickhouseDir, diskPath)
-    tableShadowDir := filepath.Join(diskDir, "shadow", dirName)
+    tableShadowDir := filepath.Join(t.ClickhouseDir, diskPath, "shadow", dirName)
     storeDir := filepath.Join(tableShadowDir, "store")
     storeDirs, err := os.ReadDir(storeDir)
     if err != nil && !os.IsNotExist(err) {
@@ -57,10 +57,11 @@ func (t *BackupManager) freezeAndMoveToBackupDir(db driver.Conn, table clickhous
       }
     }
 
-    err = os.RemoveAll(tableShadowDir)
-    if err != nil {
-      return errors.WithStack(err)
-    }
+    // https://github.com/ClickHouse/ClickHouse/issues/34794
+    //err = os.RemoveAll(tableShadowDir)
+    //if err != nil {
+    //  return errors.WithStack(err)
+    //}
   }
   return nil
 }

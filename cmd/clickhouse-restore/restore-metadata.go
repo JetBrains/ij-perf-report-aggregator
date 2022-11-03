@@ -78,11 +78,14 @@ func extractMetadata(clickhouseDir string, info *clickhouse_backup.MappingInfo, 
       return errors.WithStack(err)
     }
 
-    dbDir := filepath.Join(clickhouseDir, "data", table.Database)
-
-    err = os.Symlink(filepath.Join(clickhouseDir, "store", table.Uuid[0:3], table.Uuid), filepath.Join(dbDir, table.Name))
-    if err != nil && !os.IsExist(err) {
-      return errors.WithStack(err)
+    source := filepath.Join(clickhouseDir, "store", table.Uuid[0:3], table.Uuid)
+    // no file if all data stored on S3
+    if _, err := os.Stat(source); err == nil {
+      dbDir := filepath.Join(clickhouseDir, "data", table.Database)
+      err = os.Symlink(source, filepath.Join(dbDir, table.Name))
+      if err != nil && !os.IsExist(err) {
+        return errors.WithStack(err)
+      }
     }
   }
 

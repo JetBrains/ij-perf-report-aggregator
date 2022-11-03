@@ -152,30 +152,32 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
   // wait a little bit for clickhouse start
   time.Sleep(1 * time.Second)
 
-  // just for debug
-  cmd := exec.Command(chBackupExecutable, "list", "remote")
-  configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
-  cmd.Stdout = os.Stdout
-  cmd.Stderr = os.Stderr
-  err := cmd.Start()
-  if err != nil {
-    return err
-  }
-  err = cmd.Wait()
-  if err != nil {
-    return err
-  }
-
   var backupName string
-  for i := 0; i < 3; i++ {
-    cmd := exec.Command(chBackupExecutable, "list", "remote", "latest")
-    configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, true)
-
+  attemptCount := 3
+  for i := 0; i < attemptCount; i++ {
+    // just for debug - print all backups
+    cmd := exec.Command(chBackupExecutable, "list", "remote")
+    configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
+    cmd.Stdout = os.Stdout
     cmd.Stderr = os.Stderr
-    result, err := cmd.Output()
+    err := cmd.Start()
     if err != nil {
-      if i < 3 {
-        time.Sleep(time.Duration(i+1) * time.Second)
+      return err
+    }
+    err = cmd.Wait()
+
+    var result []byte
+    if err == nil {
+      cmd = exec.Command(chBackupExecutable, "list", "remote", "latest")
+      configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, true)
+
+      cmd.Stderr = os.Stderr
+      result, err = cmd.Output()
+    }
+
+    if err != nil {
+      if i < attemptCount {
+        time.Sleep(time.Duration((i+1)*2) * time.Second)
         continue
       } else {
         log.Println("cannot get latest backup name")
@@ -191,11 +193,11 @@ func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string
     return errors.New("no remote backup")
   }
 
-  cmd = exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
+  cmd := exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
   configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
   cmd.Stdout = os.Stdout
   cmd.Stderr = os.Stderr
-  err = cmd.Run()
+  err := cmd.Run()
   if err != nil {
     return err
   }

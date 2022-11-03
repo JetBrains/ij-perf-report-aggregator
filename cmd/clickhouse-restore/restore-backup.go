@@ -3,6 +3,7 @@ package main
 import (
   "archive/tar"
   _ "embed"
+  "fmt"
   clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/cheggaaa/pb/v3"
@@ -11,6 +12,7 @@ import (
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "io"
+  "io/fs"
   "log"
   "os"
   "path/filepath"
@@ -78,6 +80,26 @@ func restoreMain(logger *zap.Logger) error {
   err = backupManager.download(remoteFile, clickhouseDir, true, bar)
   if err != nil {
     return err
+  }
+
+  maxDepth := 2
+  err = filepath.WalkDir(clickhouseDir, func(path string, d fs.DirEntry, err error) error {
+    if err != nil {
+      return err
+    }
+
+    if path != clickhouseDir {
+      relPath, _ := filepath.Rel(clickhouseDir, path)
+      if d.IsDir() && strings.Count(relPath, string(os.PathSeparator)) > maxDepth {
+        return fs.SkipDir
+      }
+
+      fmt.Println(relPath)
+    }
+    return nil
+  })
+  if err != nil {
+    logger.Warn("cannot print dir contents", zap.Error(err))
   }
 
   return nil

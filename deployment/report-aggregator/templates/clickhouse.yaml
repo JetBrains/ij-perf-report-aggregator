@@ -62,15 +62,8 @@ spec:
               cpu: "0.2"
               memory: 512Mi
           env:
-            - name: DISABLE_PROGRESS
-              value: "true"
             - name: CLICKHOUSE
               value: "127.0.0.1:9000"
-            # reduce memory usage - default part size is 128
-            - name: UPLOAD_WORKER_COUNT
-              value: "2"
-            - name: UPLOAD_PART_SIZE
-              value: "64"
           volumeMounts: *clickhouseVolumeMounts
       imagePullSecrets:
         - name: ghcr

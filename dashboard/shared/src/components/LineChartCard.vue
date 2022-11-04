@@ -47,9 +47,9 @@ const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = inject(chartToolTipKey)!
 
-const show = (event: Event) => {
+const show = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  tooltip.value?.["show"](event, chartToolTipManager)
+  tooltip.value?.["show"](chartToolTipManager)
 }
 const hide = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -111,7 +111,7 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     dataQueryExecutor!,
     toRef(props, "dataZoom"),
-    props.compoundTooltip ? chartToolTipManager.formatArrayValue.bind(chartToolTipManager) : null,
+    props.compoundTooltip ? chartToolTipManager : null,
     props.valueUnit,
     props.trigger,
   )

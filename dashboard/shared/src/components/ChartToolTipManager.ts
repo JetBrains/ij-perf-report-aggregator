@@ -1,5 +1,5 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, shallowReactive } from "vue"
+import { inject } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DataQuery } from "../dataQuery"
 import { reportInfoProviderKey } from "../injectionKeys"
@@ -24,47 +24,56 @@ interface TooltipDataItem {
 }
 
 export class ChartToolTipManager {
-  private valueUnit: "ms" | "ns"
+  private readonly valueUnit: "ms" | "ns"
+
   constructor(valueUnit: "ms" | "ns") {
     this.valueUnit = valueUnit
-
   }
 
   public dataQueryExecutor!: DataQueryExecutor
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
-  readonly reportTooltipData = shallowReactive<TooltipData>({items: [], firstSeriesData: [], reportInfoProvider: null, query: null})
 
-  paused = false
+  private consumer: ((data: TooltipData  | null, target: Event | null) => void) | null = null
 
-  formatArrayValue(params: Array<CallbackDataParams>): null {
-    if (this.paused) {
-      console.log("paused")
-      return null
-    }
+  setConsumer(consumer: ((data: TooltipData | null, target: Event | null) => void) | null) {
+    this.consumer = consumer
+  }
 
+  showTooltip(params: Array<CallbackDataParams> | null, target: Event | null) {
     const query = this.dataQueryExecutor.lastQuery
     if (query == null) {
-      return null
+      return
     }
 
-    const data = this.reportTooltipData
-    data.items = params.map(measure => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
-      return {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        name: measure.seriesName!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        value: measureValue,
-        color: measure.color as string,
-      }
-    })
+    const consumer = this.consumer
+    if (consumer == null) {
+      return
+    }
+
+    if (params == null || params.length === 0) {
+      consumer(null, null)
+      return
+    }
+
     // same for all series
     const values = params[0].value as Array<number>
-    data.firstSeriesData = query.db === "perfint" ? [...values.slice(0, 2),...values.slice(3)] : values
-    data.reportInfoProvider = this.reportInfoProvider
-    data.query = query
-    return null
+
+    consumer({
+      items: params.map(measure => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
+        return {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          name: measure.seriesName!,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          value: measureValue,
+          color: measure.color as string,
+        }
+      }),
+      firstSeriesData: query.db === "perfint" ? [...values.slice(0, 2), ...values.slice(3)] : values,
+      reportInfoProvider: this.reportInfoProvider,
+      query,
+    }, target)
   }
 }

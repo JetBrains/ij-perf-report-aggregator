@@ -68,5 +68,4 @@ create table report2
 )
   engine = MergeTree
     partition by (product, toYYYYMM(generated_time))
-    order by (product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time)
-    settings old_parts_lifetime = 10;
+    order by (product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time);

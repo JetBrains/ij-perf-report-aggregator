@@ -5,4 +5,3 @@ create table installer
 )
   engine = MergeTree
     order by id
-    settings old_parts_lifetime = 10

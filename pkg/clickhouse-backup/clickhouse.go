@@ -46,23 +46,7 @@ type BackupManager struct {
 
 func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*BackupManager, error) {
   // do not try to use doppler on K8S
-  if len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0 {
-    cmd := exec.Command("doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
-    stdout, err := cmd.Output()
-    if err != nil {
-      logger.Warn("failed to use doppler to retrieve credentials", zap.Error(err))
-    } else {
-      excludePrefix := []byte("DOPPLER_")
-      fastjson.MustParseBytes(stdout).GetObject().Visit(func(key []byte, v *fastjson.Value) {
-        if !bytes.HasPrefix(key, excludePrefix) {
-          err = os.Setenv(string(key), string(v.GetStringBytes()))
-          if err != nil {
-            logger.Fatal("cannot set env", zap.Error(err))
-          }
-        }
-      })
-    }
-  }
+  setS3EnvForLocalRun(logger)
 
   endpoint, err := util.GetEnvOrFile("S3_ENDPOINT", "/etc/s3/endpoint")
   if err != nil {
@@ -85,6 +69,11 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
     return nil, errors.WithStack(err)
   }
 
+  bucket, err := util.GetEnvOrFile("S3_BUCKET", "/etc/s3/bucket")
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
   client, err := minio.New(endpoint, &minio.Options{
     Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
     Secure: !strings.HasPrefix(endpoint, "127.0.0.1:"),
@@ -94,12 +83,32 @@ func CreateBackupManager(taskContext context.Context, logger *zap.Logger) (*Back
   }
 
   return &BackupManager{
-    Bucket:        os.Getenv("S3_BUCKET"),
+    Bucket:        bucket,
     Client:        client,
     TaskContext:   taskContext,
     ClickhouseDir: GetClickhouseDir(),
     Logger:        logger,
   }, nil
+}
+
+func setS3EnvForLocalRun(logger *zap.Logger) {
+  if len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0 {
+    cmd := exec.Command("doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
+    stdout, err := cmd.Output()
+    if err != nil {
+      logger.Warn("failed to use doppler to retrieve credentials", zap.Error(err))
+    } else {
+      excludePrefix := []byte("DOPPLER_")
+      fastjson.MustParseBytes(stdout).GetObject().Visit(func(key []byte, v *fastjson.Value) {
+        if !bytes.HasPrefix(key, excludePrefix) {
+          err = os.Setenv(string(key), string(v.GetStringBytes()))
+          if err != nil {
+            logger.Fatal("cannot set env", zap.Error(err))
+          }
+        }
+      })
+    }
+  }
 }
 
 func GetClickhouseDir() string {

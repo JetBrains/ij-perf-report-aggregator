@@ -2,7 +2,7 @@
   "name": "ij",
   "private": true,
   "dependencies": {
-    "primevue": "^3.18.0",
+    "primevue": "^3.18.1",
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
     "vue": "3.2.41",

@@ -48,7 +48,7 @@ func NewBulkInsertManager(
     poolCapacity = 99
   }
 
-  logger.Info("insert pool capacity", zap.Int("count", poolCapacity))
+  logger.Debug("insert pool capacity", zap.Int("count", poolCapacity))
 
   errorGroup, ctx := errgroup.WithContext(insertContext)
   errorGroup.SetLimit(poolCapacity)

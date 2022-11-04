@@ -47,7 +47,7 @@ func (t *Collector) loadReports(builds []*Build) error {
       if build == nil || build.Agent.Name == "Dead agent" {
         return nil
       }
-
+      t.logger.Info("processing build", zap.Int("id", build.Id))
       if t.reportAnalyzer.Config.HasInstallerField && build.installerInfo == nil {
         // or already processed or cannot compute installer info
         return nil

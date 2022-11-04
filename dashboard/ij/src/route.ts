@@ -149,6 +149,14 @@ export function getIjItems(): Array<MenuItem> {
           label: "Explore",
           to: "/kotlin/performanceKotlinPluginTests",
         },
+        {
+          label: "Build kts",
+          to: "/kotlin/buildScript"
+        },
+        {
+          label: "MPP projects",
+          to: "/kotlin/mppProjects"
+        },
       ]
     },
     {
@@ -304,6 +312,16 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/kotlin/pluginDashboard",
           component: () => import("./kotlin/KotlinPluginDashboard.vue"),
           meta: {pageTitle: "Kotlin plugin Dashboard"},
+        },
+        {
+          path: "/kotlin/buildScript",
+          component: () => import("./kotlin/KotlinBuildScriptDashboard.vue"),
+          meta: {pageTitle: "Kotlin build kts dashboard"},
+        },
+        {
+          path: "/kotlin/mppProjects",
+          component: () => import("./kotlin/MppProjectsDashboard.vue"),
+          meta: {pageTitle: "Kotlin MPP projects dashboard"},
         },
       ]
     },

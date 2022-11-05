@@ -23,7 +23,7 @@ importers:
       rollup: ^3.2.5
       rollup-plugin-visualizer: ^5.8.3
       sass: ^1.56.0
-      tailwindcss: ^3.2.1
+      tailwindcss: ^3.2.2
       typescript: ^4.8.4
       unplugin-vue-components: ^0.22.9
       vite: ^3.2.2
@@ -33,9 +33,9 @@ importers:
       '@types/node': 18.11.9
       eslint-plugin-unicorn: 44.0.2_eslint@8.26.0
     devDependencies:
-      '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.1
-      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.1
-      '@tailwindcss/typography': 0.5.7_tailwindcss@3.2.1
+      '@tailwindcss/forms': 0.5.3_tailwindcss@3.2.2
+      '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.2
+      '@tailwindcss/typography': 0.5.7_tailwindcss@3.2.2
       '@typescript-eslint/eslint-plugin': 5.42.0_6xw5wg2354iw4zujk2f3vyfrzu
       '@typescript-eslint/parser': 5.42.0_wyqvi574yv7oiwfeinomdzmc3m
       '@vitejs/plugin-vue': 3.2.0_vite@3.2.2+vue@3.2.41
@@ -50,7 +50,7 @@ importers:
       rollup: 3.2.5
       rollup-plugin-visualizer: 5.8.3_rollup@3.2.5
       sass: 1.56.0
-      tailwindcss: 3.2.1_postcss@8.4.18
+      tailwindcss: 3.2.2_postcss@8.4.18
       typescript: 4.8.4
       unplugin-vue-components: 0.22.9_rollup@3.2.5+vue@3.2.41
       vite: 3.2.2_sass@1.56.0
@@ -206,15 +206,15 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /@babel/parser/7.20.1:
-    resolution: {integrity: sha512-hp0AYxaZJhxULfM1zyp7Wgr+pSUKBcP3M+PHnSzWGdXOzg/kHWIgiUWARvubhUKGOEw3xqY4x+lyZ9ytBVcELw==}
+  /@babel/parser/7.20.2:
+    resolution: {integrity: sha512-afk318kh2uKbo7BEj2QtEi8HVCGrwHUffrYDy7dgVcSa2j9lY3LDjPzcyGdpX7xgm35aWqvciZJ4WKmdF/SxYg==}
     engines: {node: '>=6.0.0'}
     hasBin: true
     dependencies:
-      '@babel/types': 7.20.0
+      '@babel/types': 7.20.2
 
-  /@babel/types/7.20.0:
-    resolution: {integrity: sha512-Jlgt3H0TajCW164wkTOTzHkZb075tMQMULzrLUoUeKmO7eFL96GgDxf7/Axhc5CAuKE3KFyVW1p6ysKsi2oXAg==}
+  /@babel/types/7.20.2:
+    resolution: {integrity: sha512-FnnvsNWgZCr232sqtXggapvlkk/tuwR/qhGzcmxI0GXLCjmPYQPzio2FbdlWuY6y1sHFfQKk+rRbUZ9VStQMog==}
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/helper-string-parser': 7.19.4
@@ -330,24 +330,24 @@ packages:
       rollup: 3.2.5
     dev: true
 
-  /@tailwindcss/forms/0.5.3_tailwindcss@3.2.1:
+  /@tailwindcss/forms/0.5.3_tailwindcss@3.2.2:
     resolution: {integrity: sha512-y5mb86JUoiUgBjY/o6FJSFZSEttfb3Q5gllE4xoKjAAD+vBrnIhE4dViwUuow3va8mpH4s9jyUbUbrRGoRdc2Q==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
     dependencies:
       mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.2.1_postcss@8.4.18
+      tailwindcss: 3.2.2_postcss@8.4.18
     dev: true
 
-  /@tailwindcss/line-clamp/0.4.2_tailwindcss@3.2.1:
+  /@tailwindcss/line-clamp/0.4.2_tailwindcss@3.2.2:
     resolution: {integrity: sha512-HFzAQuqYCjyy/SX9sLGB1lroPzmcnWv1FHkIpmypte10hptf4oPUfucryMKovZh2u0uiS9U5Ty3GghWfEJGwVw==}
     peerDependencies:
       tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.2.1_postcss@8.4.18
+      tailwindcss: 3.2.2_postcss@8.4.18
     dev: true
 
-  /@tailwindcss/typography/0.5.7_tailwindcss@3.2.1:
+  /@tailwindcss/typography/0.5.7_tailwindcss@3.2.2:
     resolution: {integrity: sha512-JTTSTrgZfp6Ki4svhPA4mkd9nmQ/j9EfE7SbHJ1cLtthKkpW2OxsFXzSmxbhYbEkfNIyAyhle5p4SYyKRbz/jg==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders'
@@ -356,7 +356,7 @@ packages:
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.2.1_postcss@8.4.18
+      tailwindcss: 3.2.2_postcss@8.4.18
     dev: true
 
   /@types/estree/1.0.0:
@@ -570,7 +570,7 @@ packages:
   /@vue/compiler-core/3.2.41:
     resolution: {integrity: sha512-oA4mH6SA78DT+96/nsi4p9DX97PHcNROxs51lYk7gb9Z4BPKQ3Mh+BLn6CQZBw857Iuhu28BfMSRHAlPvD4vlw==}
     dependencies:
-      '@babel/parser': 7.20.1
+      '@babel/parser': 7.20.2
       '@vue/shared': 3.2.41
       estree-walker: 2.0.2
       source-map: 0.6.1
@@ -584,7 +584,7 @@ packages:
   /@vue/compiler-sfc/3.2.41:
     resolution: {integrity: sha512-+1P2m5kxOeaxVmJNXnBskAn3BenbTmbxBxWOtBq3mQTCokIreuMULFantBUclP0+KnzNCMOvcnKinqQZmiOF8w==}
     dependencies:
-      '@babel/parser': 7.20.1
+      '@babel/parser': 7.20.2
       '@vue/compiler-core': 3.2.41
       '@vue/compiler-dom': 3.2.41
       '@vue/compiler-ssr': 3.2.41
@@ -629,7 +629,7 @@ packages:
   /@vue/reactivity-transform/3.2.41:
     resolution: {integrity: sha512-mK5+BNMsL4hHi+IR3Ft/ho6Za+L3FA5j8WvreJ7XzHrqkPq8jtF/SMo7tuc9gHjLDwKZX1nP1JQOKo9IEAn54A==}
     dependencies:
-      '@babel/parser': 7.20.1
+      '@babel/parser': 7.20.2
       '@vue/compiler-core': 3.2.41
       '@vue/shared': 3.2.41
       estree-walker: 2.0.2
@@ -2660,8 +2660,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  /tailwindcss/3.2.1_postcss@8.4.18:
-    resolution: {integrity: sha512-Uw+GVSxp5CM48krnjHObqoOwlCt5Qo6nw1jlCRwfGy68dSYb/LwS9ZFidYGRiM+w6rMawkZiu1mEMAsHYAfoLg==}
+  /tailwindcss/3.2.2_postcss@8.4.18:
+    resolution: {integrity: sha512-c2GtSdqg+harR4QeoTmex0Ngfg8IIHNeLQH5yr2B9uZbZR1Xt1rYbjWOWTcj3YLTZhrmZnPowoQDbSRFyZHQ5Q==}
     engines: {node: '>=12.13.0'}
     hasBin: true
     peerDependencies:

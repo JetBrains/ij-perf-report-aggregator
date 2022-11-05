@@ -1,4 +1,4 @@
-create table report2
+create table ij.report2
 (
   `product`                    LowCardinality(String) CODEC(ZSTD(20)),
   `machine`                    LowCardinality(String) CODEC(ZSTD(20)),
@@ -49,8 +49,6 @@ create table report2
   `classLoadingSearchTime` Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingDefineTime` Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingPreparedCount` Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20)),
 
   `resourceLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
   `resourceLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
@@ -64,8 +62,11 @@ create table report2
   `measure.name` Array(LowCardinality(String)) CODEC(ZSTD(20)),
   `measure.start` Array(UInt32) CODEC(Gorilla, ZSTD(20)),
   `measure.duration` Array(UInt32) CODEC(ZSTD(20)),
-  `measure.thread` Array(LowCardinality(String)) CODEC(ZSTD(20))
+  `measure.thread` Array(LowCardinality(String)) CODEC(ZSTD(20)),
+
+  `classLoadingPreparedCount` Int32 CODEC (Gorilla, ZSTD(20)),
+  `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20))
 )
   engine = MergeTree
-    partition by (product, toYYYYMM(generated_time))
+    partition by (product, toYear(generated_time))
     order by (product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time);

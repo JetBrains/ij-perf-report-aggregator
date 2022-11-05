@@ -71,7 +71,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzePerfReport,
       HasInstallerField: true,
       HasBuildTypeField: true,
-      HasRawReport:      true,
+      HasRawReport:      false,
       extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")

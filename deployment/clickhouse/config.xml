@@ -141,13 +141,17 @@
       </s3>
     </disks>
     <policies>
-      <s3>
+      <tiered>
         <volumes>
+          <default>
+            <disk>default</disk>
+          </default>
           <s3>
             <disk>s3</disk>
           </s3>
         </volumes>
-      </s3>
+        <move_factor>0</move_factor>
+      </tiered>
     </policies>
   </storage_configuration>
 </clickhouse>

@@ -57,6 +57,9 @@ update-deps:
 # reverse sync
 # doppler run --project s3 --config prd -- rclone sync --checksum --fast-list --progress :s3,region=eu-west-1,provider=AWS,env_auth:eks-eu-west-1-idea-ij-perf-data-zznrqycixv/data minio:ij-perf/data
 
+# size
+doppler run --project s3 --config prd -- rclone size :s3,region=eu-west-1,provider=AWS,env_auth:eks-eu-west-1-idea-ij-perf-data-zznrqycixv/data
+
 # doppler run --project s3 --config prd -- aws s3 sync --delete /Volumes/data/ij-perf-db/s3/ij-perf/data s3://eks-eu-west-1-idea-ij-perf-data-zznrqycixv/data/ --region=eu-west-1
 # doppler run --project s3 --config prd -- aws s3 cp s3://eks-eu-west-1-idea-ij-perf-data-zznrqycixv/data/ryb/ihvlrwxuhfddotlaamluhjpvqzdfw --region=eu-west-1 f
 

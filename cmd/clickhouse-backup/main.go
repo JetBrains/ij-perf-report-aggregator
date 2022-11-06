@@ -11,6 +11,7 @@ import (
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
   "go.uber.org/zap"
+  "time"
 )
 
 // example: if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day
@@ -58,6 +59,7 @@ func start(natsUrl string, logger *zap.Logger) error {
     return errors.WithStack(err)
   }
 
+  lastBackupTime := time.Time{}
   backupCount := 0
   for taskContext.Err() == nil {
     _, err = sub.NextMsgWithContext(taskContext)
@@ -74,10 +76,18 @@ func start(natsUrl string, logger *zap.Logger) error {
       return nil
     }
 
+    if time.Now().Sub(lastBackupTime) < 4*time.Hour {
+      // do not create backups too often
+      logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
+      return nil
+    }
+
     logger.Info("backup requested")
     backupCount, err = executeBackup(backuper, taskContext, backupCount, logger)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
+    } else {
+      lastBackupTime = time.Now()
     }
   }
 

@@ -6,6 +6,7 @@ import (
   "errors"
   "github.com/nats-io/nats.go"
   "github.com/valyala/fastjson"
+  "go.deanishe.net/env"
   "log"
   "os"
   "os/exec"
@@ -35,7 +36,11 @@ func main() {
 
   configFile := "/var/lib/clickhouse/config.xml"
   if isLocalRun {
-    configFile = "/Volumes/data/Documents/report-aggregator/deployment/ch-local-config.xml"
+    workingDir, err := os.Getwd()
+    if err != nil {
+      log.Fatal(err)
+    }
+    configFile = filepath.Join(workingDir, "deployment/ch-local-config.xml")
   }
 
   if restoreData {
@@ -94,7 +99,7 @@ func main() {
 func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3SecretKey string, configFile string) error {
   chDir := "/var/lib/clickhouse"
   if isLocalRun {
-    chDir = "/Volumes/data/ij-perf-db/clickhouse"
+    chDir = env.GetString("CLICKHOUSE_DATA_PATH", "/Volumes/data/ij-perf-db/clickhouse")
   }
 
   entries, err := os.ReadDir(chDir)
@@ -122,7 +127,7 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
     ).Replace(string(clickhouseConfig))
 
     // /etc is not writeable
-    err := os.WriteFile(configFile, []byte(s), 0666)
+    err = os.WriteFile(configFile, []byte(s), 0666)
     if err != nil {
       return err
     }

@@ -155,7 +155,7 @@ func setS3EnvForLocalRun() {
 
 func restoreDb() error {
   // wait a little bit for clickhouse start
-  time.Sleep(2 * time.Second)
+  time.Sleep(4 * time.Second)
 
   backuper := clickhousebackup.CreateBackuper()
 
@@ -165,7 +165,7 @@ func restoreDb() error {
     backups, err := backuper.GetRemoteBackups(context.Background(), false)
     if err != nil {
       if i < attemptCount {
-        time.Sleep(time.Duration((i+1)*2) * time.Second)
+        time.Sleep(time.Duration((i+1)*3) * time.Second)
         continue
       } else {
         return fmt.Errorf("%w", err)

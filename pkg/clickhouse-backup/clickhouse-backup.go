@@ -13,6 +13,7 @@ func CreateBackuper() *backup.Backuper {
   backupConfig := config.DefaultConfig()
   backupConfig.General.RemoteStorage = "s3"
   backupConfig.General.BackupsToKeepRemote = MaxIncrementalBackupCount * 2
+  backupConfig.ClickHouse.Host = "127.0.0.1"
   backupConfig.S3.AccessKey = util.GetEnvOrFileOrPanic("S3_ACCESS_KEY", "/etc/s3/accessKey")
   backupConfig.S3.SecretKey = util.GetEnvOrFileOrPanic("S3_SECRET_KEY", "/etc/s3/secretKey")
   backupConfig.S3.Bucket = util.GetEnvOrFileOrPanic("S3_BUCKET", "/etc/s3/bucket")

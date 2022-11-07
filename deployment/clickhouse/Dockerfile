@@ -1,6 +1,4 @@
 FROM buildpack-deps:curl AS builder
-WORKDIR /project/src
-ADD config.xml .
 
 RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.7.2.15-stable/clickhouse-common-static-22.7.2.15-amd64.tgz | tar xvz --strip-components=3
 RUN mkdir /var/lib/clickhouse

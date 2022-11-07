@@ -4,8 +4,8 @@ import (
   "context"
   "fmt"
   "github.com/AlexAkulov/clickhouse-backup/pkg/backup"
-  "github.com/AlexAkulov/clickhouse-backup/pkg/config"
   "github.com/AlexAkulov/clickhouse-backup/pkg/status"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/nats-io/nats.go"
@@ -13,9 +13,6 @@ import (
   "go.uber.org/zap"
   "time"
 )
-
-// example: if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day
-const maxIncrementalBackupCount = 4
 
 func main() {
   logger := util.CreateLogger()
@@ -33,15 +30,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  backupConfig := config.DefaultConfig()
-  backupConfig.General.RemoteStorage = "s3"
-  backupConfig.General.BackupsToKeepRemote = maxIncrementalBackupCount * 2
-  backupConfig.S3.AccessKey = util.GetEnvOrFileOrPanic("S3_ACCESS_KEY", "/etc/s3/accessKey")
-  backupConfig.S3.SecretKey = util.GetEnvOrFileOrPanic("S3_SECRET_KEY", "/etc/s3/secretKey")
-  backupConfig.S3.Bucket = util.GetEnvOrFileOrPanic("S3_BUCKET", "/etc/s3/bucket")
-  backupConfig.S3.Region = "eu-west-1"
-  backupConfig.S3.AllowMultipartDownload = true
-  backuper := backup.NewBackuper(backupConfig)
+  backuper := clickhousebackup.CreateBackuper()
 
   if env.GetBool("DO_BACKUP") {
     _, err := executeBackup(backuper, taskContext, 0, logger)
@@ -99,7 +88,7 @@ func executeBackup(backuper *backup.Backuper, taskContext context.Context, backu
   logger = logger.With(zap.String("backup", backupName))
 
   diffFromRemote := ""
-  if backupCount < maxIncrementalBackupCount {
+  if backupCount < clickhousebackup.MaxIncrementalBackupCount {
     remoteBackups, err := backuper.GetRemoteBackups(taskContext, false)
     if err != nil {
       logger.Error("cannot get remote backup list", zap.Error(err))

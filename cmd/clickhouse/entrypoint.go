@@ -2,8 +2,12 @@ package main
 
 import (
   "bytes"
+  "context"
   _ "embed"
   "errors"
+  "fmt"
+  "github.com/AlexAkulov/clickhouse-backup/pkg/status"
+  clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/nats-io/nats.go"
   "github.com/valyala/fastjson"
   "go.deanishe.net/env"
@@ -73,11 +77,7 @@ func main() {
       }
     }()
 
-    chBackupExecutable := "/usr/bin/clickhouse-backup"
-    if isLocalRun {
-      chBackupExecutable = "/usr/local/bin/clickhouse-backup"
-    }
-    err = restoreDb(chBackupExecutable, s3AccessKey, s3SecretKey, bucket)
+    err = restoreDb()
     if err != nil {
       log.Fatal(err)
     }
@@ -153,80 +153,41 @@ func setS3EnvForLocalRun() {
   }
 }
 
-func restoreDb(chBackupExecutable string, s3AccessKey string, s3SecretKey string, bucket string) error {
+func restoreDb() error {
   // wait a little bit for clickhouse start
-  time.Sleep(1 * time.Second)
+  time.Sleep(2 * time.Second)
 
-  var backupName string
+  backuper := clickhousebackup.CreateBackuper()
+
   attemptCount := 3
+  var backupName string
   for i := 0; i < attemptCount; i++ {
-    // just for debug - print all backups
-    cmd := exec.Command(chBackupExecutable, "list", "remote")
-    configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
-    cmd.Stdout = os.Stdout
-    cmd.Stderr = os.Stderr
-    err := cmd.Start()
-    if err != nil {
-      return err
-    }
-    err = cmd.Wait()
-
-    var result []byte
-    if err == nil {
-      cmd = exec.Command(chBackupExecutable, "list", "remote", "latest")
-      configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, true)
-
-      cmd.Stderr = os.Stderr
-      result, err = cmd.Output()
-    }
-
+    backups, err := backuper.GetRemoteBackups(context.Background(), false)
     if err != nil {
       if i < attemptCount {
         time.Sleep(time.Duration((i+1)*2) * time.Second)
         continue
       } else {
-        log.Println("cannot get latest backup name")
-        return err
+        return fmt.Errorf("%w", err)
       }
     }
 
-    backupName = strings.TrimSpace(string(result))
-    break
+    if len(backups) != 0 {
+      backupName = backups[len(backups)-1].BackupName
+      break
+    }
   }
-
   if len(backupName) == 0 {
     return errors.New("no remote backup")
   }
 
-  cmd := exec.Command(chBackupExecutable, "restore_remote", "--drop=false", backupName)
-  configureBackupToolEnv(cmd, s3AccessKey, s3SecretKey, bucket, false)
-  cmd.Stdout = os.Stdout
-  cmd.Stderr = os.Stderr
-  err := cmd.Run()
+  err := backuper.RestoreFromRemote(backupName, "", nil, nil, false, false, false, false, false, false, false, status.NotFromAPI)
   if err != nil {
-    return err
+    return fmt.Errorf("%w", err)
   }
 
   log.Println("DB is restored (backup=" + backupName + ")")
   return nil
-}
-
-func configureBackupToolEnv(cmd *exec.Cmd, s3AccessKey string, s3SecretKey string, bucket string, logOnlyErrors bool) {
-  cmd.Env = []string{}
-  for _, s := range os.Environ() {
-    if !strings.HasPrefix(s, "S3_") && !strings.HasPrefix(s, "CLICKHOUSE_") {
-      cmd.Env = append(cmd.Env, s)
-    }
-  }
-  if logOnlyErrors {
-    cmd.Env = append(cmd.Env, "LOG_LEVEL=error")
-  }
-  cmd.Env = append(cmd.Env, "S3_ALLOW_MULTIPART_DOWNLOAD=true")
-  cmd.Env = append(cmd.Env, "REMOTE_STORAGE=s3")
-  cmd.Env = append(cmd.Env, "S3_ACCESS_KEY="+s3AccessKey)
-  cmd.Env = append(cmd.Env, "S3_SECRET_KEY="+s3SecretKey)
-  cmd.Env = append(cmd.Env, "S3_BUCKET="+bucket)
-  cmd.Env = append(cmd.Env, "S3_REGION=eu-west-1")
 }
 
 func requestClearCache() {

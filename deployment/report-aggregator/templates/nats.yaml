@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: nats
-          image: nats:2.9.6-scratch@sha256:89dabf164ecc437ed321d60703fb97ceeb8f6cca5dc50220a2b56f391b3166e2
+          image: nats:2.8.4-scratch@sha256:796298f636925dedbbdfa537f42423dffd3a69b70c3a9bf4fd0982886a4b745d
           resources:
             requests:
               cpu: "0.1"

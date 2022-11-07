@@ -149,6 +149,10 @@ export function getIjItems(): Array<MenuItem> {
           label: "Explore",
           to: "/kotlin/performanceKotlinPluginTests",
         },
+         {
+          label: "Explore (Dev)",
+          to: "/kotlin/performanceKotlinPluginTests",
+        },
         {
           label: "Build kts",
           to: "/kotlin/buildScript"
@@ -307,6 +311,16 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
           },
           meta: {pageTitle: "Explore Kotlin plugin Tests"},
+        },
+        {
+          path: "/kotlin/performanceKotlinPluginTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlin",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore Kotlin plugin Tests (Dev)"},
         },
         {
           path: "/kotlin/pluginDashboard",

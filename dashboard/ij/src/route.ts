@@ -164,6 +164,15 @@ export function getIjItems(): Array<MenuItem> {
       ]
     },
     {
+      label: "JBR",
+      items: [
+        {
+          label: "Explore",
+          to: "/jbr/performanceTests",
+        },
+      ]
+    },
+    {
       label: "Aggregates",
       items: [
         {
@@ -437,6 +446,21 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Fleet Explore"},
         },
       ],
+    },
+    {
+      children: [
+        {
+          path: "/jbr/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "jbr",
+            table: "report",
+            installerExists: false,
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore JBR Tests"},
+        },
+      ]
     },
     {
       children: [

@@ -99,6 +99,15 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", name, value")
       },
     }
+  } else if id == "jbr" {
+    return DatabaseConfiguration{
+      DbName:          "jbr",
+      TableName:       "report",
+      extraFieldCount: 3,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", measures.name, measures.value, measures.type")
+      },
+    }
   } else {
     panic("unknown project: " + id)
   }

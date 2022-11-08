@@ -49,7 +49,7 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
 func getBuildTimeFromReport(report *model.Report, dbName string) (time.Time, error) {
   var buildTimeUnix time.Time
   if dbName != "ij" || version.Compare(report.Version, "13", ">=") {
-    buildTime, err := parseTime(report.BuildDate)
+    buildTime, err := ParseTime(report.BuildDate)
     if err != nil {
       return time.Time{}, err
     }
@@ -60,7 +60,7 @@ func getBuildTimeFromReport(report *model.Report, dbName string) (time.Time, err
   return buildTimeUnix, nil
 }
 
-func parseTime(s string) (time.Time, error) {
+func ParseTime(s string) (time.Time, error) {
   parsedTime, err := time.Parse(time.RFC1123Z, s)
   if err != nil {
     parsedTime, err = time.Parse(time.RFC1123, s)
@@ -76,6 +76,10 @@ func parseTime(s string) (time.Time, error) {
 
   if err != nil {
     parsedTime, err = time.Parse("Mon, 2 Jan 2006 15:04:05 MST", s)
+  }
+
+  if err != nil {
+    parsedTime, err = time.Parse("20060102T150405+0000", s)
   }
 
   if err != nil {

@@ -162,7 +162,7 @@ func restoreDb() error {
   attemptCount := 3
   var backupName string
   for i := 0; i < attemptCount; i++ {
-    backups, err := backuper.GetRemoteBackups(context.Background(), false)
+    backups, err := backuper.GetRemoteBackups(context.Background(), true)
     if err != nil {
       if i < attemptCount {
         time.Sleep(time.Duration((i+1)*3) * time.Second)

@@ -89,7 +89,7 @@ func executeBackup(backuper *backup.Backuper, taskContext context.Context, backu
 
   diffFromRemote := ""
   if backupCount < clickhousebackup.MaxIncrementalBackupCount {
-    remoteBackups, err := backuper.GetRemoteBackups(taskContext, false)
+    remoteBackups, err := backuper.GetRemoteBackups(taskContext, true)
     if err != nil {
       logger.Error("cannot get remote backup list", zap.Error(err))
     } else if len(remoteBackups) > 0 {

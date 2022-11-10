@@ -94,7 +94,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
         return configuration.measures[0]
       },
       getSeriesName(_index: number): string {
-        return measureNameToLabel(this.getMeasureName(-1))
+        return measureNameToLabel(configuration.measures[0])
       },
       mutate(): void {
         // the only value

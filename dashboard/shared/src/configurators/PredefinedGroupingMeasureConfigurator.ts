@@ -70,35 +70,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 
   configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
-    const producers = configuration.queryProducers
-    if (producers.length > 0) {
-      return configureWithQueryProducers(dataList, configuration, this.chartStyle)
-    }
-
-    const measures = configuration.measures
-    const data = dataList[0]
-
-    const series = new Array<BarSeriesOption>(data[0].length)
-    const formatter = this.chartStyle.valueUnit == "ms" ? formatBarSeriesLabel : formatBarSeriesLabelNs
-    for (let i = 0; i < series.length; i++) {
-      series[i] = {
-        type: "bar",
-        label: {
-          show: true,
-          formatter,
-          position: this.chartStyle.barSeriesLabelPosition,
-        },
-      }
-    }
-
-    return {
-      dataset: {
-        source: data.map((it, index) => {
-          return [index === 0 ? "measure" : measureNameToLabel(measures[index - 1]), ...it]
-        }),
-      },
-      series,
-    }
+    return configureWithQueryProducers(dataList, configuration, this.chartStyle)
   }
 }
 
@@ -108,18 +80,27 @@ function configureWithQueryProducers(dataList: Array<Array<Array<string | number
   const dimensionNameSet = new Set<string>()
   const source: Array<{ [key: string]: string | number }> = []
 
-  for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
-    if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
-      useDurationFormatter = false
-    }
+  // outer cycle over measures to group it together (e.g. if several machines are selected)
+  for (let measureIndex = 0; measureIndex < configuration.measures.length; measureIndex++) {
+    for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+      if (useDurationFormatter && !isDurationFormatterApplicable(configuration.measureNames[dataIndex])) {
+        useDurationFormatter = false
+      }
 
-    const column: { [key: string]: string | number } = {dimension: configuration.seriesNames[dataIndex]}
-    source.push(column)
-    const result = dataList[dataIndex]
-    for (let i = 0; i < result[0].length; i++) {
-      const valueKey = result[0][i] as string
-      dimensionNameSet.add(valueKey)
-      column[valueKey] = result[1][i]
+      const measure = measureNameToLabel(configuration.measures[measureIndex])
+      const classifier = configuration.seriesNames[dataIndex]
+      let dimension = measure
+      if (classifier.length > 0) {
+        dimension += ` | ${classifier}`
+      }
+      const column: { [key: string]: string | number } = {dimension}
+      source.push(column)
+      const result = dataList[dataIndex]
+      for (let i = 0; i < result[0].length; i++) {
+        const valueKey = result[0][i] as string
+        dimensionNameSet.add(valueKey)
+        column[valueKey] = result[measureIndex + 1][i]
+      }
     }
   }
 
@@ -158,21 +139,6 @@ function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: Value
     const value = converter((data.value as { [key: string]: string | number })[data.seriesName as string] as number)
     return useDurationFormatter && value > 10_000 ? durationAxisPointerFormatter(value) : numberFormat.format(value)
   }
-}
-
-function extractValue(data: CallbackDataParams): number {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return (data.value as Array<number>)[data.seriesIndex! + 1]
-}
-
-function formatBarSeriesLabel(data: CallbackDataParams): string {
-  // mostly all values in ms, no need to increase noise and use humanized formatter
-  return numberFormat.format(extractValue(data))
-}
-
-function formatBarSeriesLabelNs(data: CallbackDataParams): string {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return numberFormat.format(nsToMs(extractValue(data)))
 }
 
 function getClickHouseIntervalByDuration(range: TimeRange) {

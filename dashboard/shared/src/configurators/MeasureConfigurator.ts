@@ -5,7 +5,7 @@ import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, swit
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { ChartConfigurator, collator, ChartType, ValueUnit, SymbolOptions } from "../chart"
+import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../chart"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
@@ -287,14 +287,10 @@ function configureChart(
       id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
       name: seriesName,
       type: chartType,
-      showSymbol: symbolOptions.showSymbol != undefined ?
-        symbolOptions.showSymbol :
-        seriesData[0].length < 100,
+      // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
       // 10 is a default value for scatter (  undefined doesn't work to unset)
-      symbolSize: symbolOptions.symbolSize ||
-        (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
+      symbolSize: symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
       symbol: symbolOptions.symbol || "circle",
-      legendHoverLink: true,
       triggerLineEvent: true,
       // applicable only for line chart
       sampling: "lttb",
@@ -302,7 +298,6 @@ function configureChart(
       datasetIndex: dataIndex,
       dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
     })
-
 
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false

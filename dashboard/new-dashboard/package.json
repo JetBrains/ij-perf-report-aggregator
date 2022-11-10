@@ -4,13 +4,12 @@
   "dependencies": {
     "@heroicons/vue": "2.0.13",
     "echarts": "5.4.0",
-    "echarts-stat": "1.2.0",
     "ij": "workspace:*",
     "primevue": "3.18.1",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.5",
     "shared": "workspace:*",
-    "vue": "3.2.41",
+    "vue": "3.2.44",
     "vue-router": "4.1.6"
   }
 }

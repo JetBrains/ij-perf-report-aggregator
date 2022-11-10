@@ -10,7 +10,7 @@
     "primevue": "3.18.1",
     "rxjs": "8.0.0-alpha.5",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.41",
+    "vue": "3.2.44",
     "vue-router": "4.1.6"
   },
   "devDependencies": {

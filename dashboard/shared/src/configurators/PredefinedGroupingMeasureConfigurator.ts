@@ -13,7 +13,6 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   constructor(private readonly measures: Array<string>,
               private readonly timeRange: Ref<TimeRange>,
               private readonly chartStyle: ChartStyle) {}
-
   createObservable() {
     return null
   }

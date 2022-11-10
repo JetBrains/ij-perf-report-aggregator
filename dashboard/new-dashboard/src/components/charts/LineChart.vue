@@ -35,6 +35,7 @@ interface LineChartProps {
 const props = withDefaults(defineProps<LineChartProps>(), {
   skipZeroValues: true,
   valueUnit: "ms",
+  chartType: "line",
 })
 
 const chartElement = shallowRef<HTMLElement>()
@@ -67,7 +68,7 @@ const dataQueryExecutor = new DataQueryExecutor([
   ...props.configurators,
   measureConfigurator,
   infoFieldsConfigurator,
-].filter((item): item is DataQueryConfigurator => Boolean(item)))
+].filter((item): item is DataQueryConfigurator => item != null))
 
 const container = inject(containerKey)
 const sidebarVm = inject(sidebarVmKey)
@@ -76,6 +77,7 @@ let chartManager: ChartManager
 let chartVm: LineChartVM
 
 onMounted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new ChartManager(chartElement.value!, container?.value)
   chartVm = new LineChartVM(
     chartManager,

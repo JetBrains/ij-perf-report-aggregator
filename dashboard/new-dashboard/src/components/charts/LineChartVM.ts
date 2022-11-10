@@ -1,18 +1,9 @@
-import * as ecStat from "echarts-stat"
-import { registerTransform} from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "shared/src/chart"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
 import { ChartManager } from "./ChartManager"
-
-
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-registerTransform(ecStat["transform"].regression)
 
 export class LineChartVM {
   constructor(

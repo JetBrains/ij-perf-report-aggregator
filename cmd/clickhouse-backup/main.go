@@ -33,7 +33,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   backuper := clickhousebackup.CreateBackuper()
 
   if env.GetBool("DO_BACKUP") {
-    _, err := executeBackup(backuper, taskContext, 0, logger)
+    err := executeBackup(backuper, taskContext, true, logger)
     return err
   }
 
@@ -49,7 +49,8 @@ func start(natsUrl string, logger *zap.Logger) error {
   }
 
   lastBackupTime := time.Time{}
-  backupCount := 0
+  incrementalBackupCount := 0
+  isIncremental := true
   for taskContext.Err() == nil {
     _, err = sub.NextMsgWithContext(taskContext)
     if err != nil {
@@ -68,27 +69,34 @@ func start(natsUrl string, logger *zap.Logger) error {
     if time.Now().Sub(lastBackupTime) < 4*time.Hour {
       // do not create backups too often
       logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
-      return nil
+      continue
     }
 
     logger.Info("backup requested")
-    backupCount, err = executeBackup(backuper, taskContext, backupCount, logger)
+    err = executeBackup(backuper, taskContext, isIncremental, logger)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     } else {
       lastBackupTime = time.Now()
+      incrementalBackupCount++
+      if incrementalBackupCount > clickhousebackup.MaxIncrementalBackupCount {
+        incrementalBackupCount = 0
+        isIncremental = false
+      } else {
+        isIncremental = true
+      }
     }
   }
 
   return nil
 }
 
-func executeBackup(backuper *backup.Backuper, taskContext context.Context, backupCount int, logger *zap.Logger) (int, error) {
+func executeBackup(backuper *backup.Backuper, taskContext context.Context, isIncremental bool, logger *zap.Logger) error {
   backupName := backup.NewBackupName()
   logger = logger.With(zap.String("backup", backupName))
 
   diffFromRemote := ""
-  if backupCount < clickhousebackup.MaxIncrementalBackupCount {
+  if isIncremental {
     remoteBackups, err := backuper.GetRemoteBackups(taskContext, true)
     if err != nil {
       logger.Error("cannot get remote backup list", zap.Error(err))
@@ -99,23 +107,23 @@ func executeBackup(backuper *backup.Backuper, taskContext context.Context, backu
 
   err := backuper.CreateBackup(backupName, "", nil, false, false, false, "unknown", status.NotFromAPI)
   if err != nil {
-    return backupCount, errors.WithStack(err)
+    return errors.WithStack(err)
   }
 
   if taskContext.Err() != nil {
-    return backupCount, nil
+    return nil
   }
 
   logger.Info("upload", zap.String("diffFromRemote", diffFromRemote))
   err = backuper.Upload(backupName, "", diffFromRemote, "", nil, false, false, status.NotFromAPI)
   if err != nil {
-    return backupCount, err
+    return err
   }
 
   if taskContext.Err() != nil {
-    return backupCount, nil
+    return nil
   }
 
   logger.Info("uploaded")
-  return backupCount + 1, nil
+  return nil
 }

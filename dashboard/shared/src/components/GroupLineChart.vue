@@ -1,22 +1,19 @@
 <template>
-  <Divider :label="label" />
-  <div class="grid grid-cols-12 gap-4">
-    <div class="col-span-12">
-      <LineChartCard
-        :compound-tooltip="true"
-        :chart-type="'line'"
-        :value-unit="props.valueUnit"
-        :measures="[measure]"
-        :configurators="configurators"
-        :skip-zero-values="false"
-        trigger="item"
-      />
-    </div>
+  <div class="w-full">
+    <LineChartCard
+      :label="label"
+      :compound-tooltip="true"
+      :chart-type="'line'"
+      :value-unit="props.valueUnit"
+      :measures="[measure]"
+      :configurators="configurators"
+      :skip-zero-values="false"
+      trigger="item"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import Divider from "tailwind-ui/src/Divider.vue"
 import { inject, onMounted } from "vue"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"

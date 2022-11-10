@@ -1,13 +1,18 @@
 <template>
-  <Button
+  <button
     title="Updated automatically, but you can force data reloading"
-    icon="pi pi-refresh"
-    class="p-button-rounded p-button-text"
-    :loading="loading"
+    type="button"
+    class="-m-2 ml-5 p-2 text-gray-400 hover:text-gray-500 sm:ml-7"
     @click="doLoad"
-  />
+  >
+    <ArrowPathIcon
+      class="h-5 w-5"
+      aria-hidden="true"
+    />
+  </button>
 </template>
 <script setup lang="ts">
+import { ArrowPathIcon } from "@heroicons/vue/20/solid"
 import { take } from "rxjs"
 import { computed, inject, PropType, shallowRef } from "vue"
 import { ReloadConfigurator } from "../configurators/ReloadConfigurator"

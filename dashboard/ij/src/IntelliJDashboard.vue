@@ -1,8 +1,9 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <DimensionSelect
+      <SimpleDimensionSelect
         label="Product"
+        :value-to-label="it => productCodeToName.get(it) ?? it"
         :dimension="productConfigurator"
       />
       <DimensionSelect
@@ -37,6 +38,7 @@ import { chartDefaultStyle } from "shared/src/chart"
 import Dashboard from "shared/src/components/Dashboard.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
+import SimpleDimensionSelect from "shared/src/components/SimpleDimensionSelect.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
@@ -50,6 +52,16 @@ import { TabItem } from "tailwind-ui/src/tabModel"
 import { provide } from "vue"
 import { useRouter } from "vue-router"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
+
+const productCodeToName = new Map([
+  ["DB", "DataGrip"],
+  ["IU", "IntelliJ IDEA"],
+  ["PS", "PhpStorm"],
+  ["WS", "WebStorm"],
+  ["GO", "GoLand"],
+  ["PY", "PyCharm Professional"],
+  ["RM", "RubyMine"],
+])
 
 provideReportUrlProvider()
 provide(chartStyleKey, {

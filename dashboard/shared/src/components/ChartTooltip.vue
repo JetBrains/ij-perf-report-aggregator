@@ -119,7 +119,6 @@ const linkUrl = computed(() => {
 let lastManager: ChartToolTipManager | null = null
 
 const hide = debounceSync(() => {
-  console.log("hide")
   lastManager = null
   panel.value?.hide()
   tooltipData.value = null

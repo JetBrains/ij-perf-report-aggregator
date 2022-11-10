@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import { CallbackDataParams } from "echarts/types/dist/shared"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"

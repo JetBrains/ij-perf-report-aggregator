@@ -290,7 +290,7 @@ function configureChart(
       // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
       // 10 is a default value for scatter (  undefined doesn't work to unset)
       symbolSize: symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
-      symbol: symbolOptions.symbol || "circle",
+      symbol: symbolOptions.symbol,
       triggerLineEvent: true,
       // applicable only for line chart
       sampling: "lttb",

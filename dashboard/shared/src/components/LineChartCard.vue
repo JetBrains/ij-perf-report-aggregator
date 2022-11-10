@@ -1,11 +1,30 @@
 <template>
   <div
+    v-if="label == null"
     ref="chartElement"
     class="bg-white shadow rounded-lg"
     :style="{height: `${chartHeight}px`}"
     @mouseenter="show"
     @mouseleave="hide"
   />
+  <div
+    v-else
+    class="bg-white shadow rounded-lg"
+    @mouseenter="show"
+    @mouseleave="hide"
+  >
+    <div class="flex justify-center mt-3 mb-2">
+      <h3
+        class="px-2 bg-white text-sm text-gray-900 capitalize"
+      >
+        {{ label }}
+      </h3>
+    </div>
+    <div
+      ref="chartElement"
+      :style="{height: `${chartHeight}px`}"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect, withDefaults } from "vue"
@@ -26,6 +45,7 @@ const props = withDefaults(defineProps<{
   valueUnit?: ValueUnit
   configurators?: Array<DataQueryConfigurator>|null
   trigger?: PopupTrigger
+  label?: string
   aggregatedMeasure?: string | null
 }>(), {
   skipZeroValues: true,
@@ -37,6 +57,7 @@ const props = withDefaults(defineProps<{
   configurators: null,
   trigger: "axis",
   aggregatedMeasure: null,
+  label: undefined,
 })
 
 const chartElement = shallowRef<HTMLElement | null>(null)

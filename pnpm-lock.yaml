@@ -63,7 +63,6 @@ importers:
       '@fontsource/jetbrains-mono': 4.5.11
       ij: workspace:*
       new-dashboard: workspace:*
-      primeicons: 6.0.1
       primevue: 3.18.1
       report-visualizer: workspace:*
       rxjs: 8.0.0-alpha.5
@@ -75,8 +74,7 @@ importers:
       '@fontsource/jetbrains-mono': 4.5.11
       ij: link:../ij
       new-dashboard: link:../new-dashboard
-      primeicons: 6.0.1
-      primevue: 3.18.1_okrgtsts4qjntpk3agybkuvb7e
+      primevue: 3.18.1_vue@3.2.44
       report-visualizer: link:../report-visualizer
       rxjs: 8.0.0-alpha.5
       shared: link:../shared
@@ -101,7 +99,6 @@ importers:
     specifiers:
       '@heroicons/vue': 2.0.13
       echarts: 5.4.0
-      echarts-stat: 1.2.0
       ij: workspace:*
       primevue: 3.18.1
       report-visualizer: workspace:*
@@ -112,7 +109,6 @@ importers:
     dependencies:
       '@heroicons/vue': 2.0.13_vue@3.2.44
       echarts: 5.4.0
-      echarts-stat: 1.2.0
       ij: link:../ij
       primevue: 3.18.1_vue@3.2.44
       report-visualizer: link:../report-visualizer
@@ -2356,25 +2352,14 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  /primeicons/6.0.1:
-    resolution: {integrity: sha512-KDeO94CbWI4pKsPnYpA1FPjo79EsY9I+M8ywoPBSf9XMXoe/0crjbUK7jcQEDHuc0ZMRIZsxH3TYLv4TUtHmAA==}
-    dev: false
-
-  /primevue/3.18.1_okrgtsts4qjntpk3agybkuvb7e:
-    resolution: {integrity: sha512-5UYNooA6Qqx0iGaRxPUYLPamxRn6eQKMNU3wbqGyxWhoc944rMaOiT9mVQWhavPlKCgs7FY8SNhsDzqV4aRCxA==}
-    peerDependencies:
-      primeicons: ^5.0.0 || ^6.0.0
-      vue: ^3.0.0
-    dependencies:
-      primeicons: 6.0.1
-      vue: 3.2.44
-    dev: false
-
   /primevue/3.18.1_vue@3.2.44:
     resolution: {integrity: sha512-5UYNooA6Qqx0iGaRxPUYLPamxRn6eQKMNU3wbqGyxWhoc944rMaOiT9mVQWhavPlKCgs7FY8SNhsDzqV4aRCxA==}
     peerDependencies:
       primeicons: ^5.0.0 || ^6.0.0
       vue: ^3.0.0
+    peerDependenciesMeta:
+      primeicons:
+        optional: true
     dependencies:
       vue: 3.2.44
     dev: false

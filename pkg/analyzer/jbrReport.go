@@ -23,6 +23,11 @@ func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
     if len(split) == 2 {
       name := split[0]
       value, err := strconv.ParseFloat(split[1], 64)
+      if err != nil {
+        //for some reason float is written as "54,14" in some tests so we have to convert it back to the normal one "54.14"
+        normalizedValue := strings.Replace(split[1], ",", ".", 1)
+        value, err = strconv.ParseFloat(normalizedValue, 64)
+      }
       if err == nil {
         measureNames = append(measureNames, name)
         measureValues = append(measureValues, value)

@@ -57,7 +57,7 @@
             <span class="flex items-center gap-1 overflow-hidden">
               Triggered by
               <span class="text-gray-500 truncate" v-if="triggeredValue !== null && triggeredValue.length > 0">
-                {{ triggeredValue?.length > 0 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
+                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />

@@ -1,9 +1,9 @@
 <template>
   <div
     v-show="vm.visible.value"
-    class="infoSidebar p-5 ml-5 border border-solid rounded-md border-zinc-200 text-gray-500 relative"
+    class="infoSidebar ml-5 text-gray-500 relative"
   >
-    <div class="flex flex-col gap-4 sticky top-5">
+    <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
       <span class="flex justify-between uppercase text-xs">
       {{ vm.data.value?.title }}
 

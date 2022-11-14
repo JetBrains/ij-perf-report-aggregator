@@ -1,7 +1,6 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -25,6 +24,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
       v-for="metric in measureConfigurator.selected.value"
@@ -59,11 +59,11 @@ import { provide, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 import { initDataComponent } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { chartDefaultStyle, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
+import { chartDefaultStyle, ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../configurators/MachineConfigurator"
-import { ChartType, MeasureConfigurator } from "../configurators/MeasureConfigurator"
+import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"

@@ -5,5 +5,4 @@ create table collector_state
 )
   engine = ReplacingMergeTree(last_time)
     order by build_type_id
-    settings old_parts_lifetime = 10
 

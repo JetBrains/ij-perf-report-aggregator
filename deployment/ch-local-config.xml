@@ -1,7 +1,7 @@
 <yandex>
   <logger>
     <level>debug</level>
-     <console>1</console>   Default behavior is autodetection (log to console if not daemon mode and is tty)
+    <console>1</console>
   </logger>
   <disable_internal_dns_cache>1</disable_internal_dns_cache>
   <listen_host>127.0.0.1</listen_host>
@@ -19,7 +19,7 @@
 
   <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve
        correct maximum value. -->
-   <max_open_files>262144</max_open_files>
+  <max_open_files>262144</max_open_files>
 
   <!-- Size of cache of uncompressed blocks of data, used in tables of MergeTree family.
        In bytes. Cache is single for server. Memory is allocated only on demand.
@@ -125,4 +125,41 @@
        The directory will be created if it doesn't exist.
     -->
   <format_schema_path>/Volumes/data/ij-perf-db/clickhouse/format_schemas/</format_schema_path>
+
+  <backups>
+    <allowed_disk>backups</allowed_disk>
+    <allowed_path>/Volumes/data/ch-backup/</allowed_path>
+  </backups>
+  <storage_configuration>
+    <disks>
+      <s3>
+        <type>s3</type>
+        <endpoint>http://127.0.0.1:9002/ij-perf/data/</endpoint>
+        <access_key_id>minio</access_key_id>
+        <secret_access_key>minio123</secret_access_key>
+        <metadata_path>/Volumes/data/ij-perf-db/clickhouse/disks/s3_disk/</metadata_path>
+        <cache_enabled>true</cache_enabled>
+        <data_cache_enabled>true</data_cache_enabled>
+        <cache_path>/Volumes/data/ij-perf-db/clickhouse/disks/s3_disk/cache/</cache_path>
+        <max_cache_size>3221225472</max_cache_size>
+      </s3>
+      <backups>
+        <type>local</type>
+        <path>/Volumes/data/ch-backup/</path>
+      </backups>
+    </disks>
+    <policies>
+      <tiered>
+        <volumes>
+          <default>
+            <disk>default</disk>
+          </default>
+          <s3>
+            <disk>s3</disk>
+          </s3>
+        </volumes>
+        <move_factor>0</move_factor>
+      </tiered>
+    </policies>
+  </storage_configuration>
 </yandex>

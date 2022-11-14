@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import { CallbackDataParams } from "echarts/types/dist/shared"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
@@ -35,6 +35,7 @@ interface LineChartProps {
 const props = withDefaults(defineProps<LineChartProps>(), {
   skipZeroValues: true,
   valueUnit: "ms",
+  chartType: "line",
 })
 
 const chartElement = shallowRef<HTMLElement>()
@@ -67,7 +68,7 @@ const dataQueryExecutor = new DataQueryExecutor([
   ...props.configurators,
   measureConfigurator,
   infoFieldsConfigurator,
-].filter((item): item is DataQueryConfigurator => Boolean(item)))
+].filter((item): item is DataQueryConfigurator => item != null))
 
 const container = inject(containerKey)
 const sidebarVm = inject(sidebarVmKey)
@@ -76,6 +77,7 @@ let chartManager: ChartManager
 let chartVm: LineChartVM
 
 onMounted(() => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new ChartManager(chartElement.value!, container?.value)
   chartVm = new LineChartVM(
     chartManager,

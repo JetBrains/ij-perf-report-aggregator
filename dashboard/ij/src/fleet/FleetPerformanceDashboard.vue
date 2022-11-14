@@ -1,7 +1,6 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -14,6 +13,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <div class="relative flex py-5 items-center">
       <div class="flex-grow border-t border-gray-400" />
@@ -46,6 +46,13 @@
       value-unit="ns"
       measure="fleet.test"
       :projects="['stressHighlighting']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Tree"
+      value-unit="ns"
+      measure="fleet.test"
+      :projects="['wideTree', 'deepTree']"
       :server-configurator="serverConfigurator"
     />
     <div class="relative flex py-5 items-center">

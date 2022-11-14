@@ -1,7 +1,6 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -10,27 +9,24 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <template
       v-for="metric in aggregatedMetrics"
       :key="metric"
     >
-      <Divider :label="metric" />
-      <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12">
-          <LineChartCard
-            :skip-zero-values="false"
-            :aggregated-measure="metric"
-            trigger="item"
-          />
-        </div>
-      </div>
+      <LineChartCard
+        class="w-full"
+        :label="metric"
+        :skip-zero-values="false"
+        :aggregated-measure="metric"
+        trigger="item"
+      />
     </template>
   </Dashboard>
 </template>
 
 <script lang="ts" setup>
-import Divider from "tailwind-ui/src/Divider.vue"
 import { useRouter } from "vue-router"
 import { initDataComponent } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"

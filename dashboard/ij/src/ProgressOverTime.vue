@@ -4,7 +4,6 @@
     <BarChartCard
       :measures='[
         "bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d",
-        "appComponentCreation_d", "projectComponentCreation_d",
       ]'
     />
     <BarChartCard
@@ -28,5 +27,4 @@
 </template>
 <script setup lang="ts">
 import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
-import BarChartCard from "shared/src/components/BarChartCard.vue"
-</script>
+import BarChartCard from "shared/src/components/BarChartCard.vue"</script>

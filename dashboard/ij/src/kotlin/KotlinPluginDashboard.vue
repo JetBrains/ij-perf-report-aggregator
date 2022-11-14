@@ -1,7 +1,6 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -11,9 +10,14 @@
         :dimension="machineConfigurator"
       />
       <DimensionSelect
+        label="Nightly/Release"
+        :dimension="releaseConfigurator"
+      />
+      <DimensionSelect
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
       label="Completion empty kotlin project"
@@ -67,6 +71,14 @@
         'intellij_commit/completion/after_parameter_without_library_cache_k2',
         'kotlin_lang/completion/after_parameter_without_library_cache_k2',
         'kotlin_lang/completion/empty_place_without_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Highlight on random files - time to line mean value"
+      measure="highlighting#timeToLines#mean_value"
+      :projects="[
+       'intellij_commit/highlightOnRandomFiles',
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -218,6 +230,7 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
+import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
@@ -246,13 +259,15 @@ const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, p
   return a.includes("/") ? 1 : -1
 })
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  triggeredByConfigurator
+  triggeredByConfigurator,
+  releaseConfigurator,
 ]
 initDataComponent(configurators)
 </script>

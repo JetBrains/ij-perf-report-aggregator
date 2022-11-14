@@ -14,27 +14,36 @@
     :show-toggle-all="hasManyElements"
   >
     <template #value="slotProps">
-      <span
-        v-if="!slotProps.value || slotProps.value.length === 0"
-        class="flex items-center gap-1"
-      >
-        <slot name="icon" />
-        {{ placeholder }}
-      </span>
-      <span
-        v-if="slotProps.value && slotProps.value.length === 1"
-        class="flex items-center gap-1"
-      >
-        <slot name="icon" />
-        {{ slotProps.value[0] }}
-      </span>
-      <span
-        v-if="slotProps.value && slotProps.value.length > 1"
-        class="flex items-center gap-1"
-      >
-        <slot name="icon" />
-        {{ props.selectedLabel(slotProps.value) }}
-      </span>
+      <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+        <span
+          v-if="!slotProps.value || slotProps.value.length === 0"
+          class="flex items-center gap-1"
+        >
+          <slot name="icon" />
+          {{ placeholder }}
+        </span>
+        <span
+          v-if="slotProps.value && slotProps.value.length === 1"
+          class="flex items-center gap-1"
+        >
+          <slot name="icon" />
+          {{ slotProps.value[0] }}
+        </span>
+        <span
+          v-if="slotProps.value && slotProps.value.length > 1"
+          class="flex items-center gap-1"
+        >
+          <slot name="icon" />
+          {{ props.selectedLabel(slotProps.value) }}
+        </span>
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
+    </template>
+    <template #indicator>
+      <span />
     </template>
   </MultiSelect>
   <Dropdown
@@ -43,13 +52,26 @@
     :title="label"
     :loading="dimension.state.loading"
     :disabled="dimension.state.disabled"
-    :options="items"
+    :options="dimension.values.value"
     :placeholder="placeholder"
-    option-label="label"
-    option-value="value"
-    :filter="true"
-    :auto-filter-focus="true"
-  />
+    :option-label="optionToLabel"
+    :filter="hasManyElements"
+    :auto-filter-focus="hasManyElements"
+  >
+    <template #value="{value}">
+      <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+        {{ value ? valueToLabel(value) : value }}
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
+    </template>
+    <template #indicator>
+      <!-- empty element to avoid ignoring override of slot -->
+      <span />
+    </template>
+  </Dropdown>
   <MultiSelect
     v-else
     v-model="value"
@@ -64,7 +86,7 @@
     option-group-label="label"
     :selection-limit="multiple ? null : 1"
     :max-selected-labels="1"
-    :filter="true"
+    :filter="hasManyElements"
     :auto-filter-focus="true"
   >
     <template #value="slotProps">
@@ -90,9 +112,13 @@
         {{ props.selectedLabel(slotProps.value) }}
       </span>
     </template>
+    <template #indicator>
+      <span />
+    </template>
   </MultiSelect>
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed } from "vue"
 import { DimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
@@ -113,6 +139,10 @@ const props = withDefaults(defineProps<{
 const multiple = computed(() => props.dimension.multiple)
 
 const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
+
+function optionToLabel(value: string): string {
+  return props.valueToLabel(value)
+}
 
 const value = computed<string | Array<string> | null>({
   get() {
@@ -145,8 +175,8 @@ const value = computed<string | Array<string> | null>({
   },
 })
 
-const hasManyElements = computed(()=>{
-  return items.value.length > 2
+const hasManyElements = computed(() => {
+  return items.value.length > 10
 })
 
 const items = computed(() => {

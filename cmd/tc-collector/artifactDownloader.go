@@ -30,21 +30,23 @@ func (t *Collector) downloadReports(build Build, ctx context.Context) ([]Artifac
 
 func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artifact, result *[]ArtifactItem, ctx context.Context) error {
   for _, artifact := range artifacts {
-    if strings.HasSuffix(artifact.Url, ".json") {
-      name := path.Base(artifact.Url)
-      if strings.HasPrefix(name, "startup-stats") || strings.HasSuffix(name, ".performance.json") || (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json") {
-        artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
-        report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
-        if err != nil {
-          return err
-        }
-
-        *result = append(*result, ArtifactItem{
-          data: report,
-          path: artifactUrlString,
-        })
-        continue
+    name := path.Base(artifact.Url)
+    if strings.HasSuffix(artifact.Url, ".json") && strings.HasPrefix(name, "startup-stats") ||
+      strings.HasSuffix(name, ".performance.json") ||
+      strings.HasSuffix(artifact.Url, ".json") && (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json") ||
+      t.reportAnalyzer.Config.DbName == "jbr" && strings.HasSuffix(name, ".txt") {
+      artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
+      report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
+      if err != nil {
+        return err
       }
+
+      *result = append(*result, ArtifactItem{
+        data: report,
+        path: artifactUrlString,
+      })
+      continue
+
     }
 
     err := t.findAndDownloadStartUpReports(build, artifact.Children.File, result, ctx)

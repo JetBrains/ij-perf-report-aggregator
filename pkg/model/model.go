@@ -40,6 +40,8 @@ type ExtraData struct {
   Changes            []string
   TriggeredBy        string
 
+  CurrentBuildTime time.Time
+
   // for logging only
   ReportFile string
 }

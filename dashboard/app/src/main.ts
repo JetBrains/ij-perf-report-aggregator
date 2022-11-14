@@ -8,7 +8,7 @@ import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"
 // get rid of color.png
 import "./primevue.css"
-// due to https://github.com/primefaces/primeicons/issues/301, we don't use primeicons package, but instead svg source was converted into woff2
+// avoid tiff/svg/other deprecated stuff in a final build
 import "./primeicons.css"
 // import "../../../jb/prime-theme/themes/saga/saga-blue/theme.scss"
 import "../../../jb/prime-theme/themes/lara/lara-light/blue/theme.scss"

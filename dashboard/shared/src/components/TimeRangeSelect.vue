@@ -1,28 +1,26 @@
 <template>
-  <Dropdown
+  <DropdownFilter
     v-model="value"
-    title="Time Range"
-    :options="timeRanges"
-    option-label="label"
-    option-value="value"
+    label="Time Range"
+    :options="TimeRangeConfigurator.timeRanges"
   />
 </template>
 <script setup lang="ts">
-import { computed, shallowRef } from "vue"
-import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
+import DropdownFilter from "tailwind-ui/src/DropdownFilter.vue"
+import { computed } from "vue"
+import { TimeRangeConfigurator, TimeRangeItem } from "../configurators/TimeRangeConfigurator"
 
-const props =  defineProps<{
+const props = defineProps<{
   configurator: TimeRangeConfigurator
 }>()
 
-const value = computed({
-  get() {
-    return props.configurator.value.value
+const value = computed<TimeRangeItem>({
+  get(): TimeRangeItem {
+    return TimeRangeConfigurator.timeRangeValueToItem.get(props.configurator.value.value) ?? TimeRangeConfigurator.timeRanges[0]
   },
-  set(value: string) {
+  set(item: TimeRangeItem) {
     // eslint-disable-next-line vue/no-mutating-props
-    props.configurator.value.value = value
+    props.configurator.value.value = item.value
   },
 })
-const timeRanges = shallowRef(TimeRangeConfigurator.timeRanges)
 </script>

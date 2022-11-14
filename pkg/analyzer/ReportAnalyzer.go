@@ -124,7 +124,15 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TriggeredBy:        extraData.TriggeredBy,
   }
 
-  err = ReadReport(runResult, t.Config, t.logger)
+  if t.Config.DbName == "jbr" {
+    ignore := analyzePerfJbrReport(runResult, extraData)
+    if ignore {
+      //ignore empty report
+      return nil
+    }
+  } else {
+    err = ReadReport(runResult, t.Config, t.logger)
+  }
   projectId := t.Config.DbName
   if err != nil {
     return err
@@ -152,7 +160,11 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   if runResult.GeneratedTime.IsZero() {
     runResult.GeneratedTime, err = computeGeneratedTime(runResult.Report, extraData)
     if err != nil {
-      return err
+      if extraData.CurrentBuildTime.IsZero() {
+        return err
+      } else {
+        runResult.GeneratedTime = extraData.CurrentBuildTime
+      }
     }
   }
 
@@ -247,7 +259,7 @@ func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time
     }
     return extraData.LastGeneratedTime, nil
   } else {
-    parsedTime, err := parseTime(report.Generated)
+    parsedTime, err := ParseTime(report.Generated)
     if err != nil {
       return time.Time{}, err
     }

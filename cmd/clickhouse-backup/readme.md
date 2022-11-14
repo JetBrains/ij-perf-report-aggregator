@@ -1,1 +1,0 @@
-AWS SDK is not easy to use and requires solving a lot of pitfalls. Say, you cannot upload object with unknown size, and have to use multi-part upload, and no such implementation is provided. Minio provides consistent, clear and well designed API (PutObject automatically handles streaming upload).

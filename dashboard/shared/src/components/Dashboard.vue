@@ -1,12 +1,10 @@
 <template>
-  <Toolbar>
-    <template #start>
+  <div class="flex items-center justify-between">
+    <div class="flex items-baseline gap-x-2">
       <slot name="toolbar" />
-    </template>
-    <template #end>
-      <ReloadButton />
-    </template>
-  </Toolbar>
+    </div>
+    <ReloadButton />
+  </div>
   <slot />
   <ChartTooltip
     ref="tooltip"

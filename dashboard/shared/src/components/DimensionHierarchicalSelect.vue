@@ -10,22 +10,32 @@
     class="max-w-lg"
   >
     <template #value="{value}">
-      <template v-if="value && value.length > 0">
-        <span class="flex items-center gap-1">
-          <slot name="icon"/>
-          {{ value[0].label }}
-        </span>
-      </template>
-      <template v-if="!value || value.length === 0">
-        <span class="flex items-center gap-1">
-          <slot name="icon"/>
-          {{ placeholder }}
-        </span>
-      </template>
+      <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+        <template v-if="value && value.length > 0">
+          <span class="flex items-center gap-1">
+            <slot name="icon" />
+            {{ value[0].label }}
+          </span>
+        </template>
+        <template v-if="!value || value.length === 0">
+          <span class="flex items-center gap-1">
+            <slot name="icon" />
+            {{ placeholder }}
+          </span>
+        </template>
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
+    </template>
+    <template #indicator>
+      <span />
     </template>
   </TreeSelect>
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { TreeNode } from "primevue/tree"
 import { computed } from "vue"
 import { GroupedDimensionValue, MachineConfigurator } from "../configurators/MachineConfigurator"

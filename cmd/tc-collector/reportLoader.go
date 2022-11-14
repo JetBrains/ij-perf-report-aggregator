@@ -6,6 +6,7 @@ import (
   "encoding/base64"
   "encoding/hex"
   e "errors"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
@@ -47,7 +48,7 @@ func (t *Collector) loadReports(builds []*Build) error {
       if build == nil || build.Agent.Name == "Dead agent" {
         return nil
       }
-
+      t.logger.Info("processing build", zap.Int("id", build.Id))
       if t.reportAnalyzer.Config.HasInstallerField && build.installerInfo == nil {
         // or already processed or cannot compute installer info
         return nil
@@ -79,6 +80,11 @@ func (t *Collector) loadReports(builds []*Build) error {
           TcBuildType:       build.Type,
           TcBuildProperties: tcBuildProperties,
           ReportFile:        artifact.path,
+        }
+
+        currentBuildTime, err := analyzer.ParseTime(build.StartDate)
+        if err == nil {
+          data.CurrentBuildTime = currentBuildTime
         }
 
         if build.Private && build.TriggeredBy.User != nil {

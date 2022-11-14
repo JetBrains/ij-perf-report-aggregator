@@ -3,14 +3,16 @@ import { LineChart, ScatterChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { registerTransform, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
+import { CallbackDataParams } from "echarts/types/src/util/types"
 import { debounceTime } from "rxjs"
 import { Ref } from "vue"
 import { ChartManagerHelper } from "../ChartManagerHelper"
 import { DataQueryExecutor } from "../DataQueryExecutor"
-import { adaptToolTipFormatter, timeFormat, ToolTipFormatter, ValueUnit } from "../chart"
+import { adaptToolTipFormatter, timeFormat, ValueUnit } from "../chart"
 import { refToObservable } from "../configurators/rxjs"
 import { LineChartOptions } from "../echarts"
 import { nsToMs, numberFormat } from "../formatter"
+import { ChartToolTipManager } from "./ChartToolTipManager"
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -32,11 +34,21 @@ export class LineChartManager {
   constructor(container: HTMLElement,
               private _dataQueryExecutor: DataQueryExecutor,
               dataZoom: Ref<boolean>,
-              tooltipFormatter: ToolTipFormatter | null,
+              chartToolTipManager: ChartToolTipManager | null,
               valueUnit: ValueUnit,
               trigger: PopupTrigger = "axis") {
     this.chart = new ChartManagerHelper(container)
     const isMs = valueUnit == "ms"
+
+    // https://github.com/apache/echarts/issues/2941
+    let lastParams: Array<CallbackDataParams> | null = null
+    if (chartToolTipManager != null) {
+      this.chart.chart.getZr().on("click", event => {
+        chartToolTipManager.showTooltip(lastParams, event.event)
+      })
+    }
+
+    const isCompoundTooltip = chartToolTipManager == null
     this.chart.chart.setOption<LineChartOptions>({
       legend: {},
       animation: false,
@@ -58,8 +70,11 @@ export class LineChartManager {
           type: "cross",
           snap: true
         },
-        formatter: tooltipFormatter == null ? undefined : adaptToolTipFormatter(tooltipFormatter),
-        valueFormatter: tooltipFormatter == null ? it => (numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms") : undefined
+        formatter: isCompoundTooltip ? undefined : adaptToolTipFormatter(params => {
+          lastParams = params
+          return null
+        }),
+        valueFormatter: isCompoundTooltip ? it => (numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms") : undefined
       },
       xAxis: {
         type: "time",

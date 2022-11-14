@@ -1,7 +1,15 @@
-.p-dropdown, .p-multiselect, .p-cascadeselect, .p-treeselect, .p-inputtext {
+.p-inputtext {
   /*border-color: var(--input-border-color);*/
   background-color: var(--input-bg-color);
+  /*@apply text-sm;*/
   @apply rounded-md border shadow-sm border-gray-300 text-sm;
+}
+
+.p-dropdown, .p-multiselect, .p-cascadeselect, .p-treeselect {
+  /*border-color: var(--input-border-color);*/
+  /*background-color: var(--input-bg-color);*/
+  @apply text-sm;
+  /*@apply rounded-md border shadow-sm border-gray-300 text-sm;*/
 }
 
 .p-dropdown:not(.p-disabled).p-focus,
@@ -26,15 +34,15 @@
 .p-multiselect .p-multiselect-label,
 .p-cascadeselect .p-cascadeselect-label,
 .p-treeselect .p-treeselect-label {
-  color: var(--input-text-color);
-  @apply pl-3 pr-2 py-2;
+  /*color: var(--input-text-color);*/
+  @apply pl-3 pr-2 py-2 font-medium text-gray-700 hover:text-gray-900;
 }
 
-.p-dropdown .p-dropdown-trigger,
-.p-multiselect .p-multiselect-trigger,
-.p-treeselect .p-treeselect-trigger {
-  @apply text-gray-400 rounded-r-md pr-2 w-5;
-}
+/*.p-dropdown .p-dropdown-trigger,*/
+/*.p-multiselect .p-multiselect-trigger,*/
+/*.p-treeselect .p-treeselect-trigger {*/
+/*  @apply text-gray-400 rounded-r-md pr-2 w-5;*/
+/*}*/
 
 .p-dropdown .p-dropdown-label, .p-cascadeselect .p-cascadeselect-label {
   /* shadow-none is required because label also has .p-inputtext class */

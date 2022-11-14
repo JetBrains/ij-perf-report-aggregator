@@ -76,17 +76,15 @@
         <ServerIcon class="w-5 h-5" />
         <span>{{ tooltipData.firstSeriesData[2] }}</span>
       </div>
-      <div class="text-xs pt-3">
-        Hold {{ metaKeySymbol }} to prevent popup refresh
-      </div>
     </div>
   </OverlayPanel>
 </template>
 <script setup lang="ts">
 
+import { ArchiveBoxIcon, ArrowDownTrayIcon, ServerIcon, UsersIcon } from "@heroicons/vue/24/outline"
 import OverlayPanel from "primevue/overlaypanel"
 import Divider from "tailwind-ui/src/Divider.vue"
-import { computed, onBeforeUnmount, onMounted, shallowRef } from "vue"
+import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
 import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
@@ -109,7 +107,7 @@ const linkText = computed(() => {
 })
 
 const linkUrl = computed(() => {
-  const data = tooltipData?.value
+  const data = tooltipData.value
   const query = data?.query
   if (query == null) {
     return null
@@ -117,94 +115,78 @@ const linkUrl = computed(() => {
   return data?.reportInfoProvider?.createReportUrl(data.firstSeriesData[0], query)
 })
 
-let currentTarget: EventTarget | null
-
-// noinspection JSDeprecatedSymbols
-const metaKeySymbol = window.navigator.platform.toUpperCase().includes("MAC") ? "⌘" : "⊞"
-
 // do not show tooltip if cursor was not pointed again to some item
-function resetState() {
-  const value = tooltipData.value
-  if (value != null) {
-    value.items.length = 0
-  }
-
-  if (lastManager != null) {
-    lastManager.paused = false
-  }
-}
+let lastManager: ChartToolTipManager | null = null
 
 const hide = debounceSync(() => {
-  if (lastManager?.paused) {
+  lastManager = null
+  panel.value?.hide()
+  tooltipData.value = null
+}, 1_000)
+
+let panelTargetIsChanged = false
+const consumer: (data: TooltipData | null, event: Event | null) => void = (data, event) => {
+  console.log("new data", data == null, event == null, panelTargetIsChanged)
+  // console.log(event)
+  hide.clear()
+
+  tooltipData.value = data
+
+  if (data == null || event == null) {
     return
   }
-  currentTarget = null
-  debouncedShow.clear()
-  panel.value?.hide()
-  resetState()
-}, 2_000)
+
+  let stopHandle: WatchStopHandle | null = null
+  const panelElement = panel.value
+  if (panelElement == null) {
+    stopHandle = watch(panel, value => {
+      value?.show(event)
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      stopHandle!()
+    })
+  }
+  else {
+    if (panelTargetIsChanged) {
+      panelTargetIsChanged = false
+      // make sure that we show panel near the target - PrimeVue doesn't handle that if panel is shown
+      panelElement.hide()
+      // show only after hide is performed
+      void nextTick(() => {
+        panelElement.show(event)
+      })
+    }
+    else {
+      panelElement.show(event)
+    }
+  }
+}
 
 function panelClosedExplicitly() {
   hide.clear()
-  currentTarget = null
-  resetState()
+  tooltipData.value = null
 }
-
-const debouncedShow = debounceSync(() => {
-  if (currentTarget != null) {
-    panel.value?.show({currentTarget} as Event)
-    currentTarget = null
-  }
-}, 300)
 
 function cancelHide() {
   hide.clear()
 }
 
-let metaKey = ""
-let lastManager: ChartToolTipManager | null = null
-const keyDown = (event: KeyboardEvent) => {
-  if (event.metaKey) {
-    metaKey = event.code
-    if (lastManager != null) {
-      lastManager.paused = true
-    }
-  }
-}
-const keyUp = (event: KeyboardEvent) => {
-  if (event.code === metaKey && lastManager != null) {
-      lastManager.paused = false
-    }
-}
-
-onMounted(() => {
-  window.addEventListener("keyup", keyUp)
-  window.addEventListener("keydown", keyDown)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener("keydown", keyDown)
-  window.removeEventListener("keyup", keyUp)
-})
-
 defineExpose({
-  show(event: MouseEvent, manager: ChartToolTipManager) {
-    if(lastManager?.paused) return
-    if (lastManager !== manager && lastManager !== null) {
-      currentTarget = null
-      debouncedShow.clear()
-      panel.value?.hide()
+  show(manager: ChartToolTipManager) {
+    if (lastManager === manager) {
+      hide.clear()
+      panelTargetIsChanged = false
+    }
+    else if (lastManager != null) {
+      panelTargetIsChanged = true
     }
 
     lastManager = manager
-    hide.clear()
-    if (!lastManager.paused) {
-      tooltipData.value = manager.reportTooltipData
-    }
-    currentTarget = event.currentTarget
-    debouncedShow()
+    manager.setConsumer(consumer)
   },
-  hide,
+  hide() {
+    lastManager?.setConsumer(null)
+    hide()
+  },
 })
 
 </script>

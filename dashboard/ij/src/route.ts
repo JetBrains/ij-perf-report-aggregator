@@ -149,6 +149,27 @@ export function getIjItems(): Array<MenuItem> {
           label: "Explore",
           to: "/kotlin/performanceKotlinPluginTests",
         },
+         {
+          label: "Explore (Dev)",
+          to: "/kotlin/performanceKotlinPluginTests",
+        },
+        {
+          label: "Build kts",
+          to: "/kotlin/buildScript"
+        },
+        {
+          label: "MPP projects",
+          to: "/kotlin/mppProjects"
+        },
+      ]
+    },
+    {
+      label: "JBR",
+      items: [
+        {
+          label: "Explore",
+          to: "/jbr/performanceTests",
+        },
       ]
     },
     {
@@ -301,9 +322,29 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore Kotlin plugin Tests"},
         },
         {
+          path: "/kotlin/performanceKotlinPluginTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlin",
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore Kotlin plugin Tests (Dev)"},
+        },
+        {
           path: "/kotlin/pluginDashboard",
           component: () => import("./kotlin/KotlinPluginDashboard.vue"),
           meta: {pageTitle: "Kotlin plugin Dashboard"},
+        },
+        {
+          path: "/kotlin/buildScript",
+          component: () => import("./kotlin/KotlinBuildScriptDashboard.vue"),
+          meta: {pageTitle: "Kotlin build kts dashboard"},
+        },
+        {
+          path: "/kotlin/mppProjects",
+          component: () => import("./kotlin/MppProjectsDashboard.vue"),
+          meta: {pageTitle: "Kotlin MPP projects dashboard"},
         },
       ]
     },
@@ -405,6 +446,21 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Fleet Explore"},
         },
       ],
+    },
+    {
+      children: [
+        {
+          path: "/jbr/performanceTests",
+          component: () => import("shared/src/components/GenericMetricDashboard.vue"),
+          props: {
+            dbName: "jbr",
+            table: "report",
+            installerExists: false,
+            defaultMeasures: [],
+          },
+          meta: {pageTitle: "Explore JBR Tests"},
+        },
+      ]
     },
     {
       children: [

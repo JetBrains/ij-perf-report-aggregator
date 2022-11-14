@@ -8,6 +8,8 @@
 drop table report;
 rename table report2 to report
 
+-- insert into report2 select * from report;
+
 /*
 // migrate changes as new-line delimited to array
 insert into installer2 select id, if(changes = '', emptyArrayString(), splitByChar('\n', changes)) from installer;

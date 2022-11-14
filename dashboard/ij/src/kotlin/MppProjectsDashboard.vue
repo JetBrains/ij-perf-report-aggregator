@@ -10,64 +10,74 @@
         label="Machine"
         :dimension="machineConfigurator"
       />
+      <DimensionSelect
+        label="Nightly/Release"
+        :dimension="releaseConfigurator"
+      />
+      <DimensionSelect
+        label="Triggered by"
+        :dimension="triggeredByConfigurator"
+      />
     </template>
-    <template
-      v-for="metric in aggregatedMetrics"
-      :key="metric"
-    >
-      <Divider :label="metric" />
-      <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-12">
-          <LineChartCard
-            :skip-zero-values="false"
-            :aggregated-measure="metric"
-            trigger="item"
-          />
-        </div>
-      </div>
-    </template>
+    <GroupLineChart
+      label="Highlight on random files to lines count"
+      measure="highlighting#timeToLines#mean_value"
+      :projects="[
+        'kotlin_coroutines/mpp_highlightOnRandomFiles',
+        'ktor/mpp_highlightOnRandomFiles',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
   </Dashboard>
 </template>
 
 <script lang="ts" setup>
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
+import { chartDefaultStyle } from "shared/src/chart"
 import Dashboard from "shared/src/components/Dashboard.vue"
+import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import LineChartCard from "shared/src/components/LineChartCard.vue"
+import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
+import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
+import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import Divider from "tailwind-ui/src/Divider.vue"
+import { chartStyleKey } from "shared/src/injectionKeys"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { provide } from "vue"
 import { useRouter } from "vue-router"
-import DimensionHierarchicalSelect from "/shared/src/components/DimensionHierarchicalSelect.vue"
 
-const persistentStateManager = new PersistentStateManager("phpstorm_dashboard", {
+provide(chartStyleKey, {
+  ...chartDefaultStyle,
+})
+
+provideReportUrlProvider()
+
+const persistentStateManager = new PersistentStateManager("kotlinMppProjects_dashboard", {
   machine: "linux-blade-hetzner",
   project: [],
   branch: "master",
 }, useRouter())
 
-const serverConfigurator = new ServerConfigurator("perfint", "phpstorm")
+const serverConfigurator = new ServerConfigurator("perfint", "kotlin")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
   return a.includes("/") ? 1 : -1
 })
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-
-const timeAverageConfigurator = new TimeAverageConfigurator()
-
-const aggregatedMetrics = ["responsiveness_time", "completion_execution_time"]
-
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  timeAverageConfigurator
+  triggeredByConfigurator,
+  releaseConfigurator,
 ]
 initDataComponent(configurators)
 </script>

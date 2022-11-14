@@ -2,15 +2,15 @@
   "name": "report-visualizer",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.3",
+    "@headlessui/vue": "^1.7.4",
     "compare-versions": "^5.0.1",
     "echarts": "5.4.0",
     "fast-equals": "4.0.3",
-    "primevue": "3.18.0",
+    "primevue": "3.18.1",
     "rxjs": "8.0.0-alpha.5",
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.41",
+    "vue": "3.2.44",
     "vue-router": "4.1.6"
   }
 }

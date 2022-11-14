@@ -9,7 +9,7 @@
     <div class="relative flex justify-center">
       <span
         v-if="label != null"
-        class="px-2 bg-white text-sm text-gray-500"
+        class="px-2 bg-white text-sm text-gray-500 capitalize"
       >{{ props.label }}</span>
       <span
         v-else-if="title != null"

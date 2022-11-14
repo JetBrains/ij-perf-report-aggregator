@@ -21,6 +21,8 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     {label: "All", value: "all"},
   ]
 
+  static readonly timeRangeValueToItem: Map<string, TimeRangeItem> = new Map(TimeRangeConfigurator.timeRanges.map(it => [it.value, it]))
+
   readonly value = ref<string>(TimeRangeConfigurator.timeRanges[0].value)
 
   constructor(persistentStateManager: PersistentStateManager) {

@@ -23,7 +23,7 @@
 
   <!-- Set limit on number of open files (default: maximum). This setting makes sense on Mac OS X because getrlimit() fails to retrieve
        correct maximum value. -->
-   <max_open_files>262144</max_open_files>
+  <max_open_files>262144</max_open_files>
 
   <!-- Size of cache of uncompressed blocks of data, used in tables of MergeTree family.
        In bytes. Cache is single for server. Memory is allocated only on demand.
@@ -49,7 +49,7 @@
   <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
 
   <!-- Path to configuration file with users, access rights, profiles of settings, quotas. -->
-  <users_config>users.xml</users_config>
+  <users_config>/etc/clickhouse-server/users.xml</users_config>
 
   <!-- Default profile of settings. -->
   <default_profile>default</default_profile>
@@ -126,4 +126,32 @@
        The directory will be created if it doesn't exist.
     -->
   <format_schema_path>/var/lib/clickhouse/format_schemas/</format_schema_path>
+  <storage_configuration>
+    <disks>
+      <s3>
+        <type>s3</type>
+        <endpoint>$S3_URL</endpoint>
+        <access_key_id>$S3_ACCESS_KEY</access_key_id>
+        <secret_access_key>$S3_SECRET_KEY</secret_access_key>
+        <metadata_path>/var/lib/clickhouse/disks/s3_disk/</metadata_path>
+        <cache_enabled>true</cache_enabled>
+        <data_cache_enabled>true</data_cache_enabled>
+        <cache_path>/var/lib/clickhouse/disks/s3_disk/cache/</cache_path>
+        <max_cache_size>3221225472</max_cache_size>
+      </s3>
+    </disks>
+    <policies>
+      <tiered>
+        <volumes>
+          <default>
+            <disk>default</disk>
+          </default>
+          <s3>
+            <disk>s3</disk>
+          </s3>
+        </volumes>
+        <move_factor>0</move_factor>
+      </tiered>
+    </policies>
+  </storage_configuration>
 </clickhouse>

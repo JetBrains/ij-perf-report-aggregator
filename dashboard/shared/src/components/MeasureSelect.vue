@@ -12,33 +12,39 @@
     :max-selected-labels="1"
   >
     <template #value="slotProps">
-      <span
-        v-if="!slotProps.value || slotProps.value.length === 0"
-        class="flex items-center gap-1"
-      >
+      <div class="group flex items-center gap-1">
         <slot name="icon" />
-        {{ title }}
-      </span>
-      <span
-        v-if="slotProps.value && slotProps.value.length === 1"
-        class="flex items-center gap-1"
-      >
-        <slot name="icon" />
-        {{ slotProps.value[0] }}
-      </span>
-      <span
-        v-if="slotProps.value && slotProps.value.length > 1"
-        class="flex items-center gap-1"
-      >
-        <slot name="icon" />
-        {{ props.selectedLabel(slotProps.value) }}
-      </span>
+
+        <span
+          v-if="!slotProps.value || slotProps.value.length === 0"
+        >
+          {{ title }}
+        </span>
+
+        <span v-if="slotProps.value && slotProps.value.length === 1">
+          {{ slotProps.value[0] }}
+        </span>
+
+        <span
+          v-if="slotProps.value && slotProps.value.length > 1"
+        >
+          {{ props.selectedLabel(slotProps.value) }}
+        </span>
+
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
+    </template>
+    <template #indicator>
+      <span class="hidden" />
     </template>
   </MultiSelect>
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed } from "vue"
-
 import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
 
 interface Props {
@@ -49,7 +55,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   title: "Metrics",
-  selectedLabel: (items: string[]) => `${items.length} items selected`
+  selectedLabel: (items: string[]) => `${items.length} items selected`,
 })
 
 // const items = props.configurator.data

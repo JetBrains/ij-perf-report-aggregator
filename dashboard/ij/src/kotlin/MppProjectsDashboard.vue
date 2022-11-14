@@ -63,7 +63,7 @@ const persistentStateManager = new PersistentStateManager("kotlinMppProjects_das
   branch: "master",
 }, useRouter())
 
-const serverConfigurator = new ServerConfigurator("perfint", "kotlin")
+const serverConfigurator = new ServerConfigurator("perfintDev", "kotlin")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
   return a.includes("/") ? 1 : -1

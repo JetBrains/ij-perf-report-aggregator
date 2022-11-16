@@ -14,26 +14,30 @@
     panel-style="overflow: visible"
   >
     <template #value="slotProps">
-      <span v-if="!slotProps.value || slotProps.value.length === 0" class="flex items-center gap-1 ">
-         <div class="w-4 h-4 text-gray-500">
+      <div class="group flex items-center gap-1">
+        <div class="w-4 h-4 text-gray-500">
            <BranchIcon />
          </div>
+
+        <span v-if="!slotProps.value || slotProps.value.length === 0">
           {{ placeholder }}
-      </span>
-      <span v-if="slotProps.value && slotProps.value.length === 1" class="flex items-center gap-1">
-         <div class="w-4 h-4 text-gray-500">
-           <BranchIcon/>
-         </div>
-         {{ slotProps.value[0] }}
-      </span>
-      <span v-if="slotProps.value && slotProps.value.length > 1" class="flex items-center gap-1">
-        <div class="w-4 h-4 text-gray-500">
-          <BranchIcon/>
-        </div>
-        {{ branchesSelectLabelFormat(slotProps.value) }}
-      </span>
+        </span>
+
+        <span v-if="slotProps.value && slotProps.value.length === 1">
+          {{ slotProps.value[0] }}
+        </span>
+
+        <span v-if="slotProps.value && slotProps.value.length > 1">
+          {{ branchesSelectLabelFormat(slotProps.value) }}
+        </span>
+
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
     </template>
-    <template #footer="slotProps">
+    <template #footer>
       <div class="border-t border-solid border-neutral-200 relative">
         <ul class="p-multiselect-items p-component">
           <li
@@ -57,7 +61,7 @@
             <span class="flex items-center gap-1 overflow-hidden">
               Triggered by
               <span class="text-gray-500 truncate" v-if="triggeredValue !== null && triggeredValue.length > 0">
-                {{ triggeredValue?.length > 0 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
+                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
@@ -106,6 +110,9 @@
         </div>
       </div>
     </template>
+    <template #indicator>
+      <span class="hidden" />
+    </template>
   </MultiSelect>
 </template>
 <style>
@@ -117,6 +124,7 @@
 </style>
 <script setup lang="ts">
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
+import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed, ref } from "vue"
 import { usePlaceholder } from "shared/src/components/placeholder"
 import { branchesSelectLabelFormat } from "../../shared/labels"

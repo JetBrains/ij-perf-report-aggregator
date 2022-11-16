@@ -328,6 +328,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             dbName: "perfintDev",
             table: "kotlin",
             defaultMeasures: [],
+            installerExists: false,
           },
           meta: {pageTitle: "Explore Kotlin plugin Tests (Dev)"},
         },
@@ -339,11 +340,17 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
         {
           path: "/kotlin/buildScript",
           component: () => import("./kotlin/KotlinBuildScriptDashboard.vue"),
+          props: {
+            installerExists: false,
+          },
           meta: {pageTitle: "Kotlin build kts dashboard"},
         },
         {
           path: "/kotlin/mppProjects",
           component: () => import("./kotlin/MppProjectsDashboard.vue"),
+          props: {
+            installerExists: false,
+          },
           meta: {pageTitle: "Kotlin MPP projects dashboard"},
         },
       ]

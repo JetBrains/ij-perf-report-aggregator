@@ -2,6 +2,7 @@
   "name": "shared",
   "private": true,
   "dependencies": {
+    "@headlessui/vue": "^1.7.4",
     "@heroicons/vue": "2.0.13",
     "echarts": "5.4.0",
     "echarts-stat": "1.2.0",
@@ -9,9 +10,8 @@
     "humanize-duration": "3.27.3",
     "primevue": "3.18.1",
     "rxjs": "8.0.0-alpha.5",
-    "@headlessui/vue": "^1.7.4",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.44",
+    "vue": "3.2.45",
     "vue-router": "4.1.6"
   },
   "devDependencies": {

@@ -55,7 +55,7 @@ provide(chartStyleKey, {
   ...chartDefaultStyle,
 })
 
-provideReportUrlProvider()
+provideReportUrlProvider(false)
 
 const persistentStateManager = new PersistentStateManager("kotlinMppProjects_dashboard", {
   machine: "linux-blade-hetzner",

@@ -15,6 +15,22 @@
         :skip-zero-values="false"
       />
       <LineChartCard
+        :measures='["time to edit.end"]'
+        :skip-zero-values="false"
+      />
+      <LineChartCard
+        :measures='["terminal ready.end"]'
+        :skip-zero-values="false"
+      />
+      <LineChartCard
+        :measures='["file tree rendered.end"]'
+        :skip-zero-values="false"
+      />
+      <LineChartCard
+        :measures='["highlighting done.end"]'
+        :skip-zero-values="false"
+      />
+      <LineChartCard
         :measures='["window appeared.end"]'
         :skip-zero-values="false"
       />

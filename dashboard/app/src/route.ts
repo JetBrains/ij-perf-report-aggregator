@@ -1,10 +1,10 @@
 import { getIjItems, getIjRoutes } from "ij/src/route"
+import { getNewDashboardRoutes } from "new-dashboard/src/routes"
 import { MenuItem } from "primevue/menuitem"
 import { getReportVisualizerItems, getReportVisualizerRoutes } from "report-visualizer/src/route"
 import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
-import { getNewDashboardRoutes } from "new-dashboard/src/routes"
 
 function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRaw>) {
   for (const route of routes) {

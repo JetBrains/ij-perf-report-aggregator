@@ -78,7 +78,7 @@
       label="Highlight on random files - time to line mean value"
       measure="highlighting#timeToLines#mean_value"
       :projects="[
-       'intellij_commit/highlightOnRandomFiles',
+        'intellij_commit/highlightOnRandomFiles',
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -86,7 +86,7 @@
       label="Highlight mean value with Library cache K1"
       measure="highlighting#mean_value"
       :projects="[
-       'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
+        'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
         'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
         'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
         'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
@@ -230,10 +230,10 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
+import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { chartStyleKey } from "shared/src/injectionKeys"

@@ -1,6 +1,5 @@
 <template>
   <MultiSelect
-    @hide="clearSubMenu"
     v-model="branchValue"
     title="Branch"
     :loading="branchConfigurator.state.loading"
@@ -12,12 +11,13 @@
     :show-toggle-all="false"
     panel-class="w-[270px]"
     panel-style="overflow: visible"
+    @hide="clearSubMenu"
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
         <div class="w-4 h-4 text-gray-500">
-           <BranchIcon />
-         </div>
+          <BranchIcon />
+        </div>
 
         <span v-if="!slotProps.value || slotProps.value.length === 0">
           {{ placeholder }}
@@ -41,26 +41,32 @@
       <div class="border-t border-solid border-neutral-200 relative">
         <ul class="p-multiselect-items p-component">
           <li
+            v-if="versionItems.length > 0"
             class="p-multiselect-item flex items-center gap-2"
             @click="openVersionSubmenu"
-            v-if="versionItems.length > 0"
           >
             <span class="flex items-center gap-1 overflow-hidden">
               Version type
-              <span class="text-gray-500 truncate" v-if="versionValue !== null && versionValue.length > 0">
+              <span
+                v-if="versionValue !== null && versionValue.length > 0"
+                class="text-gray-500 truncate"
+              >
                 {{ versionValue?.length < 2 ? versionValue[0] : `Selected ${versionValue?.length }` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
           </li>
           <li
+            v-if="triggeredItems.length > 0"
             class="p-multiselect-item flex items-center gap-2"
             @click="openTriggeredSubmenu"
-            v-if="triggeredItems.length > 0"
           >
             <span class="flex items-center gap-1 overflow-hidden">
               Triggered by
-              <span class="text-gray-500 truncate" v-if="triggeredValue !== null && triggeredValue.length > 0">
+              <span
+                v-if="triggeredValue !== null && triggeredValue.length > 0"
+                class="text-gray-500 truncate"
+              >
                 {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
               </span>
             </span>
@@ -75,11 +81,14 @@
         >
           <ul class="p-multiselect-items p-component">
             <li v-for="item in versionItems">
-              <label class="field-checkbox w-full p-multiselect-item p-component" :for="item.value">
+              <label
+                class="field-checkbox w-full p-multiselect-item p-component"
+                :for="item.value"
+              >
                 <Checkbox
+                  v-model="versionValue"
                   :value="item.value"
                   :input-id="item.value"
-                  v-model="versionValue"
                 />
                 <span>{{ item.label }}</span>
               </label>
@@ -97,11 +106,14 @@
               No available options
             </div>
             <li v-for="item in triggeredItems">
-              <label class="field-checkbox w-full p-multiselect-item p-component" :for="item.value">
+              <label
+                class="field-checkbox w-full p-multiselect-item p-component"
+                :for="item.value"
+              >
                 <Checkbox
+                  v-model="triggeredValue"
                   :value="item.value"
                   :input-id="item.value"
-                  v-model="triggeredValue"
                 />
                 <span>{{ item.label }}</span>
               </label>
@@ -115,18 +127,11 @@
     </template>
   </MultiSelect>
 </template>
-<style>
-.branch-select-dropdown {
-  top: 0;
-  margin-top: 0;
-  border-top-left-radius: 0;
-}
-</style>
 <script setup lang="ts">
-import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { computed, ref } from "vue"
 import { usePlaceholder } from "shared/src/components/placeholder"
+import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
+import { computed, ref } from "vue"
 import { branchesSelectLabelFormat } from "../../shared/labels"
 import BranchIcon from "./BranchIcon.vue"
 
@@ -204,3 +209,10 @@ const placeholder = usePlaceholder(
   () => props.branchConfigurator.selected.value,
 )
 </script>
+<style>
+.branch-select-dropdown {
+  top: 0;
+  margin-top: 0;
+  border-top-left-radius: 0;
+}
+</style>

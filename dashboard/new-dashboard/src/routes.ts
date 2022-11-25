@@ -1,7 +1,7 @@
 import { ParentRouteRecord } from "shared/src/route"
 
 export interface NavigationItems {
-  path: string,
+  path: string
   name: string
 }
 

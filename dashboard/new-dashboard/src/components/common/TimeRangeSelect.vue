@@ -11,7 +11,7 @@
         <slot name="icon" />
 
         <span v-if="!slotProps.value">Select range</span>
-        <span >{{ currentValue?.label }}</span>
+        <span>{{ currentValue?.label }}</span>
 
         <ChevronDownIcon
           class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -25,8 +25,8 @@
   </Dropdown>
 </template>
 <script setup lang="ts">
-import { TimeRangeItem } from "shared/src/configurators/TimeRangeConfigurator"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
+import { TimeRangeItem } from "shared/src/configurators/TimeRangeConfigurator"
 import { computed, shallowRef } from "vue"
 
 const props = defineProps<{

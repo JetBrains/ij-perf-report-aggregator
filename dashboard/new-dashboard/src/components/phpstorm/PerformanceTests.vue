@@ -12,9 +12,9 @@
           </template>
         </TimeRangeSelect>
         <BranchSelect
-          :branchConfigurator="branchConfigurator"
-          :releaseConfigurator="releaseConfigurator"
-          :triggeredByConfigurator="triggeredByConfigurator"
+          :branch-configurator="branchConfigurator"
+          :release-configurator="releaseConfigurator"
+          :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect
           label="Metrics"
@@ -87,8 +87,8 @@ import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/l
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
+import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider()
 

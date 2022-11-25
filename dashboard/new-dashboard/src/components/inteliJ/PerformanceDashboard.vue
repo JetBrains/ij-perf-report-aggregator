@@ -12,9 +12,9 @@
           </template>
         </TimeRangeSelect>
         <BranchSelect
-          :branchConfigurator="branchConfigurator"
-          :releaseConfigurator="releaseConfigurator"
-          :triggeredByConfigurator="triggeredByConfigurator"
+          :branch-configurator="branchConfigurator"
+          :release-configurator="releaseConfigurator"
+          :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionHierarchicalSelect
           label="Machine"

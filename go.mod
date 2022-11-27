@@ -1,11 +1,11 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.18
+go 1.19
 
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
 
 require (
-	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221023090630-376c8dd499c3
+	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221116102458-8976be3c1c33
 	github.com/ClickHouse/ch-go v0.50.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.4.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible

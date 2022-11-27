@@ -3,7 +3,6 @@ package main
 import (
   "context"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
   "strconv"
@@ -15,7 +14,7 @@ type ReportExistenceChecker struct {
   ids intsets.Sparse
 }
 
-func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, reportAnalyzer *analyzer.ReportAnalyzer, taskContext context.Context, since time.Time) error {
+func (t *ReportExistenceChecker) reset(dbName string, tableName string, buildTypeId string, db driver.Conn, taskContext context.Context, since time.Time) error {
   t.ids.Clear()
 
   var rows driver.Rows
@@ -34,14 +33,14 @@ func (t *ReportExistenceChecker) reset(dbName string, buildTypeId string, report
 
     // don't filter by machine - product is enough to reduce set
     query := "select tc_build_id from report where product = $1 and generated_time > $2 order by tc_build_id"
-    rows, err = reportAnalyzer.InsertReportManager.InsertManager.Db.Query(taskContext, query, product, since)
+    rows, err = db.Query(taskContext, query, product, since)
   } else {
     table := "report"
-    if reportAnalyzer.InsertReportManager.TableName != "" {
-      table = reportAnalyzer.InsertReportManager.TableName
+    if tableName != "" {
+      table = tableName
     }
     query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " order by tc_build_id"
-    rows, err = reportAnalyzer.InsertReportManager.InsertManager.Db.Query(taskContext, query, since)
+    rows, err = db.Query(taskContext, query, since)
   }
 
   if err != nil {

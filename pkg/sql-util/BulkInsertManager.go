@@ -23,7 +23,7 @@ type BatchInsertManager struct {
 
   logger *zap.Logger
 
-  errorGroup *errgroup.Group
+  group *errgroup.Group
 
   InsertContext context.Context
 
@@ -59,7 +59,7 @@ func NewBulkInsertManager(
     insertSql:     insertSql,
     logger:        logger,
 
-    errorGroup: errorGroup,
+    group: errorGroup,
 
     // large inserts leads to large memory usage, so, insert by 2000 items
     BatchSize: 2000,
@@ -78,7 +78,7 @@ func (t *BatchInsertManager) GetQueuedItemCount() int {
 func (t *BatchInsertManager) ScheduleSendBatch() {
   batch := t.prepareForFlush()
   if batch != nil {
-    t.errorGroup.Go(func() error {
+    t.group.Go(func() error {
       return t.sendBatch(batch)
     })
   }
@@ -150,7 +150,7 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
 func (t *BatchInsertManager) Close() error {
   // flush
   t.ScheduleSendBatch()
-  err := t.errorGroup.Wait()
+  err := t.group.Wait()
 
   if t.batch != nil {
     t.logger.Error("abort batch", zap.String("reason", "was not sent, but close is called"))

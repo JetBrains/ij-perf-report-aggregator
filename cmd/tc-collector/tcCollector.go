@@ -30,7 +30,7 @@ type Collector struct {
   httpClient  *http.Client
   taskContext context.Context
 
-  reportAnalyzer *analyzer.ReportAnalyzer
+  config analyzer.DatabaseConfiguration
 
   logger *zap.Logger
 
@@ -86,7 +86,6 @@ func collectFromTeamCity(
   httpClient *http.Client,
   logger *zap.Logger,
   taskContext context.Context,
-  cancel context.CancelFunc,
 ) error {
   serverUrl := tcUrl + "/app/rest"
 
@@ -105,29 +104,23 @@ func collectFromTeamCity(
   defer util.Close(db, logger)
 
   for _, buildTypeId := range buildConfigurationIds {
-    reportAnalyzer, err := analyzer.CreateReportAnalyzer(db, config, taskContext, logger, func() {
-      logger.Debug("canceled by analyzer")
-      cancel()
-    })
-    if err != nil {
-      return err
+    if taskContext.Err() != nil {
+      return errors.WithStack(taskContext.Err())
     }
 
-    collector := &Collector{
-      serverUrl: serverUrl,
-
-      reportAnalyzer: reportAnalyzer,
-
-      httpClient:  httpClient,
-      taskContext: taskContext,
-
-      installerBuildIdToInfo: make(map[int]*InstallerInfo),
-
-      logger:                 logger,
-      reportExistenceChecker: &ReportExistenceChecker{},
-    }
-
-    err = collectBuildConfiguration(buildTypeId, collector, serverBuildUrl, tcUrl, userSpecifiedSince, initialSince, projectId, logger)
+    err = collectBuildConfiguration(
+      taskContext,
+      httpClient,
+      db,
+      config,
+      buildTypeId,
+      serverUrl,
+      serverBuildUrl,
+      tcUrl,
+      userSpecifiedSince,
+      initialSince,
+      logger.With(zap.String("buildTypeId", buildTypeId), zap.String("projectId", projectId)),
+    )
     if err != nil {
       return err
     }
@@ -136,31 +129,28 @@ func collectFromTeamCity(
 }
 
 func collectBuildConfiguration(
+  taskContext context.Context,
+  httpClient *http.Client,
+  db driver.Conn,
+  config analyzer.DatabaseConfiguration,
   buildTypeId string,
-  collector *Collector,
-  serverUrl *url.URL,
+  serverUrl string,
+  serverBuildUrl *url.URL,
   serverHost string,
   userSpecifiedSince time.Time,
   initialSince time.Time,
-  projectId string,
   logger *zap.Logger,
 ) error {
-  taskContext := collector.taskContext
-  if taskContext.Err() != nil {
-    return errors.WithStack(taskContext.Err())
-  }
-
-  q := serverUrl.Query()
+  q := serverBuildUrl.Query()
   locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:500"
 
   since := userSpecifiedSince
-  insertManager := collector.reportAnalyzer.InsertReportManager.InsertManager
   if since.IsZero() {
     since = initialSince
     if since.IsZero() {
       //goland:noinspection SqlResolve
       query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
-      err := insertManager.Db.QueryRow(taskContext, query).Scan(&since)
+      err := db.QueryRow(taskContext, query).Scan(&since)
       if err != nil && err != sql.ErrNoRows {
         return errors.WithStack(err)
       }
@@ -173,11 +163,13 @@ func collectBuildConfiguration(
 
   q.Set("locator", locator)
   q.Set("fields", buildTeamCityQuery())
-  serverUrl.RawQuery = q.Encode()
+  serverBuildUrl.RawQuery = q.Encode()
 
   logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
 
-  err := collector.reportExistenceChecker.reset(projectId, buildTypeId, collector.reportAnalyzer, taskContext, since)
+  reportExistenceChecker := &ReportExistenceChecker{}
+
+  err := reportExistenceChecker.reset(config.DbName, config.TableName, buildTypeId, db, taskContext, since)
   if err != nil {
     return err
   }
@@ -187,7 +179,19 @@ func collectBuildConfiguration(
   //2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
   var buildsToLoad [][]*Build
 
-  buildList, err := collector.loadBuilds(serverUrl.String())
+  collector := &Collector{
+    serverUrl: serverUrl,
+
+    httpClient:  httpClient,
+    taskContext: taskContext,
+    config:      config,
+
+    installerBuildIdToInfo: make(map[int]*InstallerInfo),
+
+    logger: logger,
+  }
+
+  buildList, err := collector.loadBuilds(serverBuildUrl.String())
   if err != nil {
     logger.Warn(err.Error())
     return nil
@@ -231,32 +235,29 @@ func collectBuildConfiguration(
       return errors.WithStack(err)
     }
 
-    err = collector.loadReports(builds)
+    reportAnalyzer, err := analyzer.CreateReportAnalyzer(db, config, taskContext, logger)
     if err != nil {
       return err
     }
 
-    select {
-    case analyzeError := <-collector.reportAnalyzer.WaitAnalyzer():
-      if analyzeError != nil {
-        return analyzeError
-      }
+    err = collector.loadReports(builds, reportExistenceChecker, reportAnalyzer)
+    if err != nil {
+      return err
+    }
 
-      // ensure that data is written
-      logger.Debug("wait for insert", zap.Int("chunk", i))
-      err = collector.reportAnalyzer.Close()
-      if err != nil {
-        return err
-      }
+    reportAnalyzer.CloseChannel()
 
-      // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
-      // set last collect time to 1 second after last build in chunk
-      err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), insertManager.Db, taskContext)
-      if err != nil {
-        return err
-      }
-    case <-taskContext.Done():
-      return nil
+    logger.Debug("wait for analyze and insert", zap.Int("chunk", i))
+    err = reportAnalyzer.WaitAnalyzeAndInsert()
+    if err != nil {
+      return err
+    }
+
+    // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
+    // set last collect time to 1 second after last build in chunk
+    err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), db, taskContext)
+    if err != nil {
+      return err
     }
   }
   return nil

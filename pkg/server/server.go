@@ -120,9 +120,8 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Co
   pool, err := chpool.Dial(ctx, chpool.Options{
     MaxConns: 16,
     ClientOptions: ch.Options{
-      DialTimeout: 10 * time.Second,
-      Address:     t.dbUrl,
-      Database:    name,
+      Address:  t.dbUrl,
+      Database: name,
       Settings: []ch.Setting{
         ch.SettingInt("readonly", 1),
         ch.SettingInt("max_query_size", 1000000),

@@ -2,32 +2,27 @@ package analyzer
 
 import (
   "context"
+  errors2 "errors"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
-  errors2 "github.com/pkg/errors"
   "go.deanishe.net/env"
-  "go.uber.org/atomic"
   "go.uber.org/zap"
+  "golang.org/x/sync/errgroup"
   "strconv"
   "strings"
-  "sync"
   "time"
 )
 
 type ReportAnalyzer struct {
-  Config DatabaseConfiguration
+  config DatabaseConfiguration
 
   insertQueue chan *ReportInfo
-  DoneChannel chan error
-
-  firstError atomic.Value
 
   analyzeContext context.Context
 
-  waitGroup sync.WaitGroup
-  closeOnce sync.Once
+  waitGroup *errgroup.Group
 
   InsertReportManager *InsertReportManager
 
@@ -37,23 +32,22 @@ type ReportAnalyzer struct {
 func CreateReportAnalyzer(
   db driver.Conn,
   config DatabaseConfiguration,
-  analyzeContext context.Context,
+  parentContext context.Context,
   logger *zap.Logger,
-  cancelOnError context.CancelFunc,
 ) (*ReportAnalyzer, error) {
+  group, analyzeContext := errgroup.WithContext(parentContext)
+  group.SetLimit(1)
+
   insertReportManager, err := NewInsertReportManager(db, config, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
 
   analyzer := &ReportAnalyzer{
-    Config:         config,
-    insertQueue:    make(chan *ReportInfo, 32),
+    config:         config,
+    insertQueue:    make(chan *ReportInfo, 1024),
     analyzeContext: analyzeContext,
-    // buffered channel - do not block send if no one yet read
-    DoneChannel: make(chan error, 1),
-
-    waitGroup: sync.WaitGroup{},
+    waitGroup:      group,
 
     InsertReportManager: insertReportManager,
     logger:              logger,
@@ -61,28 +55,15 @@ func CreateReportAnalyzer(
 
   go func() {
     for {
-      select {
-      case <-analyzeContext.Done():
-        logger.Debug("analyze stopped", zap.String("reason", "context cancelled"))
+      report, ok := <-analyzer.insertQueue
+      if !ok {
+        logger.Debug("analyze stopped", zap.String("reason", "insert queue is closed"))
         return
-
-      case report, ok := <-analyzer.insertQueue:
-        if !ok {
-          return
-        }
-
-        err = analyzer.insert(report)
-        if err != nil {
-          logger.Error("analyze stopped", zap.String("reason", "error occurred"), zap.Error(err))
-          analyzer.firstError.Store(err)
-          // first, publish error
-          analyzer.DoneChannel <- err
-          cancelOnError()
-
-          // do not process insertQueue anymore
-          return
-        }
       }
+
+      group.Go(func() error {
+        return analyzer.insert(report)
+      })
     }
   }()
   return analyzer, nil
@@ -124,16 +105,16 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TriggeredBy:        extraData.TriggeredBy,
   }
 
-  if t.Config.DbName == "jbr" {
+  if t.config.DbName == "jbr" {
     ignore := analyzePerfJbrReport(runResult, extraData)
     if ignore {
       //ignore empty report
       return nil
     }
   } else {
-    err = ReadReport(runResult, t.Config, t.logger)
+    err = ReadReport(runResult, t.config, t.logger)
   }
-  projectId := t.Config.DbName
+  projectId := t.config.DbName
   if err != nil {
     return err
   }
@@ -168,7 +149,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     }
   }
 
-  if t.Config.HasInstallerField {
+  if t.config.HasInstallerField {
     runResult.BuildTime = extraData.BuildTime
 
     if len(extraData.BuildNumber) == 0 {
@@ -200,7 +181,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     }
   }
 
-  t.waitGroup.Add(1)
   t.insertQueue <- &ReportInfo{
     extraData: extraData,
     runResult: runResult,
@@ -267,26 +247,21 @@ func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time
   }
 }
 
-func (t *ReportAnalyzer) Close() error {
-  t.closeOnce.Do(func() {
-    close(t.insertQueue)
-  })
-  return t.InsertReportManager.InsertManager.Close()
+func (t *ReportAnalyzer) CloseChannel() {
+  close(t.insertQueue)
 }
 
-func (t *ReportAnalyzer) WaitAnalyzer() <-chan error {
-  go func() {
-    t.waitGroup.Wait()
-    if t.firstError.Load() == nil {
-      t.DoneChannel <- nil
-    }
-  }()
-  return t.DoneChannel
+func (t *ReportAnalyzer) WaitAnalyzeAndInsert() error {
+  // execute as part of the waitGroup because we use waitGroup context for InsertReportManager - after calling of Wait, context will be cancelled
+  t.waitGroup.Go(func() error {
+    // ensure that data is written
+    t.logger.Debug("wait for insert")
+    return t.InsertReportManager.InsertManager.Close()
+  })
+  return t.waitGroup.Wait()
 }
 
 func (t *ReportAnalyzer) insert(report *ReportInfo) error {
-  defer t.waitGroup.Done()
-
   runResult := report.runResult
 
   if report.extraData.TcInstallerBuildId > 0 {

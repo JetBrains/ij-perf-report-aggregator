@@ -56,7 +56,6 @@ export class LineChartVM {
         },
         // Formatting
         formatter(params: CallbackDataParams) {
-          // console.log("HOVER:", params)
           const element = document.createElement("div")
           const [dateMs, durationMs] = params.value as OptionDataValue[]
 
@@ -82,7 +81,7 @@ export class LineChartVM {
       xAxis: {
         type: "time",
         axisPointer: {
-          snap: true,
+          snap: false,
           label: {
             formatter(data) {
               return timeFormat.format(data["value"] as number)

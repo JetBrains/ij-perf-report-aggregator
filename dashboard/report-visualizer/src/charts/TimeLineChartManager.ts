@@ -133,7 +133,7 @@ export class TimeLineChartManager implements ChartManager {
           this.dataDescriptor.unitConverter.convert(item.s + item.d),
           this.dataDescriptor.unitConverter.convert(item.d),
           item,
-          this.dataDescriptor.shortenName !== false ? `${namePrefix}${getShortName(item.n)}` : item.n,
+          this.dataDescriptor.shortenName === false ? item.n : `${namePrefix}${getShortName(item.n)}`,
           group.category,
         ]
         list.push(chartItem)

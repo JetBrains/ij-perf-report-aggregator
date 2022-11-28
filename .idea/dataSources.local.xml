@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="IU-222.SNAPSHOT">
+  <component name="dataSourceStorageLocal" created-in="GO-223.7401.12">
     <data-source name="perfint@localhost" uuid="2557058b-5f52-497f-8a1d-9cfd03894455">
-      <database-info product="ClickHouse" version="22.3.2.1" jdbc-version="0.1" driver-name="ru.yandex.clickhouse-jdbc" driver-version="0.3.1-patch" dbms="CLICKHOUSE" exact-version="22.3.2.1" exact-driver-version="0.3">
+      <database-info product="ClickHouse" version="22.9.1.352" jdbc-version="4.2" driver-name="ClickHouse JDBC Driver" driver-version="clickhouse-jdbc 0.3.2-patch11 (revision: 27f8951)" dbms="CLICKHOUSE" exact-version="22.9.1.352" exact-driver-version="0.3">
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
@@ -10,10 +10,13 @@
       <schema-mapping>
         <introspection-scope>
           <node kind="schema">
+            <name qname="jbr" />
             <name qname="@" />
             <name qname="default" />
             <name qname="fleet" />
-            <name qname="sharedIndexes" />
+            <name qname="ij" />
+            <name qname="perfint" />
+            <name qname="perfintDev" />
           </node>
         </introspection-scope>
       </schema-mapping>

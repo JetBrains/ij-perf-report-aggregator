@@ -80,6 +80,8 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }
 
         const selectedRef = this.selected
+        //filter out _23 metrics, we need them in DB but not in UI
+        data = data.filter(it => !/.*_\d+/.test(it))
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
@@ -165,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 }
 
 export function measureNameToLabel(key: string): string {
-  return !key.includes(".") ? /* remove _d or _i suffix */key.replace(/_[a-z]$/g, "") : key
+  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replace(/_[a-z]$/g, "")
 }
 
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {

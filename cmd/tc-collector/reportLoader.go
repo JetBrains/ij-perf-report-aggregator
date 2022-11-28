@@ -5,7 +5,6 @@ import (
   "context"
   "encoding/base64"
   "encoding/hex"
-  e "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -13,6 +12,7 @@ import (
   "github.com/json-iterator/go"
   "go.uber.org/zap"
   "go.uber.org/zap/zapcore"
+  "golang.org/x/sync/errgroup"
   "io"
   "net/url"
   "runtime"
@@ -23,101 +23,105 @@ import (
 
 var networkRequestCount = runtime.NumCPU() + 1
 
-func (t *Collector) loadReports(builds []*Build) error {
+func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
   if networkRequestCount > 8 {
     networkRequestCount = 8
   }
 
   for index, build := range builds {
-    if t.reportExistenceChecker.has(build.Id) {
+    if reportExistenceChecker.has(build.Id) {
       t.logger.Info("build already processed", zap.Int("id", build.Id), zap.String("startDate", build.StartDate))
       builds[index] = nil
     }
   }
 
-  if t.reportAnalyzer.Config.HasInstallerField {
+  if t.config.HasInstallerField {
     err := t.loadInstallerInfo(builds, networkRequestCount)
     if err != nil {
       return err
     }
   }
 
-  err := util.MapAsyncConcurrency(len(builds), networkRequestCount, func(taskIndex int) (f func() error, err error) {
-    return func() error {
-      build := builds[taskIndex]
-      if build == nil || build.Agent.Name == "Dead agent" {
-        return nil
-      }
-      t.logger.Info("processing build", zap.Int("id", build.Id))
-      if t.reportAnalyzer.Config.HasInstallerField && build.installerInfo == nil {
-        // or already processed or cannot compute installer info
-        return nil
-      }
+  duration := time.Duration(len(builds)*30) * time.Second
+  t.logger.Debug("load", zap.Int("timeout", int(duration.Seconds())))
+  taskContextWithTimeout, cancel := context.WithTimeout(t.taskContext, duration)
+  defer cancel()
+  errGroup, loadContext := errgroup.WithContext(taskContextWithTimeout)
 
-      artifacts, err := t.downloadReports(*build, t.taskContext)
-      if err != nil {
-        return err
-      }
-
-      if len(artifacts) == 0 {
-        t.logger.Error("cannot find any performance report", zap.Int("id", build.Id), zap.String("status", build.Status))
-        return nil
-      }
-
-      tcBuildProperties, err := t.downloadBuildProperties(*build, t.taskContext)
-      if err != nil {
-        return err
-      }
-
-      for _, artifact := range artifacts {
-        if t.taskContext.Err() != nil {
+  errGroup.SetLimit(networkRequestCount)
+  for _, build := range builds {
+    if build == nil || build.Agent.Name == "Dead agent" {
+      return nil
+    }
+    errGroup.Go((func(build *Build) func() error {
+      return func() error {
+        t.logger.Info("processing build", zap.Int("id", build.Id))
+        if t.config.HasInstallerField && build.installerInfo == nil {
+          // or already processed or cannot compute installer info
           return nil
         }
 
-        data := model.ExtraData{
-          Machine:           build.Agent.Name,
-          TcBuildId:         build.Id,
-          TcBuildType:       build.Type,
-          TcBuildProperties: tcBuildProperties,
-          ReportFile:        artifact.path,
-        }
-
-        currentBuildTime, err := analyzer.ParseTime(build.StartDate)
-        if err == nil {
-          data.CurrentBuildTime = currentBuildTime
-        }
-
-        if build.Private && build.TriggeredBy.User != nil {
-          data.TriggeredBy = build.TriggeredBy.User.Email
-        }
-
-        if t.reportAnalyzer.Config.HasInstallerField {
-          installerInfo := build.installerInfo
-          data.BuildTime = installerInfo.buildTime
-          data.Changes = installerInfo.changes
-          data.TcInstallerBuildId = installerInfo.id
-        }
-
-        err = t.reportAnalyzer.Analyze(artifact.data, data)
+        artifacts, err := t.downloadReports(*build, loadContext)
         if err != nil {
-          if build.Status == "FAILURE" {
-            t.logger.Warn("cannot parse performance report in the failed build", zap.Int("buildId", build.Id), zap.Error(err))
-          } else {
-            return err
+          return err
+        }
+
+        if len(artifacts) == 0 {
+          t.logger.Error("cannot find any performance report", zap.Int("id", build.Id), zap.String("status", build.Status))
+          return nil
+        }
+
+        tcBuildProperties, err := t.downloadBuildProperties(*build, loadContext)
+        if err != nil {
+          return err
+        }
+        if tcBuildProperties == nil {
+          return nil
+        }
+
+        for _, artifact := range artifacts {
+          if loadContext.Err() != nil {
+            return nil
+          }
+
+          data := model.ExtraData{
+            Machine:           build.Agent.Name,
+            TcBuildId:         build.Id,
+            TcBuildType:       build.Type,
+            TcBuildProperties: tcBuildProperties,
+            ReportFile:        artifact.path,
+          }
+
+          currentBuildTime, err := analyzer.ParseTime(build.StartDate)
+          if err == nil {
+            data.CurrentBuildTime = currentBuildTime
+          }
+
+          if build.Private && build.TriggeredBy.User != nil {
+            data.TriggeredBy = build.TriggeredBy.User.Email
+          }
+
+          if t.config.HasInstallerField {
+            installerInfo := build.installerInfo
+            data.BuildTime = installerInfo.buildTime
+            data.Changes = installerInfo.changes
+            data.TcInstallerBuildId = installerInfo.id
+          }
+
+          err = reportAnalyzer.Analyze(artifact.data, data)
+          if err != nil {
+            if build.Status == "FAILURE" {
+              t.logger.Warn("cannot parse performance report in the failed build", zap.Int("buildId", build.Id), zap.Error(err))
+            } else {
+              return err
+            }
           }
         }
+        return nil
       }
-      return nil
-    }, nil
-  })
-  if err != nil {
-    if e.Is(err, context.Canceled) {
-      return err
-    } else {
-      return errors.WithStack(err)
-    }
+    })(build))
   }
-  return nil
+  return errGroup.Wait()
 }
 
 func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) error {
@@ -133,7 +137,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     }
 
     if id == -1 {
-      if t.reportAnalyzer.Config.HasInstallerField {
+      if t.config.HasInstallerField {
         t.logger.Error("cannot find installer build", zap.Int("buildId", build.Id))
       }
       continue
@@ -155,30 +159,29 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     return nil
   }
 
-  if notLoadedInstallerBuildIds[0].id != -1 {
-    t.logger.Debug("load installer info", zap.Int("count", len(notLoadedInstallerBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
-      for _, installerInfo := range notLoadedInstallerBuildIds {
-        encoder.AppendInt(installerInfo.id)
-      }
-      return nil
-    })))
-    err := util.MapAsyncConcurrency(len(notLoadedInstallerBuildIds), networkRequestCount, func(index int) (func() error, error) {
-      return func() error {
-        installerInfo := notLoadedInstallerBuildIds[index]
-        var err error
-        installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id)
-        if err != nil {
-          return errors.WithStack(err)
-        }
-        return nil
-      }, nil
-    })
-
-    if err != nil {
-      return errors.WithStack(err)
+  t.logger.Debug("load installer info", zap.Int("count", len(notLoadedInstallerBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
+    for _, installerInfo := range notLoadedInstallerBuildIds {
+      encoder.AppendInt(installerInfo.id)
     }
+    return nil
+  })))
+
+  errGroup, loadContext := errgroup.WithContext(t.taskContext)
+  errGroup.SetLimit(networkRequestCount)
+  for _, installerInfo := range notLoadedInstallerBuildIds {
+    if installerInfo.id == -1 {
+      continue
+    }
+
+    errGroup.Go((func(installerInfo *InstallerInfo) func() error {
+      return func() error {
+        var err error
+        installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id, loadContext)
+        return errors.WithStack(err)
+      }
+    })(installerInfo))
   }
-  return nil
+  return errGroup.Wait()
 }
 
 func computeBuildDate(build *Build) (int, time.Time, error) {
@@ -195,13 +198,13 @@ func computeBuildDate(build *Build) (int, time.Time, error) {
   return -1, time.Time{}, nil
 }
 
-func (t *Collector) loadInstallerChanges(installerBuildId int) ([]string, error) {
+func (t *Collector) loadInstallerChanges(installerBuildId int, ctx context.Context) ([]string, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
   if err != nil {
     return nil, err
   }
 
-  response, err := t.get(artifactUrl.String(), t.taskContext)
+  response, err := t.get(artifactUrl.String(), ctx)
   if err != nil {
     return nil, err
   }

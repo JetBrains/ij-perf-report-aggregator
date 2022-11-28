@@ -34,7 +34,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artif
     if strings.HasSuffix(artifact.Url, ".json") && strings.HasPrefix(name, "startup-stats") ||
       strings.HasSuffix(name, ".performance.json") ||
       strings.HasSuffix(artifact.Url, ".json") && (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json") ||
-      t.reportAnalyzer.Config.DbName == "jbr" && strings.HasSuffix(name, ".txt") {
+      t.config.DbName == "jbr" && strings.HasSuffix(name, ".txt") {
       artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
       report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
       if err != nil {
@@ -104,6 +104,11 @@ func (t *Collector) downloadBuildProperties(build Build, ctx context.Context) ([
   defer util.Close(response.Body, t.logger)
 
   if response.StatusCode > 300 {
+    if response.StatusCode == 404 {
+      t.logger.Warn("build.start.properties not found", zap.String("url", artifactUrl.String()))
+      return nil, nil
+    }
+
     responseBody, _ := io.ReadAll(response.Body)
     return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }

@@ -114,7 +114,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
       }
     }
 
-    err = collectFromTeamCity(clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger, taskContext, cancel)
+    err = collectFromTeamCity(clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger, taskContext)
     if err != nil {
       return err
     }

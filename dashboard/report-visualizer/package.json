@@ -6,11 +6,11 @@
     "compare-versions": "^5.0.1",
     "echarts": "5.4.0",
     "fast-equals": "4.0.3",
-    "primevue": "3.18.1",
+    "primevue": "3.20.0",
     "rxjs": "8.0.0-alpha.5",
     "shared": "workspace:*",
     "tailwind-ui": "workspace:*",
-    "vue": "3.2.44",
+    "vue": "3.2.45",
     "vue-router": "4.1.6"
   }
 }

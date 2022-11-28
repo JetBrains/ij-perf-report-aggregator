@@ -121,7 +121,7 @@ export class ActivityBarChartManager implements ChartManager {
         }
 
         const chartItem: ChartDataItem = [
-          this.dataDescriptor.shortenName !== false ? getShortName(item.n) : item.n,
+          this.dataDescriptor.shortenName === false ? item.n : getShortName(item.n),
           this.dataDescriptor.unitConverter.convert(item.od ?? item.d),
           item,
           group.category,

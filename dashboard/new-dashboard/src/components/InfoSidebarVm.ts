@@ -21,7 +21,7 @@ export interface InfoData {
   machineName: string
   duration: string
   build: string
-  date: string,
+  date: string
 }
 
 const buildUrl = (id: number) =>`https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
@@ -38,16 +38,16 @@ export function getInfoDataFrom(params: CallbackDataParams): InfoData {
     buildNum1,
     buildNum2,
   ] = params.value as OptionDataValue[]
-  const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 != 0 ? `.${buildNum2}` : ''}`
+  const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
   const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = `${buildUrl(installerId as number)}&tab=artifacts`
 
   return {
     build: fullBuildId,
-    artifactsUrl: artifactsUrl,
-    changesUrl: changesUrl,
-    installerUrl: installerUrl,
+    artifactsUrl,
+    changesUrl,
+    installerUrl,
     color: params.color as string,
     date: timeFormatWithoutSeconds.format(dateMs as number),
     duration: durationAxisPointerFormatter(durationMs as number),

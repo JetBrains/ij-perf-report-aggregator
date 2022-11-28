@@ -26,7 +26,9 @@
       leave-from-class="transform opacity-100 scale-100"
       leave-to-class="transform opacity-0 scale-95"
     >
-      <PopoverPanel class="absolute max-h-96 overflow-y-scroll left-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
+      <PopoverPanel
+        class="absolute max-h-96 overflow-y-scroll left-0 z-10 mt-2 origin-top-right rounded-md bg-white p-4 shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none"
+      >
         <form class="space-y-4">
           <div
             v-for="(option, optionIndex) in filteredItems"

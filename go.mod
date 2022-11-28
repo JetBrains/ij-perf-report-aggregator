@@ -19,7 +19,6 @@ require (
 	github.com/magiconair/properties v1.8.6
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/nats-io/nats.go v1.19.1
-	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.2
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.8.1
@@ -112,6 +111,7 @@ require (
 	github.com/pascaldekloe/name v1.0.1 // indirect
 	github.com/paulmach/orb v0.7.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/sftp v1.13.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect

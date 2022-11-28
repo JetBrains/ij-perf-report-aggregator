@@ -198,6 +198,19 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   }
 
   branch := string(props.GetStringBytes("vcsroot.branch"))
+  if projectId == "jbr" {
+    projectId := string(props.GetStringBytes("teamcity.project.id"))
+    splitId := strings.SplitN(projectId, "_", 3)
+    if len(splitId) == 3 {
+      jbrBranch := splitId[1]
+      _, err = strconv.Atoi(jbrBranch)
+      if err == nil {
+        return jbrBranch, nil
+      }
+    }
+    logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", projectId))
+    return "", errors.New("cannot infer branch from JBR project id")
+  }
   if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
   }

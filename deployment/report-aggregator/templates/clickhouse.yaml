@@ -45,11 +45,11 @@ spec:
           resources:
             requests:
               cpu: "4"
-              memory: "1Gi"
+              memory: "2Gi"
               ephemeral-storage: "5Gi"
             limits:
               cpu: "6"
-              memory: "6Gi"
+              memory: "8Gi"
               ephemeral-storage: "5Gi"
           volumeMounts: *clickhouseVolumeMounts
         # backup requires access to volume, so, it cannot be done using k8s cron job

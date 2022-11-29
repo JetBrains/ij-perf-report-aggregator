@@ -1,6 +1,6 @@
 FROM buildpack-deps:curl AS builder
 
-RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.11.1.1360-stable/clickhouse-common-static-22.11.1.1360-amd64.tgz | tar xvz --strip-components=3
+RUN cd /tmp && curl -L https://github.com/ClickHouse/ClickHouse/releases/download/v22.10.3.27-stable/clickhouse-common-static-22.10.3.27-amd64.tgz | tar xvz --strip-components=3
 RUN mkdir /var/lib/clickhouse
 
 FROM gcr.io/distroless/base-debian11:nonroot

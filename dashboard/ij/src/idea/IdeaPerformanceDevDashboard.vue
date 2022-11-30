@@ -117,7 +117,7 @@ provide(chartStyleKey, {
 
 provideReportUrlProvider(false)
 
-const persistentStateManager = new PersistentStateManager("idea_dashboard", {
+const persistentStateManager = new PersistentStateManager("idea_dev_dashboard", {
   machine: "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)",
   project: [],
   branch: "master",

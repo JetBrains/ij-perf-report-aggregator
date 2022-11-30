@@ -32,19 +32,39 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Time Processing JAVA"
+      measure="processingSpeed#JAVA"
+      :projects="['community/indexing', 'intellij_sources/indexing', 'empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing',
+                  'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Time Processing KOTLIN"
+      measure="processingSpeed#Kotlin"
+      :projects="['community/indexing', 'intellij_sources/indexing', 'empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing',
+                  'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Scanning Long"
+      measure="scanning"
+      :projects="['community/indexing', 'intellij_sources/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="VFS Record Storage Indexing"
       measure="indexing"
-      :projects="['vfs-record-storage/in-memory-intellij-sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij-sources/indexing',
-      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij-sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij-sources/indexing',
-      'vfs-record-storage/lock-free-intellij-sources/indexing']"
+      :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
+      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
+      'vfs-record-storage/lock-free-intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="VFS Record Storage Scanning"
       measure="scanning"
-      :projects="['vfs-record-storage/in-memory-intellij-sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij-sources/indexing',
-      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij-sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij-sources/indexing',
-      'vfs-record-storage/lock-free-intellij-sources/indexing']"
+      :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
+      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
+      'vfs-record-storage/lock-free-intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -135,7 +155,7 @@
     />
     <GroupLineChart
       label="Show Intentions"
-      measure="show_intentions"
+      measure="test#max_awt_delay"
       :projects="['grails/showIntentions/Find cause', 'kotlin/showIntention/Import', 'spring_boot/showIntentions/']"
       :server-configurator="serverConfigurator"
     />
@@ -147,7 +167,7 @@
     />
     <GroupLineChart
       label="Expand Menu"
-      measure="ExpandActionGroup"
+      measure="expandActionGroup"
       :projects="['intellij_sources/expandProjectMenu', 'intellij_sources/expandMainMenu', 'intellij_sources/expandEditorMenu']"
       :server-configurator="serverConfigurator"
     />

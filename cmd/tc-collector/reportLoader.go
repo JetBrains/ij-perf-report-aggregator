@@ -51,7 +51,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
   errGroup.SetLimit(networkRequestCount)
   for _, build := range builds {
     if build == nil || build.Agent.Name == "Dead agent" {
-      return nil
+      continue
     }
     errGroup.Go((func(build *Build) func() error {
       return func() error {

@@ -72,9 +72,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
         }
-        else if (value.startsWith("intellij-linux-aws-m-i")) {
+        else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt-a-i") || value.startsWith("intellij-linux-aws-amd-2-lt-c-i")) {
           // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge"
+          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
         }
         else if (value.startsWith("intellij-linux-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/

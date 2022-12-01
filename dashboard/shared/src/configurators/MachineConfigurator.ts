@@ -161,9 +161,15 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         }
         else {
           // it's group
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          for (const child of groupItem.children!) {
-            values.push(child.value)
+          if(groupItem.children != null) {
+            if (groupItem.children.length > 50) {
+              filter.v = prefix(groupItem.children.map(it => it.value)) + "%"
+              filter.o = "like"
+              return
+            }
+            for (const child of groupItem.children) {
+              values.push(child.value)
+            }
           }
           values.sort()
         }
@@ -217,6 +223,14 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 export interface GroupedDimensionValue {
   value: string
   children?: Array<GroupedDimensionValue>
+}
+
+function prefix(words: Array<string>):string{
+  if (!words[0] || words.length ==  1) return words[0] || ""
+  let i = 0
+  while(words[0][i] && words.every(w => w[i] === words[0][i]))
+    i++
+  return words[0].slice(0, Math.max(0, i))
 }
 
 function getValueToGroup() {

@@ -72,7 +72,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
         }
-        else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt-a-i") || value.startsWith("intellij-linux-aws-amd-2-lt-c-i")) {
+        else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
         }

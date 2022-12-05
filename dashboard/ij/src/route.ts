@@ -48,8 +48,8 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/dashboardDev",
         },
         {
-          label: "Import Dashboard",
-          to: "/intellij/importDashboard",
+          label: "Project Import Dashboard",
+          to: "/intellij/projectImportDashboard",
         },
         {
           label: "Shared Indexes",
@@ -273,9 +273,9 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Performance Tests Dashboard"},
         },
         {
-          path: "/intellij/importDashboard",
-          component: () => import("./idea/ImportPerformanceDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests on Import Dashboard"},
+          path: "/intellij/projectImportDashboard",
+          component: () => import("./idea/ProjectImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests on Project Import"},
         },
         {
           path: "/intellij/rust/performanceTests",

@@ -32,8 +32,8 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/performanceTests",
         },
         {
-          label: "Performance Tests (Dev Server)",
-          to: "/intellij/performanceTestsDev",
+          label: "Performance Tests (Fast Installer)",
+          to: "/intellij/performanceTestsFastInstaller",
         },
         {
           label: "Performance Dashboard",
@@ -252,7 +252,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
         },
         {
-          path: "/intellij/performanceTestsDev",
+          path: "/intellij/performanceTestsFastInstaller",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfintDev",

@@ -42,7 +42,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
     }
   }
 
-  duration := time.Duration(len(builds)*30) * time.Second
+  duration := time.Duration(len(builds)*120) * time.Second
   t.logger.Debug("load", zap.Int("timeout", int(duration.Seconds())))
   taskContextWithTimeout, cancel := context.WithTimeout(t.taskContext, duration)
   defer cancel()

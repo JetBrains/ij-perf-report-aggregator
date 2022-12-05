@@ -28,32 +28,8 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Git Log Indexing: execution time"
-      measure="indexing"
-      :projects="['intellij_sources/gitLogIndexing']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Git Log Indexing: number of commits"
-      measure="indexing#number"
-      :projects="['intellij_sources/gitLogIndexing']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
       label="Rebuild"
       measure="build_compilation_duration"
-      :projects="['intellij_sources/rebuild']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Kotlin Builder"
-      measure="kotlin_builder_time"
-      :projects="['intellij_sources/rebuild']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Java Builder"
-      measure="java_time"
       :projects="['intellij_sources/rebuild']"
       :server-configurator="serverConfigurator"
     />
@@ -68,7 +44,8 @@
       label="Find Usages Kotlin"
       measure="findUsages"
       :projects="['intellij_sources/findUsages/ActionsKt_runReadAction', 'intellij_sources/findUsages/DynamicPluginListener_TOPIC', 'intellij_sources/findUsages/Path_div',
-                  'intellij_sources/findUsages/Persistent_absolutePath', 'intellij_sources/findUsages/RelativeTextEdit_rangeTo']"
+                  'intellij_sources/findUsages/Persistent_absolutePath', 'intellij_sources/findUsages/RelativeTextEdit_rangeTo',
+                  'intellij_sources/findUsages/TemporaryFolder_invoke', 'intellij_sources/findUsages/Project_guessProjectDir']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

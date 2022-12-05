@@ -124,6 +124,12 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Find Usages with internal mode"
+      measure="findUsages"
+      :projects="['intellij_sources/findUsages/PsiManager_getInstance_firstCall', 'intellij_sources/findUsages/PsiManager_getInstance_secondCall', 'intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Local Inspection"
       measure="localInspections"
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection', 'kotlin_coroutines/localInspection']"

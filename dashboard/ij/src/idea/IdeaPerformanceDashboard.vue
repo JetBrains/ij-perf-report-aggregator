@@ -46,12 +46,6 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Scanning Long"
-      measure="scanning"
-      :projects="['community/indexing', 'intellij_sources/indexing']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
       label="VFS Record Storage Indexing"
       measure="indexing"
       :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
@@ -85,6 +79,12 @@
       label="VFS Refresh"
       measure="vfs_initial_refresh"
       :projects="['intellij_sources/vfsRefresh/default', 'intellij_sources/vfsRefresh/with-1-thread(s)', 'intellij_sources/vfsRefresh/with-6-thread(s)']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Git Status"
+      measure="git#status"
+      :projects="['intellij_sources']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -163,12 +163,6 @@
       label="Show Intentions"
       measure="test#max_awt_delay"
       :projects="['grails/showIntentions/Find cause', 'kotlin/showIntention/Import', 'spring_boot/showIntentions/']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Git Status"
-      measure="git#status"
-      :projects="['intellij_sources']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

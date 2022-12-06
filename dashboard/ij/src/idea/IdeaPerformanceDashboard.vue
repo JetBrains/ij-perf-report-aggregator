@@ -32,6 +32,12 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Number of indexing runs long"
+      measure="numberOfIndexingRuns"
+      :projects="['community/indexing', 'intellij_sources/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Time Processing JAVA"
       measure="processingSpeed#JAVA"
       :projects="['community/indexing', 'intellij_sources/indexing', 'empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing',
@@ -62,6 +68,14 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="VFS Record Storage Number of indexing runs"
+      measure="numberOfIndexingRuns"
+      :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
+      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
+      'vfs-record-storage/lock-free-intellij_sources/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Indexing Short"
       measure="indexing"
       :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
@@ -72,6 +86,13 @@
       label="Scanning Short"
       measure="scanning"
       :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
+                  'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Number of indexing runs short"
+      measure="numberOfIndexingRuns"
+      :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing',
                   'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
       :server-configurator="serverConfigurator"
     />

@@ -11,6 +11,7 @@ import (
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
   "go.uber.org/zap"
+  "os"
   "time"
 )
 
@@ -29,6 +30,10 @@ func main() {
 func start(natsUrl string, logger *zap.Logger) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
+
+  if len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0 {
+    clickhousebackup.SetS3EnvForLocalRun()
+  }
 
   backuper := clickhousebackup.CreateBackuper()
 

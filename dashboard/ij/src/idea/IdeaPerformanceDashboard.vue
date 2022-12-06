@@ -78,13 +78,7 @@
     <GroupLineChart
       label="VFS Refresh"
       measure="vfs_initial_refresh"
-      :projects="['intellij_sources/vfsRefresh/default', 'intellij_sources/vfsRefresh/with-1-thread(s)', 'intellij_sources/vfsRefresh/with-6-thread(s)']"
-      :server-configurator="serverConfigurator"
-    />
-    <GroupLineChart
-      label="Git Status"
-      measure="git#status"
-      :projects="['intellij_sources']"
+      :projects="['intellij_sources/vfsRefresh/default', 'intellij_sources/vfsRefresh/with-1-thread(s)', 'intellij_sources/vfsRefresh/git-status']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

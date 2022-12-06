@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-2 gap-4">
     <LineChartCard
-      :measures='["cache loading", "modules loading without cache", "modules loading with cache"]'
+      :measures='["cache loading", "modules loading without cache", "modules loading with cache", "workspace file index initialization"]'
     />
     <LineChartCard
       :measures='[

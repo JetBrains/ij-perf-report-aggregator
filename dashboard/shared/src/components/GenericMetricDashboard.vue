@@ -31,24 +31,14 @@
       :key="metric"
     >
       <Divider :label="metric" />
-      <div class="grid grid-cols-12 gap-4">
-        <div class="col-span-8">
-          <LineChartCard
-            :compound-tooltip="compoundTooltip"
-            :chart-type="chartType"
-            :value-unit="valueUnit"
-            :measures="[metric]"
-            :skip-zero-values="false"
-            trigger="item"
-          />
-        </div>
-        <div class="col-span-4">
-          <BarChartCard
-            :height="chartHeight"
-            :measures="[metric]"
-          />
-        </div>
-      </div>
+      <LineChartCard
+        :compound-tooltip="compoundTooltip"
+        :chart-type="chartType"
+        :value-unit="valueUnit"
+        :measures="[metric]"
+        :skip-zero-values="false"
+        trigger="item"
+      />
     </template>
   </Dashboard>
 </template>

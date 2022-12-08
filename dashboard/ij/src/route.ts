@@ -32,8 +32,8 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/performanceTests",
         },
         {
-          label: "Performance Tests (Fast Installer)",
-          to: "/intellij/performanceTestsFastInstaller",
+          label: "Performance Tests (Fast Installer and Dev Server)",
+          to: "/intellij/performanceTestsFastInstallerDevServer",
         },
         {
           label: "Performance Dashboard",
@@ -44,8 +44,8 @@ export function getIjItems(): Array<MenuItem> {
           to: "/new",
         },
         {
-          label: "Performance Dashboard (Fast Installer)",
-          to: "/intellij/dashboardFastInstaller",
+          label: "Performance Dashboard (Fast Installer and Dev Server)",
+          to: "/intellij/dashboardFastInstallerDevServer",
         },
         {
           label: "Project Import Dashboard",
@@ -260,12 +260,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
             installerExists: false,
           },
-          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer or Dev Server"},
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer and Dev Server"},
         },
         {
           path: "/intellij/dashboardFastInstallerDevServer",
           component: () => import("./idea/IdeaPerformanceFastInstallerDevServerDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer or Dev Server Dashboard"},
+          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer and Dev Server Dashboard"},
         },
         {
           path: "/intellij/dashboard",

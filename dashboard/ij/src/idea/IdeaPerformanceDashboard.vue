@@ -121,25 +121,28 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Find Usages Long"
+      label="Find Usages Before Compilation"
       measure="findUsages"
-      :projects="['community/findUsages/PsiManager_getInstance_Before', 'community/findUsages/PsiManager_getInstance_After', 'community/findUsages/LocalInspectionTool_getID_Before', 'community/findUsages/LocalInspectionTool_getID_After']"
+      :projects="['community/findUsages/PsiManager_getInstance_Before', 'community/findUsages/LocalInspectionTool_getID_Before',
+      'community/findUsages/ActionsKt_runReadAction_Before', 'community/findUsages/Application_runReadAction_Before',
+      'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/PropertyMapping_value_Before',
+      'community/findUsages/RelativeTextEdit_rangeTo_Before', 'community/findUsages/DynamicPluginListener_TOPIC_Before',
+      'community/findUsages/Path_div_Before'
+      ]"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Find Usages Short"
+      label="Find Usages After Compilation"
       measure="findUsages"
-      :projects="['community/findUsages/ActionsKt_runReadAction_Before', 'community/findUsages/ActionsKt_runReadAction_After',
-      'community/findUsages/Application_runReadAction_Before', 'community/findUsages/Application_runReadAction_After',
-      'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/Persistent_absolutePath_After',
-      'community/findUsages/PropertyMapping_value_Before', 'community/findUsages/PropertyMapping_value_After',
-      'community/findUsages/RelativeTextEdit_rangeTo_Before', 'community/findUsages/RelativeTextEdit_rangeTo_After',
-      'community/findUsages/DynamicPluginListener_TOPIC_Before', 'community/findUsages/DynamicPluginListener_TOPIC_After',
-      'community/findUsages/Path_div_Before', 'community/findUsages/Path_div_After']"
+      :projects="['community/findUsages/PsiManager_getInstance_After', 'community/findUsages/LocalInspectionTool_getID_After',
+      'community/findUsages/ActionsKt_runReadAction_After', 'community/findUsages/Application_runReadAction_After',
+      'community/findUsages/Persistent_absolutePath_After', 'community/findUsages/PropertyMapping_value_After',
+      'community/findUsages/RelativeTextEdit_rangeTo_After', 'community/findUsages/DynamicPluginListener_TOPIC_After',
+      'community/findUsages/Path_div_After']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Find Usages with internal mode"
+      label="Find Usages with internal mode on Before Compilation"
       measure="findUsages"
       :projects="['intellij_sources/findUsages/PsiManager_getInstance_firstCall', 'intellij_sources/findUsages/PsiManager_getInstance_secondCall', 'intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode']"
       :server-configurator="serverConfigurator"

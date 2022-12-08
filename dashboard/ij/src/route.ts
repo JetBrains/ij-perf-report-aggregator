@@ -252,7 +252,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
         },
         {
-          path: "/intellij/performanceTestsFastInstaller",
+          path: "/intellij/performanceTestsFastInstallerDevServer",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfintDev",
@@ -260,12 +260,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
             installerExists: false,
           },
-          meta: {pageTitle: "IntelliJ Integration Performance Tests On Dev Server"},
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer or Dev Server"},
         },
         {
-          path: "/intellij/dashboardFastInstaller",
-          component: () => import("./idea/IdeaPerformanceFastInstallerDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer Dashboard"},
+          path: "/intellij/dashboardFastInstallerDevServer",
+          component: () => import("./idea/IdeaPerformanceFastInstallerDevServerDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer or Dev Server Dashboard"},
         },
         {
           path: "/intellij/dashboard",

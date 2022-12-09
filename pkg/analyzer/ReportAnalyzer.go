@@ -213,9 +213,9 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   if projectId == "jbr" {
     splitId := strings.SplitN(extraData.TcBuildType, "_", 3)
     if len(splitId) == 3 {
-      jbrBranch := splitId[1]
+      jbrBranch := strings.ToLower(splitId[1])
       _, err = strconv.Atoi(jbrBranch)
-      if err == nil {
+      if err == nil || jbrBranch == "master" {
         return jbrBranch, nil
       }
     }

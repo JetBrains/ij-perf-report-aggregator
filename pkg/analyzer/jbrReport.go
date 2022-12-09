@@ -18,7 +18,7 @@ func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
 
   reportURL := runResult.ReportFileName
   fileName := reportURL[strings.LastIndex(reportURL, "/")+1:]
-  if strings.Contains(fileName, "regression") {
+  if strings.Contains(fileName, "regression") || strings.Contains(fileName, "comparison") || strings.Contains(fileName, "log") {
     return true
   }
 
@@ -30,7 +30,7 @@ func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
   for scanner.Scan() {
     text := scanner.Text()
     split := strings.Split(text, "\t")
-    if len(split) == 2 {
+    if len(split) == 2 || len(split) == 3 {
       name := strings.TrimSpace(split[0])
       value, err := strconv.ParseFloat(strings.TrimSpace(split[1]), 64)
       if err != nil {

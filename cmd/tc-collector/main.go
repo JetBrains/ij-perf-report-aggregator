@@ -88,6 +88,14 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
         }
         buildConfigurationIds = append(buildConfigurationIds, "ijplatform_master_"+productCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTestMacM1")
       }
+    } else if chunk.Database == "jbr" {
+      jbrTypes := []string{"macOS12aarch64Metal", "macOS12aarch64OGL", "macOS12x64Metal", "macOS12x64OGL", "macOS13aarch64Metal", "macOS13aarch64OGL", "macOS13x64Metal",
+        "macOS13x64OGL", "Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL", "Windows10x64", "Windows11x64"}
+      for _, configuration := range chunk.Configurations {
+        for _, jbrType := range jbrTypes {
+          buildConfigurationIds = append(buildConfigurationIds, configuration+"_"+jbrType)
+        }
+      }
     } else {
       if len(chunk.Products) != 0 {
         return errors.New("Must be specified either configurations or products, but not both")

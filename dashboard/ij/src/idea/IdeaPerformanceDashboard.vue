@@ -152,7 +152,8 @@
     <GroupLineChart
       label="FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"
       measure="findUsages"
-      :projects="['community/findUsages/Persistent_absolutePath_After', 'community/findUsages/PropertyMapping_value_After'
+      :projects="['community/findUsages/Persistent_absolutePath_After', 'community/findUsages/PropertyMapping_value_After',
+      'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/PropertyMapping_value_Before'
       ]"
       :server-configurator="serverConfigurator"
     />

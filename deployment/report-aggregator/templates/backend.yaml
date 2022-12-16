@@ -29,11 +29,11 @@ spec:
               value: "nats://nats:4222"
           resources:
             requests:
-              cpu: "0.4"
-              memory: 256Mi
+              cpu: "0.5"
+              memory: "512Mi"
             limits:
-              cpu: "0.9"
-              memory: 512Mi
+              cpu: "1"
+              memory: "1Gi"
           ports:
             - containerPort: 8080
           readinessProbe:

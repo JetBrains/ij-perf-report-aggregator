@@ -42,7 +42,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
     }
   }
 
-  duration := time.Duration(len(builds)*30) * time.Second
+  duration := time.Duration(len(builds)*300) * time.Second
   t.logger.Debug("load", zap.Int("timeout", int(duration.Seconds())))
   taskContextWithTimeout, cancel := context.WithTimeout(t.taskContext, duration)
   defer cancel()
@@ -51,7 +51,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
   errGroup.SetLimit(networkRequestCount)
   for _, build := range builds {
     if build == nil || build.Agent.Name == "Dead agent" {
-      return nil
+      continue
     }
     errGroup.Go((func(build *Build) func() error {
       return func() error {

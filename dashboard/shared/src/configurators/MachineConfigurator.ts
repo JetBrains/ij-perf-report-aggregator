@@ -72,9 +72,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
         }
-        else if (value.startsWith("intellij-linux-aws-m-i")) {
+        else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
           // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge"
+          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
         }
         else if (value.startsWith("intellij-linux-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
@@ -161,9 +161,15 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         }
         else {
           // it's group
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          for (const child of groupItem.children!) {
-            values.push(child.value)
+          if(groupItem.children != null) {
+            if (groupItem.children.length > 50) {
+              filter.v = prefix(groupItem.children.map(it => it.value)) + "%"
+              filter.o = "like"
+              return
+            }
+            for (const child of groupItem.children) {
+              values.push(child.value)
+            }
           }
           values.sort()
         }
@@ -217,6 +223,14 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 export interface GroupedDimensionValue {
   value: string
   children?: Array<GroupedDimensionValue>
+}
+
+function prefix(words: Array<string>):string{
+  if (!words[0] || words.length ==  1) return words[0] || ""
+  let i = 0
+  while(words[0][i] && words.every(w => w[i] === words[0][i]))
+    i++
+  return words[0].slice(0, Math.max(0, i))
 }
 
 function getValueToGroup() {

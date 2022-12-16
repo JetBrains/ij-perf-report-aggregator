@@ -63,6 +63,9 @@ create table ij.report2
   `measure.start` Array(UInt32) CODEC(Gorilla, ZSTD(20)),
   `measure.duration` Array(UInt32) CODEC(ZSTD(20)),
   `measure.thread` Array(LowCardinality(String)) CODEC(ZSTD(20)),
+  `metrics.name` Array(LowCardinality(String)) CODEC(ZSTD(20)),
+  `metrics.value` Array(UInt32) CODEC(Gorilla, ZSTD(20)),
+
 
   `classLoadingPreparedCount` Int32 CODEC (Gorilla, ZSTD(20)),
   `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20))

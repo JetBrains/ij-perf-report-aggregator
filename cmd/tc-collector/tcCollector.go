@@ -245,8 +245,6 @@ func collectBuildConfiguration(
       return err
     }
 
-    reportAnalyzer.CloseChannel()
-
     logger.Debug("wait for analyze and insert", zap.Int("chunk", i))
     err = reportAnalyzer.WaitAnalyzeAndInsert()
     if err != nil {

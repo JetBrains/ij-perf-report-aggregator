@@ -146,10 +146,27 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     servicePlugin[i] = info.plugin
   }
 
+  metricNames := make([]string, 0)
+  metricValues := make([]uint32, 0)
+  additionalMetrics := data.GetObject("additionalMetrics")
+  if additionalMetrics != nil {
+    additionalMetrics.Visit(func(groupName []byte, v *fastjson.Value) {
+      v.GetObject().Visit(func(metricName []byte, v *fastjson.Value) {
+        value, err := v.Int()
+        if err != nil {
+          logger.Warn("Invalid value", zap.Int("id", runResult.TcBuildId), zap.String("generated", report.Generated), zap.String("metricName", string(metricName)))
+          return
+        }
+        metricNames = append(metricNames, string(groupName)+"/"+string(metricName))
+        metricValues = append(metricValues, uint32(value))
+      })
+    })
+  }
+
   runResult.ExtraFieldData = []interface{}{
     serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
     clTotal, clSearch, clDefine, clCount, clPreparedCount, clLoadedCount, rlTime, rlCount,
-    measureName, measureStart, measureDuration, measureThread,
+    measureName, measureStart, measureDuration, measureThread, metricNames, metricValues,
   }
   return nil
 }

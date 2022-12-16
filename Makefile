@@ -22,6 +22,10 @@ build-tc-collector:
 build-transform:
 	go build -tags -ldflags='-s -w' -o dist/transformer ./cmd/transform
 
+
+install-ch-x64:
+	cd /tmp && curl -L -O https://github.com/ClickHouse/ClickHouse/releases/download/v22.10.3.27-stable/clickhouse-macos && mv clickhouse-macos clickhouse && install ./clickhouse /usr/local/bin
+
 update-deps:
 	go get -u ./cmd/... ./pkg/...
 	go mod tidy

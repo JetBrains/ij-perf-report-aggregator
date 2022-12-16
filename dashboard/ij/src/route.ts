@@ -32,8 +32,8 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/performanceTests",
         },
         {
-          label: "Performance Tests (Dev Server)",
-          to: "/intellij/performanceTestsDev",
+          label: "Performance Tests (Fast Installer and Dev Server)",
+          to: "/intellij/performanceTestsFastInstallerDevServer",
         },
         {
           label: "Performance Dashboard",
@@ -44,8 +44,12 @@ export function getIjItems(): Array<MenuItem> {
           to: "/new",
         },
         {
-          label: "Performance Dashboard (Dev Server)",
-          to: "/intellij/dashboardDev",
+          label: "Performance Dashboard (Fast Installer and Dev Server)",
+          to: "/intellij/dashboardFastInstallerDevServer",
+        },
+        {
+          label: "Project Import Dashboard",
+          to: "/intellij/projectImportDashboard",
         },
         {
           label: "Shared Indexes",
@@ -248,7 +252,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
         },
         {
-          path: "/intellij/performanceTestsDev",
+          path: "/intellij/performanceTestsFastInstallerDevServer",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfintDev",
@@ -256,17 +260,22 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
             defaultMeasures: [],
             installerExists: false,
           },
-          meta: {pageTitle: "IntelliJ Integration Performance Tests On Dev Server"},
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer and Dev Server"},
         },
         {
-          path: "/intellij/dashboardDev",
-          component: () => import("./idea/IdeaPerformanceDevDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests On Dev Server Dashboard"},
+          path: "/intellij/dashboardFastInstallerDevServer",
+          component: () => import("./idea/IdeaPerformanceFastInstallerDevServerDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer and Dev Server Dashboard"},
         },
         {
           path: "/intellij/dashboard",
           component: () => import("./idea/IdeaPerformanceDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests Dashboard"},
+        },
+        {
+          path: "/intellij/projectImportDashboard",
+          component: () => import("./idea/ProjectImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests on Project Import"},
         },
         {
           path: "/intellij/rust/performanceTests",

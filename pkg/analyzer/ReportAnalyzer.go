@@ -9,9 +9,9 @@ import (
   "github.com/develar/errors"
   "go.deanishe.net/env"
   "go.uber.org/zap"
-  "golang.org/x/sync/errgroup"
   "strconv"
   "strings"
+  "sync"
   "time"
 )
 
@@ -22,7 +22,10 @@ type ReportAnalyzer struct {
 
   analyzeContext context.Context
 
-  waitGroup *errgroup.Group
+  waitGroup sync.WaitGroup
+  cancel    func()
+  errOnce   sync.Once
+  err       error
 
   InsertReportManager *InsertReportManager
 
@@ -35,19 +38,18 @@ func CreateReportAnalyzer(
   parentContext context.Context,
   logger *zap.Logger,
 ) (*ReportAnalyzer, error) {
-  group, analyzeContext := errgroup.WithContext(parentContext)
-  group.SetLimit(1)
-
-  insertReportManager, err := NewInsertReportManager(db, config, analyzeContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
+  insertReportManager, err := NewInsertReportManager(db, config, parentContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
+
+  analyzeContext, cancel := context.WithCancel(parentContext)
 
   analyzer := &ReportAnalyzer{
     config:         config,
     insertQueue:    make(chan *ReportInfo, 1024),
     analyzeContext: analyzeContext,
-    waitGroup:      group,
+    cancel:         cancel,
 
     InsertReportManager: insertReportManager,
     logger:              logger,
@@ -61,12 +63,21 @@ func CreateReportAnalyzer(
         return
       }
 
-      group.Go(func() error {
-        return analyzer.insert(report)
-      })
+      analyzer.invokeInsert(report, cancel)
     }
   }()
   return analyzer, nil
+}
+
+func (t *ReportAnalyzer) invokeInsert(report *ReportInfo, cancel context.CancelFunc) {
+  defer t.waitGroup.Add(-1)
+  err := t.insert(report)
+  if err != nil {
+    t.errOnce.Do(func() {
+      t.err = err
+      cancel()
+    })
+  }
 }
 
 func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, error) {
@@ -181,6 +192,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     }
   }
 
+  t.waitGroup.Add(1)
   t.insertQueue <- &ReportInfo{
     extraData: extraData,
     runResult: runResult,
@@ -198,6 +210,18 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   }
 
   branch := string(props.GetStringBytes("vcsroot.branch"))
+  if projectId == "jbr" {
+    splitId := strings.SplitN(extraData.TcBuildType, "_", 3)
+    if len(splitId) == 3 {
+      jbrBranch := strings.ToLower(splitId[1])
+      _, err = strconv.Atoi(jbrBranch)
+      if err == nil || jbrBranch == "master" {
+        return jbrBranch, nil
+      }
+    }
+    logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
+    return "", errors.New("cannot infer branch from JBR project id")
+  }
   if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
   }
@@ -247,18 +271,23 @@ func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time
   }
 }
 
-func (t *ReportAnalyzer) CloseChannel() {
-  close(t.insertQueue)
-}
-
 func (t *ReportAnalyzer) WaitAnalyzeAndInsert() error {
-  // execute as part of the waitGroup because we use waitGroup context for InsertReportManager - after calling of Wait, context will be cancelled
-  t.waitGroup.Go(func() error {
-    // ensure that data is written
-    t.logger.Debug("wait for insert")
-    return t.InsertReportManager.InsertManager.Close()
-  })
-  return t.waitGroup.Wait()
+  t.logger.Debug("wait for analyze")
+  t.waitGroup.Wait()
+  t.cancel()
+  if t.err != nil {
+    return t.err
+  }
+
+  close(t.insertQueue)
+
+  t.logger.Debug("wait for insert")
+  err := t.InsertReportManager.InsertManager.Close()
+  if err != nil {
+    return err
+  }
+
+  return nil
 }
 
 func (t *ReportAnalyzer) insert(report *ReportInfo) error {

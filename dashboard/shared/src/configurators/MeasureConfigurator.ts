@@ -81,7 +81,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
         const selectedRef = this.selected
         //filter out _23 metrics, we need them in DB but not in UI
-        data = data.filter(it => !/.*_\d+/.test(it))
+        data = data.filter(it => !/.*_\d+(#.*)?$/.test(it))
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
@@ -218,6 +218,12 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
         field.resultKey = measure.replaceAll(".", "_")
         addFilter({f: "name", v: measure})
         valueFieldName = "value"
+      }
+      else if(isIj && measure.includes("metrics.")){
+        field.n = "metrics"
+        field.subName="value"
+        addFilter({f:"metrics.name", v: measure.split(".",2)[1]})
+        valueFieldName = "metrics.value"
       }
       else if (isIj && !measure.includes(" ") && measure != "elementTypeCount") {
         field.n = measure

@@ -1,7 +1,6 @@
 package main
 
 import (
-  "bytes"
   "context"
   _ "embed"
   "errors"
@@ -9,7 +8,6 @@ import (
   "github.com/AlexAkulov/clickhouse-backup/pkg/status"
   clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/nats-io/nats.go"
-  "github.com/valyala/fastjson"
   "go.deanishe.net/env"
   "log"
   "os"
@@ -29,7 +27,7 @@ func main() {
   isLocalRun := len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0
   if isLocalRun {
     clickhouseExecutable = "/usr/local/bin/clickhouse"
-    setS3EnvForLocalRun()
+    clickhousebackup.SetS3EnvForLocalRun()
   }
 
   bucket := getEnvOrFile("S3_BUCKET", "/etc/s3/bucket")
@@ -133,24 +131,6 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
     }
   }
   return nil
-}
-
-func setS3EnvForLocalRun() {
-  cmd := exec.Command("doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
-  stdout, err := cmd.Output()
-  if err != nil {
-    log.Println("failed to use doppler to retrieve credentials", err)
-  } else {
-    excludePrefix := []byte("DOPPLER_")
-    fastjson.MustParseBytes(stdout).GetObject().Visit(func(key []byte, v *fastjson.Value) {
-      if !bytes.HasPrefix(key, excludePrefix) {
-        err = os.Setenv(string(key), string(v.GetStringBytes()))
-        if err != nil {
-          log.Println("cannot set env", err)
-        }
-      }
-    })
-  }
 }
 
 func restoreDb() error {

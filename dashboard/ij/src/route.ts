@@ -150,6 +150,10 @@ export function getIjItems(): Array<MenuItem> {
           to: "/kotlin/pluginDashboard",
         },
         {
+          label: "Dashboard (Fast installer/Dev)",
+          to: "/kotlin/pluginDashboardFastOrDev",
+        },
+        {
           label: "Explore",
           to: "/kotlin/performanceKotlinPluginTests",
         },
@@ -345,6 +349,14 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           path: "/kotlin/pluginDashboard",
           component: () => import("./kotlin/KotlinPluginDashboard.vue"),
           meta: {pageTitle: "Kotlin plugin Dashboard"},
+        },
+        {
+          path: "/kotlin/pluginDashboardFastOrDev",
+          component: () => import("./kotlin/KotlinPluginDashboardFastInstallerOrDev.vue"),
+          props: {
+            installerExists: false,
+          },
+          meta: {pageTitle: "Kotlin plugin Dashboard (Fast installer/Dev)"},
         },
         {
           path: "/kotlin/buildScript",

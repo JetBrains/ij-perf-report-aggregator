@@ -1,7 +1,6 @@
 <template>
   <Dashboard>
     <template #toolbar>
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
       <DimensionSelect
         label="Branch"
         :dimension="branchConfigurator"
@@ -18,13 +17,13 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
+      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
     </template>
     <GroupLineChart
-      label="Highlight on random files to lines count"
+      label="Highlight on random files - time to line mean value"
       measure="highlighting#timeToLines#mean_value"
       :projects="[
-        'kotlin_coroutines/mpp_highlightOnRandomFiles',
-        'ktor/mpp_highlightOnRandomFiles',
+        'intellij_commit/highlightOnRandomFiles',
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -56,7 +55,7 @@ provide(chartStyleKey, {
 
 provideReportUrlProvider(false)
 
-const persistentStateManager = new PersistentStateManager("kotlinMppProjects_dashboard", {
+const persistentStateManager = new PersistentStateManager("kotlinBuildKts_dashboard", {
   machine: "linux-blade-hetzner",
   project: [],
   branch: "master",

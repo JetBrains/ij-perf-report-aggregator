@@ -43,7 +43,6 @@ import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { chartStyleKey } from "shared/src/injectionKeys"
@@ -55,7 +54,7 @@ provide(chartStyleKey, {
   ...chartDefaultStyle,
 })
 
-provideReportUrlProvider()
+provideReportUrlProvider(false)
 
 const persistentStateManager = new PersistentStateManager("kotlinBuildKts_dashboard", {
   machine: "linux-blade-hetzner",
@@ -69,7 +68,6 @@ const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, p
   return a.includes("/") ? 1 : -1
 })
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [
   serverConfigurator,
@@ -77,7 +75,6 @@ const configurators = [
   machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
-  releaseConfigurator,
 ]
 initDataComponent(configurators)
 </script>

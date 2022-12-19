@@ -30,7 +30,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
       "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
       "resourceLoadingTime", "resourceLoadingCount",
-      "measure.name", "measure.start", "measure.duration", "measure.thread",
+      "measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",
     }
     return DatabaseConfiguration{
       DbName:            id,

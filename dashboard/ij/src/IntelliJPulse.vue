@@ -35,6 +35,27 @@
       :measures='["splash_i", "startUpCompleted"]'
     />
   </ChartRow>
+  <ChartRow title="Memory">
+    <LineChartCard
+      :skip-zero-values="false"
+      :measures='["metrics.memory/usedMb", "metrics.memory/metaspaceMb","metrics.memory/maxMb"]'
+    />
+  </ChartRow>
+  <ChartRow title="GC">
+    <LineChartCard
+      :skip-zero-values="false"
+      :measures='["metrics.gc/totalHeapUsedMax", "metrics.gc/freedMemoryByGC"]'
+    />
+    <LineChartCard
+      :skip-zero-values="false"
+      label="Number of pauses"
+      :measures='["metrics.gc/gcPauseCount"]'
+    />
+    <LineChartCard
+      :skip-zero-values="false"
+      :measures='["metrics.gc/fullGCPause","metrics.gc/gcPause"]'
+    />
+  </ChartRow>
 </template>
 <script setup lang="ts">
 import LineChartCard from "shared/src/components/LineChartCard.vue"

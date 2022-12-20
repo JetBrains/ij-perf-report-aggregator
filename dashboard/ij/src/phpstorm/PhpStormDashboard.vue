@@ -23,6 +23,13 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Slow Inspections (continue)"
+      measure="globalInspections"
+      :projects="['akaunting/inspection','aggregateStitcher/inspection', 'prestaShop/inspection', 'kunstmaanBundlesCMS/inspection']"
+      :server-configurator="serverConfigurator"
+    />
+
+    <GroupLineChart
       label="Fast Inspections"
       measure="globalInspections"
       :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
@@ -45,6 +52,12 @@
       measure="indexing"
       :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
                   'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Slow Indexing (continue)"
+      measure="indexing"
+      :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

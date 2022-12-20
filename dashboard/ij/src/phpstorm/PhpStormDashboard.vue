@@ -140,6 +140,12 @@
                   'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
       :server-configurator="serverConfigurator"
     />
+    <GroupLineChart
+      label="Index size"
+      measure="indexSize"
+      :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
+      :server-configurator="serverConfigurator"
+    />
   </Dashboard>
 </template>
 

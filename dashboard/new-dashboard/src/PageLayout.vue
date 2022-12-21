@@ -3,7 +3,7 @@
     <header class="flex flex-col gap-y-0.5">
       <PageHeader />
       <NavigationTabs
-        :items="tabNavigationItems"
+        :items="tabs"
         :current-path="currentPath"
       />
     </header>
@@ -18,7 +18,7 @@ import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
 import { InfoSidebarVmImpl } from "./components/InfoSidebarVm"
 import NavigationTabs from "./components/NavigationTabs.vue"
-import { tabNavigationItems } from "./routes"
+import { getNavigationTabs } from "./routes"
 import {sidebarVmKey } from "./shared/keys"
 
 import "./shared/overrides.css"
@@ -26,6 +26,7 @@ import "./shared/overrides.css"
 const sidebarVm = new InfoSidebarVmImpl()
 const router = useRouter()
 const currentPath = router.currentRoute.value.path
+const tabs = getNavigationTabs(currentPath)
 
 provide(sidebarVmKey, sidebarVm)
 </script>

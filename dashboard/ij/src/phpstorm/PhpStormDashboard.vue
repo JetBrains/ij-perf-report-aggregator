@@ -23,6 +23,13 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="Slow Inspections (continue)"
+      measure="globalInspections"
+      :projects="['akaunting/inspection','aggregateStitcher/inspection', 'prestaShop/inspection', 'kunstmaanBundlesCMS/inspection']"
+      :server-configurator="serverConfigurator"
+    />
+
+    <GroupLineChart
       label="Fast Inspections"
       measure="globalInspections"
       :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
@@ -45,6 +52,12 @@
       measure="indexing"
       :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
                   'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Slow Indexing (continue)"
+      measure="indexing"
+      :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -125,6 +138,12 @@
       measure="test#max_awt_delay"
       :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                   'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="Index size"
+      measure="indexSize"
+      :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>

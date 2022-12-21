@@ -50,14 +50,7 @@
       ]"
       :server-configurator="serverConfigurator"
     />
-    <GroupLineChart
-      label="Highlight on random files - time to line mean value"
-      measure="highlighting#timeToLines#mean_value"
-      :projects="[
-        'intellij_commit/highlightOnRandomFiles',
-      ]"
-      :server-configurator="serverConfigurator"
-    />
+
     <GroupLineChart
       label="Highlight mean value with Library cache K1"
       measure="highlighting#mean_value"
@@ -155,7 +148,7 @@ provide(chartStyleKey, {
   ...chartDefaultStyle,
 })
 
-provideReportUrlProvider(false)
+provideReportUrlProvider()
 
 const persistentStateManager = new PersistentStateManager("kotlinplugin_dashboard", {
   machine: "linux-blade-hetzner",

@@ -52,6 +52,51 @@
     />
 
     <GroupLineChart
+      label="Completion with typing mean value with Library cache"
+      measure="completion#mean_value"
+      :projects="[
+        'intellij_commit/completion/empty_place_typing_with_library_cache_k1',
+        'intellij_commit/completion/empty_place_typing_with_library_cache_k2',
+        'kotlin_empty/completion/empty_place_typing_with_library_cache_k1',
+        'kotlin_empty/completion/empty_place_typing_with_library_cache_k2',
+        'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
+        'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+
+    <GroupLineChart
+      label="Highlight mean value with Library cache K1 on intellij"
+      measure="highlighting#mean_value"
+      :projects="[
+        'intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache_k1',
+        'intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache_k1',
+        'intellij_commit/highlight/ContentManagerImpl_with_library_cache_k1',
+        'intellij_commit/highlight/JdkList_with_library_cache_k1',
+        'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k1',
+        'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k1',
+        'intellij_commit/highlight/AndroidModelTest_with_library_cache_k1',
+        'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+
+    <GroupLineChart
+      label="Highlight mean value with Library cache K2 on intellij"
+      measure="highlighting#mean_value"
+      :projects="[
+        'intellij_commit/highlight/AndroidModelTest_with_library_cache_k2',
+        'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
+        'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k2',
+        'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k2',
+        'intellij_commit/highlight/JdkList_with_library_cache_k2',
+        'intellij_commit/highlight/ContentManagerImpl_with_library_cache_k2',
+        'intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache_k2',
+        'intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache_k2',
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
       label="Highlight mean value with Library cache K1"
       measure="highlighting#mean_value"
       :projects="[

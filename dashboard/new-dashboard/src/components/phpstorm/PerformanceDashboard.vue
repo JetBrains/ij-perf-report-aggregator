@@ -37,7 +37,7 @@
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#PHP'"
-              :title="'Indexing Java (kB/s)'"
+              :title="'Indexing PHP (kB/s)'"
               :chart-color="'#219653'"
             />
           </div>
@@ -60,7 +60,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Slow Inspections"
+            label="Batch Inspections"
             measure="globalInspections"
             :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection',
                         'laravel-io/inspection']"
@@ -68,20 +68,31 @@
             :configurators="dashboardConfigurators"
           />
         </section>
-        <section>
-          <GroupProjectsChart
-            label="Fast Inspections"
-            measure="globalInspections"
-            :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="Batch Inspections"
+              measure="globalInspections"
+              :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="Batch Inspections"
+              measure="globalInspections"
+              :projects="['akaunting/inspection','aggregateStitcher/inspection', 'prestaShop/inspection', 'kunstmaanBundlesCMS/inspection']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
         </section>
 
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
-              label="Slow Local Inspections"
+              label="Local Inspections"
               measure="localInspections"
               :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
               :server-configurator="serverConfigurator"
@@ -90,7 +101,7 @@
           </div>
           <div class="flex-1">
             <GroupProjectsChart
-              label="Fast Local Inspections"
+              label="Local Inspections"
               measure="localInspections"
               :projects="['WI_59961/localInspection', 'bitrix/localInspection', 'WI_65893/localInspection']"
               :server-configurator="serverConfigurator"
@@ -100,7 +111,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Slow Indexing"
+            label="Indexing"
             measure="indexing"
             :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
                         'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
@@ -110,7 +121,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Medium Indexing"
+            label="Indexing"
             measure="indexing"
             :projects="['WI_39333/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
                         'shopware/indexing', 'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
@@ -120,7 +131,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Fast Indexing"
+            label="Indexing"
             measure="indexing"
             :projects="['phpcs/indexing','empty_project/indexing','complex_meta/indexing', 'WI_53502/indexing','heredoc/indexing', 'many_array_access/indexing',
                         'WI_66279/indexing']"
@@ -224,6 +235,15 @@
               :configurators="dashboardConfigurators"
             />
           </div>
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Index size"
+            measure="indexSize"
+            :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
         </section>
       </div>
       <InfoSidebar />

@@ -165,7 +165,6 @@
       ]"
       :server-configurator="serverConfigurator"
     />
-
   </Dashboard>
 </template>
 

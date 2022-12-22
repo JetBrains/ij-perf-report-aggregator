@@ -16,7 +16,9 @@ const ROUTES = {
   InteliJCompare: `${ROUTE_PREFIX.InteliJ}/compare`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
+  PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests: `${ROUTE_PREFIX.PhpStorm}/tests`,
+  PhpStormWithPluginsTests: `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
 }
 
 export const topNavigationItems: NavigationItems[] = [
@@ -52,11 +54,19 @@ export const intelijTabNavigationItems: NavigationItems[] = [
 export const phpStormNavigationItems: NavigationItems[] = [
   {
     path: ROUTES.PhpStormDashboard,
-    name: "Performance dashboard",
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.PhpStormWithPluginsDashboard,
+    name: "Dashboard with Plugins",
   },
   {
     path: ROUTES.PhpStormTests,
-    name: "Performance tests",
+    name: "Tests",
+  },
+  {
+    path: ROUTES.PhpStormWithPluginsTests,
+    name: "Tests with Plugins",
   },
 ]
 
@@ -91,6 +101,16 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
           meta: {pageTitle: "PhpStorm Performance dashboard"},
+        },
+        {
+          path: ROUTES.PhpStormWithPluginsDashboard,
+          component: () => import("./components/phpstorm/PerformanceDashboardWithPlugins.vue"),
+          meta: {pageTitle: "PhpStorm With Plugins Performance dashboard"},
+        },
+        {
+          path: ROUTES.PhpStormWithPluginsTests,
+          component: () => import("./components/phpstorm/PerformanceTestsWithPlugins.vue"),
+          meta: {pageTitle: "PhpStorm Performance tests with plugins"},
         },
         {
           path: ROUTES.PhpStormTests,

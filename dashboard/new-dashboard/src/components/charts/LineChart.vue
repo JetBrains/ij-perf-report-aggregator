@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
-    <h3 class="uppercase m-0 text-sm">
+    <h3 class="m-0 text-sm">
       {{ props.title }}
     </h3>
     <div

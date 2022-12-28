@@ -1,8 +1,9 @@
 import { ParentRouteRecord } from "shared/src/route"
 
-export interface NavigationItems {
+export interface NavigationItem {
   path: string
   name: string
+  key?: string
 }
 
 const enum ROUTE_PREFIX {
@@ -11,7 +12,7 @@ const enum ROUTE_PREFIX {
 }
 
 const ROUTES = {
-  InteliJDashboard:`${ROUTE_PREFIX.InteliJ}/dashboard`,
+  InteliJDashboard: `${ROUTE_PREFIX.InteliJ}/dashboard`,
   InteliJTests: `${ROUTE_PREFIX.InteliJ}/tests`,
   InteliJCompare: `${ROUTE_PREFIX.InteliJ}/compare`,
 
@@ -21,14 +22,16 @@ const ROUTES = {
   PhpStormWithPluginsTests: `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
 }
 
-export const topNavigationItems: NavigationItems[] = [
+export const topNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.InteliJDashboard,
     name: "InteliJ",
+    key: ROUTE_PREFIX.InteliJ,
   },
   {
     path: ROUTES.PhpStormDashboard,
     name: "PhpStorm",
+    key: ROUTE_PREFIX.PhpStorm,
   },
   {
     path: "/",
@@ -36,7 +39,7 @@ export const topNavigationItems: NavigationItems[] = [
   },
 ]
 
-export const intelijTabNavigationItems: NavigationItems[] = [
+export const intelijTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.InteliJDashboard,
     name: "Performance dashboard",
@@ -51,7 +54,7 @@ export const intelijTabNavigationItems: NavigationItems[] = [
   // },
 ]
 
-export const phpStormNavigationItems: NavigationItems[] = [
+export const phpStormNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.PhpStormDashboard,
     name: "Dashboard",
@@ -70,7 +73,7 @@ export const phpStormNavigationItems: NavigationItems[] = [
   },
 ]
 
-export function getNavigationTabs(path: string): NavigationItems[] {
+export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems
   }

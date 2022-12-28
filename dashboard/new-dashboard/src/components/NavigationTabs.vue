@@ -21,10 +21,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { NavigationItems } from "../routes"
+import { NavigationItem } from "../routes"
 
 interface Props {
-  items: NavigationItems[]
+  items: NavigationItem[]
   currentPath: string
 }
 const props = defineProps<Props>()

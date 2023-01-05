@@ -57,21 +57,21 @@
       label="Local Inspection"
       measure="localInspections"
       :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file',
-      'intellij_commit/localInspection/java_file','intellij_commit/localInspection/kotlin_file']"
+                  'intellij_commit/localInspection/java_file','intellij_commit/localInspection/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Completion: execution time"
       measure="completion"
       :projects="['intellij_sources/completion/java_file','intellij_sources/completion/kotlin_file',
-      'intellij_commit/completion/java_file','intellij_commit/completion/kotlin_file']"
+                  'intellij_commit/completion/java_file','intellij_commit/completion/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Completion: awt delay"
       measure="test#average_awt_delay"
       :projects="['intellij_sources/completion/java_file','intellij_sources/completion/kotlin_file',
-      'intellij_commit/completion/java_file','intellij_commit/completion/kotlin_file']"
+                  'intellij_commit/completion/java_file','intellij_commit/completion/kotlin_file']"
       :server-configurator="serverConfigurator"
     />
   </Dashboard>

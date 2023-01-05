@@ -55,24 +55,24 @@
       label="Indexing with the new record storage (IntelliJ project)"
       measure="indexing"
       :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
-      'vfs-record-storage/lock-free-intellij_sources/indexing']"
+                  'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
+                  'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/lock-free-intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Scanning with the new record storage (IntelliJ project)"
       measure="scanning"
       :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
-      'vfs-record-storage/lock-free-intellij_sources/indexing']"
+                  'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
+                  'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing','vfs-record-storage/lock-free-intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Number of indexing runs with the new record storage (IntelliJ project)"
       measure="numberOfIndexingRuns"
       :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-      'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing',
-      'vfs-record-storage/lock-free-intellij_sources/indexing']"
+                  'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
+                  'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/lock-free-intellij_sources/indexing']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
@@ -145,7 +145,7 @@
       label="FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"
       measure="findUsages"
       :projects="['community/findUsages/ActionsKt_runReadAction_Before', 'community/findUsages/Application_runReadAction_Before',
-      'community/findUsages/ActionsKt_runReadAction_After', 'community/findUsages/Application_runReadAction_After'
+                  'community/findUsages/ActionsKt_runReadAction_After', 'community/findUsages/Application_runReadAction_After'
       ]"
       :server-configurator="serverConfigurator"
     />
@@ -153,14 +153,15 @@
       label="FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"
       measure="findUsages"
       :projects="['community/findUsages/Persistent_absolutePath_After', 'community/findUsages/PropertyMapping_value_After',
-      'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/PropertyMapping_value_Before'
+                  'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/PropertyMapping_value_Before'
       ]"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
       label="Find Usages with idea.is.internal=true Before Compilation"
       measure="findUsages"
-      :projects="['intellij_sources/findUsages/PsiManager_getInstance_firstCall', 'intellij_sources/findUsages/PsiManager_getInstance_secondCall', 'intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode']"
+      :projects="['intellij_sources/findUsages/PsiManager_getInstance_firstCall', 'intellij_sources/findUsages/PsiManager_getInstance_secondCall',
+                  'intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode']"
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart

@@ -17,8 +17,8 @@
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect
-          label="Metrics"
-          :selected-label="metricsSelectLabelFormat"
+          label="Tests"
+          :selected-label="testsSelectLabelFormat"
           :dimension="scenarioConfigurator"
         >
           <template #icon>
@@ -26,8 +26,8 @@
           </template>
         </DimensionSelect>
         <MeasureSelect
-          title="Tests"
-          :selected-label="testsSelectLabelFormat"
+          title="Metrics"
+          :selected-label="metricsSelectLabelFormat"
           :configurator="measureConfigurator"
         >
           <template #icon>

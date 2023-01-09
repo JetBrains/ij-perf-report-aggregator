@@ -17,10 +17,10 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
-      label="Gradle: gradle.sync.duration"
+      label="gradle.sync.duration"
       measure="gradle.sync.duration"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
@@ -33,7 +33,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Gradle: GRADLE_CALL"
+      label="GRADLE_CALL"
       measure="GRADLE_CALL"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
@@ -46,7 +46,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Gradle: PROJECT_RESOLVERS"
+      label="PROJECT_RESOLVERS"
       measure="PROJECT_RESOLVERS"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
@@ -59,7 +59,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Gradle: DATA_SERVICES"
+      label="DATA_SERVICES"
       measure="DATA_SERVICES"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
@@ -72,7 +72,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Gradle: WORKSPACE_MODEL_APPLY"
+      label="WORKSPACE_MODEL_APPLY"
       measure="WORKSPACE_MODEL_APPLY"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
@@ -85,7 +85,7 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
-      label="Gradle: CPU | Load | 75th pctl"
+      label="CPU | Load | 75th pctl"
       measure="CPU | Load | 75th pctl"
       :projects="[
         'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',

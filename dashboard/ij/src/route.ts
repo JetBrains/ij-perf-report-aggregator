@@ -52,8 +52,12 @@ export function getIjItems(): Array<MenuItem> {
           to: "/intellij/gradleImportDashboard",
         },
         {
-          label: "Maven Import Dashboard",
-          to: "/intellij/mavenImportDashboard",
+          label: "Maven Import Dashboard - Part 1",
+          to: "/intellij/mavenImportDashboardPart1",
+        },
+        {
+          label: "Maven Import Dashboard - Part 2",
+          to: "/intellij/mavenImportDashboardPart2",
         },
         {
           label: "Shared Indexes",
@@ -286,9 +290,14 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Performance Tests on Gradle Import"},
         },
         {
-          path: "/intellij/mavenImportDashboard",
-          component: () => import("./idea/MavenImportPerformanceDashboard.vue"),
-          meta: {pageTitle: "Performance Tests on Maven Import"},
+          path: "/intellij/mavenImportDashboardPart1",
+          component: () => import("./idea/MavenImportPerformancePart1Dashboard.vue"),
+          meta: {pageTitle: "Performance Tests on Maven Import - Part 1"},
+        },
+        {
+          path: "/intellij/mavenImportDashboardPart2",
+          component: () => import("./idea/MavenImportPerformancePart2Dashboard.vue"),
+          meta: {pageTitle: "Performance Tests on Maven Import - Part 2"},
         },
         {
           path: "/intellij/rust/performanceTests",

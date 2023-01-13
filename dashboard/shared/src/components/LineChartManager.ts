@@ -50,9 +50,17 @@ export class LineChartManager {
 
     const isCompoundTooltip = chartToolTipManager == null
     this.chart.chart.setOption<LineChartOptions>({
-      legend: {},
+      legend: {
+        top: 0,
+        left: 0,
+        itemHeight: 3,
+        itemWidth: 15,
+        icon: "rect",
+        type: "scroll",
+      },
       animation: false,
       toolbox: {
+        top: 20,
         feature: {
           dataZoom: {
             yAxisIndex: false,
@@ -94,6 +102,8 @@ export class LineChartManager {
         }
       },
       dataZoom: dataZoom.value ? dataZoomConfig : undefined,
+    }, {
+      replaceMerge: ["legend"],
     })
 
     this.chart.enableZoomTool()

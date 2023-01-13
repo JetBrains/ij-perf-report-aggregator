@@ -72,6 +72,7 @@ import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
+import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
@@ -113,15 +114,7 @@ const persistentStateManager = new PersistentStateManager(
   }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = dimensionConfigurator(
-  "branch",
-  serverConfigurator,
-  persistentStateManager,
-  true,
-  [timeRangeConfigurator],
-  (a, _) => {
-    return a.includes("/") ? 1 : -1
-  })
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistentStateManager,

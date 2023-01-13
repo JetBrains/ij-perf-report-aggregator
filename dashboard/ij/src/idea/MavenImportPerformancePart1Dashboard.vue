@@ -17,7 +17,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
       label="maven.sync.duration"
@@ -481,7 +481,7 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
+import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
@@ -506,9 +506,7 @@ const persistentStateManager = new PersistentStateManager("import_dashboard", {
 
 const serverConfigurator = new ServerConfigurator("perfint", "idea")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
-  return a.includes("/") ? 1 : -1
-})
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])

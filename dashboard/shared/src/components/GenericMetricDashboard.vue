@@ -51,6 +51,7 @@ import { initDataComponent } from "../DataQueryExecutor"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { chartDefaultStyle, ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
+import { createBranchConfigurator } from "../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../configurators/MeasureConfigurator"
@@ -60,7 +61,6 @@ import { ServerConfigurator } from "../configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "../configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey } from "../injectionKeys"
 import { provideReportUrlProvider } from "../lineChartTooltipLinkProvider"
-import BarChartCard from "./BarChartCard.vue"
 import Dashboard from "./Dashboard.vue"
 import DimensionHierarchicalSelect from "./DimensionHierarchicalSelect.vue"
 import DimensionSelect from "./DimensionSelect.vue"
@@ -106,9 +106,7 @@ const persistentStateManager = new PersistentStateManager(`${(props.dbName)}-${(
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = dimensionConfigurator("branch", serverConfigurator, persistentStateManager, true, [timeRangeConfigurator], (a, _) => {
-  return a.includes("/") ? 1 : -1
-})
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
 
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
@@ -140,6 +138,5 @@ if (props.supportReleases) {
 // median by default, no UI control to change is added (insert <AggregationOperatorSelect /> if needed)
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 
-const chartHeight = DEFAULT_LINE_CHART_HEIGHT
 initDataComponent(configurators)
 </script>

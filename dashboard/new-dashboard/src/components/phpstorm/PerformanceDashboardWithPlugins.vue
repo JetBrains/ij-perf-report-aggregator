@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
+import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
@@ -158,15 +158,7 @@ const persistenceForDashboard = new PersistentStateManager("phpstorm_plugins_das
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const branchConfigurator = dimensionConfigurator(
-  "branch",
-  serverConfigurator,
-  persistenceForDashboard,
-  true,
-  [timeRangeConfigurator],
-  (a, _) => {
-    return a.includes("/") ? 1 : -1
-  })
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistenceForDashboard,

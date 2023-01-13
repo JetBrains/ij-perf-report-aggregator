@@ -102,17 +102,15 @@ export class LineChartVM {
   subscribe(): () => void {
     return this.dataQuery.subscribe(
       (data, configuration) => {
-        if (data.length > 6) {
-          this.eChart.chart.setOption(
-            {
-              legend: { type: "scroll" },
-              toolbox: { top: 20 }
-            },
-            {
-              replaceMerge: ["legend"],
-            }
-          )
-        }
+        this.eChart.chart.setOption(
+          {
+            legend: {type: "scroll"},
+            toolbox: {top: 20},
+          },
+          {
+            replaceMerge: ["legend"],
+          },
+        )
         this.eChart.updateChart(
           configuration.chartConfigurator.configureChart(data, configuration)
         )

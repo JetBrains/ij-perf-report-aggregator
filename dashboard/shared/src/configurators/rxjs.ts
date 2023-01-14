@@ -40,7 +40,7 @@ export function fromFetchWithRetryAndErrorHandling<T>(
         }
       }),
       // timeout
-      takeUntil(timer(120_000)),
+      takeUntil(timer(8_000)),
       // retry at least three times
       retry({
         count: 3,

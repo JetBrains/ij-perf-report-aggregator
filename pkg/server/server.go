@@ -118,7 +118,7 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Co
   t.poolMutex.Lock()
   defer t.poolMutex.Unlock()
   pool, err := chpool.Dial(ctx, chpool.Options{
-    MaxConns: 500,
+    MaxConns: 16,
     ClientOptions: ch.Options{
       Address:  t.dbUrl,
       Database: name,

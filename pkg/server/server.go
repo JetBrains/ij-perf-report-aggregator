@@ -102,7 +102,7 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddle
   if exists {
     pool = untypedPool.(*puddle.Pool[*ch.Client])
   } else {
-    pool, err = createStoreForDatabaseUnderLock(name, t, ctx)
+    pool, err = createStoreForDatabaseUnderLock(name, t)
   }
   if err != nil {
     return nil, errors.WithStack(err)
@@ -115,7 +115,7 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddle
   return resource, nil
 }
 
-func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Context) (*puddle.Pool[*ch.Client], error) {
+func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[*ch.Client], error) {
   t.poolMutex.Lock()
   defer t.poolMutex.Unlock()
   pool, err := puddle.NewPool(&puddle.Config[*ch.Client]{

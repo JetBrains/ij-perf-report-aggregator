@@ -4,13 +4,14 @@ import (
   "context"
   "errors"
   "github.com/ClickHouse/ch-go"
+  "github.com/ClickHouse/ch-go/chpool"
   "github.com/ClickHouse/ch-go/proto"
   "io"
   "net"
 )
 
 type DatabaseConnectionSupplier interface {
-  AcquireDatabase(name string, ctx context.Context) (*ch.Client, error)
+  AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error)
 }
 
 func executeQuery(
@@ -39,12 +40,15 @@ func executeQuery(
 
 func doExecution(
   sqlQuery string,
-  client *ch.Client,
+  client *chpool.Client,
   ctx context.Context,
   resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
 ) (error, bool) {
+  isDestroyed := false
   defer func() {
-    _ = client.Close()
+    if !isDestroyed {
+      client.Release()
+    }
   }()
 
   var result proto.Results
@@ -65,6 +69,8 @@ func doExecution(
     return err, true
   }
 
+  isDestroyed = true
+  client.Release()
   return nil, false
 }
 

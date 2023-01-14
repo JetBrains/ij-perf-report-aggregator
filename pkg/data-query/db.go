@@ -21,21 +21,23 @@ func executeQuery(
   ctx context.Context,
   resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
 ) error {
-  dbResource, err := dbSupplier.AcquireDatabase(query.Database, ctx)
-  if err != nil {
-    return err
+  for attempt := 0; attempt <= 8; attempt++ {
+    dbResource, err := dbSupplier.AcquireDatabase(query.Database, ctx)
+    if err != nil {
+      return err
+    }
+
+    err, done := doExecution(sqlQuery, dbResource, ctx, resultHandler)
+    if err != nil {
+      return err
+    }
+
+    if done {
+      return nil
+    }
   }
 
-  err, done := doExecution(sqlQuery, dbResource, ctx, resultHandler)
-  if err != nil {
-    return err
-  }
-
-  if done {
-    return nil
-  } else {
-    return errors.New("cannot acquire database")
-  }
+  return errors.New("cannot acquire database")
 }
 
 func doExecution(

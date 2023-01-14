@@ -16,6 +16,7 @@ import (
   "net/http"
   "os"
   "os/signal"
+  "sync"
   "syscall"
   "time"
 )
@@ -23,9 +24,12 @@ import (
 const DefaultDbUrl = "127.0.0.1:9000"
 
 type StatsServer struct {
-  dbUrl string
+  dbUrl        string
+  nameToDbPool sync.Map
 
   machineInfo analyzer.MachineInfo
+
+  poolMutex sync.Mutex
 
   logger *zap.Logger
 }
@@ -42,6 +46,14 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
     machineInfo: analyzer.GetMachineInfo(),
   }
+
+  defer func() {
+    statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
+      p := pool.(*chpool.Client)
+      p.Release()
+      return true
+    })
+  }()
 
   cacheManager, err := NewResponseCacheManager(logger)
   if err != nil {
@@ -83,10 +95,18 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 }
 
 func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error) {
-  pool, err := createStoreForDatabaseUnderLock(name, t, ctx)
+  untypedPool, exists := t.nameToDbPool.Load(name)
+  var pool *chpool.Pool
+  var err error
+  if exists {
+    pool = untypedPool.(*chpool.Pool)
+  } else {
+    pool, err = createStoreForDatabaseUnderLock(name, t, ctx)
+  }
   if err != nil {
     return nil, errors.WithStack(err)
   }
+
   resource, err := pool.Acquire(ctx)
   if err != nil {
     return nil, errors.WithStack(err)
@@ -95,8 +115,10 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool
 }
 
 func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Context) (*chpool.Pool, error) {
+  t.poolMutex.Lock()
+  defer t.poolMutex.Unlock()
   pool, err := chpool.Dial(ctx, chpool.Options{
-    MaxConns: 1,
+    MaxConns: 500,
     ClientOptions: ch.Options{
       Address:  t.dbUrl,
       Database: name,
@@ -107,6 +129,9 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Co
       },
     },
   })
+  if err == nil && pool != nil {
+    t.nameToDbPool.Store(name, pool)
+  }
   return pool, err
 }
 

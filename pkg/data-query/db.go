@@ -4,14 +4,15 @@ import (
   "context"
   "errors"
   "github.com/ClickHouse/ch-go"
-  "github.com/ClickHouse/ch-go/chpool"
   "github.com/ClickHouse/ch-go/proto"
+  "github.com/jackc/puddle/v2"
   "io"
   "net"
+  "time"
 )
 
 type DatabaseConnectionSupplier interface {
-  AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error)
+  AcquireDatabase(name string, ctx context.Context) (*puddle.Resource[*ch.Client], error)
 }
 
 func executeQuery(
@@ -21,7 +22,7 @@ func executeQuery(
   ctx context.Context,
   resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
 ) error {
-  for attempt := 0; attempt <= 8; attempt++ {
+  for attempt := 0; attempt <= 120; attempt++ {
     dbResource, err := dbSupplier.AcquireDatabase(query.Database, ctx)
     if err != nil {
       return err
@@ -35,17 +36,13 @@ func executeQuery(
     if done {
       return nil
     }
+    time.Sleep(500 * time.Millisecond)
   }
 
   return errors.New("cannot acquire database")
 }
 
-func doExecution(
-  sqlQuery string,
-  client *chpool.Client,
-  ctx context.Context,
-  resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
-) (error, bool) {
+func doExecution(sqlQuery string, client *puddle.Resource[*ch.Client], ctx context.Context, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) (error, bool) {
   isDestroyed := false
   defer func() {
     if !isDestroyed {
@@ -54,7 +51,7 @@ func doExecution(
   }()
 
   var result proto.Results
-  err := client.Do(ctx, ch.Query{
+  err := client.Value().Do(ctx, ch.Query{
     Body:   sqlQuery,
     Result: result.Auto(),
     OnResult: func(ctx context.Context, block proto.Block) error {
@@ -72,7 +69,7 @@ func doExecution(
   }
 
   isDestroyed = true
-  client.Release()
+  client.Destroy()
   return nil, false
 }
 

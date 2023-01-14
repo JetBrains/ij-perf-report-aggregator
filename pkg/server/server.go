@@ -3,7 +3,6 @@ package server
 import (
   "context"
   "crypto/tls"
-  "fmt"
   "github.com/ClickHouse/ch-go"
   "github.com/ClickHouse/ch-go/chpool"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
@@ -110,7 +109,6 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddle
   }
 
   resource, err := pool.Acquire(ctx)
-  fmt.Printf("%+v\n", pool.Stat())
   if err != nil {
     return nil, errors.WithStack(err)
   }

@@ -129,7 +129,7 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Co
       },
     },
   })
-  if err == nil && pool != nil {
+  if err != nil && pool != nil {
     t.nameToDbPool.Store(name, pool)
   }
   return pool, err

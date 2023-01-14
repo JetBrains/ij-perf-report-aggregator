@@ -4,7 +4,6 @@ import (
   "context"
   "crypto/tls"
   "github.com/ClickHouse/ch-go"
-  "github.com/ClickHouse/ch-go/chpool"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -82,32 +81,21 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error) {
-  pool, err := createStoreForDatabaseUnderLock(name, t, ctx)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  resource, err := pool.Acquire(ctx)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  return resource, nil
-}
-
-func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Context) (*chpool.Pool, error) {
-  pool, err := chpool.Dial(ctx, chpool.Options{
-    MaxConns: 1,
-    ClientOptions: ch.Options{
-      Address:  t.dbUrl,
-      Database: name,
-      Settings: []ch.Setting{
-        ch.SettingInt("readonly", 1),
-        ch.SettingInt("max_query_size", 1000000),
-        ch.SettingInt("max_memory_usage", 3221225472),
-      },
+func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*ch.Client, error) {
+  resource, err := ch.Dial(ctx, ch.Options{
+    Address:  t.dbUrl,
+    Database: name,
+    Settings: []ch.Setting{
+      ch.SettingInt("readonly", 1),
+      ch.SettingInt("max_query_size", 1000000),
+      ch.SettingInt("max_memory_usage", 3221225472),
     },
   })
-  return pool, err
+  if err != nil {
+    return nil, errors.WithStack(err)
+  }
+
+  return resource, nil
 }
 
 func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {

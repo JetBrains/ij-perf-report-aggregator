@@ -35,7 +35,7 @@ func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
-  cacheSize := 512 * 1000 * 1000
+  cacheSize := 1000 * 1000 * 1000 //1 GiB
   cache, err := ristretto.NewCache(&ristretto.Config{
     NumCounters: int64((cacheSize / 50 /* assume that each response ~ 50 KB */) * 10) /* number of keys to track frequency of */,
     MaxCost:     int64(cacheSize),

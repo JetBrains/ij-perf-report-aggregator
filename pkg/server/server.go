@@ -9,6 +9,7 @@ import (
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
+  "github.com/jackc/puddle/v2"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
@@ -94,14 +95,14 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool.Client, error) {
+func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddle.Resource[*ch.Client], error) {
   untypedPool, exists := t.nameToDbPool.Load(name)
-  var pool *chpool.Pool
+  var pool *puddle.Pool[*ch.Client]
   var err error
   if exists {
-    pool = untypedPool.(*chpool.Pool)
+    pool = untypedPool.(*puddle.Pool[*ch.Client])
   } else {
-    pool, err = createStoreForDatabaseUnderLock(name, t, ctx)
+    pool, err = createStoreForDatabaseUnderLock(name, t)
   }
   if err != nil {
     return nil, errors.WithStack(err)
@@ -114,22 +115,27 @@ func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*chpool
   return resource, nil
 }
 
-func createStoreForDatabaseUnderLock(name string, t *StatsServer, ctx context.Context) (*chpool.Pool, error) {
+func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[*ch.Client], error) {
   t.poolMutex.Lock()
   defer t.poolMutex.Unlock()
-  pool, err := chpool.Dial(ctx, chpool.Options{
-    MaxConns: 16,
-    ClientOptions: ch.Options{
-      Address:  t.dbUrl,
-      Database: name,
-      Settings: []ch.Setting{
-        ch.SettingInt("readonly", 1),
-        ch.SettingInt("max_query_size", 1000000),
-        ch.SettingInt("max_memory_usage", 3221225472),
-      },
+  pool, err := puddle.NewPool(&puddle.Config[*ch.Client]{
+    MaxSize: 16,
+    Destructor: func(value *ch.Client) {
+      _ = value.Close()
+    },
+    Constructor: func(ctx context.Context) (res *ch.Client, err error) {
+      return ch.Dial(ctx, ch.Options{
+        Address:  t.dbUrl,
+        Database: name,
+        Settings: []ch.Setting{
+          ch.SettingInt("readonly", 1),
+          ch.SettingInt("max_query_size", 1000000),
+          ch.SettingInt("max_memory_usage", 3221225472),
+        },
+      })
     },
   })
-  if err != nil && pool != nil {
+  if err == nil && pool != nil {
     t.nameToDbPool.Store(name, pool)
   }
   return pool, err

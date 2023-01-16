@@ -17,7 +17,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
       label="Highlight on random files - time to line mean value"

@@ -175,7 +175,8 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 
     runResult.BuildC1, runResult.BuildC2, runResult.BuildC3, err = splitBuildNumber(buildComponents)
     if err != nil {
-      return err
+      //we might get 231.snapshot build numbers, that is more or less fine and we need such build anyway
+      t.logger.Error(err.Error())
     }
   }
 
@@ -326,11 +327,11 @@ func splitBuildNumber(buildComponents []string) (int, int, int, error) {
   }
   buildC2, err := strconv.Atoi(buildComponents[1])
   if err != nil {
-    return 0, 0, 0, errors.WithStack(err)
+    return buildC1, 0, 0, errors.WithStack(err)
   }
   buildC3, err := strconv.Atoi(buildComponents[2])
   if err != nil {
-    return 0, 0, 0, errors.WithStack(err)
+    return buildC1, buildC2, 0, errors.WithStack(err)
   }
   return buildC1, buildC2, buildC3, nil
 }

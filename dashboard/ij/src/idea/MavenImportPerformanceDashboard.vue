@@ -17,7 +17,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator" />
+      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
     </template>
     <GroupLineChart
       label="maven.sync.duration"
@@ -1220,6 +1220,157 @@
       :server-configurator="serverConfigurator"
     />
     <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.total_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.total_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.collect_folders_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.collect_folders_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.config_modules_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.config_modules_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.before_apply_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.before_apply_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.after_apply_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter.after_apply_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.total_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.total_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.collect_folders_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.collect_folders_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.config_modules_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.config_modules_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.before_apply_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.before_apply_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+    <GroupLineChart
+      label="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.after_apply_duration_ms"
+      measure="workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter.after_apply_duration_ms"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
+
+    <GroupLineChart
       label="workspace_import.duration_ms"
       measure="workspace_import.duration_ms"
       :projects="[
@@ -1264,7 +1415,21 @@
       ]"
       :server-configurator="serverConfigurator"
     />
-
+    <GroupLineChart
+      label="maven.project.importer.post.importing.task.marker"
+      measure="maven.project.importer.post.importing.task.marker"
+      :projects="[
+        'project-import-maven-quarkus/measureStartup',
+        'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+        'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+        'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+        'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+        'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+        'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+        'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+      ]"
+      :server-configurator="serverConfigurator"
+    />
     <GroupLineChart
       label="Maven: CPU | Load | 75th pctl"
       measure="CPU | Load | 75th pctl"

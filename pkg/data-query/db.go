@@ -64,7 +64,7 @@ func doExecution(sqlQuery string, client *puddle.Resource[*ch.Client], ctx conte
   }
 
   // if net error or io error - connection was closed due to inactivity, destroy it and acquire a new one
-  if !isNetError(err) {
+  if !isNetError(err) && !client.Value().IsClosed() {
     return err, true
   }
 

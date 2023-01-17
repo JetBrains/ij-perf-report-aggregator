@@ -9,6 +9,7 @@ export interface NavigationItem {
 const enum ROUTE_PREFIX {
   InteliJ = "/new/ij",
   PhpStorm = "/new/phpstorm",
+  Kotlin = "/new/kotlin",
 }
 
 const ROUTES = {
@@ -20,6 +21,11 @@ const ROUTES = {
   PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests: `${ROUTE_PREFIX.PhpStorm}/tests`,
   PhpStormWithPluginsTests: `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
+
+  KotlinDashboard: `${ROUTE_PREFIX.Kotlin}/dashboard`,
+  KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
+  KotlinExplore: `${ROUTE_PREFIX.Kotlin}/explore`,
+  KotlinExploreDev: `${ROUTE_PREFIX.Kotlin}/exploreDev`,
 }
 
 export const topNavigationItems: NavigationItem[] = [
@@ -32,6 +38,11 @@ export const topNavigationItems: NavigationItem[] = [
     path: ROUTES.PhpStormDashboard,
     name: "PhpStorm",
     key: ROUTE_PREFIX.PhpStorm,
+  },
+  {
+    path: ROUTES.KotlinDashboard,
+    name: "Kotlin",
+    key: ROUTE_PREFIX.Kotlin,
   },
   {
     path: "/",
@@ -72,7 +83,24 @@ export const phpStormNavigationItems: NavigationItem[] = [
     name: "Tests with Plugins",
   },
 ]
-
+export const kotlinNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.KotlinDashboard,
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.KotlinDashboardDev,
+    name: "Dashboard (dev/fast installer)",
+  },
+  {
+    path: ROUTES.KotlinExplore,
+    name: "Explore",
+  },
+  {
+    path: ROUTES.KotlinExploreDev,
+    name: "Explore (dev/fast installer)",
+  },
+]
 export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems
@@ -80,6 +108,9 @@ export function getNavigationTabs(path: string): NavigationItem[] {
 
   if (path.startsWith(ROUTE_PREFIX.PhpStorm)) {
     return phpStormNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.Kotlin)) {
+    return kotlinNavigationItems
   }
 
   return []
@@ -119,6 +150,26 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.PhpStormTests,
           component: () => import("./components/phpstorm/PerformanceTests.vue"),
           meta: {pageTitle: "PhpStorm Performance tests"},
+        },
+        {
+          path: ROUTES.KotlinExplore,
+          component: () => import("./components/kotlin/KotlinExplore.vue"),
+          meta: {pageTitle: "Kotlin Performance tests explore"},
+        },
+        {
+          path: ROUTES.KotlinExploreDev,
+          component: () => import("./components/kotlin/KotlinDevExplore.vue"),
+          meta: {pageTitle: "Kotlin Performance tests explore (dev/fast installer)"},
+        },
+        {
+          path: ROUTES.KotlinDashboard,
+          component: () => import("./components/kotlin/PerformanceDashboard.vue"),
+          meta: {pageTitle: "Kotlin Performance dashboard"},
+        },
+        {
+          path: ROUTES.KotlinDashboardDev,
+          component: () => import("./components/kotlin/PerformanceDevDashboard.vue"),
+          meta: {pageTitle: "Kotlin Performance dashboard (dev/fast installer)"},
         },
       ],
     },

@@ -14,6 +14,7 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.1.1
+	github.com/jackc/puddle/v2 v2.1.2
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.15.14
 	github.com/magiconair/properties v1.8.7
@@ -51,7 +52,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/apex/log v1.9.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.179 // indirect
+	github.com/aws/aws-sdk-go v1.44.180 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
@@ -62,7 +63,7 @@ require (
 	github.com/djherbis/nio/v3 v3.0.1 // indirect
 	github.com/dmarkham/enumer v1.5.7 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
-	github.com/dustin/go-humanize v1.0.0 // indirect
+	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/eapache/go-resiliency v1.3.0 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
@@ -83,7 +84,6 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
-	github.com/jackc/puddle/v2 v2.1.2 // indirect
 	github.com/jlaffaye/ftp v0.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
@@ -125,7 +125,7 @@ require (
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.41 // indirect
 	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
-	github.com/urfave/cli v1.22.10 // indirect
+	github.com/urfave/cli v1.22.11 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.11.2 // indirect

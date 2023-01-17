@@ -8,6 +8,7 @@
     "echarts-stat": "1.2.0",
     "fast-equals": "4.0.3",
     "humanize-duration": "3.27.3",
+    "p-limit": "^4.0.0",
     "primevue": "3.20.0",
     "rxjs": "8.0.0-alpha.5",
     "tailwind-ui": "workspace:*",

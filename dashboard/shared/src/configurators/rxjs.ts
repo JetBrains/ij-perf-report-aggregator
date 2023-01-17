@@ -2,8 +2,9 @@ import { deepEqual } from "fast-equals"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
 import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
-import { fromFetch } from "rxjs/fetch"
+import { fromPromise } from "rxjs/internal/observable/innerFrom"
 import { Ref, watch } from "vue"
+import pLimit from "p-limit"
 
 export function refToObservable<T>(ref: Ref<T>, deep: boolean = false): Observable<T> {
   return new Observable<T>(context => {
@@ -23,12 +24,14 @@ const serverNotAvailableMessage = {
   life: 3_000,
 }
 
+const limit = pLimit(100)
+
 export function fromFetchWithRetryAndErrorHandling<T>(
   request: Request | string,
   unavailableErrorMessage: ({ summary: string; detail: string }) | null = null,
   bodyConsumer: (response: Response) => Promise<T> = it => it.json() as Promise<T>
 ): Observable<T> {
-  return fromFetch(request)
+  return fromPromise(limit(()=>fetch(request)))
     .pipe(
       // promise to result
       mergeMap(response => {

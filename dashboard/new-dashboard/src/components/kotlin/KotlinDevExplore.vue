@@ -13,7 +13,6 @@
         </TimeRangeSelect>
         <BranchSelect
           :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect

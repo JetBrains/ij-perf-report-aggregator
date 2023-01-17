@@ -13,7 +13,6 @@
         </TimeRangeSelect>
         <BranchSelect
           :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionHierarchicalSelect
@@ -263,7 +262,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("kotlin_dashboard", {
+const persistenceForDashboard = new PersistentStateManager("kotlinDev_dashboard", {
   machine: initialMachine,
   project: [],
   branch: "master",

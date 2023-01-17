@@ -41,7 +41,7 @@
       <div class="border-t border-solid border-neutral-200 relative">
         <ul class="p-multiselect-items p-component">
           <li
-            v-if="versionItems.length > 0"
+            v-if="versionItems!== undefined && versionItems.length > 0"
             class="p-multiselect-item flex items-center gap-2"
             @click="openVersionSubmenu"
           >

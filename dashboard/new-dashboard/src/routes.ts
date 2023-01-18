@@ -9,7 +9,7 @@ export interface NavigationItem {
 const enum ROUTE_PREFIX {
   InteliJ = "/new/ij",
   PhpStorm = "/new/phpstorm",
-  GoLand = "/new/GoLand",
+  GoLand = "/new/goland",
   RubyMine = "/new/rubymine",
   Kotlin = "/new/kotlin",
   Rust = "/new/rust",
@@ -329,23 +329,23 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.GoLandDashboard,
-          component: () => import("./components/GoLand/PerformanceDashboard.vue"),
+          component: () => import("./components/goland/PerformanceDashboard.vue"),
           meta: {pageTitle: "GoLand Performance dashboard"},
         },
         {
           path: ROUTES.GoLandTests,
-          component: () => import("./components/GoLand/PerformanceTests.vue"),
+          component: () => import("./components/goland/PerformanceTests.vue"),
           meta: {pageTitle: "GoLand Performance tests"},
         },
 
         {
           path: ROUTES.RubyMineDashboard,
-          component: () => import("./components/RubyMine/PerformanceDashboard.vue"),
+          component: () => import("./components/rubymine/PerformanceDashboard.vue"),
           meta: {pageTitle: "RubyMine Performance dashboard"},
         },
         {
           path: ROUTES.RubyMineTests,
-          component: () => import("./components/RubyMine/PerformanceTests.vue"),
+          component: () => import("./components/rubymine/PerformanceTests.vue"),
           meta: {pageTitle: "RubyMine Performance tests"},
         },
 

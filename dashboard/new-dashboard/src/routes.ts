@@ -15,6 +15,7 @@ const enum ROUTE_PREFIX {
   Rust = "/new/rust",
   Scala = "/new/scala",
   JBR = "/new/jbr",
+  Fleet = "/new/fleet",
 }
 
 const ROUTES = {
@@ -46,6 +47,9 @@ const ROUTES = {
   RustTests: `${ROUTE_PREFIX.Rust}/tests`,
   ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
   JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
+  FleetTest: `${ROUTE_PREFIX.Fleet}/tests`,
+  FleetPerfDashboard: `${ROUTE_PREFIX.Fleet}/perfDashboard`,
+  FleetStartupDashboard: `${ROUTE_PREFIX.Fleet}/startupDashboard`,
 }
 
 export const topNavigationItems: NavigationItem[] = [
@@ -78,6 +82,11 @@ export const topNavigationItems: NavigationItem[] = [
     path: ROUTES.JBRTests,
     name: "JBR",
     key: ROUTE_PREFIX.JBR,
+  },
+  {
+    path: ROUTES.FleetStartupDashboard,
+    name: "Fleet",
+    key: ROUTE_PREFIX.Fleet,
   },
   {
     path: ROUTES.RustTests,
@@ -210,6 +219,21 @@ export const JBRNavigationItems: NavigationItem[] = [
     name: "Tests",
   },
 ]
+
+export const FleetNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.FleetStartupDashboard,
+    name: "Starup Dashboard",
+  },
+  {
+    path: ROUTES.FleetPerfDashboard,
+    name: "Performance Dashboard",
+  },
+  {
+    path: ROUTES.FleetTest,
+    name: "Tests",
+  },
+]
 export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems
@@ -235,6 +259,9 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   }
   if (path.startsWith(ROUTE_PREFIX.JBR)) {
     return JBRNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.Fleet)) {
+    return FleetNavigationItems
   }
 
   return []
@@ -356,6 +383,21 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.JBRTests,
           component: () => import("./components/jbr/PerformanceTests.vue"),
           meta: {pageTitle: "JBR Performance tests"},
+        },
+        {
+          path: ROUTES.FleetTest,
+          component: () => import("./components/fleet/PerformanceTests.vue"),
+          meta: {pageTitle: "Fleet Performance tests"},
+        },
+        {
+          path: ROUTES.FleetPerfDashboard,
+          component: () => import("./components/fleet/PerformanceDashboard.vue"),
+          meta: {pageTitle: "Fleet Performance dashboard"},
+        },
+        {
+          path: ROUTES.FleetStartupDashboard,
+          component: () => import("./components/fleet/FleetDashboard.vue"),
+          meta: {pageTitle: "Fleet Startup dashboard"},
         },
       ],
     },

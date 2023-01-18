@@ -14,6 +14,7 @@ const enum ROUTE_PREFIX {
   Kotlin = "/new/kotlin",
   Rust = "/new/rust",
   Scala = "/new/scala",
+  JBR = "/new/jbr",
 }
 
 const ROUTES = {
@@ -44,6 +45,7 @@ const ROUTES = {
 
   RustTests: `${ROUTE_PREFIX.Rust}/tests`,
   ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
+  JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
 }
 
 export const topNavigationItems: NavigationItem[] = [
@@ -71,6 +73,11 @@ export const topNavigationItems: NavigationItem[] = [
     path: ROUTES.RubyMineDashboard,
     name: "RubyMine",
     key: ROUTE_PREFIX.RubyMine,
+  },
+  {
+    path: ROUTES.JBRTests,
+    name: "JBR",
+    key: ROUTE_PREFIX.JBR,
   },
   {
     path: ROUTES.RustTests,
@@ -196,6 +203,13 @@ export const ScalaNavigationItems: NavigationItem[] = [
     name: "Tests",
   },
 ]
+
+export const JBRNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.JBRTests,
+    name: "Tests",
+  },
+]
 export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems
@@ -218,6 +232,9 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   }
   if (path.startsWith(ROUTE_PREFIX.Scala)) {
     return ScalaNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.JBR)) {
+    return JBRNavigationItems
   }
 
   return []
@@ -244,7 +261,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.InteliJDevDashboard,
-          component: () => import("./components/inteliJ/PerformanceDevDashboard.vue.vue"),
+          component: () => import("./components/inteliJ/PerformanceDevDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer Dashboard"},
         },
         {
@@ -334,6 +351,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.RustTests,
           component: () => import("./components/scala/PerformanceTests.vue"),
           meta: {pageTitle: "Scala Performance tests"},
+        },
+        {
+          path: ROUTES.JBRTests,
+          component: () => import("./components/jbr/PerformanceTests.vue"),
+          meta: {pageTitle: "JBR Performance tests"},
         },
       ],
     },

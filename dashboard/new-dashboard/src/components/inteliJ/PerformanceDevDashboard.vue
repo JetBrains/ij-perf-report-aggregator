@@ -31,7 +31,6 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        </section>
         <section>
           <GroupProjectsChart
             label="Indexing"

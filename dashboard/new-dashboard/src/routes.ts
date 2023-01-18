@@ -9,12 +9,18 @@ export interface NavigationItem {
 const enum ROUTE_PREFIX {
   InteliJ = "/new/ij",
   PhpStorm = "/new/phpstorm",
+  GoLand = "/new/GoLand",
+  RubyMine = "/new/rubymine",
   Kotlin = "/new/kotlin",
 }
 
 const ROUTES = {
   InteliJDashboard: `${ROUTE_PREFIX.InteliJ}/dashboard`,
+  InteliJGradleDashboard: `${ROUTE_PREFIX.InteliJ}/gradleDashboard`,
+  InteliJMavenDashboard: `${ROUTE_PREFIX.InteliJ}/mavenDashboard`,
+  InteliJDevDashboard: `${ROUTE_PREFIX.InteliJ}/devDashboard`,
   InteliJTests: `${ROUTE_PREFIX.InteliJ}/tests`,
+  InteliJDevTests: `${ROUTE_PREFIX.InteliJ}/devTests`,
   InteliJCompare: `${ROUTE_PREFIX.InteliJ}/compare`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
@@ -26,6 +32,12 @@ const ROUTES = {
   KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
   KotlinExplore: `${ROUTE_PREFIX.Kotlin}/explore`,
   KotlinExploreDev: `${ROUTE_PREFIX.Kotlin}/exploreDev`,
+
+  GoLandDashboard: `${ROUTE_PREFIX.GoLand}/dashboard`,
+  GoLandTests: `${ROUTE_PREFIX.GoLand}/tests`,
+
+  RubyMineDashboard: `${ROUTE_PREFIX.RubyMine}/dashboard`,
+  RubyMineTests: `${ROUTE_PREFIX.RubyMine}/tests`,
 }
 
 export const topNavigationItems: NavigationItem[] = [
@@ -45,6 +57,16 @@ export const topNavigationItems: NavigationItem[] = [
     key: ROUTE_PREFIX.Kotlin,
   },
   {
+    path: ROUTES.GoLandDashboard,
+    name: "GoLand",
+    key: ROUTE_PREFIX.GoLand,
+  },
+  {
+    path: ROUTES.RubyMineDashboard,
+    name: "RubyMine",
+    key: ROUTE_PREFIX.RubyMine,
+  },
+  {
     path: "/",
     name: "Back to old",
   },
@@ -56,8 +78,24 @@ export const intelijTabNavigationItems: NavigationItem[] = [
     name: "Performance dashboard",
   },
   {
+    path: ROUTES.InteliJGradleDashboard,
+    name: "Gradle Import dashboard",
+  },
+  {
+    path: ROUTES.InteliJMavenDashboard,
+    name: "Maven Import dashboard",
+  },
+  {
+    path: ROUTES.InteliJDevDashboard,
+    name: "Performance dashboard (Fast Installer and Dev Server)",
+  },
+  {
     path: ROUTES.InteliJTests,
     name: "Performance tests",
+  },
+  {
+    path: ROUTES.InteliJDevTests,
+    name: "Performance Tests (Fast Installer and Dev Server)",
   },
   // {
   //   path: ROUTES.Compare,
@@ -83,6 +121,29 @@ export const phpStormNavigationItems: NavigationItem[] = [
     name: "Tests with Plugins",
   },
 ]
+
+export const GoLandNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.GoLandDashboard,
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.GoLandTests,
+    name: "Tests",
+  },
+]
+
+export const RubyMineNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.RubyMineDashboard,
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.RubyMineTests,
+    name: "Tests",
+  },
+]
+
 export const kotlinNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.KotlinDashboard,
@@ -112,6 +173,13 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.Kotlin)) {
     return kotlinNavigationItems
   }
+  if (path.startsWith(ROUTE_PREFIX.GoLand)) {
+    return GoLandNavigationItems
+  }
+
+  if (path.startsWith(ROUTE_PREFIX.RubyMine)) {
+    return RubyMineNavigationItems
+  }
 
   return []
 }
@@ -126,9 +194,29 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "InteliJ Performance dashboard"},
         },
         {
+          path: ROUTES.InteliJGradleDashboard,
+          component: () => import("./components/inteliJ/GradleImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "Gradle Import dashboard"},
+        },
+        {
+          path: ROUTES.InteliJMavenDashboard,
+          component: () => import("./components/inteliJ/MavenImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "Maven Import dashboard"},
+        },
+        {
+          path: ROUTES.InteliJDevDashboard,
+          component: () => import("./components/inteliJ/MavenImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer and Dev Server Dashboard"},
+        },
+        {
           path: ROUTES.InteliJTests,
           component: () => import("./components/inteliJ/PerformanceTests.vue"),
           meta: {pageTitle: "InteliJ Performance tests"},
+        },
+        {
+          path: ROUTES.InteliJDevTests,
+          component: () => import("./components/inteliJ/PerformanceTestsDev.vue"),
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer and Dev Server"},
         },
 
         {
@@ -151,6 +239,28 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           component: () => import("./components/phpstorm/PerformanceTests.vue"),
           meta: {pageTitle: "PhpStorm Performance tests"},
         },
+        {
+          path: ROUTES.GoLandDashboard,
+          component: () => import("./components/GoLand/PerformanceDashboard.vue"),
+          meta: {pageTitle: "GoLand Performance dashboard"},
+        },
+        {
+          path: ROUTES.GoLandTests,
+          component: () => import("./components/GoLand/PerformanceTests.vue"),
+          meta: {pageTitle: "GoLand Performance tests"},
+        },
+
+        {
+          path: ROUTES.RubyMineDashboard,
+          component: () => import("./components/RubyMine/PerformanceDashboard.vue"),
+          meta: {pageTitle: "RubyMine Performance dashboard"},
+        },
+        {
+          path: ROUTES.RubyMineTests,
+          component: () => import("./components/RubyMine/PerformanceTests.vue"),
+          meta: {pageTitle: "RubyMine Performance tests"},
+        },
+
         {
           path: ROUTES.KotlinExplore,
           component: () => import("./components/kotlin/KotlinExplore.vue"),

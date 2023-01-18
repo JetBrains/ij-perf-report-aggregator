@@ -12,6 +12,8 @@ const enum ROUTE_PREFIX {
   GoLand = "/new/GoLand",
   RubyMine = "/new/rubymine",
   Kotlin = "/new/kotlin",
+  Rust = "/new/rust",
+  Scala = "/new/scala",
 }
 
 const ROUTES = {
@@ -21,6 +23,7 @@ const ROUTES = {
   InteliJDevDashboard: `${ROUTE_PREFIX.InteliJ}/devDashboard`,
   InteliJTests: `${ROUTE_PREFIX.InteliJ}/tests`,
   InteliJDevTests: `${ROUTE_PREFIX.InteliJ}/devTests`,
+  InteliJSharedIndicesTests: `${ROUTE_PREFIX.InteliJ}/sharedIndicesTests`,
   InteliJCompare: `${ROUTE_PREFIX.InteliJ}/compare`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
@@ -38,6 +41,9 @@ const ROUTES = {
 
   RubyMineDashboard: `${ROUTE_PREFIX.RubyMine}/dashboard`,
   RubyMineTests: `${ROUTE_PREFIX.RubyMine}/tests`,
+
+  RustTests: `${ROUTE_PREFIX.Rust}/tests`,
+  ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
 }
 
 export const topNavigationItems: NavigationItem[] = [
@@ -67,6 +73,16 @@ export const topNavigationItems: NavigationItem[] = [
     key: ROUTE_PREFIX.RubyMine,
   },
   {
+    path: ROUTES.RustTests,
+    name: "Rust",
+    key: ROUTE_PREFIX.Rust,
+  },
+  {
+    path: ROUTES.ScalaTests,
+    name: "Scala",
+    key: ROUTE_PREFIX.Scala,
+  },
+  {
     path: "/",
     name: "Back to old",
   },
@@ -87,7 +103,7 @@ export const intelijTabNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.InteliJDevDashboard,
-    name: "Performance dashboard (Fast Installer and Dev Server)",
+    name: "Performance dashboard (Fast Installer)",
   },
   {
     path: ROUTES.InteliJTests,
@@ -95,7 +111,11 @@ export const intelijTabNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.InteliJDevTests,
-    name: "Performance Tests (Fast Installer and Dev Server)",
+    name: "Performance Tests (Fast Installer)",
+  },
+  {
+    path: ROUTES.InteliJSharedIndicesTests,
+    name: "Shared Indices",
   },
   // {
   //   path: ROUTES.Compare,
@@ -162,6 +182,20 @@ export const kotlinNavigationItems: NavigationItem[] = [
     name: "Explore (dev/fast installer)",
   },
 ]
+
+export const RustNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.RustTests,
+    name: "Tests",
+  },
+]
+
+export const ScalaNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.ScalaTests,
+    name: "Tests",
+  },
+]
 export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems
@@ -176,9 +210,14 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.GoLand)) {
     return GoLandNavigationItems
   }
-
   if (path.startsWith(ROUTE_PREFIX.RubyMine)) {
     return RubyMineNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.Rust)) {
+    return RustNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.Scala)) {
+    return ScalaNavigationItems
   }
 
   return []
@@ -205,8 +244,8 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.InteliJDevDashboard,
-          component: () => import("./components/inteliJ/MavenImportPerformanceDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer and Dev Server Dashboard"},
+          component: () => import("./components/inteliJ/PerformanceDevDashboard.vue.vue"),
+          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer Dashboard"},
         },
         {
           path: ROUTES.InteliJTests,
@@ -216,7 +255,12 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         {
           path: ROUTES.InteliJDevTests,
           component: () => import("./components/inteliJ/PerformanceTestsDev.vue"),
-          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer and Dev Server"},
+          meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer"},
+        },
+        {
+          path: ROUTES.InteliJSharedIndicesTests,
+          component: () => import("./components/inteliJ/SharedIndicesTests.vue"),
+          meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices"},
         },
 
         {
@@ -280,6 +324,16 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.KotlinDashboardDev,
           component: () => import("./components/kotlin/PerformanceDevDashboard.vue"),
           meta: {pageTitle: "Kotlin Performance dashboard (dev/fast installer)"},
+        },
+        {
+          path: ROUTES.RustTests,
+          component: () => import("./components/rust/PerformanceTests.vue"),
+          meta: {pageTitle: "Rust Performance tests"},
+        },
+        {
+          path: ROUTES.RustTests,
+          component: () => import("./components/scala/PerformanceTests.vue"),
+          meta: {pageTitle: "Scala Performance tests"},
         },
       ],
     },

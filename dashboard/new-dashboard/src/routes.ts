@@ -375,7 +375,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Rust Performance tests"},
         },
         {
-          path: ROUTES.RustTests,
+          path: ROUTES.ScalaTests,
           component: () => import("./components/scala/PerformanceTests.vue"),
           meta: {pageTitle: "Scala Performance tests"},
         },

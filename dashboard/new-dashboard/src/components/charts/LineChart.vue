@@ -89,7 +89,7 @@ onMounted(() => {
 
   chartManager.chart.on("click", (params: CallbackDataParams) => {
     if (params.dataIndex != undefined) {
-      sidebarVm?.show(getInfoDataFrom(params))
+      sidebarVm?.show(getInfoDataFrom(params, props.valueUnit))
     }
   })
 })

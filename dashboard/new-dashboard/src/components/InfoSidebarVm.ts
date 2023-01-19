@@ -1,6 +1,7 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { durationAxisPointerFormatter, timeFormatWithoutSeconds } from "shared/src/formatter"
+import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "shared/src/formatter"
 import { computed, ShallowRef, shallowRef } from "vue"
+import { ValueUnit } from "shared/src/chart"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>
@@ -26,7 +27,7 @@ export interface InfoData {
 
 const buildUrl = (id: number) =>`https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
-export function getInfoDataFrom(params: CallbackDataParams): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit): InfoData {
   const dataSeries = params.value as OptionDataValue[]
   //dev builds
   if(dataSeries.length == 4){
@@ -45,7 +46,7 @@ export function getInfoDataFrom(params: CallbackDataParams): InfoData {
       installerUrl: undefined,
       color: params.color as string,
       date: timeFormatWithoutSeconds.format(dateMs as number),
-      duration: durationAxisPointerFormatter(durationMs as number),
+      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
       machineName: machineName as string,
       projectName: params.seriesName!,
       title: "Title",
@@ -74,7 +75,7 @@ export function getInfoDataFrom(params: CallbackDataParams): InfoData {
       installerUrl,
       color: params.color as string,
       date: timeFormatWithoutSeconds.format(dateMs as number),
-      duration: durationAxisPointerFormatter(durationMs as number),
+      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
       machineName: machineName as string,
       projectName: params.seriesName!,
       title: "Title",
@@ -103,7 +104,7 @@ export function getInfoDataFrom(params: CallbackDataParams): InfoData {
     installerUrl,
     color: params.color as string,
     date: timeFormatWithoutSeconds.format(dateMs as number),
-    duration: durationAxisPointerFormatter(durationMs as number),
+    duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
     machineName: machineName as string,
     projectName: params.seriesName!,
     title: "Title",

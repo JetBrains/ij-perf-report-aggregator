@@ -49,7 +49,7 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ServerStackIcon class="w-4 h-4" /> Artifacts
+          <ServerStackIcon class="w-4 h-4" /> Test Artifacts
         </a>
         <a
           v-if="vm.data.value?.installerUrl !== undefined"
@@ -57,7 +57,7 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ArrowDownTrayIcon class="w-4 h-4" /> Snapshot
+          <ArrowDownTrayIcon class="w-4 h-4" /> Installer
         </a>
       </div>
     </div>

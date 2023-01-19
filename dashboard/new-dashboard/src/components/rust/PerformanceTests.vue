@@ -95,7 +95,7 @@ provideReportUrlProvider()
 
 const dbName = "perfint"
 const dbTable = "rust"
-const initialMachine = "linux-blade-hetzner"
+const initialMachine = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

@@ -95,7 +95,7 @@ provideReportUrlProvider()
 
 const dbName = "perfint"
 const dbTable = "idea"
-const initialMachine = "macMini Intel 3.2, 16GB"
+const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

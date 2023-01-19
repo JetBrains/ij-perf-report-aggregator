@@ -93,7 +93,7 @@ provideReportUrlProvider(false)
 
 const dbName = "perfintDev"
 const dbTable = "idea"
-const initialMachine = "linux-blade-hetzner"
+const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

@@ -42,7 +42,7 @@ export const chartDefaultStyle: ChartStyle = {
   valueUnit: "ms",
 }
 
-export type ValueUnit = "ms" | "ns"
+export type ValueUnit = "ms" | "ns" | "counter"
 
 export type ChartSymbolType = "circle" | "none"
 

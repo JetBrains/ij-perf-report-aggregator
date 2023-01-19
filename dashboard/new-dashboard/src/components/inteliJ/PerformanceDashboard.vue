@@ -39,6 +39,7 @@
               :aggregated-measure="'processingSpeed#JAVA'"
               :title="'Indexing Java (kB/s)'"
               :chart-color="'#219653'"
+              :value-unit="'counter'"
             />
           </div>
           <div class="flex-1">
@@ -47,6 +48,7 @@
               :aggregated-measure="'processingSpeed#Kotlin'"
               :title="'Indexing Kotlin (kB/s)'"
               :chart-color="'#9B51E0'"
+              :value-unit="'counter'"
             />
           </div>
           <div class="flex-1">

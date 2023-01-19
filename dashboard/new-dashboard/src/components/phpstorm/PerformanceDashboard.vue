@@ -39,6 +39,7 @@
               :aggregated-measure="'processingSpeed#PHP'"
               :title="'Indexing PHP (kB/s)'"
               :chart-color="'#219653'"
+              :value-unit="'counter'"
             />
           </div>
           <div class="flex-1">

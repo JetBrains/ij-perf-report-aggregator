@@ -7,15 +7,15 @@ export interface NavigationItem {
 }
 
 const enum ROUTE_PREFIX {
-  InteliJ = "/new/ij",
-  PhpStorm = "/new/phpstorm",
-  GoLand = "/new/goland",
-  RubyMine = "/new/rubymine",
-  Kotlin = "/new/kotlin",
-  Rust = "/new/rust",
-  Scala = "/new/scala",
-  JBR = "/new/jbr",
-  Fleet = "/new/fleet",
+  InteliJ = "/intellij",
+  PhpStorm = "/phpstorm",
+  GoLand = "/goland",
+  RubyMine = "/rubymine",
+  Kotlin = "/kotlin",
+  Rust = "/rust",
+  Scala = "/scala",
+  JBR = "/jbr",
+  Fleet = "/fleet",
 }
 
 const ROUTES = {
@@ -99,8 +99,8 @@ export const topNavigationItems: NavigationItem[] = [
     key: ROUTE_PREFIX.Scala,
   },
   {
-    path: "/",
-    name: "Back to old",
+    path: "/old",
+    name: "IJ startup(Back To Old)",
   },
 ]
 
@@ -234,6 +234,7 @@ export const FleetNavigationItems: NavigationItem[] = [
     name: "Tests",
   },
 ]
+
 export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
     return intelijTabNavigationItems

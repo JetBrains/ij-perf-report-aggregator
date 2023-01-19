@@ -81,6 +81,30 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
       title: "Title",
     }
   }
+  //jbr
+  if(dataSeries.length == 5){
+    const [
+      dateMs,
+      durationMs,
+      _,
+      machineName,
+      buildId,
+    ]  = dataSeries
+    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
+    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
+    return {
+      build: undefined,
+      artifactsUrl,
+      changesUrl,
+      installerUrl: undefined,
+      color: params.color as string,
+      date: timeFormatWithoutSeconds.format(dateMs as number),
+      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
+      machineName: machineName as string,
+      projectName: params.seriesName!,
+      title: "Title",
+    }
+  }
   const [
     dateMs,
     durationMs,

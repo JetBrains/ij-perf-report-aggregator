@@ -87,7 +87,9 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 
+provideReportUrlProvider(false)
 
 const dbName = "jbr"
 const dbTable = "report"

@@ -9,7 +9,7 @@
         {{ vm.average }}
       </span>
       <div class="text-sm text-neutral-500 font-normal">
-        Avg<div v-if="props.valueUnit !== 'counter'">, ms</div>
+        Avg<span v-if="props.valueUnit !== 'counter'">, ms</span>
       </div>
     </div>
 

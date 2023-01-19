@@ -129,6 +129,7 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -136,6 +137,8 @@ import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+
+provideReportUrlProvider()
 
 const dbName = "fleet"
 const dbTable = "report"

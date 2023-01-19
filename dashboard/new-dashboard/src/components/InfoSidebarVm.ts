@@ -17,16 +17,69 @@ export interface InfoData {
   projectName: string
   changesUrl: string
   artifactsUrl: string
-  installerUrl: string
+  installerUrl: string|undefined
   machineName: string
   duration: string
-  build: string
+  build: string|undefined
   date: string
 }
 
 const buildUrl = (id: number) =>`https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
 export function getInfoDataFrom(params: CallbackDataParams): InfoData {
+  const dataSeries = params.value as OptionDataValue[]
+  //dev builds
+  if(dataSeries.length == 4){
+    const [
+      dateMs,
+      durationMs,
+      machineName,
+      buildId,
+    ]  = dataSeries
+    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
+    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
+    return {
+      build: undefined,
+      artifactsUrl,
+      changesUrl,
+      installerUrl: undefined,
+      color: params.color as string,
+      date: timeFormatWithoutSeconds.format(dateMs as number),
+      duration: durationAxisPointerFormatter(durationMs as number),
+      machineName: machineName as string,
+      projectName: params.seriesName!,
+      title: "Title",
+    }
+  }
+  //fleet
+  if(dataSeries.length == 8){
+    const [
+      dateMs,
+      durationMs,
+      machineName,
+      buildId,
+      installerId,
+      buildVersion,
+      buildNum1,
+      buildNum2,
+    ] = params.value as OptionDataValue[]
+    const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
+    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
+    const installerUrl = `${buildUrl(installerId as number)}&tab=artifacts`
+    return {
+      build: fullBuildId,
+      artifactsUrl,
+      changesUrl,
+      installerUrl,
+      color: params.color as string,
+      date: timeFormatWithoutSeconds.format(dateMs as number),
+      duration: durationAxisPointerFormatter(durationMs as number),
+      machineName: machineName as string,
+      projectName: params.seriesName!,
+      title: "Title",
+    }
+  }
   const [
     dateMs,
     durationMs,

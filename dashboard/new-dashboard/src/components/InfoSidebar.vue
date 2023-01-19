@@ -52,6 +52,7 @@
           <ServerStackIcon class="w-4 h-4" /> Artifacts
         </a>
         <a
+          v-if="vm.data.value?.installerUrl !== undefined"
           :href="vm.data.value?.installerUrl"
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"

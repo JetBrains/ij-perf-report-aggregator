@@ -1,7 +1,7 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
+import { ValueUnit } from "shared/src/chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "shared/src/formatter"
 import { computed, ShallowRef, shallowRef } from "vue"
-import { ValueUnit } from "shared/src/chart"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>
@@ -29,97 +29,46 @@ const buildUrl = (id: number) =>`https://buildserver.labs.intellij.net/viewLog.h
 
 export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit): InfoData {
   const dataSeries = params.value as OptionDataValue[]
+  const dateMs = dataSeries[0] as number
+  const durationMs: number = dataSeries[1]  as number
+  let machineName: string|undefined
+  let buildId: number|undefined
+  let installerId: number|undefined
+  let buildVersion: number|undefined
+  let buildNum1: number|undefined
+  let buildNum2: number|undefined
   //dev builds
   if(dataSeries.length == 4){
-    const [
-      dateMs,
-      durationMs,
-      machineName,
-      buildId,
-    ]  = dataSeries
-    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
-    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
-    return {
-      build: undefined,
-      artifactsUrl,
-      changesUrl,
-      installerUrl: undefined,
-      color: params.color as string,
-      date: timeFormatWithoutSeconds.format(dateMs as number),
-      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
-      machineName: machineName as string,
-      projectName: params.seriesName!,
-      title: "Title",
-    }
+    machineName = dataSeries[2] as string
+    buildId = dataSeries[3] as number
   }
   //fleet
   if(dataSeries.length == 8){
-    const [
-      dateMs,
-      durationMs,
-      machineName,
-      buildId,
-      installerId,
-      buildVersion,
-      buildNum1,
-      buildNum2,
-    ] = params.value as OptionDataValue[]
-    const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
-    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
-    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
-    const installerUrl = `${buildUrl(installerId as number)}&tab=artifacts`
-    return {
-      build: fullBuildId,
-      artifactsUrl,
-      changesUrl,
-      installerUrl,
-      color: params.color as string,
-      date: timeFormatWithoutSeconds.format(dateMs as number),
-      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
-      machineName: machineName as string,
-      projectName: params.seriesName!,
-      title: "Title",
-    }
+    machineName = dataSeries[2] as string
+    buildId = dataSeries[3] as number
+    installerId = dataSeries[4] as number
+    buildVersion = dataSeries[5] as number
+    buildNum1 = dataSeries[6] as number
+    buildNum2 = dataSeries[7] as number
   }
   //jbr
   if(dataSeries.length == 5){
-    const [
-      dateMs,
-      durationMs,
-      _,
-      machineName,
-      buildId,
-    ]  = dataSeries
-    const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
-    const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
-    return {
-      build: undefined,
-      artifactsUrl,
-      changesUrl,
-      installerUrl: undefined,
-      color: params.color as string,
-      date: timeFormatWithoutSeconds.format(dateMs as number),
-      duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
-      machineName: machineName as string,
-      projectName: params.seriesName!,
-      title: "Title",
-    }
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
   }
-  const [
-    dateMs,
-    durationMs,
-    _,
-    machineName,
-    buildId,
-    installerId,
-    buildVersion,
-    buildNum1,
-    buildNum2,
-  ] = params.value as OptionDataValue[]
-  const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+  if(dataSeries.length == 9){
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
+    installerId = dataSeries[5] as number
+    buildVersion = dataSeries[6] as number
+    buildNum1 = dataSeries[7] as number
+    buildNum2 = dataSeries[8] as number
+  }
+
+  const fullBuildId = buildVersion == undefined ? undefined :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
   const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
-  const installerUrl = `${buildUrl(installerId as number)}&tab=artifacts`
+  const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`
 
   return {
     build: fullBuildId,
@@ -127,10 +76,10 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     changesUrl,
     installerUrl,
     color: params.color as string,
-    date: timeFormatWithoutSeconds.format(dateMs as number),
-    duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs as number),
+    date: timeFormatWithoutSeconds.format(dateMs),
+    duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs ),
     machineName: machineName as string,
-    projectName: params.seriesName!,
+    projectName: params.seriesName as string,
     title: "Title",
   }
 }

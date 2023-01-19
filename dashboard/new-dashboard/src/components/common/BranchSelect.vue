@@ -164,6 +164,9 @@ const props = defineProps<Props>()
 
 function createItems(configurator: DimensionConfigurator) {
   return computed(() => {
+    if (configurator === undefined || configurator.values === undefined) {
+      return {}
+    }
     const values = configurator.values.value
 
     return values.map(it => {

@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import { ValueUnit } from "shared/src/chart"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
@@ -21,7 +22,7 @@ interface Props {
   projects: Array<string>
   serverConfigurator: ServerConfigurator
   configurators: Array<DataQueryConfigurator>
-  valueUnit?: "ns" | "ms"
+  valueUnit?: ValueUnit
 }
 
 const props = withDefaults(defineProps<Props>(), {

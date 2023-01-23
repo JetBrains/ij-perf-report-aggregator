@@ -28,7 +28,7 @@
         </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ClockIcon class="w-4 h-4" />
-          {{ vm.data.value?.duration }}
+          {{ vm.data.value?.value }}
         </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ComputerDesktopIcon class="w-4 h-4" />

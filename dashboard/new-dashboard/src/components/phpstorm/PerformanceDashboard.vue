@@ -255,6 +255,15 @@
             :configurators="dashboardConfigurators"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="Inline Rename"
+            measure="startInlineRename"
+            :projects="['mpdf/inlineRename']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
       </div>
       <InfoSidebar />
     </main>

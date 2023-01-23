@@ -37,6 +37,8 @@ const ROUTES = {
   KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
   KotlinExplore: `${ROUTE_PREFIX.Kotlin}/explore`,
   KotlinExploreDev: `${ROUTE_PREFIX.Kotlin}/exploreDev`,
+  KotlinCompletion: `${ROUTE_PREFIX.Kotlin}/completion`,
+  KotlinCompletionDev: `${ROUTE_PREFIX.Kotlin}/completionDev`,
 
   GoLandDashboard: `${ROUTE_PREFIX.GoLand}/dashboard`,
   GoLandTests: `${ROUTE_PREFIX.GoLand}/tests`,
@@ -186,16 +188,24 @@ export const kotlinNavigationItems: NavigationItem[] = [
     name: "Dashboard",
   },
   {
-    path: ROUTES.KotlinDashboardDev,
-    name: "Dashboard (dev/fast installer)",
-  },
-  {
     path: ROUTES.KotlinExplore,
     name: "Explore",
   },
   {
+    path: ROUTES.KotlinDashboardDev,
+    name: "Dashboard (dev/fast installer)",
+  },
+  {
     path: ROUTES.KotlinExploreDev,
     name: "Explore (dev/fast installer)",
+  },
+  {
+    path: ROUTES.KotlinCompletion,
+    name: "Completion dashboard",
+  },
+  {
+    path: ROUTES.KotlinCompletionDev,
+    name: "Completion dashboard (dev/fast installer)",
   },
 ]
 
@@ -357,7 +367,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.KotlinExploreDev,
-          component: () => import("./components/kotlin/KotlinDevExplore.vue"),
+          component: () => import("./components/kotlin/dev/KotlinDevExplore.vue"),
           meta: {pageTitle: "Kotlin Performance tests explore (dev/fast installer)"},
         },
         {
@@ -367,8 +377,18 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.KotlinDashboardDev,
-          component: () => import("./components/kotlin/PerformanceDevDashboard.vue"),
+          component: () => import("./components/kotlin/dev/PerformanceDevDashboard.vue"),
           meta: {pageTitle: "Kotlin Performance dashboard (dev/fast installer)"},
+        },
+        {
+          path: ROUTES.KotlinCompletion,
+          component: () => import("./components/kotlin/KotlinCompletionDashboard.vue"),
+          meta: {pageTitle: "Kotlin completion"},
+        },
+        {
+          path: ROUTES.KotlinCompletionDev,
+          component: () => import("./components/kotlin/dev/KotlinCompletionDevDashboard.vue"),
+          meta: {pageTitle: "Kotlin completion (dev/fast)"},
         },
         {
           path: ROUTES.RustTests,

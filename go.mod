@@ -6,7 +6,7 @@ go 1.18
 
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7
-	github.com/ClickHouse/ch-go v0.51.0
+	github.com/ClickHouse/ch-go v0.51.1
 	github.com/ClickHouse/clickhouse-go/v2 v2.5.0
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.4

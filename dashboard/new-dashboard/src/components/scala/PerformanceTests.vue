@@ -94,8 +94,8 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 provideReportUrlProvider()
 
 const dbName = "perfint"
-const dbTable = "idea"
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+const dbTable = "scala"
+const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

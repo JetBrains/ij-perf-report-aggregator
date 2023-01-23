@@ -13,7 +13,6 @@
         </TimeRangeSelect>
         <BranchSelect
           :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect
@@ -77,7 +76,6 @@ import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
@@ -91,9 +89,9 @@ import LineChart from "../charts/LineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
-provideReportUrlProvider()
+provideReportUrlProvider(false)
 
-const dbName = "perfint"
+const dbName = "perfintDev"
 const dbTable = "idea"
 const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
@@ -139,7 +137,6 @@ const measureConfigurator = new MeasureConfigurator(
   true,
   "line",
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 
 const configurators = [
   serverConfigurator,
@@ -148,7 +145,6 @@ const configurators = [
   machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
-  releaseConfigurator,
 ]
 
 function onChangeRange(value: string) {

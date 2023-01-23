@@ -94,7 +94,7 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 provideReportUrlProvider()
 
 const dbName = "perfint"
-const dbTable = "idea"
+const dbTable = "ideaSharedIndices"
 const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()

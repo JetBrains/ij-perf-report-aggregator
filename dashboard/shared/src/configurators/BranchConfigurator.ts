@@ -31,7 +31,7 @@ export class BranchConfigurator extends DimensionConfigurator {
           return values[index]
         },
         getMeasureName(_index: number): string {
-          return configuration.measures[0]
+          return values[_index]
         },
       },
     )

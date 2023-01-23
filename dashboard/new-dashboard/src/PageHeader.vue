@@ -13,20 +13,15 @@
       :model="items"
       :popup="true"
     />
-
-    <ServerSelect v-model="serverUrl" />
   </div>
 </template>
 
 <script setup lang="ts">
 import Menu from "primevue/menu"
-import ServerSelect from "shared/src/components/ServerSelect.vue"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { ref, shallowRef } from "vue"
+import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { topNavigationItems } from "./routes"
 
-const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
 const menuItems = topNavigationItems.map(({ path, name }) => ({
     label: name,
     url: path,

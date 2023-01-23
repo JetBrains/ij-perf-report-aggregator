@@ -39,6 +39,7 @@
               :aggregated-measure="'processingSpeed#PHP'"
               :title="'Indexing PHP (kB/s)'"
               :chart-color="'#219653'"
+              :value-unit="'counter'"
             />
           </div>
           <div class="flex-1">
@@ -123,8 +124,17 @@
           <GroupProjectsChart
             label="Indexing"
             measure="indexing"
+            :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing', 'shopware/indexing']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Indexing"
+            measure="indexing"
             :projects="['WI_39333/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
-                        'shopware/indexing', 'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
+                        'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

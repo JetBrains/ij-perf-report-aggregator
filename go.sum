@@ -34,8 +34,8 @@ github.com/Azure/go-autorest/logger v0.2.1/go.mod h1:T9E3cAhj2VqvPOtCYAvby9aBXkZ
 github.com/Azure/go-autorest/tracing v0.6.0 h1:TYi4+3m5t6K48TGI9AUdb+IzbnSxvnvUMfuitfgcfuo=
 github.com/Azure/go-autorest/tracing v0.6.0/go.mod h1:+vhtPC754Xsa23ID7GlGsrdKBpUA79WCAKPPZVC2DeU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/ClickHouse/ch-go v0.51.0 h1:APpjlLifKMgRp1b94cujX7dRZLL4DjbtMVs7qRoUPqg=
-github.com/ClickHouse/ch-go v0.51.0/go.mod h1:laZ+vBk0hO3UBQblUXqECDcy71K+/tcIfs7ZjN0evgc=
+github.com/ClickHouse/ch-go v0.51.1 h1:qT66gldDXAzZNbgu3E/LwTROWrZejG6n8tVMRuyw/vA=
+github.com/ClickHouse/ch-go v0.51.1/go.mod h1:z+/hEezvvHvRMV/I00CaXBnxOx+td4zRe7HJpBYLwGU=
 github.com/ClickHouse/clickhouse-go v1.5.4 h1:cKjXeYLNWVJIx2J1K6H2CqyRmfwVJVY1OV1coaaFcI0=
 github.com/ClickHouse/clickhouse-go v1.5.4/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
 github.com/ClickHouse/clickhouse-go/v2 v2.5.0 h1:zJHnnGTXwANqryLI3c9dESa8g5aij6zTTL1QL7SW5sk=

@@ -2,13 +2,13 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "4.5.14",
-    "@fontsource/jetbrains-mono": "4.5.11",
+    "@fontsource/inter": "4.5.15",
+    "@fontsource/jetbrains-mono": "4.5.12",
     "ij": "workspace:*",
     "new-dashboard": "workspace:*",
-    "primevue": "3.20.0",
+    "primevue": "3.22.3",
     "report-visualizer": "workspace:*",
-    "rxjs": "8.0.0-alpha.5",
+    "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
     "vue": "3.2.45",
     "vue-router": "4.1.6"

@@ -29,43 +29,43 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Performance Tests",
-          to: "/intellij/performanceTests",
+          to: "/old/intellij/performanceTests",
         },
         {
           label: "Performance Tests (Fast Installer and Dev Server)",
-          to: "/intellij/performanceTestsFastInstallerDevServer",
+          to: "/old/intellij/performanceTestsFastInstallerDevServer",
         },
         {
           label: "Performance Dashboard",
-          to: "/intellij/dashboard",
+          to: "/old/intellij/dashboard",
         },
         {
           label: "Performance Dashboard (New)",
-          to: "/new",
+          to: "/",
         },
         {
           label: "Performance Dashboard (Fast Installer and Dev Server)",
-          to: "/intellij/dashboardFastInstallerDevServer",
+          to: "/old/intellij/dashboardFastInstallerDevServer",
         },
         {
           label: "Gradle Import Dashboard",
-          to: "/intellij/gradleImportDashboard",
+          to: "/old/intellij/gradleImportDashboard",
         },
         {
           label: "Maven Import Dashboard",
-          to: "/intellij/mavenImportDashboard",
+          to: "/old/intellij/mavenImportDashboard",
         },
         {
           label: "Shared Indexes",
-          to: "/intellij/sharedIndexes",
+          to: "/old/intellij/sharedIndexes",
         },
         {
           label: "With Rust Plugin",
-          to: "/intellij/rust/performanceTests",
+          to: "/old/intellij/rust/performanceTests",
         },
         {
           label: "Scala Plugin",
-          to: "/intellij/scala/performanceTests",
+          to: "/old/intellij/scala/performanceTests",
         },
       ]
     },
@@ -74,19 +74,19 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Dashboard",
-          to: "/phpstorm/dashboard",
+          to: "/old/phpstorm/dashboard",
         },
         {
           label: "Explore",
-          to: "/phpstorm/performanceTests",
+          to: "/old/phpstorm/performanceTests",
         },
         {
           label: "Dashboard With Plugins",
-          to: "/phpstorm/dashboardWithPlugins",
+          to: "/old/phpstorm/dashboardWithPlugins",
         },
         {
           label: "Explore With Plugins",
-          to: "/phpstorm/performanceTestsWithPlugins",
+          to: "/old/phpstorm/performanceTestsWithPlugins",
         },
       ]
     },
@@ -95,11 +95,11 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Dashboard",
-          to: "/rubymine/dashboard",
+          to: "/old/rubymine/dashboard",
         },
         {
           label: "Explore",
-          to: "/rubymine/performanceTests",
+          to: "/old/rubymine/performanceTests",
         },
       ]
     },
@@ -108,11 +108,11 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Dashboard",
-          to: "/goland/dashboard",
+          to: "/old/goland/dashboard",
         },
         {
           label: "Explore",
-          to: "/goland/performanceTests",
+          to: "/old/goland/performanceTests",
         },
       ]
     },
@@ -121,7 +121,7 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Explore",
-          to: "/datagrip/performanceTests",
+          to: "/old/datagrip/performanceTests",
         },
       ]
     },
@@ -129,19 +129,19 @@ export function getIjItems(): Array<MenuItem> {
       label: "Fleet",
       items: [
         {
-          to: "/fleet/dashboard",
+          to: "/old/fleet/dashboard",
           label: "Startup Dashboard",
         },
         {
-          to: "/fleet/perf/dashboard",
+          to: "/old/fleet/perf/dashboard",
           label: "Performance Dashboard",
         },
         {
-          to: "/fleet/perf",
+          to: "/old/fleet/perf",
           label: "Performance Tests",
         },
         {
-          to: "/fleet/explore",
+          to: "/old/fleet/explore",
           label: "Explore",
         },
       ],
@@ -151,27 +151,27 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Dashboard",
-          to: "/kotlin/pluginDashboard",
+          to: "/old/kotlin/pluginDashboard",
         },
         {
           label: "Dashboard (Fast installer/Dev)",
-          to: "/kotlin/pluginDashboardFastOrDev",
+          to: "/old/kotlin/pluginDashboardFastOrDev",
         },
         {
           label: "Explore",
-          to: "/kotlin/performanceKotlinPluginTests",
+          to: "/old/kotlin/performanceKotlinPluginTests",
         },
          {
           label: "Explore (Dev)",
-          to: "/kotlin/performanceKotlinPluginTestsDev",
+          to: "/old/kotlin/performanceKotlinPluginTestsDev",
         },
         {
           label: "Build kts",
-          to: "/kotlin/buildScript"
+          to: "/old/kotlin/buildScript"
         },
         {
           label: "MPP projects",
-          to: "/kotlin/mppProjects"
+          to: "/old/kotlin/mppProjects"
         },
       ]
     },
@@ -180,7 +180,7 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "Explore",
-          to: "/jbr/performanceTests",
+          to: "/old/jbr/performanceTests",
         },
       ]
     },
@@ -189,11 +189,11 @@ export function getIjItems(): Array<MenuItem> {
       items: [
         {
           label: "PhpStorm",
-          to: "/aggregates/phpstorm",
+          to: "/old/aggregates/phpstorm",
         },
         {
           label: "IDEA",
-          to: "/aggregates/idea",
+          to: "/old/aggregates/idea",
         },
       ]
     }
@@ -239,7 +239,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children:[
         {
-          path: "/intellij/sharedIndexes",
+          path: "/old/intellij/sharedIndexes",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -249,7 +249,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Shared Indexes"},
         },
         {
-          path: "/intellij/performanceTests",
+          path: "/old/intellij/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -260,7 +260,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests"},
         },
         {
-          path: "/intellij/performanceTestsFastInstallerDevServer",
+          path: "/old/intellij/performanceTestsFastInstallerDevServer",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfintDev",
@@ -271,27 +271,27 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer and Dev Server"},
         },
         {
-          path: "/intellij/dashboardFastInstallerDevServer",
+          path: "/old/intellij/dashboardFastInstallerDevServer",
           component: () => import("./idea/IdeaPerformanceFastInstallerDevServerDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer and Dev Server Dashboard"},
         },
         {
-          path: "/intellij/dashboard",
+          path: "/old/intellij/dashboard",
           component: () => import("./idea/IdeaPerformanceDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests Dashboard"},
         },
         {
-          path: "/intellij/gradleImportDashboard",
+          path: "/old/intellij/gradleImportDashboard",
           component: () => import("./idea/GradleImportPerformanceDashboard.vue"),
           meta: {pageTitle: "Performance Tests on Gradle Import"},
         },
         {
-          path: "/intellij/mavenImportDashboard",
+          path: "/old/intellij/mavenImportDashboard",
           component: () => import("./idea/MavenImportPerformanceDashboard.vue"),
           meta: {pageTitle: "Performance Tests on Maven Import"},
         },
         {
-          path: "/intellij/rust/performanceTests",
+          path: "/old/intellij/rust/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -301,7 +301,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ with Rust Plugin"},
         },
         {
-          path: "/intellij/scala/performanceTests",
+          path: "/old/intellij/scala/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -315,7 +315,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/rubymine/performanceTests",
+          path: "/old/rubymine/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -325,7 +325,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore RubyMine Tests"},
         },
         {
-          path: "/rubymine/dashboard",
+          path: "/old/rubymine/dashboard",
           component: () => import("./rubymine/RubyMineDashboard.vue"),
           meta: {pageTitle: "RubyMine Dashboard"},
         },
@@ -334,7 +334,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/kotlin/performanceKotlinPluginTests",
+          path: "/old/kotlin/performanceKotlinPluginTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -344,7 +344,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore Kotlin plugin Tests"},
         },
         {
-          path: "/kotlin/performanceKotlinPluginTestsDev",
+          path: "/old/kotlin/performanceKotlinPluginTestsDev",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfintDev",
@@ -355,12 +355,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore Kotlin plugin Tests (Dev)"},
         },
         {
-          path: "/kotlin/pluginDashboard",
+          path: "/old/kotlin/pluginDashboard",
           component: () => import("./kotlin/KotlinPluginDashboard.vue"),
           meta: {pageTitle: "Kotlin plugin Dashboard"},
         },
         {
-          path: "/kotlin/pluginDashboardFastOrDev",
+          path: "/old/kotlin/pluginDashboardFastOrDev",
           component: () => import("./kotlin/KotlinPluginDashboardFastInstallerOrDev.vue"),
           props: {
             installerExists: false,
@@ -368,7 +368,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Kotlin plugin Dashboard (Fast installer/Dev)"},
         },
         {
-          path: "/kotlin/buildScript",
+          path: "/old/kotlin/buildScript",
           component: () => import("./kotlin/KotlinBuildScriptDashboard.vue"),
           props: {
             installerExists: false,
@@ -376,7 +376,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Kotlin build kts dashboard"},
         },
         {
-          path: "/kotlin/mppProjects",
+          path: "/old/kotlin/mppProjects",
           component: () => import("./kotlin/MppProjectsDashboard.vue"),
           props: {
             installerExists: false,
@@ -388,7 +388,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/datagrip/performanceTests",
+          path: "/old/datagrip/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -402,7 +402,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/goland/performanceTests",
+          path: "/old/goland/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -412,7 +412,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore GoLand Tests"},
         },
         {
-          path: "/goland/dashboard",
+          path: "/old/goland/dashboard",
           component: () => import("./goland/GolandDashboard.vue"),
           meta: {pageTitle: "GoLand Dashboard"},
         },
@@ -421,7 +421,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/phpstorm/performanceTests",
+          path: "/old/phpstorm/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -431,12 +431,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore PhpStorm Tests"},
         },
         {
-          path: "/phpstorm/dashboard",
+          path: "/old/phpstorm/dashboard",
           component: () => import("./phpstorm/PhpStormDashboard.vue"),
           meta: {pageTitle: "PhpStorm Dashboard"},
         },
         {
-          path: "/phpstorm/performanceTestsWithPlugins",
+          path: "/old/phpstorm/performanceTestsWithPlugins",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -446,7 +446,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Explore PhpStorm Tests With Plugins"},
         },
         {
-          path: "/phpstorm/dashboardWithPlugins",
+          path: "/old/phpstorm/dashboardWithPlugins",
           component: () => import("./phpstorm/PhpStormDashboardWithPlugins.vue"),
           meta: {pageTitle: "PhpStorm With Plugins Dashboard"},
         },
@@ -455,12 +455,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/fleet/dashboard",
+          path: "/old/fleet/dashboard",
           meta: {pageTitle: "Fleet Dashboard", menuTitle: "Dashboard"},
           component: () => import("./fleet/FleetDashboard.vue"),
         },
         {
-          path: "/fleet/perf",
+          path: "/old/fleet/perf",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "fleet",
@@ -473,12 +473,12 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Fleet Performance Tests"},
         },
         {
-          path: "/fleet/perf/dashboard",
+          path: "/old/fleet/perf/dashboard",
           component: () => import("./fleet/FleetPerformanceDashboard.vue"),
           meta: {pageTitle: "Fleet Performance Dashboard"},
         },
         {
-          path: "/fleet/explore",
+          path: "/old/fleet/explore",
           component: () => import("./fleet/FleetExplore.vue"),
           meta: {pageTitle: "Fleet Explore"},
         },
@@ -487,7 +487,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/jbr/performanceTests",
+          path: "/old/jbr/performanceTests",
           component: () => import("shared/src/components/GenericMetricDashboard.vue"),
           props: {
             dbName: "jbr",
@@ -502,7 +502,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: "/aggregates/phpstorm",
+          path: "/old/aggregates/phpstorm",
           component: () => import("shared/src/components/GenericAggregatedDashboard.vue"),
           props: {
             dbName: "perfint",
@@ -511,7 +511,7 @@ export function getIjRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "PhpStorm Aggregated Dashboard"},
         },
         {
-          path: "/aggregates/idea",
+          path: "/old/aggregates/idea",
           component: () => import("shared/src/components/GenericAggregatedDashboard.vue"),
           props: {
             dbName: "perfint",

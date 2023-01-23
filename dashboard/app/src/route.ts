@@ -24,11 +24,11 @@ export function createAndConfigureRouter(): Router {
   const routes: Array<RouteRecordRaw> = [
     {
       path: "",
-      redirect: "/ij/pulse",
+      redirect: "/intellij/dashboard",
     },
     {
-      path: "/new",
-      redirect: "/new/ij/dashboard",
+      path: "/old",
+      redirect: "/ij/pulse",
     },
     {
       path: "/:catchAll(.*)",

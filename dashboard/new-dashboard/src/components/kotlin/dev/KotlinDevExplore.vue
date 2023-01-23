@@ -81,13 +81,13 @@ import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigu
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import InfoSidebar from "../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
-import LineChart from "../charts/LineChart.vue"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { containerKey, sidebarVmKey } from "../../../shared/keys"
+import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../../shared/labels"
+import InfoSidebar from "../../InfoSidebar.vue"
+import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
+import LineChart from "../../charts/LineChart.vue"
+import BranchSelect from "../../common/BranchSelect.vue"
+import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider(false)
 

@@ -13,6 +13,7 @@
         </TimeRangeSelect>
         <BranchSelect
           :branch-configurator="branchConfigurator"
+          :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionHierarchicalSelect
@@ -31,6 +32,26 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
+        <section class="flex gap-6">
+          <div class="flex-1">
+            <AggregationChart
+              :configurators="averagesConfigurators"
+              :aggregated-measure="'completion\_%'"
+              :aggregated-project="'%\_k1'"
+              :is-like="true"
+              :title="'completion K1'"
+            />
+          </div>
+          <div class="flex-1">
+            <AggregationChart
+              :configurators="averagesConfigurators"
+              :aggregated-measure="'completion\_%'"
+              :aggregated-project="'%\_k2'"
+              :is-like="true"
+              :title="'completion K2'"
+            />
+          </div>
+        </section>
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
@@ -50,6 +71,7 @@
             />
           </div>
         </section>
+
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
@@ -111,120 +133,35 @@
             />
           </div>
         </section>
-
-        <section>
-          <GroupProjectsChart
-            label="Highlight mean value with Library cache K1 on intellij"
-            measure="highlighting#mean_value"
-            :projects="[
-              'intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache_k1',
-              'intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache_k1',
-              'intellij_commit/highlight/ContentManagerImpl_with_library_cache_k1',
-              'intellij_commit/highlight/JdkList_with_library_cache_k1',
-              'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k1',
-              'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k1',
-              'intellij_commit/highlight/AndroidModelTest_with_library_cache_k1',
-              'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Highlight mean value with Library cache K2 on intellij"
-            measure="highlighting#mean_value"
-            :projects="[
-              'intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache_k2',
-              'intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache_k2',
-              'intellij_commit/highlight/ContentManagerImpl_with_library_cache_k2',
-              'intellij_commit/highlight/JdkList_with_library_cache_k2',
-              'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k2',
-              'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k2',
-              'intellij_commit/highlight/AndroidModelTest_with_library_cache_k2',
-              'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Highlight mean value with Library cache K1"
-            measure="highlighting#mean_value"
-            :projects="[
-              'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
-              'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
-              'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
-              'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
-              'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
-              'kotlin_lang/highlight/CommonParser_with_library_cache_k1',
-              'kotlin_lang/highlight/FirErrors_with_library_cache_k1',
-              'kotlin_lang/highlight/Flag_with_library_cache_k1',
-              'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
-              'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-          <GroupProjectsChart
-            label="Highlight mean value with Library cache K2"
-            measure="highlighting#mean_value"
-            :projects="[
-              'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k2',
-              'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k2',
-              'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',
-              'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
-              'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
-              'kotlin_lang/highlight/CommonParser_with_library_cache_k2',
-              'kotlin_lang/highlight/FirErrors_with_library_cache_k2',
-              'kotlin_lang/highlight/Flag_with_library_cache_k2',
-              'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
-              'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages mean value with Library cache K1"
-            measure="findUsages#mean_value"
-            :projects="[
-              'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k1',
-              'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
-              'intellij_commit/findUsages/OraIntrospector_with_library_cache_k1',
-              'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k1',
-              'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k1',
-              'kotlin_lang/findUsages/FirErrors_with_library_cache_k1',
-              'kotlin_lang/findUsages/Flag_with_library_cache_k1',
-              'kotlin_lang/findUsages/CommonParser_with_library_cache_k1',
-              'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
-              'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages mean value with Library cache K2"
-            measure="findUsages#mean_value"
-            :projects="[
-              'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
-              'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
-              'intellij_commit/findUsages/OraIntrospector_with_library_cache_k2',
-              'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k2',
-              'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k2',
-              'kotlin_lang/findUsages/FirErrors_with_library_cache_k2',
-              'kotlin_lang/findUsages/Flag_with_library_cache_k2',
-              'kotlin_lang/findUsages/CommonParser_with_library_cache_k2',
-              'kotlin_lang/findUsages/SymbolTable_with_library_cache_k2',
-              'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="Completion mean value Kotlin language server K1"
+              measure="completion#mean_value"
+              :projects="[
+                'kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache_k1',
+                'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_typing_with_library_cache_k1',
+                'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
+                'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="Completion mean value Kotlin language server K2"
+              measure="completion#mean_value"
+              :projects="[
+                'kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache_k2',
+                'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_typing_with_library_cache_k2',
+                'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
+                'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
         </section>
       </div>
       <InfoSidebar />
@@ -238,9 +175,9 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
+import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -250,10 +187,11 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import AggregationChart from "../charts/AggregationChart.vue"
 
-provideReportUrlProvider(false)
+provideReportUrlProvider()
 
-const dbName = "perfintDev"
+const dbName = "perfint"
 const dbTable = "kotlin"
 const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
@@ -264,7 +202,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("kotlinDev_dashboard", {
+const persistenceForDashboard = new PersistentStateManager("kotlin_completion_dashboard", {
   machine: initialMachine,
   project: [],
   branch: "master",
@@ -278,17 +216,27 @@ const machineConfigurator = new MachineConfigurator(
   persistenceForDashboard,
   [timeRangeConfigurator, branchConfigurator],
 )
+const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
   [branchConfigurator, timeRangeConfigurator],
 )
 
+
+const averagesConfigurators = [
+  serverConfigurator,
+  branchConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+]
+
 const dashboardConfigurators = [
   serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
+  releaseConfigurator,
   triggeredByConfigurator,
 ]
 

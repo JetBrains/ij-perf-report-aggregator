@@ -34,6 +34,7 @@ interface AggregationChartProps {
   chartColor?: string
   configurators: Array<DataQueryConfigurator>
   aggregatedMeasure: string
+  aggregatedProject: string
   isLike?: boolean
   title: string
 }
@@ -46,6 +47,9 @@ const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
     query.addFilter({f: "measures.name", v: props.aggregatedMeasure, o: props.isLike ? "like" : "="})
+    if (props.aggregatedProject !== undefined) {
+      query.addFilter({f: "project", v: props.aggregatedProject, o: props.isLike ? "like" : "="})
+    }
     return true
   },
   createObservable() {

@@ -13,7 +13,6 @@
         </TimeRangeSelect>
         <BranchSelect
           :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionHierarchicalSelect
@@ -32,62 +31,6 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <section class="flex gap-6">
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'completion\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'completion K1'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'completion\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'completion K2'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'highlighting\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'highlighting K1'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'highlighting\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'highlighting K2'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'findUsage\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'findUsage K1'"
-            />
-          </div>
-          <div class="flex-1">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'findUsage\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'findUsage K2'"
-            />
-          </div>
-        </section>
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
@@ -295,23 +238,22 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import InfoSidebar from "../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import AggregationChart from "../charts/AggregationChart.vue"
+import { containerKey, sidebarVmKey } from "../../../shared/keys"
+import InfoSidebar from "../../InfoSidebar.vue"
+import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
+import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import BranchSelect from "../../common/BranchSelect.vue"
+import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 
-provideReportUrlProvider()
+provideReportUrlProvider(false)
 
-const dbName = "perfint"
+const dbName = "perfintDev"
 const dbTable = "kotlin"
 const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
@@ -322,7 +264,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("kotlin_dashboard", {
+const persistenceForDashboard = new PersistentStateManager("kotlinDev_dashboard", {
   machine: initialMachine,
   project: [],
   branch: "master",
@@ -336,7 +278,6 @@ const machineConfigurator = new MachineConfigurator(
   persistenceForDashboard,
   [timeRangeConfigurator, branchConfigurator],
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
@@ -348,15 +289,7 @@ const dashboardConfigurators = [
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  releaseConfigurator,
   triggeredByConfigurator,
-]
-
-const averagesConfigurators = [
-  serverConfigurator,
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
 ]
 
 function onChangeRange(value: string) {

@@ -20,23 +20,24 @@ export interface InfoData {
   artifactsUrl: string
   installerUrl: string|undefined
   machineName: string
-  duration: string
+  value: string
   build: string|undefined
   date: string
 }
 
-const buildUrl = (id: number) =>`https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
+const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
 export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit): InfoData {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
-  const durationMs: number = dataSeries[1]  as number
+  const value: number = dataSeries[1]  as number
   let machineName: string|undefined
   let buildId: number|undefined
   let installerId: number|undefined
   let buildVersion: number|undefined
   let buildNum1: number|undefined
   let buildNum2: number|undefined
+  let type: ValueUnit|undefined = valueUnit
   //dev builds
   if(dataSeries.length == 4){
     machineName = dataSeries[2] as string
@@ -52,11 +53,17 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum2 = dataSeries[7] as number
   }
   //jbr
-  if(dataSeries.length == 5){
+  if (dataSeries.length == 5) {
+    if (dataSeries[2] == "c") {
+      type = "counter"
+    }
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
   }
-  if(dataSeries.length == 9){
+  if (dataSeries.length == 9) {
+    if (dataSeries[2] == "c") {
+      type = "counter"
+    }
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
     installerId = dataSeries[5] as number
@@ -70,6 +77,11 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`
 
+  let showValue = value.toString()
+  if(type != "counter"){
+    showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value )
+  }
+
   return {
     build: fullBuildId,
     artifactsUrl,
@@ -77,7 +89,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     installerUrl,
     color: params.color as string,
     date: timeFormatWithoutSeconds.format(dateMs),
-    duration: durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(durationMs) : durationMs ),
+    value: showValue,
     machineName: machineName as string,
     projectName: params.seriesName as string,
     title: "Title",

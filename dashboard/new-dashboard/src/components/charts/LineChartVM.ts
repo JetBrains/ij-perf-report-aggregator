@@ -58,10 +58,10 @@ export class LineChartVM {
         // Formatting
         formatter(params: CallbackDataParams) {
           const element = document.createElement("div")
-          const [dateMs, durationMs] = params.value as OptionDataValue[]
+          const [dateMs, durationMs, type] = params.value as OptionDataValue[]
 
           element.append(
-            durationAxisPointerFormatter(durationMs as number),
+            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(durationMs as number),
             document.createElement("br"),
             timeFormatWithoutSeconds.format(dateMs as number),
           )

@@ -92,7 +92,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     value: showValue,
     machineName: machineName as string,
     projectName: params.seriesName as string,
-    title: "Title",
+    title: "Details",
   }
 }
 

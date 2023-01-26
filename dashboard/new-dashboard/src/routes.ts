@@ -7,7 +7,7 @@ export interface NavigationItem {
 }
 
 const enum ROUTE_PREFIX {
-  InteliJ = "/intellij",
+  IntelliJ = "/intellij",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -19,14 +19,15 @@ const enum ROUTE_PREFIX {
 }
 
 const ROUTES = {
-  InteliJDashboard: `${ROUTE_PREFIX.InteliJ}/dashboard`,
-  InteliJGradleDashboard: `${ROUTE_PREFIX.InteliJ}/gradleDashboard`,
-  InteliJMavenDashboard: `${ROUTE_PREFIX.InteliJ}/mavenDashboard`,
-  InteliJDevDashboard: `${ROUTE_PREFIX.InteliJ}/devDashboard`,
-  InteliJTests: `${ROUTE_PREFIX.InteliJ}/tests`,
-  InteliJDevTests: `${ROUTE_PREFIX.InteliJ}/devTests`,
-  InteliJSharedIndicesTests: `${ROUTE_PREFIX.InteliJ}/sharedIndicesTests`,
-  InteliJCompare: `${ROUTE_PREFIX.InteliJ}/compare`,
+  IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
+  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJ}/gradleDashboard`,
+  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJ}/mavenDashboard`,
+  IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
+  IntelliJTests: `${ROUTE_PREFIX.IntelliJ}/tests`,
+  IntelliJDevTests: `${ROUTE_PREFIX.IntelliJ}/devTests`,
+  IntelliJSharedIndicesDashboard: `${ROUTE_PREFIX.IntelliJ}/sharedIndicesDashboard`,
+  IntelliJSharedIndicesTests: `${ROUTE_PREFIX.IntelliJ}/sharedIndicesTests`,
+  IntelliJCompare: `${ROUTE_PREFIX.IntelliJ}/compare`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
   PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
@@ -56,9 +57,9 @@ const ROUTES = {
 
 export const topNavigationItems: NavigationItem[] = [
   {
-    path: ROUTES.InteliJDashboard,
-    name: "InteliJ",
-    key: ROUTE_PREFIX.InteliJ,
+    path: ROUTES.IntelliJDashboard,
+    name: "IntelliJ",
+    key: ROUTE_PREFIX.IntelliJ,
   },
   {
     path: ROUTES.PhpStormDashboard,
@@ -106,33 +107,37 @@ export const topNavigationItems: NavigationItem[] = [
   },
 ]
 
-export const intelijTabNavigationItems: NavigationItem[] = [
+export const intelliJTabNavigationItems: NavigationItem[] = [
   {
-    path: ROUTES.InteliJDashboard,
+    path: ROUTES.IntelliJDashboard,
     name: "Performance dashboard",
   },
   {
-    path: ROUTES.InteliJGradleDashboard,
+    path: ROUTES.IntelliJGradleDashboard,
     name: "Gradle Import dashboard",
   },
   {
-    path: ROUTES.InteliJMavenDashboard,
+    path: ROUTES.IntelliJMavenDashboard,
     name: "Maven Import dashboard",
   },
   {
-    path: ROUTES.InteliJDevDashboard,
+    path: ROUTES.IntelliJDevDashboard,
     name: "Performance dashboard (Fast Installer)",
   },
   {
-    path: ROUTES.InteliJTests,
+    path: ROUTES.IntelliJSharedIndicesDashboard,
+    name: "Shared Indices dashboard",
+  },
+  {
+    path: ROUTES.IntelliJTests,
     name: "Performance tests",
   },
   {
-    path: ROUTES.InteliJDevTests,
+    path: ROUTES.IntelliJDevTests,
     name: "Performance Tests (Fast Installer)",
   },
   {
-    path: ROUTES.InteliJSharedIndicesTests,
+    path: ROUTES.IntelliJSharedIndicesTests,
     name: "Shared Indices",
   },
   // {
@@ -246,8 +251,8 @@ export const FleetNavigationItems: NavigationItem[] = [
 ]
 
 export function getNavigationTabs(path: string): NavigationItem[] {
-  if (path.startsWith(ROUTE_PREFIX.InteliJ)) {
-    return intelijTabNavigationItems
+  if (path.startsWith(ROUTE_PREFIX.IntelliJ)) {
+    return intelliJTabNavigationItems
   }
 
   if (path.startsWith(ROUTE_PREFIX.PhpStorm)) {
@@ -283,38 +288,43 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
     {
       children: [
         {
-          path: ROUTES.InteliJDashboard,
-          component: () => import("./components/inteliJ/PerformanceDashboard.vue"),
-          meta: {pageTitle: "InteliJ Performance dashboard"},
+          path: ROUTES.IntelliJDashboard,
+          component: () => import("./components/intelliJ/PerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Performance dashboard"},
         },
         {
-          path: ROUTES.InteliJGradleDashboard,
-          component: () => import("./components/inteliJ/GradleImportPerformanceDashboard.vue"),
+          path: ROUTES.IntelliJGradleDashboard,
+          component: () => import("./components/intelliJ/GradleImportPerformanceDashboard.vue"),
           meta: {pageTitle: "Gradle Import dashboard"},
         },
         {
-          path: ROUTES.InteliJMavenDashboard,
-          component: () => import("./components/inteliJ/MavenImportPerformanceDashboard.vue"),
+          path: ROUTES.IntelliJMavenDashboard,
+          component: () => import("./components/intelliJ/MavenImportPerformanceDashboard.vue"),
           meta: {pageTitle: "Maven Import dashboard"},
         },
         {
-          path: ROUTES.InteliJDevDashboard,
-          component: () => import("./components/inteliJ/PerformanceDevDashboard.vue"),
+          path: ROUTES.IntelliJDevDashboard,
+          component: () => import("./components/intelliJ/PerformanceDevDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer Dashboard"},
         },
         {
-          path: ROUTES.InteliJTests,
-          component: () => import("./components/inteliJ/PerformanceTests.vue"),
-          meta: {pageTitle: "InteliJ Performance tests"},
+          path: ROUTES.IntelliJSharedIndicesDashboard,
+          component: () => import("./components/intelliJ/SharedIndicesPerformanceDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices Dashboard"},
         },
         {
-          path: ROUTES.InteliJDevTests,
-          component: () => import("./components/inteliJ/PerformanceTestsDev.vue"),
+          path: ROUTES.IntelliJTests,
+          component: () => import("./components/intelliJ/PerformanceTests.vue"),
+          meta: {pageTitle: "IntelliJ Performance tests"},
+        },
+        {
+          path: ROUTES.IntelliJDevTests,
+          component: () => import("./components/intelliJ/PerformanceTestsDev.vue"),
           meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer"},
         },
         {
-          path: ROUTES.InteliJSharedIndicesTests,
-          component: () => import("./components/inteliJ/SharedIndicesTests.vue"),
+          path: ROUTES.IntelliJSharedIndicesTests,
+          component: () => import("./components/intelliJ/SharedIndicesTests.vue"),
           meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices"},
         },
 

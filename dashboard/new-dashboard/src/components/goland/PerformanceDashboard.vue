@@ -117,7 +117,7 @@
           <GroupProjectsChart
             label="Find Usages execution time"
             measure="findUsages"
-            :projects="['vault/findUsage']"
+            :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -126,7 +126,7 @@
           <GroupProjectsChart
             label="Find Usages number of found usages"
             measure="findUsages#number"
-            :projects="['vault/findUsage']"
+            :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

@@ -8,7 +8,7 @@
           :on-change="onChangeRange"
         >
           <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
+            <CalendarIcon class="w-4 h-4 text-gray-500"/>
           </template>
         </TimeRangeSelect>
         <BranchSelect
@@ -21,7 +21,7 @@
           :dimension="machineConfigurator"
         >
           <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500"/>
           </template>
         </DimensionHierarchicalSelect>
       </template>
@@ -32,6 +32,168 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
+        <section>
+          <GroupProjectsChart
+            label="CPU | Load |Total % 95th pctl"
+            measure="CPU | Load |Total % 95th pctl"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="CPU | IDE | Threads 95th pctl"
+            measure="CPU | IDE | Threads 95th pctl"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Memory | IDE | RESIDENT SIZE (MB) 95th pctl"
+            measure="Memory | IDE | RESIDENT SIZE (MB) 95th pctl"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Memory | IDE | VIRTUAL SIZE (MB) 95th pctl"
+            measure="Memory | IDE | VIRTUAL SIZE (MB) 95th pctl"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="gcPause"
+            measure="gcPause"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="gcPauseCount"
+            measure="gcPauseCount"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="fullGCPause"
+            measure="fullGCPause"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="freedMemoryByGC"
+            measure="freedMemoryByGC"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="totalHeapUsedMax"
+            measure="totalHeapUsedMax"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
         <section>
           <GroupProjectsChart
             label="maven.sync.duration"
@@ -1922,26 +2084,8 @@
             :configurators="dashboardConfigurators"
           />
         </section>
-        <section>
-          <GroupProjectsChart
-            label="Maven: CPU | Load | 75th pctl"
-            measure="CPU | Load | 75th pctl"
-            :projects="[
-              'project-import-maven-quarkus/measureStartup',
-              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
-              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
-              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
-              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
-              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
-              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
-              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
       </div>
-      <InfoSidebar />
+      <InfoSidebar/>
     </main>
   </div>
 </template>

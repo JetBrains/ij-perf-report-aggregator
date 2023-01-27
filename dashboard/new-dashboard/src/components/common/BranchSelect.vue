@@ -80,7 +80,10 @@
           style="left: 100%;"
         >
           <ul class="p-multiselect-items p-component">
-            <li v-for="item in versionItems">
+            <li
+              v-for="item in versionItems"
+              :key="item.label"
+            >
               <label
                 class="field-checkbox w-full p-multiselect-item p-component"
                 :for="item.value"
@@ -105,7 +108,10 @@
             <div v-if="triggeredItems.length === 0">
               No available options
             </div>
-            <li v-for="item in triggeredItems">
+            <li
+              v-for="item in triggeredItems"
+              :key="item.label"
+            >
               <label
                 class="field-checkbox w-full p-multiselect-item p-component"
                 :for="item.value"
@@ -164,6 +170,9 @@ const props = defineProps<Props>()
 
 function createItems(configurator: DimensionConfigurator) {
   return computed(() => {
+    if (configurator == undefined) {
+      return {}
+    }
     const values = configurator.values.value
 
     return values.map(it => {

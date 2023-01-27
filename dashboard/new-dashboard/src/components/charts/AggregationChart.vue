@@ -25,7 +25,7 @@ import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ValueUnit } from "shared/src/chart"
 import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { inject, onMounted, onUnmounted, ref, shallowRef, withDefaults } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, withDefaults } from "vue"
 import { containerKey } from "../../shared/keys"
 import { AggregationChartVM } from "./AggregationChartVM"
 
@@ -34,7 +34,7 @@ interface AggregationChartProps {
   chartColor?: string
   configurators: Array<DataQueryConfigurator>
   aggregatedMeasure: string
-  aggregatedProject: string
+  aggregatedProject?: string
   isLike?: boolean
   title: string
 }
@@ -42,6 +42,7 @@ interface AggregationChartProps {
 const props = withDefaults(defineProps<AggregationChartProps>(), {
   valueUnit: "ms",
   chartColor: "#4B84EE",
+  aggregatedProject: undefined
 })
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
@@ -64,7 +65,9 @@ const container = inject(containerKey)
 
 let dispose: () => void
 onMounted(() => {
-  dispose = vm.initChart(element.value!, container?.value)
+  if (element.value != null) {
+    dispose = vm.initChart(element.value, container?.value)
+  }
 })
 
 onUnmounted(() => {

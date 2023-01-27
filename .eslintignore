@@ -5,3 +5,4 @@ postcss.config.js
 tailwind.config.js
 .eslintrc.js
 cmd/frontend/resources/**
+/dashboard/new-dashboard/src/components/common/BranchIcon.vue

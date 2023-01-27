@@ -58,6 +58,7 @@
     :filter="hasManyElements"
     :auto-filter-focus="hasManyElements"
   >
+    <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{value}">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         {{ value ? valueToLabel(value) : value }}

@@ -143,7 +143,7 @@ import BranchIcon from "./BranchIcon.vue"
 
 interface Props {
   branchConfigurator: DimensionConfigurator
-  releaseConfigurator: DimensionConfigurator
+  releaseConfigurator?: DimensionConfigurator
   triggeredByConfigurator: DimensionConfigurator
 }
 
@@ -168,7 +168,7 @@ const clearSubMenu = () => {
 
 const props = defineProps<Props>()
 
-function createItems(configurator: DimensionConfigurator) {
+function createItems(configurator?: DimensionConfigurator) {
   return computed(() => {
     if (configurator == undefined) {
       return {}
@@ -181,9 +181,12 @@ function createItems(configurator: DimensionConfigurator) {
   })
 }
 
-function createValueFrom(configurator: DimensionConfigurator) {
+function createValueFrom(configurator?: DimensionConfigurator) {
   return computed<Array<string> | null>({
     get() {
+      if(configurator == null){
+        return null
+      }
       const values = configurator.values.value
       if (values == null || values.length === 0) {
         return null

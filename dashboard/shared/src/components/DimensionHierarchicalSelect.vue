@@ -9,6 +9,7 @@
     :placeholder="placeholder"
     class="max-w-lg"
   >
+    <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{value}">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         <template v-if="value && value.length > 0">

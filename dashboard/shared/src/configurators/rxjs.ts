@@ -1,10 +1,10 @@
 import { deepEqual } from "fast-equals"
+import pLimit from "p-limit"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
 import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 import { Ref, watch } from "vue"
-import pLimit from "p-limit"
 
 export function refToObservable<T>(ref: Ref<T>, deep: boolean = false): Observable<T> {
   return new Observable<T>(context => {

@@ -17,7 +17,7 @@
         label="Triggered by"
         :dimension="triggeredByConfigurator"
       />
-      <TimeRangeSelect :configurator="timeRangeConfigurator"/>
+      <TimeRangeSelect :configurator="timeRangeConfigurator" />
     </template>
     <GroupLineChart
       label="maven.sync.duration"
@@ -1623,7 +1623,6 @@ import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import GroupLineChart from "shared/src/components/GroupLineChart.vue"
 import TimeRangeSelect from "shared/src/components/TimeRangeSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"

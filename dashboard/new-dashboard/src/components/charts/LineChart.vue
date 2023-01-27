@@ -97,7 +97,6 @@ onMounted(() => {
 onUnmounted(() => {
   // TODO: Make them lifetimed for auto-dispose
   chartManager.dispose()
-  chartVm.dispose()
 })
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT

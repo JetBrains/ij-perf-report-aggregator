@@ -75,6 +75,7 @@ const sidebarVm = inject(sidebarVmKey)
 
 let chartManager: ChartManager
 let chartVm: LineChartVM
+let unsubscribe: (() => void)|null  = null
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -85,7 +86,7 @@ onMounted(() => {
     props.valueUnit,
   )
 
-  chartVm.subscribe()
+  unsubscribe = chartVm.subscribe()
 
   chartManager.chart.on("click", (params: CallbackDataParams) => {
     if (params.dataIndex != undefined) {
@@ -95,7 +96,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // TODO: Make them lifetimed for auto-dispose
+  if(unsubscribe != null) unsubscribe()
   chartManager.dispose()
 })
 

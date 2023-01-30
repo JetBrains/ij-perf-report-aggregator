@@ -16,7 +16,8 @@
       :measures='["classLoadingCount", "resourceLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount"]'
     />
     <LineChartCard
-      :measures='["metrics.classLoadingMetrics/inlineCount", "metrics.classLoadingMetrics/companionCount"]'
+      :measures='["metrics.classLoadingMetrics/inlineCount", "metrics.classLoadingMetrics/companionCount",
+                  "metrics.classLoadingMetrics/lambdaCount", "metrics.classLoadingMetrics/methodHandleCount"]'
     />
   </ChartRow>
 

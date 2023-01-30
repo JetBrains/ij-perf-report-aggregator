@@ -238,7 +238,7 @@ export const JBRNavigationItems: NavigationItem[] = [
 export const FleetNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.FleetStartupDashboard,
-    name: "Starup Dashboard",
+    name: "Startup Dashboard",
   },
   {
     path: ROUTES.FleetPerfDashboard,

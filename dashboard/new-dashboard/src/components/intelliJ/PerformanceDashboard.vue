@@ -352,7 +352,7 @@
           <GroupProjectsChart
             label="FileStructure"
             measure="FileStructurePopup"
-            :projects="['intellij_sources/FileStructureDialog/java_file', 'intellij_sources/FileStructureDialog/java_file']"
+            :projects="['intellij_sources/FileStructureDialog/java_file', 'intellij_sources/FileStructureDialog/kotlin_file']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

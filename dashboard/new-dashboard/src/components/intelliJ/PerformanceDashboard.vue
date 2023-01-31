@@ -350,6 +350,15 @@
         </section>
         <section>
           <GroupProjectsChart
+            label="FileStructure"
+            measure="FileStructurePopup"
+            :projects="['intellij_sources/FileStructureDialog/java_file', 'intellij_sources/FileStructureDialog/java_file']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="Typing during indexing (with changed count of indexing threads)"
             measure="typing"
             :projects="['typingInJavaFile_16Threads/typing', 'typingInJavaFile_4Threads/typing', 'typingInKotlinFile_16Threads/typing', 'typingInKotlinFile_4Threads/typing']"

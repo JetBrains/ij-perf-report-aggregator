@@ -8,7 +8,7 @@
           :on-change="onChangeRange"
         >
           <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500"/>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
         <BranchSelect
@@ -21,7 +21,7 @@
           :dimension="machineConfigurator"
         >
           <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500"/>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
       </template>
@@ -2085,7 +2085,7 @@
           />
         </section>
       </div>
-      <InfoSidebar/>
+      <InfoSidebar />
     </main>
   </div>
 </template>

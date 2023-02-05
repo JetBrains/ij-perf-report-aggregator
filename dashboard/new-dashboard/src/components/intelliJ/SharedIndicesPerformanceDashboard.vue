@@ -8,7 +8,7 @@
           :on-change="onChangeRange"
         >
           <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500"/>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
         <BranchSelect
@@ -21,7 +21,7 @@
           :dimension="machineConfigurator"
         >
           <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500"/>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
       </template>
@@ -37,10 +37,10 @@
             label="Indexing (IntelliJ project)"
             measure="indexing"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -50,10 +50,10 @@
             label="Scanning (IntelliJ project)"
             measure="scanning"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -63,10 +63,10 @@
             label="Number of indexing runs (IntelliJ project)"
             measure="numberOfIndexingRuns"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -76,10 +76,10 @@
             label="Number of indexing files by usual indexes (IntelliJ project)"
             measure="numberOfIndexedFiles"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -89,10 +89,10 @@
             label="Number of indexing files by shared indexes (IntelliJ project)"
             measure="numberOfFilesIndexedByExtensions"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -102,10 +102,10 @@
             label="Updating time (IntelliJ project)"
             measure="updatingTime"
             :projects="['ijx-intellij-speed/downloading-shared-indexes',
-            'ijx-intellij-speed/shared-indexes',
-            'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-intellij-speed/usual-indexes']"
+                        'ijx-intellij-speed/shared-indexes',
+                        'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -115,10 +115,10 @@
             label="Indexing (Community project)"
             measure="indexing"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-             'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-              'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -128,10 +128,10 @@
             label="Scanning (Community project)"
             measure="scanning"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-             'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-              'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -141,10 +141,10 @@
             label="Number of indexing runs (Community project)"
             measure="numberOfIndexingRuns"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-             'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-              'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -154,10 +154,10 @@
             label="Number of indexing files by usual indexes (Community project)"
             measure="numberOfIndexedFiles"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-              'ijx-intellij-community-speed/shared-indexes',
-              'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-              'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -167,10 +167,10 @@
             label="Number of indexing files by shared indexes (Community project)"
             measure="numberOfFilesIndexedByExtensions"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes',
-              'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -180,10 +180,10 @@
             label="Updating time (Community project)"
             measure="updatingTime"
             :projects="['ijx-intellij-community-speed/downloading-shared-indexes',
-             'ijx-intellij-community-speed/shared-indexes',
-              'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-intellij-community-speed/usual-indexes']"
+                        'ijx-intellij-community-speed/shared-indexes',
+                        'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -193,10 +193,10 @@
             label="Indexing (JDK Maven project)"
             measure="indexing"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -206,10 +206,10 @@
             label="Scanning (JDK Maven project)"
             measure="scanning"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -219,10 +219,10 @@
             label="Number of indexing runs (JDK Maven project)"
             measure="numberOfIndexingRuns"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -232,10 +232,10 @@
             label="Number of indexing files by usual indexes (JDK Maven project)"
             measure="numberOfIndexedFiles"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -245,10 +245,10 @@
             label="Number of indexing files by shared indexes (JDK Maven project)"
             measure="numberOfFilesIndexedByExtensions"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -258,10 +258,10 @@
             label="Updating time (JDK Maven project)"
             measure="updatingTime"
             :projects="['ijx-jdk-maven-speed/downloading-shared-indexes',
-             'ijx-jdk-maven-speed/shared-indexes',
-              'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-              'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-               'ijx-jdk-maven-speed/usual-indexes']"
+                        'ijx-jdk-maven-speed/shared-indexes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -271,10 +271,10 @@
             label="Indexing (JDK Gradle project)"
             measure="indexing"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -284,10 +284,10 @@
             label="Scanning (JDK Gradle project)"
             measure="scanning"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -297,10 +297,10 @@
             label="Number of indexing runs (JDK Gradle project)"
             measure="numberOfIndexingRuns"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -310,10 +310,10 @@
             label="Number of indexing files by usual indexes (JDK Gradle project)"
             measure="numberOfIndexedFiles"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -323,10 +323,10 @@
             label="Number of indexing files by shared indexes (JDK Gradle project)"
             measure="numberOfFilesIndexedByExtensions"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -336,16 +336,16 @@
             label="Updating time (JDK Gradle project)"
             measure="updatingTime"
             :projects="['ijx-jdk-gradle-speed/downloading-shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-            'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-            'ijx-jdk-gradle-speed/usual-indexes']"
+                        'ijx-jdk-gradle-speed/shared-indexes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
+                        'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
+                        'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
         </section>
       </div>
-      <InfoSidebar/>
+      <InfoSidebar />
     </main>
   </div>
 </template>

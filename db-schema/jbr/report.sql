@@ -6,6 +6,7 @@ create table jbr.report
   `project`               LowCardinality(String) CODEC (ZSTD(20)),
   `tc_build_id`           UInt32 CODEC (DoubleDelta, ZSTD(20)),
   `branch`                LowCardinality(String) CODEC (ZSTD(20)),
+  `build_number`          LowCardinality(String) CODEC (ZSTD(20)),
 
   `measures.name`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
   `measures.value`        Array(Float64) CODEC (Gorilla, ZSTD(20)),

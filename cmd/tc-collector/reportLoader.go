@@ -108,6 +108,10 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
             data.TcInstallerBuildId = installerInfo.id
           }
 
+          if t.config.HasBuildNumber {
+            data.TcBuildNumber = build.BuildNumber
+          }
+
           err = reportAnalyzer.Analyze(artifact.data, data)
           if err != nil {
             if build.Status == "FAILURE" {

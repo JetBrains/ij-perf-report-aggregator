@@ -37,6 +37,7 @@ type ExtraData struct {
   TcBuildType        string
   TcInstallerBuildId int
   TcBuildProperties  []byte
+  TcBuildNumber      string
   Changes            []string
   TriggeredBy        string
 

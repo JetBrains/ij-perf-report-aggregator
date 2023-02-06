@@ -180,6 +180,10 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     }
   }
 
+  if t.config.HasBuildNumber {
+    runResult.BuildNumber = extraData.TcBuildNumber
+  }
+
   if t.analyzeContext.Err() != nil {
     return nil
   }

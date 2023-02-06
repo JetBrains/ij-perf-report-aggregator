@@ -20,6 +20,7 @@ type DatabaseConfiguration struct {
   HasInstallerField bool
   HasBuildTypeField bool
   HasRawReport      bool
+  HasBuildNumber    bool
   extraFieldCount   int
 }
 
@@ -103,6 +104,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       DbName:          "jbr",
       TableName:       "report",
       extraFieldCount: 3,
+      HasBuildNumber:  true,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },

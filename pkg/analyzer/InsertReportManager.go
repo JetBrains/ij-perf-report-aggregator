@@ -41,6 +41,7 @@ type RunResult struct {
   BuildC3 int
 
   TriggeredBy string
+  BuildNumber string
 
   ExtraFieldData []interface{}
 
@@ -86,6 +87,9 @@ func NewInsertReportManager(
   }
   if config.HasRawReport {
     metaFields = append(metaFields, "raw_report")
+  }
+  if config.HasBuildNumber {
+    metaFields = append(metaFields, "build_number")
   }
   metaFields = append(metaFields, "triggeredBy")
   var sb strings.Builder
@@ -258,6 +262,9 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
   if t.config.HasRawReport {
     args = append(args, string(row.RawReport))
+  }
+  if t.config.HasBuildNumber {
+    args = append(args, row.BuildNumber)
   }
   args = append(args, row.TriggeredBy)
 

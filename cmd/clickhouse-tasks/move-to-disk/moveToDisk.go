@@ -14,7 +14,7 @@ func main() {
 
   err := moveToDisk("default", taskContext)
   if err != nil {
-    log.Fatal(fmt.Sprintf("%+v", err))
+    log.Fatalf("%+v", err)
   }
 }
 

@@ -37,8 +37,6 @@ type Collector struct {
   tcSessionId atomic.String
 
   installerBuildIdToInfo map[int]*InstallerInfo
-
-  reportExistenceChecker *ReportExistenceChecker
 }
 
 var productCodeToBuildName = map[string]string{

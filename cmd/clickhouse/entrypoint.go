@@ -105,12 +105,10 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
     return err
   }
 
-  if entries != nil {
-    for _, entry := range entries {
-      err = os.RemoveAll(filepath.Join(chDir, entry.Name()))
-      if err != nil && !os.IsNotExist(err) {
-        return err
-      }
+  for _, entry := range entries {
+    err = os.RemoveAll(filepath.Join(chDir, entry.Name()))
+    if err != nil && !os.IsNotExist(err) {
+      return err
     }
   }
 

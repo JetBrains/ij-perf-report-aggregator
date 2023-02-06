@@ -71,7 +71,7 @@ func start(natsUrl string, logger *zap.Logger) error {
       return nil
     }
 
-    if time.Now().Sub(lastBackupTime) < 4*time.Hour {
+    if time.Since(lastBackupTime) < 4*time.Hour {
       // do not create backups too often
       logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
       continue

@@ -15,7 +15,7 @@ func main() {
 
   err := execute(taskContext)
   if err != nil {
-    log.Fatal(fmt.Sprintf("%+v", err))
+    log.Fatalf("%+v", err)
   }
 }
 

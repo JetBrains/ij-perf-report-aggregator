@@ -92,7 +92,7 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
 
   orderValue := value.Get("order")
   if orderValue == nil {
-    return nil, http_error.NewHttpError(400, fmt.Sprintf("order is missing"))
+    return nil, http_error.NewHttpError(400, "order is missing")
   }
   if orderValue.Type() == fastjson.TypeString {
     field := string(orderValue.GetStringBytes())

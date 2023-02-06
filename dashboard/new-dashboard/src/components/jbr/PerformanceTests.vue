@@ -89,7 +89,7 @@ import LineChart from "../charts/LineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
-provideReportUrlProvider(false)
+provideReportUrlProvider(false, true)
 
 const dbName = "jbr"
 const dbTable = "report"

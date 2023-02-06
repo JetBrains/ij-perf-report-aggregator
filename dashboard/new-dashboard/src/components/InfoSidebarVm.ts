@@ -38,6 +38,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let buildNum1: number|undefined
   let buildNum2: number|undefined
   let type: ValueUnit|undefined = valueUnit
+  let buildNumber: string|undefined
   //dev builds
   if(dataSeries.length == 4){
     machineName = dataSeries[2] as string
@@ -53,12 +54,13 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum2 = dataSeries[7] as number
   }
   //jbr
-  if (dataSeries.length == 5) {
+  if (dataSeries.length == 6) {
     if (dataSeries[2] == "c") {
       type = "counter"
     }
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
+    buildNumber = dataSeries[5] as string
   }
   if (dataSeries.length == 9) {
     if (dataSeries[2] == "c") {
@@ -72,7 +74,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum2 = dataSeries[8] as number
   }
 
-  const fullBuildId = buildVersion == undefined ? undefined :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+  const fullBuildId = buildVersion == undefined ? buildNumber :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
   const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`

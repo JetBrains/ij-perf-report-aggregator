@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import pLimit from "p-limit"
+import pLimit, { LimitFunction } from "p-limit"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
 import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
@@ -24,7 +24,7 @@ const serverNotAvailableMessage = {
   life: 3_000,
 }
 
-const limit = pLimit(100)
+export const limit: LimitFunction = pLimit(100)
 
 export function fromFetchWithRetryAndErrorHandling<T>(
   request: Request | string,

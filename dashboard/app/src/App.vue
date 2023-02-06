@@ -46,7 +46,7 @@ import { filter, shareReplay } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import ServerSelect from "shared/src/components/ServerSelect.vue"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
+import { limit, refToObservable } from "shared/src/configurators/rxjs"
 import { serverUrlObservableKey } from "shared/src/injectionKeys"
 import { provide, ref, shallowRef, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute } from "vue-router"
@@ -67,6 +67,7 @@ const activePath = shallowRef("")
 const _route = useRoute()
 watch(() => _route.path, p => {
   activePath.value = p
+  limit.clearQueue()
 })
 
 const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})

@@ -2,14 +2,14 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@heroicons/vue": "2.0.14",
+    "@heroicons/vue": "2.0.13",
     "echarts": "5.4.1",
     "ij": "workspace:*",
-    "primevue": "3.23.0",
+    "primevue": "3.22.3",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
-    "vue": "3.2.47",
+    "vue": "3.2.45",
     "vue-router": "4.1.6"
   }
 }

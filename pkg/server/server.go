@@ -4,7 +4,6 @@ import (
   "context"
   "crypto/tls"
   "github.com/ClickHouse/ch-go"
-  "github.com/ClickHouse/ch-go/chpool"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -50,8 +49,8 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   defer func() {
     statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
-      p := pool.(*chpool.Client)
-      p.Release()
+      p := pool.(*puddle.Pool[*ch.Client])
+      p.Close()
       return true
     })
   }()

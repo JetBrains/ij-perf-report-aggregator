@@ -113,7 +113,7 @@
         <section>
           <GroupProjectsChart
             label="Indexing"
-            measure="indexing"
+            measure="updatingTime"
             :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
                         'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
             :server-configurator="serverConfigurator"
@@ -123,7 +123,7 @@
         <section>
           <GroupProjectsChart
             label="Indexing"
-            measure="indexing"
+            measure="updatingTime"
             :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing', 'shopware/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
@@ -132,7 +132,7 @@
         <section>
           <GroupProjectsChart
             label="Indexing"
-            measure="indexing"
+            measure="updatingTime"
             :projects="['WI_39333/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
                         'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
             :server-configurator="serverConfigurator"
@@ -142,7 +142,7 @@
         <section>
           <GroupProjectsChart
             label="Indexing"
-            measure="indexing"
+            measure="updatingTime"
             :projects="['phpcs/indexing','empty_project/indexing','complex_meta/indexing', 'WI_53502/indexing','heredoc/indexing', 'many_array_access/indexing',
                         'WI_66279/indexing']"
             :server-configurator="serverConfigurator"

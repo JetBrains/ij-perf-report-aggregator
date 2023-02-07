@@ -65,7 +65,7 @@
           <div class="flex-1">
             <GroupProjectsChart
               label="Indexing"
-              measure="indexing"
+              measure="updatingTime"
               :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
@@ -74,7 +74,7 @@
           <div class="flex-1">
             <GroupProjectsChart
               label="Indexing"
-              measure="indexing"
+              measure="updatingTime"
               :projects="['magento/indexing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"

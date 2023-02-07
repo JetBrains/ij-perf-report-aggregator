@@ -75,7 +75,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   }
 
   const fullBuildId = buildVersion == undefined ? buildNumber :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
-  const changesUrl = `${buildUrl(buildId as number)}&tab=changes`
+  const changesUrl = installerId == undefined  ? `${buildUrl(buildId as number)}&tab=changes` : `${buildUrl(installerId)}&tab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`
 

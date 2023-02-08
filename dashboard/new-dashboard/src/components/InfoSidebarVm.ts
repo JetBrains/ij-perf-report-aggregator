@@ -39,10 +39,18 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let buildNum2: number|undefined
   let type: ValueUnit|undefined = valueUnit
   let buildNumber: string|undefined
-  //dev builds
+  //dev fleet builds
   if(dataSeries.length == 4){
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
+  }
+  //dev builds intellij
+  if(dataSeries.length == 5){
+    if (dataSeries[2] == "c") {
+      type = "counter"
+    }
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
   }
   //fleet
   if(dataSeries.length == 8){

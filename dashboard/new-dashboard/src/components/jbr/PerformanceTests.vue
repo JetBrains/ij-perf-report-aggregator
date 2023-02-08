@@ -133,7 +133,7 @@ const triggeredByConfigurator = privateBuildConfigurator(
 const measureConfigurator = new MeasureConfigurator(
   serverConfigurator,
   persistentStateManager,
-  [scenarioConfigurator, branchConfigurator],
+  [scenarioConfigurator, branchConfigurator, timeRangeConfigurator],
   true,
   "line",
 )

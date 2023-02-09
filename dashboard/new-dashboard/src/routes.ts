@@ -49,7 +49,10 @@ const ROUTES = {
 
   RustTests: `${ROUTE_PREFIX.Rust}/tests`,
   ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
+
   JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
+  MapBenchDashboard: `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
+
   FleetTest: `${ROUTE_PREFIX.Fleet}/tests`,
   FleetPerfDashboard: `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard: `${ROUTE_PREFIX.Fleet}/startupDashboard`,
@@ -233,6 +236,10 @@ export const JBRNavigationItems: NavigationItem[] = [
     path: ROUTES.JBRTests,
     name: "Tests",
   },
+  {
+    path: ROUTES.MapBenchDashboard,
+    name: "MapBench",
+  },
 ]
 
 export const FleetNavigationItems: NavigationItem[] = [
@@ -414,6 +421,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.JBRTests,
           component: () => import("./components/jbr/PerformanceTests.vue"),
           meta: {pageTitle: "JBR Performance tests"},
+        },
+        {
+          path: ROUTES.MapBenchDashboard,
+          component: () => import("./components/jbr/MapBenchDashboard.vue"),
+          meta: {pageTitle: "MapBench Dashboard"},
         },
         {
           path: ROUTES.FleetTest,

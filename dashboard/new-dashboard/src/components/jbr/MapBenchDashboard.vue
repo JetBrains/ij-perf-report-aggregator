@@ -23,7 +23,10 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <div v-for="metric in metricsNames" v-bind:key="metric">
+        <div
+          v-for="metric in metricsNames"
+          :key="metric"
+        >
           <div class="relative flex py-5 items-center">
             <div class="flex-grow border-t border-gray-400" />
             <span class="flex-shrink mx-4 text-gray-400 text-lg">{{ metric }}</span>
@@ -116,13 +119,15 @@ const dashboardConfigurators = [
   triggeredByConfigurator,
 ]
 
-const metricsNames = ["CircleTests", "EllipseTests-fill-false", "EllipseTests-fill-true", "spiralTest-dash-false", "spiralTest-fill"].flatMap((test, i, a) => {
-  return ["ser.Avg", "ser.Max", "ser.Min", "ser.Pct95", "ser.StdDev"].map((stat, i, a) => test +"."+ stat)
+const metricsNames = ["CircleTests", "EllipseTests-fill-false", "EllipseTests-fill-true", "spiralTest-dash-false", "spiralTest-fill", "dc_boulder_2013-13-30-06-13-17",
+  "dc_boulder_2013-13-30-06-13-20", "dc_shp_alllayers_2013-00-30-07-00-43", "dc_shp_alllayers_2013-00-30-07-00-47", "dc_spearfish_2013-11-30-06-11-15",
+  "dc_spearfish_2013-11-30-06-11-19", "test_z_625k"].flatMap((test, i, a) => {
+  return ["ser.Avg", "ser.Max", "ser.Min", "ser.Pct95", "ser.StdDev"].map((stat, i, a) => test + "." + stat)
 })
-const ubuntuConfigurations = ["Mapbench_Ubuntu2004x64", "Mapbench_Ubuntu2004x64OGL", "Mapbench_Ubuntu2204x64", "Mapbench_Ubuntu2204x64OGL"]
-const macOSConfigurations = ["Mapbench_macOS13x64OGL", "Mapbench_macOS13x64Metal", "Mapbench_macOS13aarch64OGL", "Mapbench_macOS13aarch64Metal",
-  "Mapbench_macOS12x64OGL", "Mapbench_macOS12x64Metal", "Mapbench_macOS12aarch64OGL", "Mapbench_macOS12aarch64Metal"]
-const windowsConfigurations = ["Mapbench_Windows10x64"]
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config, i, a) => "Mapbench_" + config)
+const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
+  "macOS12aarch64Metal"].map((config, i, a) => "Mapbench_" + config)
+const windowsConfigurations = ["Windows10x64"].map((config, i, a) => "Mapbench_" + config)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

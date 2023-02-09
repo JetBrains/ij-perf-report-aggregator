@@ -33,14 +33,6 @@
             <BeakerIcon class="w-4 h-4 text-gray-500" />
           </template>
         </MeasureSelect>
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
 
@@ -113,11 +105,6 @@ const persistentStateManager = new PersistentStateManager(
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [timeRangeConfigurator, branchConfigurator],
-)
 const scenarioConfigurator = dimensionConfigurator(
   "project",
   serverConfigurator,
@@ -142,7 +129,6 @@ const configurators = [
   serverConfigurator,
   scenarioConfigurator,
   branchConfigurator,
-  machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]

@@ -52,6 +52,10 @@ const ROUTES = {
 
   JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
   MapBenchDashboard: `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
+  DaCapoDashboard: `${ROUTE_PREFIX.JBR}/dacapoDashboard`,
+  J2DBenchDashboard: `${ROUTE_PREFIX.JBR}/j2dDashboard`,
+  JavaDrawDashboard: `${ROUTE_PREFIX.JBR}/javaDrawDashboard`,
+  RenderDashboard: `${ROUTE_PREFIX.JBR}/renderDashboard`,
 
   FleetTest: `${ROUTE_PREFIX.Fleet}/tests`,
   FleetPerfDashboard: `${ROUTE_PREFIX.Fleet}/perfDashboard`,
@@ -232,6 +236,22 @@ export const ScalaNavigationItems: NavigationItem[] = [
 ]
 
 export const JBRNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.DaCapoDashboard,
+    name: "DaCapo",
+  },
+  {
+    path: ROUTES.J2DBenchDashboard,
+    name: "J2DBench",
+  },
+  {
+    path: ROUTES.JavaDrawDashboard,
+    name: "JavaDraw",
+  },
+  {
+    path: ROUTES.RenderDashboard,
+    name: "Render",
+  },
   {
     path: ROUTES.JBRTests,
     name: "Tests",
@@ -426,6 +446,26 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.MapBenchDashboard,
           component: () => import("./components/jbr/MapBenchDashboard.vue"),
           meta: {pageTitle: "MapBench Dashboard"},
+        },
+        {
+          path: ROUTES.DaCapoDashboard,
+          component: () => import("./components/jbr/DaCapoDashboard.vue"),
+          meta: {pageTitle: "DaCapo Dashboard"},
+        },
+        {
+          path: ROUTES.J2DBenchDashboard,
+          component: () => import("./components/jbr/J2DBenchDashboard.vue"),
+          meta: {pageTitle: "J2DBench Dashboard"},
+        },
+        {
+          path: ROUTES.JavaDrawDashboard,
+          component: () => import("./components/jbr/JavaDrawDashboard.vue"),
+          meta: {pageTitle: "JavaDraw Dashboard"},
+        },
+        {
+          path: ROUTES.RenderDashboard,
+          component: () => import("./components/jbr/RenderDashboard.vue"),
+          meta: {pageTitle: "Render Dashboard"},
         },
         {
           path: ROUTES.FleetTest,

@@ -253,13 +253,13 @@ export const JBRNavigationItems: NavigationItem[] = [
     name: "Render",
   },
   {
-    path: ROUTES.JBRTests,
-    name: "Tests",
-  },
-  {
     path: ROUTES.MapBenchDashboard,
     name: "MapBench",
   },
+  {
+    path: ROUTES.JBRTests,
+    name: "Tests",
+  }
 ]
 
 export const FleetNavigationItems: NavigationItem[] = [

@@ -51,9 +51,9 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Rebuild"
-            measure="build_compilation_duration"
-            :projects="['intellij_sources/rebuild']"
+            label="Updating time"
+            measure="updatingTime"
+            :projects="['intellij_sources/indexing', 'intellij_commit/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

@@ -332,6 +332,15 @@
         </section>
         <section>
           <GroupProjectsChart
+            label="Show File History"
+            measure="showFileHistory"
+            :projects="['intellij_sources/showFileHistory/EditorImpl']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="Expand Menu"
             measure="expandActionGroup"
             :projects="['intellij_sources/expandProjectMenu', 'intellij_sources/expandMainMenu', 'intellij_sources/expandEditorMenu']"

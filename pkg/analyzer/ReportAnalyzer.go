@@ -227,7 +227,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
     return "", errors.New("cannot infer branch from JBR project id")
   }
-  if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" {
+  if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" && projectId != "perfintDev" {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
   }
 

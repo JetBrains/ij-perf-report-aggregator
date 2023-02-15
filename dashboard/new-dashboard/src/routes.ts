@@ -38,8 +38,9 @@ const ROUTES = {
   KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
   KotlinExplore: `${ROUTE_PREFIX.Kotlin}/explore`,
   KotlinExploreDev: `${ROUTE_PREFIX.Kotlin}/exploreDev`,
-  KotlinCompletion: `${ROUTE_PREFIX.Kotlin}/completion`,
   KotlinCompletionDev: `${ROUTE_PREFIX.Kotlin}/completionDev`,
+  KotlinHighlightingDev: `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
+  KotlinFindUsagesDev: `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
 
   GoLandDashboard: `${ROUTE_PREFIX.GoLand}/dashboard`,
   GoLandTests: `${ROUTE_PREFIX.GoLand}/tests`,
@@ -212,12 +213,16 @@ export const kotlinNavigationItems: NavigationItem[] = [
     name: "Explore (dev/fast installer)",
   },
   {
-    path: ROUTES.KotlinCompletion,
-    name: "Completion dashboard",
+    path: ROUTES.KotlinCompletionDev,
+    name: "Completion (dev)",
   },
   {
-    path: ROUTES.KotlinCompletionDev,
-    name: "Completion dashboard (dev/fast installer)",
+    path: ROUTES.KotlinHighlightingDev,
+    name: "Highlighting (dev)",
+  },
+  {
+    path: ROUTES.KotlinFindUsagesDev,
+    name: "FindUsages (dev)",
   },
 ]
 
@@ -418,14 +423,19 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Kotlin Performance dashboard (dev/fast installer)"},
         },
         {
-          path: ROUTES.KotlinCompletion,
-          component: () => import("./components/kotlin/KotlinCompletionDashboard.vue"),
-          meta: {pageTitle: "Kotlin completion"},
+          path: ROUTES.KotlinCompletionDev,
+          component: () => import("./components/kotlin/dev/CompletionDashboard.vue"),
+          meta: {pageTitle: "Kotlin completion (dev/fast)"},
         },
         {
-          path: ROUTES.KotlinCompletionDev,
-          component: () => import("./components/kotlin/dev/KotlinCompletionDevDashboard.vue"),
-          meta: {pageTitle: "Kotlin completion (dev/fast)"},
+          path: ROUTES.KotlinHighlightingDev,
+          component: () => import("./components/kotlin/dev/HighlightingDashboard.vue"),
+          meta: {pageTitle: "Kotlin highlighting (dev/fast)"},
+        },
+        {
+          path: ROUTES.KotlinFindUsagesDev,
+          component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
+          meta: {pageTitle: "Kotlin findUsages (dev/fast)"},
         },
         {
           path: ROUTES.RustTests,

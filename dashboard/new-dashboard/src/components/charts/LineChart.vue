@@ -15,17 +15,14 @@ import { CallbackDataParams } from "echarts/types/dist/shared"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, QueryProducer, SimpleQueryProducer } from "shared/src/dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "shared/src/dataQuery"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { getInfoDataFrom, InfoData } from "../InfoSidebarVm"
+import { getInfoDataFrom} from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
-import { filter, Observable, shareReplay } from "rxjs"
-import { FilterConfigurator } from "shared/src/configurators/filter"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
+import { showSideBar } from "./ShowSideBar"
 
 interface LineChartProps {
   title: string
@@ -79,36 +76,7 @@ const sidebarVm = inject(sidebarVmKey)
 
 let chartManager: ChartManager
 let chartVm: LineChartVM
-let unsubscribe: (() => void)|null  = null
-
-function fetchChangesFromInstaller(infoData: InfoData) {
-  if(infoData.installerId == undefined) {
-    sidebarVm?.show(infoData)
-  }
-  const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)).pipe(
-    filter((it: string | null): it is string => it !== null && it.length > 0),
-    shareReplay(1),
-  )
-  new DataQueryExecutor([new ServerConfigurator("perfint", "installer", serverUrlObservable), new class implements DataQueryConfigurator, FilterConfigurator {
-    configureFilter(query: DataQuery): boolean {
-      return true
-    }
-    configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-      configuration.queryProducers.push(new SimpleQueryProducer())
-      query.addField({n: "changes", sql: "concat(toString(arrayElement(changes, 1)),' .. ',toString(arrayElement(changes, -1)))"})
-      query.addFilter({f: "id", v: infoData.installerId})
-      query.order = "changes"
-      return true
-    }
-
-    createObservable(): Observable<unknown> | null {
-      return null
-    }
-  }]).subscribe((data, configuration) => {
-    infoData.changes = data.flat(3)[0] as string
-    sidebarVm?.show(infoData)
-  })
-}
+let unsubscribe: (() => void) | null = null
 
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -124,7 +92,7 @@ onMounted(() => {
   chartManager.chart.on("click", (params: CallbackDataParams) => {
     if (params.dataIndex != undefined) {
       const infoData = getInfoDataFrom(params, props.valueUnit)
-      fetchChangesFromInstaller(infoData)
+      showSideBar(sidebarVm, infoData)
     }
   })
 })

@@ -19,7 +19,7 @@ export class BranchConfigurator extends DimensionConfigurator {
     }
 
     const filter: DataQueryFilter = {f: this.name, v: "", o: "like"}
-    const values = Array.isArray(value) ? ["", ...value] : [value]
+    const values = Array.isArray(value) ? [...value] : [value]
     configuration.queryProducers.push({
         size(): number {
           return values.length

@@ -280,8 +280,19 @@
           <GroupProjectsChart
             label="Local Inspection"
             measure="localInspections"
-            :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection', 'kotlin_coroutines/localInspection']"
+            :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection',
+            'kotlin_coroutines/localInspection', 'gradle_kts_vulnerable_dep/localInspection']"
             :server-configurator="serverConfigurator" 
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="First Code Analysis"
+            measure="firstCodeAnalysis"
+            :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection',
+             'kotlin_coroutines/localInspection', 'gradle_kts_vulnerable_dep/localInspection']"
+            :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
         </section>

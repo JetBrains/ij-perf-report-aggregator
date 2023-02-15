@@ -28,7 +28,7 @@ export class BranchConfigurator extends DimensionConfigurator {
           filter.v = /\d+/.test(values[index]) ? values[index] + "%" : values[index]
         },
         getSeriesName(index: number): string {
-          return values[index]
+          return values.length > 1 ? values[index] : ""
         },
         getMeasureName(_index: number): string {
           return values[_index]

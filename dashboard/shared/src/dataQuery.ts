@@ -114,6 +114,23 @@ export interface QueryProducer {
   getMeasureName(index: number): string
 }
 
+export class SimpleQueryProducer implements QueryProducer {
+  getMeasureName(_: number): string {
+    return ""
+  }
+
+  getSeriesName(_: number): string {
+    return ""
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  mutate(_: number): void {}
+
+  size(): number {
+    return 1
+  }
+}
+
 export class DataQueryExecutorConfiguration {
   readonly seriesNames: Array<string> = []
   readonly measureNames: Array<string> = []

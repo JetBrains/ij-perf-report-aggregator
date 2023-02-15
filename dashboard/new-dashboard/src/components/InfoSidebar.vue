@@ -60,6 +60,12 @@
           <ArrowDownTrayIcon class="w-4 h-4" /> Installer
         </a>
       </div>
+      <div
+        v-if="vm.data.value?.changes"
+        class="text-sm"
+      >
+        Changes: {{ vm.data.value?.changes }}
+      </div>
     </div>
   </div>
 </template>

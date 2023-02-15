@@ -9,8 +9,11 @@ export class ServerConfigurator implements DataQueryConfigurator {
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL
 
-  constructor(readonly db: string, readonly table: string | null = null) {
-    this.observable = combineLatest([injectOrError(serverUrlObservableKey), initZstdObservable]).pipe(
+  constructor(readonly db: string, readonly table: string | null = null, serverUrlObservable: Observable<string> | null = null) {
+    if (serverUrlObservable == null) {
+      serverUrlObservable = injectOrError(serverUrlObservableKey)
+    }
+    this.observable = combineLatest([serverUrlObservable, initZstdObservable]).pipe(
       map(([url, _]) => {
         this._serverUrl = url
         return null

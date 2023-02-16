@@ -13,7 +13,7 @@ import (
 )
 
 var (
-  //go:embed resources
+  //go:embed all:resources
   assetFs embed.FS
 )
 

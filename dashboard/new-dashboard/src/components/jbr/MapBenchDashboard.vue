@@ -121,13 +121,13 @@ const dashboardConfigurators = [
 
 const metricsNames = ["CircleTests", "EllipseTests-fill-false", "EllipseTests-fill-true", "spiralTest-dash-false", "spiralTest-fill", "dc_boulder_2013-13-30-06-13-17",
   "dc_boulder_2013-13-30-06-13-20", "dc_shp_alllayers_2013-00-30-07-00-43", "dc_shp_alllayers_2013-00-30-07-00-47", "dc_spearfish_2013-11-30-06-11-15",
-  "dc_spearfish_2013-11-30-06-11-19", "test_z_625k"].flatMap((test, i, a) => {
-  return ["ser.Pct95"].map((stat, i, a) => test + "." + stat)
+  "dc_spearfish_2013-11-30-06-11-19", "test_z_625k"].flatMap(test => {
+  return ["ser.Pct95"].map(stat => test + "." + stat)
 })
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config, i, a) => "Mapbench_" + config)
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "Mapbench_" + config)
 const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map((config, i, a) => "Mapbench_" + config)
-const windowsConfigurations = ["Windows10x64"].map((config, i, a) => "Mapbench_" + config)
+  "macOS12aarch64Metal"].map(config => "Mapbench_" + config)
+const windowsConfigurations = ["Windows10x64"].map(config => "Mapbench_" + config)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

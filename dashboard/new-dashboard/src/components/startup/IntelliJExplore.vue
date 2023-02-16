@@ -68,9 +68,7 @@ import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigu
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
-import { useRouter } from "vue-router"
 import { metricsSelectLabelFormat } from "../../shared/labels"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
@@ -95,10 +93,7 @@ provide(chartToolTipKey, tooltip)
 
 const dbName = "ij"
 const dbTable = "report"
-const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
-const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-explore")

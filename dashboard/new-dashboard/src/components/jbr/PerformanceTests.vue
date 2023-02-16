@@ -60,12 +60,10 @@
 
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import MeasureSelect from "shared/src/components/MeasureSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"

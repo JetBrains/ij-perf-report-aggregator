@@ -82,14 +82,12 @@ import LineChartCard from "shared/src/components/LineChartCard.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
@@ -114,10 +112,7 @@ provide(chartToolTipKey, tooltip)
 
 const dbName = "ij"
 const dbTable = "report"
-const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
-const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-dashboard", {
@@ -131,13 +126,6 @@ const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistentStateManager,
   [timeRangeConfigurator],
-)
-const measureConfigurator = new MeasureConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [timeRangeConfigurator],
-  true,
-  "line",
 )
 
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager)

@@ -3,15 +3,15 @@
   "private": true,
   "dependencies": {
     "@headlessui/vue": "^1.7.7",
-    "@heroicons/vue": "2.0.13",
+    "@heroicons/vue": "2.0.15",
     "echarts": "5.4.1",
     "echarts-stat": "1.2.0",
     "fast-equals": "4.0.3",
     "humanize-duration": "3.28.0",
     "p-limit": "^4.0.0",
-    "primevue": "3.22.3",
+    "primevue": "3.23.0",
     "rxjs": "8.0.0-alpha.7",
-    "vue": "3.2.45",
+    "vue": "3.2.47",
     "vue-router": "4.1.6"
   },
   "devDependencies": {

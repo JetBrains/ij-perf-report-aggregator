@@ -6,10 +6,10 @@
     "compare-versions": "6.0.0-rc.1",
     "echarts": "5.4.1",
     "fast-equals": "4.0.3",
-    "primevue": "3.22.3",
+    "primevue": "3.23.0",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
-    "vue": "3.2.45",
+    "vue": "3.2.47",
     "vue-router": "4.1.6"
   }
 }

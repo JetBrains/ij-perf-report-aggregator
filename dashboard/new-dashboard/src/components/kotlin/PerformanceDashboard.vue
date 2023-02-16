@@ -249,15 +249,15 @@
             measure="findUsages#mean_value"
             :projects="[
               'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k1',
+              'intellij_commit/findUsages/setUp_with_library_cache_k1',
+              'intellij_commit/findUsages/SolutionModel_with_library_cache_k1',
               'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
-              'intellij_commit/findUsages/OraIntrospector_with_library_cache_k1',
-              'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k1',
-              'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k1',
+              'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1',
+              'kotlin_lang/findUsages/CommonParser_with_library_cache_k1',
+              'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
               'kotlin_lang/findUsages/FirErrors_with_library_cache_k1',
               'kotlin_lang/findUsages/Flag_with_library_cache_k1',
-              'kotlin_lang/findUsages/CommonParser_with_library_cache_k1',
-              'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
-              'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
+              'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
@@ -269,15 +269,15 @@
             measure="findUsages#mean_value"
             :projects="[
               'intellij_commit/findUsages/loadModuleEntity_with_library_cache_k2',
+              'intellij_commit/findUsages/setUp_with_library_cache_k2',
+              'intellij_commit/findUsages/SolutionModel_with_library_cache_k2',
               'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
-              'intellij_commit/findUsages/OraIntrospector_with_library_cache_k2',
-              'intellij_commit/findUsages/UIAutomationInteractionModel.Generated_with_library_cache_k2',
-              'intellij_commit/findUsages/SolutionModel.Generated_with_library_cache_k2',
-              'kotlin_lang/findUsages/FirErrors_with_library_cache_k2',
-              'kotlin_lang/findUsages/Flag_with_library_cache_k2',
-              'kotlin_lang/findUsages/CommonParser_with_library_cache_k2',
-              'kotlin_lang/findUsages/SymbolTable_with_library_cache_k2',
-              'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
+              'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2',
+              'kotlin_lang/highlight/CommonParser_with_library_cache_k2',
+              'kotlin_lang/highlight/FirErrors_with_library_cache_k2',
+              'kotlin_lang/highlight/Flag_with_library_cache_k2',
+              'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
+              'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"

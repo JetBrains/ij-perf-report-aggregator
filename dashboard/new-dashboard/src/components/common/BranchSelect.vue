@@ -171,7 +171,7 @@ const props = defineProps<Props>()
 function createItems(configurator?: DimensionConfigurator) {
   return computed(() => {
     if (configurator == undefined) {
-      return {}
+      return []
     }
     const values = configurator.values.value
 
@@ -201,6 +201,7 @@ function createValueFrom(configurator?: DimensionConfigurator) {
       return value == null || value === "" ? [] : [value]
     },
     set(value) {
+      if(configurator == null) return
       // eslint-disable-next-line vue/no-mutating-props
       configurator.selected.value = value == null || value.length === 0 ? null : value
     },

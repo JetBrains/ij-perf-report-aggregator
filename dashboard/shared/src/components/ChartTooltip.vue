@@ -68,7 +68,14 @@
         </template>
       </div>
       <!-- in our case data is related to each other, reduce height of panel -->
-      <Divider class="my-2" />
+      <div class="relative mt-3 mb-2">
+        <div
+          class="absolute inset-0 flex items-center"
+          aria-hidden="true"
+        >
+          <div class="w-full border-t border-gray-300" />
+        </div>
+      </div>
       <div
         v-if="tooltipData.firstSeriesData.length >= 3"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
@@ -83,7 +90,6 @@
 
 import { ArchiveBoxIcon, ArrowDownTrayIcon, ServerIcon, UsersIcon } from "@heroicons/vue/24/outline"
 import OverlayPanel from "primevue/overlaypanel"
-import Divider from "tailwind-ui/src/Divider.vue"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
 import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
 import { debounceSync } from "../util/debounce"

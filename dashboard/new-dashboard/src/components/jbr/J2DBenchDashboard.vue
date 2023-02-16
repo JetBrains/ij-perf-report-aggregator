@@ -88,7 +88,6 @@ provideReportUrlProvider(false, true)
 
 const dbName = "jbr"
 const dbTable = "report"
-const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()
@@ -122,10 +121,10 @@ const dashboardConfigurators = [
 const metricsNames = ["graphics.imaging.benchmarks.tests.drawimage", "graphics.imaging.benchmarks.tests.drawimagescaleup",
   "graphics.imaging.benchmarks.tests.drawimagetxform", "graphics.render.tests.drawLine", "graphics.render.tests.fillOval", "graphics.render.tests.fillRect",
   "graphics.render.tests.shape.fillCubic", "text.Rendering.tests.drawString"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config, i, a) => "J2DBench_" + config)
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "J2DBench_" + config)
 const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map((config, i, a) => "J2DBench_" + config)
-const windowsConfigurations = ["Windows10x64"].map((config, i, a) => "J2DBench_" + config)
+  "macOS12aarch64Metal"].map(config => "J2DBench_" + config)
+const windowsConfigurations = ["Windows10x64"].map(config => "J2DBench_" + config)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

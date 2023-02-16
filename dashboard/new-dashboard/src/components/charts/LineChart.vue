@@ -11,11 +11,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { CallbackDataParams } from "echarts/types/dist/shared"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "shared/src/dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration} from "shared/src/dataQuery"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -89,7 +88,7 @@ onMounted(() => {
 
   unsubscribe = chartVm.subscribe()
 
-  chartManager.chart.on("click", (params: CallbackDataParams) => {
+  chartManager.chart.on("click", (params: any) => {
     if (params.dataIndex != undefined) {
       const infoData = getInfoDataFrom(params, props.valueUnit)
       showSideBar(sidebarVm, infoData)

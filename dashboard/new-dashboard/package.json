@@ -4,6 +4,7 @@
   "dependencies": {
     "@heroicons/vue": "2.0.13",
     "echarts": "5.4.1",
+    "ij": "workspace:*",
     "primevue": "3.22.3",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",

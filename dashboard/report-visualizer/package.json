@@ -9,6 +9,7 @@
     "primevue": "3.22.3",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
+    "tailwind-ui": "workspace:*",
     "vue": "3.2.45",
     "vue-router": "4.1.6"
   }

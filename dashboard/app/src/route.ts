@@ -1,4 +1,7 @@
+import { getIjItems, getIjRoutes } from "ij/src/route"
 import { getNewDashboardRoutes } from "new-dashboard/src/routes"
+import { MenuItem } from "primevue/menuitem"
+import { getReportVisualizerItems, getReportVisualizerRoutes } from "report-visualizer/src/route"
 import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
@@ -9,11 +12,23 @@ function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRa
   }
 }
 
+export function getItems(): Array<MenuItem> {
+  return [...getIjItems(), ...getReportVisualizerItems()]
+}
+
+function getRoutes(): Array<ParentRouteRecord> {
+  return [...getIjRoutes(), ...getReportVisualizerRoutes(), ...getNewDashboardRoutes()]
+}
+
 export function createAndConfigureRouter(): Router {
   const routes: Array<RouteRecordRaw> = [
     {
       path: "",
       redirect: "/intellij/dashboard",
+    },
+    {
+      path: "/old",
+      redirect: "/ij/pulse",
     },
     {
       path: "/:catchAll(.*)",
@@ -22,7 +37,7 @@ export function createAndConfigureRouter(): Router {
     },
   ]
 
-  addRoutes(getNewDashboardRoutes(), routes)
+  addRoutes(getRoutes(), routes)
 
   const router = createRouter({
     history: createWebHistory("/"),

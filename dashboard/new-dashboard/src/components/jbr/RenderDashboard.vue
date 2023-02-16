@@ -125,10 +125,10 @@ const metricsNames = ["ArgbSurfaceBlitImageRenderer", "LinGrad3RotatedOvalAA", "
   "ClipFlatOval", "RotatedOvalAA", "VolImageAA", "ImageAA", "RotatedBox", "RotatedBoxAA", "WiredBox", "FlatOval", "WiredBoxAA", "WiredBubblesAA", "Lines", "Image", "ClipFlatBox",
   "VolImage", "LargeTextGray", "LargeTextNoAA", "Image_XOR", "WhiteTextGray", "LargeTextLCD", "BgrSwBlitImage", "FlatQuad", "TextLCD", "WhiteTextLCD", "TextNoAA", "FlatOval_XOR",
   "TextGray", "WhiteTextNoAA", "LinesAA", "WiredQuadAA", "Lines_XOR", "RotatedBox_XOR", "WiredQuad", "TextNoAA_XOR", "FlatQuadAA", "TextLCD_XOR"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "Render_" + config)
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config, i, a) => "Render_" + config)
 const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map(config => "Render_" + config)
-const windowsConfigurations = ["Windows10x64"].map(config => "Render_" + config)
+  "macOS12aarch64Metal"].map((config, i, a) => "Render_" + config)
+const windowsConfigurations = ["Windows10x64"].map((config, i, a) => "Render_" + config)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

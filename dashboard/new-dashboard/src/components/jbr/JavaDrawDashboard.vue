@@ -120,10 +120,10 @@ const dashboardConfigurators = [
 ]
 
 const metricsNames = ["Plus_200_Random_Small_Circles", "Plus_2_SweepGradient_Circles", "Plus_320_Long_Lines", "Plus_4000_Random_Small_Circles"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "JavaDraw_" + config)
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config, i, a) => "JavaDraw_" + config)
 const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map(config => "JavaDraw_" + config)
-const windowsConfigurations = ["Windows10x64"].map(config => "JavaDraw_" + config)
+  "macOS12aarch64Metal"].map((config, i, a) => "JavaDraw_" + config)
+const windowsConfigurations = ["Windows10x64"].map((config, i, a) => "JavaDraw_" + config)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

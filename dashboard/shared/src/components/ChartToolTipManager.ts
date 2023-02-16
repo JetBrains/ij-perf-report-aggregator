@@ -3,7 +3,6 @@ import { inject } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { DataQuery } from "../dataQuery"
 import { reportInfoProviderKey } from "../injectionKeys"
-import { ValueUnit } from "../chart"
 
 export interface ReportInfoProvider {
   createReportUrl(generatedTime: number, query: DataQuery): string
@@ -25,9 +24,9 @@ interface TooltipDataItem {
 }
 
 export class ChartToolTipManager {
-  private readonly valueUnit: ValueUnit
+  private readonly valueUnit: "ms" | "ns"
 
-  constructor(valueUnit: ValueUnit) {
+  constructor(valueUnit: "ms" | "ns") {
     this.valueUnit = valueUnit
   }
 

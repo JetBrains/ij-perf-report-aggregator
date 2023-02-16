@@ -7,7 +7,6 @@ export interface NavigationItem {
 }
 
 const enum ROUTE_PREFIX {
-  Startup = "/ij",
   IntelliJ = "/intellij",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
@@ -20,12 +19,6 @@ const enum ROUTE_PREFIX {
 }
 
 const ROUTES = {
-  StartupPulse: `${ROUTE_PREFIX.Startup}/pulse`,
-  StartupProgress: `${ROUTE_PREFIX.Startup}/progressOverTime`,
-  StartupModuleLoading: `${ROUTE_PREFIX.Startup}/moduleLoading`,
-  StartupExplore: `${ROUTE_PREFIX.Startup}/explore`,
-  StartupReport: `${ROUTE_PREFIX.Startup}/report`,
-
   IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
   IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJ}/gradleDashboard`,
   IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJ}/mavenDashboard`,
@@ -72,11 +65,6 @@ const ROUTES = {
 
 export const topNavigationItems: NavigationItem[] = [
   {
-    path: ROUTES.StartupPulse,
-    name: "IntelliJ Startup",
-    key: ROUTE_PREFIX.Startup,
-  },
-  {
     path: ROUTES.IntelliJDashboard,
     name: "IntelliJ",
     key: ROUTE_PREFIX.IntelliJ,
@@ -120,28 +108,10 @@ export const topNavigationItems: NavigationItem[] = [
     path: ROUTES.ScalaTests,
     name: "Scala",
     key: ROUTE_PREFIX.Scala,
-  }
-]
-export const startupTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.StartupPulse,
-    name: "Pulse",
   },
   {
-    path: ROUTES.StartupProgress,
-    name: "Progress Over Time",
-  },
-  {
-    path: ROUTES.StartupModuleLoading,
-    name: "Module Loading",
-  },
-  {
-    path: ROUTES.StartupExplore,
-    name: "Explore",
-  },
-  {
-    path: ROUTES.StartupReport,
-    name: "Report",
+    path: "/old",
+    name: "IJ startup(Back To Old)",
   },
 ]
 
@@ -313,12 +283,10 @@ export const FleetNavigationItems: NavigationItem[] = [
 ]
 
 export function getNavigationTabs(path: string): NavigationItem[] {
-  if (path.startsWith(ROUTE_PREFIX.Startup)) {
-    return startupTabNavigationItems
-  }
   if (path.startsWith(ROUTE_PREFIX.IntelliJ)) {
     return intelliJTabNavigationItems
   }
+
   if (path.startsWith(ROUTE_PREFIX.PhpStorm)) {
     return phpStormNavigationItems
   }
@@ -351,31 +319,6 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
   return [
     {
       children: [
-        {
-          path: ROUTES.StartupPulse,
-          component: () => import("./components/startup/IntelliJPulse.vue"),
-          meta: {pageTitle: "Pulse"},
-        },
-        {
-          path: ROUTES.StartupProgress,
-          component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
-          meta: {pageTitle: "Progress Over Time"},
-        },
-        {
-          path: ROUTES.StartupModuleLoading,
-          component: () => import("./components/startup/IntelliJModuleLoading.vue"),
-          meta: {pageTitle: "Module Loading"},
-        },
-        {
-          path: ROUTES.StartupExplore,
-          component: () => import("./components/startup/IntelliJExplore.vue"),
-          meta: {pageTitle: "Explore"},
-        },
-        {
-          path: ROUTES.StartupReport,
-          component: () => import("../../report-visualizer/src/Report.vue"),
-          meta: {pageTitle: "Startup Report"},
-        },
         {
           path: ROUTES.IntelliJDashboard,
           component: () => import("./components/intelliJ/PerformanceDashboard.vue"),

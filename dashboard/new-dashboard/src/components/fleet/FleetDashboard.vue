@@ -27,7 +27,11 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <Divider title="Remote Mode" />
+        <div class="relative flex py-5 items-center">
+          <div class="flex-grow border-t border-gray-400" />
+          <span class="flex-shrink mx-4 text-gray-400 text-lg">Remote Mode</span>
+          <div class="flex-grow border-t border-gray-400" />
+        </div>
         <!-- :skip-zero-values="false"
 :configurators="dashboardConfigurators" because computed measures cannot be filtered -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
@@ -69,7 +73,11 @@
           />
         </div>
 
-        <Divider title="ShortCircuit" />
+        <div class="relative flex py-5 items-center">
+          <div class="flex-grow border-t border-gray-400" />
+          <span class="flex-shrink mx-4 text-gray-400 text-lg">ShortCircuit</span>
+          <div class="flex-grow border-t border-gray-400" />
+        </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
             title="editor appeared"
@@ -128,7 +136,6 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
-import Divider from "../common/Divider.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider()

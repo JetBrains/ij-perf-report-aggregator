@@ -31,7 +31,11 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <Divider title="Core" />
+        <div class="relative flex py-5 items-center">
+          <div class="flex-grow border-t border-gray-400" />
+          <span class="flex-shrink mx-4 text-gray-400 text-lg">Core</span>
+          <div class="flex-grow border-t border-gray-400" />
+        </div>
         <section>
           <GroupProjectsChart
             label="Typing (time)"
@@ -81,8 +85,12 @@
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
+          <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-gray-400" />
+            <span class="flex-shrink mx-4 text-gray-400 text-lg">PHP</span>
+            <div class="flex-grow border-t border-gray-400" />
+          </div>
         </section>
-        <Divider title="PHP" />
         <section>
           <GroupProjectsChart
             label="Typing (time)"
@@ -145,7 +153,6 @@ import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
-import Divider from "../common/Divider.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
 provideReportUrlProvider(false)

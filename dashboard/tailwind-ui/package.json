@@ -1,9 +1,0 @@
-{
-  "name": "tailwind-ui",
-  "private": true,
-  "dependencies": {
-    "@headlessui/vue": "^1.7.7",
-    "@heroicons/vue": "^2.0.13",
-    "vue": "3.2.45"
-  }
-}

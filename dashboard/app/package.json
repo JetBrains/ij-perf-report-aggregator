@@ -4,13 +4,12 @@
   "dependencies": {
     "@fontsource/inter": "4.5.15",
     "@fontsource/jetbrains-mono": "4.5.12",
-    "ij": "workspace:*",
     "new-dashboard": "workspace:*",
-    "primevue": "3.22.3",
+    "primevue": "3.23.0",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
-    "vue": "3.2.45",
+    "vue": "3.2.47",
     "vue-router": "4.1.6"
   }
 }

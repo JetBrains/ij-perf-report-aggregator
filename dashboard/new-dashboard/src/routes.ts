@@ -7,7 +7,7 @@ export interface NavigationItem {
 }
 
 const enum ROUTE_PREFIX {
-  Startup = "/startup",
+  Startup = "/ij",
   IntelliJ = "/intellij",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",

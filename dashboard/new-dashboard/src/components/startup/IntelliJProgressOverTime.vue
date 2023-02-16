@@ -70,11 +70,14 @@
   />
 </template>
 <script setup lang="ts">
-import { createProjectConfigurator, getProjectName } from "ij/src/projectNameMapping"
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
+import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
+import BarChartCard from "shared/src/components/BarChartCard.vue"
+import ChartTooltip from "shared/src/components/ChartTooltip.vue"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
+import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
@@ -85,13 +88,8 @@ import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } fr
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import AggregationOperatorSelect from "../../../../../dashboard/shared/src/components/AggregationOperatorSelect.vue"
-import BarChartCard from "../../../../../dashboard/shared/src/components/BarChartCard.vue"
-import ChartTooltip from "../../../../../dashboard/shared/src/components/ChartTooltip.vue"
-import DimensionSelect from "../../../../../dashboard/shared/src/components/DimensionSelect.vue"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const productCodeToName = new Map([
   ["DB", "DataGrip"],
@@ -117,10 +115,6 @@ const dbTable = "report"
 const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
-
-provide(containerKey, container)
-provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-dashboard", {

@@ -17,9 +17,9 @@ type InsertInstallerManager struct {
   insertedIds intsets.Sparse
 }
 
-func NewInstallerInsertManager(db driver.Conn, insertContext context.Context, logger *zap.Logger) (*InsertInstallerManager, error) {
+func NewInstallerInsertManager(insertContext context.Context, db driver.Conn, logger *zap.Logger) (*InsertInstallerManager, error) {
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBulkInsertManager(db, insertContext, "insert into installer", 1, logger.Named("installer"))
+  insertManager, err := sql_util.NewBulkInsertManager(insertContext, db, "insert into installer", 1, logger.Named("installer"))
   if err != nil {
     return nil, errors.WithStack(err)
   }

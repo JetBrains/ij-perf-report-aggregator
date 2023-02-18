@@ -47,7 +47,7 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
       jsonWriter.S(",")
     }
 
-    err := t.computeMeasureResponse(dataQuery, jsonWriter, request.Context())
+    err := t.computeMeasureResponse(request.Context(), dataQuery, jsonWriter)
     if err != nil {
       return nil, false, err
     }
@@ -60,13 +60,13 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
   return buffer, true, nil
 }
 
-func (t *StatsServer) computeMeasureResponse(query data_query.DataQuery, jsonWriter *quicktemplate.QWriter, context context.Context) error {
+func (t *StatsServer) computeMeasureResponse(context context.Context, query data_query.DataQuery, jsonWriter *quicktemplate.QWriter) error {
   table := query.Table
   if len(table) == 0 {
     table = "report"
   }
 
-  err := data_query.SelectRows(query, table, t, jsonWriter, context)
+  err := data_query.SelectRows(context, query, table, t, jsonWriter)
   if err != nil {
     return err
   }

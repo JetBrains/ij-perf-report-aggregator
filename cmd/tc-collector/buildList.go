@@ -1,7 +1,6 @@
 package main
 
 import (
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
@@ -73,7 +72,7 @@ type Agent struct {
 func (t *Collector) loadBuilds(url string) (*BuildList, error) {
   t.logger.Info("request", zap.String("url", url))
 
-  request, err := t.createRequest(url, t.taskContext)
+  request, err := t.createRequest(t.taskContext, url)
   if err != nil {
     return nil, err
   }
@@ -83,7 +82,7 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
     return nil, errors.WithStack(err)
   }
 
-  defer util.Close(response.Body, t.logger)
+  defer response.Body.Close()
 
   if response.StatusCode > 300 {
     responseBody, _ := io.ReadAll(response.Body)

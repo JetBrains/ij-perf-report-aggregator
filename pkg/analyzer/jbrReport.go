@@ -34,7 +34,7 @@ func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
       name := strings.TrimSpace(split[0])
       value, err := strconv.ParseFloat(strings.TrimSpace(split[1]), 64)
       if err != nil {
-        //for some reason float is written as "54,14" in some tests so we have to convert it back to the normal one "54.14"
+        // for some reason float is written as "54,14" in some tests so we have to convert it back to the normal one "54.14"
         normalizedValue := strings.Replace(split[1], ",", ".", 1)
         value, err = strconv.ParseFloat(normalizedValue, 64)
       }

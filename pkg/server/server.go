@@ -49,8 +49,10 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   defer func() {
     statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
-      p := pool.(*puddle.Pool[*ch.Client])
-      p.Close()
+      p, ok := pool.(*puddle.Pool[*ch.Client])
+      if ok {
+        p.Close()
+      }
       return true
     })
   }()
@@ -83,7 +85,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   })
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
-    writer.WriteHeader(200)
+    writer.WriteHeader(http.StatusOK)
   })
 
   server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), mux, logger)
@@ -94,17 +96,21 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func (t *StatsServer) AcquireDatabase(name string, ctx context.Context) (*puddle.Resource[*ch.Client], error) {
+func (t *StatsServer) AcquireDatabase(ctx context.Context, name string) (*puddle.Resource[*ch.Client], error) {
   untypedPool, exists := t.nameToDbPool.Load(name)
   var pool *puddle.Pool[*ch.Client]
   var err error
+  isCorrectPool := true
   if exists {
-    pool = untypedPool.(*puddle.Pool[*ch.Client])
+    pool, isCorrectPool = untypedPool.(*puddle.Pool[*ch.Client])
   } else {
     pool, err = createStoreForDatabaseUnderLock(name, t)
   }
   if err != nil {
     return nil, errors.WithStack(err)
+  }
+  if !isCorrectPool {
+    return nil, errors.New("Pool can't be casted to (*puddle.Pool[*ch.Client])")
   }
 
   resource, err := pool.Acquire(ctx)
@@ -122,8 +128,8 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[
     Destructor: func(value *ch.Client) {
       _ = value.Close()
     },
-    Constructor: func(ctx context.Context) (res *ch.Client, err error) {
-      return ch.Dial(ctx, ch.Options{
+    Constructor: func(ctx context.Context) (*ch.Client, error) {
+      client, err := ch.Dial(ctx, ch.Options{
         Address:  t.dbUrl,
         Database: name,
         Settings: []ch.Setting{
@@ -132,6 +138,7 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[
           ch.SettingInt("max_memory_usage", 3221225472),
         },
       })
+      return client, err
     },
   })
   if err == nil && pool != nil {

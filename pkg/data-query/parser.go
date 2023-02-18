@@ -72,11 +72,12 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
     Flat:     value.GetBool("flat"),
   }
 
-  if len(query.Database) == 0 {
+  switch {
+  case len(query.Database) == 0:
     query.Database = "default"
-  } else if !reDbName.MatchString(query.Database) {
+  case !reDbName.MatchString(query.Database):
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Database name %s contains illegal chars", query.Database))
-  } else if len(query.Table) > 0 && !reDbName.MatchString(query.Table) {
+  case len(query.Table) > 0 && !reDbName.MatchString(query.Table):
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Table name %s contains illegal chars", query.Table))
   }
 
@@ -224,30 +225,31 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       return http_error.NewHttpError(400, fmt.Sprintf("%s is not a valid filter field name", t.Field))
     }
 
+    if len(t.Sql) == 0 && value == nil {
+      return errors.New("Filter value is not specified")
+    }
     if len(t.Sql) == 0 {
-      if value == nil {
-        return errors.New("Filter value is not specified")
-      } else if value.Type() == fastjson.TypeString {
+      switch value.Type() {
+      case fastjson.TypeString:
         t.Value = string(value.GetStringBytes())
-      } else if value.Type() == fastjson.TypeNumber {
+      case fastjson.TypeNumber:
         number, err := value.Float64()
         if err != nil {
           return errors.WithStack(err)
         }
-
         if number == math.Trunc(number) {
           // convert to int (to be able to use time unix timestamps from client side)
           t.Value = int(number)
         } else {
           t.Value = number
         }
-      } else if value.Type() == fastjson.TypeArray {
+      case fastjson.TypeArray:
         t.Value = readArray(value)
-      } else if value.Type() == fastjson.TypeFalse {
+      case fastjson.TypeFalse:
         t.Value = value.GetBool()
-      } else if value.Type() == fastjson.TypeTrue {
+      case fastjson.TypeTrue:
         t.Value = value.GetBool()
-      } else {
+      default:
         return errors.Errorf("Filter value %v is not supported", value)
       }
 
@@ -274,11 +276,12 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
 func readArray(parentValue *fastjson.Value) []interface{} {
   list := make([]interface{}, 0)
   for _, v := range parentValue.GetArray() {
-    if v.Type() == fastjson.TypeFalse {
+    switch v.Type() {
+    case fastjson.TypeFalse:
       list = append(list, false)
-    } else if v.Type() == fastjson.TypeTrue {
+    case fastjson.TypeTrue:
       list = append(list, true)
-    } else {
+    default:
       list = append(list, string(v.GetStringBytes()))
     }
   }

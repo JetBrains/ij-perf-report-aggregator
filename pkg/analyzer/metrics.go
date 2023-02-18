@@ -39,7 +39,7 @@ func init() {
     return result
   }
 
-  //createVersionedMetric := func(name string, sinceVersion string) *Metric {
+  // createVersionedMetric := func(name string, sinceVersion string) *Metric {
   //  result := createMetric(name)
   //  result.sinceVersion = sinceVersion
   //  return result
@@ -158,13 +158,14 @@ func init() {
 
 func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
   for _, info := range IjMetricDescriptors {
-    if info.maxValue == 65535 {
+    switch info.maxValue {
+    case 65535:
       *result = append(*result, uint16(0))
-    } else if info.maxValue == 4294967295 {
+    case 4294967295:
       *result = append(*result, uint32(0))
-    } else if info.maxValue == 2147483647 {
+    case 2147483647:
       *result = append(*result, int32(-1))
-    } else {
+    default:
       *result = append(*result, -1)
     }
   }
@@ -178,16 +179,17 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
     }
   }
 
-  if version.Compare(report.Version, "32", ">=") {
-    // part of report.Activities
-  } else if version.Compare(report.Version, "18", ">=") {
+  switch {
+  case version.Compare(report.Version, "32", ">="):
+  // part of report.Activities
+  case version.Compare(report.Version, "18", ">="):
     for _, activity := range report.PrepareAppInitActivities {
       err := setMetric(nonMetricFieldCount, activity, report, result)
       if err != nil {
         return err
       }
     }
-  } else {
+  default:
     for _, activity := range report.PrepareAppInitActivities {
       switch activity.Name {
       case "plugin descriptors loading":
@@ -264,13 +266,14 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
     return errors.Errorf("value must be positive (generatedTime: %s, value: %v)", report.Generated, v)
   }
 
-  if info.maxValue == 65535 {
+  switch info.maxValue {
+  case 65535:
     (*result)[nonMetricFieldCount+info.index] = uint16(v)
-  } else if info.maxValue == 4294967295 {
+  case 4294967295:
     (*result)[nonMetricFieldCount+info.index] = uint32(v)
-  } else if info.maxValue == 2147483647 {
+  case 2147483647:
     (*result)[nonMetricFieldCount+info.index] = int32(v)
-  } else {
+  default:
     (*result)[nonMetricFieldCount+info.index] = v
   }
 

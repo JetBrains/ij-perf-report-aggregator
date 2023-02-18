@@ -113,7 +113,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   config := analyzer.GetAnalyzer(idName)
 
   config.TableName = tableName + "2"
-  insertReportManager, err := analyzer.NewInsertReportManager(db, config, taskContext, tableName+"2", insertWorkerCount, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, config, tableName+"2", insertWorkerCount, logger)
   if err != nil {
     return err
   }
@@ -145,7 +145,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   for current := minTime; current.Before(maxTime); {
     // 1 month
     next := current.AddDate(0, 1, 0)
-    err = process(db, config, current, next, insertReportManager, taskContext, tableName, logger)
+    err = process(taskContext, db, config, current, next, insertReportManager, tableName, logger)
     if err != nil {
       return err
     }
@@ -166,16 +166,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   return nil
 }
 
-func process(
-  db driver.Conn,
-  config analyzer.DatabaseConfiguration,
-  startTime time.Time,
-  endTime time.Time,
-  insertReportManager *analyzer.InsertReportManager,
-  taskContext context.Context,
-  tableName string,
-  logger *zap.Logger,
-) error {
+func process(taskContext context.Context, db driver.Conn, config analyzer.DatabaseConfiguration, startTime time.Time, endTime time.Time, insertReportManager *analyzer.InsertReportManager, tableName string, logger *zap.Logger, ) error {
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
 
@@ -260,7 +251,7 @@ rowLoop:
       runResult.ExtraFieldData[4] = row.ServicePlugin
     }
 
-    //transform runResult here
+    // transform runResult here
     // Example: runResult.Report.Project = strings.TrimPrefix(runResult.Report.Project, "devServer-")
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)

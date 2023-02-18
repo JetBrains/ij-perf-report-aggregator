@@ -38,7 +38,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   backuper := clickhousebackup.CreateBackuper()
 
   if env.GetBool("DO_BACKUP") {
-    err := executeBackup(backuper, taskContext, true, logger)
+    err := executeBackup(taskContext, backuper, true, logger)
     return err
   }
 
@@ -78,7 +78,7 @@ func start(natsUrl string, logger *zap.Logger) error {
     }
 
     logger.Info("backup requested")
-    err = executeBackup(backuper, taskContext, isIncremental, logger)
+    err = executeBackup(taskContext, backuper, isIncremental, logger)
     if err != nil {
       logger.Error("cannot backup", zap.Error(err))
     } else {
@@ -96,7 +96,7 @@ func start(natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func executeBackup(backuper *backup.Backuper, taskContext context.Context, isIncremental bool, logger *zap.Logger) error {
+func executeBackup(taskContext context.Context, backuper *backup.Backuper, isIncremental bool, logger *zap.Logger) error {
   backupName := backup.NewBackupName()
   logger = logger.With(zap.String("backup", backupName))
 

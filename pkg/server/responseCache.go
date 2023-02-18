@@ -2,11 +2,11 @@ package server
 
 import (
   "context"
-  errors2 "errors"
+  "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/andybalholm/brotli"
-  "github.com/develar/errors"
+  e "github.com/develar/errors"
   "github.com/dgraph-io/ristretto"
   "github.com/valyala/bytebufferpool"
   "github.com/zeebo/xxh3"
@@ -35,14 +35,14 @@ func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
-  cacheSize := 1000 * 1000 * 1000 //1 GiB
+  cacheSize := 1000 * 1000 * 1000 // 1 GiB
   cache, err := ristretto.NewCache(&ristretto.Config{
     NumCounters: int64((cacheSize / 50 /* assume that each response ~ 50 KB */) * 10) /* number of keys to track frequency of */,
     MaxCost:     int64(cacheSize),
     BufferItems: 64 /* number of keys per Get buffer */,
   })
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, e.WithStack(err)
   }
   return &ResponseCacheManager{
     cache:  cache,
@@ -103,7 +103,11 @@ func (t *ResponseCacheManager) handle(
   value, found := t.cache.Get(cacheKey)
   var result []byte
   if found {
-    result = value.([]byte)
+    var ok bool
+    result, ok = value.([]byte)
+    if !ok {
+      return
+    }
     prevEtag := request.Header.Get("If-None-Match")
     eTag := computeEtag(result)
     if prevEtag == eTag {
@@ -153,14 +157,13 @@ func (t *ResponseCacheManager) handle(
 }
 
 func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
-  switch exception := errors.Cause(err).(type) {
-  case *http_error.HttpError:
-    w.WriteHeader(exception.Code)
-    writehttpError(w, exception)
-
-  default:
-    //fmt.Printf("%+v", err)
-    if errors2.Is(exception, context.Canceled) {
+  cause := e.Cause(err)
+  var httpError *http_error.HttpError
+  if errors.As(cause, &httpError) {
+    w.WriteHeader(httpError.Code)
+    writehttpError(w, httpError)
+  } else {
+    if errors.Is(cause, context.Canceled) {
       http.Error(w, err.Error(), 499)
     } else {
       t.logger.Error("cannot handle http request", zap.Error(err))

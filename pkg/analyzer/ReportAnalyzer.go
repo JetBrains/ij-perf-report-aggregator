@@ -2,11 +2,11 @@ package analyzer
 
 import (
   "context"
-  errors2 "errors"
+  "errors"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/develar/errors"
+  e "github.com/develar/errors"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "strconv"
@@ -32,13 +32,8 @@ type ReportAnalyzer struct {
   logger *zap.Logger
 }
 
-func CreateReportAnalyzer(
-  db driver.Conn,
-  config DatabaseConfiguration,
-  parentContext context.Context,
-  logger *zap.Logger,
-) (*ReportAnalyzer, error) {
-  insertReportManager, err := NewInsertReportManager(db, config, parentContext, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
+func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, config DatabaseConfiguration, logger *zap.Logger, ) (*ReportAnalyzer, error) {
+  insertReportManager, err := NewInsertReportManager(parentContext, db, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
   if err != nil {
     return nil, err
   }
@@ -70,7 +65,7 @@ func CreateReportAnalyzer(
 }
 
 func (t *ReportAnalyzer) invokeInsert(report *ReportInfo, cancel context.CancelFunc) {
-  defer t.waitGroup.Add(-1)
+  defer t.waitGroup.Done()
   err := t.insert(report)
   if err != nil {
     t.errOnce.Do(func() {
@@ -119,7 +114,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   if t.config.DbName == "jbr" {
     ignore := analyzePerfJbrReport(runResult, extraData)
     if ignore {
-      //ignore empty report
+      // ignore empty report
       return nil
     }
   } else {
@@ -143,7 +138,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   }
 
   if len(extraData.Machine) == 0 {
-    return errors.New("machine is not specified")
+    return e.New("machine is not specified")
   }
 
   runResult.Product = extraData.ProductCode
@@ -154,9 +149,8 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     if err != nil {
       if extraData.CurrentBuildTime.IsZero() {
         return err
-      } else {
-        runResult.GeneratedTime = extraData.CurrentBuildTime
       }
+      runResult.GeneratedTime = extraData.CurrentBuildTime
     }
   }
 
@@ -175,7 +169,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 
     runResult.BuildC1, runResult.BuildC2, runResult.BuildC3, err = splitBuildNumber(buildComponents)
     if err != nil {
-      //we might get 231.snapshot build numbers, that is more or less fine and we need such build anyway
+      // we might get 231.snapshot build numbers, that is more or less fine and we need such build anyway
       t.logger.Error(err.Error())
     }
   }
@@ -211,7 +205,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 
   props, err := parser.ParseBytes(extraData.TcBuildProperties)
   if err != nil {
-    return "", errors.WithStack(err)
+    return "", e.WithStack(err)
   }
 
   branch := string(props.GetStringBytes("vcsroot.branch"))
@@ -225,7 +219,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
       }
     }
     logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
-    return "", errors.New("cannot infer branch from JBR project id")
+    return "", e.New("cannot infer branch from JBR project id")
   }
   if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" && projectId != "perfintDev" {
     return strings.TrimPrefix(branch, "refs/heads/"), nil
@@ -233,26 +227,23 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 
   if projectId == "ij" {
     logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
-    return "", errors.New("cannot infer branch from TC properties")
-  } else {
-    //goland:noinspection SpellCheckingInspection
-    branch = string(props.GetStringBytes("teamcity.build.branch"))
-    if len(branch) != 0 && branch != "<default>" {
-      return branch, nil
-    }
-    var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
-    if len(isMaster) == 0 {
-      // we check that the property doesn't exist so it is not a master
-      if runResult.BuildC3 == 0 {
-        return strconv.Itoa(runResult.BuildC1), nil
-      } else {
-        // we have EAP branch
-        return strconv.Itoa(runResult.BuildC1) + "." + strconv.Itoa(runResult.BuildC2), nil
-      }
-    } else {
-      return "master", nil
-    }
+    return "", e.New("cannot infer branch from TC properties")
   }
+  //goland:noinspection SpellCheckingInspection
+  branch = string(props.GetStringBytes("teamcity.build.branch"))
+  if len(branch) != 0 && branch != "<default>" {
+    return branch, nil
+  }
+  var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
+  if len(isMaster) == 0 {
+    // we check that the property doesn't exist so it is not a master
+    if runResult.BuildC3 == 0 {
+      return strconv.Itoa(runResult.BuildC1), nil
+    }
+    // we have EAP branch
+    return strconv.Itoa(runResult.BuildC1) + "." + strconv.Itoa(runResult.BuildC2), nil
+  }
+  return "master", nil
 }
 
 type ReportInfo struct {
@@ -264,16 +255,15 @@ type ReportInfo struct {
 func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time.Time, error) {
   if report.Generated == "" {
     if extraData.LastGeneratedTime.IsZero() {
-      return time.Time{}, errors.New("generated time not in report and not provided explicitly")
+      return time.Time{}, e.New("generated time not in report and not provided explicitly")
     }
     return extraData.LastGeneratedTime, nil
-  } else {
-    parsedTime, err := ParseTime(report.Generated)
-    if err != nil {
-      return time.Time{}, err
-    }
-    return parsedTime, nil
   }
+  parsedTime, err := ParseTime(report.Generated)
+  if err != nil {
+    return time.Time{}, err
+  }
+  return parsedTime, nil
 }
 
 func (t *ReportAnalyzer) WaitAnalyzeAndInsert() error {
@@ -307,11 +297,10 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 
   err := t.InsertReportManager.Insert(runResult)
   if err != nil {
-    if errors2.Is(err, context.Canceled) {
+    if errors.Is(err, context.Canceled) {
       return err
-    } else {
-      return errors.WithMessagef(err, "cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
     }
+    return e.WithMessagef(err, "cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
   }
   return nil
 }
@@ -319,23 +308,22 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 func getNullIfEmpty(v int) int {
   if v <= 0 {
     return 0
-  } else {
-    return v
   }
+  return v
 }
 
 func splitBuildNumber(buildComponents []string) (int, int, int, error) {
   buildC1, err := strconv.Atoi(buildComponents[0])
   if err != nil {
-    return 0, 0, 0, errors.WithStack(err)
+    return 0, 0, 0, e.WithStack(err)
   }
   buildC2, err := strconv.Atoi(buildComponents[1])
   if err != nil {
-    return buildC1, 0, 0, errors.WithStack(err)
+    return buildC1, 0, 0, e.WithStack(err)
   }
   buildC3, err := strconv.Atoi(buildComponents[2])
   if err != nil {
-    return buildC1, buildC2, 0, errors.WithStack(err)
+    return buildC1, buildC2, 0, e.WithStack(err)
   }
   return buildC1, buildC2, buildC3, nil
 }

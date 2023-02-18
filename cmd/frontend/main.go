@@ -77,23 +77,24 @@ func run() error {
       info.contentLength = lengthAsString
 
       // no mime type on distroless image
-      if strings.HasSuffix(key, ".woff2") {
+      switch {
+      case strings.HasSuffix(key, ".woff2"):
         info.contentType = "font/woff2"
-      } else if strings.HasSuffix(key, ".svg") {
+      case strings.HasSuffix(key, ".svg"):
         info.contentType = "image/svg+xml"
-      } else if strings.HasSuffix(key, ".js") {
+      case strings.HasSuffix(key, ".js"):
         info.contentType = "text/javascript"
-      } else if strings.HasSuffix(key, ".json") {
+      case strings.HasSuffix(key, ".json"):
         info.contentType = "application/json"
-      } else if strings.HasSuffix(key, ".html") {
+      case strings.HasSuffix(key, ".html"):
         info.contentType = "text/html"
-      } else if strings.HasSuffix(key, ".css") {
+      case strings.HasSuffix(key, ".css"):
         info.contentType = "text/css"
-      } else if strings.HasSuffix(key, ".wasm") {
+      case strings.HasSuffix(key, ".wasm"):
         info.contentType = "application/wasm"
-      } else if strings.HasSuffix(key, ".dictionary") {
+      case strings.HasSuffix(key, ".dictionary"):
         info.contentType = "application/octet-stream"
-      } else {
+      default:
         return errors.New("cannot determinate content-type by file extension: " + filepath.Ext(path))
       }
 

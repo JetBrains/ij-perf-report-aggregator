@@ -67,17 +67,17 @@ func execute(taskContext context.Context) error {
       return fmt.Errorf("%w", err)
     }
 
-    //tableSqlFile := filepath.Join(backupDir, name, "metadata", dbName, tableName+".sql")
-    //sql, err := os.ReadFile(tableSqlFile)
-    //if err != nil {
-    //  return fmt.Errorf("%w", err)
-    //}
+    // tableSqlFile := filepath.Join(backupDir, name, "metadata", dbName, tableName+".sql")
+    // sql, err := os.ReadFile(tableSqlFile)
+    // if err != nil {
+    //   return fmt.Errorf("%w", err)
+    // }
     //
-    //fixedSql := bytes.Replace(sql, []byte(", storage_policy = 's3'"), []byte(""), 1)
-    //err = os.WriteFile(tableSqlFile, fixedSql, 0666)
-    //if err != nil {
-    //  return fmt.Errorf("%w", err)
-    //}
+    // fixedSql := bytes.Replace(sql, []byte(", storage_policy = 's3'"), []byte(""), 1)
+    // err = os.WriteFile(tableSqlFile, fixedSql, 0666)
+    // if err != nil {
+    //   return fmt.Errorf("%w", err)
+    // }
   }
   return nil
 }

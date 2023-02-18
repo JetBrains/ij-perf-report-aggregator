@@ -4,12 +4,12 @@ import (
   "context"
   "database/sql"
   "encoding/json"
-  e "errors"
+  "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/develar/errors"
+  e "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
@@ -52,39 +52,29 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   logger.Info("ask report aggregator server to clear cache")
   nc, err := nats.Connect("nats://" + natsUrl)
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   err = nc.Publish("server.clearCache", []byte("tcCollector"))
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   logger.Info("ask to backup db")
   err = nc.Publish("db.backup", []byte("tcCollector"))
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   // ensure that message is delivered, because app will be exited very soon
   err = nc.Flush()
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
   return nil
 }
 
-func collectFromTeamCity(
-  clickHouseUrl string,
-  tcUrl string,
-  projectId string,
-  buildConfigurationIds []string,
-  initialSince time.Time,
-  userSpecifiedSince time.Time,
-  httpClient *http.Client,
-  logger *zap.Logger,
-  taskContext context.Context,
-) error {
+func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, initialSince time.Time, userSpecifiedSince time.Time, httpClient *http.Client, logger *zap.Logger, ) error {
   serverUrl := tcUrl + "/app/rest"
 
   serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
@@ -96,14 +86,14 @@ func collectFromTeamCity(
 
   db, err := analyzer.OpenDb(clickHouseUrl, config)
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   defer util.Close(db, logger)
 
   for _, buildTypeId := range buildConfigurationIds {
     if taskContext.Err() != nil {
-      return errors.WithStack(taskContext.Err())
+      return e.WithStack(taskContext.Err())
     }
 
     err = collectBuildConfiguration(
@@ -149,8 +139,8 @@ func collectBuildConfiguration(
       //goland:noinspection SqlResolve
       query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
       err := db.QueryRow(taskContext, query).Scan(&since)
-      if err != nil && err != sql.ErrNoRows {
-        return errors.WithStack(err)
+      if err != nil && errors.Is(err, sql.ErrNoRows) {
+        return e.WithStack(err)
       }
     }
   }
@@ -167,14 +157,14 @@ func collectBuildConfiguration(
 
   reportExistenceChecker := &ReportExistenceChecker{}
 
-  err := reportExistenceChecker.reset(config.DbName, config.TableName, buildTypeId, db, taskContext, since)
+  err := reportExistenceChecker.reset(taskContext, config.DbName, config.TableName, buildTypeId, db, since)
   if err != nil {
     return err
   }
 
   // TC returns from newest to oldest, but we need
   // 1) to insert in opposite order (less merge work for ClickHouse)
-  //2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
+  // 2) set last collect state once the oldest chunk is committed, but it is possible only if the oldest will be inserted before newest (as we ask TC to returns since some date)
   var buildsToLoad [][]*Build
 
   collector := &Collector{
@@ -201,7 +191,7 @@ func collectBuildConfiguration(
   nextHref := buildList.NextHref
   for len(buildList.NextHref) != 0 {
     if taskContext.Err() != nil {
-      return errors.WithStack(taskContext.Err())
+      return e.WithStack(taskContext.Err())
     }
 
     buildList, err = collector.loadBuilds(serverHost + nextHref)
@@ -230,10 +220,10 @@ func collectBuildConfiguration(
 
     lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
     if err != nil {
-      return errors.WithStack(err)
+      return e.WithStack(err)
     }
 
-    reportAnalyzer, err := analyzer.CreateReportAnalyzer(db, config, taskContext, logger)
+    reportAnalyzer, err := analyzer.CreateReportAnalyzer(taskContext, db, config, logger)
     if err != nil {
       return err
     }
@@ -251,7 +241,7 @@ func collectBuildConfiguration(
 
     // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
     // set last collect time to 1 second after last build in chunk
-    err = updateLastCollectTime(buildTypeId, lastBuildStartDate.Add(1*time.Second), db, taskContext)
+    err = updateLastCollectTime(taskContext, buildTypeId, lastBuildStartDate.Add(1*time.Second), db)
     if err != nil {
       return err
     }
@@ -267,21 +257,21 @@ func buildTeamCityQuery() string {
   return "count,href,nextHref,build(id,buildTypeId,number,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
 }
 
-func updateLastCollectTime(buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn, ctx context.Context) error {
+func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn) error {
   //goland:noinspection SqlResolve
   batch, err := db.PrepareBatch(ctx, "insert into collector_state values")
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   err = batch.Append(buildTypeId, lastCollectTimeToSet)
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
 
   err = batch.Send()
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
   return nil
 }
@@ -303,25 +293,24 @@ func (t *Collector) storeSessionIdCookie(response *http.Response) {
   }
 }
 
-func (t *Collector) get(url string, ctx context.Context) (*http.Response, error) {
-  request, err := t.createRequest(url, ctx)
+func (t *Collector) get(ctx context.Context, url string) (*http.Response, error) {
+  request, err := t.createRequest(ctx, url)
   if err != nil {
     return nil, err
   }
 
   response, err := t.httpClient.Do(request)
   if err != nil {
-    if e.Is(err, context.Canceled) {
+    if errors.Is(err, context.Canceled) {
       return nil, err
-    } else {
-      return nil, errors.WithStack(err)
     }
+    return nil, e.WithStack(err)
   }
   return response, nil
 }
 
-func (t *Collector) getSnapshots(configuration string, ctx context.Context) ([]string, error) {
-  isComposite, err := t.isComposite(configuration, ctx)
+func (t *Collector) getSnapshots(ctx context.Context, configuration string) ([]string, error) {
+  isComposite, err := t.isComposite(ctx, configuration)
   if err != nil {
     return nil, err
   }
@@ -329,12 +318,12 @@ func (t *Collector) getSnapshots(configuration string, ctx context.Context) ([]s
     return []string{configuration}, nil
   }
   configurations := make([]string, 0)
-  err = t.getSnapshotsRecursive(configuration, &configurations, ctx)
+  err = t.getSnapshotsRecursive(ctx, configuration, &configurations)
   return configurations, err
 }
 
-func (t *Collector) getSnapshotsRecursive(configuration string, configurations *[]string, ctx context.Context) error {
-  isComposite, err := t.isComposite(configuration, ctx)
+func (t *Collector) getSnapshotsRecursive(ctx context.Context, configuration string, configurations *[]string) error {
+  isComposite, err := t.isComposite(ctx, configuration)
   if err != nil {
     return nil
   }
@@ -346,13 +335,14 @@ func (t *Collector) getSnapshotsRecursive(configuration string, configurations *
     return nil
   }
 
-  response, err := t.get(t.serverUrl+"/buildTypes/"+configuration+"/snapshot-dependencies", ctx)
+  response, err := t.get(ctx, t.serverUrl+"/buildTypes/"+configuration+"/snapshot-dependencies")
   if err != nil {
     return err
   }
+  defer response.Body.Close()
   responseBody, _ := io.ReadAll(response.Body)
   if response.StatusCode > 300 {
-    return errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
 
   type Dependency struct {
@@ -369,7 +359,7 @@ func (t *Collector) getSnapshotsRecursive(configuration string, configurations *
   }
 
   for _, dependency := range dependency.Dependencies {
-    err = t.getSnapshotsRecursive(dependency.Id, configurations, ctx)
+    err = t.getSnapshotsRecursive(ctx, dependency.Id, configurations)
     if err != nil {
       t.logger.Warn(err.Error())
     }
@@ -377,14 +367,15 @@ func (t *Collector) getSnapshotsRecursive(configuration string, configurations *
   return nil
 }
 
-func (t *Collector) isComposite(configuration string, ctx context.Context) (bool, error) {
-  response, err := t.get(t.serverUrl+"/buildTypes/"+configuration+"/settings/buildConfigurationType", ctx)
+func (t *Collector) isComposite(ctx context.Context, configuration string) (bool, error) {
+  response, err := t.get(ctx, t.serverUrl+"/buildTypes/"+configuration+"/settings/buildConfigurationType")
   if err != nil {
     return false, err
   }
+  defer response.Body.Close()
   responseBody, _ := io.ReadAll(response.Body)
   if response.StatusCode > 300 {
-    return false, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return false, e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
   }
   type BuildType struct {
     Name  string
@@ -395,10 +386,10 @@ func (t *Collector) isComposite(configuration string, ctx context.Context) (bool
   return buildType.Value == "COMPOSITE", err
 }
 
-func (t *Collector) createRequest(url string, ctx context.Context) (*http.Request, error) {
-  request, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+func (t *Collector) createRequest(ctx context.Context, url string) (*http.Request, error) {
+  request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, e.WithStack(err)
   }
 
   sessionId := t.tcSessionId.Load()

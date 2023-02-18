@@ -12,13 +12,13 @@ func main() {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
-  err := moveToDisk("default", taskContext)
+  err := moveToDisk(taskContext)
   if err != nil {
     log.Fatalf("%+v", err)
   }
 }
 
-func moveToDisk(disk string, taskContext context.Context) error {
+func moveToDisk(taskContext context.Context) error {
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{"127.0.0.1:9000"},
   })
@@ -42,7 +42,7 @@ func moveToDisk(disk string, taskContext context.Context) error {
   for _, item := range result {
     log.Printf("move %s (%s.%s)", item.Partition, item.Database, item.Table)
     query := fmt.Sprintf("alter table %s.%s move partition %s to disk '%s'", item.Database, item.Table, item.Partition, "s3")
-    //query := fmt.Sprintf("alter table %s.%s modify setting storage_policy='tiered'", item.Database, item.Table)
+    // query := fmt.Sprintf("alter table %s.%s modify setting storage_policy='tiered'", item.Database, item.Table)
     println(query)
     err = db.Exec(taskContext, query)
     if err != nil {

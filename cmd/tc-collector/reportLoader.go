@@ -7,7 +7,6 @@ import (
   "encoding/hex"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
   "go.uber.org/zap"
@@ -61,7 +60,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
           return nil
         }
 
-        artifacts, err := t.downloadReports(*build, loadContext)
+        artifacts, err := t.downloadReports(loadContext, *build)
         if err != nil {
           return err
         }
@@ -71,7 +70,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
           return nil
         }
 
-        tcBuildProperties, err := t.downloadBuildProperties(*build, loadContext)
+        tcBuildProperties, err := t.downloadBuildProperties(loadContext, *build)
         if err != nil {
           return err
         }
@@ -180,7 +179,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     errGroup.Go((func(installerInfo *InstallerInfo) func() error {
       return func() error {
         var err error
-        installerInfo.changes, err = t.loadInstallerChanges(installerInfo.id, loadContext)
+        installerInfo.changes, err = t.loadInstallerChanges(loadContext, installerInfo.id)
         return errors.WithStack(err)
       }
     })(installerInfo))
@@ -202,18 +201,18 @@ func computeBuildDate(build *Build) (int, time.Time, error) {
   return -1, time.Time{}, nil
 }
 
-func (t *Collector) loadInstallerChanges(installerBuildId int, ctx context.Context) ([]string, error) {
+func (t *Collector) loadInstallerChanges(ctx context.Context, installerBuildId int) ([]string, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
   if err != nil {
     return nil, err
   }
 
-  response, err := t.get(artifactUrl.String(), ctx)
+  response, err := t.get(ctx, artifactUrl.String())
   if err != nil {
     return nil, err
   }
 
-  defer util.Close(response.Body, t.logger)
+  defer response.Body.Close()
 
   if response.StatusCode > 300 {
     responseBody, _ := io.ReadAll(response.Body)
@@ -234,7 +233,7 @@ func (t *Collector) loadInstallerChanges(installerBuildId int, ctx context.Conte
   result := make([]string, len(changeList.List))
   for index, change := range changeList.List {
     if strings.Contains(change.Version, " ") {
-      //private build with custom change, format: 13 04 2022 12:14
+      // private build with custom change, format: 13 04 2022 12:14
       continue
     }
     data, err := hex.DecodeString(change.Version)

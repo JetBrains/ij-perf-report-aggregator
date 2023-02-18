@@ -7,10 +7,7 @@ import (
 
 func TestFilter(t *testing.T) {
   // /Volumes/data/Downloads/build.finish.properties
-  err := os.Setenv("CLICKHOUSE_DATA_PATH", "test")
-  if err != nil {
-    t.Error(err)
-  }
+  t.Setenv("CLICKHOUSE_DATA_PATH", "test")
 
   data, err := os.ReadFile("/Volumes/data/Downloads/build.finish.properties copy")
   if err != nil {
@@ -26,8 +23,8 @@ func TestFilter(t *testing.T) {
     t.Error(err)
   }
 
-  //err = backup()
-  //if err == nil || !strings.HasPrefix(err.Error(), "can't connect to ") {
-  //  t.Error(err)
-  //}
+  // err = backup()
+  // if err == nil || !strings.HasPrefix(err.Error(), "can't connect to ") {
+  //   t.Error(err)
+  // }
 }

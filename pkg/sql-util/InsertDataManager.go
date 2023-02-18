@@ -2,8 +2,9 @@ package sql_util
 
 import (
   "database/sql"
+  "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "github.com/develar/errors"
+  e "github.com/develar/errors"
   "go.uber.org/zap"
 )
 
@@ -15,11 +16,12 @@ type InsertDataManager struct {
 func (t *InsertDataManager) CheckExists(row driver.Row) (bool, error) {
   var fakeResult uint8
   err := row.Scan(&fakeResult)
+
   switch {
   case err == nil:
     return true, nil
-  case err != sql.ErrNoRows:
-    return false, errors.WithStack(err)
+  case errors.Is(err, sql.ErrNoRows):
+    return false, e.WithStack(err)
   default:
     return false, nil
   }

@@ -14,7 +14,8 @@ import (
 func Close(c io.Closer, log *zap.Logger) {
   err := c.Close()
   if err != nil && !errors.Is(err, os.ErrClosed) && errors.Is(err, io.ErrClosedPipe) {
-    if e, ok := err.(*os.PathError); ok && e.Err == os.ErrClosed {
+    var pathError *os.PathError
+    if errors.As(err, &pathError) && errors.Is(pathError, os.ErrClosed) {
       return
     }
     log.Error("cannot close", zap.Error(err))

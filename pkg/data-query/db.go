@@ -12,23 +12,17 @@ import (
 )
 
 type DatabaseConnectionSupplier interface {
-  AcquireDatabase(name string, ctx context.Context) (*puddle.Resource[*ch.Client], error)
+  AcquireDatabase(ctx context.Context, name string) (*puddle.Resource[*ch.Client], error)
 }
 
-func executeQuery(
-  sqlQuery string,
-  query DataQuery,
-  dbSupplier DatabaseConnectionSupplier,
-  ctx context.Context,
-  resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error,
-) error {
+func executeQuery(ctx context.Context, sqlQuery string, query DataQuery, dbSupplier DatabaseConnectionSupplier, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) error {
   for attempt := 0; attempt <= 120; attempt++ {
-    dbResource, err := dbSupplier.AcquireDatabase(query.Database, ctx)
+    dbResource, err := dbSupplier.AcquireDatabase(ctx, query.Database)
     if err != nil {
       return err
     }
 
-    err, done := doExecution(sqlQuery, dbResource, ctx, resultHandler)
+    done, err := doExecution(ctx, sqlQuery, dbResource, resultHandler)
     if err != nil {
       return err
     }
@@ -42,7 +36,7 @@ func executeQuery(
   return errors.New("cannot acquire database")
 }
 
-func doExecution(sqlQuery string, client *puddle.Resource[*ch.Client], ctx context.Context, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) (error, bool) {
+func doExecution(ctx context.Context, sqlQuery string, client *puddle.Resource[*ch.Client], resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) (bool, error) {
   isDestroyed := false
   defer func() {
     if !isDestroyed {
@@ -60,26 +54,26 @@ func doExecution(sqlQuery string, client *puddle.Resource[*ch.Client], ctx conte
   })
 
   if err == nil {
-    return nil, true
+    return true, nil
   }
 
   // if net error or io error - connection was closed due to inactivity, destroy it and acquire a new one
   if !isNetError(err) && !client.Value().IsClosed() {
-    return err, true
+    return true, err
   }
 
   isDestroyed = true
   client.Destroy()
-  return nil, false
+  return false, nil
 }
 
 func isNetError(err error) bool {
   for err != nil {
-    if err == io.ErrUnexpectedEOF {
+    if errors.Is(err, io.ErrUnexpectedEOF) {
       return true
     }
-
-    if _, ok := err.(net.Error); ok {
+    var netError *net.Error
+    if errors.As(err, netError) {
       return true
     }
 

@@ -30,13 +30,7 @@ type BatchInsertManager struct {
   dependencies []*BatchInsertManager
 }
 
-func NewBulkInsertManager(
-  db driver.Conn,
-  insertContext context.Context,
-  insertSql string,
-  insertWorkerCount int,
-  logger *zap.Logger,
-) (*BatchInsertManager, error) {
+func NewBulkInsertManager(insertContext context.Context, db driver.Conn, insertSql string, insertWorkerCount int, logger *zap.Logger, ) (*BatchInsertManager, error) {
   poolCapacity := insertWorkerCount
   if insertWorkerCount == -1 {
     // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
@@ -88,9 +82,8 @@ func (t *BatchInsertManager) SendBatchNow() error {
   batch := t.prepareForFlush()
   if batch != nil {
     return t.sendBatch(batch)
-  } else {
-    return nil
   }
+  return nil
 }
 
 func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {

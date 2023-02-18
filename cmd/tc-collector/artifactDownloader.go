@@ -4,10 +4,10 @@ import (
   "compress/gzip"
   "context"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.uber.org/zap"
   "io"
+  "net/http"
   "net/url"
   "path"
   "strconv"
@@ -19,16 +19,16 @@ type ArtifactItem struct {
   path string
 }
 
-func (t *Collector) downloadReports(build Build, ctx context.Context) ([]ArtifactItem, error) {
+func (t *Collector) downloadReports(ctx context.Context, build Build) ([]ArtifactItem, error) {
   var result []ArtifactItem
-  err := t.findAndDownloadStartUpReports(build, build.Artifacts.File, &result, ctx)
+  err := t.findAndDownloadStartUpReports(ctx, build, build.Artifacts.File, &result)
   if err != nil {
     return nil, err
   }
   return result, nil
 }
 
-func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artifact, result *[]ArtifactItem, ctx context.Context) error {
+func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Build, artifacts []Artifact, result *[]ArtifactItem) error {
   for _, artifact := range artifacts {
     name := path.Base(artifact.Url)
     if strings.HasSuffix(artifact.Url, ".json") && strings.HasPrefix(name, "startup-stats") ||
@@ -36,7 +36,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artif
       strings.HasSuffix(artifact.Url, ".json") && (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json") ||
       t.config.DbName == "jbr" && strings.HasSuffix(name, ".txt") {
       artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
-      report, err := t.downloadStartUpReport(build, artifactUrlString, ctx)
+      report, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
       if err != nil {
         return err
       }
@@ -49,7 +49,7 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artif
 
     }
 
-    err := t.findAndDownloadStartUpReports(build, artifact.Children.File, result, ctx)
+    err := t.findAndDownloadStartUpReports(ctx, build, artifact.Children.File, result)
     if err != nil {
       return err
     }
@@ -58,21 +58,21 @@ func (t *Collector) findAndDownloadStartUpReports(build Build, artifacts []Artif
   return nil
 }
 
-func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string, ctx context.Context) ([]byte, error) {
+func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
   artifactUrl, err := url.Parse(artifactUrlString)
   if err != nil {
     return nil, errors.WithStack(err)
   }
 
-  response, err := t.get(artifactUrl.String(), ctx)
+  response, err := t.get(ctx, artifactUrl.String())
   if err != nil {
     return nil, err
   }
 
-  defer util.Close(response.Body, t.logger)
+  defer response.Body.Close()
 
   if response.StatusCode > 300 {
-    if response.StatusCode == 404 && build.Status == "FAILURE" {
+    if response.StatusCode == http.StatusNotFound && build.Status == "FAILURE" {
       t.logger.Warn("no report", zap.Int("id", build.Id), zap.String("status", build.Status))
       return nil, err
     }
@@ -90,21 +90,21 @@ func (t *Collector) downloadStartUpReport(build Build, artifactUrlString string,
   return data, nil
 }
 
-func (t *Collector) downloadBuildProperties(build Build, ctx context.Context) ([]byte, error) {
+func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([]byte, error) {
   artifactUrl, err := url.Parse(t.serverUrl + "/builds/id:" + strconv.Itoa(build.Id) + "/artifacts/content/.teamcity/properties/build.start.properties.gz")
   if err != nil {
     return nil, err
   }
 
-  response, err := t.get(artifactUrl.String(), ctx)
+  response, err := t.get(ctx, artifactUrl.String())
   if err != nil {
     return nil, err
   }
 
-  defer util.Close(response.Body, t.logger)
+  defer response.Body.Close()
 
   if response.StatusCode > 300 {
-    if response.StatusCode == 404 {
+    if response.StatusCode == http.StatusNotFound {
       t.logger.Warn("build.start.properties not found", zap.String("url", artifactUrl.String()))
       return nil, nil
     }

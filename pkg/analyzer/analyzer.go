@@ -25,7 +25,8 @@ type DatabaseConfiguration struct {
 }
 
 func GetAnalyzer(id string) DatabaseConfiguration {
-  if id == "ij" {
+  switch {
+  case id == "ij":
     fieldNames := []string{
       "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
       "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
@@ -50,7 +51,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         }
       },
     }
-  } else if strings.HasPrefix(id, "perfintDev") {
+  case strings.HasPrefix(id, "perfintDev"):
     dbName, tableName := splitId(id)
     return DatabaseConfiguration{
       DbName:            dbName,
@@ -63,7 +64,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
-  } else if strings.HasPrefix(id, "perfint") {
+  case strings.HasPrefix(id, "perfint"):
     dbName, tableName := splitId(id)
     return DatabaseConfiguration{
       DbName:            dbName,
@@ -77,7 +78,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
-  } else if id == "fleet" {
+  case id == "fleet":
     return DatabaseConfiguration{
       DbName:            "fleet",
       ReportReader:      analyzeFleetReport,
@@ -88,8 +89,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.start, measures.thread")
       },
     }
-
-  } else if id == "perf_fleet" {
+  case id == "perf_fleet":
     return DatabaseConfiguration{
       DbName:          "fleet",
       TableName:       "measure",
@@ -99,7 +99,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", name, value")
       },
     }
-  } else if id == "jbr" {
+  case id == "jbr":
     return DatabaseConfiguration{
       DbName:          "jbr",
       TableName:       "report",
@@ -109,7 +109,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
-  } else {
+  default:
     panic("unknown project: " + id)
   }
 }

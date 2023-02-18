@@ -89,8 +89,8 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   parser := queryParsers.Get()
   defer queryParsers.Put(parser)
 
-  //fileName := strconv.FormatUint(xxh3.HashString(request.URL.Path), 36) + ".json"
-  //_ = os.WriteFile("/Volumes/data/queries/"+fileName, decompressed, 0644)
+  // fileName := strconv.FormatUint(xxh3.HashString(request.URL.Path), 36) + ".json"
+  // _ = os.WriteFile("/Volumes/data/queries/"+fileName, decompressed, 0644)
 
   list, err := readQuery(decompressed)
   if err != nil {
@@ -128,7 +128,7 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   return list, wrappedAsArray, nil
 }
 
-func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter, ctx context.Context) error {
+func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter) error {
   sqlQuery, columnNameToIndex, err := buildSql(query, table)
   if err != nil {
     return err
@@ -136,7 +136,7 @@ func SelectRows(query DataQuery, table string, dbSupplier DatabaseConnectionSupp
 
   columnBuffers := make([]*bytebufferpool.ByteBuffer, len(columnNameToIndex))
 
-  err = executeQuery(sqlQuery, query, dbSupplier, ctx, func(ctx context.Context, block proto.Block, result *proto.Results) error {
+  err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(ctx context.Context, block proto.Block, result *proto.Results) error {
     if block.Rows == 0 {
       return nil
     }
@@ -182,7 +182,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
       // the only array join is supported for now
       arrayJoin = dimension.arrayJoin
       // for field add distinct to filter duplicates out
-      //sb.WriteString(" distinct ")
+      // sb.WriteString(" distinct ")
       break
     }
   }
@@ -192,7 +192,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
 
   dimensionWritten := false
   for _, dimension := range query.Dimensions {
-    //check that the field with the same name doesn't exists
+    // check that the field with the same name doesn't exists
     fieldExist := false
     for _, field := range query.Fields {
       if field.Name == dimension.Name {
@@ -405,11 +405,11 @@ loop:
         if j != 0 {
           sb.WriteRune(',')
         }
-        switch v[j].(type) {
+        switch e := v[j].(type) {
         case string:
-          writeString(sb, v[j].(string))
+          writeString(sb, e)
         case bool:
-          sb.WriteString(strconv.FormatBool(v[j].(bool)))
+          sb.WriteString(strconv.FormatBool(e))
         default:
           return errors.Errorf("Filter value type [%T] is not supported", v[j])
         }
@@ -428,17 +428,17 @@ func writeString(sb *strings.Builder, s string) {
   sb.WriteByte('\'')
 }
 
-//var fileLogger *zap.Logger
+// var fileLogger *zap.Logger
 //
-//func init() {
-//  var cfg = zap.NewDevelopmentConfig()
-//  cfg.EncoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-//  }
-//  cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
-//  }
-//  cfg.DisableCaller = true
-//  cfg.OutputPaths = []string{
-//    "",
-//  }
-//  fileLogger, _ = cfg.Build()
-//}
+// func init() {
+//   var cfg = zap.NewDevelopmentConfig()
+//   cfg.EncoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
+//   }
+//   cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
+//   }
+//   cfg.DisableCaller = true
+//   cfg.OutputPaths = []string{
+//     "",
+//   }
+//   fileLogger, _ = cfg.Build()
+// }

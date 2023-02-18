@@ -2,10 +2,11 @@ package analyzer
 
 import (
   "context"
+  "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
-  "github.com/develar/errors"
+  e "github.com/develar/errors"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "strconv"
@@ -16,7 +17,7 @@ import (
 // use `select distinct cast(machine, 'Uint16') as id, machine as name FROM report order by id` to get current enum values
 // for now machine enum should be updated manually if a new machine will be added
 
-var ErrMetricsCannotBeComputed = errors.New("metrics cannot be computed")
+var ErrMetricsCannotBeComputed = e.New("metrics cannot be computed")
 
 type RunResult struct {
   Product string
@@ -60,14 +61,7 @@ type InsertReportManager struct {
   TableName                        string
 }
 
-func NewInsertReportManager(
-  db driver.Conn,
-  config DatabaseConfiguration,
-  context context.Context,
-  tableName string,
-  insertWorkerCount int,
-  logger *zap.Logger,
-) (*InsertReportManager, error) {
+func NewInsertReportManager(context context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int, logger *zap.Logger, ) (*InsertReportManager, error) {
   var err error
 
   if len(config.TableName) != 0 {
@@ -114,17 +108,17 @@ func NewInsertReportManager(
   sb.WriteRune(')')
 
   effectiveSql := sb.String()
-  insertManager, err := sql_util.NewBulkInsertManager(db, context, effectiveSql, insertWorkerCount, logger.Named("report"))
+  insertManager, err := sql_util.NewBulkInsertManager(context, db, effectiveSql, insertWorkerCount, logger.Named("report"))
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, e.WithStack(err)
   }
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
   insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
 
-  var installerManager *InsertInstallerManager = nil
+  var installerManager *InsertInstallerManager
   if config.HasInstallerField {
-    installerManager, err = NewInstallerInsertManager(db, context, logger)
+    installerManager, err = NewInstallerInsertManager(context, db, logger)
     if err != nil {
       return nil, err
     }
@@ -185,7 +179,7 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
 
   err := t.WriteMetrics(runResult.Product, runResult, runResult.branch, runResult.Report.Project, logger)
   if err != nil {
-    if err == ErrMetricsCannotBeComputed {
+    if errors.Is(err, ErrMetricsCannotBeComputed) {
       logger.Warn(err.Error())
       return nil
     }
@@ -279,7 +273,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 
   err = batch.Append(args...)
   if err != nil {
-    return errors.WithStack(err)
+    return e.WithStack(err)
   }
   return nil
 }

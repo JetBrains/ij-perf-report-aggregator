@@ -290,23 +290,28 @@ function configureChart(
       }
     }
 
-    series.push({
-      // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-      id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
-      name: seriesName,
-      type: chartType,
-      // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
-      // 10 is a default value for scatter (  undefined doesn't work to unset)
-      symbolSize: symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
-      symbol: symbolOptions.symbol,
-      triggerLineEvent: true,
-      // applicable only for line chart
-      sampling: "lttb",
-      seriesLayoutBy: "row",
-      datasetIndex: dataIndex,
-      dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
-    })
-
+    let isNotEmpty = false
+    for (const data of seriesData) {
+      isNotEmpty = isNotEmpty || data.length > 0
+    }
+    if (isNotEmpty) {
+      series.push({
+        // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
+        id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
+        name: seriesName,
+        type: chartType,
+        // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
+        // 10 is a default value for scatter (  undefined doesn't work to unset)
+        symbolSize: symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
+        symbol: symbolOptions.symbol,
+        triggerLineEvent: true,
+        // applicable only for line chart
+        sampling: "lttb",
+        seriesLayoutBy: "row",
+        datasetIndex: dataIndex,
+        dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
+      })
+    }
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false
     }

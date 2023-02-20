@@ -2,7 +2,7 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@heroicons/vue": "2.0.15",
+    "@heroicons/vue": "2.0.16",
     "echarts": "5.4.1",
     "primevue": "3.23.0",
     "report-visualizer": "workspace:*",

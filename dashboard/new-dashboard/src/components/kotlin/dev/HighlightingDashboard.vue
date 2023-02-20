@@ -218,17 +218,16 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../../shared/keys"
 import InfoSidebar from "../../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
+import AggregationChart from "../../charts/AggregationChart.vue"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
-import AggregationChart from "../../charts/AggregationChart.vue"
 
 provideReportUrlProvider(false)
 

@@ -11,6 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { CallbackDataParams } from "echarts/types/src/util/types"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
@@ -88,7 +89,7 @@ onMounted(() => {
 
   unsubscribe = chartVm.subscribe()
 
-  chartManager.chart.on("click", (params: any) => {
+  chartManager.chart.on("click", (params: CallbackDataParams) => {
     if (params.dataIndex != undefined) {
       const infoData = getInfoDataFrom(params, props.valueUnit)
       showSideBar(sidebarVm, infoData)

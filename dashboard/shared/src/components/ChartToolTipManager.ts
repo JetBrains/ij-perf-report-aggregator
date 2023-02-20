@@ -1,9 +1,9 @@
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
+import { ValueUnit } from "../chart"
 import { DataQuery } from "../dataQuery"
 import { reportInfoProviderKey } from "../injectionKeys"
-import { ValueUnit } from "../chart"
 
 export interface ReportInfoProvider {
   createReportUrl(generatedTime: number, query: DataQuery): string

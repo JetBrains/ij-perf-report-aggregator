@@ -68,16 +68,14 @@ func doExecution(ctx context.Context, sqlQuery string, client *puddle.Resource[*
 }
 
 func isNetError(err error) bool {
-  for err != nil {
+  if err != nil {
     if errors.Is(err, io.ErrUnexpectedEOF) {
       return true
     }
-    var netError *net.Error
-    if errors.As(err, netError) {
+    var netError net.Error
+    if errors.As(err, &netError) {
       return true
     }
-
-    err = errors.Unwrap(err)
   }
   return false
 }

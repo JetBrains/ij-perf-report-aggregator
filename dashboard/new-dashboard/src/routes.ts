@@ -178,10 +178,10 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
     path: ROUTES.IntelliJSharedIndicesTests,
     name: "Shared Indices",
   },
-  // {
-  //   path: ROUTES.Compare,
-  //   name: "Compare branches",
-  // },
+  {
+    path: ROUTES.IntelliJCompare,
+    name: "Compare Builds",
+  },
 ]
 
 export const phpStormNavigationItems: NavigationItem[] = [
@@ -416,7 +416,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           component: () => import("./components/intelliJ/SharedIndicesTests.vue"),
           meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices"},
         },
-
+        {
+          path: ROUTES.IntelliJCompare,
+          component: () => import("./components/intelliJ/CompareBuilds.vue"),
+          meta: {pageTitle: "Compare Builds"},
+        },
         {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),

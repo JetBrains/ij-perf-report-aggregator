@@ -180,7 +180,7 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.IntelliJCompare,
-    name: "Compare Builds",
+    name: "Compare",
   },
 ]
 

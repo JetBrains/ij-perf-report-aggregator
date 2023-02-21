@@ -20,7 +20,7 @@ func (t *InsertDataManager) CheckExists(row driver.Row) (bool, error) {
   switch {
   case err == nil:
     return true, nil
-  case errors.Is(err, sql.ErrNoRows):
+  case !errors.Is(err, sql.ErrNoRows):
     return false, e.WithStack(err)
   default:
     return false, nil

@@ -149,7 +149,7 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
           && (r1.value != 0 || r2.value != 0) //don't add metrics that are zero
           && !/.*_\d+(#.*)?$/.test(r1.metric) //don't add metrics like foo_1
           && (r1.value != r2.value) //don't add equal metrics
-          && (r1.value/r2.value > 1.2 || r1.value/r2.value < 0.8)
+          && (r1.value/r2.value > 1.2 || r1.value/r2.value < 0.8) //don't add metrics that differ less than 20%
         ) {
           table.push({test: r1.test, metric: r1.metric, build1: r1.value, build2: r2.value})
         }
@@ -159,8 +159,6 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
   )
 })
 
-// getAllBuildsForBranch("master")
-// getAllTestsFromBuild("231.990.0")
 class Result {
   public constructor(readonly test: string, readonly metric: string, readonly value: number) {}
 }

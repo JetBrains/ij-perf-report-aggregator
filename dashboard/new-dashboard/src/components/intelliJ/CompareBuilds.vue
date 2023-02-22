@@ -43,10 +43,12 @@
       <Column
         field="test"
         header="Test"
+        :sortable="true"
       />
       <Column
         field="metric"
         header="Metric"
+        :sortable="true"
       />
       <Column
         field="build1"
@@ -71,6 +73,7 @@
       <Column
         field="difference"
         header="Difference (%)"
+        :sortable="true"
       />
     </DataTable>
   </div>

@@ -9,7 +9,7 @@
     option-label="label"
     option-value="value"
     :show-toggle-all="false"
-    panel-class="w-[270px]"
+    panel-class="w-fit"
     panel-style="overflow: visible"
     @hide="clearSubMenu"
   >

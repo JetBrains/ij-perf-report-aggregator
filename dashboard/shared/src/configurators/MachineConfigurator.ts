@@ -215,7 +215,11 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     if (values.length > 0) {
       // stable order of fields in query (caching)
       values.sort()
-      query.addFilter({f: "machine", v: values})
+      if (values.length > 50) {
+        query.addFilter({f:"machine", v: prefix(values) + "%", o: "like"})
+      } else {
+        query.addFilter({f: "machine", v: values})
+      }
     }
   }
 }

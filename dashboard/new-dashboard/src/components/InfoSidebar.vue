@@ -13,7 +13,7 @@
         />
       </span>
 
-      <div class="flex gap-1.5 font-medium text-base items-center">
+      <div class="flex gap-1.5 font-medium text-base items-center break-all">
         <span
           class="w-3 h-3 rounded-full"
           :style="{ backgroundColor: vm.data.value?.color }"
@@ -83,6 +83,7 @@ function handleCloseClick() {
 <style>
 .infoSidebar {
   min-width: 350px;
+  max-width: 25%;
 }
 
 .infoSidebar_icon::after {

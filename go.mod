@@ -1,13 +1,13 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.18
+go 1.20
 
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
 
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7
-	github.com/ClickHouse/ch-go v0.52.1
-	github.com/ClickHouse/clickhouse-go/v2 v2.6.2
+	github.com/ClickHouse/ch-go v0.53.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.6.3
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.5
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -52,7 +52,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/apex/log v1.9.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.204 // indirect
+	github.com/aws/aws-sdk-go v1.44.206 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
@@ -89,7 +89,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/jolestar/go-commons-pool/v2 v2.1.2 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -118,7 +118,7 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.40.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
@@ -141,7 +141,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.110.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20230216225411-c8e22ba71e44 // indirect
+	google.golang.org/genproto v0.0.0-20230221151758-ace64dc21148 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect

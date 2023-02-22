@@ -65,6 +65,8 @@ export class LineChartVM {
             document.createElement("br"),
             timeFormatWithoutSeconds.format(dateMs as number),
           )
+          element.append(document.createElement("br"))
+          element.append(`${params.seriesName}`)
 
           return element
         },

@@ -68,6 +68,10 @@
           </div>
         </template>
       </Column>
+      <Column
+        field="difference"
+        header="Difference (%)"
+      />
     </DataTable>
   </div>
 </template>
@@ -151,7 +155,8 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
           && (r1.value != r2.value) //don't add equal metrics
           && (r1.value/r2.value > 1.2 || r1.value/r2.value < 0.8) //don't add metrics that differ less than 20%
         ) {
-          table.push({test: r1.test, metric: r1.metric, build1: r1.value, build2: r2.value})
+          const difference = (((r2.value - r1.value)/r1.value)*100).toFixed(1)
+          table.push({test: r1.test, metric: r1.metric, build1: r1.value, build2: r2.value, difference})
         }
       }
       metricData.value = table

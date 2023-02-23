@@ -41,6 +41,7 @@
       responsive-layout="scroll"
       show-gridlines
       filter-display="menu"
+      class="p-datatable-sm"
     >
       <Column
         field="test"
@@ -94,13 +95,24 @@
         field="difference"
         header="Difference (%)"
         :sortable="true"
-      />
+        :filter-match-mode-options="differenceMatchModes"
+      >
+        <template #filter="{filterModel}">
+          <Slider
+            v-model="filterModel.value"
+            class="m-3"
+          />
+          <div class="flex px-2">
+            <span class="text-sm">Difference ≥ {{ filterModel.value ? filterModel.value : 0 }}%</span>
+          </div>
+        </template>
+      </Column>
     </DataTable>
   </div>
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode } from "primevue/api"
+import { FilterMatchMode, FilterService } from "primevue/api"
 import { combineLatest, Observable } from "rxjs"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
@@ -177,7 +189,6 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
           && (r1.value != 0 || r2.value != 0) //don't add metrics that are zero
           && !/.*_\d+(#.*)?$/.test(r1.metric) //don't add metrics like foo_1
           && (r1.value != r2.value) //don't add equal metrics
-          && (r1.value/r2.value > 1.2 || r1.value/r2.value < 0.8) //don't add metrics that differ less than 20%
         ) {
           const difference = (((r2.value - r1.value)/r1.value)*100).toFixed(1)
           table.push({test: r1.test, metric: r1.metric, build1: r1.value, build2: r2.value, difference})
@@ -187,10 +198,16 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
     },
   )
 })
-
+FilterService.register("differenceFilter", (a,b) => {
+  return a > b || a < -b
+} )
+const differenceMatchModes=[
+  {label: "Set difference", value: "differenceFilter"},
+]
 const filters = ref({
   "test": {value: null, matchMode: FilterMatchMode.CONTAINS},
   "metric": {value: null, matchMode: FilterMatchMode.CONTAINS},
+  "difference": {value: 30, matchMode: "differenceFilter"},
 })
 
 class Result {

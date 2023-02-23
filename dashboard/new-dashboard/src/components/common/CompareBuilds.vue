@@ -130,21 +130,23 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, Simpl
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey } from "../../shared/keys"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import BranchSelect from "./BranchSelect.vue"
+import TimeRangeSelect from "./TimeRangeSelect.vue"
 
+const props = defineProps<{
+  dbName: string
+  table: string
+}>()
 
-const dbName = "perfint"
-const dbTable = "idea"
 const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 
 provide(containerKey, container)
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
-  `${dbName}-${dbTable}-dashboard`,
+  `${props.dbName}-${props.table}-dashboard`,
   {
     machine: initialMachine,
     branch: "master",

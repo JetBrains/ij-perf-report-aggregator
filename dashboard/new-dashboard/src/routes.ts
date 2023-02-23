@@ -40,6 +40,7 @@ const ROUTES = {
   PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests: `${ROUTE_PREFIX.PhpStorm}/tests`,
   PhpStormWithPluginsTests: `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
+  PhpStormCompare: `${ROUTE_PREFIX.PhpStorm}/compare`,
 
   KotlinDashboard: `${ROUTE_PREFIX.Kotlin}/dashboard`,
   KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
@@ -48,15 +49,20 @@ const ROUTES = {
   KotlinCompletionDev: `${ROUTE_PREFIX.Kotlin}/completionDev`,
   KotlinHighlightingDev: `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev: `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
+  KotlinCompare: `${ROUTE_PREFIX.Kotlin}/compare`,
 
   GoLandDashboard: `${ROUTE_PREFIX.GoLand}/dashboard`,
   GoLandTests: `${ROUTE_PREFIX.GoLand}/tests`,
+  GoLandCompare: `${ROUTE_PREFIX.GoLand}/compare`,
 
   RubyMineDashboard: `${ROUTE_PREFIX.RubyMine}/dashboard`,
   RubyMineTests: `${ROUTE_PREFIX.RubyMine}/tests`,
+  RubyMineCompare: `${ROUTE_PREFIX.RubyMine}/compare`,
 
   RustTests: `${ROUTE_PREFIX.Rust}/tests`,
+  RustCompare: `${ROUTE_PREFIX.Rust}/compare`,
   ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
+  ScalaCompare: `${ROUTE_PREFIX.Scala}/compare`,
 
   JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
   MapBenchDashboard: `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
@@ -190,12 +196,16 @@ export const phpStormNavigationItems: NavigationItem[] = [
     name: "Dashboard",
   },
   {
-    path: ROUTES.PhpStormWithPluginsDashboard,
-    name: "Dashboard with Plugins",
-  },
-  {
     path: ROUTES.PhpStormTests,
     name: "Tests",
+  },
+  {
+    path: ROUTES.PhpStormCompare,
+    name: "Compare Builds",
+  },
+  {
+    path: ROUTES.PhpStormWithPluginsDashboard,
+    name: "Dashboard with Plugins",
   },
   {
     path: ROUTES.PhpStormWithPluginsTests,
@@ -212,6 +222,10 @@ export const GoLandNavigationItems: NavigationItem[] = [
     path: ROUTES.GoLandTests,
     name: "Tests",
   },
+  {
+    path: ROUTES.GoLandCompare,
+    name: "Compare Builds",
+  },
 ]
 
 export const RubyMineNavigationItems: NavigationItem[] = [
@@ -222,6 +236,10 @@ export const RubyMineNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.RubyMineTests,
     name: "Tests",
+  },
+  {
+    path: ROUTES.RubyMineCompare,
+    name: "Compare Builds",
   },
 ]
 
@@ -254,6 +272,10 @@ export const kotlinNavigationItems: NavigationItem[] = [
     path: ROUTES.KotlinFindUsagesDev,
     name: "FindUsages (dev)",
   },
+  {
+    path: ROUTES.KotlinCompare,
+    name: "Compare Builds",
+  },
 ]
 
 export const RustNavigationItems: NavigationItem[] = [
@@ -261,12 +283,20 @@ export const RustNavigationItems: NavigationItem[] = [
     path: ROUTES.RustTests,
     name: "Tests",
   },
+  {
+    path: ROUTES.RustCompare,
+    name: "Compare Builds",
+  },
 ]
 
 export const ScalaNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.ScalaTests,
     name: "Tests",
+  },
+  {
+    path: ROUTES.ScalaCompare,
+    name: "Compare Builds",
   },
 ]
 
@@ -418,7 +448,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.IntelliJCompare,
-          component: () => import("./components/intelliJ/CompareBuilds.vue"),
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea"
+          },
           meta: {pageTitle: "Compare Builds"},
         },
         {
@@ -442,6 +476,15 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "PhpStorm Performance tests"},
         },
         {
+          path: ROUTES.PhpStormCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm"
+          },
+          meta: {pageTitle: "Compare Builds"},
+        },
+        {
           path: ROUTES.GoLandDashboard,
           component: () => import("./components/goland/PerformanceDashboard.vue"),
           meta: {pageTitle: "GoLand Performance dashboard"},
@@ -451,7 +494,15 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           component: () => import("./components/goland/PerformanceTests.vue"),
           meta: {pageTitle: "GoLand Performance tests"},
         },
-
+        {
+          path: ROUTES.GoLandCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "goland"
+          },
+          meta: {pageTitle: "Compare Builds"},
+        },
         {
           path: ROUTES.RubyMineDashboard,
           component: () => import("./components/rubymine/PerformanceDashboard.vue"),
@@ -461,6 +512,15 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.RubyMineTests,
           component: () => import("./components/rubymine/PerformanceTests.vue"),
           meta: {pageTitle: "RubyMine Performance tests"},
+        },
+        {
+          path: ROUTES.RubyMineCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby"
+          },
+          meta: {pageTitle: "Compare Builds"},
         },
 
         {
@@ -499,14 +559,41 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Kotlin findUsages (dev/fast)"},
         },
         {
+          path: ROUTES.KotlinCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "kotlin"
+          },
+          meta: {pageTitle: "Compare Builds"},
+        },
+        {
           path: ROUTES.RustTests,
           component: () => import("./components/rust/PerformanceTests.vue"),
           meta: {pageTitle: "Rust Performance tests"},
         },
         {
+          path: ROUTES.RustCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "rust"
+          },
+          meta: {pageTitle: "Compare Builds"},
+        },
+        {
           path: ROUTES.ScalaTests,
           component: () => import("./components/scala/PerformanceTests.vue"),
           meta: {pageTitle: "Scala Performance tests"},
+        },
+        {
+          path: ROUTES.ScalaCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "scala"
+          },
+          meta: {pageTitle: "Compare Builds"},
         },
         {
           path: ROUTES.JBRTests,

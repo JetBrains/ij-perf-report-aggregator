@@ -36,20 +36,40 @@
     </Toolbar>
 
     <DataTable
+      v-model:filters="filters"
       :value="metricData"
       responsive-layout="scroll"
       show-gridlines
+      filter-display="menu"
     >
       <Column
         field="test"
         header="Test"
         :sortable="true"
-      />
+      >
+        <template #filter="{filterModel}">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search by name"
+          />
+        </template>
+      </Column>
       <Column
         field="metric"
         header="Metric"
         :sortable="true"
-      />
+      >
+        <template #filter="{filterModel}">
+          <InputText
+            v-model="filterModel.value"
+            type="text"
+            class="p-column-filter"
+            placeholder="Search by name"
+          />
+        </template>
+      </Column>
       <Column
         field="build1"
         header="Value"
@@ -80,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import { FilterMatchMode } from "primevue/api"
 import { combineLatest, Observable } from "rxjs"
 import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
@@ -165,6 +186,11 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
       metricData.value = table
     },
   )
+})
+
+const filters = ref({
+  "test": {value: null, matchMode: FilterMatchMode.CONTAINS},
+  "metric": {value: null, matchMode: FilterMatchMode.CONTAINS},
 })
 
 class Result {

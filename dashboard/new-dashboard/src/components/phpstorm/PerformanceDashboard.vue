@@ -133,7 +133,7 @@
           <GroupProjectsChart
             label="Indexing"
             measure="updatingTime"
-            :projects="['WI_39333/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
+            :projects="['WI_39333-5x/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
                         'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"

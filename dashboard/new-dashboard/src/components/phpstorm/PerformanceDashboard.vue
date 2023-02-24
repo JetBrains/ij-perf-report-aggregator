@@ -143,8 +143,7 @@
           <GroupProjectsChart
             label="Indexing"
             measure="updatingTime"
-            :projects="['phpcs/indexing','empty_project/indexing','complex_meta/indexing', 'WI_53502/indexing','heredoc/indexing', 'many_array_access/indexing',
-                        'WI_66279/indexing']"
+            :projects="['empty_project/indexing','complex_meta/indexing', 'WI_53502-10x/indexing', 'many_array_access/indexing-10x', 'WI_66279-10x/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

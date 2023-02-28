@@ -11,6 +11,9 @@
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
+        <BranchSelect
+          :branch-configurator="branchConfigurator"
+        />
         <DimensionSelect
           label="Product"
           :value-to-label="it => productCodeToName.get(it) ?? it"
@@ -80,6 +83,7 @@ import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarch
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
 import LineChartCard from "shared/src/components/LineChartCard.vue"
 import { AggregationOperatorConfigurator } from "shared/src/configurators/AggregationOperatorConfigurator"
+import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
@@ -88,6 +92,7 @@ import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } fr
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
@@ -119,23 +124,26 @@ const persistentStateManager = new PersistentStateManager("ij-dashboard", {
   product: "IU",
   project: "simple for IJ",
   machine: "macMini M1, 16GB",
+  branch: "master",
 }, useRouter())
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistentStateManager,
-  [timeRangeConfigurator],
+  [timeRangeConfigurator, branchConfigurator],
 )
 
-const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager)
+const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager)
 const configurators = [
   serverConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
   productConfigurator,
-  projectConfigurator
+  projectConfigurator,
+  branchConfigurator
 ]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))

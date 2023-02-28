@@ -208,7 +208,6 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     return "", e.WithStack(err)
   }
 
-  branch := string(props.GetStringBytes("vcsroot.branch"))
   if projectId == "jbr" {
     splitId := strings.SplitN(extraData.TcBuildType, "_", 3)
     if len(splitId) == 3 {
@@ -221,16 +220,8 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
     return "", e.New("cannot infer branch from JBR project id")
   }
-  if len(branch) != 0 && projectId != "fleet" && projectId != "perfint" && projectId != "perfintDev" {
-    return strings.TrimPrefix(branch, "refs/heads/"), nil
-  }
-
-  if projectId == "ij" {
-    logger.Error("cannot infer branch from TC properties", zap.ByteString("tcBuildProperties", extraData.TcBuildProperties))
-    return "", e.New("cannot infer branch from TC properties")
-  }
   //goland:noinspection SpellCheckingInspection
-  branch = string(props.GetStringBytes("teamcity.build.branch"))
+  branch := string(props.GetStringBytes("teamcity.build.branch"))
   if len(branch) != 0 && branch != "<default>" {
     return branch, nil
   }

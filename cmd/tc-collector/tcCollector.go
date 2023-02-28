@@ -139,7 +139,7 @@ func collectBuildConfiguration(
       //goland:noinspection SqlResolve
       query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
       err := db.QueryRow(taskContext, query).Scan(&since)
-      if err != nil && errors.Is(err, sql.ErrNoRows) {
+      if err != nil && !errors.Is(err, sql.ErrNoRows) {
         return e.WithStack(err)
       }
     }

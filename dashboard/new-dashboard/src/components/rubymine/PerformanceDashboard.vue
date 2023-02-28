@@ -36,7 +36,7 @@
           <GroupProjectsChart
             label="Indexing"
             measure="indexing"
-            :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing']"
+            :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

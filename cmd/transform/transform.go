@@ -6,6 +6,7 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.deanishe.net/env"
@@ -62,6 +63,8 @@ type ReportRow struct {
 
   TcBuildId          uint32 `ch:"tc_build_id"`
   TcInstallerBuildId uint32 `ch:"tc_installer_build_id"`
+  TcBuildType        string `ch:"tc_build_type"`
+  TriggeredBy        string `ch:"triggeredBy"`
 
   BuildC1 uint8  `ch:"build_c1"`
   BuildC2 uint16 `ch:"build_c2"`
@@ -72,6 +75,10 @@ type ReportRow struct {
   ServiceDuration []uint32 `ch:"service.duration"`
   ServiceThread   []string `ch:"service.thread"`
   ServicePlugin   []string `ch:"service.plugin"`
+
+  MeasuresName  []string `ch:"measures.name"`
+  MeasuresValue []int32  `ch:"measures.value"`
+  MeasuresType  []string `ch:"measures.type"`
 }
 
 // set insertWorkerCount to 1 if not enough memory
@@ -192,10 +199,14 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
     if config.HasInstallerField {
       installerFields = "tc_installer_build_id, " + buildFields
     }
+    rawReportField := ""
+    if config.HasRawReport {
+      rawReportField = "raw_report,"
+    }
     rows, err = db.Query(taskContext, `
       select machine, branch,
-             generated_time, build_time, raw_report,
-             tc_build_id,`+installerFields+` project
+             generated_time, build_time, `+rawReportField+`
+             tc_build_id,`+installerFields+` project, measures.name, measures.value, measures.type, triggeredBy
       from `+tableName+`
       where generated_time >= $1 and generated_time < $2
       order by machine, branch, project, `+buildFields+` build_time, generated_time
@@ -232,15 +243,16 @@ rowLoop:
       runResult.BuildC2 = int(row.BuildC2)
       runResult.BuildC3 = int(row.BuildC3)
     }
+    if config.HasRawReport {
+      err = analyzer.ReadReport(runResult, config, logger)
+      if err != nil {
+        return err
+      }
 
-    err = analyzer.ReadReport(runResult, config, logger)
-    if err != nil {
-      return err
-    }
-
-    if runResult.Report == nil {
-      // ignore report
-      continue rowLoop
+      if runResult.Report == nil {
+        // ignore report
+        continue rowLoop
+      }
     }
 
     if config.HasProductField {
@@ -250,10 +262,20 @@ rowLoop:
       runResult.ExtraFieldData[3] = row.ServiceThread
       runResult.ExtraFieldData[4] = row.ServicePlugin
     }
+    if config.DbName == "perfint" {
+      runResult.Report = &model.Report{
+        Project:   row.Project,
+        BuildDate: row.BuildTime.Format("20060102T150405+0000"),
+        Generated: row.GeneratedTime.Format("20060102T150405+0000"),
+      }
+      runResult.ExtraFieldData = []interface{}{row.MeasuresName, row.MeasuresValue, row.MeasuresType}
+      runResult.TriggeredBy = row.TriggeredBy
+      runResult.TcBuildType = row.TcBuildType
+    }
 
     // transform runResult here
     // Example: runResult.Report.Project = strings.TrimPrefix(runResult.Report.Project, "devServer-")
-
+    runResult.Report.Project = strings.TrimPrefix(runResult.Report.Project, "devServer-")
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
     if err != nil {
       return err

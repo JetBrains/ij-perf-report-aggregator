@@ -337,7 +337,7 @@
             label="Search Everywhere"
             measure="searchEverywhere"
             :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-            'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
+                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -347,7 +347,7 @@
             label="Search Everywhere (Dialog Shown)"
             measure="searchEverywhere_dialog_shown"
             :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-            'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
+                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -357,7 +357,7 @@
             label="Search Everywhere (Items Loaded)"
             measure="searchEverywhere_items_loaded"
             :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-            'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
+                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

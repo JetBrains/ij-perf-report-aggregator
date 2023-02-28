@@ -7,7 +7,7 @@ go 1.20
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7
 	github.com/ClickHouse/ch-go v0.53.0
-	github.com/ClickHouse/clickhouse-go/v2 v2.6.3
+	github.com/ClickHouse/clickhouse-go/v2 v2.6.5
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.5
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -16,13 +16,13 @@ require (
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/jackc/puddle/v2 v2.2.0
 	github.com/json-iterator/go v1.1.12
-	github.com/klauspost/compress v1.15.15
+	github.com/klauspost/compress v1.16.0
 	github.com/magiconair/properties v1.8.7
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/nats-io/nats.go v1.23.0
+	github.com/nats-io/nats.go v1.24.0
 	github.com/rs/cors v1.8.3
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/valyala/quicktemplate v1.7.0
@@ -52,7 +52,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/apex/log v1.9.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.206 // indirect
+	github.com/aws/aws-sdk-go v1.44.210 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj v1.8.4 // indirect
@@ -94,7 +94,7 @@ require (
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-ieproxy v0.0.9 // indirect
+	github.com/mattn/go-ieproxy v0.0.10 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-shellwords v1.0.12 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
@@ -128,9 +128,9 @@ require (
 	github.com/urfave/cli v1.22.12 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/otel v1.13.0 // indirect
-	go.opentelemetry.io/otel/metric v0.36.0 // indirect
-	go.opentelemetry.io/otel/trace v1.13.0 // indirect
+	go.opentelemetry.io/otel v1.14.0 // indirect
+	go.opentelemetry.io/otel/metric v0.37.0 // indirect
+	go.opentelemetry.io/otel/trace v1.14.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/mod v0.8.0 // indirect
@@ -141,7 +141,7 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/api v0.110.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20230221151758-ace64dc21148 // indirect
+	google.golang.org/genproto v0.0.0-20230227214838-9b19f0bdc514 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect

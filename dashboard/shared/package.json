@@ -2,7 +2,7 @@
   "name": "shared",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.7",
+    "@headlessui/vue": "^1.7.11",
     "@heroicons/vue": "2.0.16",
     "echarts": "5.4.1",
     "echarts-stat": "1.2.0",

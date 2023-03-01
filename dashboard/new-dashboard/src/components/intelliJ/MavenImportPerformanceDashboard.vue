@@ -2032,6 +2032,42 @@
         </section>
         <section>
           <GroupProjectsChart
+            label="workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms"
+            measure="workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms"
+            measure="workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms"
+            :projects="[
+              'project-import-maven-quarkus/measureStartup',
+              'project-import-maven-500-modules/measureStartup', 'project-import-maven-1000-modules/measureStartup',
+              'project-import-maven-keycloak/measureStartup', 'project-import-maven-javaee7/measureStartup',
+              'project-import-maven-javaee8/measureStartup', 'project-import-maven-jersey/measureStartup',
+              'project-import-maven-flink/measureStartup', 'project-import-maven-drill/measureStartup',
+              'project-import-maven-azure-sdk-java/measureStartup', 'project-import-maven-hive/measureStartup',
+              'project-import-maven-quarkus-to-legacy-model/measureStartup', 'project-import-maven-500-modules-to-legacy-model/measureStartup',
+              'project-import-maven-1000-modules-to-legacy-model/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="workspace_import.populate.duration_ms"
             measure="workspace_import.populate.duration_ms"
             :projects="[

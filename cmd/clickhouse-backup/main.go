@@ -98,7 +98,7 @@ func start(natsUrl string, logger *zap.Logger) error {
 
 func executeBackup(taskContext context.Context, backuper *backup.Backuper, isIncremental bool, logger *zap.Logger) error {
   backupName := backup.NewBackupName()
-  logger = logger.With(zap.String("backup", backupName))
+  logger = logger.With(zap.String("backup", backupName), zap.Bool("isIncremental", isIncremental))
 
   diffFromRemote := ""
   if isIncremental {

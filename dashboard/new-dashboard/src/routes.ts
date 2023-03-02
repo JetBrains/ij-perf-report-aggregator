@@ -27,6 +27,7 @@ const ROUTES = {
   StartupReport: `${ROUTE_PREFIX.Startup}/report`,
 
   IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
+  IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJ}/ultimateDashboard`,
   IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJ}/gradleDashboard`,
   IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJ}/mavenDashboard`,
   IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
@@ -84,7 +85,7 @@ export const topNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.IntelliJDashboard,
-    name: "IntelliJ",
+    name: "IntelliJ IDEA",
     key: ROUTE_PREFIX.IntelliJ,
   },
   {
@@ -154,23 +155,27 @@ export const startupTabNavigationItems: NavigationItem[] = [
 export const intelliJTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJDashboard,
-    name: "Performance dashboard",
+    name: "Performance",
+  },
+  {
+    path: ROUTES.IntelliJUltimateDashboard,
+    name: "Performance Ultimate",
   },
   {
     path: ROUTES.IntelliJGradleDashboard,
-    name: "Gradle Import dashboard",
+    name: "Gradle Import",
   },
   {
     path: ROUTES.IntelliJMavenDashboard,
-    name: "Maven Import dashboard",
+    name: "Maven Import",
   },
   {
     path: ROUTES.IntelliJDevDashboard,
-    name: "Performance dashboard (Fast Installer)",
+    name: "Performance (Fast Installer)",
   },
   {
     path: ROUTES.IntelliJSharedIndicesDashboard,
-    name: "Shared Indices dashboard",
+    name: "Shared Indices",
   },
   {
     path: ROUTES.IntelliJTests,
@@ -178,11 +183,11 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.IntelliJDevTests,
-    name: "Performance Tests (Fast Installer)",
+    name: "Performance tests (Fast Installer)",
   },
   {
     path: ROUTES.IntelliJSharedIndicesTests,
-    name: "Shared Indices",
+    name: "Shared Indices tests",
   },
   {
     path: ROUTES.IntelliJCompare,
@@ -422,9 +427,14 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Maven Import dashboard"},
         },
         {
+          path: ROUTES.IntelliJUltimateDashboard,
+          component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
+          meta: {pageTitle: "Ultimate Projects"},
+        },
+        {
           path: ROUTES.IntelliJDevDashboard,
           component: () => import("./components/intelliJ/PerformanceDevDashboard.vue"),
-          meta: {pageTitle: "IntelliJ Performance Tests On Fast Installer Dashboard"},
+          meta: {pageTitle: "IntelliJ Performance dashboard Fast Installer"},
         },
         {
           path: ROUTES.IntelliJSharedIndicesDashboard,

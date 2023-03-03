@@ -63,8 +63,8 @@
           <GroupProjectsChart
             label="Local Inspection"
             measure="localInspections"
-            :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource']"
+            :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
+                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -73,8 +73,8 @@
           <GroupProjectsChart
             label="First Code Analysis"
             measure="firstCodeAnalysis"
-            :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource']"
+            :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
+                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -93,8 +93,8 @@
           <GroupProjectsChart
             label="Show Intentions (average awt delay)"
             measure="test#average_awt_delay"
-            :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource']"
+            :projects="['keycloak_release_20/showIntentions/AuthenticationManagementResource','keycloak_release_20/showIntentions/IdentityBrokerService',
+                        'keycloak_release_20/showIntentions/JpaUserProvider', 'keycloak_release_20/showIntentions/RealmAdminResource']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -103,8 +103,8 @@
           <GroupProjectsChart
             label="Show Intentions (showQuickFixes)"
             measure="showQuickFixes"
-            :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource']"
+            :projects="['keycloak_release_20/showIntentions/AuthenticationManagementResource','keycloak_release_20/showIntentions/IdentityBrokerService',
+                        'keycloak_release_20/showIntentions/JpaUserProvider', 'keycloak_release_20/showIntentions/RealmAdminResource']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

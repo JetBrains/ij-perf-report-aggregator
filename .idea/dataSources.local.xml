@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="GO-231.7515.9">
+  <component name="dataSourceStorageLocal" created-in="GO-231.7665.20">
     <data-source name="perfint@localhost" uuid="2557058b-5f52-497f-8a1d-9cfd03894455">
-      <database-info product="ClickHouse" version="22.9.1.352" jdbc-version="4.2" driver-name="ClickHouse JDBC Driver" driver-version="clickhouse-jdbc 0.3.2-patch11 (revision: 27f8951)" dbms="CLICKHOUSE" exact-version="22.9.1.352" exact-driver-version="0.3">
+      <database-info product="ClickHouse" version="22.10.3.27" jdbc-version="4.2" driver-name="ClickHouse JDBC Driver" driver-version="clickhouse-jdbc 0.3.2-patch11 (revision: 27f8951)" dbms="CLICKHOUSE" exact-version="22.10.3.27" exact-driver-version="0.3">
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />

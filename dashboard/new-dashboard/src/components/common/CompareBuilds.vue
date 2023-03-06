@@ -36,7 +36,7 @@
       :value="metricData"
       responsive-layout="scroll"
       show-gridlines
-      filter-display="menu"
+      filter-display="row"
       class="p-datatable-sm"
     >
       <Column
@@ -57,14 +57,22 @@
         field="metric"
         header="Metric"
         :sortable="true"
+        :filter-match-mode-options="metricsMatchModes"
       >
         <template #filter="{filterModel}">
           <InputText
+            v-if="filterModel.matchMode == FilterMatchMode.CONTAINS"
             v-model="filterModel.value"
             type="text"
             class="p-column-filter"
             placeholder="Search by name"
           />
+          <div
+            v-else
+            class="p-column-filter"
+          >
+            {{ metricsMatchModes.find(e=>e.value == filterModel.matchMode).label }}
+          </div>
         </template>
       </Column>
       <Column
@@ -120,14 +128,12 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "shared/src/dataQuery"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey } from "../../shared/keys"
 import BranchSelect from "./BranchSelect.vue"
-import TimeRangeSelect from "./TimeRangeSelect.vue"
 
 const props = defineProps<{
   dbName: string
@@ -183,7 +189,7 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
           && !/.*_\d+(#.*)?$/.test(r1.metric) //don't add metrics like foo_1
           && (r1.value != r2.value) //don't add equal metrics
         ) {
-          const difference = (((r2.value - r1.value)/r1.value)*100).toFixed(1)
+          const difference = (((r2.value - r1.value) / r1.value) * 100).toFixed(1)
           table.push({test: r1.test, metric: r1.metric, build1: r1.value, build2: r2.value, difference})
         }
       }
@@ -191,15 +197,39 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
     },
   )
 })
-FilterService.register("differenceFilter", (a,b) => {
+
+const mainMetrics = new Set(["indexing", "scanning", "numberOfIndexingRuns", "vfs_initial_refresh", "build_compilation_duration",
+  "globalInspections", "findUsages", "localInspections", "firstCodeAnalysis", "completion", "searchEverywhere", "showFileHistory",
+  "expandActionGroup", "highlighting", "FileStructurePopup", "typing", "test#average_awt_delay", "test#max_awt_delay"])
+FilterService.register("metricsFilter", value => {
+  return mainMetrics.has(value as string)
+})
+const indexingMetrics = new Set(["indexing", "scanning", "numberOfIndexingRuns"])
+FilterService.register("indexingFilter", value => {
+  return indexingMetrics.has(value as string)
+})
+const memoryMetrics = new Set(["freedMemoryByGC", "fullGCPause", "gcPause", "gcPauseCount", "totalHeapUsedMax", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl"])
+FilterService.register("memoryFilter", value => {
+  return memoryMetrics.has(value as string)
+})
+
+const metricsMatchModes = [
+  {label: "Main metrics", value: "metricsFilter"},
+  {label: "Indexing metrics", value: "indexingFilter"},
+  {label: "Memory metrics", value: "memoryFilter"},
+  {label: "Contains", value: FilterMatchMode.CONTAINS}
+]
+
+FilterService.register("differenceFilter", (a, b) => {
   return a > b || a < -b
-} )
-const differenceMatchModes=[
+})
+const differenceMatchModes = [
   {label: "Set difference", value: "differenceFilter"},
 ]
+
 const filters = ref({
   "test": {value: null, matchMode: FilterMatchMode.CONTAINS},
-  "metric": {value: null, matchMode: FilterMatchMode.CONTAINS},
+  "metric": {value: null, matchMode: "metricsFilter"},
   "difference": {value: 30, matchMode: "differenceFilter"},
 })
 

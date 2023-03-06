@@ -307,33 +307,6 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Search Everywhere (Go to Action) Old"
-            measure="searchEverywhere_action"
-            :projects="['community/go-to-action/SharedIndex']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Search Everywhere (Go to Class) Old"
-            measure="searchEverywhere_class"
-            :projects="['community/go-to-class/EditorImpl','community/go-to-class/SharedIndex']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Search Everywhere (Go to File) Old"
-            measure="searchEverywhere_file"
-            :projects="['community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
             label="Search Everywhere"
             measure="searchEverywhere"
             :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
@@ -366,7 +339,7 @@
           <GroupProjectsChart
             label="Show Intentions (average awt delay)"
             measure="test#average_awt_delay"
-            :projects="['grails/showIntentions/Find cause', 'kotlin/showIntention/Import', 'spring_boot/showIntentions/']"
+            :projects="['grails/showIntentions/Find cause', 'kotlin/showIntention/Import', 'spring_boot/showIntentions']"
             :server-configurator="serverConfigurator" 
             :configurators="dashboardConfigurators"
           />

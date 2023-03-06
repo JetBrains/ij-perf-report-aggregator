@@ -275,18 +275,18 @@ rowLoop:
 
     // transform runResult here
     // Example: transform project
-    //if runResult.Report.Project == "spring_boot/showIntentions/" {
-    //  runResult.Report.Project = "spring_boot/showIntentions"
-    //}
-    //Example: transform metrics name
-    //if strings.HasPrefix(runResult.Report.Project, "community/go-to-") {
-    //  metricNames := runResult.ExtraFieldData[0].([]string)
-    //  for i, name := range metricNames {
-    //    if name == "searchEverywhere_action" || name == "searchEverywhere_class" || name == "searchEverywhere_file" {
-    //      metricNames[i] = "searchEverywhere"
-    //    }
-    //  }
-    //}
+    // if runResult.Report.Project == "spring_boot/showIntentions/" {
+    //   runResult.Report.Project = "spring_boot/showIntentions"
+    // }
+    // Example: transform metrics name
+    // if strings.HasPrefix(runResult.Report.Project, "community/go-to-") {
+    //   metricNames := runResult.ExtraFieldData[0].([]string)
+    //   for i, name := range metricNames {
+    //     if name == "searchEverywhere_action" || name == "searchEverywhere_class" || name == "searchEverywhere_file" {
+    //       metricNames[i] = "searchEverywhere"
+    //     }
+    //   }
+    // }
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
     if err != nil {

@@ -125,7 +125,9 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
   defer t.mutex.Unlock()
 
   if t.queuedItems >= t.BatchSize {
+    t.mutex.Unlock()
     t.ScheduleSendBatch()
+    t.mutex.Lock()
   } else {
     t.queuedItems++
   }

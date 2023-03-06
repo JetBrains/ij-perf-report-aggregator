@@ -2,20 +2,6 @@
   <div class="flex flex-col gap-5">
     <Toolbar class="customToolbar">
       <template #start>
-        <TimeRangeSelect
-          :ranges="TimeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        >
-          <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
-          :triggered-by-configurator="triggeredByConfigurator"
-        />
         <DimensionHierarchicalSelect
           label="Machine"
           :dimension="machineConfigurator"
@@ -24,9 +10,19 @@
             <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
+        <BranchSelect
+          :branch-configurator="branchConfigurator1"
+          :release-configurator="releaseConfigurator1"
+          :triggered-by-configurator="triggeredByConfigurator1"
+        />
         <DimensionSelect
           label="Build N1"
           :dimension="firstBuildConfigurator"
+        />
+        <BranchSelect
+          :branch-configurator="branchConfigurator2"
+          :release-configurator="releaseConfigurator2"
+          :triggered-by-configurator="triggeredByConfigurator2"
         />
         <DimensionSelect
           label="Build N2"
@@ -154,29 +150,24 @@ const persistentStateManager = new PersistentStateManager(
     measure: [],
   }, router)
 
-const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistentStateManager,
-  [timeRangeConfigurator, branchConfigurator],
 )
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 
+const branchConfigurator1 = createBranchConfigurator(serverConfigurator, persistentStateManager)
+const branchConfigurator2 = createBranchConfigurator(serverConfigurator, persistentStateManager)
 
-function onChangeRange(value: string) {
-  timeRangeConfigurator.value.value = value
-}
+const triggeredByConfigurator1 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
+const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
+
+const releaseConfigurator1 = new ReleaseNightlyConfigurator(persistentStateManager)
+const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManager)
+
 
 const metricData = ref()
-const firstBuildConfigurator = buildConfigurator("firstBuild", serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator, machineConfigurator])
-const secondBuildConfigurator = buildConfigurator("secondBuild", serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator, machineConfigurator])
+const firstBuildConfigurator = buildConfigurator("firstBuild", serverConfigurator, persistentStateManager, [branchConfigurator1, machineConfigurator])
+const secondBuildConfigurator = buildConfigurator("secondBuild", serverConfigurator, persistentStateManager, [branchConfigurator2, machineConfigurator])
 combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable(secondBuildConfigurator.selected)]).subscribe(data => {
   combineLatest([getAllMetricsFromBuild(data[0] as string),
     getAllMetricsFromBuild(data[1] as string)]).subscribe(data => {

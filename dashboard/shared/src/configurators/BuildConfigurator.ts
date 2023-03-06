@@ -35,8 +35,8 @@ function loadBuilds(serverConfigurator: ServerConfigurator, filters: Array<Filte
 }
 
 export function buildConfigurator(name: string, serverConfigurator: ServerConfigurator,
-                                         persistentStateManager: PersistentStateManager | null,
-                                         filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+                                  persistentStateManager: PersistentStateManager | null,
+                                  filters: Array<FilterConfigurator> = []): DimensionConfigurator {
   const configurator = new BuildConfigurator(name)
   persistentStateManager?.add(name, configurator.selected)
 
@@ -50,10 +50,24 @@ export function buildConfigurator(name: string, serverConfigurator: ServerConfig
         return
       }
 
-      configurator.values.value = data.filter(value => !(value == "")).filter(value => value.split(".").length == 3).map(value=>{
+      configurator.values.value = data.filter(value => !(value == "")).filter(value => value.split(".").length == 3).map(value => {
         const buildParts = value.split(".")
-        return buildParts[2] == "0" ? buildParts[0]+"."+buildParts[1] : value
-      })
+        return buildParts[2] == "0" ? buildParts[0] + "." + buildParts[1] : value
+      }).sort(compareBuilds)
     })
   return configurator
+}
+
+function compareBuilds(a: string, b: string) {
+  const [branch1, build1] = a.split(".").map(value => Number.parseInt(value))
+  const [branch2, build2] = b.split(".").map(value => Number.parseInt(value))
+  if (branch1 < branch2) {
+    return 1
+  }
+  else if (branch1 > branch2) {
+    return -1
+  }
+  else {
+    return build1 < build2 ? 1 : -1
+  }
 }

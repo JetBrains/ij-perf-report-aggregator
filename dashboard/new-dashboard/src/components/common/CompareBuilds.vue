@@ -240,8 +240,8 @@ class Result {
 function getColorForBuild(build1: number, build2: number) {
   return [
     {
-      "higher": build1 > build2,
-      "lower": build1 < build2,
+      "higher": build1 < build2,
+      "lower": build1 > build2,
     },
   ]
 }

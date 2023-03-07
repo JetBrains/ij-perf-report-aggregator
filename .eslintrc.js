@@ -35,7 +35,6 @@ module.exports = {
     "unicorn/numeric-separators-style": "off",
     "unicorn/consistent-function-scoping" : ["error", {"checkArrowFunctions" : false}],
     "unicorn/no-new-array": "off",
-    "unicorn/no-useless-spread" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
     "max-len": ["error", {"code": 180}],
     "object-shorthand": ["error", "always", {"avoidExplicitReturnArrows": true}],

@@ -102,8 +102,8 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     }]
   }
 
-  const cartesian: Array<Array<number>> = producers.length === 1 ? [...new Array<number>(producers[0].size())].map((_, i) => [i]) : computeCartesian(producers.map(it => {
-    return [...new Array<number>(it.size())].map((_, i) => i)
+  const cartesian: Array<Array<number>> = producers.length === 1 ? Array.from({length: producers[0].size()}).map((_, i) => [i]) : computeCartesian(producers.map(it => {
+    return Array.from({length: it.size()}).map((_, i) => i)
   }))
 
   let serializedQuery = ""
@@ -111,7 +111,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
   // https://en.wikipedia.org/wiki/Cartesian_product
 
   const result: Array<string> = []
-  const last = [...new Array<number>(producers.length - 1)].map((_, i) => cartesian[0][i])
+  const last = Array.from({length: producers.length - 1}).map((_, i) => cartesian[0][i])
   for (const item of cartesian) {
     // each column it is a producer
     // each row it is a combination

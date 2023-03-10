@@ -211,6 +211,64 @@
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
+              label="'Intellij with typing suit 2' completion mean value K1"
+              measure="completion#mean_value"
+              :projects="[
+                 'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
+                'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
+                'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'Intellij with typing suit 2' completion mean value K2"
+              measure="completion#mean_value"
+              :projects="[
+                'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k2',
+                'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
+                'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+        </section>
+
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'Intellij with typing suit 2' firstElementShown mean value K1"
+              measure="completion#firstElementShown#mean_value"
+              :projects="[
+                'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
+                'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
+                'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'Intellij with typing suit 2' firstElementShown mean value K2"
+              measure="completion#firstElementShown#mean_value"
+              :projects="[
+                'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k2',
+                'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
+                'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+        </section>
+
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
               label="Kotlin lang Completion mean value K1"
               measure="completion#mean_value"
               :projects="[

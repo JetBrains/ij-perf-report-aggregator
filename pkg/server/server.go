@@ -19,6 +19,7 @@ import (
   "sync"
   "syscall"
   "time"
+  "zombiezen.com/go/sqlite/sqlitex"
 )
 
 const DefaultDbUrl = "127.0.0.1:9000"
@@ -31,6 +32,7 @@ type StatsServer struct {
 
   poolMutex sync.Mutex
 
+  metaDb *sqlitex.Pool
   logger *zap.Logger
 }
 
@@ -39,12 +41,17 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     dbUrl = DefaultDbUrl
   }
 
+  dbpool, err := sqlitex.Open("file:./meta.db", 0, 5)
+  if err != nil {
+    return err
+  }
   statsServer := &StatsServer{
     dbUrl: dbUrl,
 
     logger: logger,
 
     machineInfo: analyzer.GetMachineInfo(),
+    metaDb:      dbpool,
   }
 
   defer func() {
@@ -83,6 +90,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     manager:     cacheManager,
     contentType: "application/octet-stream",
   })
+  mux.Handle("/api/meta/", cacheManager.CreateHandler(statsServer.handleMetaRequest))
 
   mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
     writer.WriteHeader(http.StatusOK)

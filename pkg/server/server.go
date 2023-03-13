@@ -49,7 +49,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   if err != nil {
     return err
   }
-  conn := dbpool.Get(context.TODO())
+  conn := dbpool.Get(context.Background())
   err = sqlitex.ExecScript(conn, metaDBSQL)
   if err != nil {
     return err

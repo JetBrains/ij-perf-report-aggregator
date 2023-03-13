@@ -2,11 +2,11 @@
   "name": "shared",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.11",
+    "@headlessui/vue": "^1.7.12",
     "@heroicons/vue": "2.0.16",
     "echarts": "5.4.1",
     "echarts-stat": "1.2.0",
-    "fast-equals": "4.0.3",
+    "fast-equals": "5.0.0",
     "humanize-duration": "3.28.0",
     "p-limit": "^4.0.0",
     "primevue": "3.23.0",

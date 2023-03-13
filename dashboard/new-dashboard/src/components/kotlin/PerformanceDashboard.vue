@@ -256,7 +256,7 @@
               label="'Intellij with typing suit 2' completion mean value K1"
               measure="completion#mean_value"
               :projects="[
-                 'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
+                'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
                 'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
                 'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
               ]"

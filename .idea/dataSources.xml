@@ -12,14 +12,6 @@
       <synchronize>true</synchronize>
       <jdbc-driver>com.clickhouse.jdbc.ClickHouseDriver</jdbc-driver>
       <jdbc-url>jdbc:clickhouse://127.0.0.1:2000/ij</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="meta.db" uuid="0919ca6d-bdc0-4517-9c6f-a8ec5546737c">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/meta.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

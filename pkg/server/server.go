@@ -3,6 +3,7 @@ package server
 import (
   "context"
   "crypto/tls"
+  _ "embed"
   "github.com/ClickHouse/ch-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
@@ -36,15 +37,25 @@ type StatsServer struct {
   logger *zap.Logger
 }
 
+//go:embed meta.sql
+var metaDBSQL string
+
 func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
     dbUrl = DefaultDbUrl
   }
 
-  dbpool, err := sqlitex.Open("file:./meta.db", 0, 5)
+  dbpool, err := sqlitex.Open("file::memory:?mode=memory", 0, 5)
   if err != nil {
     return err
   }
+  conn := dbpool.Get(context.TODO())
+  err = sqlitex.ExecScript(conn, metaDBSQL)
+  if err != nil {
+    return err
+  }
+  dbpool.Put(conn)
+
   statsServer := &StatsServer{
     dbUrl: dbUrl,
 

@@ -118,7 +118,7 @@
           <GroupProjectsChart
             label="Typing: average delay"
             measure="test#average_awt_delay"
-            :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
+            :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -127,7 +127,7 @@
           <GroupProjectsChart
             label="Typing: total time"
             measure="typing"
-            :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
+            :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

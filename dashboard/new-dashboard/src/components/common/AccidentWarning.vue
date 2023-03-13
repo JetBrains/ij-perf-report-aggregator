@@ -7,7 +7,7 @@
       v-for="warning in warnings as Array<Accident>"
       :key="warning.id"
     >
-      There is a known degradation in {{ warning.affectedTest }} that happened on {{ warning.date }}. The reason is {{ warning.reason }}.
+      Known degradation in <b>{{ warning.affectedTest }}</b>, in build <b>{{ warning.buildNumber }}</b>. Reason: <b>{{ warning.reason }}</b>.
     </li>
   </Message>
 </template>
@@ -28,7 +28,7 @@ const props = defineProps<{
 }>()
 
 class Accident {
-  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number) {}
+  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number, readonly buildNumber: string) {}
 }
 
 const warnings = ref<Array<Accident>>()

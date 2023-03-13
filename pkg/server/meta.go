@@ -26,7 +26,7 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     return nil, false, errors.New("Can't get connection to sqlite from pool")
   }
   defer t.metaDb.Put(conn)
-  stmt := conn.Prep("SELECT id, date, affected_test, reason FROM accident WHERE branch=$branch and db_table=$table;")
+  stmt := conn.Prep("SELECT id, date, affected_test, reason, build_number FROM accident WHERE branch=$branch and db_table=$table;")
   stmt.SetText("$branch", params.Branch)
   stmt.SetText("$table", params.Table)
   type Accident struct {
@@ -34,6 +34,7 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     Date         string `json:"date"`
     AffectedTest string `json:"affectedTest"`
     Reason       string `json:"reason"`
+    BuildNumber  string `json:"buildNumber"`
   }
   var accidents []Accident
   for {
@@ -47,8 +48,9 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     accident := Accident{
       ID:           stmt.GetInt64("id"),
       Date:         stmt.GetText("date"),
-      AffectedTest: stmt.GetText("affectedTest"),
+      AffectedTest: stmt.GetText("affected_test"),
       Reason:       stmt.GetText("reason"),
+      BuildNumber:  stmt.GetText("build_number"),
     }
     accidents = append(accidents, accident)
   }

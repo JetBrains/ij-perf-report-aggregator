@@ -64,7 +64,9 @@
             label="Local Inspection"
             measure="localInspections"
             :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
-                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource']"
+                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource',
+                        'keycloak_release_20/localInspection/QuarkusRuntimePomXml', 'keycloak_release_20/localInspection/RootPomXml',
+                        'keycloak_release_20/localInspection/CorePomXml']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -74,7 +76,9 @@
             label="First Code Analysis"
             measure="firstCodeAnalysis"
             :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
-                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource']"
+                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource',
+                        'keycloak_release_20/localInspection/QuarkusRuntimePomXml', 'keycloak_release_20/localInspection/RootPomXml',
+                        'keycloak_release_20/localInspection/CorePomXml']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -84,7 +88,9 @@
             label="Completion"
             measure="completion"
             :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource']"
+                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource',
+                        'keycloak_release_20/completion/QuarkusRuntimePomXml', 'keycloak_release_20/completion/RootPomXml',
+                        'keycloak_release_20/completion/CorePomXml']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />

@@ -26,7 +26,7 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     return nil, false, errors.New("Can't get connection to sqlite from pool")
   }
   defer t.metaDb.Put(conn)
-  stmt := conn.Prep("SELECT id, date, affected_test, reason, build_number FROM accident WHERE branch=$branch and db_table=$table;")
+  stmt := conn.Prep("SELECT id, date, affected_test, reason, build_number FROM accidents WHERE branch=$branch and db_table=$table;")
   stmt.SetText("$branch", params.Branch)
   stmt.SetText("$table", params.Table)
   type Accident struct {

@@ -45,7 +45,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     dbUrl = DefaultDbUrl
   }
 
-  dbpool, err := sqlitex.Open("file::memory:?mode=memory", 0, 5)
+  dbpool, err := sqlitex.Open("file::memory:?mode=memory", 0, 1)
   if err != nil {
     return err
   }

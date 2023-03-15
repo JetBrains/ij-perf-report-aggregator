@@ -34,128 +34,11 @@
       >
         <section>
           <GroupProjectsChart
-            label="Indexing"
-            measure="indexing"
-            :projects="['keycloak_release_20/indexing']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Scanning"
-            measure="scanning"
-            :projects="['keycloak_release_20/indexing']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Number of indexing runs"
-            measure="numberOfIndexingRuns"
-            :projects="['keycloak_release_20/indexing']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Local Inspection"
-            measure="localInspections"
-            :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
-                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource',
-                        'keycloak_release_20/localInspection/QuarkusRuntimePomXml', 'keycloak_release_20/localInspection/RootPomXml',
-                        'keycloak_release_20/localInspection/CorePomXml']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="First Code Analysis"
-            measure="firstCodeAnalysis"
-            :projects="['keycloak_release_20/localInspection/AuthenticationManagementResource','keycloak_release_20/localInspection/IdentityBrokerService',
-                        'keycloak_release_20/localInspection/JpaUserProvider', 'keycloak_release_20/localInspection/RealmAdminResource',
-                        'keycloak_release_20/localInspection/QuarkusRuntimePomXml', 'keycloak_release_20/localInspection/RootPomXml',
-                        'keycloak_release_20/localInspection/CorePomXml']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Completion"
-            measure="completion"
-            :projects="['keycloak_release_20/completion/AuthenticationManagementResource','keycloak_release_20/completion/IdentityBrokerService',
-                        'keycloak_release_20/completion/JpaUserProvider', 'keycloak_release_20/completion/RealmAdminResource',
-                        'keycloak_release_20/completion/QuarkusRuntimePomXml', 'keycloak_release_20/completion/RootPomXml',
-                        'keycloak_release_20/completion/CorePomXml']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Show Intentions (average awt delay)"
-            measure="test#average_awt_delay"
-            :projects="['keycloak_release_20/showIntentions/AuthenticationManagementResource','keycloak_release_20/showIntentions/IdentityBrokerService',
-                        'keycloak_release_20/showIntentions/JpaUserProvider', 'keycloak_release_20/showIntentions/RealmAdminResource']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Show Intentions (showQuickFixes)"
-            measure="showQuickFixes"
-            :projects="['keycloak_release_20/showIntentions/AuthenticationManagementResource','keycloak_release_20/showIntentions/IdentityBrokerService',
-                        'keycloak_release_20/showIntentions/JpaUserProvider', 'keycloak_release_20/showIntentions/RealmAdminResource']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing"
-            measure="typing"
-            :projects="['keycloak_release_20/typing/ClientEntity', 'keycloak_release_20/typing/PolicyEntity']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing (firstCodeAnalysis)"
-            measure="firstCodeAnalysis"
-            :projects="['keycloak_release_20/typing/ClientEntity', 'keycloak_release_20/typing/PolicyEntity']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing (typingCodeAnalyzing)"
-            measure="typingCodeAnalyzing"
-            :projects="['keycloak_release_20/typing/ClientEntity', 'keycloak_release_20/typing/PolicyEntity']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing (average_awt_delay)"
-            measure="test#average_awt_delay"
-            :projects="['keycloak_release_20/typing/ClientEntity', 'keycloak_release_20/typing/PolicyEntity']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing (max_awt_delay)"
-            measure="test#max_awt_delay"
-            :projects="['keycloak_release_20/typing/ClientEntity', 'keycloak_release_20/typing/PolicyEntity']"
+            v-for="chart in charts"
+            :key="chart.definition.label"
+            :label="chart.definition.label"
+            :measure="chart.definition.measure"
+            :projects="chart.projects"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
@@ -170,6 +53,7 @@
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
@@ -182,6 +66,7 @@ import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
@@ -198,6 +83,37 @@ const sidebarVm = new InfoSidebarVmImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
+const chartsDeclaration: Array<ChartDefinition> = [{
+  labels: ["Indexing", "Scanning", "Number of indexing runs"],
+  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  projects: ["keycloak_release_20/indexing"],
+}, {
+  labels: ["Local Inspection", "First Code Analysis"],
+  measures: ["localInspections", "firstCodeAnalysis"],
+  projects: ["keycloak_release_20/localInspection/AuthenticationManagementResource", "keycloak_release_20/localInspection/IdentityBrokerService",
+    "keycloak_release_20/localInspection/JpaUserProvider", "keycloak_release_20/localInspection/RealmAdminResource",
+    "keycloak_release_20/localInspection/QuarkusRuntimePomXml", "keycloak_release_20/localInspection/RootPomXml",
+    "keycloak_release_20/localInspection/CorePomXml"],
+}, {
+  labels: ["Completion"],
+  measures: ["completion"],
+  projects: ["keycloak_release_20/completion/AuthenticationManagementResource", "keycloak_release_20/completion/IdentityBrokerService",
+    "keycloak_release_20/completion/JpaUserProvider", "keycloak_release_20/completion/RealmAdminResource",
+    "keycloak_release_20/completion/QuarkusRuntimePomXml", "keycloak_release_20/completion/RootPomXml",
+    "keycloak_release_20/completion/CorePomXml"],
+}, {
+  labels: ["Show Intentions (average awt delay)", "Show Intentions (showQuickFixes)"],
+  measures: ["test#average_awt_delay", "showQuickFixes"],
+  projects: ["keycloak_release_20/showIntentions/AuthenticationManagementResource", "keycloak_release_20/showIntentions/IdentityBrokerService",
+    "keycloak_release_20/showIntentions/JpaUserProvider", "keycloak_release_20/showIntentions/RealmAdminResource"],
+}, {
+  labels: ["Typing", "Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
+  measures: ["typing", "firstCodeAnalysis", "typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
+  projects: ["keycloak_release_20/typing/ClientEntity", "keycloak_release_20/typing/PolicyEntity"],
+}]
+
+const charts = combineCharts(chartsDeclaration)
+
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistenceForDashboard = new PersistentStateManager("idea_ultimate_dashboard", {
   machine: initialMachine,
@@ -206,18 +122,25 @@ const persistenceForDashboard = new PersistentStateManager("idea_ultimate_dashbo
 }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+const scenarioConfigurator = dimensionConfigurator(
+  "project",
+  serverConfigurator,
+  null,
+  true,
+)
+scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
 
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator, scenarioConfigurator])
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [timeRangeConfigurator, branchConfigurator],
+  [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
 )
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [branchConfigurator, timeRangeConfigurator],
+  [branchConfigurator, timeRangeConfigurator, scenarioConfigurator],
 )
 
 const averagesConfigurators = [

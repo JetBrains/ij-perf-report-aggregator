@@ -74,331 +74,12 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Indexing (Big projects)"
-            measure="indexing"
-            :projects="['community/indexing', 'intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Scanning (Big projects)"
-            measure="scanning"
-            :projects="['community/indexing', 'intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Number of indexing runs long (Big projects)"
-            measure="numberOfIndexingRuns"
-            :projects="['community/indexing', 'intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Processing speed of JAVA files"
-            measure="processingSpeed#JAVA"
-            :projects="['community/indexing', 'intellij_sources/indexing', 'empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 
-                        'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Processing speed of KOTLIN files"
-            measure="processingSpeed#Kotlin"
-            :projects="['community/indexing', 'intellij_sources/indexing', 'empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 
-                        'kotlin_coroutines/indexing', 'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Indexing with the new record storage (IntelliJ project)"
-            measure="indexing"
-            :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-                        'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
-                        'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/lock-free-intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Scanning with the new record storage (IntelliJ project)"
-            measure="scanning"
-            :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-                        'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
-                        'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing','vfs-record-storage/lock-free-intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Number of indexing runs with the new record storage (IntelliJ project)"
-            measure="numberOfIndexingRuns"
-            :projects="['vfs-record-storage/in-memory-intellij_sources/indexing', 'vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing',
-                        'vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing', 
-                        'vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing', 'vfs-record-storage/lock-free-intellij_sources/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Indexing"
-            measure="indexing"
-            :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
-                        'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Scanning"
-            measure="scanning"
-            :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing', 
-                        'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Number of indexing runs"
-            measure="numberOfIndexingRuns"
-            :projects="['empty_project/indexing', 'grails/indexing', 'java/indexing', 'kotlin/indexing', 'kotlin_coroutines/indexing',
-                        'spring_boot/indexing', 'spring_boot_maven/indexing', 'kotlin_petclinic/indexing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="VFS Refresh"
-            measure="vfs_initial_refresh"
-            :projects="['intellij_sources/vfsRefresh/default', 'intellij_sources/vfsRefresh/with-1-thread(s)', 'intellij_sources/vfsRefresh/git-status']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Rebuild (Big projects)"
-            measure="build_compilation_duration"
-            :projects="['community/rebuild','intellij_sources/rebuild']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Rebuild"
-            measure="build_compilation_duration"
-            :projects="['grails/rebuild','java/rebuild','spring_boot/rebuild']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Inspection"
-            measure="globalInspections"
-            :projects="['java/inspection', 'grails/inspection', 'spring_boot_maven/inspection', 'spring_boot/inspection', 'kotlin/inspection', 'kotlin_coroutines/inspection']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages PsiManager#getInstance Before and After Compilation"
-            measure="findUsages"
-            :projects="['community/findUsages/PsiManager_getInstance_Before', 'community/findUsages/PsiManager_getInstance_After'
-            ]"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages Library#getName Before and After Compilation"
-            measure="findUsages"
-            :projects="['community/findUsages/Library_getName_Before', 'community/findUsages/Library_getName_After'
-            ]"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages LocalInspectionTool#getID Before and After Compilation"
-            measure="findUsages"
-            :projects="['community/findUsages/LocalInspectionTool_getID_Before', 'community/findUsages/LocalInspectionTool_getID_After'
-            ]"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"
-            measure="findUsages"
-            :projects="['community/findUsages/ActionsKt_runReadAction_Before', 'community/findUsages/Application_runReadAction_Before',
-                        'community/findUsages/ActionsKt_runReadAction_After', 'community/findUsages/Application_runReadAction_After'
-            ]"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"
-            measure="findUsages"
-            :projects="['community/findUsages/Persistent_absolutePath_After', 'community/findUsages/PropertyMapping_value_After',
-                        'community/findUsages/Persistent_absolutePath_Before', 'community/findUsages/PropertyMapping_value_Before'
-            ]"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Find Usages with idea.is.internal=true Before Compilation"
-            measure="findUsages"
-            :projects="['intellij_sources/findUsages/PsiManager_getInstance_firstCall', 'intellij_sources/findUsages/PsiManager_getInstance_secondCall',
-                        'intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Local Inspection"
-            measure="localInspections"
-            :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection',
-                        'kotlin_coroutines/localInspection', 'gradle_kts_vulnerable_dep/localInspection']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="First Code Analysis"
-            measure="firstCodeAnalysis"
-            :projects="['intellij_sources/localInspection/java_file','intellij_sources/localInspection/kotlin_file', 'kotlin/localInspection',
-                        'kotlin_coroutines/localInspection', 'gradle_kts_vulnerable_dep/localInspection']"
+            v-for="chart in charts"
+            :key="chart.definition.label"
+            :label="chart.definition.label"
+            :measure="chart.definition.measure"
+            :projects="chart.projects"
             :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Completion"
-            measure="completion"
-            :projects="['community/completion/kotlin_file','grails/completion/groovy_file', 'grails/completion/java_file']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Search Everywhere"
-            measure="searchEverywhere"
-            :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Search Everywhere (Dialog Shown)"
-            measure="searchEverywhere_dialog_shown"
-            :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Search Everywhere (Items Loaded)"
-            measure="searchEverywhere_items_loaded"
-            :projects="['community/go-to-action/SharedIndex', 'community/go-to-class/EditorImpl','community/go-to-class/SharedIndex',
-                        'community/go-to-file/EditorImpl','community/go-to-file/SharedIndex']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Show Intentions (average awt delay)"
-            measure="test#average_awt_delay"
-            :projects="['grails/showIntentions/Find cause', 'kotlin/showIntention/Import', 'spring_boot/showIntentions']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Show File History"
-            measure="showFileHistory"
-            :projects="['intellij_sources/showFileHistory/EditorImpl']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Expand Menu"
-            measure="expandActionGroup"
-            :projects="['intellij_sources/expandProjectMenu', 'intellij_sources/expandMainMenu', 'intellij_sources/expandEditorMenu']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Highlight"
-            measure="highlighting"
-            :projects="['kotlin/highlight', 'kotlin_coroutines/highlight']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="FileStructure"
-            measure="FileStructurePopup"
-            :projects="['intellij_sources/FileStructureDialog/java_file', 'intellij_sources/FileStructureDialog/kotlin_file']"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing during indexing (with changed count of indexing threads)"
-            measure="typing"
-            :projects="['typingInJavaFile_16Threads/typing', 'typingInJavaFile_4Threads/typing', 'typingInKotlinFile_16Threads/typing', 'typingInKotlinFile_4Threads/typing']"
-            :server-configurator="serverConfigurator" 
-            :configurators="dashboardConfigurators"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="Typing during indexing (average awt delay)"
-            measure="test#average_awt_delay"
-            :projects="['typingInJavaFile_16Threads/typing', 'typingInJavaFile_4Threads/typing', 'typingInKotlinFile_16Threads/typing', 'typingInKotlinFile_4Threads/typing']"
-            :server-configurator="serverConfigurator" 
             :configurators="dashboardConfigurators"
           />
         </section>
@@ -412,6 +93,7 @@
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
@@ -425,6 +107,7 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
+import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import AccidentWarning from "../common/AccidentWarning.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -442,6 +125,113 @@ const sidebarVm = new InfoSidebarVmImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
+const chartsDeclaration: Array<ChartDefinition> = [{
+  labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexing runs long (Big projects)"],
+  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  projects: ["community/indexing", "intellij_sources/indexing"],
+}, {
+  labels: ["Processing speed of JAVA files", "Processing speed of KOTLIN files"],
+  measures: ["processingSpeed#JAVA", "processingSpeed#Kotlin"],
+  projects: ["community/indexing", "intellij_sources/indexing", "empty_project/indexing", "grails/indexing", "java/indexing", "kotlin/indexing",
+    "kotlin_coroutines/indexing", "spring_boot/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
+}, {
+  labels: ["Indexing with the new record storage (IntelliJ project)", "Scanning with the new record storage (IntelliJ project)",
+    "Number of indexing runs with the new record storage (IntelliJ project)"],
+  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  projects: ["vfs-record-storage/in-memory-intellij_sources/indexing", "vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing",
+    "vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing",
+    "vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing", "vfs-record-storage/lock-free-intellij_sources/indexing"],
+}, {
+  labels: ["Indexing", "Scanning", "Number of indexing runs"],
+  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  projects: ["empty_project/indexing", "grails/indexing", "java/indexing", "kotlin/indexing", "kotlin_coroutines/indexing",
+    "spring_boot/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
+}, {
+  labels: ["VFS Refresh"],
+  measures: ["vfs_initial_refresh"],
+  projects: ["intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status"],
+}, {
+  labels: ["Rebuild (Big projects)"],
+  measures: ["build_compilation_duration"],
+  projects: ["community/rebuild", "intellij_sources/rebuild"],
+}, {
+  labels: ["Rebuild"],
+  measures: ["build_compilation_duration"],
+  projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
+}, {
+  labels: ["Inspection"],
+  measures: ["globalInspections"],
+  projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
+}, {
+  labels: ["FindUsages PsiManager#getInstance Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
+}, {
+  labels: ["FindUsages Library#getName Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
+}, {
+  labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/LocalInspectionTool_getID_Before", "community/findUsages/LocalInspectionTool_getID_After"],
+}, {
+  labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/Application_runReadAction_Before",
+    "community/findUsages/ActionsKt_runReadAction_After", "community/findUsages/Application_runReadAction_After"],
+}, {
+  labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/Persistent_absolutePath_After", "community/findUsages/PropertyMapping_value_After",
+    "community/findUsages/Persistent_absolutePath_Before", "community/findUsages/PropertyMapping_value_Before",
+  ],
+}, {
+  labels: ["Find Usages with idea.is.internal=true Before Compilation"],
+  measures: ["findUsages"],
+  projects: ["intellij_sources/findUsages/PsiManager_getInstance_firstCall", "intellij_sources/findUsages/PsiManager_getInstance_secondCall",
+    "intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode"],
+}, {
+  labels: ["Local Inspection", "First Code Analysis"],
+  measures: ["localInspections", "firstCodeAnalysis"],
+  projects: ["intellij_sources/localInspection/java_file", "intellij_sources/localInspection/kotlin_file", "kotlin/localInspection",
+    "kotlin_coroutines/localInspection", "gradle_kts_vulnerable_dep/localInspection"],
+}, {
+  labels: ["Completion"],
+  measures: ["completion"],
+  projects: ["community/completion/kotlin_file", "grails/completion/groovy_file", "grails/completion/java_file"],
+}, {
+  labels: ["Search Everywhere", "Search Everywhere (Dialog Shown)", "Search Everywhere (Items Loaded)"],
+  measures: ["searchEverywhere", "searchEverywhere_dialog_shown", "searchEverywhere_items_loaded"],
+  projects: ["community/go-to-action/SharedIndex", "community/go-to-class/EditorImpl", "community/go-to-class/SharedIndex",
+    "community/go-to-file/EditorImpl", "community/go-to-file/SharedIndex"],
+}, {
+  labels: ["Show Intentions (average awt delay)"],
+  measures: ["test#average_awt_delay"],
+  projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+}, {
+  labels: ["Show File History"],
+  measures: ["showFileHistory"],
+  projects: ["intellij_sources/showFileHistory/EditorImpl"],
+}, {
+  labels: ["Expand Menu"],
+  measures: ["expandActionGroup"],
+  projects: ["intellij_sources/expandProjectMenu", "intellij_sources/expandMainMenu", "intellij_sources/expandEditorMenu"],
+}, {
+  labels: ["Highlight"],
+  measures: ["highlighting"],
+  projects: ["kotlin/highlight", "kotlin_coroutines/highlight"],
+}, {
+  labels: ["FileStructure"],
+  measures: ["FileStructurePopup"],
+  projects: ["intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file"],
+}, {
+  labels: ["Typing during indexing (with changed count of indexing threads)", "Typing during indexing (average awt delay)", "Typing during indexing (max awt delay)"],
+  measures: ["typing", "test#average_awt_delay", "test#max_awt_delay"],
+  projects: ["typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing", "typingInKotlinFile_16Threads/typing", "typingInKotlinFile_4Threads/typing"],
+}]
+
+const charts = combineCharts(chartsDeclaration)
+
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistenceForDashboard = new PersistentStateManager("idea_dashboard", {
   machine: initialMachine,
@@ -450,18 +240,25 @@ const persistenceForDashboard = new PersistentStateManager("idea_dashboard", {
 }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+const scenarioConfigurator = dimensionConfigurator(
+  "project",
+  serverConfigurator,
+  null,
+  true,
+)
+scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
 
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [timeRangeConfigurator, branchConfigurator],
+  [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
 )
 const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [branchConfigurator, timeRangeConfigurator],
+  [branchConfigurator, timeRangeConfigurator, scenarioConfigurator],
 )
 
 const averagesConfigurators = [

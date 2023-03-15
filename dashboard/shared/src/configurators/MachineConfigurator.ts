@@ -103,6 +103,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
           groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
         }
+        else if (value.startsWith("intellij-linux-performance-huge-aws-i")){
+          groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
+        }
         else {
           groupName = MachineConfigurator.valueToGroup[value]
         }

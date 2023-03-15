@@ -8,4 +8,4 @@ create table accident
   db_table      TEXT not null,
   build_number  TEXT
 );
-INSERT INTO accident (id, date, affected_test, reason, branch, db_table, build_number) VALUES (1, '2023-03-04 07:00:00', 'mediawiki/inspection', 'JSHint became initialized', 'master', 'phpstorm', '232.1409');
+INSERT INTO accident (date, affected_test, reason, branch, db_table, build_number) VALUES ('2023-03-04 07:00:00', 'mediawiki/inspection', 'JSHint became initialized', 'master', 'phpstorm', '232.1409');

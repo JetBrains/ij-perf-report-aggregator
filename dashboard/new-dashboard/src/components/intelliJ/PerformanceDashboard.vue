@@ -29,7 +29,7 @@
     <AccidentWarning
       :time-range-configurator="timeRangeConfigurator"
       :branch-configurator="branchConfigurator"
-      :table="dbTable"
+      :table="dbName+'_'+dbTable"
     />
     <main class="flex">
       <div

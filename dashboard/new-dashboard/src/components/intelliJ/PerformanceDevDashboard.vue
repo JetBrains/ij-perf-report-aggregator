@@ -25,7 +25,11 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-
+    <AccidentWarning
+      :time-range-configurator="timeRangeConfigurator"
+      :branch-configurator="branchConfigurator"
+      :table="dbName+'_'+dbTable"
+    />
     <main class="flex">
       <div
         ref="container"
@@ -137,6 +141,7 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import AccidentWarning from "../common/AccidentWarning.vue"
 
 provideReportUrlProvider(false)
 

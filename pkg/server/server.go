@@ -9,6 +9,8 @@ import (
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
+  "github.com/go-chi/chi/v5"
+  "github.com/go-chi/chi/v5/middleware"
   "github.com/jackc/puddle/v2"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
@@ -80,7 +82,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     return err
   }
 
-  mux := http.NewServeMux()
+  r := chi.NewRouter()
 
   disposer := util.NewDisposer()
   defer disposer.Dispose()
@@ -91,23 +93,28 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     }
   }
 
-  mux.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
-  mux.Handle("/api/v1/load/", cacheManager.CreateHandler(statsServer.handleLoadRequest))
-  mux.Handle("/api/q/", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-  mux.Handle("/api/zstd-dictionary", &CachingHandler{
+  r.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
+  r.Use(cors.New(cors.Options{
+    AllowedOrigins: []string{"*"},
+    AllowedMethods: []string{"GET"},
+    MaxAge:         50,
+  }).Handler)
+  r.Use(middleware.Heartbeat("/health-check"))
+  r.Use(middleware.Recoverer)
+  r.Use(middleware.Logger)
+
+  r.Handle("/api/v1/meta/measure/*", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
+  r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
+  r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
+  r.Handle("/api/meta/*", cacheManager.CreateHandler(statsServer.handleMetaRequest))
+  r.Handle("/api/zstd-dictionary/*", &CachingHandler{
     handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
       return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil
     },
-    manager:     cacheManager,
-    contentType: "application/octet-stream",
-  })
-  mux.Handle("/api/meta/", cacheManager.CreateHandler(statsServer.handleMetaRequest))
-
-  mux.HandleFunc("/health-check", func(writer http.ResponseWriter, request *http.Request) {
-    writer.WriteHeader(http.StatusOK)
+    manager: cacheManager,
   })
 
-  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), mux, logger)
+  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), r, logger)
 
   logger.Info("started", zap.String("address", server.Addr), zap.String("clickhouse", dbUrl), zap.String("nats", natsUrl))
 

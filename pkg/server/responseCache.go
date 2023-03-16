@@ -25,13 +25,12 @@ type ResponseCacheManager struct {
 }
 
 type CachingHandler struct {
-  handler     func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)
-  manager     *ResponseCacheManager
-  contentType string
+  handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)
+  manager *ResponseCacheManager
 }
 
 func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  t.manager.handle(w, r, t.contentType, t.handler)
+  t.manager.handle(w, r, t.handler)
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
@@ -52,9 +51,8 @@ func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) 
 
 func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) http.Handler {
   return &CachingHandler{
-    handler:     handler,
-    manager:     t,
-    contentType: "application/json",
+    handler: handler,
+    manager: t,
   }
 }
 
@@ -86,15 +84,7 @@ func generateKey(request *http.Request, isBrotliSupported bool) []byte {
   return result
 }
 
-func (t *ResponseCacheManager) handle(
-  w http.ResponseWriter,
-  request *http.Request,
-  contentType string,
-  handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error),
-) {
-  w.Header().Set("Content-Type", contentType)
-  w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set("Cache-Control", "public, must-revalidate, max-age=30")
+func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error), ) {
   w.Header().Set("Vary", "Accept-Encoding")
 
   isBrotliSupported := strings.Contains(request.Header.Get("Accept-Encoding"), "br")

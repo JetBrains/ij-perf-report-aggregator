@@ -36,6 +36,9 @@ const warnings = ref<Array<Accident>>()
 refToObservable(props.branchConfigurator.selected).subscribe(data => {
   getWarningFromMetaDb(data, props.table)
 })
+refToObservable(props.timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(props.branchConfigurator.selected.value, props.table)
+})
 
 function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
   const currentDate = new Date()

@@ -1,3 +1,6 @@
+![](https://camo.githubusercontent.com/be6f8b50b2400e8b0dc74e58dd9a68803fe6698f5f30d843a7504888879f8392/68747470733a2f2f6a622e67672f6261646765732f696e63756261746f722d706c61737469632e737667)
+## IJ Perf
+
 Tool to collect performance reports in JSON format from TeamCity, insert into ClickHouse and visualize.
 
  * `clickhouse-backup` - backup clickhouse data.
@@ -6,7 +9,7 @@ Tool to collect performance reports in JSON format from TeamCity, insert into Cl
  * `tc-collector` - collect performance reports from [TeamCity artifacts](https://www.jetbrains.com/help/teamcity/build-artifact.html) and insert to ClickHouse.
  * `transform` - transform existing data into another form. Raw JSON report is preserved as is, but for performance reasons maybe needed to pre-analyze and extract data into separate columns during collecting. And as data requirements changes, re-analyze the whole data set maybe required.
 
-## Dashboard Editing
+### Dashboard Editing
 
 Directory `dashboard` contains Vue.js application built using [Element Plus](http://element-plus.org/) Desktop UI Library.
 
@@ -28,7 +31,7 @@ Otherwise use:
 
 For example, if activity `launch terminal` reported under category `prepareAppInitActivities`, use `prepareAppInitActivities.launch terminal` as metric name. Or `prepareAppInitActivities.first render.s` to get start value of `first render`.
 
-## Adding a New Database
+### Adding a New Database
 
 `cd ~/Documents/report-aggregator`
 

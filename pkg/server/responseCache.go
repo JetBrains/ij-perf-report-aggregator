@@ -4,8 +4,6 @@ import (
   "context"
   "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/andybalholm/brotli"
   e "github.com/develar/errors"
   "github.com/dgraph-io/ristretto"
   "github.com/valyala/bytebufferpool"
@@ -14,23 +12,22 @@ import (
   "io"
   "net/http"
   "strconv"
-  "strings"
 )
 
 var byteBufferPool bytebufferpool.Pool
-
-type ResponseCacheManager struct {
-  cache  *ristretto.Cache
-  logger *zap.Logger
-}
 
 type CachingHandler struct {
   handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)
   manager *ResponseCacheManager
 }
 
-func (t *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  t.manager.handle(w, r, t.handler)
+func (ch *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+  ch.manager.handle(w, r, ch.handler)
+}
+
+type ResponseCacheManager struct {
+  cache  *ristretto.Cache
+  logger *zap.Logger
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
@@ -49,54 +46,28 @@ func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) 
   }, nil
 }
 
-func (t *ResponseCacheManager) CreateHandler(handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) http.Handler {
+func (rcm *ResponseCacheManager) CreateHandler(handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) http.Handler {
   return &CachingHandler{
     handler: handler,
-    manager: t,
+    manager: rcm,
   }
 }
 
-var jsonMarker = []byte("j:")
-var uncompressedMarker = []byte("u:")
-
-func generateKey(request *http.Request, isBrotliSupported bool) []byte {
-  buffer := bytebufferpool.Get()
-  defer bytebufferpool.Put(buffer)
-
-  // if json requested, it means that handler can return data in several formats
-  if request.Header.Get("Accept") == "application/json" {
-    _, _ = buffer.Write(jsonMarker)
-  }
-  if !isBrotliSupported {
-    _, _ = buffer.Write(uncompressedMarker)
-  }
-
-  u := request.URL
-  _, _ = io.WriteString(buffer, u.Path)
-
-  // do not complicate, use RawQuery as is without sorting
-  if len(u.RawQuery) > 0 {
-    _, _ = io.WriteString(buffer, u.RawQuery)
-  }
-
-  result := make([]byte, len(buffer.B))
-  copy(result, buffer.B)
-  return result
-}
-
-func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error), ) {
+func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error), ) {
   w.Header().Set("Vary", "Accept-Encoding")
 
-  isBrotliSupported := strings.Contains(request.Header.Get("Accept-Encoding"), "br")
-
-  cacheKey := generateKey(request, isBrotliSupported)
-  value, found := t.cache.Get(cacheKey)
+  cacheKey := generateCacheKey(request)
+  value, found := rcm.cache.Get(cacheKey)
   var result []byte
   if found {
-    var ok bool
-    result, ok = value.([]byte)
+    cacheData, ok := value.([]byte)
     if !ok {
       return
+    }
+    var err error
+    result, err = decompressData(cacheData)
+    if err != nil {
+      rcm.handleError(err, w)
     }
     prevEtag := request.Header.Get("If-None-Match")
     eTag := computeEtag(result)
@@ -108,32 +79,20 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
   } else {
     buffer, releaseBuffer, err := handler(request)
     if err != nil {
-      t.handleError(err, w)
+      rcm.handleError(err, w)
       return
     }
-
-    if isBrotliSupported {
-      result, err = t.brotliData(buffer.B)
-      if releaseBuffer {
-        bytebufferpool.Put(buffer)
-      }
-      if err != nil {
-        t.logger.Error("cannot compress result", zap.Error(err))
-        http.Error(w, err.Error(), http.StatusServiceUnavailable)
-        return
-      }
-    } else {
-      result = CopyBuffer(buffer)
-      if releaseBuffer {
-        bytebufferpool.Put(buffer)
-      }
+    result, err = rcm.compressData(buffer.B)
+    if err != nil {
+      rcm.logger.Error("cannot compress result", zap.Error(err))
+      http.Error(w, err.Error(), http.StatusServiceUnavailable)
+      return
     }
-
-    t.cache.Set(cacheKey, result, int64(len(result)))
-  }
-
-  if isBrotliSupported {
-    w.Header().Set("Content-Encoding", "br")
+    rcm.cache.Set(cacheKey, result, int64(len(result)))
+    result = buffer.B
+    if releaseBuffer {
+      bytebufferpool.Put(buffer)
+    }
   }
 
   w.Header().Set("ETag", computeEtag(result))
@@ -141,12 +100,28 @@ func (t *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Reque
   w.WriteHeader(http.StatusOK)
   _, err := w.Write(result)
   if err != nil {
-    t.logger.Error("cannot write cached result", zap.Error(err))
+    rcm.logger.Error("cannot write cached result", zap.Error(err))
     http.Error(w, err.Error(), http.StatusServiceUnavailable)
   }
 }
 
-func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
+func generateCacheKey(request *http.Request) []byte {
+  buffer := bytebufferpool.Get()
+  defer bytebufferpool.Put(buffer)
+  // if json requested, it means that handler can return data in several formats
+  if request.Header.Get("Accept") == "application/json" {
+    _, _ = buffer.Write([]byte("j:"))
+  }
+  u := request.URL
+  _, _ = io.WriteString(buffer, u.Path)
+  // do not complicate, use RawQuery as is without sorting
+  if len(u.RawQuery) > 0 {
+    _, _ = io.WriteString(buffer, u.RawQuery)
+  }
+  return CopyBuffer(buffer)
+}
+
+func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
   cause := e.Cause(err)
   var httpError *http_error.HttpError
   if errors.As(cause, &httpError) {
@@ -156,7 +131,7 @@ func (t *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
     if errors.Is(cause, context.Canceled) {
       http.Error(w, err.Error(), 499)
     } else {
-      t.logger.Error("cannot handle http request", zap.Error(err))
+      rcm.logger.Error("cannot handle http request", zap.Error(err))
       http.Error(w, err.Error(), http.StatusServiceUnavailable)
     }
   }
@@ -169,22 +144,8 @@ func computeEtag(result []byte) string {
   return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36)
 }
 
-func (t *ResponseCacheManager) brotliData(value []byte) ([]byte, error) {
-  buffer := bytebufferpool.Get()
-  defer bytebufferpool.Put(buffer)
-  writer := brotli.NewWriter(buffer)
-  _, err := writer.Write(value)
-  if err != nil {
-    util.Close(writer, t.logger)
-    return nil, err
-  }
-
-  util.Close(writer, t.logger)
-  return CopyBuffer(buffer), nil
-}
-
-func (t *ResponseCacheManager) Clear() {
-  t.cache.Clear()
+func (rcm *ResponseCacheManager) Clear() {
+  rcm.cache.Clear()
 }
 
 func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {

@@ -8,6 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/andybalholm/brotli"
   "github.com/develar/errors"
   "github.com/go-chi/chi/v5"
   "github.com/go-chi/chi/v5/middleware"
@@ -16,6 +17,7 @@ import (
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
   "go.uber.org/zap"
+  "io"
   "net/http"
   "os"
   "os/signal"
@@ -102,6 +104,11 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Use(middleware.Heartbeat("/health-check"))
   r.Use(middleware.Recoverer)
   r.Use(middleware.Logger)
+  compressor := middleware.NewCompressor(5, "/*")
+  compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
+    return brotli.NewWriterLevel(w, level)
+  })
+  r.Use(compressor.Handler)
 
   r.Handle("/api/v1/meta/measure/*", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))

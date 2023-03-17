@@ -139,9 +139,9 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import AccidentWarning from "../common/AccidentWarning.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import AccidentWarning from "../common/AccidentWarning.vue"
 
 provideReportUrlProvider(false)
 

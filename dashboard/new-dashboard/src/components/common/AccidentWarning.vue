@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import { combineLatest } from "rxjs"
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
@@ -33,10 +34,7 @@ class Accident {
 
 const warnings = ref<Array<Accident>>()
 
-refToObservable(props.branchConfigurator.selected).subscribe(data => {
-  getWarningFromMetaDb(data, props.table)
-})
-refToObservable(props.timeRangeConfigurator.value).subscribe(data => {
+combineLatest([refToObservable(props.branchConfigurator.selected), refToObservable(props.timeRangeConfigurator.value)]).subscribe(data => {
   getWarningFromMetaDb(props.branchConfigurator.selected.value, props.table)
 })
 

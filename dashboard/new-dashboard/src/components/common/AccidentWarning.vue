@@ -1,6 +1,6 @@
 <template>
   <Message
-    v-if="warnings != null && warnings.length > 0"
+    v-if="warnings?.length > 0"
     severity="warn"
   >
     <li
@@ -40,18 +40,21 @@ combineLatest([refToObservable(props.branchConfigurator.selected), refToObservab
 
 function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
   const currentDate = new Date()
-  let subtractInterval: number  //5 years ago
-  if (interval == "1M") {
-    subtractInterval = 24 * 60 * 60 * 1000 * 30
-  }
-  else if (interval == "3M") {
-    subtractInterval = 24 * 60 * 60 * 1000 * 30 * 3
-  }
-  else if (interval == "1y") {
-    subtractInterval = 24 * 60 * 60 * 1000 * 30 * 12
-  }
-  else {
-    subtractInterval = 24 * 60 * 60 * 1000 * 30 * 12 * 5
+  let subtractInterval: number
+  const day = 24 * 60 * 60 * 1000
+  switch (interval) {
+    case "1M":
+      subtractInterval = day * 30
+      break
+    case "3M":
+      subtractInterval = day * 30 * 3
+      break
+    case "1y":
+      subtractInterval = day * 30 * 12
+      break
+    default:
+      subtractInterval = day * 30 * 12 * 5
+      break
   }
   const selectedDate = new Date()
   selectedDate.setTime(Date.now() - subtractInterval)

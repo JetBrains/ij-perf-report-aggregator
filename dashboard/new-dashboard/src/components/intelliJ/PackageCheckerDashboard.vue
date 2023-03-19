@@ -59,7 +59,6 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -84,44 +83,16 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const chartsDeclaration: Array<ChartDefinition> = [{
-  labels: ["Indexing", "Scanning", "Number of indexing runs"],
-  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
-  projects: ["keycloak_release_20/indexing", "train-ticket/indexing"],
-}, {
-  labels: ["Local Inspection", "First Code Analysis"],
-  measures: ["localInspections", "firstCodeAnalysis"],
-  projects: ["keycloak_release_20/localInspection/AuthenticationManagementResource", "keycloak_release_20/localInspection/IdentityBrokerService",
-    "keycloak_release_20/localInspection/JpaUserProvider", "keycloak_release_20/localInspection/RealmAdminResource",
-    "keycloak_release_20/localInspection/QuarkusRuntimePomXml", "keycloak_release_20/localInspection/RootPomXml",
-    "keycloak_release_20/localInspection/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
-    "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
-}, {
-  labels: ["Completion"],
-  measures: ["completion"],
-  projects: ["keycloak_release_20/completion/AuthenticationManagementResource", "keycloak_release_20/completion/IdentityBrokerService",
-    "keycloak_release_20/completion/JpaUserProvider", "keycloak_release_20/completion/RealmAdminResource",
-    "keycloak_release_20/completion/QuarkusRuntimePomXml", "keycloak_release_20/completion/RootPomXml",
-    "keycloak_release_20/completion/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
-    "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
-}, {
-  labels: ["Show Intentions (average awt delay)", "Show Intentions (showQuickFixes)"],
-  measures: ["test#average_awt_delay", "showQuickFixes"],
-  projects: ["keycloak_release_20/showIntentions/AuthenticationManagementResource", "keycloak_release_20/showIntentions/IdentityBrokerService",
-    "keycloak_release_20/showIntentions/JpaUserProvider", "keycloak_release_20/showIntentions/RealmAdminResource"],
-}, {
-  labels: ["Typing", "Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
-  measures: ["typing", "firstCodeAnalysis", "typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
-  projects: ["keycloak_release_20/typing/ClientEntity", "keycloak_release_20/typing/PolicyEntity", "train-ticket/ultimateCase/AdminBasicInfoController",
-    "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
+  labels: ["Package Checker execution time", "Total heap max", "Freed memory by GC", "GC pause count", "Full GC pause", "GC pause"],
+  measures: ["runServiceInPlugin", "totalHeapUsedMax", "freedMemoryByGC", "gcPauseCount", "fullGCPause", "gcPause"],
+  projects: ["package-checker-gradle-500-modules/get_declared_dependencies", "package-checker-gradle-500-modules/get_all_modules/maven",
+    "package-checker-gradle-500-modules/get_all_modules/gradle"]
 }]
 
 const charts = combineCharts(chartsDeclaration)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("idea_ultimate_dashboard", {
+const persistenceForDashboard = new PersistentStateManager("idea_package_checker_dashboard", {
   machine: initialMachine,
   project: [],
   branch: "master",
@@ -157,16 +128,6 @@ const dashboardConfigurators = [
   releaseConfigurator,
   triggeredByConfigurator,
 ]
-
-const typingOnlyConfigurator = {
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "project", v: "%typing", o: "like"})
-    return true
-  },
-  createObservable() {
-    return null
-  },
-}
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

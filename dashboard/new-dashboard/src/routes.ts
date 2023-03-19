@@ -28,6 +28,7 @@ const ROUTES = {
 
   IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
   IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJ}/ultimateDashboard`,
+  IntelliJPackageCheckerDashboard: `${ROUTE_PREFIX.IntelliJ}/packageCheckerDashboard`,
   IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJ}/gradleDashboard`,
   IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJ}/mavenDashboard`,
   IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
@@ -160,6 +161,10 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJUltimateDashboard,
     name: "Performance Ultimate",
+  },
+  {
+    path: ROUTES.IntelliJPackageCheckerDashboard,
+    name: "Performance Package Checker",
   },
   {
     path: ROUTES.IntelliJGradleDashboard,
@@ -430,6 +435,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.IntelliJUltimateDashboard,
           component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
           meta: {pageTitle: "Ultimate Projects"},
+        },
+        {
+          path: ROUTES.IntelliJPackageCheckerDashboard,
+          component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
+          meta: {pageTitle: "Package Checker"},
         },
         {
           path: ROUTES.IntelliJDevDashboard,

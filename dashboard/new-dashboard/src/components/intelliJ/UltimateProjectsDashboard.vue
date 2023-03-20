@@ -90,8 +90,8 @@ const chartsDeclaration: Array<ChartDefinition> = [{
 }, {
   labels: ["Local Inspection", "First Code Analysis"],
   measures: ["localInspections", "firstCodeAnalysis"],
-  projects: ["keycloak_release_20/localInspection/AuthenticationManagementResource", "keycloak_release_20/localInspection/IdentityBrokerService",
-    "keycloak_release_20/localInspection/JpaUserProvider", "keycloak_release_20/localInspection/RealmAdminResource",
+  projects: ["keycloak_release_20/ultimateCase/AuthenticationManagementResource", "keycloak_release_20/ultimateCase/IdentityBrokerService",
+    "keycloak_release_20/ultimateCase/JpaUserProvider", "keycloak_release_20/ultimateCase/RealmAdminResource",
     "keycloak_release_20/localInspection/QuarkusRuntimePomXml", "keycloak_release_20/localInspection/RootPomXml",
     "keycloak_release_20/localInspection/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
@@ -99,8 +99,8 @@ const chartsDeclaration: Array<ChartDefinition> = [{
 }, {
   labels: ["Completion"],
   measures: ["completion"],
-  projects: ["keycloak_release_20/completion/AuthenticationManagementResource", "keycloak_release_20/completion/IdentityBrokerService",
-    "keycloak_release_20/completion/JpaUserProvider", "keycloak_release_20/completion/RealmAdminResource",
+  projects: ["keycloak_release_20/ultimateCase/AuthenticationManagementResource", "keycloak_release_20/ultimateCase/IdentityBrokerService",
+    "keycloak_release_20/ultimateCase/JpaUserProvider", "keycloak_release_20/ultimateCase/RealmAdminResource",
     "keycloak_release_20/completion/QuarkusRuntimePomXml", "keycloak_release_20/completion/RootPomXml",
     "keycloak_release_20/completion/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",

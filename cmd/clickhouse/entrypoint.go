@@ -145,9 +145,8 @@ func restoreDb() error {
       if i < attemptCount {
         time.Sleep(time.Duration((i+1)*3) * time.Second)
         continue
-      } else {
-        return fmt.Errorf("%w", err)
       }
+      return fmt.Errorf("%w", err)
     }
 
     if len(backups) != 0 {

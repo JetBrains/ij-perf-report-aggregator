@@ -84,17 +84,20 @@
               v-for="item in versionItems"
               :key="item.label"
             >
-              <label
-                class="field-checkbox w-full p-multiselect-item p-component"
-                :for="item.value"
-              >
+              <div class="flex items-center p-multiselect-item p-component">
                 <Checkbox
                   v-model="versionValue"
                   :value="item.value"
                   :input-id="item.value"
+                  class="field-checkbox"
                 />
-                <span>{{ item.label }}</span>
-              </label>
+                <label
+                  class="w-full inline-block"
+                  :for="item.value"
+                >
+                  <span>{{ item.label }}</span>
+                </label>
+              </div>
             </li>
           </ul>
         </div>
@@ -112,17 +115,20 @@
               v-for="item in triggeredItems"
               :key="item.label"
             >
-              <label
-                class="field-checkbox w-full p-multiselect-item p-component"
-                :for="item.value"
-              >
+              <div class="flex items-center p-multiselect-item p-component">
                 <Checkbox
                   v-model="triggeredValue"
                   :value="item.value"
                   :input-id="item.value"
+                  class="field-checkbox"
                 />
-                <span>{{ item.label }}</span>
-              </label>
+                <label
+                  class="w-full inline-block"
+                  :for="item.value"
+                >
+                  <span>{{ item.label }}</span>
+                </label>
+              </div>
             </li>
           </ul>
         </div>

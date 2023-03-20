@@ -113,7 +113,10 @@ const chartsDeclaration: Array<ChartDefinition> = [{
 }, {
   labels: ["Typing", "Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
   measures: ["typing", "firstCodeAnalysis", "typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
-  projects: ["keycloak_release_20/typing/ClientEntity", "keycloak_release_20/typing/PolicyEntity", "train-ticket/ultimateCase/AdminBasicInfoController",
+  projects: ["keycloak_release_20/typing/ClientEntity", "keycloak_release_20/typing/PolicyEntity",
+    "keycloak_release_20/ultimateCase/AuthenticationManagementResource", "keycloak_release_20/ultimateCase/IdentityBrokerService",
+    "keycloak_release_20/ultimateCase/JpaUserProvider", "keycloak_release_20/ultimateCase/RealmAdminResource",
+    "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
     "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
 }]

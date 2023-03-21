@@ -2,14 +2,19 @@
   <div class="flex flex-col gap-5">
     <Toolbar class="customToolbar">
       <template #start>
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
+        <div class="flex items-center">
+          <DimensionHierarchicalSelect
+            label="Machine"
+            :dimension="machineConfigurator"
+          >
+            <template #icon>
+              <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
+            </template>
+          </DimensionHierarchicalSelect>
+          <span class="ml-5">
+            Build 1
+          </span>
+        </div>
         <BranchSelect
           :branch-configurator="branchConfigurator1"
           :release-configurator="releaseConfigurator1"
@@ -19,6 +24,7 @@
           label="Build N1"
           :dimension="firstBuildConfigurator"
         />
+        Build 2
         <BranchSelect
           :branch-configurator="branchConfigurator2"
           :release-configurator="releaseConfigurator2"
@@ -77,7 +83,7 @@
       </Column>
       <Column
         field="build1"
-        header="Value"
+        header="Build 1"
       >
         <template #body="slotProps">
           <div :class="getColorForBuild(slotProps.data.build1, slotProps.data.build2)">
@@ -87,7 +93,7 @@
       </Column>
       <Column
         field="build2"
-        header="Value"
+        header="Build 2"
       >
         <template #body="slotProps">
           <div :class="getColorForBuild(slotProps.data.build2, slotProps.data.build1)">

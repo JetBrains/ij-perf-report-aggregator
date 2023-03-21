@@ -9,6 +9,7 @@ export interface NavigationItem {
 const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
+  IntelliJBuildTools = "/intellij/buildTools",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -29,8 +30,8 @@ const ROUTES = {
   IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
   IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJ}/ultimateDashboard`,
   IntelliJPackageCheckerDashboard: `${ROUTE_PREFIX.IntelliJ}/packageCheckerDashboard`,
-  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJ}/gradleDashboard`,
-  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJ}/mavenDashboard`,
+  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
+  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
   IntelliJTests: `${ROUTE_PREFIX.IntelliJ}/tests`,
   IntelliJDevTests: `${ROUTE_PREFIX.IntelliJ}/devTests`,
@@ -77,6 +78,19 @@ const ROUTES = {
   FleetPerfDashboard: `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard: `${ROUTE_PREFIX.Fleet}/startupDashboard`,
 }
+
+export const intellijSubNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.IntelliJDashboard,
+    name: "Primary Functionality",
+    key: ROUTE_PREFIX.IntelliJ,
+  },
+  {
+    path: ROUTES.IntelliJGradleDashboard,
+    name: "Build Tools",
+    key: ROUTE_PREFIX.IntelliJBuildTools,
+  }
+]
 
 export const topNavigationItems: NavigationItem[] = [
   {
@@ -167,14 +181,6 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
     name: "Performance Package Checker",
   },
   {
-    path: ROUTES.IntelliJGradleDashboard,
-    name: "Gradle Import",
-  },
-  {
-    path: ROUTES.IntelliJMavenDashboard,
-    name: "Maven Import",
-  },
-  {
     path: ROUTES.IntelliJDevDashboard,
     name: "Performance (Fast Installer)",
   },
@@ -197,6 +203,17 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJCompare,
     name: "Compare",
+  },
+]
+
+export const intelliJBuildToolsTabNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.IntelliJGradleDashboard,
+    name: "Gradle Import",
+  },
+  {
+    path: ROUTES.IntelliJMavenDashboard,
+    name: "Maven Import",
   },
 ]
 
@@ -353,6 +370,9 @@ export const FleetNavigationItems: NavigationItem[] = [
 ]
 
 export function getNavigationTabs(path: string): NavigationItem[] {
+  if (path.startsWith(ROUTE_PREFIX.IntelliJBuildTools)) {
+    return intelliJBuildToolsTabNavigationItems
+  }
   if (path.startsWith(ROUTE_PREFIX.Startup)) {
     return startupTabNavigationItems
   }
@@ -384,6 +404,13 @@ export function getNavigationTabs(path: string): NavigationItem[] {
     return FleetNavigationItems
   }
 
+  return []
+}
+
+export function getSubMenus(path: string): NavigationItem[] {
+  if (path.startsWith(ROUTE_PREFIX.IntelliJ)) {
+    return intellijSubNavigationItems
+  }
   return []
 }
 

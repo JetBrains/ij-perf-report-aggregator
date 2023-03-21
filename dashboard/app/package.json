@@ -5,7 +5,7 @@
     "@fontsource/inter": "4.5.15",
     "@fontsource/jetbrains-mono": "4.5.12",
     "new-dashboard": "workspace:*",
-    "primevue": "3.23.0",
+    "primevue": "3.26.0",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",

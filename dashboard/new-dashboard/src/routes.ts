@@ -11,6 +11,8 @@ const enum ROUTE_PREFIX {
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
   IntelliJSharedIndices = "/intellij/sharedIndices",
+  IntelliJUltimate = "/intellij/ultimate",
+  IntelliJPackageChecker = "/intellij/packageChecker",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -29,17 +31,23 @@ const ROUTES = {
   StartupReport: `${ROUTE_PREFIX.Startup}/report`,
 
   IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
-  IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJ}/ultimateDashboard`,
-  IntelliJPackageCheckerDashboard: `${ROUTE_PREFIX.IntelliJ}/packageCheckerDashboard`,
-  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
-  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
   IntelliJTests: `${ROUTE_PREFIX.IntelliJ}/tests`,
-  IntelliJBuildTests: `${ROUTE_PREFIX.IntelliJBuildTools}/tests`,
   IntelliJDevTests: `${ROUTE_PREFIX.IntelliJ}/devTests`,
+  IntelliJCompare: `${ROUTE_PREFIX.IntelliJ}/compare`,
+
+  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
+  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
+  IntelliJBuildTests: `${ROUTE_PREFIX.IntelliJBuildTools}/tests`,
+
+  IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJUltimate}/dashboard`,
+  IntelliJUltimateTests: `${ROUTE_PREFIX.IntelliJUltimate}/tests`,
+
   IntelliJSharedIndicesDashboard: `${ROUTE_PREFIX.IntelliJSharedIndices}/dashboard`,
   IntelliJSharedIndicesTests: `${ROUTE_PREFIX.IntelliJSharedIndices}/tests`,
-  IntelliJCompare: `${ROUTE_PREFIX.IntelliJ}/compare`,
+
+  IntelliJPackageCheckerDashboard: `${ROUTE_PREFIX.IntelliJPackageChecker}/dashboard`,
+  IntelliJPackageCheckerTests: `${ROUTE_PREFIX.IntelliJPackageChecker}/tests`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
   PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
@@ -93,9 +101,19 @@ export const intellijSubNavigationItems: NavigationItem[] = [
     key: ROUTE_PREFIX.IntelliJBuildTools,
   },
   {
+    path: ROUTES.IntelliJUltimateDashboard,
+    name: "Ultimate",
+    key: ROUTE_PREFIX.IntelliJUltimate,
+  },
+  {
     path: ROUTES.IntelliJSharedIndicesDashboard,
     name: "Shared Indices",
     key: ROUTE_PREFIX.IntelliJSharedIndices,
+  },
+  {
+    path: ROUTES.IntelliJPackageCheckerDashboard,
+    name: "Package Checker",
+    key: ROUTE_PREFIX.IntelliJPackageChecker,
   }
 ]
 
@@ -107,7 +125,7 @@ export const topNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.IntelliJDashboard,
-    name: "IntelliJ IDEA",
+    name: "IDEA",
     key: ROUTE_PREFIX.IntelliJ,
   },
   {
@@ -177,41 +195,33 @@ export const startupTabNavigationItems: NavigationItem[] = [
 export const intelliJTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJDashboard,
-    name: "Performance",
-  },
-  {
-    path: ROUTES.IntelliJUltimateDashboard,
-    name: "Performance Ultimate",
-  },
-  {
-    path: ROUTES.IntelliJPackageCheckerDashboard,
-    name: "Performance Package Checker",
+    name: "Dashboard",
   },
   {
     path: ROUTES.IntelliJDevDashboard,
-    name: "Performance (Fast Installer)",
+    name: "Dashboard (Fast Installer)",
   },
   {
     path: ROUTES.IntelliJTests,
-    name: "Performance tests",
+    name: "Tests",
   },
   {
     path: ROUTES.IntelliJDevTests,
-    name: "Performance tests (Fast Installer)",
+    name: "Tests (Fast Installer)",
   },
   {
     path: ROUTES.IntelliJCompare,
-    name: "Compare",
+    name: "Compare Builds",
   },
 ]
 export const intelliJSharedIndicesTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJSharedIndicesDashboard,
-    name: "Shared Indices",
+    name: "Dashboard",
   },
   {
     path: ROUTES.IntelliJSharedIndicesTests,
-    name: "Performance tests",
+    name: "Tests",
   },
 ]
 
@@ -226,7 +236,29 @@ export const intelliJBuildToolsTabNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.IntelliJBuildTests,
-    name: "Performance tests",
+    name: "Tests",
+  },
+]
+
+export const intelliJUltimateTabNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.IntelliJUltimateDashboard,
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.IntelliJBuildTests,
+    name: "Tests",
+  },
+]
+
+export const intelliJPackageCheckerTabNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.IntelliJPackageCheckerDashboard,
+    name: "Dashboard",
+  },
+  {
+    path: ROUTES.IntelliJPackageCheckerTests,
+    name: "Tests",
   },
 ]
 
@@ -290,7 +322,7 @@ export const kotlinNavigationItems: NavigationItem[] = [
   },
   {
     path: ROUTES.KotlinExplore,
-    name: "Explore",
+    name: "Tests",
   },
   {
     path: ROUTES.KotlinDashboardDev,
@@ -388,6 +420,12 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   }
   if (path.startsWith(ROUTE_PREFIX.IntelliJSharedIndices)) {
     return intelliJSharedIndicesTabNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.IntelliJUltimate)) {
+    return intelliJUltimateTabNavigationItems
+  }
+  if (path.startsWith(ROUTE_PREFIX.IntelliJPackageChecker)) {
+    return intelliJPackageCheckerTabNavigationItems
   }
   if (path.startsWith(ROUTE_PREFIX.Startup)) {
     return startupTabNavigationItems

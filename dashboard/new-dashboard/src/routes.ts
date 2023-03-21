@@ -246,7 +246,7 @@ export const intelliJUltimateTabNavigationItems: NavigationItem[] = [
     name: "Dashboard",
   },
   {
-    path: ROUTES.IntelliJBuildTests,
+    path: ROUTES.IntelliJUltimateTests,
     name: "Tests",
   },
 ]

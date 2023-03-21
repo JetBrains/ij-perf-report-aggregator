@@ -10,6 +10,7 @@ const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
+  IntelliJSharedIndices = "/intellij/sharedIndices",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -34,9 +35,10 @@ const ROUTES = {
   IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
   IntelliJTests: `${ROUTE_PREFIX.IntelliJ}/tests`,
+  IntelliJBuildTests: `${ROUTE_PREFIX.IntelliJBuildTools}/tests`,
   IntelliJDevTests: `${ROUTE_PREFIX.IntelliJ}/devTests`,
-  IntelliJSharedIndicesDashboard: `${ROUTE_PREFIX.IntelliJ}/sharedIndicesDashboard`,
-  IntelliJSharedIndicesTests: `${ROUTE_PREFIX.IntelliJ}/sharedIndicesTests`,
+  IntelliJSharedIndicesDashboard: `${ROUTE_PREFIX.IntelliJSharedIndices}/dashboard`,
+  IntelliJSharedIndicesTests: `${ROUTE_PREFIX.IntelliJSharedIndices}/tests`,
   IntelliJCompare: `${ROUTE_PREFIX.IntelliJ}/compare`,
 
   PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
@@ -89,6 +91,11 @@ export const intellijSubNavigationItems: NavigationItem[] = [
     path: ROUTES.IntelliJGradleDashboard,
     name: "Build Tools",
     key: ROUTE_PREFIX.IntelliJBuildTools,
+  },
+  {
+    path: ROUTES.IntelliJSharedIndicesDashboard,
+    name: "Shared Indices",
+    key: ROUTE_PREFIX.IntelliJSharedIndices,
   }
 ]
 
@@ -185,10 +192,6 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
     name: "Performance (Fast Installer)",
   },
   {
-    path: ROUTES.IntelliJSharedIndicesDashboard,
-    name: "Shared Indices",
-  },
-  {
     path: ROUTES.IntelliJTests,
     name: "Performance tests",
   },
@@ -197,12 +200,18 @@ export const intelliJTabNavigationItems: NavigationItem[] = [
     name: "Performance tests (Fast Installer)",
   },
   {
-    path: ROUTES.IntelliJSharedIndicesTests,
-    name: "Shared Indices tests",
-  },
-  {
     path: ROUTES.IntelliJCompare,
     name: "Compare",
+  },
+]
+export const intelliJSharedIndicesTabNavigationItems: NavigationItem[] = [
+  {
+    path: ROUTES.IntelliJSharedIndicesDashboard,
+    name: "Shared Indices",
+  },
+  {
+    path: ROUTES.IntelliJSharedIndicesTests,
+    name: "Performance tests",
   },
 ]
 
@@ -214,6 +223,10 @@ export const intelliJBuildToolsTabNavigationItems: NavigationItem[] = [
   {
     path: ROUTES.IntelliJMavenDashboard,
     name: "Maven Import",
+  },
+  {
+    path: ROUTES.IntelliJBuildTests,
+    name: "Performance tests",
   },
 ]
 
@@ -373,6 +386,9 @@ export function getNavigationTabs(path: string): NavigationItem[] {
   if (path.startsWith(ROUTE_PREFIX.IntelliJBuildTools)) {
     return intelliJBuildToolsTabNavigationItems
   }
+  if (path.startsWith(ROUTE_PREFIX.IntelliJSharedIndices)) {
+    return intelliJSharedIndicesTabNavigationItems
+  }
   if (path.startsWith(ROUTE_PREFIX.Startup)) {
     return startupTabNavigationItems
   }
@@ -479,7 +495,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices Dashboard"},
         },
         {
-          path: ROUTES.IntelliJTests,
+          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/tests`,
           component: () => import("./components/intelliJ/PerformanceTests.vue"),
           meta: {pageTitle: "IntelliJ Performance tests"},
         },

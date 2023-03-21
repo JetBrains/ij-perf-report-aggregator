@@ -4,7 +4,7 @@
       v-if="subMenuItems.length > 0"
       class="text-xl font-semibold"
     >
-      Tests for
+      Tests on
     </span>
     <button
       class="text-blue-400 px-1 py-1 inline-flex text-xl items-center"
@@ -23,7 +23,7 @@
       v-if="subMenuItems.length > 0"
       class="text-xl font-semibold"
     >
-      aggregated by
+      aggregated for
     </span>
     <button
       v-if="subMenuItems.length > 0"

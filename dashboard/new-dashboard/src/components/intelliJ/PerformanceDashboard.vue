@@ -177,14 +177,28 @@ const chartsDeclaration: Array<ChartDefinition> = [{
 }, {
   labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"],
   measures: ["findUsages"],
-  projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/Application_runReadAction_Before",
-    "community/findUsages/ActionsKt_runReadAction_After", "community/findUsages/Application_runReadAction_After"],
+  projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/ActionsKt_runReadAction_After",
+    "community/findUsages/Application_runReadAction_Before", "community/findUsages/Application_runReadAction_After"],
 }, {
   labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"],
   measures: ["findUsages"],
-  projects: ["community/findUsages/Persistent_absolutePath_After", "community/findUsages/PropertyMapping_value_After",
-    "community/findUsages/Persistent_absolutePath_Before", "community/findUsages/PropertyMapping_value_Before",
+  projects: ["community/findUsages/Persistent_absolutePath_Before", "community/findUsages/Persistent_absolutePath_After",
+    "community/findUsages/PropertyMapping_value_Before", "community/findUsages/PropertyMapping_value_After"
   ],
+}, {
+    labels: ["FindUsages Object#hashCode and Path#toString Before and After Compilation"],
+    measures: ["findUsages"],
+    projects: ["community/findUsages/Object_hashCode_Before", "community/findUsages/Object_hashCode_After",
+      "community/findUsages/Path_toString_Before", "community/findUsages/Path_toString_After"
+    ],
+  }, {
+  labels: ["FindUsages Objects#hashCode Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/Objects_hashCode_Before", "community/findUsages/Objects_hashCode_After"],
+}, {
+  labels: ["FindUsages Path#div Before and After Compilation"],
+  measures: ["findUsages"],
+  projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After"],
 }, {
   labels: ["Find Usages with idea.is.internal=true Before Compilation"],
   measures: ["findUsages"],
@@ -194,7 +208,7 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   labels: ["Local Inspection", "First Code Analysis"],
   measures: ["localInspections", "firstCodeAnalysis"],
   projects: ["intellij_sources/localInspection/java_file", "intellij_sources/localInspection/kotlin_file", "kotlin/localInspection",
-    "kotlin_coroutines/localInspection", "gradle_kts_vulnerable_dep/localInspection"],
+    "kotlin_coroutines/localInspection"],
 }, {
   labels: ["Completion"],
   measures: ["completion"],

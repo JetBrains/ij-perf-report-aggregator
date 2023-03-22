@@ -1,11 +1,5 @@
 import { ParentRouteRecord } from "shared/src/route"
 
-export interface NavigationItem {
-  path: string
-  name: string
-  key?: string
-}
-
 const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
@@ -23,450 +17,396 @@ const enum ROUTE_PREFIX {
   Fleet = "/fleet",
 }
 
-const ROUTES = {
-  StartupPulse: `${ROUTE_PREFIX.Startup}/pulse`,
-  StartupProgress: `${ROUTE_PREFIX.Startup}/progressOverTime`,
-  StartupModuleLoading: `${ROUTE_PREFIX.Startup}/moduleLoading`,
-  StartupExplore: `${ROUTE_PREFIX.Startup}/explore`,
-  StartupReport: `${ROUTE_PREFIX.Startup}/report`,
-
-  IntelliJDashboard: `${ROUTE_PREFIX.IntelliJ}/dashboard`,
-  IntelliJDevDashboard: `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
-  IntelliJTests: `${ROUTE_PREFIX.IntelliJ}/tests`,
-  IntelliJDevTests: `${ROUTE_PREFIX.IntelliJ}/devTests`,
-  IntelliJCompare: `${ROUTE_PREFIX.IntelliJ}/compare`,
-
-  IntelliJGradleDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
-  IntelliJMavenDashboard: `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
-  IntelliJBuildTests: `${ROUTE_PREFIX.IntelliJBuildTools}/tests`,
-
-  IntelliJUltimateDashboard: `${ROUTE_PREFIX.IntelliJUltimate}/dashboard`,
-  IntelliJUltimateTests: `${ROUTE_PREFIX.IntelliJUltimate}/tests`,
-
-  IntelliJSharedIndicesDashboard: `${ROUTE_PREFIX.IntelliJSharedIndices}/dashboard`,
-  IntelliJSharedIndicesTests: `${ROUTE_PREFIX.IntelliJSharedIndices}/tests`,
-
-  IntelliJPackageCheckerDashboard: `${ROUTE_PREFIX.IntelliJPackageChecker}/dashboard`,
-  IntelliJPackageCheckerTests: `${ROUTE_PREFIX.IntelliJPackageChecker}/tests`,
-
-  PhpStormDashboard: `${ROUTE_PREFIX.PhpStorm}/dashboard`,
-  PhpStormWithPluginsDashboard: `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
-  PhpStormTests: `${ROUTE_PREFIX.PhpStorm}/tests`,
-  PhpStormWithPluginsTests: `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
-  PhpStormCompare: `${ROUTE_PREFIX.PhpStorm}/compare`,
-
-  KotlinDashboard: `${ROUTE_PREFIX.Kotlin}/dashboard`,
-  KotlinDashboardDev: `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
-  KotlinExplore: `${ROUTE_PREFIX.Kotlin}/explore`,
-  KotlinExploreDev: `${ROUTE_PREFIX.Kotlin}/exploreDev`,
-  KotlinCompletionDev: `${ROUTE_PREFIX.Kotlin}/completionDev`,
-  KotlinHighlightingDev: `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
-  KotlinFindUsagesDev: `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
-  KotlinCompare: `${ROUTE_PREFIX.Kotlin}/compare`,
-
-  GoLandDashboard: `${ROUTE_PREFIX.GoLand}/dashboard`,
-  GoLandTests: `${ROUTE_PREFIX.GoLand}/tests`,
-  GoLandCompare: `${ROUTE_PREFIX.GoLand}/compare`,
-
-  RubyMineDashboard: `${ROUTE_PREFIX.RubyMine}/dashboard`,
-  RubyMineTests: `${ROUTE_PREFIX.RubyMine}/tests`,
-  RubyMineCompare: `${ROUTE_PREFIX.RubyMine}/compare`,
-
-  RustTests: `${ROUTE_PREFIX.Rust}/tests`,
-  RustCompare: `${ROUTE_PREFIX.Rust}/compare`,
-  ScalaTests: `${ROUTE_PREFIX.Scala}/tests`,
-  ScalaCompare: `${ROUTE_PREFIX.Scala}/compare`,
-
-  JBRTests: `${ROUTE_PREFIX.JBR}/tests`,
-  MapBenchDashboard: `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
-  DaCapoDashboard: `${ROUTE_PREFIX.JBR}/dacapoDashboard`,
-  J2DBenchDashboard: `${ROUTE_PREFIX.JBR}/j2dDashboard`,
-  JavaDrawDashboard: `${ROUTE_PREFIX.JBR}/javaDrawDashboard`,
-  RenderDashboard: `${ROUTE_PREFIX.JBR}/renderDashboard`,
-
-  FleetTest: `${ROUTE_PREFIX.Fleet}/tests`,
-  FleetPerfDashboard: `${ROUTE_PREFIX.Fleet}/perfDashboard`,
-  FleetStartupDashboard: `${ROUTE_PREFIX.Fleet}/startupDashboard`,
+enum ROUTES {
+  StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
+  StartupProgress = `${ROUTE_PREFIX.Startup}/progressOverTime`,
+  StartupModuleLoading = `${ROUTE_PREFIX.Startup}/moduleLoading`,
+  StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
+  StartupReport = `${ROUTE_PREFIX.Startup}/report`,
+  IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboard`,
+  IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
+  IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/tests`,
+  IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/devTests`,
+  IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/compare`,
+  IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
+  IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
+  IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/tests`,
+  IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/dashboard`,
+  IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/tests`,
+  IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/dashboard`,
+  IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/tests`,
+  IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/dashboard`,
+  IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/tests`,
+  PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/dashboard`,
+  PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
+  PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/tests`,
+  PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
+  PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/compare`,
+  KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/dashboard`,
+  KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
+  KotlinExplore = `${ROUTE_PREFIX.Kotlin}/explore`,
+  KotlinExploreDev = `${ROUTE_PREFIX.Kotlin}/exploreDev`,
+  KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
+  KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
+  KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
+  KotlinCompare = `${ROUTE_PREFIX.Kotlin}/compare`,
+  GoLandDashboard = `${ROUTE_PREFIX.GoLand}/dashboard`,
+  GoLandTests = `${ROUTE_PREFIX.GoLand}/tests`,
+  GoLandCompare = `${ROUTE_PREFIX.GoLand}/compare`,
+  RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/dashboard`,
+  RubyMineTests = `${ROUTE_PREFIX.RubyMine}/tests`,
+  RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/compare`,
+  RustTests = `${ROUTE_PREFIX.Rust}/tests`,
+  RustCompare = `${ROUTE_PREFIX.Rust}/compare`,
+  ScalaTests = `${ROUTE_PREFIX.Scala}/tests`,
+  ScalaCompare = `${ROUTE_PREFIX.Scala}/compare`,
+  JBRTests = `${ROUTE_PREFIX.JBR}/tests`,
+  MapBenchDashboard = `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
+  DaCapoDashboard = `${ROUTE_PREFIX.JBR}/dacapoDashboard`,
+  J2DBenchDashboard = `${ROUTE_PREFIX.JBR}/j2dDashboard`,
+  JavaDrawDashboard = `${ROUTE_PREFIX.JBR}/javaDrawDashboard`,
+  RenderDashboard = `${ROUTE_PREFIX.JBR}/renderDashboard`,
+  FleetTest = `${ROUTE_PREFIX.Fleet}/tests`,
+  FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
+  FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
 }
 
-export const intellijSubNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJDashboard,
-    name: "Primary Functionality",
-    key: ROUTE_PREFIX.IntelliJ,
-  },
-  {
-    path: ROUTES.IntelliJGradleDashboard,
-    name: "Build Tools",
-    key: ROUTE_PREFIX.IntelliJBuildTools,
-  },
-  {
-    path: ROUTES.IntelliJUltimateDashboard,
-    name: "Ultimate",
-    key: ROUTE_PREFIX.IntelliJUltimate,
-  },
-  {
-    path: ROUTES.IntelliJSharedIndicesDashboard,
-    name: "Shared Indices",
-    key: ROUTE_PREFIX.IntelliJSharedIndices,
-  },
-  {
-    path: ROUTES.IntelliJPackageCheckerDashboard,
-    name: "Package Checker",
-    key: ROUTE_PREFIX.IntelliJPackageChecker,
-  }
-]
-
-export const topNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.StartupPulse,
-    name: "IntelliJ Startup",
-    key: ROUTE_PREFIX.Startup,
-  },
-  {
-    path: ROUTES.IntelliJDashboard,
-    name: "IDEA",
-    key: ROUTE_PREFIX.IntelliJ,
-  },
-  {
-    path: ROUTES.PhpStormDashboard,
-    name: "PhpStorm",
-    key: ROUTE_PREFIX.PhpStorm,
-  },
-  {
-    path: ROUTES.KotlinDashboard,
-    name: "Kotlin",
-    key: ROUTE_PREFIX.Kotlin,
-  },
-  {
-    path: ROUTES.GoLandDashboard,
-    name: "GoLand",
-    key: ROUTE_PREFIX.GoLand,
-  },
-  {
-    path: ROUTES.RubyMineDashboard,
-    name: "RubyMine",
-    key: ROUTE_PREFIX.RubyMine,
-  },
-  {
-    path: ROUTES.JBRTests,
-    name: "JBR",
-    key: ROUTE_PREFIX.JBR,
-  },
-  {
-    path: ROUTES.FleetStartupDashboard,
-    name: "Fleet",
-    key: ROUTE_PREFIX.Fleet,
-  },
-  {
-    path: ROUTES.RustTests,
-    name: "Rust",
-    key: ROUTE_PREFIX.Rust,
-  },
-  {
-    path: ROUTES.ScalaTests,
-    name: "Scala",
-    key: ROUTE_PREFIX.Scala,
-  }
-]
-export const startupTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.StartupPulse,
-    name: "Pulse",
-  },
-  {
-    path: ROUTES.StartupProgress,
-    name: "Progress Over Time",
-  },
-  {
-    path: ROUTES.StartupModuleLoading,
-    name: "Module Loading",
-  },
-  {
-    path: ROUTES.StartupExplore,
-    name: "Explore",
-  },
-  {
-    path: ROUTES.StartupReport,
-    name: "Report",
-  },
-]
-
-export const intelliJTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.IntelliJDevDashboard,
-    name: "Dashboard (Fast Installer)",
-  },
-  {
-    path: ROUTES.IntelliJTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.IntelliJDevTests,
-    name: "Tests (Fast Installer)",
-  },
-  {
-    path: ROUTES.IntelliJCompare,
-    name: "Compare Builds",
-  },
-]
-export const intelliJSharedIndicesTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJSharedIndicesDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.IntelliJSharedIndicesTests,
-    name: "Tests",
-  },
-]
-
-export const intelliJBuildToolsTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJGradleDashboard,
-    name: "Gradle Import",
-  },
-  {
-    path: ROUTES.IntelliJMavenDashboard,
-    name: "Maven Import",
-  },
-  {
-    path: ROUTES.IntelliJBuildTests,
-    name: "Tests",
-  },
-]
-
-export const intelliJUltimateTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJUltimateDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.IntelliJUltimateTests,
-    name: "Tests",
-  },
-]
-
-export const intelliJPackageCheckerTabNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.IntelliJPackageCheckerDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.IntelliJPackageCheckerTests,
-    name: "Tests",
-  },
-]
-
-export const phpStormNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.PhpStormDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.PhpStormTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.PhpStormCompare,
-    name: "Compare Builds",
-  },
-  {
-    path: ROUTES.PhpStormWithPluginsDashboard,
-    name: "Dashboard with Plugins",
-  },
-  {
-    path: ROUTES.PhpStormWithPluginsTests,
-    name: "Tests with Plugins",
-  },
-]
-
-export const GoLandNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.GoLandDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.GoLandTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.GoLandCompare,
-    name: "Compare Builds",
-  },
-]
-
-export const RubyMineNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.RubyMineDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.RubyMineTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.RubyMineCompare,
-    name: "Compare Builds",
-  },
-]
-
-export const kotlinNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.KotlinDashboard,
-    name: "Dashboard",
-  },
-  {
-    path: ROUTES.KotlinExplore,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.KotlinDashboardDev,
-    name: "Dashboard (dev/fast installer)",
-  },
-  {
-    path: ROUTES.KotlinExploreDev,
-    name: "Explore (dev/fast installer)",
-  },
-  {
-    path: ROUTES.KotlinCompletionDev,
-    name: "Completion (dev)",
-  },
-  {
-    path: ROUTES.KotlinHighlightingDev,
-    name: "Highlighting (dev)",
-  },
-  {
-    path: ROUTES.KotlinFindUsagesDev,
-    name: "FindUsages (dev)",
-  },
-  {
-    path: ROUTES.KotlinCompare,
-    name: "Compare Builds",
-  },
-]
-
-export const RustNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.RustTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.RustCompare,
-    name: "Compare Builds",
-  },
-]
-
-export const ScalaNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.ScalaTests,
-    name: "Tests",
-  },
-  {
-    path: ROUTES.ScalaCompare,
-    name: "Compare Builds",
-  },
-]
-
-export const JBRNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.DaCapoDashboard,
-    name: "DaCapo",
-  },
-  {
-    path: ROUTES.J2DBenchDashboard,
-    name: "J2DBench",
-  },
-  {
-    path: ROUTES.JavaDrawDashboard,
-    name: "JavaDraw",
-  },
-  {
-    path: ROUTES.RenderDashboard,
-    name: "Render",
-  },
-  {
-    path: ROUTES.MapBenchDashboard,
-    name: "MapBench",
-  },
-  {
-    path: ROUTES.JBRTests,
-    name: "Tests",
-  }
-]
-
-export const FleetNavigationItems: NavigationItem[] = [
-  {
-    path: ROUTES.FleetStartupDashboard,
-    name: "Startup Dashboard",
-  },
-  {
-    path: ROUTES.FleetPerfDashboard,
-    name: "Performance Dashboard",
-  },
-  {
-    path: ROUTES.FleetTest,
-    name: "Tests",
-  },
-]
-
-export function getNavigationTabs(path: string): NavigationItem[] {
-  if (path.startsWith(ROUTE_PREFIX.IntelliJBuildTools)) {
-    return intelliJBuildToolsTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.IntelliJSharedIndices)) {
-    return intelliJSharedIndicesTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.IntelliJUltimate)) {
-    return intelliJUltimateTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.IntelliJPackageChecker)) {
-    return intelliJPackageCheckerTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.Startup)) {
-    return startupTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.IntelliJ)) {
-    return intelliJTabNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.PhpStorm)) {
-    return phpStormNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.Kotlin)) {
-    return kotlinNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.GoLand)) {
-    return GoLandNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.RubyMine)) {
-    return RubyMineNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.Rust)) {
-    return RustNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.Scala)) {
-    return ScalaNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.JBR)) {
-    return JBRNavigationItems
-  }
-  if (path.startsWith(ROUTE_PREFIX.Fleet)) {
-    return FleetNavigationItems
-  }
-
-  return []
+export interface Tab {
+  url: ROUTES
+  label: string
 }
 
-export function getSubMenus(path: string): NavigationItem[] {
-  if (path.startsWith(ROUTE_PREFIX.IntelliJ)) {
-    return intellijSubNavigationItems
-  }
-  return []
+export interface SubProject {
+  url: ROUTE_PREFIX
+  label: string
+  tabs: Tab[]
 }
+
+interface Product {
+  url: ROUTE_PREFIX|ROUTES
+  label: string
+  children: SubProject[]
+}
+
+const IDEA: Product = {
+  url: ROUTE_PREFIX.IntelliJ,
+  label: "IDEA",
+  children: [
+    {
+      url: ROUTE_PREFIX.IntelliJ,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.IntelliJDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJDevDashboard,
+          label: "Dashboard (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.IntelliJDevTests,
+          label: "Tests (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJCompare,
+          label: "Compare Builds",
+        }],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJBuildTools,
+      label: "Build Tools",
+      tabs: [
+        {
+          url: ROUTES.IntelliJGradleDashboard,
+          label: "Gradle Import",
+        },
+        {
+          url: ROUTES.IntelliJMavenDashboard,
+          label: "Maven Import",
+        },
+        {
+          url: ROUTES.IntelliJBuildTests,
+          label: "Tests",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJSharedIndices,
+      label: "Shared Indices",
+      tabs: [
+        {
+          url: ROUTES.IntelliJSharedIndicesDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesTests,
+          label: "Tests",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJUltimate,
+      label: "Ultimate",
+      tabs: [
+        {
+          url: ROUTES.IntelliJUltimateDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJUltimateTests,
+          label: "Tests",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJPackageChecker,
+      label: "Package Checker",
+      tabs: [
+        {
+          url: ROUTES.IntelliJPackageCheckerDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJPackageCheckerTests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+const PHPSTORM: Product = {
+  url: ROUTE_PREFIX.PhpStorm,
+  label: "PhpStorm",
+  children: [
+    {
+      url: ROUTE_PREFIX.PhpStorm,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.PhpStormDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.PhpStormTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.PhpStormCompare,
+          label: "Compare Builds",
+        },
+        {
+          url: ROUTES.PhpStormWithPluginsDashboard,
+          label: "Dashboard with Plugins",
+        },
+        {
+          url: ROUTES.PhpStormWithPluginsTests,
+          label: "Tests with Plugins",
+        }],
+    },
+  ],
+}
+const KOTLIN: Product = {
+  url: ROUTE_PREFIX.Kotlin,
+  label: "Kotlin",
+  children: [
+    {
+      url: ROUTE_PREFIX.Kotlin,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.KotlinDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.KotlinExplore,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.KotlinDashboardDev,
+          label: "Dashboard (dev/fast installer)",
+        },
+        {
+          url: ROUTES.KotlinExploreDev,
+          label: "Explore (dev/fast installer)",
+        },
+        {
+          url: ROUTES.KotlinCompletionDev,
+          label: "Completion (dev)",
+        },
+        {
+          url: ROUTES.KotlinHighlightingDev,
+          label: "Highlighting (dev)",
+        },
+        {
+          url: ROUTES.KotlinFindUsagesDev,
+          label: "FindUsages (dev)",
+        },
+        {
+          url: ROUTES.KotlinCompare,
+          label: "Compare Builds",
+        }],
+    },
+  ],
+}
+const GOLAND: Product = {
+  url: ROUTE_PREFIX.GoLand,
+  label: "GoLand",
+  children: [
+    {
+      url: ROUTE_PREFIX.GoLand,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.GoLandDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.GoLandTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.GoLandCompare,
+          label: "Compare Builds",
+        },
+      ],
+    },
+  ],
+}
+const RUBYMINE: Product = {
+  url: ROUTE_PREFIX.RubyMine,
+  label: "RubyMine",
+  children: [
+    {
+      url: ROUTE_PREFIX.RubyMine,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.RubyMineDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.RubyMineTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.RubyMineCompare,
+          label: "Compare Builds",
+        },
+      ],
+    },
+  ],
+}
+const RUST: Product = {
+  url: ROUTE_PREFIX.Rust,
+  label: "Rust",
+  children: [
+    {
+      url: ROUTE_PREFIX.Rust,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.RustTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.RustCompare,
+          label: "Compare Builds",
+        },
+      ],
+    },
+  ],
+}
+const SCALA: Product = {
+  url: ROUTE_PREFIX.Scala,
+  label: "Scala",
+  children: [
+    {
+      url: ROUTE_PREFIX.Scala,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.ScalaTests,
+          label: "Tests",
+        },
+        {
+          url: ROUTES.ScalaCompare,
+          label: "Compare Builds",
+        },
+      ],
+    },
+  ],
+}
+const JBR: Product = {
+  url: ROUTE_PREFIX.JBR,
+  label: "JBR",
+  children: [
+    {
+      url: ROUTE_PREFIX.JBR,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.DaCapoDashboard,
+          label: "DaCapo",
+        },
+        {
+          url: ROUTES.J2DBenchDashboard,
+          label: "J2DBench",
+        },
+        {
+          url: ROUTES.JavaDrawDashboard,
+          label: "JavaDraw",
+        },
+        {
+          url: ROUTES.RenderDashboard,
+          label: "Render",
+        },
+        {
+          url: ROUTES.MapBenchDashboard,
+          label: "MapBench",
+        },
+        {
+          url: ROUTES.JBRTests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+const FLEET: Product = {
+  url: ROUTE_PREFIX.Fleet,
+  label: "Fleet",
+  children: [
+    {
+      url: ROUTE_PREFIX.Fleet,
+      label: "Primary Functionality",
+      tabs: [
+        {
+          url: ROUTES.FleetStartupDashboard,
+          label: "Startup Dashboard",
+        },
+        {
+          url: ROUTES.FleetPerfDashboard,
+          label: "Performance Dashboard",
+        },
+        {
+          url: ROUTES.FleetTest,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS =  [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, RUST, SCALA, JBR, FLEET]
+export function getNavigationElement(path: string): Product {
+  return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
+}
+
 
 export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
   return [

@@ -2,9 +2,9 @@
   <div class="px-7 flex gap-7 items-center border-b border-gray-200 border-solid">
     <router-link
       v-for="item in props.items"
-      :key="item.path"
+      :key="item.url"
       v-slot="{ href, isActive, navigate }"
-      :to="item.path"
+      :to="item.url"
       custom
     >
       <a
@@ -15,16 +15,16 @@
         }"
         @click="navigate"
       >
-        {{ item.name }}
+        {{ item.label }}
       </a>
     </router-link>
   </div>
 </template>
 <script setup lang="ts">
-import { NavigationItem } from "../routes"
+import { Tab } from "../routes"
 
 interface Props {
-  items: NavigationItem[]
+  items: Tab[]
   currentPath: string
 }
 const props = defineProps<Props>()

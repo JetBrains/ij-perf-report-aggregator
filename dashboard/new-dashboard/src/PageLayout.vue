@@ -18,7 +18,7 @@ import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
 import { InfoSidebarVmImpl } from "./components/InfoSidebarVm"
 import NavigationTabs from "./components/NavigationTabs.vue"
-import { getNavigationTabs } from "./routes"
+import { getNavigationElement, Tab } from "./routes"
 import {sidebarVmKey } from "./shared/keys"
 
 import "./shared/overrides.css"
@@ -26,7 +26,10 @@ import "./shared/overrides.css"
 const sidebarVm = new InfoSidebarVmImpl()
 const router = useRouter()
 const currentPath = router.currentRoute.value.path
-const tabs = getNavigationTabs(currentPath)
+const product = getNavigationElement(currentPath)
+const tabs: Tab[] = product.children.find(child => {
+  return currentPath.slice(0, Math.max(0, currentPath.lastIndexOf("/"))) == child.url
+})?.tabs ?? product.children[0].tabs
 
 provide(sidebarVmKey, sidebarVm)
 </script>

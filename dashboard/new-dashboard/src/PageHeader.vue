@@ -1,18 +1,18 @@
 <template>
-  <div class="flex pt-5 px-7 items-center space-x-3">
+  <div class="flex pt-5 px-7 items-center space-x-0.5 font-semibold">
     <span
       v-if="isSubMenuExists"
-      class="text-xl font-semibold"
+      class="text-xl"
     >
       Tests on
     </span>
     <button
-      class="text-blue-400 px-1 py-1 inline-flex text-xl items-center"
+      class="text-blue-500 px-1 py-1 inline-flex text-xl items-center"
       type="button"
       @click="toggle"
     >
       {{ product.label }}
-      <div class="pi pi-chevron-down text-sm ml-1.5" />
+      <div class="pi pi-chevron-down text-sm ml-1" />
     </button>
     <Menu
       ref="menu"
@@ -21,18 +21,18 @@
     />
     <span
       v-if="isSubMenuExists"
-      class="text-xl font-semibold"
+      class="text-xl"
     >
       aggregated for
     </span>
     <button
       v-if="isSubMenuExists"
-      class="text-blue-400 px-1 py-1 inline-flex text-xl items-center"
+      class="text-blue-500 px-1 py-1 inline-flex text-xl items-center"
       type="button"
       @click="toggleSubMenu"
     >
       {{ selectedSubMenu.label }}
-      <div class="pi pi-chevron-down text-sm ml-1.5" />
+      <div class="pi pi-chevron-down text-sm ml-1" />
     </button>
 
     <Menu

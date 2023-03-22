@@ -88,6 +88,10 @@ interface Product {
   children: SubProject[]
 }
 
+const TESTS_LABEL = "Tests"
+const COMPARE_BUILDS_LABEL = "Compare Builds"
+const DASHBOARD_LABEL = "Dashboard"
+
 const IDEA: Product = {
   url: ROUTE_PREFIX.IntelliJ,
   label: "IDEA",
@@ -98,7 +102,7 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.IntelliJDevDashboard,
@@ -106,7 +110,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.IntelliJDevTests,
@@ -114,7 +118,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         }],
     },
     {
@@ -131,7 +135,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJBuildTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -141,11 +145,11 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJSharedIndicesDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.IntelliJSharedIndicesTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -155,11 +159,11 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJUltimateDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.IntelliJUltimateTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -169,11 +173,11 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJPackageCheckerDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.IntelliJPackageCheckerTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -185,19 +189,19 @@ const PHPSTORM: Product = {
   children: [
     {
       url: ROUTE_PREFIX.PhpStorm,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.PhpStormDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.PhpStormTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.PhpStormCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         },
         {
           url: ROUTES.PhpStormWithPluginsDashboard,
@@ -216,15 +220,15 @@ const KOTLIN: Product = {
   children: [
     {
       url: ROUTE_PREFIX.Kotlin,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.KotlinDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.KotlinExplore,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.KotlinDashboardDev,
@@ -248,7 +252,7 @@ const KOTLIN: Product = {
         },
         {
           url: ROUTES.KotlinCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         }],
     },
   ],
@@ -259,19 +263,19 @@ const GOLAND: Product = {
   children: [
     {
       url: ROUTE_PREFIX.GoLand,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.GoLandDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.GoLandTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.GoLandCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         },
       ],
     },
@@ -283,19 +287,19 @@ const RUBYMINE: Product = {
   children: [
     {
       url: ROUTE_PREFIX.RubyMine,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.RubyMineDashboard,
-          label: "Dashboard",
+          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.RubyMineTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.RubyMineCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         },
       ],
     },
@@ -307,15 +311,15 @@ const RUST: Product = {
   children: [
     {
       url: ROUTE_PREFIX.Rust,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.RustTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.RustCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         },
       ],
     },
@@ -327,15 +331,15 @@ const SCALA: Product = {
   children: [
     {
       url: ROUTE_PREFIX.Scala,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.ScalaTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.ScalaCompare,
-          label: "Compare Builds",
+          label: COMPARE_BUILDS_LABEL,
         },
       ],
     },
@@ -347,7 +351,7 @@ const JBR: Product = {
   children: [
     {
       url: ROUTE_PREFIX.JBR,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.DaCapoDashboard,
@@ -371,7 +375,7 @@ const JBR: Product = {
         },
         {
           url: ROUTES.JBRTests,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -383,7 +387,7 @@ const FLEET: Product = {
   children: [
     {
       url: ROUTE_PREFIX.Fleet,
-      label: "Primary Functionality",
+      label: "",
       tabs: [
         {
           url: ROUTES.FleetStartupDashboard,
@@ -395,7 +399,7 @@ const FLEET: Product = {
         },
         {
           url: ROUTES.FleetTest,
-          label: "Tests",
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -494,7 +498,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "idea"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.PhpStormDashboard,
@@ -523,7 +527,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "phpstorm"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.GoLandDashboard,
@@ -542,7 +546,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "goland"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.RubyMineDashboard,
@@ -561,7 +565,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "ruby"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
 
         {
@@ -606,7 +610,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "kotlin"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.RustTests,
@@ -620,7 +624,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "rust"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.ScalaTests,
@@ -634,7 +638,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
             dbName: "perfint",
             table: "scala"
           },
-          meta: {pageTitle: "Compare Builds"},
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },
         {
           path: ROUTES.JBRTests,

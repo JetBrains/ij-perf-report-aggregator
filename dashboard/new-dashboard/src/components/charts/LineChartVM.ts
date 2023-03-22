@@ -61,7 +61,7 @@ export class LineChartVM {
           const [dateMs, durationMs, type] = params.value as OptionDataValue[]
 
           element.append(
-            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(durationMs as number),
+            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? durationMs as number : durationMs as number / 1000 / 1000),
             document.createElement("br"),
             timeFormatWithoutSeconds.format(dateMs as number),
           )

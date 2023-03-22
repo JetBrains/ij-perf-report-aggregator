@@ -478,17 +478,32 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/tests`,
-          component: () => import("./components/intelliJ/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea",
+            initialMachine: "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+          },
           meta: {pageTitle: "IntelliJ Performance tests"},
         },
         {
           path: ROUTES.IntelliJDevTests,
-          component: () => import("./components/intelliJ/PerformanceTestsDev.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "idea",
+            initialMachine: "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)",
+            withInstaller: false
+          },
           meta: {pageTitle: "IntelliJ Integration Performance Tests On Fast Installer"},
         },
         {
           path: ROUTES.IntelliJSharedIndicesTests,
-          component: () => import("./components/intelliJ/SharedIndicesTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ideaSharedIndices"
+          },
           meta: {pageTitle: "IntelliJ Integration Performance Tests For Shared Indices"},
         },
         {
@@ -512,12 +527,22 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.PhpStormWithPluginsTests,
-          component: () => import("./components/phpstorm/PerformanceTestsWithPlugins.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstormWithPlugins",
+            initialMachine: "linux-blade-hetzner",
+          },
           meta: {pageTitle: "PhpStorm Performance tests with plugins"},
         },
         {
           path: ROUTES.PhpStormTests,
-          component: () => import("./components/phpstorm/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm",
+            initialMachine: "linux-blade-hetzner"
+          },
           meta: {pageTitle: "PhpStorm Performance tests"},
         },
         {
@@ -536,7 +561,12 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.GoLandTests,
-          component: () => import("./components/goland/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "goland",
+            initialMachine: "linux-blade-hetzner"
+          },
           meta: {pageTitle: "GoLand Performance tests"},
         },
         {
@@ -555,7 +585,12 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.RubyMineTests,
-          component: () => import("./components/rubymine/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby",
+            initialMachine: "Linux Munich i7-3770, 32 Gb"
+          },
           meta: {pageTitle: "RubyMine Performance tests"},
         },
         {
@@ -570,12 +605,23 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
 
         {
           path: ROUTES.KotlinExplore,
-          component: () => import("./components/kotlin/KotlinExplore.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "kotlin",
+            initialMachine: "linux-blade-hetzner",
+          },
           meta: {pageTitle: "Kotlin Performance tests explore"},
         },
         {
           path: ROUTES.KotlinExploreDev,
-          component: () => import("./components/kotlin/dev/KotlinDevExplore.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlin",
+            initialMachine: "linux-blade-hetzner",
+            withInstaller: false
+          },
           meta: {pageTitle: "Kotlin Performance tests explore (dev/fast installer)"},
         },
         {
@@ -614,7 +660,12 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.RustTests,
-          component: () => import("./components/rust/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "rust",
+            initialMachine: "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
+          },
           meta: {pageTitle: "Rust Performance tests"},
         },
         {
@@ -628,7 +679,12 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.ScalaTests,
-          component: () => import("./components/scala/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "scala",
+            initialMachine: "linux-blade-hetzner"
+          },
           meta: {pageTitle: "Scala Performance tests"},
         },
         {
@@ -672,7 +728,14 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
         {
           path: ROUTES.FleetTest,
-          component: () => import("./components/fleet/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "fleet",
+            table: "measure",
+            initialMachine: "linux-blade-hetzner",
+            withInstaller: false,
+            unit: "ns"
+          },
           meta: {pageTitle: "Fleet Performance tests"},
         },
         {

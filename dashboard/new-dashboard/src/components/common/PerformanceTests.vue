@@ -12,8 +12,14 @@
           </template>
         </TimeRangeSelect>
         <BranchSelect
+          v-if="releaseConfigurator != null"
           :branch-configurator="branchConfigurator"
           :release-configurator="releaseConfigurator"
+          :triggered-by-configurator="triggeredByConfigurator"
+        />
+        <BranchSelect
+          v-else
+          :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <DimensionSelect
@@ -59,6 +65,8 @@
             :measures="[measure]"
             :configurators="configurators"
             :skip-zero-values="false"
+            :value-unit="props.unit"
+            :chart-type="props.unit =='ns'?'scatter':'line'"
           />
         </template>
       </div>
@@ -81,7 +89,7 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { provide, ref } from "vue"
+import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
@@ -91,11 +99,21 @@ import LineChart from "../charts/LineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 
-provideReportUrlProvider()
+interface PerformanceTestsProps {
+  dbName: string
+  table: string
+  initialMachine: string
+  withInstaller?: boolean
+  unit?: "ns" | "ms"
+}
 
-const dbName = "perfint"
-const dbTable = "ideaSharedIndices"
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+const props = withDefaults(defineProps<PerformanceTestsProps>(), {
+  withInstaller: true,
+  unit: "ms",
+})
+
+provideReportUrlProvider(props.withInstaller)
+
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()
@@ -103,11 +121,11 @@ const sidebarVm = new InfoSidebarVmImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
-  `${dbName}-${dbTable}-dashboard`,
+  `${props.dbName}-${props.table}-dashboard`,
   {
-    machine: initialMachine,
+    machine: props.initialMachine,
     branch: "master",
     project: [],
     measure: [],
@@ -139,7 +157,6 @@ const measureConfigurator = new MeasureConfigurator(
   true,
   "line",
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistentStateManager)
 
 const configurators = [
   serverConfigurator,
@@ -148,8 +165,12 @@ const configurators = [
   machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
-  releaseConfigurator,
 ]
+
+const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
+if(releaseConfigurator != null){
+  configurators.push(releaseConfigurator)
+}
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

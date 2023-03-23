@@ -92,6 +92,37 @@ const TESTS_LABEL = "Tests"
 const COMPARE_BUILDS_LABEL = "Compare Builds"
 const DASHBOARD_LABEL = "Dashboard"
 
+const IJ_STARTUP: Product = {
+  url: ROUTE_PREFIX.Startup,
+  label: "IntelliJ Startup",
+  children: [
+    {
+      url: ROUTE_PREFIX.Startup,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.StartupPulse,
+          label: "Pulse",
+        },
+        {
+          url: ROUTES.StartupProgress,
+          label: "Progress Over Time",
+        },
+        {
+          url: ROUTES.StartupModuleLoading,
+          label: "Module Loading",
+        },
+        {
+          url: ROUTES.StartupExplore,
+          label: "Explore",
+        },
+        {
+          url: ROUTES.StartupReport,
+          label: "Report",
+        }],
+    },
+  ],
+}
 const IDEA: Product = {
   url: ROUTE_PREFIX.IntelliJ,
   label: "IDEA",
@@ -406,7 +437,7 @@ const FLEET: Product = {
   ],
 }
 
-export const PRODUCTS =  [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, RUST, SCALA, JBR, FLEET]
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, RUST, SCALA, JBR, FLEET]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }

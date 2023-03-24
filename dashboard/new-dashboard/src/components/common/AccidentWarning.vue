@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { combineLatest } from "rxjs"
+import { combineLatest, of } from "rxjs"
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
@@ -25,17 +25,23 @@ import { ref } from "vue"
 const props = defineProps<{
   table: string
   branchConfigurator: DimensionConfigurator
+  scenarioConfigurator?: DimensionConfigurator
   timeRangeConfigurator: TimeRangeConfigurator
 }>()
 
 class Accident {
-  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number, readonly buildNumber: string) {}
+  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number, readonly buildNumber: string) {
+  }
 }
 
 const warnings = ref<Array<Accident>>()
 
-combineLatest([refToObservable(props.branchConfigurator.selected), refToObservable(props.timeRangeConfigurator.value)]).subscribe(data => {
-  getWarningFromMetaDb(props.branchConfigurator.selected.value, props.table)
+const selected = props.scenarioConfigurator == null ? null : refToObservable(props.scenarioConfigurator.selected)
+combineLatest([refToObservable(props.branchConfigurator.selected),
+  refToObservable(props.timeRangeConfigurator.value),
+  selected || of(null),
+]).subscribe(data => {
+  getWarningFromMetaDb(props.branchConfigurator.selected.value, data[2], props.table)
 })
 
 function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
@@ -61,28 +67,29 @@ function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
   return dateOfAccident >= selectedDate && dateOfAccident <= currentDate
 }
 
-function getWarningFromMetaDb(branches: Array<string> | string | null, table: string) {
+function getWarningFromMetaDb(branches: Array<string> | string | null, tests: Array<string> | string | null, table: string) {
   if (branches == null) {
     return
   }
   if (!Array.isArray(branches)) {
     branches = [branches]
   }
+  if (tests != null && !Array.isArray(tests)) {
+    tests = [tests]
+  }
   const url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/"
   warnings.value = []
-  for (const branch of branches) {
-    const data = {branch, table}
-    fetch(url + encodeRison(data))
-      .then(response => response.json())
-      .then((data: Array<Accident>) => {
-        for (const datum of data) {
-          if (isDateInsideRange(new Date(datum.date), props.timeRangeConfigurator.value.value as TimeRange)) {
-            warnings.value?.push(datum)
-          }
+  const data = tests == null ? {table, branches} : {table, branches, tests}
+  fetch(url + encodeRison(data))
+    .then(response => response.json())
+    .then((data: Array<Accident>) => {
+      for (const datum of data) {
+        if (isDateInsideRange(new Date(datum.date), props.timeRangeConfigurator.value.value as TimeRange)) {
+          warnings.value?.push(datum)
         }
-      })
-      .catch(error => console.error(error))
-  }
+      }
+    })
+    .catch(error => console.error(error))
 }
 
 </script>

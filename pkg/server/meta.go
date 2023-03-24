@@ -11,8 +11,9 @@ import (
 
 func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
   type RequestParams struct {
-    Branch string `json:"branch"`
-    Table  string `json:"table"`
+    Branches []string `json:"branches"`
+    Table    string   `json:"table"`
+    Tests    []string `json:"tests"`
   }
   objectStart := strings.IndexRune(request.URL.Path, '(')
   buffer := byteBufferPool.Get()
@@ -26,8 +27,11 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     return nil, false, errors.New("Can't get connection to sqlite from pool")
   }
   defer t.metaDb.Put(conn)
-  stmt := conn.Prep("SELECT id, date, affected_test, reason, build_number FROM accidents WHERE branch=$branch and db_table=$table;")
-  stmt.SetText("$branch", params.Branch)
+  sql := "SELECT id, date, affected_test, reason, build_number FROM accidents WHERE branch in (" + stringArrayToSQL(params.Branches) + ") and db_table=$table"
+  if params.Tests != nil {
+    sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ")"
+  }
+  stmt := conn.Prep(sql)
   stmt.SetText("$table", params.Table)
   type Accident struct {
     ID           int64  `json:"id"`
@@ -64,4 +68,12 @@ func (t *StatsServer) handleMetaRequest(request *http.Request) (*bytebufferpool.
     return nil, false, err
   }
   return buffer, true, nil
+}
+
+func stringArrayToSQL(input []string) string {
+  var str strings.Builder
+  str.WriteRune('\'')
+  str.WriteString(strings.Join(input, "','"))
+  str.WriteRune('\'')
+  return str.String()
 }

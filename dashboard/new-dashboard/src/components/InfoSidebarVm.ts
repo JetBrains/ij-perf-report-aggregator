@@ -88,9 +88,10 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum1 = dataSeries[7] as number
     buildNum2 = dataSeries[8] as number
     if (accidents != null) {
-      accidentReasons = accidents
+      const reasons = accidents
         .filter(accident => accident.affectedTest == projectName && accident.buildNumber == `${buildVersion}.${buildNum1}`)
         .map(accident => accident.reason)
+      accidentReasons = reasons.length > 0 ? reasons : undefined
     }
   }
 

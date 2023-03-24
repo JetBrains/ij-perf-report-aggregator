@@ -50,12 +50,6 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-    <AccidentWarning
-      :time-range-configurator="timeRangeConfigurator"
-      :scenario-configurator="scenarioConfigurator"
-      :branch-configurator="branchConfigurator"
-      :table="props.dbName+'_'+props.table"
-    />
     <main class="flex">
       <div
         ref="container"

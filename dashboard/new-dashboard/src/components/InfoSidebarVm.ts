@@ -2,6 +2,7 @@ import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/type
 import { ValueUnit } from "shared/src/chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "shared/src/formatter"
 import { computed, ShallowRef, shallowRef } from "vue"
+import { Accident } from "shared/src/meta"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>
@@ -25,29 +26,32 @@ export interface InfoData {
   date: string
   installerId: number|undefined
   changes: string | undefined
+  accidentReasons: Array<string> | undefined
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Array<Accident> | null = null): InfoData {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
-  const value: number = dataSeries[1]  as number
-  let machineName: string|undefined
-  let buildId: number|undefined
-  let installerId: number|undefined
-  let buildVersion: number|undefined
-  let buildNum1: number|undefined
-  let buildNum2: number|undefined
-  let type: ValueUnit|undefined = valueUnit
-  let buildNumber: string|undefined
+  const value: number = dataSeries[1] as number
+  let projectName: string = params.seriesName as string
+  let machineName: string | undefined
+  let buildId: number | undefined
+  let installerId: number | undefined
+  let buildVersion: number | undefined
+  let buildNum1: number | undefined
+  let buildNum2: number | undefined
+  let type: ValueUnit | undefined = valueUnit
+  let buildNumber: string | undefined
+  let accidentReasons: Array<string> | undefined
   //dev fleet builds
-  if(dataSeries.length == 4){
+  if (dataSeries.length == 4) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
   }
   //dev builds intellij
-  if(dataSeries.length == 5){
+  if (dataSeries.length == 5) {
     if (dataSeries[2] == "c") {
       type = "counter"
     }
@@ -72,16 +76,22 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildId = dataSeries[4] as number
     buildNumber = dataSeries[5] as string
   }
-  if (dataSeries.length == 9) {
+  if (dataSeries.length == 10) {
     if (dataSeries[2] == "c") {
       type = "counter"
     }
+    projectName = dataSeries[9] as string
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
     installerId = dataSeries[5] as number
     buildVersion = dataSeries[6] as number
     buildNum1 = dataSeries[7] as number
     buildNum2 = dataSeries[8] as number
+    if (accidents != null) {
+      accidentReasons = accidents
+        .filter(accident => accident.affectedTest == projectName && accident.buildNumber == `${buildVersion}.${buildNum1}`)
+        .map(accident => accident.reason)
+    }
   }
 
   const fullBuildId = buildVersion == undefined ? buildNumber :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
@@ -103,10 +113,11 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     date: timeFormatWithoutSeconds.format(dateMs),
     value: showValue,
     machineName: machineName as string,
-    projectName: params.seriesName as string,
+    projectName,
     title: "Details",
     installerId,
-    changes: undefined
+    changes: undefined,
+    accidentReasons,
   }
 }
 

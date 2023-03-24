@@ -95,7 +95,7 @@ onMounted(() => {
 
   chartManager.chart.on("click", (params: CallbackDataParams) => {
     if (params.dataIndex != undefined) {
-      const infoData = getInfoDataFrom(params, props.valueUnit)
+      const infoData = getInfoDataFrom(params, props.valueUnit, props.accidents)
       showSideBar(sidebarVm, infoData)
     }
   })

@@ -7,7 +7,7 @@ export function provideReportUrlProvider(isInstallerExists: boolean = true, isBu
   const serverUrl = injectOrError(serverUrlObservableKey)
   const infoFields = ["machine", "tc_build_id"]
   if (isInstallerExists) {
-    infoFields.push("tc_installer_build_id", "build_c1", "build_c2", "build_c3")
+    infoFields.push("tc_installer_build_id", "build_c1", "build_c2", "build_c3", "project")
   }
   if(isBuildNumberExists){
     infoFields.push("build_number")

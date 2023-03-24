@@ -34,6 +34,24 @@
           <ComputerDesktopIcon class="w-4 h-4" />
           {{ vm.data.value?.machineName }}
         </span>
+
+        <span
+          v-if="vm.data.value?.accidentReasons"
+          class="flex gap-1.5 text-sm items-center"
+        >
+          <ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
+        </span>
+        <ul
+          v-if="vm.data.value?.accidentReasons"
+          class="flex gap-1.5 text-sm"
+        >
+          <li
+            v-for="reason in vm.data.value?.accidentReasons"
+            :key="reason"
+          >
+            &bull; {{ reason }}
+          </li>
+        </ul>
       </div>
 
       <div class="flex gap-4 text-blue-500">

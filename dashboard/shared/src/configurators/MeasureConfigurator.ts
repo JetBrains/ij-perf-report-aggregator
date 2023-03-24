@@ -1,5 +1,5 @@
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
-import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
+import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import { deepEqual } from "fast-equals"
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { Ref, shallowRef } from "vue"
@@ -270,7 +270,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidents: Array<Accident> | null,
+  accidents: Array<Accident> | null = null,
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -315,10 +315,12 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-            if (accidents != null && seriesIndex.value.length > 7 && accidents.some(accident => accident.buildNumber == seriesIndex.value[6] + "." + seriesIndex.value[7])) {
-              return "red"
-            }
+            const value = seriesIndex.value as Array<string>
+            return accidents != null && value.length > 9
+              && accidents.some(accident => accident.affectedTest == value[9])
+              && accidents.some(accident => accident.buildNumber == value[6] + "." + value[7])
+              ? "black"
+              : seriesIndex.color as ZRColor
           },
         },
       })

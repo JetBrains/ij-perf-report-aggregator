@@ -9,6 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
+import { Accident } from "../meta"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -148,6 +149,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
               private readonly chartType: ChartType = "line",
               private readonly valueUnit: ValueUnit = "ms",
               readonly symbolOptions: SymbolOptions = {},
+              readonly accidents: Array<Accident> | null = null,
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -162,7 +164,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidents)
   }
 }
 
@@ -268,6 +270,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
+  accidents: Array<Accident> | null,
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -310,6 +313,14 @@ function configureChart(
         seriesLayoutBy: "row",
         datasetIndex: dataIndex,
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
+        itemStyle: {
+          color(seriesIndex) {
+            // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+            if (accidents != null && seriesIndex.value.length > 7 && accidents.some(accident => accident.buildNumber == seriesIndex.value[6] + "." + seriesIndex.value[7])) {
+              return "red"
+            }
+          },
+        },
       })
     }
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {

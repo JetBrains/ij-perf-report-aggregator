@@ -17,7 +17,8 @@ import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/char
 import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration} from "shared/src/dataQuery"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
-import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
+import { Accident } from "shared/src/meta"
+import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { getInfoDataFrom} from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
@@ -31,12 +32,14 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
+  accidents?: Array<Accident>|null
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
   skipZeroValues: true,
   valueUnit: "ms",
   chartType: "line",
+  accidents: null
 })
 
 const chartElement = shallowRef<HTMLElement>()
@@ -51,6 +54,7 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
     symbolSize: 7,
     showSymbol: false,
   },
+  props.accidents
 )
 
 const infoFieldsConfigurator = reportInfoProvider && reportInfoProvider.infoFields.length > 0 ?

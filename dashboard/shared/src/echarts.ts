@@ -24,3 +24,4 @@ export type BarChartOptions = ComposeOption<
 export type CustomChartOptions = ComposeOption<
   TooltipComponentOption | CustomSeriesOption | GridComponentOption
 >
+e

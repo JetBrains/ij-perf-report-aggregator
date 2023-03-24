@@ -17,8 +17,8 @@ import { combineLatest, of } from "rxjs"
 import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { ref } from "vue"
-import { Accident, getWarningFromMetaDb } from "../meta"
 
 
 const props = defineProps<{

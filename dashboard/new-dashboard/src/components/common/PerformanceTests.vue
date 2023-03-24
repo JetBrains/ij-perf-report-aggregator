@@ -72,6 +72,7 @@
             :skip-zero-values="false"
             :value-unit="props.unit"
             :chart-type="props.unit =='ns'?'scatter':'line'"
+            :accidents="warnings"
           />
         </template>
       </div>
@@ -81,6 +82,7 @@
 </template>
 
 <script setup lang="ts">
+import { combineLatest } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "shared/src/components/DimensionSelect.vue"
@@ -92,8 +94,10 @@ import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -174,13 +178,20 @@ const configurators = [
 ]
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
-if(releaseConfigurator != null){
+if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
 }
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const warnings = ref<Array<Accident>>()
+
+const selected = refToObservable(scenarioConfigurator.selected)
+combineLatest([refToObservable(branchConfigurator.selected), refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
+  getWarningFromMetaDb(warnings, data[0], data[1], props.dbName+"_"+props.table, data[2] as TimeRange)
+})
 
 </script>
 

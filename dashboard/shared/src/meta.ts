@@ -1,7 +1,7 @@
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRange } from "shared/src/configurators/TimeRangeConfigurator"
-import { encodeRison } from "shared/src/rison"
 import { Ref } from "vue"
+import { ServerConfigurator } from "./configurators/ServerConfigurator"
+import { TimeRange } from "./configurators/TimeRangeConfigurator"
+import { encodeRison } from "./rison"
 
 export class Accident {
   constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number, readonly buildNumber: string) {}

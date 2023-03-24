@@ -7,7 +7,8 @@
       v-for="warning in warnings as Array<Accident>"
       :key="warning.id"
     >
-      Known degradation in <b>{{ warning.affectedTest }}</b>, in build <b>{{ warning.buildNumber }}</b>. Reason: <b>{{ warning.reason }}</b>.
+      Known degradation in <b>{{ warning.affectedTest }}</b> <span v-if="warning.buildNumber!=''">, in build <b>{{ warning.buildNumber }}</b></span>.
+      Reason: <b>{{ warning.reason }}</b>.
     </li>
   </Message>
 </template>

@@ -50,6 +50,13 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
+    <AccidentWarning
+      v-if="!props.withInstaller"
+      :time-range-configurator="timeRangeConfigurator"
+      :scenario-configurator="scenarioConfigurator"
+      :branch-configurator="branchConfigurator"
+      :table="props.dbName+'_'+props.table"
+    />
     <main class="flex">
       <div
         ref="container"

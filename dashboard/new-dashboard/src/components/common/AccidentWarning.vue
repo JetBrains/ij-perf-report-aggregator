@@ -46,24 +46,15 @@ combineLatest([refToObservable(props.branchConfigurator.selected),
 
 function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
   const currentDate = new Date()
-  let subtractInterval: number
   const day = 24 * 60 * 60 * 1000
-  switch (interval) {
-    case "1M":
-      subtractInterval = day * 30
-      break
-    case "3M":
-      subtractInterval = day * 30 * 3
-      break
-    case "1y":
-      subtractInterval = day * 30 * 12
-      break
-    default:
-      subtractInterval = day * 30 * 12 * 5
-      break
+  const intervalMapping = {
+    "1M": day * 30,
+    "3M": day * 30 * 3,
+    "1y": day * 365,
+    "all": day * 365,
   }
   const selectedDate = new Date()
-  selectedDate.setTime(Date.now() - subtractInterval)
+  selectedDate.setTime(Date.now() - intervalMapping[interval])
   return dateOfAccident >= selectedDate && dateOfAccident <= currentDate
 }
 

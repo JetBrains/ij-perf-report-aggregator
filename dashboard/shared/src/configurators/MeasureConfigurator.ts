@@ -279,7 +279,7 @@ function configureChart(
 
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
     const measureName = configuration.measureNames[dataIndex]
-    const seriesName = configuration.seriesNames[dataIndex]
+    let seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
 
     if (seriesData.length > 2) {
@@ -291,6 +291,10 @@ function configureChart(
       else if (type === "d") {
         useDurationFormatter = true
       }
+    }
+    if (seriesName == "" && seriesData.length > 9) {
+      // we take only the one project name, there can't be more
+      seriesName = seriesData[9][0] as string
     }
 
     let isNotEmpty = false

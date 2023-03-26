@@ -12,7 +12,7 @@ export class LineChartVM {
     valueUnit: ValueUnit,
   ) {
     const isMs = valueUnit == "ms"
-
+    this.eChart.chart.showLoading()
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
         top: 0,
@@ -105,6 +105,7 @@ export class LineChartVM {
   subscribe(): () => void {
     return this.dataQuery.subscribe(
       (data, configuration) => {
+        this.eChart.chart.hideLoading()
         this.eChart.chart.setOption(
           {
             legend: {type: "scroll"},

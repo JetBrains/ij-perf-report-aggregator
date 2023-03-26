@@ -221,6 +221,10 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   projects: ["community/go-to-action/SharedIndex", "community/go-to-class/EditorImpl", "community/go-to-class/SharedIndex",
     "community/go-to-file/EditorImpl", "community/go-to-file/SharedIndex"],
 }, {
+    labels: ["Search Everywhere Slow Typing", "Search Everywhere Slow Typing (Dialog Shown)", "Search Everywhere Slow Typing (Items Loaded)"],
+    measures: ["searchEverywhere", "searchEverywhere_dialog_shown", "searchEverywhere_items_loaded"],
+    projects: ["community/go-to-action/Runtime", "community/go-to-class/Kotlin", "community/go-to-file/properties"],
+}, {
   labels: ["Show Intentions (average awt delay)"],
   measures: ["test#average_awt_delay"],
   projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],

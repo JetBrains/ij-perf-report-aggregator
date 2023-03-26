@@ -95,6 +95,8 @@ import { useRouter } from "vue-router"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
+import { combineLatest } from "rxjs"
+import { limit } from "shared/src/configurators/rxjs"
 
 const productCodeToName = new Map([
   ["DB", "DataGrip"],
@@ -145,6 +147,10 @@ const configurators = [
   projectConfigurator,
   branchConfigurator
 ]
+
+combineLatest(configurators.map(configurator => configurator.createObservable())).subscribe(data =>
+  limit.clearQueue()
+)
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 initDataComponent(configurators)

@@ -83,6 +83,8 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { combineLatest } from "rxjs"
+import { limit } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false, true)
 
@@ -118,6 +120,10 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
+
+combineLatest(dashboardConfigurators.map(configurator => configurator.createObservable())).subscribe(data =>
+  limit.clearQueue()
+)
 
 const metricsNames = ["CircleTests", "EllipseTests-fill-false", "EllipseTests-fill-true", "spiralTest-dash-false", "spiralTest-fill", "dc_boulder_2013-13-30-06-13-17",
   "dc_boulder_2013-13-30-06-13-20", "dc_shp_alllayers_2013-00-30-07-00-43", "dc_shp_alllayers_2013-00-30-07-00-47", "dc_spearfish_2013-11-30-06-11-15",

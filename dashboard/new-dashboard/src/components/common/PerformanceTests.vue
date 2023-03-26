@@ -96,7 +96,7 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
+import { limit, refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
@@ -177,6 +177,10 @@ const configurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
+
+combineLatest(configurators.map(configurator => configurator.createObservable())).subscribe(data =>
+  limit.clearQueue()
+)
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {

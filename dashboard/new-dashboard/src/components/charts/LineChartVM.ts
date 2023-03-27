@@ -13,7 +13,7 @@ export class LineChartVM {
     valueUnit: ValueUnit,
   ) {
     const isMs = valueUnit == "ms"
-    this.eChart.chart.showLoading()
+    this.eChart.chart.showLoading("default", {showSpinner: false})
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
         top: 0,
@@ -107,7 +107,7 @@ export class LineChartVM {
     return this.dataQuery.subscribe(
       (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading) => {
         if(isLoading || data == null){
-          this.eChart.chart.showLoading()
+          this.eChart.chart.showLoading("default", {showSpinner: false})
           return
         }
         this.eChart.chart.hideLoading()

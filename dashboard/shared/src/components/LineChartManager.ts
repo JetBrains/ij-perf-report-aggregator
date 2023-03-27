@@ -125,7 +125,7 @@ export class LineChartManager {
     this.unsubscribe()
     this.unsubscribe = this.dataQueryExecutor.subscribe((data, configuration,isLoading) => {
       if(isLoading || data == null){
-        this.chart.chart.showLoading()
+        this.chart.chart.showLoading("default", {showSpinner: false})
         return
       }
       this.chart.chart.hideLoading()

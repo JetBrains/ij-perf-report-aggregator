@@ -93,7 +93,7 @@ export class AggregationChartVM {
     return this.query.subscribe(
       (data, configuration, isLoading: boolean) => {
         if(isLoading || data == null){
-          this.chartManager?.chart.showLoading()
+          this.chartManager?.chart.showLoading("default", {showSpinner: false})
           return
         }
         this.chartManager?.chart.hideLoading()

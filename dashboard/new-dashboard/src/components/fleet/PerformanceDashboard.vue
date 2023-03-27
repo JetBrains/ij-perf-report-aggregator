@@ -147,8 +147,6 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import Divider from "../common/Divider.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { combineLatest } from "rxjs"
-import { limit } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false)
 
@@ -190,10 +188,6 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
-
-combineLatest(dashboardConfigurators.map(configurator => configurator.createObservable())).subscribe(data =>
-  limit.clearQueue()
-)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

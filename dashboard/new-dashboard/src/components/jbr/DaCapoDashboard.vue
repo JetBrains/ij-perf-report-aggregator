@@ -83,8 +83,6 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { combineLatest } from "rxjs"
-import { limit } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false, true)
 
@@ -119,10 +117,6 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
-
-combineLatest(dashboardConfigurators.map(configurator => configurator.createObservable())).subscribe(data =>
-  limit.clearQueue()
-)
 
 const metricsNames = ["avrora", "fop", "h2", "jython", "luindex", "lusearch", "pmd", "sunflow", "xalan"]
 const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "DaCapo_" + config)

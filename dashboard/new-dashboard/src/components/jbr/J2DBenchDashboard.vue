@@ -83,8 +83,6 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { combineLatest } from "rxjs"
-import { limit } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false, true)
 
@@ -119,10 +117,6 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
-
-combineLatest(dashboardConfigurators.map(configurator => configurator.createObservable())).subscribe(data =>
-  limit.clearQueue()
-)
 
 const metricsNames = ["graphics.imaging.benchmarks.tests.drawimage", "graphics.imaging.benchmarks.tests.drawimagescaleup",
   "graphics.imaging.benchmarks.tests.drawimagetxform", "graphics.render.tests.drawLine", "graphics.render.tests.fillOval", "graphics.render.tests.fillRect",

@@ -130,8 +130,6 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { combineLatest } from "rxjs"
-import { limit } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider()
 
@@ -165,10 +163,6 @@ const dashboardConfigurators = [
   machineConfigurator,
   timeRangeConfigurator,
 ]
-
-combineLatest(dashboardConfigurators.map(configurator => configurator.createObservable())).subscribe(data =>
-  limit.clearQueue()
-)
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

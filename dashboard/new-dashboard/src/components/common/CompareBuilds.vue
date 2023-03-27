@@ -275,7 +275,10 @@ function getAllMetricsFromBuild(build: string): Observable<Array<Result>> {
       createObservable(): Observable<unknown> | null {
         return null
       }
-    }]).subscribe((data, _configuration) => {
+    }]).subscribe((data, _configuration, isLoading) => {
+      if (isLoading || data == null){
+        return
+      }
       const result: Array<Result> = new Array<Result>()
       const datum = data[0]
       for (let i = 0; i < datum[0].length; i++) {

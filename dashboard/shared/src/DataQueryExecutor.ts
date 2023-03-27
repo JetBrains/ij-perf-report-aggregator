@@ -1,4 +1,4 @@
-import { combineLatest, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
+import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { provide } from "vue"
 import { measureNameToLabel } from "./configurators/MeasureConfigurator"
 import { ReloadConfigurator } from "./configurators/ReloadConfigurator"
@@ -8,10 +8,11 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, seria
 import { configuratorListKey } from "./injectionKeys"
 
 export declare type DataQueryResult = Array<Array<Array<string | number>>>
-export declare type DataQueryConsumer = (data: DataQueryResult, configuration: DataQueryExecutorConfiguration) => void
+export declare type DataQueryConsumer = (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
 
 interface Result {
-  readonly data: DataQueryResult
+  readonly isLoading: boolean
+  readonly data: DataQueryResult|null
   readonly query: DataQuery
   readonly configuration: DataQueryExecutorConfiguration
 }
@@ -50,12 +51,14 @@ export class DataQueryExecutor {
           }
 
           const queries = generateQueries(query, configuration)
-          return forkJoin(queries.map(it => {
+          const loadingResults = of({query, configuration, data: null, isLoading: true})
+          return concat(loadingResults, forkJoin(queries.map(it => {
             return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`))
           })).pipe(
             // pass context along with data and flatten result
-            map((data): Result => ({query, configuration, data: data.flat(1)})),
-          )
+            map((data): Result => ({query, configuration, data: data.flat(1), isLoading: false})),
+          ))
+
         }),
         filter((it: Result | null): it is Result => it !== null),
         shareReplay(1),
@@ -63,11 +66,11 @@ export class DataQueryExecutor {
   }
 
   subscribe(listener: DataQueryConsumer): () => void {
-    const subscription = this.observable.subscribe(({configuration, query, data}) => {
+    const subscription = this.observable.subscribe(({configuration, query, data, isLoading}) => {
       this._lastQuery = query
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
-      listener(data, configuration)
+      listener(data, configuration, isLoading)
     })
     return () => subscription.unsubscribe()
   }

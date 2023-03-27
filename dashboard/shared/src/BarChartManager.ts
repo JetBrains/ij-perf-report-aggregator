@@ -40,7 +40,12 @@ export class BarChartManager {
       },
     })
 
-    this.unsubscribe = dataQueryExecutor.subscribe((data, configuration) => {
+    this.unsubscribe = dataQueryExecutor.subscribe((data, configuration, isLoading) => {
+      if(isLoading || data == null){
+        this.chart.chart.showLoading()
+        return
+      }
+      this.chart.chart.hideLoading()
       this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
     })
   }

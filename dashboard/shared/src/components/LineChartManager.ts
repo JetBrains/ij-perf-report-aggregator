@@ -123,7 +123,12 @@ export class LineChartManager {
 
   private subscribe() {
     this.unsubscribe()
-    this.unsubscribe = this.dataQueryExecutor.subscribe((data, configuration) => {
+    this.unsubscribe = this.dataQueryExecutor.subscribe((data, configuration,isLoading) => {
+      if(isLoading || data == null){
+        this.chart.chart.showLoading()
+        return
+      }
+      this.chart.chart.hideLoading()
       this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
     })
   }

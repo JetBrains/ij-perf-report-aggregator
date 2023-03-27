@@ -28,7 +28,10 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
     createObservable(): Observable<unknown> | null {
       return null
     }
-  }]).subscribe((data, _configuration) => {
+  }]).subscribe((data, _configuration,isLoading) => {
+    if(isLoading || data == null){
+      return
+    }
     //commit has to be decoded as base64 and converted to hex
     infoData.changes = (data.flat(3)[0] as string).split(separator).map(it => stringToHex(atob(it)).slice(0, 7)).join(" .. ")
     sidebarVm?.show(infoData)

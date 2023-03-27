@@ -1,9 +1,10 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
+import { DataQueryExecutor, DataQueryResult } from "shared/src/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "shared/src/chart"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
 import { ChartManager } from "./ChartManager"
+import { DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 
 export class LineChartVM {
   constructor(
@@ -104,7 +105,11 @@ export class LineChartVM {
 
   subscribe(): () => void {
     return this.dataQuery.subscribe(
-      (data, configuration) => {
+      (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+        if(isLoading || data == null){
+          this.eChart.chart.showLoading()
+          return
+        }
         this.eChart.chart.hideLoading()
         this.eChart.chart.setOption(
           {

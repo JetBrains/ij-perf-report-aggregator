@@ -91,7 +91,12 @@ export class AggregationChartVM {
 
   private dataSubscribe(): () => void {
     return this.query.subscribe(
-      (data, configuration) => {
+      (data, configuration, isLoading: boolean) => {
+        if(isLoading || data == null){
+          this.chartManager?.chart.showLoading()
+          return
+        }
+        this.chartManager?.chart.hideLoading()
         const options = configuration.chartConfigurator.configureChart(data, configuration)
 
         this.updateChartData(options)

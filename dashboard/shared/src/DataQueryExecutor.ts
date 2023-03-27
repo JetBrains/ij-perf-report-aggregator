@@ -31,6 +31,7 @@ export class DataQueryExecutor {
    */
   constructor(configurators: Array<DataQueryConfigurator>) {
     const serverConfigurator = configurators.find(it => it instanceof ServerConfigurator) as ServerConfigurator
+    let abortController = new AbortController()
     this.observable = combineLatest(configurators.map(configurator => {
       // combineLatest will not emit an initial value until each observable emits at least one value, so, null observer simply emits one null value
       return (configurator.createObservable() ?? of(null))
@@ -41,6 +42,7 @@ export class DataQueryExecutor {
       .pipe(
         debounceTime(100),
         switchMap(configurators => {
+          abortController.abort()
           const configuration = new DataQueryExecutorConfiguration()
           const query = new DataQuery()
 
@@ -52,8 +54,9 @@ export class DataQueryExecutor {
 
           const queries = generateQueries(query, configuration)
           const loadingResults = of({query, configuration, data: null, isLoading: true})
+          abortController = new AbortController()
           return concat(loadingResults, forkJoin(queries.map(it => {
-            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`))
+            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`), null, it => it.json() , abortController)
           })).pipe(
             // pass context along with data and flatten result
             map((data): Result => ({query, configuration, data: data.flat(1), isLoading: false})),

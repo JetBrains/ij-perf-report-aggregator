@@ -29,9 +29,11 @@ export const limit: LimitFunction = pLimit(100)
 export function fromFetchWithRetryAndErrorHandling<T>(
   request: Request | string,
   unavailableErrorMessage: ({ summary: string; detail: string }) | null = null,
-  bodyConsumer: (response: Response) => Promise<T> = it => it.json() as Promise<T>
+  bodyConsumer: (response: Response) => Promise<T> = it => it.json() as Promise<T>,
+  controller: AbortController | null = null,
 ): Observable<T> {
-  return fromPromise(limit(()=>fetch(request)))
+  const signal = (controller ?? new AbortController()).signal
+  return fromPromise(limit(() => fetch(request, {signal})))
     .pipe(
       // promise to result
       mergeMap(response => {

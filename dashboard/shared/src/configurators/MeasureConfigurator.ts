@@ -321,8 +321,7 @@ function configureChart(
           color(seriesIndex) {
             const value = seriesIndex.value as Array<string>
             return accidents != null && value.length > 9
-              && accidents.some(accident => accident.affectedTest == value[9])
-              && accidents.some(accident => accident.buildNumber == value[6] + "." + value[7])
+              && accidents.some(accident => accident.affectedTest == value[9] && accident.buildNumber == value[6] + "." + value[7])
               ? "black"
               : seriesIndex.color as ZRColor
           },

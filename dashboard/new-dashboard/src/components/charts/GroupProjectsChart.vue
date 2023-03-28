@@ -5,6 +5,7 @@
     :measures="[measure]"
     :configurators="configurators"
     :skip-zero-values="false"
+    :accidents="accidents"
   />
 </template>
 
@@ -13,6 +14,7 @@ import { ValueUnit } from "shared/src/chart"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
+import { Accident } from "shared/src/meta"
 import { onMounted } from "vue"
 import LineChart from "./LineChart.vue"
 
@@ -23,10 +25,12 @@ interface Props {
   serverConfigurator: ServerConfigurator
   configurators: Array<DataQueryConfigurator>
   valueUnit?: ValueUnit
+  accidents?: Array<Accident>|null
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  valueUnit: "ms"
+  valueUnit: "ms",
+  accidents: null
 })
 
 const scenarioConfigurator = dimensionConfigurator(

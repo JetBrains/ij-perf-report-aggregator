@@ -26,11 +26,6 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-    <AccidentWarning
-      :time-range-configurator="timeRangeConfigurator"
-      :branch-configurator="branchConfigurator"
-      :table="dbName+'_'+dbTable"
-    />
     <main class="flex">
       <div
         ref="container"
@@ -81,6 +76,7 @@
             :projects="chart.projects"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -90,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { combineLatest } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
@@ -98,9 +95,11 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -294,6 +293,12 @@ const dashboardConfigurators = [
   releaseConfigurator,
   triggeredByConfigurator,
 ]
+
+const projects = chartsDeclaration.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
+const warnings = ref<Array<Accident>>()
+combineLatest([refToObservable(branchConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
+  getWarningFromMetaDb(warnings, data[0], projects, dbName+"_"+dbTable, data[1] as TimeRange)
+})
 
 const typingOnlyConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {

@@ -143,6 +143,8 @@ function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: Value
 
 function getClickHouseIntervalByDuration(range: TimeRange) {
   switch (range) {
+    case "1w":
+      return "7 day"
     case "1M":
       return "7 day"
     case "3M":

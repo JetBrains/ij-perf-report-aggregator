@@ -11,6 +11,7 @@ export function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): bo
   const currentDate = new Date()
   const day = 24 * 60 * 60 * 1000
   const intervalMapping = {
+    "1w": day * 7,
     "1M": day * 30,
     "3M": day * 30 * 3,
     "1y": day * 365,

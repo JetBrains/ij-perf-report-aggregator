@@ -6,7 +6,7 @@ import { timeRangeKey } from "../injectionKeys"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export declare type TimeRange = "1M" | "3M" | "1y" | "all"
+export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all"
 
 export interface TimeRangeItem {
   label: string
@@ -15,6 +15,7 @@ export interface TimeRangeItem {
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   static readonly timeRanges: Array<TimeRangeItem> = [
+    {label: "Last week", value: "1w"},
     {label: "Last month", value: "1M"},
     {label: "Last 3 months", value: "3M"},
     {label: "Last year", value: "1y"},

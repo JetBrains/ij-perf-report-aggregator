@@ -25,11 +25,6 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-    <AccidentWarning
-      :time-range-configurator="timeRangeConfigurator"
-      :branch-configurator="branchConfigurator"
-      :table="dbName+'_'+dbTable"
-    />
     <main class="flex">
       <div
         ref="container"

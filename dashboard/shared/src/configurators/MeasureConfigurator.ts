@@ -320,10 +320,16 @@ function configureChart(
         itemStyle: {
           color(seriesIndex) {
             const value = seriesIndex.value as Array<string>
-            return accidents != null && value.length > 9
-              && accidents.some(accident => accident.affectedTest == value[9] && accident.buildNumber == value[6] + "." + value[7])
-              ? "black"
-              : seriesIndex.color as ZRColor
+            let color = seriesIndex.color as ZRColor
+            if(accidents != null){
+              if(value.length == 10 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8])){
+                color = "black"
+              }
+              if(value.length == 6 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4])){
+                color = "black"
+              }
+            }
+            return color
           },
         },
       })

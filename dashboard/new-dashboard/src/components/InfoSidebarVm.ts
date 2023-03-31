@@ -45,54 +45,55 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
   let accidentReasons: Array<string> | undefined
+  let accidentBuild: string | undefined
   //dev fleet builds
-  if (dataSeries.length == 4) {
+  if (dataSeries.length == 5) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
+    projectName = dataSeries[4] as string
   }
   //dev builds intellij
-  if (dataSeries.length == 5) {
-    if (dataSeries[2] == "c") {
-      type = "counter"
-    }
-    machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
-  }
-  //fleet
-  if(dataSeries.length == 8){
-    machineName = dataSeries[2] as string
-    buildId = dataSeries[3] as number
-    installerId = dataSeries[4] as number
-    buildVersion = dataSeries[5] as number
-    buildNum1 = dataSeries[6] as number
-    buildNum2 = dataSeries[7] as number
-  }
-  //jbr
   if (dataSeries.length == 6) {
     if (dataSeries[2] == "c") {
       type = "counter"
     }
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
-    buildNumber = dataSeries[5] as string
+    projectName = dataSeries[5] as string
+    accidentBuild = buildId.toString()
+  }
+  //fleet
+  if(dataSeries.length == 9){
+    machineName = dataSeries[2] as string
+    buildId = dataSeries[3] as number
+    projectName = dataSeries[4] as string
+    installerId = dataSeries[5] as number
+    buildVersion = dataSeries[6] as number
+    buildNum1 = dataSeries[7] as number
+    buildNum2 = dataSeries[8] as number
+  }
+  //jbr
+  if (dataSeries.length == 7) {
+    if (dataSeries[2] == "c") {
+      type = "counter"
+    }
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
+    projectName = dataSeries[5] as string
+    buildNumber = dataSeries[6] as string
   }
   if (dataSeries.length == 10) {
     if (dataSeries[2] == "c") {
       type = "counter"
     }
-    projectName = dataSeries[9] as string
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
-    installerId = dataSeries[5] as number
-    buildVersion = dataSeries[6] as number
-    buildNum1 = dataSeries[7] as number
-    buildNum2 = dataSeries[8] as number
-    if (accidents != null) {
-      const reasons = accidents
-        .filter(accident => accident.affectedTest == projectName && accident.buildNumber == `${buildVersion}.${buildNum1}`)
-        .map(accident => accident.reason)
-      accidentReasons = reasons.length > 0 ? reasons : undefined
-    }
+    projectName = dataSeries[5] as string
+    installerId = dataSeries[6] as number
+    buildVersion = dataSeries[7] as number
+    buildNum1 = dataSeries[8] as number
+    buildNum2 = dataSeries[9] as number
+    accidentBuild = `${buildVersion}.${buildNum1}`
   }
 
   const fullBuildId = buildVersion == undefined ? buildNumber :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
@@ -103,6 +104,13 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let showValue = value.toString()
   if(type != "counter"){
     showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value )
+  }
+
+  if (accidents != null) {
+    const reasons = accidents
+      .filter(accident => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
+      .map(accident => accident.reason)
+    accidentReasons = reasons.length > 0 ? reasons : undefined
   }
 
   return {

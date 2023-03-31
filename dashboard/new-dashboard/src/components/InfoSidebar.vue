@@ -24,7 +24,7 @@
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
           <CalendarIcon class="w-4 h-4" />
-          {{ vm.data.value?.date }} build {{ vm.data.value?.build }}
+          {{ vm.data.value?.date }} <span v-if="vm.data.value?.build"> build {{ vm.data.value?.build }} </span>
         </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ClockIcon class="w-4 h-4" />

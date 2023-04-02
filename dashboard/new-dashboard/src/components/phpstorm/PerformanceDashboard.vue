@@ -26,11 +26,6 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-    <AccidentWarning
-      :time-range-configurator="timeRangeConfigurator"
-      :branch-configurator="branchConfigurator"
-      :table="dbName+'_'+dbTable"
-    />
     <main class="flex">
       <div
         ref="container"
@@ -71,6 +66,7 @@
                         'laravel-io/inspection']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section class="flex gap-x-6">
@@ -81,6 +77,7 @@
               :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -90,6 +87,7 @@
               :projects="['akaunting/inspection','aggregateStitcher/inspection', 'prestaShop/inspection', 'kunstmaanBundlesCMS/inspection']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -102,6 +100,7 @@
               :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -111,6 +110,7 @@
               :projects="['WI_59961/localInspection', 'bitrix/localInspection', 'WI_65893/localInspection']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -122,6 +122,7 @@
                         'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -131,6 +132,7 @@
             :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing', 'shopware/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -141,6 +143,7 @@
                         'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -150,6 +153,7 @@
             :projects="['empty_project/indexing','complex_meta/indexing', 'WI_53502-10x/indexing', 'many_array_access/indexing-10x', 'WI_66279-10x/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -160,6 +164,7 @@
                         'WI_64694/completion','WI_58919/completion', 'WI_58807/completion', 'WI_58306/completion']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -171,6 +176,7 @@
                         'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section class="flex gap-x-6">
@@ -181,6 +187,7 @@
               :projects="['bitrix/go-to-class/BCCo', 'magento2/go-to-class/MaAdMUser']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -190,6 +197,7 @@
               :projects="['mpdf/localInspection', 'WI_65655/localInspection', 'laravel-io/localInspection/HasAuthor', 'laravel-io/localInspection/Tag']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -203,6 +211,7 @@
                           'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -214,6 +223,7 @@
                           'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -226,6 +236,7 @@
                           'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -236,6 +247,7 @@
                           'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -246,6 +258,7 @@
                           'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -256,6 +269,7 @@
             :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -265,6 +279,7 @@
             :projects="['mpdf/inlineRename']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -274,6 +289,7 @@
 </template>
 
 <script setup lang="ts">
+import { combineLatest } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
@@ -281,9 +297,11 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -358,6 +376,11 @@ const typingOnlyConfigurator = {
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const warnings = ref<Array<Accident>>()
+combineLatest([refToObservable(branchConfigurator.selected), refToObservable(timeRangeConfigurator.value)]).subscribe(data => {
+  getWarningFromMetaDb(warnings, data[0], null, dbName + "_" + dbTable, data[1] as TimeRange)
+})
 </script>
 
 <style>

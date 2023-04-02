@@ -44,7 +44,7 @@ export const chartDefaultStyle: ChartStyle = {
 
 export type ValueUnit = "ms" | "ns" | "counter"
 
-export type ChartSymbolType = "circle" | "none"
+export type ChartSymbolType = "circle"| "rect"| "roundRect"| "triangle"| "diamond"| "pin"| "arrow"| "none"
 
 export interface ChartStyle {
   barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |

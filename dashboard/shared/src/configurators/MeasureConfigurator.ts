@@ -309,8 +309,13 @@ function configureChart(
         type: chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
-        symbolSize: symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10),
-        symbol: symbolOptions.symbol,
+        symbolSize(value: Array<string>): number {
+          const symbolSize = symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
+          return isValueShouldBeMarked(value) ? symbolSize * 4 : symbolSize
+        },
+        symbol(value: Array<string>) {
+          return isValueShouldBeMarked(value) ? "pin" : symbolOptions.symbol ?? "circle"
+        },
         triggerLineEvent: true,
         // applicable only for line chart
         sampling: "lttb",
@@ -319,17 +324,7 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            const value = seriesIndex.value as Array<string>
-            let color = seriesIndex.color as ZRColor
-            if(accidents != null){
-              if(value.length == 10 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8])){
-                color = "black"
-              }
-              if(value.length == 6 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4])){
-                color = "black"
-              }
-            }
-            return color
+            return isValueShouldBeMarked(seriesIndex.value as Array<string>) ? "red" : seriesIndex.color as ZRColor
           },
         },
       })
@@ -342,6 +337,20 @@ function configureChart(
       source: seriesData,
       sourceHeader: false,
     })
+  }
+
+  function isValueShouldBeMarked(value: Array<string>): boolean {
+    if (accidents != null) {
+      //perf db
+      if (value.length == 10 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8])) {
+        return true
+      }
+      //perf dev db
+      if (value.length == 6 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4])) {
+        return true
+      }
+    }
+    return false
   }
 
   // if (chartType == "scatter") {

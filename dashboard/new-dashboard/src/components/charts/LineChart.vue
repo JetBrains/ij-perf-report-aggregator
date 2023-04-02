@@ -89,6 +89,7 @@ onMounted(() => {
     chartManager,
     dataQueryExecutor,
     props.valueUnit,
+    props.accidents
   )
 
   unsubscribe = chartVm.subscribe()

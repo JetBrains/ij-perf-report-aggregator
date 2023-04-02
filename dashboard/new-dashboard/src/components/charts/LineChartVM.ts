@@ -1,16 +1,39 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { DataQueryExecutor, DataQueryResult } from "shared/src/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "shared/src/chart"
+import { DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
+import { Accident, getAccident } from "shared/src/meta"
 import { ChartManager } from "./ChartManager"
-import { DataQueryExecutorConfiguration } from "shared/src/dataQuery"
+
+function getWarningIcon() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
+  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
+  svg.setAttribute("fill", "none")
+  svg.setAttribute("viewBox", "0 0 24 24")
+  svg.setAttribute("stroke-width", "1.5")
+  svg.setAttribute("stroke", "currentColor")
+  svg.setAttribute("class", "w-6 h-6")
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
+  path.setAttribute("stroke-linecap", "round")
+  path.setAttribute("stroke-linejoin", "round")
+  path.setAttribute("d", "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 " +
+    "0L2.697 16.126zM12 15.75h.007v.008H12v-.008z")
+  svg.append(path)
+
+  const div = document.createElement("div")
+  div.setAttribute("class", "w-4 h-4 text-red-500")
+  div.append(svg)
+  return div
+}
 
 export class LineChartVM {
   constructor(
     private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
+    accidents: Array<Accident>|null
   ) {
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", {showSpinner: false})
@@ -59,7 +82,8 @@ export class LineChartVM {
         // Formatting
         formatter(params: CallbackDataParams) {
           const element = document.createElement("div")
-          const [dateMs, durationMs, type] = params.value as OptionDataValue[]
+          const data = params.value as OptionDataValue[]
+          const [dateMs, durationMs, type] = data
 
           element.append(
             type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? durationMs as number : durationMs as number / 1000 / 1000),
@@ -69,6 +93,17 @@ export class LineChartVM {
 
           element.append(document.createElement("br"))
           element.append(`${params.seriesName}`)
+          const accident = getAccident(accidents, data as Array<string>)
+          if(accident != null){
+            //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
+            element.append(document.createElement("br"))
+            const accidentHtml = document.createElement("span")
+            accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
+            const div = getWarningIcon()
+            accidentHtml.append(div)
+            accidentHtml.append("Known degradation: " + accident.reason)
+            element.append(accidentHtml)
+          }
 
           return element
         },

@@ -9,7 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
-import { Accident } from "../meta"
+import { Accident, isValueShouldBeMarked } from "../meta"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -311,10 +311,10 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: Array<string>): number {
           const symbolSize = symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          return isValueShouldBeMarked(value) ? symbolSize * 4 : symbolSize
+          return isValueShouldBeMarked(accidents, value) ? symbolSize * 4 : symbolSize
         },
         symbol(value: Array<string>) {
-          return isValueShouldBeMarked(value) ? "pin" : symbolOptions.symbol ?? "circle"
+          return isValueShouldBeMarked(accidents, value) ? "pin" : symbolOptions.symbol ?? "circle"
         },
         triggerLineEvent: true,
         // applicable only for line chart
@@ -324,7 +324,7 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            return isValueShouldBeMarked(seriesIndex.value as Array<string>) ? "red" : seriesIndex.color as ZRColor
+            return isValueShouldBeMarked(accidents, seriesIndex.value as Array<string>) ? "red" : seriesIndex.color as ZRColor
           },
         },
       })
@@ -337,20 +337,6 @@ function configureChart(
       source: seriesData,
       sourceHeader: false,
     })
-  }
-
-  function isValueShouldBeMarked(value: Array<string>): boolean {
-    if (accidents != null) {
-      //perf db
-      if (value.length == 10 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8])) {
-        return true
-      }
-      //perf dev db
-      if (value.length == 6 && accidents.some(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4])) {
-        return true
-      }
-    }
-    return false
   }
 
   // if (chartType == "scatter") {

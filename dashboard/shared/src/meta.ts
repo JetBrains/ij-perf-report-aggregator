@@ -50,3 +50,21 @@ export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>,
     })
     .catch(error => console.error(error))
 }
+
+export function isValueShouldBeMarked(accidents: Array<Accident> | null, value: Array<string>): boolean {
+  return getAccident(accidents, value) != null
+}
+
+export function getAccident(accidents: Array<Accident> | null, value: Array<string>): Accident | null {
+  if (accidents != null) {
+    //perf db
+    if (value.length == 10) {
+      return accidents.find(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8]) ?? null
+    }
+    //perf dev db
+    if (value.length == 6) {
+      return accidents.find(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4]) ?? null
+    }
+  }
+  return null
+}

@@ -18,14 +18,19 @@ export class BranchConfigurator extends DimensionConfigurator {
       return true
     }
 
-    const filter: DataQueryFilter = {f: this.name, v: "", o: "like"}
+    const filter: DataQueryFilter = {f: this.name, v: ""}
     const values = Array.isArray(value) ? [...value] : [value]
     configuration.queryProducers.push({
         size(): number {
           return values.length
         },
         mutate(index: number) {
-          filter.v = /\d+/.test(values[index]) ? values[index] + "%" : values[index]
+          if(/\d+/.test(values[index])){
+            filter.v = values[index] + "%"
+            filter.o = "like"
+          } else {
+            filter.v = values[index]
+          }
         },
         getSeriesName(index: number): string {
           return values.length > 1 ? values[index] : ""

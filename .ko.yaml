@@ -1,4 +1,4 @@
 defaultBaseImage: gcr.io/distroless/static-debian11:nonroot
 
 baseImageOverrides:
-  github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse: ghcr.io/jetbrains/ij-perf-report-aggregator/clickhouse@sha256:8c523ad7aee052b83210314921f5dd4bcaf8bd40c2050cd4e852c97e563cb7c9
+  github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse: ghcr.io/jetbrains/ij-perf-report-aggregator/clickhouse@sha256:7ab819aa97e6b0d6e86eda1777675f0e97476d8c30c829872c30cc3aceda0010

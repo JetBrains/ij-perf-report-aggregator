@@ -1,5 +1,6 @@
 set -e
 
+pnpm --version
 pnpm i --frozen-lockfile
 pnpm lint
 pnpm build

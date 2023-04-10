@@ -1,7 +1,7 @@
 FROM buildpack-deps:curl
 
-ENV NODE_VERSION 18.14.2
-ENV GOLANG_VERSION 1.20.1
+ENV NODE_VERSION 19.8.1
+ENV GOLANG_VERSION 1.20.3
 
 RUN cd /usr/local/bin && \
   curl -L https://github.com/google/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz | tar xvz ko && \
@@ -9,7 +9,7 @@ RUN cd /usr/local/bin && \
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
-  corepack enable && corepack prepare pnpm@7.16.0 --activate
+  corepack enable && corepack prepare pnpm@8.2.0 --activate
 
 ENV GOPATH /go
 

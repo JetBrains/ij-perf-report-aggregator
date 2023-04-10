@@ -17,7 +17,11 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
 
   report, err := parser.ParseBytes(runResult.RawReport)
   if err != nil {
-    logger.Warn("invalid report - corrupted JSON, report will be skipped", zap.Int("id", runResult.TcBuildId), zap.ByteString("rawReport", runResult.RawReport))
+    endIndex := len(runResult.RawReport)
+    if endIndex > 10000 {
+      endIndex = 10000
+    }
+    logger.Warn("invalid report - corrupted JSON, report will be skipped", zap.Error(err), zap.String("file", runResult.ReportFileName), zap.ByteString("rawReport", runResult.RawReport[:endIndex]))
     runResult.Report = nil
     return nil
   }

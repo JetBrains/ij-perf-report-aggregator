@@ -5,7 +5,8 @@
     <default>
       <!-- Maximum memory usage for processing single query, in bytes. -->
       <max_memory_usage>5000000000</max_memory_usage>
-
+      <!-- Maximum threads usage for processing single query. We have a ton of small queries so we don't need multiple CPUs working on one of them. -->
+      <max_threads>1</max_threads>
       <!-- Use cache of uncompressed blocks of data. Meaningful only for processing many of very short queries. Exactly what we have!!! -->
       <use_uncompressed_cache>1</use_uncompressed_cache>
 

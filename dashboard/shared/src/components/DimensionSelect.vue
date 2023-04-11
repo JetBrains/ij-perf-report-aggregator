@@ -177,7 +177,7 @@ const value = computed<string | Array<string> | null>({
 })
 
 const hasManyElements = computed(() => {
-  return items.value.length > 10
+  return items.value.length > 3
 })
 
 const items = computed(() => {

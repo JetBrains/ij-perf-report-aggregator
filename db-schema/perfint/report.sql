@@ -22,4 +22,5 @@ create table idea2
   engine = MergeTree
 --     partitioning by month gives up to 3x performance boost
     partition by (toYYYYMM(generated_time))
-    order by (machine, branch, project, build_c1, build_c2, build_c3, generated_time)
+--     we need low cardinality indices first
+    order by (project, branch, machine, build_c1, build_c2, build_c3, generated_time)

@@ -29,6 +29,7 @@ type InsertParams struct {
   Test        string `json:"affected_test"`
   Reason      string `json:"reason"`
   BuildNumber string `json:"build_number"`
+  Kind        string `json:"kind,omitempty"`
 }
 
 func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -113,7 +114,14 @@ func createPostMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
     }
-    _, err = conn.Exec(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number) VALUES ($1, $2, $3, $4)", params.Date, params.Test, params.Reason, params.BuildNumber)
+    var kind string
+    if params.Kind == "" {
+      kind = "regression"
+    } else {
+      kind = params.Kind
+    }
+
+    _, err = conn.Exec(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind) VALUES ($1, $2, $3, $4, $5)", params.Date, params.Test, params.Reason, params.BuildNumber, kind)
     if err != nil {
       logger.Error("Cannot execute query", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)

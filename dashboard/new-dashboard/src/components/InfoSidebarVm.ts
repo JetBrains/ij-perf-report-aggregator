@@ -27,6 +27,7 @@ export interface InfoData {
   installerId: number|undefined
   changes: string | undefined
   accidentReasons: Array<string> | undefined
+  buildId: string
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
@@ -127,6 +128,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     installerId,
     changes: undefined,
     accidentReasons,
+    buildId
   }
 }
 

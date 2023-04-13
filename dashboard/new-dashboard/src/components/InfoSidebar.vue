@@ -75,7 +75,8 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ArrowDownTrayIcon class="w-4 h-4" /> Installer
+          <ArrowDownTrayIcon class="w-4 h-4" />
+          Installer
         </a>
       </div>
       <div
@@ -84,15 +85,65 @@
       >
         Changes: {{ vm.data.value?.changes }}
       </div>
+      <Button
+        class="text-sm"
+        label="Report regression"
+        text
+        size="small"
+        severity="danger"
+        @click="showDialog = true"
+      />
     </div>
   </div>
+  <Dialog
+    v-model:visible="showDialog"
+    modal
+    header="Report Regression"
+    :style="{ width: '30vw' }"
+  >
+    <span class="p-float-label">
+      <InputText
+        id="reason"
+        v-model="reason"
+        class="w-full"
+      />
+      <label for="reason">Reason</label>
+    </span>
+    <template #footer>
+      <Button
+        label="Cancel"
+        icon="pi pi-times"
+        text
+        @click="showDialog = false"
+      />
+      <Button
+        label="Report"
+        icon="pi pi-check"
+        autofocus
+        @click="reportRegression"
+      />
+    </template>
+  </Dialog>
 </template>
 <script setup lang="ts">
-import { inject } from "vue"
+import { inject, ref } from "vue"
 import { sidebarVmKey } from "../shared/keys"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
+import { writeRegressionToMetaDb } from "shared/src/meta"
 
 const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
+const showDialog = ref(false)
+const reason = ref("")
+
+function reportRegression(){
+  showDialog.value = false
+  const value = vm.data.value
+  if(value == null){
+    console.log("value is zero! This shouldn't happen")
+  } else {
+    writeRegressionToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId)
+  }
+}
 
 function handleCloseClick() {
   vm.close()

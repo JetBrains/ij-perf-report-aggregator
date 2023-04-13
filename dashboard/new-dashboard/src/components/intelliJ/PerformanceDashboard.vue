@@ -296,8 +296,8 @@ const dashboardConfigurators = [
 
 const projects = chartsDeclaration.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
 const warnings = ref<Array<Accident>>()
-combineLatest([refToObservable(branchConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
-  getWarningFromMetaDb(warnings, data[0], projects, dbName+"_"+dbTable, data[1] as TimeRange)
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, projects, data as TimeRange)
 })
 
 const typingOnlyConfigurator = {

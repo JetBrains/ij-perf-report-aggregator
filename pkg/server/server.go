@@ -36,7 +36,6 @@ type StatsServer struct {
 
   poolMutex sync.Mutex
 
-  metaDb *pgxpool.Pool
   logger *zap.Logger
 }
 
@@ -56,7 +55,6 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     logger: logger,
 
     machineInfo: analyzer.GetMachineInfo(),
-    metaDb:      dbpool,
   }
 
   defer func() {
@@ -88,22 +86,22 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
   r.Use(cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
-    AllowedMethods: []string{"GET"},
+    AllowedMethods: []string{"GET", "POST"},
     MaxAge:         50,
   }).Handler)
   r.Use(middleware.Heartbeat("/health-check"))
   r.Use(middleware.Recoverer)
-  r.Use(middleware.Logger)
   compressor := middleware.NewCompressor(5, "/*")
   compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
     return brotli.NewWriterLevel(w, level)
   })
   r.Use(compressor.Handler)
 
+  r.Post("/api/meta/*", createPostMetaRequestHandler(logger, dbpool))
+  r.Get("/api/meta/*", createGetMetaRequestHandler(logger, dbpool))
   r.Handle("/api/v1/meta/measure/*", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-  r.Handle("/api/meta/*", cacheManager.CreateHandler(statsServer.handleMetaRequest))
   r.Handle("/api/zstd-dictionary/*", &CachingHandler{
     handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
       return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil

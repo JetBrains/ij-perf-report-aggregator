@@ -3,8 +3,10 @@ import { ServerConfigurator } from "./configurators/ServerConfigurator"
 import { TimeRange } from "./configurators/TimeRangeConfigurator"
 import { encodeRison } from "./rison"
 
+const url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/"
+
 export class Accident {
-  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly id: number, readonly buildNumber: string) {}
+  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
 }
 
 export function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
@@ -22,23 +24,22 @@ export function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): bo
   return dateOfAccident >= selectedDate && dateOfAccident <= currentDate
 }
 
-export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>,
-                                     branches: Array<string> | string | null,
-                                     tests: Array<string> | string | null,
-                                     table: string,
-                                     timeRange: TimeRange) {
-  if (branches == null) {
-    return
-  }
-  if (!Array.isArray(branches)) {
-    branches = [branches]
-  }
+export function writeRegressionToMetaDb(date: string, affected_test: string, reason: string, build_number: string){
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({date, affected_test, reason, build_number}),
+  }).catch(error => console.error(error))
+}
+
+export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>, tests: Array<string> | string | null, timeRange: TimeRange) {
   if (tests != null && !Array.isArray(tests)) {
     tests = [tests]
   }
-  const url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/"
   warnings.value = []
-  const data = tests == null ? {table, branches} : {table, branches, tests}
+  const data = tests == null ? {} : {tests}
   fetch(url + encodeRison(data))
     .then(response => response.json())
     .then((data: Array<Accident>) => {

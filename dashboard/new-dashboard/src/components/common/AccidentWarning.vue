@@ -32,11 +32,10 @@ const props = defineProps<{
 const warnings = ref<Array<Accident>>()
 
 const selected = props.scenarioConfigurator == null ? null : refToObservable(props.scenarioConfigurator.selected)
-combineLatest([refToObservable(props.branchConfigurator.selected),
-  refToObservable(props.timeRangeConfigurator.value),
+combineLatest([refToObservable(props.timeRangeConfigurator.value),
   selected || of(null),
 ]).subscribe(data => {
-  getWarningFromMetaDb(warnings, props.branchConfigurator.selected.value, data[2], props.table, props.timeRangeConfigurator.value.value as TimeRange)
+  getWarningFromMetaDb(warnings, data[1], props.timeRangeConfigurator.value.value as TimeRange)
 })
 </script>
 

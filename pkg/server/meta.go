@@ -20,7 +20,8 @@ type Accident struct {
 }
 
 type RequestParams struct {
-  Tests []string `json:"tests"`
+  Tests    []string `json:"tests"`
+  Interval string   `json:"interval"`
 }
 
 type InsertParams struct {
@@ -45,9 +46,9 @@ func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.
       writer.WriteHeader(http.StatusInternalServerError)
     }
     defer conn.Release()
-    sql := "SELECT id, date, affected_test, reason, build_number FROM accidents"
+    sql := "SELECT id, date, affected_test, reason, build_number FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
     if params.Tests != nil {
-      sql += " WHERE affected_test in (" + stringArrayToSQL(params.Tests) + ")"
+      sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ")"
     }
     rows, err := conn.Query(request.Context(), sql)
     if err != nil {

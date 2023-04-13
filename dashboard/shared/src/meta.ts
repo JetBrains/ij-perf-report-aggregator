@@ -9,22 +9,18 @@ export class Accident {
   constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
 }
 
-export function isDateInsideRange(dateOfAccident: Date, interval: TimeRange): boolean {
-  const currentDate = new Date()
-  const day = 24 * 60 * 60 * 1000
+function intervalToPostgresInterval(interval: TimeRange): string {
   const intervalMapping = {
-    "1w": day * 7,
-    "1M": day * 30,
-    "3M": day * 30 * 3,
-    "1y": day * 365,
-    "all": day * 365,
+    "1w": "7 DAYS",
+    "1M": "1 MONTH",
+    "3M": "3 MONTHS",
+    "1y": "1 YEAR",
+    "all": "100 YEAR",
   }
-  const selectedDate = new Date()
-  selectedDate.setTime(Date.now() - intervalMapping[interval])
-  return dateOfAccident >= selectedDate && dateOfAccident <= currentDate
+  return intervalMapping[interval]
 }
 
-export function writeRegressionToMetaDb(date: string, affected_test: string, reason: string, build_number: string){
+export function writeRegressionToMetaDb(date: string, affected_test: string, reason: string, build_number: string) {
   fetch(url, {
     method: "POST",
     headers: {
@@ -39,14 +35,13 @@ export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>,
     tests = [tests]
   }
   warnings.value = []
-  const data = tests == null ? {} : {tests}
-  fetch(url + encodeRison(data))
+  const interval = intervalToPostgresInterval(timeRange)
+  const params = tests == null ? {interval} : {interval, tests}
+  fetch(url + encodeRison(params))
     .then(response => response.json())
     .then((data: Array<Accident>) => {
-      for (const datum of data) {
-        if (isDateInsideRange(new Date(datum.date), timeRange)) {
-          warnings.value?.push(datum)
-        }
+      if(data != null) {
+        warnings.value?.push(...data)
       }
     })
     .catch(error => console.error(error))

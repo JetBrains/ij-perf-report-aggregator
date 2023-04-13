@@ -15,6 +15,7 @@ require (
 	github.com/develar/errors v0.9.0
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/go-chi/chi/v5 v5.0.8
+	github.com/jackc/pgx/v5 v5.3.1
 	github.com/jackc/puddle/v2 v2.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.16.4
@@ -33,7 +34,6 @@ require (
 	go.uber.org/zap v1.24.0
 	golang.org/x/sync v0.1.0
 	golang.org/x/tools v0.8.0
-	zombiezen.com/go/sqlite v0.13.0
 )
 
 require (
@@ -86,6 +86,8 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jlaffaye/ftp v0.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
@@ -100,6 +102,7 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-shellwords v1.0.12 // indirect
+	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mholt/archiver/v4 v4.0.0-alpha.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
@@ -121,8 +124,8 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
@@ -151,8 +154,4 @@ require (
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.22.3 // indirect
-	modernc.org/mathutil v1.5.0 // indirect
-	modernc.org/memory v1.5.0 // indirect
-	modernc.org/sqlite v1.21.1 // indirect
 )

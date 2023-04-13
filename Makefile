@@ -29,7 +29,7 @@ install-ch-x64:
 update-deps:
 	go get -u ./cmd/... ./pkg/...
 	go mod tidy
-	pnpm update -recursive --latest
+	#pnpm update -recursive --latest
 
 # docker run -it --rm --name ij-perf-clickhouse-server --ulimit nofile=262144:262144 -p 9000:9000 -p 8123:8123 --volume=$HOME/ij-perf-db/clickhouse:/var/lib/clickhouse:delegated yandex/clickhouse-server:20.3.4.10
 

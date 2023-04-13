@@ -3,7 +3,6 @@ package server
 import (
   "context"
   "crypto/tls"
-  _ "embed"
   "github.com/ClickHouse/ch-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
@@ -12,6 +11,7 @@ import (
   "github.com/develar/errors"
   "github.com/go-chi/chi/v5"
   "github.com/go-chi/chi/v5/middleware"
+  "github.com/jackc/pgx/v5/pgxpool"
   "github.com/jackc/puddle/v2"
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
@@ -24,7 +24,6 @@ import (
   "sync"
   "syscall"
   "time"
-  "zombiezen.com/go/sqlite/sqlitex"
 )
 
 const DefaultDbUrl = "127.0.0.1:9000"
@@ -37,28 +36,19 @@ type StatsServer struct {
 
   poolMutex sync.Mutex
 
-  metaDb *sqlitex.Pool
+  metaDb *pgxpool.Pool
   logger *zap.Logger
 }
-
-//go:embed meta.sql
-var metaDBSQL string
 
 func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   if len(dbUrl) == 0 {
     dbUrl = DefaultDbUrl
   }
 
-  dbpool, err := sqlitex.Open("file::memory:?mode=memory", 0, 1)
+  dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
   if err != nil {
     return err
   }
-  conn := dbpool.Get(context.Background())
-  err = sqlitex.ExecScript(conn, metaDBSQL)
-  if err != nil {
-    return err
-  }
-  dbpool.Put(conn)
 
   statsServer := &StatsServer{
     dbUrl: dbUrl,

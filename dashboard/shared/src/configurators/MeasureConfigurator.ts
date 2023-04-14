@@ -292,9 +292,9 @@ function configureChart(
         useDurationFormatter = true
       }
     }
-    if (seriesName == "" && seriesData.length > 9) {
+    if (seriesName == "" && seriesData.length > 4) {
       // we take only the one project name, there can't be more
-      seriesName = seriesData[9][0] as string
+      seriesName = seriesData[5][0] as string
     }
 
     let isNotEmpty = false

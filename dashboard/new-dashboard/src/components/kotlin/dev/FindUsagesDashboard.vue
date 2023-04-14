@@ -65,7 +65,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
-:accidents="warnings"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -81,7 +81,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
-:accidents="warnings"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -100,7 +100,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
-:accidents="warnings"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -116,7 +116,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
-:accidents="warnings"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -134,8 +134,9 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../../shared/keys"
@@ -145,8 +146,6 @@ import AggregationChart from "../../charts/AggregationChart.vue"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
-import { Accident, getWarningFromMetaDb } from "shared/src/meta"
-import { refToObservable } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false)
 

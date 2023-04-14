@@ -19,6 +19,10 @@
           :style="{ backgroundColor: vm.data.value?.color }"
         />
         {{ vm.data.value?.projectName }}
+        <span
+          class="infoSidebar_icon text-sm pi pi-external-link cursor-pointer hover:text-gray-800 transition duration-150 ease-out relative"
+          @click="handleNavigateToTest"
+        />
       </div>
 
       <div class="flex flex-col gap-2">
@@ -126,14 +130,16 @@
   </Dialog>
 </template>
 <script setup lang="ts">
+import { writeRegressionToMetaDb } from "shared/src/meta"
 import { inject, ref } from "vue"
+import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
-import { writeRegressionToMetaDb } from "shared/src/meta"
 
 const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
 const showDialog = ref(false)
 const reason = ref("")
+const router = useRouter()
 
 function reportRegression(){
   showDialog.value = false
@@ -143,6 +149,16 @@ function reportRegression(){
   } else {
     writeRegressionToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId)
   }
+}
+
+function handleNavigateToTest(){
+  const currentRoute = router.currentRoute.value
+  const parts = currentRoute.path.split("/")
+  parts[parts.length - 1] = parts[parts.length - 2].toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+  const testURL = parts.join("/")
+  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "" }
+  const queryParams: string = new URLSearchParams(query).toString()
+  void router.push(testURL+"?"+queryParams)
 }
 
 function handleCloseClick() {

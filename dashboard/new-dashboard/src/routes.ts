@@ -24,9 +24,9 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboard`,
-  IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/devDashboard`,
+  IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/tests`,
-  IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/devTests`,
+  IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/testsDev`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/compare`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
@@ -44,8 +44,8 @@ enum ROUTES {
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/compare`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/dashboard`,
   KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
-  KotlinExplore = `${ROUTE_PREFIX.Kotlin}/explore`,
-  KotlinExploreDev = `${ROUTE_PREFIX.Kotlin}/exploreDev`,
+  KotlinTests = `${ROUTE_PREFIX.Kotlin}/tests`,
+  KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/testsDev`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
   KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
@@ -259,7 +259,7 @@ const KOTLIN: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.KotlinExplore,
+          url: ROUTES.KotlinTests,
           label: TESTS_LABEL,
         },
         {
@@ -267,7 +267,7 @@ const KOTLIN: Product = {
           label: "Dashboard (dev/fast installer)",
         },
         {
-          url: ROUTES.KotlinExploreDev,
+          url: ROUTES.KotlinTestsDev,
           label: "Explore (dev/fast installer)",
         },
         {
@@ -640,7 +640,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
         },
 
         {
-          path: ROUTES.KotlinExplore,
+          path: ROUTES.KotlinTests,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfint",
@@ -650,7 +650,7 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Kotlin Performance tests explore"},
         },
         {
-          path: ROUTES.KotlinExploreDev,
+          path: ROUTES.KotlinTestsDev,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfintDev",

@@ -50,13 +50,6 @@
         </DimensionHierarchicalSelect>
       </template>
     </Toolbar>
-    <AccidentWarning
-      v-if="!props.withInstaller"
-      :time-range-configurator="timeRangeConfigurator"
-      :scenario-configurator="scenarioConfigurator"
-      :branch-configurator="branchConfigurator"
-      :table="props.dbName+'_'+props.table"
-    />
     <main class="flex">
       <div
         ref="container"
@@ -108,7 +101,6 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import LineChart from "../charts/LineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import AccidentWarning from "./AccidentWarning.vue"
 
 interface PerformanceTestsProps {
   dbName: string

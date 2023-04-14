@@ -108,7 +108,6 @@ import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
 import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import AccidentWarning from "../common/AccidentWarning.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 

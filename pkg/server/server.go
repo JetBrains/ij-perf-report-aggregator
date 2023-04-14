@@ -86,7 +86,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
   r.Use(cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
-    AllowedMethods: []string{"GET", "POST"},
+    AllowedMethods: []string{"GET", "POST", "DELETE"},
     MaxAge:         50,
   }).Handler)
   r.Use(middleware.Heartbeat("/health-check"))
@@ -99,6 +99,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
 
   r.Post("/api/meta*", createPostMetaRequestHandler(logger, dbpool))
   r.Get("/api/meta/*", createGetMetaRequestHandler(logger, dbpool))
+  r.Delete("/api/meta*", createDeleteMetaRequestHandler(logger, dbpool))
   r.Handle("/api/v1/meta/measure/*", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
@@ -197,7 +198,7 @@ func listenAndServe(port string, mux http.Handler, logger *zap.Logger) *http.Ser
   // buffer size is 4096 https://github.com/golang/go/issues/13870
   server := &http.Server{
     Addr:    ":" + port,
-    Handler: cors.Default().Handler(mux),
+    Handler: mux,
 
     ReadTimeout:  30 * time.Second,
     WriteTimeout: 60 * time.Second,

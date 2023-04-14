@@ -13,6 +13,7 @@ import (
 )
 
 type Accident struct {
+  ID           int64  `json:"id"`
   Date         string `json:"date"`
   AffectedTest string `json:"affectedTest"`
   Reason       string `json:"reason"`
@@ -30,6 +31,10 @@ type InsertParams struct {
   Reason      string `json:"reason"`
   BuildNumber string `json:"build_number"`
   Kind        string `json:"kind,omitempty"`
+}
+
+type DeleteParams struct {
+  Id int64 `json:"id"`
 }
 
 func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -63,6 +68,7 @@ func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.
     var accidents []Accident
     _, err = pgx.ForEachRow(rows, []any{&id, &date, &affected_test, &reason, &build_number}, func() error {
       accident := Accident{
+        ID:           id,
         Date:         date.Time.String(),
         AffectedTest: affected_test.String,
         Reason:       reason.String,
@@ -126,7 +132,38 @@ func createPostMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http
       logger.Error("Cannot execute query", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
     }
-    println(all)
+    defer body.Close()
+    writer.WriteHeader(http.StatusOK)
+  }
+}
+
+func createDeleteMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+  return func(writer http.ResponseWriter, request *http.Request) {
+    body := request.Body
+    all, err := io.ReadAll(body)
+    if err != nil {
+      logger.Error("Cannot read body", zap.Error(err))
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
+    conn, err := metaDb.Acquire(request.Context())
+    if err != nil {
+      logger.Error("Cannot acquire connection for Postgres", zap.Error(err))
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
+    defer conn.Release()
+
+    var params DeleteParams
+    err = json.Unmarshal(all, &params)
+    if err != nil {
+      logger.Error("Cannot unmarshal parameters", zap.Error(err))
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
+
+    _, err = conn.Exec(request.Context(), "DELETE FROM accidents WHERE id=$1", params.Id)
+    if err != nil {
+      logger.Error("Cannot execute query", zap.Error(err))
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
     defer body.Close()
     writer.WriteHeader(http.StatusOK)
   }

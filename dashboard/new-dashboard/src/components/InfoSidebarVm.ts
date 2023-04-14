@@ -26,7 +26,7 @@ export interface InfoData {
   date: string
   installerId: number|undefined
   changes: string | undefined
-  accidentReasons: Array<string> | undefined
+  accidents: Array<Accident> | undefined
   buildId: string
 }
 
@@ -45,7 +45,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let buildNum2: number | undefined
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
-  let accidentReasons: Array<string> | undefined
+  let filteredAccidents: Array<Accident> | undefined
   let accidentBuild: string | undefined
   //dev fleet builds
   if (dataSeries.length == 5) {
@@ -108,10 +108,9 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   }
 
   if (accidents != null) {
-    const reasons = accidents
+    filteredAccidents = accidents
       .filter(accident => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
-      .map(accident => accident.reason)
-    accidentReasons = reasons.length > 0 ? reasons : undefined
+    filteredAccidents = filteredAccidents.length > 0 ? filteredAccidents : undefined
   }
 
   return {
@@ -127,7 +126,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     title: "Details",
     installerId,
     changes: undefined,
-    accidentReasons,
+    accidents: filteredAccidents,
     buildId
   }
 }

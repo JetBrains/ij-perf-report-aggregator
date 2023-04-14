@@ -40,20 +40,23 @@
         </span>
 
         <span
-          v-if="vm.data.value?.accidentReasons"
+          v-if="vm.data.value?.accidents"
           class="flex gap-1.5 text-sm items-center"
         >
           <ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
         </span>
         <ul
-          v-if="vm.data.value?.accidentReasons"
+          v-if="vm.data.value?.accidents"
           class="flex gap-1.5 text-sm"
         >
           <li
-            v-for="reason in vm.data.value?.accidentReasons"
-            :key="reason"
+            v-for="accident in vm.data.value?.accidents"
+            :key="accident.id"
           >
-            &bull; {{ reason }}
+            <span class="flex gap-1.5 text-sm items-center">&bull; {{ accident.reason }} <TrashIcon
+              class="w-4 h-4 text-red-500"
+              @click="handleRemove(accident.id)"
+            /></span>
           </li>
         </ul>
       </div>
@@ -130,7 +133,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { writeRegressionToMetaDb } from "shared/src/meta"
+import { removeRegressionFromMetaDb, writeRegressionToMetaDb } from "shared/src/meta"
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
@@ -159,6 +162,10 @@ function handleNavigateToTest(){
   const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "" }
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL+"?"+queryParams)
+}
+
+function handleRemove(id: number){
+  removeRegressionFromMetaDb(id)
 }
 
 function handleCloseClick() {

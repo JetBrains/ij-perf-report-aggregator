@@ -6,7 +6,7 @@ import { encodeRison } from "./rison"
 const url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/"
 
 export class Accident {
-  constructor(readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
+  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
 }
 
 function intervalToPostgresInterval(interval: TimeRange): string {
@@ -20,6 +20,18 @@ function intervalToPostgresInterval(interval: TimeRange): string {
   return intervalMapping[interval]
 }
 
+export function removeRegressionFromMetaDb(id: number) {
+  fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({id}),
+  }).then(
+    _ => window.location.reload(),
+  ).catch(error => console.error(error))
+}
+
 export function writeRegressionToMetaDb(date: string, affected_test: string, reason: string, build_number: string) {
   fetch(url, {
     method: "POST",
@@ -27,7 +39,9 @@ export function writeRegressionToMetaDb(date: string, affected_test: string, rea
       "Content-Type": "application/json",
     },
     body: JSON.stringify({date, affected_test, reason, build_number: build_number.toString()}),
-  }).catch(error => console.error(error))
+  }).then(
+    _ => window.location.reload(),
+  ).catch(error => console.error(error))
 }
 
 export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>, tests: Array<string> | string | null, timeRange: TimeRange) {

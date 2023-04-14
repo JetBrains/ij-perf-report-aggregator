@@ -644,6 +644,74 @@
             />
           </div>
         </section>
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'PerformInlineRename mean value on  K1"
+              measure="performInlineRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="PerformInlineRename mean value on  K2"
+              measure="performInlineRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+        </section>
+
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'StartInlineRename mean value on  K1"
+              measure="startInlineRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="StartInlineRename mean value on  K2"
+              measure="startInlineRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+        </section>
+
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'PrepareForRename mean value on  K1"
+              measure="prepareForRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="PrepareForRename mean value on  K2"
+              measure="prepareForRename#mean_value"
+              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+            />
+          </div>
+        </section>
       </div>
       <InfoSidebar />
     </main>

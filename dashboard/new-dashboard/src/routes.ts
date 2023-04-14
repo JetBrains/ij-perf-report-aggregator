@@ -49,6 +49,7 @@ enum ROUTES {
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
   KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
+  KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/compare`,
   GoLandDashboard = `${ROUTE_PREFIX.GoLand}/dashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/tests`,
@@ -280,6 +281,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinFindUsagesDev,
           label: "FindUsages (dev)",
+        },
+        {
+          url: ROUTES.KotlinRefactoringDev,
+          label: "Refactoring (dev)",
         },
         {
           url: ROUTES.KotlinCompare,
@@ -679,6 +684,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.KotlinFindUsagesDev,
           component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
           meta: {pageTitle: "Kotlin findUsages (dev/fast)"},
+        },
+        {
+          path: ROUTES.KotlinRefactoringDev,
+          component: () => import("./components/kotlin/dev/RefactoringDashboard.vue"),
+          meta: {pageTitle: "Kotlin refactoring (dev/fast)"},
         },
         {
           path: ROUTES.KotlinCompare,

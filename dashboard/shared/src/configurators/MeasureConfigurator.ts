@@ -10,6 +10,7 @@ import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutor
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
 import { Accident, isValueShouldBeMarked } from "../meta"
+import { MAIN_METRICS } from "../util/mainMetrics"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -92,10 +93,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             selectedRef.value = filtered
           }
         }
-        if (!isIj && selectedRef.value?.length == 0) {
-          selectedRef.value
-            = data.filter(it => !it.includes("#") && !it.includes("|") && it != "cpuLoad75th" && it != "pageHit" && it != "pageLoad" && it != "pageMiss" && !/.*_\d+/.test(it))
-        }
+        selectedRef.value = [...new Set([...selectedRef.value, ...data.filter(value => MAIN_METRICS.has(value))])]
       })
   }
 

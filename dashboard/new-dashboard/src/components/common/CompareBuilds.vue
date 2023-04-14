@@ -136,6 +136,7 @@ import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNigh
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "shared/src/dataQuery"
+import {MAIN_METRICS} from "shared/src/util/mainMetrics"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey } from "../../shared/keys"
@@ -204,11 +205,8 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
   )
 })
 
-const mainMetrics = new Set(["indexing", "scanning", "numberOfIndexingRuns", "vfs_initial_refresh", "build_compilation_duration",
-  "globalInspections", "findUsages", "localInspections", "firstCodeAnalysis", "completion", "searchEverywhere", "showFileHistory",
-  "expandActionGroup", "highlighting", "FileStructurePopup", "typing", "test#average_awt_delay", "test#max_awt_delay"])
 FilterService.register("metricsFilter", value => {
-  return mainMetrics.has(value as string)
+  return MAIN_METRICS.has(value as string)
 })
 const indexingMetrics = new Set(["indexing", "scanning", "numberOfIndexingRuns"])
 FilterService.register("indexingFilter", value => {

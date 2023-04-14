@@ -26,7 +26,7 @@ export function writeRegressionToMetaDb(date: string, affected_test: string, rea
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({date, affected_test, reason, build_number}),
+    body: JSON.stringify({date, affected_test, reason, build_number: build_number.toString()}),
   }).catch(error => console.error(error))
 }
 

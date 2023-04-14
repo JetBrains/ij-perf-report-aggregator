@@ -97,6 +97,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -107,6 +108,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -120,6 +122,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -130,6 +133,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -143,6 +147,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -153,6 +158,7 @@
                           'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -169,8 +175,10 @@ import { createBranchConfigurator } from "shared/src/configurators/BranchConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../../shared/keys"
@@ -228,6 +236,11 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
+
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

@@ -39,6 +39,7 @@
               :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>          <div class="flex-1">
             <GroupProjectsChart
@@ -47,6 +48,7 @@
               :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -58,6 +60,7 @@
               :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_with_library_cache_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -75,6 +78,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -89,6 +93,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -108,6 +113,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+              :accidents="warnings"
             />
           </div>
         </section>
@@ -128,6 +134,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -146,6 +153,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -166,6 +174,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
           <GroupProjectsChart
             label="Highlight mean value with Library cache K2"
@@ -184,6 +193,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -204,6 +214,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -224,6 +235,7 @@
             ]"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -239,7 +251,7 @@ import { createBranchConfigurator } from "shared/src/configurators/BranchConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -249,6 +261,8 @@ import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
+import { refToObservable } from "shared/src/configurators/rxjs"
 
 provideReportUrlProvider(false)
 
@@ -290,6 +304,11 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
+
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

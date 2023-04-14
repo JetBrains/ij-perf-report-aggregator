@@ -59,6 +59,7 @@
               :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -68,6 +69,7 @@
               :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -79,6 +81,7 @@
               :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -88,6 +91,7 @@
               :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -104,6 +108,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -117,6 +122,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -132,6 +138,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -145,6 +152,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -161,6 +169,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -175,6 +184,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -191,6 +201,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -205,6 +216,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -220,6 +232,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -233,6 +246,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -249,6 +263,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -262,6 +277,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -278,6 +294,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -291,6 +308,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -306,6 +324,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -319,6 +338,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -335,6 +355,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -349,6 +370,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -365,6 +387,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
           <div class="flex-1">
@@ -379,6 +402,7 @@
               ]"
               :server-configurator="serverConfigurator"
               :configurators="dashboardConfigurators"
+:accidents="warnings"
             />
           </div>
         </section>
@@ -395,7 +419,7 @@ import { createBranchConfigurator } from "shared/src/configurators/BranchConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -406,6 +430,8 @@ import AggregationChart from "../../charts/AggregationChart.vue"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
+import { refToObservable } from "shared/src/configurators/rxjs"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 
 provideReportUrlProvider(false)
 
@@ -454,6 +480,11 @@ const dashboardConfigurators = [
   timeRangeConfigurator,
   triggeredByConfigurator,
 ]
+
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

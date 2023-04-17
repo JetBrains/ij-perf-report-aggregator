@@ -15,6 +15,7 @@ const enum ROUTE_PREFIX {
   Scala = "/scala",
   JBR = "/jbr",
   Fleet = "/fleet",
+  PyCharm = "/pycharm",
 }
 
 enum ROUTES {
@@ -54,6 +55,9 @@ enum ROUTES {
   GoLandDashboard = `${ROUTE_PREFIX.GoLand}/dashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/tests`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/compare`,
+  PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/dashboard`,
+  PyCharmTests = `${ROUTE_PREFIX.PyCharm}/tests`,
+  PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/compare`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/dashboard`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/tests`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/compare`,
@@ -341,6 +345,32 @@ const RUBYMINE: Product = {
     },
   ],
 }
+
+const PYCHARM: Product = {
+  url: ROUTE_PREFIX.PyCharm,
+  label: "PyCharm",
+  children: [
+    {
+      url: ROUTE_PREFIX.PyCharm,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.PyCharmDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.PyCharmTests,
+          label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.PyCharmCompare,
+          label: COMPARE_BUILDS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
 const RUST: Product = {
   url: ROUTE_PREFIX.Rust,
   label: "Rust",
@@ -442,7 +472,7 @@ const FLEET: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, RUST, SCALA, JBR, FLEET]
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, RUST, SCALA, JBR, FLEET]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -611,6 +641,30 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           props: {
             dbName: "perfint",
             table: "goland"
+          },
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
+        },
+        {
+          path: ROUTES.PyCharmDashboard,
+          component: () => import("./components/pycharm/PerformanceDashboard.vue"),
+          meta: {pageTitle: "PyCharm Performance dashboard"},
+        },
+        {
+          path: ROUTES.PyCharmTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "pycharm",
+            initialMachine: "linux-blade-hetzner"
+          },
+          meta: {pageTitle: "PyCharm Performance tests"},
+        },
+        {
+          path: ROUTES.PyCharmCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "pycharm"
           },
           meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },

@@ -290,7 +290,10 @@ function configureChart(
         useDurationFormatter = true
       }
     }
-    if (seriesName == "" && seriesData.length > 4) {
+    //fleet
+    if (seriesName == "" && (seriesData.length == 5 || seriesData.length == 9)) {
+      seriesName = seriesData[4][0] as string
+    } else if (seriesName == "" && seriesData.length > 5) {
       // we take only the one project name, there can't be more
       seriesName = seriesData[5][0] as string
     }

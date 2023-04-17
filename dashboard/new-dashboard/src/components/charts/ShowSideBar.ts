@@ -16,6 +16,7 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
   }
   const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL))
   const separator = ".."
+  //todo make db configurable
   new DataQueryExecutor([new ServerConfigurator("perfint", "installer", serverUrlObservable), new class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       configuration.queryProducers.push(new SimpleQueryProducer())
@@ -32,8 +33,11 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
     if(isLoading || data == null){
       return
     }
-    //commit has to be decoded as base64 and converted to hex
-    infoData.changes = (data.flat(3)[0] as string).split(separator).map(it => stringToHex(atob(it)).slice(0, 7)).join(" .. ")
+    const changes = data.flat(3)[0]
+    if(typeof changes === "string"){
+      //commit has to be decoded as base64 and converted to hex
+      infoData.changes = changes.split(separator).map(it => stringToHex(atob(it)).slice(0, 7)).join(" .. ")
+    }
     sidebarVm?.show(infoData)
   })
 }

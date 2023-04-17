@@ -181,7 +181,6 @@ function onChangeRange(value: string) {
 
 const warnings = ref<Array<Accident>>()
 
-const selected = refToObservable(scenarioConfigurator.selected)
 combineLatest([refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
   getWarningFromMetaDb(warnings, data[0], data[1] as TimeRange)
 })

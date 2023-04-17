@@ -289,7 +289,6 @@
 </template>
 
 <script setup lang="ts">
-import { combineLatest } from "rxjs"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"

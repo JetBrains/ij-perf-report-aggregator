@@ -70,6 +70,7 @@ import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import AggregationChart from "../charts/AggregationChart.vue"
 
 provideReportUrlProvider()
 
@@ -160,16 +161,6 @@ const dashboardConfigurators = [
   releaseConfigurator,
   triggeredByConfigurator,
 ]
-
-const typingOnlyConfigurator = {
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "project", v: "%typing", o: "like"})
-    return true
-  },
-  createObservable() {
-    return null
-  },
-}
 
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value

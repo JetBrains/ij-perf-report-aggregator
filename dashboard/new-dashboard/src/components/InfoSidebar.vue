@@ -150,7 +150,7 @@ function reportRegression(){
   if(value == null){
     console.log("value is zero! This shouldn't happen")
   } else {
-    writeRegressionToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId)
+    writeRegressionToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString())
   }
 }
 

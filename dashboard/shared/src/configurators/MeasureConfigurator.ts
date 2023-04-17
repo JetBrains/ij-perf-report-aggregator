@@ -93,7 +93,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             selectedRef.value = filtered
           }
         }
-        selectedRef.value = [...new Set([...selectedRef.value, ...data.filter(value => MAIN_METRICS.has(value))])]
+        selectedRef.value = [...new Set([...selectedRef.value as string[], ...data.filter(value => MAIN_METRICS.has(value))])]
       })
   }
 

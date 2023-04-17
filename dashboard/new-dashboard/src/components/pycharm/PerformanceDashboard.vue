@@ -32,6 +32,17 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
+        <section class="flex gap-6">
+          <div class="w-1/2">
+            <AggregationChart
+              :configurators="averagesConfigurators"
+              :aggregated-measure="'processingSpeed#Python'"
+              :title="'Indexing Python (kB/s)'"
+              :chart-color="'#219653'"
+              :value-unit="'counter'"
+            />
+          </div>
+        </section>
         <section>
           <GroupProjectsChart
             label="Indexing"
@@ -88,6 +99,7 @@ import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { refToObservable } from "shared/src/configurators/rxjs"
+import AggregationChart from "../charts/AggregationChart.vue"
 
 provideReportUrlProvider()
 
@@ -122,6 +134,14 @@ const triggeredByConfigurator = privateBuildConfigurator(
   persistenceForDashboard,
   [branchConfigurator, timeRangeConfigurator],
 )
+
+const averagesConfigurators = [
+  serverConfigurator,
+  branchConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+]
+
 const dashboardConfigurators = [
   serverConfigurator,
   branchConfigurator,

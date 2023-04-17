@@ -44,6 +44,16 @@
         </section>
         <section>
           <GroupProjectsChart
+            label="Open Project"
+            measure="fleet.test"
+            value-unit="ns"
+            :projects="['openGoDelveProject', 'openJeditermProject', 'openRustSimpleServerProject', 'openSpringPetClinicJavaProject', 'openSpringPetClinicKotlinProject']"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="Typing (average delay)"
             measure="awt.delay"
             value-unit="ns"

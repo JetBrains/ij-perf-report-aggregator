@@ -2,7 +2,7 @@
   "name": "report-visualizer",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.12",
+    "@headlessui/vue": "^1.7.13",
     "compare-versions": "6.0.0-rc.1",
     "echarts": "5.4.2",
     "fast-equals": "5.0.1",

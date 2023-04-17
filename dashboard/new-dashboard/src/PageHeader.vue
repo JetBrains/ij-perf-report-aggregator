@@ -56,7 +56,7 @@ const items = ref(products)
 const menu = ref<Menu | null>(null)
 const product = getNavigationElement(currentPath)
 
-function toggle(event: PointerEvent) {
+function toggle(event: MouseEvent) {
   menu.value?.toggle(event)
 }
 
@@ -69,7 +69,7 @@ const selectedSubMenu: SubProject = product.children.find(child => {
   return child.url == currentPath.slice(0, Math.max(0, currentPath.lastIndexOf("/")))
 }) ?? product.children[0]
 
-function toggleSubMenu(event: PointerEvent) {
+function toggleSubMenu(event: MouseEvent) {
   subMenu.value?.toggle(event)
 }
 </script>

@@ -18,7 +18,7 @@ import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureC
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration} from "shared/src/dataQuery"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { Accident } from "shared/src/meta"
-import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, withDefaults } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { getInfoDataFrom} from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"

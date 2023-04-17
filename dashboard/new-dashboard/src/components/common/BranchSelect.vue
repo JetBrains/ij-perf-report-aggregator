@@ -179,7 +179,7 @@ function createItems(configurator?: DimensionConfigurator) {
     if (configurator == undefined) {
       return []
     }
-    const values = configurator.values.value
+    const values = configurator.values.value as Array<string>
 
     return values.map(it => {
       return {label: it.toString(), value: it}

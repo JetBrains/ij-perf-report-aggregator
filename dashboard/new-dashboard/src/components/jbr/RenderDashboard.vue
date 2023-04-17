@@ -88,7 +88,6 @@ provideReportUrlProvider(false, true)
 
 const dbName = "jbr"
 const dbTable = "report"
-const initialMachine = "linux-blade-hetzner"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()

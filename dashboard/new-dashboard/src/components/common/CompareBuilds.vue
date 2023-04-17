@@ -77,7 +77,7 @@
             v-else
             class="p-column-filter"
           >
-            {{ metricsMatchModes.find(e=>e.value == filterModel.matchMode).label }}
+            {{ metricsMatchModes.find(e=>e.value == filterModel.matchMode)?.label }}
           </div>
         </template>
       </Column>

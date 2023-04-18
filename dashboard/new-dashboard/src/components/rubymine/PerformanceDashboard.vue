@@ -39,6 +39,7 @@
             :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -48,6 +49,7 @@
             :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -57,6 +59,7 @@
             :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -67,6 +70,7 @@
                         'gitlab-project-inspections-test/inspection-RubyResolve-app', 'gitlab-project-inspections-test/inspection-app']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -76,6 +80,7 @@
             :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -85,6 +90,7 @@
             :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -94,6 +100,7 @@
             :projects="['diaspora-project-test/completion/routes', 'diaspora-project-test/completion/exceptions', 'diaspora-project-test/completion/localization']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -103,6 +110,7 @@
             :projects="['gitlab-project-test/completion/routes', 'gitlab-project-test/completion/exceptions', 'gitlab-project-test/completion/localization']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -112,6 +120,7 @@
             :projects="['redmine-project-test/completion/routes', 'redmine-project-test/completion/exceptions', 'redmine-project-test/completion/localization']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -121,6 +130,7 @@
             :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -130,6 +140,7 @@
             :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -141,6 +152,7 @@
                         'redmine-project-test/getSymbolMembers-ApplicationController-false', 'redmine-project-test/getSymbolMembers-ApplicationController-true']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -152,6 +164,7 @@
                         'redmine-project-test/getSymbolMembers-ApplicationController-false', 'redmine-project-test/getSymbolMembers-ApplicationController-true']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -168,8 +181,10 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -223,6 +238,10 @@ const dashboardConfigurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 </script>
 
 <style>

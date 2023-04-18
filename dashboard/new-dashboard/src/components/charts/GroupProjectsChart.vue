@@ -13,11 +13,11 @@
 import { ValueUnit } from "shared/src/chart"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
+import { FilterConfigurator } from "shared/src/configurators/filter"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { Accident } from "shared/src/meta"
 import { onMounted } from "vue"
 import LineChart from "./LineChart.vue"
-import { FilterConfigurator } from "shared/src/configurators/filter"
 
 interface Props {
   label: string

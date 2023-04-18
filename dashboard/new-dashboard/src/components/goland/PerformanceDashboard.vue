@@ -39,6 +39,7 @@
             :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -48,6 +49,7 @@
             :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -57,6 +59,7 @@
             :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -66,6 +69,7 @@
             :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -75,6 +79,7 @@
             :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -84,6 +89,7 @@
             :projects="['cockroach/inspection', 'kubernetes/inspection']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -93,6 +99,7 @@
             :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -102,6 +109,7 @@
             :projects="['mattermost-server/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -111,6 +119,7 @@
             :projects="['mattermost-server/typing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -120,6 +129,7 @@
             :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -129,6 +139,7 @@
             :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -145,8 +156,10 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -200,6 +213,10 @@ const dashboardConfigurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 </script>
 
 <style>

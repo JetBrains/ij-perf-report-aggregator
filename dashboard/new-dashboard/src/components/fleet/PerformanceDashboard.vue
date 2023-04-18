@@ -40,6 +40,7 @@
             value-unit="ns"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -50,6 +51,7 @@
             :projects="['openGoDelveProject', 'openJeditermProject', 'openRustSimpleServerProject', 'openSpringPetClinicJavaProject', 'openSpringPetClinicKotlinProject']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -60,6 +62,7 @@
             :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -70,6 +73,7 @@
             :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -80,6 +84,7 @@
             :projects="['stressHighlighting']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -90,6 +95,7 @@
             :projects="['wideTree', 'deepTree']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <Divider title="PHP" />
@@ -101,6 +107,7 @@
             :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -111,6 +118,7 @@
             :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -121,6 +129,7 @@
             :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -131,6 +140,7 @@
             :projects="['Open mPDF', 'Frontend Completion in mPDF']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -146,8 +156,10 @@ import { createBranchConfigurator } from "shared/src/configurators/BranchConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -201,6 +213,11 @@ const dashboardConfigurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 </script>
 
 <style>

@@ -43,6 +43,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -56,6 +57,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -69,6 +71,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -82,6 +85,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -95,6 +99,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -108,6 +113,7 @@
                         'ijx-intellij-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -121,6 +127,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -134,6 +141,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -147,6 +155,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -160,6 +169,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -173,6 +183,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -186,6 +197,7 @@
                         'ijx-intellij-community-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -199,6 +211,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -212,6 +225,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -225,6 +239,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -238,6 +253,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -251,6 +267,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -264,6 +281,7 @@
                         'ijx-jdk-maven-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -277,6 +295,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -290,6 +309,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -303,6 +323,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -316,6 +337,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -329,6 +351,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
         <section>
@@ -342,6 +365,7 @@
                         'ijx-jdk-gradle-speed/usual-indexes']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
+            :accidents="warnings"
           />
         </section>
       </div>
@@ -358,8 +382,10 @@ import { MachineConfigurator } from "shared/src/configurators/MachineConfigurato
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
+import { Accident, getWarningFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -413,6 +439,11 @@ const dashboardConfigurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
+const warnings = ref<Array<Accident>>()
+refToObservable(timeRangeConfigurator.value).subscribe(data => {
+  getWarningFromMetaDb(warnings, null, data as TimeRange)
+})
 </script>
 
 <style>

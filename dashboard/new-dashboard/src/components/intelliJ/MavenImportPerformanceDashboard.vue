@@ -141,14 +141,6 @@ const charts = combineCharts(chartsDeclaration)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 
-const scenarioConfigurator = dimensionConfigurator(
-  "project",
-  serverConfigurator,
-  null,
-  true,
-)
-scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
-
 const persistenceForDashboard = new PersistentStateManager("idea_gradle_dashboard", {
   machine: initialMachine,
   project: [],
@@ -156,6 +148,15 @@ const persistenceForDashboard = new PersistentStateManager("idea_gradle_dashboar
 }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
+
+const scenarioConfigurator = dimensionConfigurator(
+  "project",
+  serverConfigurator,
+  null,
+  true,
+  [timeRangeConfigurator]
+)
+scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
 
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator, scenarioConfigurator])
 const machineConfigurator = new MachineConfigurator(

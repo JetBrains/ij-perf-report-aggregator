@@ -135,6 +135,7 @@ const scenarioConfigurator = dimensionConfigurator(
   serverConfigurator,
   null,
   true,
+  [timeRangeConfigurator]
 )
 scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
 

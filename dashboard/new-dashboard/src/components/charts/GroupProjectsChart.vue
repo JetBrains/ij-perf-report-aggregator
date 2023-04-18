@@ -17,6 +17,7 @@ import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { Accident } from "shared/src/meta"
 import { onMounted } from "vue"
 import LineChart from "./LineChart.vue"
+import { FilterConfigurator } from "shared/src/configurators/filter"
 
 interface Props {
   label: string
@@ -38,9 +39,9 @@ const scenarioConfigurator = dimensionConfigurator(
   props.serverConfigurator, 
   null, 
   true,
-  [...props.configurators]
+  [...props.configurators] as Array<FilterConfigurator>
 )
-const configurators = [...props.configurators, scenarioConfigurator]
+const configurators = [...props.configurators, scenarioConfigurator, props.serverConfigurator]
 
 onMounted(() => {
   scenarioConfigurator.selected.value = props.projects

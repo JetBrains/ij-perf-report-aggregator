@@ -249,7 +249,6 @@ const averagesConfigurators = [
 ]
 
 const dashboardConfigurators = [
-  serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,

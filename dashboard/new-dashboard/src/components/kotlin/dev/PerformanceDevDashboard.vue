@@ -298,7 +298,6 @@ const triggeredByConfigurator = privateBuildConfigurator(
 )
 
 const dashboardConfigurators = [
-  serverConfigurator,
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,

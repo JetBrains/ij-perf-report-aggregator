@@ -182,8 +182,8 @@ const metricData = ref()
 const firstBuildConfigurator = buildConfigurator("firstBuild", serverConfigurator, persistentStateManager, [branchConfigurator1, machineConfigurator])
 const secondBuildConfigurator = buildConfigurator("secondBuild", serverConfigurator, persistentStateManager, [branchConfigurator2, machineConfigurator])
 combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable(secondBuildConfigurator.selected)]).subscribe(data => {
-  combineLatest([getAllMetricsFromBuild(data[0] as string),
-    getAllMetricsFromBuild(data[1] as string)]).subscribe(data => {
+  combineLatest([getAllMetricsFromBuild(machineConfigurator, data[0] as string),
+    getAllMetricsFromBuild(machineConfigurator, data[1] as string)]).subscribe(data => {
       const firstBuildResults = data[0]
       const secondBuildResults = data[1]
       const table = []
@@ -250,7 +250,7 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBuild(build: string): Observable<Array<Result>> {
+function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string): Observable<Array<Result>> {
   return new Observable<Array<Result>>(subscriber => {
     new DataQueryExecutor([serverConfigurator, new class implements DataQueryConfigurator {
       configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -266,6 +266,7 @@ function getAllMetricsFromBuild(build: string): Observable<Array<Result>> {
         if (buildParts[2] != undefined) {
           query.addFilter({f: "build_c3", v: buildParts[2]})
         }
+        machineConfigurator.configureFilter(query)
         query.order = "project"
         return true
       }

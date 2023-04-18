@@ -37,7 +37,8 @@ const scenarioConfigurator = dimensionConfigurator(
   "project", 
   props.serverConfigurator, 
   null, 
-  true
+  true,
+  [...props.configurators]
 )
 const configurators = [...props.configurators, scenarioConfigurator]
 

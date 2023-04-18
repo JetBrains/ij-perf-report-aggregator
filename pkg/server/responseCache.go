@@ -97,6 +97,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 
   w.Header().Set("ETag", computeEtag(result))
   w.Header().Set("Content-Length", strconv.Itoa(len(result)))
+  w.Header().Set("Content-Type", "text/plain")
   w.WriteHeader(http.StatusOK)
   _, err := w.Write(result)
   if err != nil {

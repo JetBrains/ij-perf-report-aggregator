@@ -91,7 +91,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   }).Handler)
   r.Use(middleware.Heartbeat("/health-check"))
   r.Use(middleware.Recoverer)
-  compressor := middleware.NewCompressor(5, "/*")
+  compressor := middleware.NewCompressor(5)
   compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
     return brotli.NewWriterLevel(w, level)
   })

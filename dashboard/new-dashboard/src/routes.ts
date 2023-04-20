@@ -16,6 +16,7 @@ const enum ROUTE_PREFIX {
   JBR = "/jbr",
   Fleet = "/fleet",
   PyCharm = "/pycharm",
+  WebStorm = "/webstorm",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -62,6 +63,9 @@ enum ROUTES {
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
+  WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
+  WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
+  WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
@@ -376,6 +380,31 @@ const PYCHARM: Product = {
   ],
 }
 
+const WEBSTORM: Product = {
+  url: ROUTE_PREFIX.WebStorm,
+  label: "WebStorm",
+  children: [
+    {
+      url: ROUTE_PREFIX.WebStorm,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.WebStormDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.WebStormTests,
+          label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.WebStormCompare,
+          label: COMPARE_BUILDS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
 const RUST: Product = {
   url: ROUTE_PREFIX.Rust,
   label: "Rust",
@@ -481,7 +510,7 @@ const FLEET: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, RUST, SCALA, JBR, FLEET]
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -674,6 +703,30 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           props: {
             dbName: "perfint",
             table: "pycharm"
+          },
+          meta: {pageTitle: COMPARE_BUILDS_LABEL},
+        },
+        {
+          path: ROUTES.WebStormDashboard,
+          component: () => import("./components/webstorm/PerformanceDashboard.vue"),
+          meta: {pageTitle: "WebStorm Performance dashboard"},
+        },
+        {
+          path: ROUTES.WebStormTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "webstorm",
+            initialMachine: "linux-blade-hetzner"
+          },
+          meta: {pageTitle: "WebStorm Performance tests"},
+        },
+        {
+          path: ROUTES.WebStormCompare,
+          component: () => import("./components/common/CompareBuilds.vue"),
+          props: {
+            dbName: "perfint",
+            table: "webstorm"
           },
           meta: {pageTitle: COMPARE_BUILDS_LABEL},
         },

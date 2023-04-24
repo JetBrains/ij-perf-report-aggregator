@@ -1,8 +1,8 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { ValueUnit } from "shared/src/chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "shared/src/formatter"
-import { Accident } from "shared/src/meta"
-import { computed, ShallowRef, shallowRef } from "vue"
+import { Accident, Description, getDescriptionFromMetaDb } from "shared/src/meta"
+import { computed, Ref, ref, ShallowRef, shallowRef } from "vue"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>
@@ -28,6 +28,7 @@ export interface InfoData {
   changes: string | undefined
   accidents: Array<Accident> | undefined
   buildId: number
+  description: Ref<Description|undefined>
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
@@ -103,8 +104,8 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`
 
   let showValue = value.toString()
-  if(type != "counter"){
-    showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value )
+  if (type != "counter") {
+    showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value)
   }
 
   if (accidents != null) {
@@ -112,6 +113,9 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
       .filter(accident => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
     filteredAccidents = filteredAccidents.length > 0 ? filteredAccidents : undefined
   }
+
+  const description = ref<Description>()
+  getDescriptionFromMetaDb(description, projectName, "master")
 
   return {
     build: fullBuildId,
@@ -127,7 +131,8 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     installerId,
     changes: undefined,
     accidents: filteredAccidents,
-    buildId: buildId as number
+    buildId: buildId as number,
+    description
   }
 }
 

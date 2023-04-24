@@ -54,11 +54,31 @@ export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefine
   fetch(accidents_url + encodeRison(params))
     .then(response => response.json())
     .then((data: Array<Accident>) => {
-      if(data != null) {
+      if (data != null) {
         accidents.value?.push(...data)
       }
     })
     .catch(error => console.error(error))
+}
+
+const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
+
+export class Description {
+  constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {
+  }
+}
+
+export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefined>, project: string | undefined, branch: string) {
+  if (project != undefined && branch != undefined) {
+    fetch(description_url + encodeRison({project, branch}))
+      .then(response => response.json())
+      .then((data: Description) => {
+        if (data != null) {
+          descriptionRef.value = data
+        }
+      })
+      .catch(error => console.error(error))
+  }
 }
 
 export function isValueShouldBeMarked(accidents: Array<Accident> | null, value: Array<string>): boolean {

@@ -176,6 +176,7 @@ const components = new Set<string>([
   "Splitter",
   "SplitterPanel",
   "Steps",
+  "SplitButton",
   "TabPanel",
   "TabView",
   "Tag",
@@ -190,6 +191,7 @@ const components = new Set<string>([
   "ToggleButton",
   // 'Tooltip',
   // Tooltip must be registered globally in order for the tooltip service to work properly
+  "TieredMenu",
   "Tree",
   "TreeSelect",
   "TreeTable",

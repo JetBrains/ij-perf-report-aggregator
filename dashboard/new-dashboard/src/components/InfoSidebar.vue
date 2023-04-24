@@ -19,11 +19,8 @@
           :style="{ backgroundColor: vm.data.value?.color }"
         />
         {{ vm.data.value?.projectName }}
-        <span
-          class="infoSidebar_icon text-sm pi pi-external-link cursor-pointer hover:text-gray-800 transition duration-150 ease-out relative"
-          @click="handleNavigateToTest"
-        />
       </div>
+      <SplitButton label="Navigate to test" @click="handleNavigateToTest" :model="getTestActions()" text plain link icon="pi pi-chart-line"/>
 
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
@@ -144,33 +141,64 @@ const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()
 
-function reportRegression(){
+const description = vm.data.value?.description
+
+function reportRegression() {
   showDialog.value = false
   const value = vm.data.value
-  if(value == null){
+  if (value == null) {
     console.log("value is zero! This shouldn't happen")
-  } else {
+  }
+  else {
     writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString())
   }
 }
 
-function handleNavigateToTest(){
+function copyMethodNameToClipboard() {
+  const methodName = vm.data.value?.description.value?.methodName
+  if (methodName != undefined) {
+    navigator.clipboard.writeText(methodName)
+  }
+}
+
+function handleNavigateToTest() {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts[parts.length - 2].toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
-  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "" }
+  const query: Record<string, string> = {...currentRoute.query, project: vm.data.value?.projectName ?? ""}
   const queryParams: string = new URLSearchParams(query).toString()
-  void router.push(testURL+"?"+queryParams)
+  void router.push(testURL + "?" + queryParams)
 }
 
-function handleRemove(id: number){
+function handleRemove(id: number) {
   removeAccidentFromMetaDb(id)
 }
 
 function handleCloseClick() {
   vm.close()
 }
+
+function getTestActions() {
+  return vm.data.value?.description.value != undefined ? [
+    {
+      label: "Download test project",
+      icon: "pi pi-download",
+      command: () => {
+        window.open(vm.data.value?.description.value?.url as string)
+      },
+    },
+    {
+      label: "Copy test method name",
+      icon: "pi pi-copy",
+      command: () => {
+        copyMethodNameToClipboard()
+      },
+    },
+  ] : []
+}
+
+
 </script>
 <style>
 .infoSidebar {
@@ -183,5 +211,13 @@ function handleCloseClick() {
   content: '';
   inset: -8px;
   transform: rotate(-45deg);
+}
+
+.p-splitbutton.p-button-text > .p-button {
+  @apply text-gray-600 font-medium text-left border-t border-solid border-neutral-200 relative;
+}
+
+.p-menuitem-content {
+  @apply text-sm text-gray-600 font-medium text-left relative;
 }
 </style>

@@ -91,7 +91,7 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { Accident, getWarningFromMetaDb } from "shared/src/meta"
+import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -182,7 +182,7 @@ function onChangeRange(value: string) {
 const warnings = ref<Array<Accident>>()
 
 combineLatest([refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
-  getWarningFromMetaDb(warnings, data[0], data[1] as TimeRange)
+  getAccidentsFromMetaDb(warnings, data[0], data[1] as TimeRange)
 })
 
 </script>

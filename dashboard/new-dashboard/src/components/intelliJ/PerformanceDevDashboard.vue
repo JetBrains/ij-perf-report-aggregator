@@ -58,7 +58,7 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { Accident, getWarningFromMetaDb } from "shared/src/meta"
+import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -155,7 +155,7 @@ const charts = combineCharts(chartsDeclaration)
 const projects = chartsDeclaration.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getWarningFromMetaDb(warnings, projects, data as TimeRange)
+  getAccidentsFromMetaDb(warnings, projects, data as TimeRange)
 })
 </script>
 

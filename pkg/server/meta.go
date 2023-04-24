@@ -20,12 +20,12 @@ type Accident struct {
   BuildNumber  string `json:"buildNumber"`
 }
 
-type RequestParams struct {
+type AccidentRequestParams struct {
   Tests    []string `json:"tests"`
   Interval string   `json:"interval"`
 }
 
-type InsertParams struct {
+type AccidentInsertParams struct {
   Date        string `json:"date"`
   Test        string `json:"affected_test"`
   Reason      string `json:"reason"`
@@ -33,14 +33,14 @@ type InsertParams struct {
   Kind        string `json:"kind,omitempty"`
 }
 
-type DeleteParams struct {
+type AccidentDeleteParams struct {
   Id int64 `json:"id"`
 }
 
-func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func createGetAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     objectStart := strings.IndexRune(request.URL.Path, '(')
-    var params RequestParams
+    var params AccidentRequestParams
     err := rison.Unmarshal([]byte(request.URL.Path[objectStart:]), &params, rison.Rison)
     if err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
@@ -99,7 +99,7 @@ func createGetMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.
   }
 }
 
-func createPostMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func createPostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
@@ -114,7 +114,7 @@ func createPostMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http
     }
     defer conn.Release()
 
-    var params InsertParams
+    var params AccidentInsertParams
     err = json.Unmarshal(all, &params)
     if err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
@@ -137,7 +137,7 @@ func createPostMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http
   }
 }
 
-func createDeleteMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func createDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
@@ -152,7 +152,7 @@ func createDeleteMetaRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) ht
     }
     defer conn.Release()
 
-    var params DeleteParams
+    var params AccidentDeleteParams
     err = json.Unmarshal(all, &params)
     if err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))

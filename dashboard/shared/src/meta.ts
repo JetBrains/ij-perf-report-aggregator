@@ -3,7 +3,7 @@ import { ServerConfigurator } from "./configurators/ServerConfigurator"
 import { TimeRange } from "./configurators/TimeRangeConfigurator"
 import { encodeRison } from "./rison"
 
-const url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/"
+const accidents_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
 
 export class Accident {
   constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
@@ -20,8 +20,8 @@ function intervalToPostgresInterval(interval: TimeRange): string {
   return intervalMapping[interval]
 }
 
-export function removeRegressionFromMetaDb(id: number) {
-  fetch(url, {
+export function removeAccidentFromMetaDb(id: number) {
+  fetch(accidents_url, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -32,8 +32,8 @@ export function removeRegressionFromMetaDb(id: number) {
   ).catch(error => console.error(error))
 }
 
-export function writeRegressionToMetaDb(date: string, affected_test: string, reason: string, build_number: string) {
-  fetch(url, {
+export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string) {
+  fetch(accidents_url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -44,18 +44,18 @@ export function writeRegressionToMetaDb(date: string, affected_test: string, rea
   ).catch(error => console.error(error))
 }
 
-export function getWarningFromMetaDb(warnings: Ref<Array<Accident> | undefined>, tests: Array<string> | string | null, timeRange: TimeRange) {
+export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefined>, tests: Array<string> | string | null, timeRange: TimeRange) {
   if (tests != null && !Array.isArray(tests)) {
     tests = [tests]
   }
-  warnings.value = []
+  accidents.value = []
   const interval = intervalToPostgresInterval(timeRange)
   const params = tests == null ? {interval} : {interval, tests}
-  fetch(url + encodeRison(params))
+  fetch(accidents_url + encodeRison(params))
     .then(response => response.json())
     .then((data: Array<Accident>) => {
       if(data != null) {
-        warnings.value?.push(...data)
+        accidents.value?.push(...data)
       }
     })
     .catch(error => console.error(error))

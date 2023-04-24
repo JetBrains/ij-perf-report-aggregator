@@ -97,9 +97,9 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   })
   r.Use(compressor.Handler)
 
-  r.Post("/api/meta*", createPostMetaRequestHandler(logger, dbpool))
-  r.Get("/api/meta/*", createGetMetaRequestHandler(logger, dbpool))
-  r.Delete("/api/meta*", createDeleteMetaRequestHandler(logger, dbpool))
+  r.Post("/api/meta/accidents*", createPostMetaRequestHandler(logger, dbpool))
+  r.Get("/api/meta/accidents*", createGetMetaRequestHandler(logger, dbpool))
+  r.Delete("/api/meta/accidents*", createDeleteMetaRequestHandler(logger, dbpool))
   r.Handle("/api/v1/meta/measure/*", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))

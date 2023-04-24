@@ -133,7 +133,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { removeRegressionFromMetaDb, writeRegressionToMetaDb } from "shared/src/meta"
+import { removeAccidentFromMetaDb, writeAccidentToMetaDb } from "shared/src/meta"
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
@@ -150,7 +150,7 @@ function reportRegression(){
   if(value == null){
     console.log("value is zero! This shouldn't happen")
   } else {
-    writeRegressionToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString())
+    writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString())
   }
 }
 
@@ -165,7 +165,7 @@ function handleNavigateToTest(){
 }
 
 function handleRemove(id: number){
-  removeRegressionFromMetaDb(id)
+  removeAccidentFromMetaDb(id)
 }
 
 function handleCloseClick() {

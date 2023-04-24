@@ -44,7 +44,7 @@
         </span>
         <ul
           v-if="vm.data.value?.accidents"
-          class="flex gap-1.5 text-sm"
+          class="flex gap-1.5 text-sm ml-5"
         >
           <li
             v-for="accident in vm.data.value?.accidents"

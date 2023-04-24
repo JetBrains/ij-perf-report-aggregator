@@ -5,8 +5,11 @@ import "time"
 type Report struct {
   Version string `json:"version"`
 
-  Generated string `json:"generated"`
-  Project   string `json:"project"`
+  Generated  string `json:"generated"`
+  Project    string `json:"project"`
+  ProjectURL string `json:"projectURL"`
+
+  MethodName string `json:"methodName"`
 
   Build     string `json:"build"`
   BuildDate string `json:"buildDate"`

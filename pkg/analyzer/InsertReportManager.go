@@ -58,6 +58,7 @@ type InsertReportManager struct {
   config                           DatabaseConfiguration
   nonMetricFieldCount              int
   insertInstallerManager           *InsertInstallerManager
+  insertMetaManager                *InsertMetaManager
   TableName                        string
 }
 
@@ -124,6 +125,14 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
     }
   }
 
+  var metaManager *InsertMetaManager
+  if config.HasMetaDB {
+    metaManager, err = NewInsertMetaManager(context)
+    if err != nil {
+      return nil, err
+    }
+  }
+
   manager := &InsertReportManager{
     nonMetricFieldCount: len(metaFields),
     config:              config,
@@ -136,6 +145,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
     context:                context,
     insertInstallerManager: installerManager,
+    insertMetaManager:      metaManager,
   }
 
   if installerManager != nil {

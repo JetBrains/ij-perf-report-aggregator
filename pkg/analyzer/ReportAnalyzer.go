@@ -286,6 +286,14 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     }
   }
 
+  if t.InsertReportManager.insertMetaManager != nil {
+    r := report.runResult.Report
+    err := t.InsertReportManager.insertMetaManager.InsertProjectDescription(r.Project, runResult.branch, r.ProjectURL, r.MethodName, "")
+    if err != nil {
+      t.logger.Warn("cannot insert project description", zap.Error(err))
+    }
+  }
+
   err := t.InsertReportManager.Insert(runResult)
   if err != nil {
     if errors.Is(err, context.Canceled) {

@@ -34,6 +34,9 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
     Os:          string(report.GetStringBytes("os")),
     ProductCode: string(report.GetStringBytes("productCode")),
     Runtime:     string(report.GetStringBytes("runtime")),
+
+    MethodName: string(report.GetStringBytes("methodName")),
+    ProjectURL: string(report.GetStringBytes("projectURL")),
   }
 
   if config.HasInstallerField {

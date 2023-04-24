@@ -21,6 +21,7 @@ type DatabaseConfiguration struct {
   HasBuildTypeField bool
   HasRawReport      bool
   HasBuildNumber    bool
+  HasMetaDB         bool
   extraFieldCount   int
 }
 
@@ -59,6 +60,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzePerfReport,
       HasRawReport:      true,
       HasBuildTypeField: true,
+      HasMetaDB:         true,
       extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")
@@ -73,6 +75,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       HasInstallerField: true,
       HasBuildTypeField: true,
       HasRawReport:      false,
+      HasMetaDB:         true,
       extraFieldCount:   3,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")

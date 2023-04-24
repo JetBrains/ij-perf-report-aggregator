@@ -217,7 +217,7 @@ function getTestActions() {
   @apply text-gray-600 font-medium text-left border-t border-solid border-neutral-200 relative;
 }
 
-.p-menuitem-content {
+.p-tieredmenu .p-menuitem-content {
   @apply text-sm text-gray-600 font-medium text-left relative;
 }
 </style>

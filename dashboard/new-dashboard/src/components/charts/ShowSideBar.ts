@@ -13,6 +13,7 @@ function stringToHex(string: string): string {
 export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
   if (infoData.installerId == undefined) {
     sidebarVm?.show(infoData)
+    return
   }
   const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL))
   const separator = ".."

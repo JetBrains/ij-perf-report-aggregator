@@ -57,20 +57,19 @@ func createGetAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) h
       writer.WriteHeader(http.StatusInternalServerError)
     }
     defer rows.Close()
-    var id int64
-    var date pgtype.Date
-    var affected_test, reason, build_number pgtype.Text
-    var accidents []Accident
-    _, err = pgx.ForEachRow(rows, []any{&id, &date, &affected_test, &reason, &build_number}, func() error {
-      accident := Accident{
+
+    accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (Accident, error) {
+      var id int64
+      var date pgtype.Date
+      var affected_test, reason, build_number string
+      err := row.Scan(&id, &date, &affected_test, &reason, &build_number)
+      return Accident{
         ID:           id,
         Date:         date.Time.String(),
-        AffectedTest: affected_test.String,
-        Reason:       reason.String,
-        BuildNumber:  build_number.String,
-      }
-      accidents = append(accidents, accident)
-      return nil
+        AffectedTest: affected_test,
+        Reason:       reason,
+        BuildNumber:  build_number,
+      }, err
     })
     if err != nil {
       logger.Error(err.Error())

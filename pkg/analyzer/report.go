@@ -27,16 +27,17 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
   }
 
   runResult.Report = &model.Report{
-    Version:   string(report.GetStringBytes("version")),
-    Generated: string(report.GetStringBytes("generated")),
-    Project:   string(report.GetStringBytes("project")),
+    Version:            string(report.GetStringBytes("version")),
+    Generated:          string(report.GetStringBytes("generated")),
+    Project:            string(report.GetStringBytes("project")),
+    ProjectURL:         string(report.GetStringBytes("projectURL")),
+    ProjectDescription: string(report.GetStringBytes("projectDescription")),
 
     Os:          string(report.GetStringBytes("os")),
     ProductCode: string(report.GetStringBytes("productCode")),
     Runtime:     string(report.GetStringBytes("runtime")),
 
     MethodName: string(report.GetStringBytes("methodName")),
-    ProjectURL: string(report.GetStringBytes("projectURL")),
   }
 
   if config.HasInstallerField {

@@ -288,7 +288,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 
   if t.InsertReportManager.insertMetaManager != nil {
     r := report.runResult.Report
-    err := t.InsertReportManager.insertMetaManager.InsertProjectDescription(r.Project, runResult.branch, r.ProjectURL, r.MethodName, "")
+    err := t.InsertReportManager.insertMetaManager.InsertProjectDescription(r.Project, runResult.branch, r.ProjectURL, r.MethodName, r.ProjectDescription)
     if err != nil {
       t.logger.Warn("cannot insert project description", zap.Error(err))
     }

@@ -18,6 +18,7 @@ type Accident struct {
   AffectedTest string `json:"affectedTest"`
   Reason       string `json:"reason"`
   BuildNumber  string `json:"buildNumber"`
+  Kind         string `json:"kind"`
 }
 
 type AccidentRequestParams struct {
@@ -47,7 +48,7 @@ func createGetAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) h
       writer.WriteHeader(http.StatusInternalServerError)
     }
 
-    sql := "SELECT id, date, affected_test, reason, build_number FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
+    sql := "SELECT id, date, affected_test, reason, build_number, kind FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
     if params.Tests != nil {
       sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ")"
     }
@@ -61,14 +62,15 @@ func createGetAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) h
     accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (Accident, error) {
       var id int64
       var date pgtype.Date
-      var affected_test, reason, build_number string
-      err := row.Scan(&id, &date, &affected_test, &reason, &build_number)
+      var affected_test, reason, build_number, kind string
+      err := row.Scan(&id, &date, &affected_test, &reason, &build_number, &kind)
       return Accident{
         ID:           id,
         Date:         date.Time.String(),
         AffectedTest: affected_test,
         Reason:       reason,
         BuildNumber:  build_number,
+        Kind:         kind,
       }, err
     })
     if err != nil {

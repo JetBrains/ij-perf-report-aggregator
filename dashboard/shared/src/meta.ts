@@ -6,7 +6,7 @@ import { encodeRison } from "./rison"
 const accidents_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
 
 export class Accident {
-  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string) {}
+  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string, readonly kind: string) {}
 }
 
 function intervalToPostgresInterval(interval: TimeRange): string {

@@ -44,16 +44,16 @@
         </span>
         <ul
           v-if="vm.data.value?.accidents"
-          class="list-inside gap-1.5 text-sm ml-5 overflow-scroll max-h-80"
+          class="list-inside gap-1.5 text-sm ml-5 overflow-scroll max-h-80  "
         >
           <li
             v-for="accident in vm.data.value?.accidents"
             :key="accident.id"
           >
-            <span class="flex gap-1.5 text-sm items-center">&bull; {{ accident.reason }} <TrashIcon
-              class="w-4 h-4 text-red-500"
+            <span class="flex gap-1.5 text-sm">&bull;<TrashIcon
+              class="w-4 h-4 text-red-500 flex-none"
               @click="handleRemove(accident.id)"
-            /></span>
+            /> {{ accident.reason }} </span>
           </li>
         </ul>
       </div>

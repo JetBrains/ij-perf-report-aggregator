@@ -5,7 +5,18 @@ import { encodeRison } from "./rison"
 
 const accidents_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
 
+
+export enum AccidentKind {
+  Regression = "Regression",
+  Exception = "Exception",
+  Improvement = "Improvement",
+}
+
 export class Accident {
+  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string, readonly kind: AccidentKind) {}
+}
+
+export class AccidentFromServer {
   constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string, readonly kind: string) {}
 }
 
@@ -21,7 +32,7 @@ function intervalToPostgresInterval(interval: TimeRange): string {
 }
 
 export function getAccidentTypes(): Array<string> {
-  return ["Regression", "Improvement", "Exception"]
+  return Object.values(AccidentKind)
 }
 
 export function removeAccidentFromMetaDb(id: number) {
@@ -57,12 +68,29 @@ export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefine
   const params = tests == null ? {interval} : {interval, tests}
   fetch(accidents_url + encodeRison(params))
     .then(response => response.json())
-    .then((data: Array<Accident>) => {
+    .then((data: Array<AccidentFromServer>) => {
       if (data != null) {
-        accidents.value?.push(...data)
+        const mappedData = data.map(value => {
+          return {...value, kind: capitalizeFirstLetter(value.kind)}
+        })
+        accidents.value?.push(...mappedData)
       }
     })
     .catch(error => console.error(error))
+}
+
+
+function capitalizeFirstLetter(str: string): AccidentKind {
+  const result = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  if (isAccidentKind(result)) {
+    return result
+  } else {
+    throw new Error("Unsupported AccidentKind")
+  }
+}
+
+function isAccidentKind(str: string): str is AccidentKind {
+  return Object.values(AccidentKind).includes(str as AccidentKind)
 }
 
 const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"

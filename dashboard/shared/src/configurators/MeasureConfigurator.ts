@@ -9,7 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
-import { Accident, isValueShouldBeMarked } from "../meta"
+import { Accident, AccidentKind, getAccident, isValueShouldBeMarked } from "../meta"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
@@ -325,7 +325,18 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            return isValueShouldBeMarked(accidents, seriesIndex.value as Array<string>) ? "red" : seriesIndex.color as ZRColor
+            const accident = getAccident(accidents, seriesIndex.value as Array<string>)
+            if (accident == null) {
+              return seriesIndex.color as ZRColor
+            }
+            switch (accident.kind) {
+              case AccidentKind.Regression:
+                return "red"
+              case AccidentKind.Improvement:
+                return "green"
+              case AccidentKind.Exception:
+                return "black"
+            }
           },
         },
       })

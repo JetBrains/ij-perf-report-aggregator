@@ -186,28 +186,33 @@ function handleCloseClick() {
 }
 
 function getTestActions() {
-  return vm.data.value?.description.value != undefined ? [
-    {
-      label: "Download test project",
-      icon: "pi pi-download",
-      command: () => {
-        window.open(vm.data.value?.description.value?.url as string)
-      },
-    },
-    {
+  const actions = []
+  if (vm.data.value?.description.value != undefined) {
+    const url = vm.data.value.description.value?.url
+    if (url != "") {
+      actions.push({
+        label: "Download test project",
+        icon: "pi pi-download",
+        command: () => {
+          window.open(vm.data.value?.description.value?.url as string)
+        },
+      })
+    }
+    actions.push({
       label: "Copy test method name",
       icon: "pi pi-copy",
       command: () => {
         copyMethodNameToClipboard()
       },
     }, {
-    label: "Open test method",
+      label: "Open test method",
       icon: "pi pi-folder-open",
       command: () => {
         openTestInIDE()
-      }
-    }
-  ] : []
+      },
+    })
+  }
+  return actions
 }
 
 

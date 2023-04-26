@@ -20,7 +20,15 @@
         />
         {{ vm.data.value?.projectName }}
       </div>
-      <SplitButton label="Navigate to test" @click="handleNavigateToTest" :model="getTestActions()" text plain link icon="pi pi-chart-line"/>
+      <SplitButton
+        label="Navigate to test"
+        :model="getTestActions()"
+        text
+        plain
+        link
+        icon="pi pi-chart-line"
+        @click="handleNavigateToTest"
+      />
 
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
@@ -157,7 +165,7 @@ function reportRegression() {
 function copyMethodNameToClipboard() {
   const methodName = vm.data.value?.description.value?.methodName
   if (methodName != undefined) {
-    navigator.clipboard.writeText(methodName)
+    void navigator.clipboard.writeText(methodName)
   }
 }
 
@@ -172,7 +180,7 @@ function handleNavigateToTest() {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts[parts.length - 2].toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
-  const query: Record<string, string> = {...currentRoute.query, project: vm.data.value?.projectName ?? ""}
+  const query: Record<string, string> = {...currentRoute.query, project: vm.data.value?.projectName ?? ""} as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL + "?" + queryParams)
 }
@@ -193,7 +201,7 @@ function getTestActions() {
       actions.push({
         label: "Download test project",
         icon: "pi pi-download",
-        command: () => {
+        command() {
           window.open(vm.data.value?.description.value?.url as string)
         },
       })
@@ -201,13 +209,13 @@ function getTestActions() {
     actions.push({
       label: "Copy test method name",
       icon: "pi pi-copy",
-      command: () => {
+      command() {
         copyMethodNameToClipboard()
       },
     }, {
       label: "Open test method",
       icon: "pi pi-folder-open",
-      command: () => {
+      command() {
         openTestInIDE()
       },
     })

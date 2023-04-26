@@ -9,7 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
-import { Accident, AccidentKind, getAccident, isValueShouldBeMarked } from "../meta"
+import { Accident, AccidentKind, getAccident, isValueShouldBeMarkedWithPin } from "../meta"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
@@ -312,10 +312,10 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: Array<string>): number {
           const symbolSize = symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          return isValueShouldBeMarked(accidents, value) ? symbolSize * 4 : symbolSize
+          return isValueShouldBeMarkedWithPin(accidents, value) ? symbolSize * 4 : symbolSize
         },
         symbol(value: Array<string>) {
-          return isValueShouldBeMarked(accidents, value) ? "pin" : symbolOptions.symbol ?? "circle"
+          return isValueShouldBeMarkedWithPin(accidents, value) ? "pin" : symbolOptions.symbol ?? "circle"
         },
         triggerLineEvent: true,
         // applicable only for line chart

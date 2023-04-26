@@ -112,8 +112,9 @@ export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefin
   }
 }
 
-export function isValueShouldBeMarked(accidents: Array<Accident> | null, value: Array<string>): boolean {
-  return getAccident(accidents, value) != null
+export function isValueShouldBeMarkedWithPin(accidents: Array<Accident> | null, value: Array<string>): boolean {
+  const accident = getAccident(accidents, value)
+  return accident != null && accident.kind != AccidentKind.Exception
 }
 
 export function getAccident(accidents: Array<Accident> | null, value: Array<string>): Accident | null {

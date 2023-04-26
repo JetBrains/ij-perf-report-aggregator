@@ -64,8 +64,7 @@ export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefine
 const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
 
 export class Description {
-  constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {
-  }
+  constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {}
 }
 
 export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefined>, project: string | undefined, branch: string) {

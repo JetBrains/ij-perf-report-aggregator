@@ -161,6 +161,12 @@ function copyMethodNameToClipboard() {
   }
 }
 
+function openTestInIDE() {
+  const method = vm.data.value?.description.value?.methodName
+  const origin = encodeURIComponent("ssh://git@git.jetbrains.team/ij/intellij.git")
+  window.open(`jetbrains://idea/navigate/reference?origin=${origin}&fqn=${method}`)
+}
+
 function handleNavigateToTest() {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
@@ -194,7 +200,13 @@ function getTestActions() {
       command: () => {
         copyMethodNameToClipboard()
       },
-    },
+    }, {
+    label: "Open test method",
+      icon: "pi pi-folder-open",
+      command: () => {
+        openTestInIDE()
+      }
+    }
   ] : []
 }
 

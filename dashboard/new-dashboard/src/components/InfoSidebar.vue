@@ -48,7 +48,7 @@
           v-if="vm.data.value?.accidents"
           class="flex gap-1.5 text-sm items-center"
         >
-          <ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
+          <ExclamationTriangleIcon class="w-4 h-4" /> Known events:
         </span>
         <ul
           v-if="vm.data.value?.accidents"
@@ -61,7 +61,7 @@
             <span class="flex gap-1.5 text-sm">&bull;<TrashIcon
               class="w-4 h-4 text-red-500 flex-none"
               @click="handleRemove(accident.id)"
-            /> {{ accident.reason }} </span>
+            /> {{ accident.kind }}: {{ accident.reason }} </span>
           </li>
         </ul>
       </div>
@@ -99,10 +99,10 @@
       </div>
       <Button
         class="text-sm"
-        label="Report"
+        label="Report Event"
         text
         size="small"
-        severity="danger"
+
         @click="showDialog = true"
       />
     </div>
@@ -118,6 +118,7 @@
         v-model="accidentType"
         placeholder="Event Type"
         :options="getAccidentTypes()"
+        class="w-[8rem]"
       />
       <span class="p-float-label flex-grow">
         <InputText
@@ -125,7 +126,7 @@
           v-model="reason"
           class="w-full"
         />
-        <label for="reason">Reason</label>
+        <label class="text-sm" for="reason">Reason</label>
       </span>
     </div>
     <template #footer>

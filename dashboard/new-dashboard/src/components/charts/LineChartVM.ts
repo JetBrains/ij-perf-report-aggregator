@@ -23,7 +23,7 @@ function getWarningIcon() {
   svg.append(path)
 
   const div = document.createElement("div")
-  div.setAttribute("class", "w-4 h-4 text-red-500")
+  div.setAttribute("class", "w-4 h-4")
   div.append(svg)
   return div
 }
@@ -101,7 +101,7 @@ export class LineChartVM {
             accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
             const div = getWarningIcon()
             accidentHtml.append(div)
-            accidentHtml.append("Known degradation: " + accident.reason)
+            accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
             element.append(accidentHtml)
           }
 

@@ -99,7 +99,7 @@
       </div>
       <Button
         class="text-sm"
-        label="Report regression"
+        label="Report"
         text
         size="small"
         severity="danger"
@@ -110,17 +110,24 @@
   <Dialog
     v-model:visible="showDialog"
     modal
-    header="Report Regression"
+    header="Report Event"
     :style="{ width: '30vw' }"
   >
-    <span class="p-float-label">
-      <InputText
-        id="reason"
-        v-model="reason"
-        class="w-full"
+    <div class="flex items-center space-x-4">
+      <Dropdown
+        v-model="accidentType"
+        placeholder="Event Type"
+        :options="getAccidentTypes()"
       />
-      <label for="reason">Reason</label>
-    </span>
+      <span class="p-float-label flex-grow">
+        <InputText
+          id="reason"
+          v-model="reason"
+          class="w-full"
+        />
+        <label for="reason">Reason</label>
+      </span>
+    </div>
     <template #footer>
       <Button
         label="Cancel"
@@ -138,7 +145,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { removeAccidentFromMetaDb, writeAccidentToMetaDb } from "shared/src/meta"
+import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "shared/src/meta"
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
@@ -151,6 +158,8 @@ const router = useRouter()
 
 const description = vm.data.value?.description
 
+const accidentType = ref<string>("Regression")
+
 function reportRegression() {
   showDialog.value = false
   const value = vm.data.value
@@ -158,7 +167,7 @@ function reportRegression() {
     console.log("value is zero! This shouldn't happen")
   }
   else {
-    writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString())
+    writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString(), accidentType.value)
   }
 }
 

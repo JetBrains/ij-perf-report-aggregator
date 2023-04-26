@@ -20,6 +20,10 @@ function intervalToPostgresInterval(interval: TimeRange): string {
   return intervalMapping[interval]
 }
 
+export function getAccidentTypes(): Array<string> {
+  return ["Regression", "Improvement", "Exception"]
+}
+
 export function removeAccidentFromMetaDb(id: number) {
   fetch(accidents_url, {
     method: "DELETE",
@@ -32,13 +36,13 @@ export function removeAccidentFromMetaDb(id: number) {
   ).catch(error => console.error(error))
 }
 
-export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string) {
+export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string|undefined) {
   fetch(accidents_url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({date, affected_test, reason, build_number: build_number.toString()}),
+    body: JSON.stringify({date, affected_test, reason, build_number: build_number.toString(), kind}),
   }).then(
     _ => window.location.reload(),
   ).catch(error => console.error(error))

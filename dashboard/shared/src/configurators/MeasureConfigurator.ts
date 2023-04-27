@@ -9,7 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../formatter"
-import { Accident, AccidentKind, getAccident, isValueShouldBeMarkedWithPin } from "../meta"
+import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../meta"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
@@ -302,6 +302,8 @@ function configureChart(
     for (const data of seriesData) {
       isNotEmpty = isNotEmpty || data.length > 0
     }
+
+    const accidentsMap = convertAccidentsToMap(accidents)
     if (isNotEmpty) {
       series.push({
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
@@ -312,10 +314,10 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: Array<string>): number {
           const symbolSize = symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          return isValueShouldBeMarkedWithPin(accidents, value) ? symbolSize * 4 : symbolSize
+          return isValueShouldBeMarkedWithPin(accidentsMap, value) ? symbolSize * 4 : symbolSize
         },
         symbol(value: Array<string>) {
-          return isValueShouldBeMarkedWithPin(accidents, value) ? "pin" : symbolOptions.symbol ?? "circle"
+          return isValueShouldBeMarkedWithPin(accidentsMap, value) ? "pin" : symbolOptions.symbol ?? "circle"
         },
         triggerLineEvent: true,
         // applicable only for line chart
@@ -325,7 +327,7 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            const accident = getAccident(accidents, seriesIndex.value as Array<string>)
+            const accident = getAccident(accidentsMap, seriesIndex.value as Array<string>)
             if (accident == null) {
               return seriesIndex.color as ZRColor
             }

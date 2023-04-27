@@ -112,20 +112,37 @@ export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefin
   }
 }
 
-export function isValueShouldBeMarkedWithPin(accidents: Array<Accident> | null, value: Array<string>): boolean {
+/**
+ * This is needed for optimization since we search for accidents on each point on the plot.
+ * @param accidents
+ */
+export function convertAccidentsToMap(accidents: Array<Accident> | null): Map<string, Accident> {
+  const accidentsMap = new Map<string, Accident>()
+  if (accidents) {
+    for (const accident of accidents) {
+      const key = `${accident.affectedTest}_${accident.buildNumber}` // assuming accident has a property 'value8'
+      accidentsMap.set(key, accident)
+    }
+  }
+  return accidentsMap
+}
+
+export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | null, value: Array<string>): boolean {
   const accident = getAccident(accidents, value)
   return accident != null && accident.kind != AccidentKind.Exception
 }
 
-export function getAccident(accidents: Array<Accident> | null, value: Array<string>): Accident | null {
+export function getAccident(accidents: Map<string, Accident> | null, value: Array<string>): Accident | null {
   if (accidents != null) {
     //perf db
     if (value.length == 10) {
-      return accidents.find(accident => accident.affectedTest == value[5] && accident.buildNumber == value[7] + "." + value[8]) ?? null
+      const key = `${value[5]}_${value[7]}.${value[8]}`
+      return accidents.get(key) ?? null
     }
     //perf dev db
     if (value.length == 6) {
-      return accidents.find(accident => accident.affectedTest == value[5] && accident.buildNumber == value[4]) ?? null
+      const key = `${value[5]}_${value[4]}`
+      return accidents.get(key) ?? null
     }
   }
   return null

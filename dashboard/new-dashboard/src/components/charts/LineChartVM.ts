@@ -4,7 +4,7 @@ import { timeFormat, ValueUnit } from "shared/src/chart"
 import { DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { LineChartOptions } from "shared/src/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
-import { Accident, getAccident } from "shared/src/meta"
+import { Accident, convertAccidentsToMap, getAccident } from "shared/src/meta"
 import { ChartManager } from "./ChartManager"
 
 function getWarningIcon() {
@@ -35,6 +35,7 @@ export class LineChartVM {
     valueUnit: ValueUnit,
     accidents: Array<Accident>|null
   ) {
+    const accidentsMap = convertAccidentsToMap(accidents)
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", {showSpinner: false})
     this.eChart.chart.setOption<LineChartOptions>({
@@ -93,7 +94,7 @@ export class LineChartVM {
 
           element.append(document.createElement("br"))
           element.append(`${params.seriesName}`)
-          const accident = getAccident(accidents, data as Array<string>)
+          const accident = getAccident(accidentsMap, data as Array<string>)
           if(accident != null){
             //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
             element.append(document.createElement("br"))

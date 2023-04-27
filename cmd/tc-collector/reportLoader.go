@@ -40,6 +40,12 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
       return err
     }
   }
+  if t.config.HasNoInstallerButHasChanges {
+    err := t.loadChanges(builds, networkRequestCount)
+    if err != nil {
+      return err
+    }
+  }
 
   duration := time.Duration(len(builds)*300) * time.Second
   t.logger.Debug("load", zap.Int("timeout", int(duration.Seconds())))
@@ -106,6 +112,9 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
             data.Changes = installerInfo.changes
             data.TcInstallerBuildId = installerInfo.id
           }
+          if t.config.HasNoInstallerButHasChanges {
+            data.Changes = build.buildInfo.changes
+          }
 
           if t.config.HasBuildNumber {
             data.TcBuildNumber = build.BuildNumber
@@ -123,6 +132,54 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
         return nil
       }
     })(build))
+  }
+  return errGroup.Wait()
+}
+
+func (t *Collector) loadChanges(builds []*Build, networkRequestCount int) error {
+  var notLoadedBuildIds []*BuildInfo
+  for _, build := range builds {
+    if build == nil {
+      continue
+    }
+
+    id := build.Id
+    buildInfo := t.buildIdToInfo[id]
+    if buildInfo == nil {
+      buildInfo = &BuildInfo{
+        id: id,
+      }
+      notLoadedBuildIds = append(notLoadedBuildIds, buildInfo)
+      t.buildIdToInfo[id] = buildInfo
+    }
+    build.buildInfo = buildInfo
+  }
+
+  if len(notLoadedBuildIds) == 0 {
+    return nil
+  }
+
+  t.logger.Debug("load build info", zap.Int("count", len(notLoadedBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
+    for _, buildInfo := range notLoadedBuildIds {
+      encoder.AppendInt(buildInfo.id)
+    }
+    return nil
+  })))
+
+  errGroup, loadContext := errgroup.WithContext(t.taskContext)
+  errGroup.SetLimit(networkRequestCount)
+  for _, buildInfo := range notLoadedBuildIds {
+    if buildInfo.id == -1 {
+      continue
+    }
+
+    errGroup.Go((func(buildInfo *BuildInfo) func() error {
+      return func() error {
+        var err error
+        buildInfo.changes, err = t.loadBuildChanges(loadContext, buildInfo.id)
+        return errors.WithStack(err)
+      }
+    })(buildInfo))
   }
   return errGroup.Wait()
 }
@@ -179,7 +236,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     errGroup.Go((func(installerInfo *InstallerInfo) func() error {
       return func() error {
         var err error
-        installerInfo.changes, err = t.loadInstallerChanges(loadContext, installerInfo.id)
+        installerInfo.changes, err = t.loadBuildChanges(loadContext, installerInfo.id)
         return errors.WithStack(err)
       }
     })(installerInfo))
@@ -201,8 +258,8 @@ func computeBuildDate(build *Build) (int, time.Time, error) {
   return -1, time.Time{}, nil
 }
 
-func (t *Collector) loadInstallerChanges(ctx context.Context, installerBuildId int) ([]string, error) {
-  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)&count=10000")
+func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string, error) {
+  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(buildId) + ")&fields=change(version)&count=10000")
   if err != nil {
     return nil, err
   }

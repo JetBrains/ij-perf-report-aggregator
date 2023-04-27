@@ -37,6 +37,7 @@ type Collector struct {
   tcSessionId atomic.String
 
   installerBuildIdToInfo map[int]*InstallerInfo
+  buildIdToInfo          map[int]*BuildInfo
 }
 
 var productCodeToBuildName = map[string]string{
@@ -175,6 +176,7 @@ func collectBuildConfiguration(
     config:      config,
 
     installerBuildIdToInfo: make(map[int]*InstallerInfo),
+    buildIdToInfo:          make(map[int]*BuildInfo),
 
     logger: logger,
   }

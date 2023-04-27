@@ -118,7 +118,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
   insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
 
   var installerManager *InsertInstallerManager
-  if config.HasInstallerField {
+  if config.HasInstallerField || config.HasNoInstallerButHasChanges {
     installerManager, err = NewInstallerInsertManager(context, db, logger)
     if err != nil {
       return nil, err

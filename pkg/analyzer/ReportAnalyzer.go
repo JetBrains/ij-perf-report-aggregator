@@ -284,6 +284,11 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     if err != nil {
       return err
     }
+  } else if report.extraData.Changes != nil {
+    err := t.InsertReportManager.insertInstallerManager.Insert(report.extraData.TcBuildId, report.extraData.Changes)
+    if err != nil {
+      return err
+    }
   }
 
   if t.InsertReportManager.insertMetaManager != nil {

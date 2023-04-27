@@ -30,6 +30,7 @@ type Build struct {
   TriggeredBy          *TriggeredBy         `json:"triggered"`
 
   installerInfo *InstallerInfo
+  buildInfo     *BuildInfo
 }
 
 type TriggeredBy struct {
@@ -44,6 +45,11 @@ type InstallerInfo struct {
   id        int
   changes   []string
   buildTime time.Time
+}
+
+type BuildInfo struct {
+  id      int
+  changes []string
 }
 
 type Artifacts struct {

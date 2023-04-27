@@ -16,13 +16,14 @@ type DatabaseConfiguration struct {
   ReportReader          CustomReportAnalyzer
   insertStatementWriter InsertStatementWriter
 
-  HasProductField   bool
-  HasInstallerField bool
-  HasBuildTypeField bool
-  HasRawReport      bool
-  HasBuildNumber    bool
-  HasMetaDB         bool
-  extraFieldCount   int
+  HasProductField             bool
+  HasInstallerField           bool
+  HasBuildTypeField           bool
+  HasRawReport                bool
+  HasBuildNumber              bool
+  HasNoInstallerButHasChanges bool
+  HasMetaDB                   bool
+  extraFieldCount             int
 }
 
 func GetAnalyzer(id string) DatabaseConfiguration {
@@ -55,13 +56,14 @@ func GetAnalyzer(id string) DatabaseConfiguration {
   case strings.HasPrefix(id, "perfintDev"):
     dbName, tableName := splitId(id)
     return DatabaseConfiguration{
-      DbName:            dbName,
-      TableName:         tableName,
-      ReportReader:      analyzePerfReport,
-      HasRawReport:      true,
-      HasBuildTypeField: true,
-      HasMetaDB:         true,
-      extraFieldCount:   3,
+      DbName:                      dbName,
+      TableName:                   tableName,
+      ReportReader:                analyzePerfReport,
+      HasRawReport:                true,
+      HasBuildTypeField:           true,
+      HasMetaDB:                   true,
+      HasNoInstallerButHasChanges: true,
+      extraFieldCount:             3,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },

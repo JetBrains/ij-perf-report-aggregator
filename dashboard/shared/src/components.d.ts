@@ -9,7 +9,22 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Button: typeof import('primevue/button/Button.vue')['default']
+    Checkbox: typeof import('primevue/checkbox/Checkbox.vue')['default']
+    Column: typeof import('primevue/column/Column.vue')['default']
+    DataTable: typeof import('primevue/datatable/DataTable.vue')['default']
+    Dialog: typeof import('primevue/dialog/Dialog.vue')['default']
+    Dropdown: typeof import('primevue/dropdown/Dropdown.vue')['default']
+    InputNumber: typeof import('primevue/inputnumber/InputNumber.vue')['default']
+    InputText: typeof import('primevue/inputtext/InputText.vue')['default']
+    Message: typeof import('primevue/message/Message.vue')['default']
+    MultiSelect: typeof import('primevue/multiselect/MultiSelect.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Slider: typeof import('primevue/slider/Slider.vue')['default']
+    SplitButton: typeof import('primevue/splitbutton/SplitButton.vue')['default']
+    Textarea: typeof import('primevue/textarea/Textarea.vue')['default']
+    Toolbar: typeof import('primevue/toolbar/Toolbar.vue')['default']
+    TreeSelect: typeof import('primevue/treeselect/TreeSelect.vue')['default']
   }
 }

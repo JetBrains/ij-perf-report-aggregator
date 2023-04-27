@@ -206,7 +206,6 @@ const componentWithStyles = new Set<string>([
   "TabMenu",
 ])
 
-// SFC compilation saves 200KB (2.65 vs 2.67 MB)
 function PrimeVueResolver(): ComponentResolver {
   const styleDir = path.join(__dirname, "dashboard/shared/src/primevue-theme")
   return {
@@ -214,13 +213,13 @@ function PrimeVueResolver(): ComponentResolver {
     resolve(name: string) {
       if (componentWithStyles.has(name)) {
         return {
-          path: `primevue/${name.toLowerCase()}/sfc`,
+          from: `primevue/${name.toLowerCase()}/${name}.vue`,
           sideEffects: [path.join(styleDir, `${name.toLowerCase()}.css`)],
         }
       }
       else if (components.has(name)) {
         return {
-          path: `primevue/${name.toLowerCase()}/sfc`,
+          from: `primevue/${name.toLowerCase()}/${name}.vue`,
         }
       }
       else {

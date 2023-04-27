@@ -7,7 +7,7 @@ import { shallowRef } from "vue"
 import { InfoData, InfoSidebarVm } from "../InfoSidebarVm"
 
 function base64ToHex(base64: string): string {
-  const decodedArray = new Uint8Array([...atob(base64)].map(c => c.charCodeAt(0)))
+  const decodedArray = new Uint8Array([...atob(base64)].map(c => c.codePointAt(0) ?? 0))
   let hex = ""
   for (const byte of decodedArray) {
     hex += byte.toString(16).padStart(2, "0")

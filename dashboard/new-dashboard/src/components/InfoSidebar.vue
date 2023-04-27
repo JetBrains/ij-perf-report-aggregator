@@ -91,7 +91,7 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ArrowDownTrayIcon class="w-4 h-4"/>
+          <ArrowDownTrayIcon class="w-4 h-4" />
           Installer
         </a>
       </div>
@@ -102,7 +102,7 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <SpaceIcon class="w-4 h-4"/>
+          <SpaceIcon class="w-4 h-4" />
           Changes
         </a>
       </div>
@@ -136,7 +136,10 @@
           v-model="reason"
           class="w-full"
         />
-        <label class="text-sm" for="reason">Reason</label>
+        <label
+          class="text-sm"
+          for="reason"
+        >Reason</label>
       </span>
     </div>
     <template #footer>

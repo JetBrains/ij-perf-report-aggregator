@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -41,7 +41,7 @@
               :title="'completion K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -52,7 +52,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion kts"
               measure="completion#mean_value"
@@ -64,7 +64,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Indexing K1"
               measure="indexing"
@@ -73,7 +73,7 @@
               :configurators="dashboardConfigurators"
               :accidents="warnings"
             />
-          </div>          <div class="flex-1">
+          </div>          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Indexing K2"
               measure="indexing"
@@ -86,7 +86,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value on hello-world"
               measure="completion#mean_value"
@@ -99,7 +99,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value K1"
               measure="completion#mean_value"
@@ -114,7 +114,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value K2"
               measure="completion#mean_value"
@@ -132,7 +132,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value with typing"
               measure="completion#mean_value"
@@ -151,7 +151,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value Kotlin language server K1"
               measure="completion#mean_value"
@@ -166,7 +166,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Completion mean value Kotlin language server K2"
               measure="completion#mean_value"

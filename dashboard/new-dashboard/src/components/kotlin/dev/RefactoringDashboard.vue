@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'performInlineRename\_%'"
@@ -41,7 +41,7 @@
               :title="'mean all rename K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'performInlineRename\_%'"
@@ -51,7 +51,7 @@
             />
           </div>
 
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'prepareForRename\_%'"
@@ -60,7 +60,7 @@
               :title="'mean all prepare-rename K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'performInlineRename\_%'"
@@ -69,7 +69,7 @@
               :title="'mean all prepare-rename K2'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'startInlineRename\_%'"
@@ -78,7 +78,7 @@
               :title="'mean all start-rename K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'startInlineRename\_%'"
@@ -89,7 +89,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'PerformInlineRename mean value on  K1"
               measure="performInlineRename#mean_value"
@@ -100,7 +100,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="PerformInlineRename mean value on  K2"
               measure="performInlineRename#mean_value"
@@ -114,7 +114,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'StartInlineRename mean value on  K1"
               measure="startInlineRename#mean_value"
@@ -125,7 +125,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="StartInlineRename mean value on  K2"
               measure="startInlineRename#mean_value"
@@ -139,7 +139,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'PrepareForRename mean value on  K1"
               measure="prepareForRename#mean_value"
@@ -150,7 +150,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="PrepareForRename mean value on  K2"
               measure="prepareForRename#mean_value"

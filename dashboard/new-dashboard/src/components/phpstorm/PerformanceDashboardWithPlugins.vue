@@ -42,7 +42,7 @@
           />
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Batch Inspections"
               measure="globalInspections"
@@ -51,7 +51,7 @@
               :configurators="dashboardConfigurators"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Local Inspections"
               measure="localInspections"
@@ -62,7 +62,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Indexing"
               measure="updatingTime"
@@ -71,7 +71,7 @@
               :configurators="dashboardConfigurators"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Indexing"
               measure="updatingTime"
@@ -83,7 +83,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Typing Time"
               measure="typing"
@@ -92,7 +92,7 @@
               :configurators="dashboardConfigurators"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Typing Average Responsiveness"
               measure="test#average_awt_delay"
@@ -101,7 +101,7 @@
               :configurators="dashboardConfigurators"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Typing Responsiveness"
               measure="test#max_awt_delay"

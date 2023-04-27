@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'findUsage\_%'"
@@ -41,7 +41,7 @@
               :title="'mean all project findUsages K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'findUsage_%'"
@@ -52,7 +52,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij findUsages mean value with Library cache K1"
               measure="findUsages#mean_value"
@@ -68,7 +68,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij findUsages mean value with Library cache K2"
               measure="findUsages#mean_value"
@@ -87,7 +87,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin lang' findUsages mean value with Library cache K1"
               measure="findUsages#mean_value"
@@ -103,7 +103,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin lang' findUsages mean value with Library cache K2"
               measure="findUsages#mean_value"

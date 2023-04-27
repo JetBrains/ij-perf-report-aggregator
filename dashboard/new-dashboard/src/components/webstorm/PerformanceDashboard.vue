@@ -33,7 +33,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#JavaScript'"
@@ -42,7 +42,7 @@
               :value-unit="'counter'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#TypeScript'"
@@ -51,7 +51,7 @@
               :value-unit="'counter'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#SCSS'"

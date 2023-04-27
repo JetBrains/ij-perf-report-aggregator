@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -41,7 +41,7 @@
               :title="'mean all project completion K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -52,7 +52,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Hello-world' completion mean value on  K1"
               measure="completion#mean_value"
@@ -62,7 +62,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Hello-world' completion mean value on hello-world K2"
               measure="completion#mean_value"
@@ -74,7 +74,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Hello-world' firstElementShown mean value on hello-world K1"
               measure="completion#firstElementShown#mean_value"
@@ -84,7 +84,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Hello-world' firstElementShown mean value on hello-world K2"
               measure="completion#firstElementShown#mean_value"
@@ -97,7 +97,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij completion mean value K1"
               measure="completion#mean_value"
@@ -111,7 +111,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij completion mean value K2"
               measure="completion#mean_value"
@@ -127,7 +127,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij firstElementShown mean value K1"
               measure="completion#firstElementShown#mean_value"
@@ -141,7 +141,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij firstElementShown mean value K2"
               measure="completion#firstElementShown#mean_value"
@@ -157,7 +157,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suit 2' completion mean value K1"
               measure="completion#mean_value"
@@ -172,7 +172,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suit 2' completion mean value K2"
               measure="completion#mean_value"
@@ -189,7 +189,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suit 2' firstElementShown mean value K1"
               measure="completion#firstElementShown#mean_value"
@@ -204,7 +204,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suit 2' firstElementShown mean value K2"
               measure="completion#firstElementShown#mean_value"
@@ -221,7 +221,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij with typing suit 2' completion mean value K1"
               measure="completion#mean_value"
@@ -235,7 +235,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij with typing suit 2' completion mean value K2"
               measure="completion#mean_value"
@@ -252,7 +252,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij with typing suit 2' firstElementShown mean value K1"
               measure="completion#firstElementShown#mean_value"
@@ -266,7 +266,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij with typing suit 2' firstElementShown mean value K2"
               measure="completion#firstElementShown#mean_value"
@@ -283,7 +283,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Kotlin lang Completion mean value K1"
               measure="completion#mean_value"
@@ -297,7 +297,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Kotlin lang Completion mean value K2"
               measure="completion#mean_value"
@@ -313,7 +313,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Kotlin lang firstElementShown mean value K1"
               measure="completion#firstElementShown#mean_value"
@@ -327,7 +327,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Kotlin lang firstElementShown mean value K2"
               measure="completion#firstElementShown#mean_value"
@@ -343,7 +343,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server ' completion mean value K1"
               measure="completion#mean_value"
@@ -358,7 +358,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server ' completion mean value K2"
               measure="completion#mean_value"
@@ -375,7 +375,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server' firstElementShown mean value K1"
               measure="completion#firstElementShown#mean_value"
@@ -390,7 +390,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server' firstElementShown mean value K2"
               measure="completion#firstElementShown#mean_value"

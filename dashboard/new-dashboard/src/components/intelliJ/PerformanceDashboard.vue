@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#JAVA'"
@@ -41,7 +41,7 @@
               :value-unit="'counter'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#Kotlin'"
@@ -50,7 +50,7 @@
               :value-unit="'counter'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -58,7 +58,7 @@
               :title="'Completion'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
               :aggregated-measure="'test#average_awt_delay'"

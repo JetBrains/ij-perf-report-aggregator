@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'processingSpeed#PHP'"
@@ -41,7 +41,7 @@
               :value-unit="'counter'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'completion\_%'"
@@ -49,7 +49,7 @@
               :title="'Completion'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
               :aggregated-measure="'test#average_awt_delay'"
@@ -70,7 +70,7 @@
           />
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Batch Inspections"
               measure="globalInspections"
@@ -80,7 +80,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Batch Inspections"
               measure="globalInspections"
@@ -93,7 +93,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Local Inspections"
               measure="localInspections"
@@ -103,7 +103,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Local Inspections"
               measure="localInspections"
@@ -180,7 +180,7 @@
           />
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="PHP SearchEverywhere Class"
               measure="searchEverywhere_class"
@@ -190,7 +190,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Code Vision (PhpReferencesCodeVisionProvider)"
               measure="PhpReferencesCodeVisionProvider"
@@ -202,7 +202,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="PHP Typing Average Responsiveness"
               measure="test#average_awt_delay"
@@ -214,7 +214,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="PHP Typing Responsiveness"
               measure="test#max_awt_delay"
@@ -228,7 +228,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Blade Typing Time"
               measure="typing"
@@ -239,7 +239,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Blade Average Responsiveness"
               measure="test#average_awt_delay"
@@ -250,7 +250,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Blade Responsiveness"
               measure="test#max_awt_delay"

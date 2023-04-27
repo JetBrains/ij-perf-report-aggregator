@@ -32,7 +32,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <section class="flex gap-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'highlighting\_%'"
@@ -41,7 +41,7 @@
               :title="'mean all project highlighting K1'"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <AggregationChart
               :configurators="averagesConfigurators"
               :aggregated-measure="'highlighting\_%'"
@@ -52,7 +52,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij highlight mean value with Library cache K1"
               measure="highlighting#mean_value"
@@ -76,7 +76,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Intellij highlight mean value with Library cache K2"
               measure="highlighting#mean_value"
@@ -103,7 +103,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suite 2' highlight mean value with Library cache K1"
               measure="highlighting#mean_value"
@@ -119,7 +119,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Intellij suite 2' highlight mean value with Library cache K2"
               measure="highlighting#mean_value"
@@ -138,7 +138,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin lang' highlight mean value with Library cache K1"
               measure="highlighting#mean_value"
@@ -154,7 +154,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin lang' highlight mean value with Library cache K2"
               measure="highlighting#mean_value"
@@ -173,7 +173,7 @@
         </section>
 
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server' highlight mean value with Library cache K1"
               measure="highlighting#mean_value"
@@ -191,7 +191,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'Kotlin language server' highlight mean value with Library cache K2"
               measure="highlighting#mean_value"

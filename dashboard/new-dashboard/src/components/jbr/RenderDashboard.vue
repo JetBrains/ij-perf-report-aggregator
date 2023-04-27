@@ -42,7 +42,7 @@
             />
           </section>
           <section class="flex gap-x-6">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <GroupProjectsChart
                 label="Ubuntu"
                 :measure="metric"
@@ -51,7 +51,7 @@
                 :configurators="dashboardConfigurators"
               />
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <GroupProjectsChart
                 label="Windows"
                 :measure="metric"

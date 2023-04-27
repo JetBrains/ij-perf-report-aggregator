@@ -614,6 +614,52 @@
         <section class="flex gap-x-6">
           <div class="flex-1">
             <GroupProjectsChart
+              label="'TBE' highlight mean value with Library cache K1"
+              measure="highlighting#mean_value"
+              :projects="[
+                'toolbox_enterprise/highlight/IdeSettingControllerTest_with_library_cache_k1',
+                'toolbox_enterprise/highlight/IntelliJPluginSettingTest_with_library_cache_k1',
+                'toolbox_enterprise/highlight/LoginTests_with_library_cache_k1',
+                'toolbox_enterprise/highlight/PluginAuditLogService_with_library_cache_k1',
+                'toolbox_enterprise/highlight/PluginControllerTest_with_library_cache_k1',
+                'toolbox_enterprise/highlight/ProfileController_with_library_cache_k1',
+                'toolbox_enterprise/highlight/ProfileService_with_library_cache_k1',
+                'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k1',
+                'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k1',
+                'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
+                'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+          <div class="flex-1">
+            <GroupProjectsChart
+              label="'TBE' highlight mean value with Library cache K2"
+              measure="highlighting#mean_value"
+              :projects="[
+                'toolbox_enterprise/highlight/IdeSettingControllerTest_with_library_cache_k2',
+                'toolbox_enterprise/highlight/IntelliJPluginSettingTest_with_library_cache_k2',
+                'toolbox_enterprise/highlight/LoginTests_with_library_cache_k2',
+                'toolbox_enterprise/highlight/PluginAuditLogService_with_library_cache_k2',
+                'toolbox_enterprise/highlight/PluginControllerTest_with_library_cache_k2',
+                'toolbox_enterprise/highlight/ProfileController_with_library_cache_k2',
+                'toolbox_enterprise/highlight/ProfileService_with_library_cache_k2',
+                'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k2',
+                'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k2',
+                'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
+                'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+        </section>
+        <section class="flex gap-x-6">
+          <div class="flex-1">
+            <GroupProjectsChart
               label="Intellij findUsages mean value with Library cache K1"
               measure="findUsages#mean_value"
               :projects="[

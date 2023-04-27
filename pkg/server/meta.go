@@ -2,6 +2,7 @@ package server
 
 import (
   "encoding/json"
+  "errors"
   "github.com/jackc/pgx/v5"
   "github.com/jackc/pgx/v5/pgtype"
   "github.com/jackc/pgx/v5/pgxpool"
@@ -191,8 +192,16 @@ func createGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       }, err
     })
     if err != nil {
-      logger.Error(err.Error())
-      writer.WriteHeader(http.StatusInternalServerError)
+      if errors.Is(err, pgx.ErrNoRows) {
+        _, err = writer.Write([]byte("{}"))
+        if err != nil {
+          logger.Error(err.Error())
+          writer.WriteHeader(http.StatusInternalServerError)
+        }
+      } else {
+        logger.Error(err.Error())
+        writer.WriteHeader(http.StatusInternalServerError)
+      }
       return
     }
 

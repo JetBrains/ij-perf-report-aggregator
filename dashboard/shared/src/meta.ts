@@ -102,7 +102,9 @@ export class Description {
 export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefined>, project: string | undefined, branch: string) {
   if (project != undefined && branch != undefined) {
     fetch(description_url + encodeRison({project, branch}))
-      .then(response => response.json())
+      .then(response => {
+        return response.ok ? response.json() : null
+      })
       .then((data: Description) => {
         if (data != null) {
           descriptionRef.value = data

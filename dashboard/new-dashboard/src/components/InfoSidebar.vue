@@ -58,8 +58,8 @@
             v-for="accident in vm.data.value?.accidents"
             :key="accident.id"
           >
-            <span class="flex items-start gap-1.5 text-sm">&bull;
-              <span>{{ accident.kind }}: {{ accident.reason }}
+            <span class="flex items-start justify-between gap-1.5 text-sm">&bull;
+              <span class="w-full">{{ accident.kind }}: {{ accident.reason }}
               </span>
               <TrashIcon
                 class="w-4 h-4 text-red-500 flex-none"

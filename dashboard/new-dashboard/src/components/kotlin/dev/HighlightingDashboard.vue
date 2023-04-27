@@ -213,7 +213,7 @@
           </div>
         </section>
         <section class="flex gap-x-6">
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'TBE' highlight mean value with Library cache K1"
               measure="highlighting#mean_value"
@@ -235,7 +235,7 @@
               :accidents="warnings"
             />
           </div>
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="'TBE' highlight mean value with Library cache K2"
               measure="highlighting#mean_value"

@@ -183,17 +183,13 @@ function reportRegression() {
   }
 }
 
-function copyMethodNameToClipboard() {
-  const methodName = vm.data.value?.description.value?.methodName
-  if (methodName != undefined) {
-    void navigator.clipboard.writeText(methodName)
-  }
+function copyMethodNameToClipboard(methodName: string) {
+  void navigator.clipboard.writeText(methodName)
 }
 
-function openTestInIDE() {
-  const method = vm.data.value?.description.value?.methodName
+function openTestInIDE(methodName: string) {
   const origin = encodeURIComponent("ssh://git@git.jetbrains.team/ij/intellij.git")
-  window.open(`jetbrains://idea/navigate/reference?origin=${origin}&fqn=${method}`)
+  window.open(`jetbrains://idea/navigate/reference?origin=${origin}&fqn=${methodName}`)
 }
 
 function handleNavigateToTest() {
@@ -218,28 +214,31 @@ function getTestActions() {
   const actions = []
   if (vm.data.value?.description.value != undefined) {
     const url = vm.data.value.description.value?.url
-    if (url != "") {
+    if (url && url != "") {
       actions.push({
         label: "Download test project",
         icon: "pi pi-download",
         command() {
-          window.open(vm.data.value?.description.value?.url as string)
+          window.open(url)
         },
       })
     }
-    actions.push({
-      label: "Copy test method name",
-      icon: "pi pi-copy",
-      command() {
-        copyMethodNameToClipboard()
-      },
-    }, {
-      label: "Open test method",
-      icon: "pi pi-folder-open",
-      command() {
-        openTestInIDE()
-      },
-    })
+    const methodName = vm.data.value?.description.value?.methodName
+    if (methodName && methodName != "") {
+      actions.push({
+        label: "Copy test method name",
+        icon: "pi pi-copy",
+        command() {
+          copyMethodNameToClipboard(methodName)
+        },
+      }, {
+        label: "Open test method",
+        icon: "pi pi-folder-open",
+        command() {
+          openTestInIDE(methodName)
+        },
+      })
+    }
   }
   return actions
 }

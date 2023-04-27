@@ -16,18 +16,15 @@ function base64ToHex(base64: string): string {
 }
 
 export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
-  if (infoData.installerId == undefined) {
-    sidebarVm?.show(infoData)
-    return
-  }
   const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL))
   const separator = ".."
-  //todo make db configurable
-  new DataQueryExecutor([new ServerConfigurator("perfint", "installer", serverUrlObservable), new class implements DataQueryConfigurator {
+  const db = infoData.installerId ? "perfint" : "perfintDev"
+  const id = infoData.installerId ?? infoData.buildId
+  new DataQueryExecutor([new ServerConfigurator(db, "installer", serverUrlObservable), new class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       configuration.queryProducers.push(new SimpleQueryProducer())
       query.addField({n: "changes", sql: `arrayStringConcat(changes,'${separator}')`})
-      query.addFilter({f: "id", v: infoData.installerId})
+      query.addFilter({f: "id", v: id})
       query.order = "changes"
       return true
     }

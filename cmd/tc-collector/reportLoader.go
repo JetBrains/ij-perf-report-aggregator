@@ -202,7 +202,7 @@ func computeBuildDate(build *Build) (int, time.Time, error) {
 }
 
 func (t *Collector) loadInstallerChanges(ctx context.Context, installerBuildId int) ([]string, error) {
-  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)")
+  artifactUrl, err := url.Parse(t.serverUrl + "/changes?locator=build:(id:" + strconv.Itoa(installerBuildId) + ")&fields=change(version)&count=10000")
   if err != nil {
     return nil, err
   }

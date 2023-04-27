@@ -97,7 +97,7 @@
       </div>
       <div class="flex gap-4 text-blue-500 justify-center">
         <a
-          v-if="getSpaceUrl() !== undefined"
+          v-if="getSpaceUrl()"
           :href="getSpaceUrl()"
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"

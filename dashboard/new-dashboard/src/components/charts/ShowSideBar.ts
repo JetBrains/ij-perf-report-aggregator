@@ -6,8 +6,13 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, Simpl
 import { shallowRef } from "vue"
 import { InfoData, InfoSidebarVm } from "../InfoSidebarVm"
 
-function stringToHex(string: string): string {
-  return [...string].map(it => it.codePointAt(0)?.toString(16).slice(-4)).join("")
+function base64ToHex(base64: string): string {
+  const decodedArray = new Uint8Array([...atob(base64)].map(c => c.charCodeAt(0)))
+  let hex = ""
+  for (const byte of decodedArray) {
+    hex += byte.toString(16).padStart(2, "0")
+  }
+  return hex
 }
 
 export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
@@ -21,7 +26,7 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
   new DataQueryExecutor([new ServerConfigurator("perfint", "installer", serverUrlObservable), new class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       configuration.queryProducers.push(new SimpleQueryProducer())
-      query.addField({n: "changes", sql: `concat(toString(arrayElement(changes, -1)),'${separator}',toString(arrayElement(changes, 1)))`})
+      query.addField({n: "changes", sql: `arrayStringConcat(changes,'${separator}')`})
       query.addFilter({f: "id", v: infoData.installerId})
       query.order = "changes"
       return true
@@ -37,7 +42,7 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
     const changes = data.flat(3)[0]
     if(typeof changes === "string"){
       //commit has to be decoded as base64 and converted to hex
-      infoData.changes = changes.split(separator).map(it => stringToHex(atob(it)).slice(0, 7)).join(" .. ")
+      infoData.changes = changes.split(separator).map(it => base64ToHex(it)).join("%2C")
     }
     sidebarVm?.show(infoData)
   })

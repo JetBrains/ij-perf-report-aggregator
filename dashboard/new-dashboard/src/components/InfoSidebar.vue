@@ -91,16 +91,22 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ArrowDownTrayIcon class="w-4 h-4" />
+          <ArrowDownTrayIcon class="w-4 h-4"/>
           Installer
         </a>
       </div>
-      <div
-        v-if="vm.data.value?.changes"
-        class="text-sm"
-      >
-        Changes: {{ vm.data.value?.changes }}
+      <div class="flex gap-4 text-blue-500 justify-center">
+        <a
+          v-if="getSpaceUrl() !== undefined"
+          :href="getSpaceUrl()"
+          target="_blank"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+        >
+          <SpaceIcon class="w-4 h-4"/>
+          Changes
+        </a>
       </div>
+
       <Button
         class="text-sm"
         label="Report Event"
@@ -155,6 +161,7 @@ import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
+import SpaceIcon from "./common/SpaceIcon.vue"
 
 const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
 const showDialog = ref(false)
@@ -237,6 +244,12 @@ function getTestActions() {
   return actions
 }
 
+function getSpaceUrl() {
+  if (vm.data.value?.changes != null) {
+    return "https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + vm.data.value?.changes + "%22&tab=changes"
+  }
+  return null
+}
 
 </script>
 <style>

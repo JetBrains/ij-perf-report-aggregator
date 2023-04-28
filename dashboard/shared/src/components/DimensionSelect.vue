@@ -42,7 +42,7 @@
         />
       </div>
     </template>
-    <template #indicator>
+    <template #dropdownicon>
       <span />
     </template>
   </MultiSelect>
@@ -68,7 +68,7 @@
         />
       </div>
     </template>
-    <template #indicator>
+    <template #dropdownicon>
       <!-- empty element to avoid ignoring override of slot -->
       <span />
     </template>
@@ -113,7 +113,7 @@
         {{ props.selectedLabel(slotProps.value) }}
       </span>
     </template>
-    <template #indicator>
+    <template #dropdownicon>
       <span />
     </template>
   </MultiSelect>

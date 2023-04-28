@@ -55,7 +55,7 @@ Styling in Tailwind UI way requires as result a lot of efforts, but PrimeVue des
 
 .p-tree-toggler-icon {
   /* same color as p-treeselect-trigger */
-  @apply text-gray-400 pr-4 w-5 text-sm;
+  @apply text-gray-400 pr-0.5;
 }
 
 .p-tree-toggler-icon:hover {

@@ -30,7 +30,7 @@
         />
       </div>
     </template>
-    <template #indicator>
+    <template #triggericon>
       <span />
     </template>
   </TreeSelect>

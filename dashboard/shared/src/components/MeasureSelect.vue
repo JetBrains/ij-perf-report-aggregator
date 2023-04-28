@@ -37,7 +37,7 @@
         />
       </div>
     </template>
-    <template #indicator>
+    <template #dropdownicon>
       <span class="hidden" />
     </template>
   </MultiSelect>

@@ -90,8 +90,8 @@ importers:
         specifier: workspace:*
         version: link:../new-dashboard
       primevue:
-        specifier: 3.26.1
-        version: 3.26.1(vue@3.2.47)
+        specifier: 3.27.0
+        version: 3.27.0(vue@3.2.47)
       report-visualizer:
         specifier: workspace:*
         version: link:../report-visualizer
@@ -117,8 +117,8 @@ importers:
         specifier: 5.4.2
         version: 5.4.2
       primevue:
-        specifier: 3.26.1
-        version: 3.26.1(vue@3.2.47)
+        specifier: 3.27.0
+        version: 3.27.0(vue@3.2.47)
       report-visualizer:
         specifier: workspace:*
         version: link:../report-visualizer
@@ -150,8 +150,8 @@ importers:
         specifier: 5.0.1
         version: 5.0.1
       primevue:
-        specifier: 3.26.1
-        version: 3.26.1(vue@3.2.47)
+        specifier: 3.27.0
+        version: 3.27.0(vue@3.2.47)
       rxjs:
         specifier: 8.0.0-alpha.7
         version: 8.0.0-alpha.7
@@ -189,8 +189,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       primevue:
-        specifier: 3.26.1
-        version: 3.26.1(vue@3.2.47)
+        specifier: 3.27.0
+        version: 3.27.0(vue@3.2.47)
       rxjs:
         specifier: 8.0.0-alpha.7
         version: 8.0.0-alpha.7
@@ -2545,14 +2545,10 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  /primevue@3.26.1(vue@3.2.47):
-    resolution: {integrity: sha512-I10mYyKMl0GF0KfIZK+psCpifzE6vTW8lvlgB8ukmYghKUmU1Ii879OgD7a8xWM8ijoEaO4mYZ18XXVpQ3xScw==}
+  /primevue@3.27.0(vue@3.2.47):
+    resolution: {integrity: sha512-oVJl8vLGNb6t5nXN41mnjR5V9Cc/eHVvmtRWiNgIC1db6OW3Qo7y2LaDEmXps/wdxX/FuJ7nuPHAZI4y8tvGyQ==}
     peerDependencies:
-      primeicons: ^5.0.0 || ^6.0.0
       vue: ^3.0.0
-    peerDependenciesMeta:
-      primeicons:
-        optional: true
     dependencies:
       vue: 3.2.47
     dev: false

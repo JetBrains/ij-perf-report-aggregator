@@ -13,13 +13,20 @@
         />
       </span>
 
-      <div class="flex gap-1.5 font-medium text-base items-center break-all">
-        <span
-          class="w-3 h-3 rounded-full"
-          :style="{ backgroundColor: vm.data.value?.color }"
-        />
-        {{ vm.data.value?.projectName }}
-      </div>
+      <VTooltip theme="info">
+        <div class="flex gap-1.5 font-medium text-base items-center break-all">
+          <span
+            class="w-3 h-3 rounded-full"
+            :style="{ backgroundColor: vm.data.value?.color }"
+          />
+          <span class="underline decoration-dotted hover:no-underline">{{ vm.data.value?.projectName }}</span>
+        </div>
+        <template #popper>
+          <span class="text-sm">
+            {{ vm.data.value?.description.value?.description }}
+          </span>
+        </template>
+      </VTooltip>
       <SplitButton
         label="Navigate to test"
         :model="getTestActions()"
@@ -170,9 +177,6 @@ const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
 const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()
-
-const description = vm.data.value?.description
-
 const accidentType = ref<string>("Regression")
 
 function reportRegression() {

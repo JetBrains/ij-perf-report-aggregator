@@ -1,6 +1,8 @@
 import "@fontsource/jetbrains-mono/variable.css"
 import "@fontsource/inter/variable.css"
+import "floating-vue/dist/style.css"
 import "./main.css"
+import FloatingVue from "floating-vue"
 import PrimeVue from "primevue/config"
 import ToastService from "primevue/toastservice"
 import { createApp } from "vue"
@@ -23,6 +25,14 @@ async function initApp() {
   app.use(router)
   app.use(PrimeVue)
   app.use(ToastService)
+  app.use(FloatingVue, {
+    themes: {
+      info: {
+        "$extend": "tooltip",
+        placement: "top-start",
+      },
+    },
+  })
 
   await router.isReady()
     .then(() => app.mount("#app"))

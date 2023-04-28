@@ -95,7 +95,7 @@
           </div>
           <div class="flex-1">
             <LineChartCard
-              :measures='["splash_i", "startUpCompleted"]'
+              :measures='["splash_i", "startUpCompleted", "metrics.exitMetrics/application.exit"]'
             />
           </div>
         </section>

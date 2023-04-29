@@ -12,8 +12,11 @@
           @click="handleCloseClick"
         />
       </span>
-
-      <VTooltip theme="info">
+      
+      <VTooltip
+        v-if="vm.data.value?.description.value?.description"
+        theme="info"
+      >
         <div class="flex gap-1.5 font-medium text-base items-center break-all">
           <span
             class="w-3 h-3 rounded-full"
@@ -27,6 +30,17 @@
           </span>
         </template>
       </VTooltip>
+      <div
+        v-else
+        class="flex gap-1.5 font-medium text-base items-center break-all"
+      >
+        <span
+          class="w-3 h-3 rounded-full"
+          :style="{ backgroundColor: vm.data.value?.color }"
+        />
+        {{ vm.data.value?.projectName }}
+      </div>
+
       <SplitButton
         label="Navigate to test"
         :model="getTestActions()"

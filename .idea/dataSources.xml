@@ -13,5 +13,12 @@
       <jdbc-driver>com.clickhouse.jdbc.ClickHouseDriver</jdbc-driver>
       <jdbc-url>jdbc:clickhouse://127.0.0.1:2000/ij</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="PostgreSQL" uuid="a4002082-26a5-4832-8a26-e6fcd1028081">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgres://ij-perf-staging-ij-meta-user-3KqlQK:FgQeGC25BAeh5x0ThTJNtFG1hK8Cnz3PAQduQnQBV1LTIPmQA4xRpGGMdyJIuY9v@10.21.36.3:5432/ij-perf-staging-ij-meta-3KqlQK</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

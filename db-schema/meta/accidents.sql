@@ -7,7 +7,8 @@ CREATE TABLE accidents
   affected_test VARCHAR(255) NOT NULL,
   build_number  VARCHAR(20) NOT NULL,
   reason        TEXT NOT NULL,
-  kind          VARCHAR(50) NOT NULL default 'regression'
+  kind          VARCHAR(50) NOT NULL default 'regression',
+  externalId    VARCHAR(20) NOT NULL default ''
 );
 
 CREATE INDEX idx_accidents_date ON accidents(date);

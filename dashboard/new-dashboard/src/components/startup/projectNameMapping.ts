@@ -1,6 +1,7 @@
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { dimensionConfigurator, DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
+import { FilterConfigurator } from "shared/src/configurators/filter"
 
 const projectNameToTitle = new Map<string, string>()
 // noinspection SpellCheckingInspection
@@ -20,8 +21,9 @@ export function getProjectName(value: string): string {
 
 export function createProjectConfigurator(productConfigurator: DimensionConfigurator,
                                           serverConfigurator: ServerConfigurator,
-                                          persistentStateManager: PersistentStateManager): DimensionConfigurator {
-  return dimensionConfigurator("project", serverConfigurator, persistentStateManager, false /* doesn't matter */, [productConfigurator], (a, b) => {
+                                          persistentStateManager: PersistentStateManager,
+                                          filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+  return dimensionConfigurator("project", serverConfigurator, persistentStateManager, false /* doesn't matter */, [productConfigurator, ...filters], (a, b) => {
     const t1 = getProjectName(a)
     const t2 = getProjectName(b)
     if (t1.startsWith("simple ") && !t2.startsWith("simple ")) {

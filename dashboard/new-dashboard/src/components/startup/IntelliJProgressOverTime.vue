@@ -135,7 +135,7 @@ const machineConfigurator = new MachineConfigurator(
 )
 
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
-const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager)
+const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const configurators = [
   serverConfigurator,
   machineConfigurator,

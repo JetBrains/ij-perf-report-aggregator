@@ -40,15 +40,6 @@ type Collector struct {
   buildIdToInfo          map[int]*BuildInfo
 }
 
-var productCodeToBuildName = map[string]string{
-  "IU": "Ultimate",
-  "WS": "WebStorm",
-  "PS": "PhpStorm",
-  "DB": "DataGrip",
-  "GO": "GoLand",
-  "RM": "RubyMine",
-}
-
 func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   logger.Info("ask report aggregator server to clear cache")
   nc, err := nats.Connect("nats://" + natsUrl)

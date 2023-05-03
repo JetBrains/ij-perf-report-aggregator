@@ -6,7 +6,6 @@ import (
   "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
   "strconv"
-  "strings"
   "time"
 )
 
@@ -20,20 +19,9 @@ func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName strin
   var rows driver.Rows
   var err error
   if dbName == "ij" {
-    var product string
-    for code, name := range productCodeToBuildName {
-      if strings.Contains(buildTypeId, "_"+name) {
-        product = code
-        break
-      }
-    }
-    if len(product) == 0 {
-      return errors.New("cannot infer product from " + buildTypeId)
-    }
-
     // don't filter by machine - product is enough to reduce set
-    query := "select tc_build_id from report where product = $1 and generated_time > $2 order by tc_build_id"
-    rows, err = db.Query(taskContext, query, product, since)
+    query := "select tc_build_id from report where generated_time > $1 order by tc_build_id"
+    rows, err = db.Query(taskContext, query, since)
   } else {
     table := "report"
     if tableName != "" {

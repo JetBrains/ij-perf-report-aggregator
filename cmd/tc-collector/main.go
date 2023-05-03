@@ -81,13 +81,13 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
 
     var buildConfigurationIds []string
     switch {
-    case len(chunk.Configurations) == 0:
+    case chunk.Database == "ij":
       osList := []string{"Mac", "Linux", "Windows"}
-      for _, product := range chunk.Products {
+      for _, configuration := range chunk.Configurations {
         for _, osName := range osList {
-          buildConfigurationIds = append(buildConfigurationIds, "ijplatform_master_"+productCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTest"+osName)
+          buildConfigurationIds = append(buildConfigurationIds, configuration+osName)
         }
-        buildConfigurationIds = append(buildConfigurationIds, "ijplatform_master_"+productCodeToBuildName[strings.ToUpper(product)]+"StartupPerfTestMacM1")
+        buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM1")
       }
     case chunk.Database == "jbr":
       jbrTypes := []string{"macOS12aarch64Metal", "macOS12aarch64OGL", "macOS12x64Metal", "macOS12x64OGL", "macOS13aarch64Metal", "macOS13aarch64OGL", "macOS13x64Metal",
@@ -98,9 +98,6 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
         }
       }
     default:
-      if len(chunk.Products) != 0 {
-        return e.New("Must be specified either configurations or products, but not both")
-      }
       for _, configuration := range chunk.Configurations {
         collector := &Collector{
           serverUrl:  config.TeamcityUrl + "/app/rest",
@@ -153,6 +150,5 @@ type CollectorConfiguration struct {
 type CollectorChunk struct {
   Database       string   `json:"db"`
   InitialSince   string   `json:"initialSince"`
-  Products       []string `json:"products"`
   Configurations []string `json:"configurations"`
 }

@@ -113,7 +113,7 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   projects: ["keycloak_release_20/showIntentions/AuthenticationManagementResource", "keycloak_release_20/showIntentions/IdentityBrokerService",
     "keycloak_release_20/showIntentions/JpaUserProvider", "keycloak_release_20/showIntentions/RealmAdminResource"],
 }, {
-  labels: ["Typing", "Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
+  labels: ["Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
   measures: ["firstCodeAnalysis", "typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
   projects: ["keycloak_release_20/typing/ClientEntity", "keycloak_release_20/typing/PolicyEntity",
     "keycloak_release_20/ultimateCase/AuthenticationManagementResource", "keycloak_release_20/ultimateCase/IdentityBrokerService",

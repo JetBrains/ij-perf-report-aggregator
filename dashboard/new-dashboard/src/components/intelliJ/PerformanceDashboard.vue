@@ -248,7 +248,7 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   measures: ["FileStructurePopup"],
   projects: ["intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file"],
 }, {
-  labels: ["Typing during indexing (with changed count of indexing threads)", "Typing during indexing (average awt delay)", "Typing during indexing (max awt delay)"],
+  labels: ["Typing during indexing (average awt delay)", "Typing during indexing (max awt delay)"],
   measures: ["test#average_awt_delay", "test#max_awt_delay"],
   projects: ["typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing", "typingInKotlinFile_16Threads/typing", "typingInKotlinFile_4Threads/typing"],
 }]

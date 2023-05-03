@@ -95,10 +95,14 @@
           </div>
           <div class="flex-1">
             <LineChartCard
-              :measures='["splash_i", "startUpCompleted", "metrics.exitMetrics/application.exit"]'
+              :measures='["splash_i", "startUpCompleted"]'
             />
           </div>
         </section>
+        <Divider title="Exit" />
+        <LineChartCard
+          :measures='["metrics.exitMetrics/application.exit", "metrics.exitMetrics/saveSettingsOnExit", "metrics.exitMetrics/disposeProjects"]'
+        />
         <Divider title="Memory" />
         <LineChartCard
           :skip-zero-values="false"

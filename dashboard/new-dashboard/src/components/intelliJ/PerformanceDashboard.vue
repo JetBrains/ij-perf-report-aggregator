@@ -228,9 +228,17 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   measures: ["showFileHistory"],
   projects: ["intellij_sources/showFileHistory/EditorImpl"],
 }, {
-  labels: ["Expand Menu"],
-  measures: ["expandActionGroup"],
-  projects: ["intellij_sources/expandProjectMenu", "intellij_sources/expandMainMenu", "intellij_sources/expandEditorMenu"],
+  labels: ["Expand Project Menu"],
+  measures: ["%expandProjectMenu"],
+  projects: ["intellij_sources/expandProjectMenu"],
+}, {
+  labels: ["Expand Main Menu"],
+  measures: ["%expandMainMenu"],
+  projects: ["intellij_sources/expandMainMenu"],
+}, {
+  labels: ["Expand Editor Menu"],
+  measures: ["%expandEditorMenu"],
+  projects: ["intellij_sources/expandEditorMenu"],
 }, {
   labels: ["Highlight"],
   measures: ["highlighting"],

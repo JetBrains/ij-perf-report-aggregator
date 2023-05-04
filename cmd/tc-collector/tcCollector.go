@@ -149,7 +149,7 @@ func collectBuildConfiguration(
 
   reportExistenceChecker := &ReportExistenceChecker{}
 
-  err := reportExistenceChecker.reset(taskContext, config.DbName, config.TableName, buildTypeId, db, since)
+  err := reportExistenceChecker.reset(taskContext, config.DbName, config.TableName, db, since)
   if err != nil {
     return err
   }

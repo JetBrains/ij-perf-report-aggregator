@@ -6,7 +6,7 @@
     "compare-versions": "6.0.0-rc.1",
     "echarts": "5.4.2",
     "fast-equals": "5.0.1",
-    "primevue": "3.27.0",
+    "primevue": "3.28.0",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
     "vue": "3.2.47",

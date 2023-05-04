@@ -13,7 +13,7 @@ type ReportExistenceChecker struct {
   ids intsets.Sparse
 }
 
-func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName string, tableName string, buildTypeId string, db driver.Conn, since time.Time) error {
+func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName string, tableName string, db driver.Conn, since time.Time) error {
   t.ids.Clear()
 
   var rows driver.Rows

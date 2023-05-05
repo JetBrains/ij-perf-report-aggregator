@@ -88,7 +88,7 @@ provide(sidebarVmKey, sidebarVm)
 const chartsDeclaration: Array<ChartDefinition> = [{
   labels: ["Indexing", "Scanning", "Number of indexing runs"],
   measures: ["indexing", "scanning", "numberOfIndexingRuns"],
-  projects: ["keycloak_release_20/indexing", "train-ticket/indexing"],
+  projects: ["keycloak_release_20/indexing", "train-ticket/indexing", "toolbox_enterprise/indexing"],
 }, {
   labels: ["Local Inspection", "First Code Analysis"],
   measures: ["localInspections", "firstCodeAnalysis"],
@@ -97,7 +97,10 @@ const chartsDeclaration: Array<ChartDefinition> = [{
     "keycloak_release_20/localInspection/QuarkusRuntimePomXml", "keycloak_release_20/localInspection/RootPomXml",
     "keycloak_release_20/localInspection/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
+    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl",
+    "toolbox_enterprise/ultimateCase/SecurityTests", "toolbox_enterprise/ultimateCase/ToolController",
+    "toolbox_enterprise/ultimateCase/ToolService", "toolbox_enterprise/ultimateCase/UserController",
+    "toolbox_enterprise/ultimateCase/UserRepository"],
 }, {
   labels: ["Completion"],
   measures: ["completion"],
@@ -106,12 +109,10 @@ const chartsDeclaration: Array<ChartDefinition> = [{
     "keycloak_release_20/completion/QuarkusRuntimePomXml", "keycloak_release_20/completion/RootPomXml",
     "keycloak_release_20/completion/CorePomXml", "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
-}, {
-  labels: ["Show Intentions (average awt delay)", "Show Intentions (showQuickFixes)"],
-  measures: ["test#average_awt_delay", "showQuickFixes"],
-  projects: ["keycloak_release_20/showIntentions/AuthenticationManagementResource", "keycloak_release_20/showIntentions/IdentityBrokerService",
-    "keycloak_release_20/showIntentions/JpaUserProvider", "keycloak_release_20/showIntentions/RealmAdminResource"],
+    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl",
+    "toolbox_enterprise/ultimateCase/SecurityTests", "toolbox_enterprise/ultimateCase/ToolController",
+    "toolbox_enterprise/ultimateCase/ToolService", "toolbox_enterprise/ultimateCase/UserController",
+    "toolbox_enterprise/ultimateCase/UserRepository"],
 }, {
   labels: ["Typing (firstCodeAnalysis)", "Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
   measures: ["firstCodeAnalysis", "typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
@@ -120,7 +121,10 @@ const chartsDeclaration: Array<ChartDefinition> = [{
     "keycloak_release_20/ultimateCase/JpaUserProvider", "keycloak_release_20/ultimateCase/RealmAdminResource",
     "train-ticket/ultimateCase/AdminBasicInfoController",
     "train-ticket/ultimateCase/ExecuteServiceImpl", "train-ticket/ultimateCase/InsidePaymentServiceImpl",
-    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl"],
+    "train-ticket/ultimateCase/OrderController", "train-ticket/ultimateCase/OrderServiceImpl",
+    "toolbox_enterprise/ultimateCase/SecurityTests", "toolbox_enterprise/ultimateCase/ToolController",
+    "toolbox_enterprise/ultimateCase/ToolService", "toolbox_enterprise/ultimateCase/UserController",
+    "toolbox_enterprise/ultimateCase/UserRepository"],
 }]
 
 const charts = combineCharts(chartsDeclaration)

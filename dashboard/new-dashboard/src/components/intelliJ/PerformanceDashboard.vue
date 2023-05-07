@@ -123,24 +123,19 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const chartsDeclaration: Array<ChartDefinition> = [{
-  labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexing runs long (Big projects)"],
-  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexed files (Big projects)"],
+  measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["community/indexing", "intellij_sources/indexing"],
-}, {
-  labels: ["Processing speed of JAVA files", "Processing speed of KOTLIN files"],
-  measures: ["processingSpeed#JAVA", "processingSpeed#Kotlin"],
-  projects: ["community/indexing", "intellij_sources/indexing", "empty_project/indexing", "grails/indexing", "java/indexing", "kotlin/indexing",
-    "kotlin_coroutines/indexing", "spring_boot/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
-}, {
+},  {
   labels: ["Indexing with the new record storage (IntelliJ project)", "Scanning with the new record storage (IntelliJ project)",
-    "Number of indexing runs with the new record storage (IntelliJ project)"],
-  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+    "Number of indexed files (IntelliJ project)"],
+  measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["vfs-record-storage/in-memory-intellij_sources/indexing", "vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing",
     "vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing",
     "vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing", "vfs-record-storage/lock-free-intellij_sources/indexing"],
 }, {
-  labels: ["Indexing", "Scanning", "Number of indexing runs"],
-  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  labels: ["Indexing", "Scanning", "Number of indexed files"],
+  measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["empty_project/indexing", "grails/indexing", "java/indexing", "kotlin/indexing", "kotlin_coroutines/indexing",
     "spring_boot/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
 }, {
@@ -156,45 +151,45 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   measures: ["build_compilation_duration"],
   projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
 }, {
-  labels: ["Inspection"],
-  measures: ["globalInspections"],
+  labels: ["Inspection", "Lookups number", "Lookups duration"],
+  measures: ["globalInspections", "lookups", "lookupsDurationMs"],
   projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
 }, {
-  labels: ["FindUsages PsiManager#getInstance Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages PsiManager#getInstance Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
 }, {
-  labels: ["FindUsages Library#getName Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages Library#getName Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
 }, {
-  labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/LocalInspectionTool_getID_Before", "community/findUsages/LocalInspectionTool_getID_After"],
 }, {
-  labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/ActionsKt_runReadAction_After",
     "community/findUsages/Application_runReadAction_Before", "community/findUsages/Application_runReadAction_After"],
 }, {
-  labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/Persistent_absolutePath_Before", "community/findUsages/Persistent_absolutePath_After",
     "community/findUsages/PropertyMapping_value_Before", "community/findUsages/PropertyMapping_value_After"
   ],
 }, {
-    labels: ["FindUsages Object#hashCode and Path#toString Before and After Compilation"],
-    measures: ["findUsages"],
+    labels: ["FindUsages Object#hashCode and Path#toString Before and After Compilation", "Lookups number", "Lookups duration"],
+    measures: ["findUsages", "lookups", "lookupsDurationMs"],
     projects: ["community/findUsages/Object_hashCode_Before", "community/findUsages/Object_hashCode_After",
       "community/findUsages/Path_toString_Before", "community/findUsages/Path_toString_After"
     ],
   }, {
-  labels: ["FindUsages Objects#hashCode Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages Objects#hashCode Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/Objects_hashCode_Before", "community/findUsages/Objects_hashCode_After"],
 }, {
-  labels: ["FindUsages Path#div Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages Path#div Before and After Compilation", "Lookups number", "Lookups duration"],
+  measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After"],
 }, {
   labels: ["Find Usages with idea.is.internal=true Before Compilation"],

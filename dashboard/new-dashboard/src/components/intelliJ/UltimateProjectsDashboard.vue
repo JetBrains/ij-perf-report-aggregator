@@ -86,8 +86,8 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const chartsDeclaration: Array<ChartDefinition> = [{
-  labels: ["Indexing", "Scanning", "Number of indexing runs"],
-  measures: ["indexing", "scanning", "numberOfIndexingRuns"],
+  labels: ["Indexing", "Scanning", "Number of indexed files"],
+  measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["keycloak_release_20/indexing", "train-ticket/indexing", "toolbox_enterprise/indexing"],
 }, {
   labels: ["Local Inspection", "First Code Analysis"],

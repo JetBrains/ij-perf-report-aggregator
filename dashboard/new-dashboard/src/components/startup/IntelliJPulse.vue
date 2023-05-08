@@ -27,18 +27,18 @@
     <Divider label="Services" />
     <section class="grid grid-cols-2 gap-x-6">
       <LineChartCard
-        :measures='["appComponentCreation_d", "projectComponentCreation_d"]'
-      />
-      <LineChartCard
         :skip-zero-values="false"
         :measures='["serviceSyncPreloading_d", "serviceAsyncPreloading_d", "projectServiceSyncPreloading_d", "projectServiceAsyncPreloading_d"]'
+      />
+      <LineChartCard
+        :measures='["projectDumbAware", "appComponentCreation_d", "projectComponentCreation_d"]'
       />
     </section>
 
     <Divider label="Post-opening" />
     <section class="grid grid-cols-2 gap-x-6">
       <LineChartCard
-        :measures='["projectDumbAware", "editorRestoring", "editorRestoringTillPaint"]'
+        :measures='["editorRestoring", "editorRestoringTillPaint", "file opening in EDT"]'
       />
       <LineChartCard
         :measures='["splash_i", "startUpCompleted", "metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished"]'

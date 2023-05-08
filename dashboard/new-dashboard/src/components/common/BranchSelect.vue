@@ -150,7 +150,7 @@ import BranchIcon from "./BranchIcon.vue"
 interface Props {
   branchConfigurator: DimensionConfigurator
   releaseConfigurator?: DimensionConfigurator
-  triggeredByConfigurator: DimensionConfigurator
+  triggeredByConfigurator?: DimensionConfigurator
 }
 
 const enum SubMenu {

@@ -27,6 +27,7 @@ enum ROUTES {
   StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
   StartupProgress = `${ROUTE_PREFIX.Startup}/progressOverTime`,
   StartupModuleLoading = `${ROUTE_PREFIX.Startup}/moduleLoading`,
+  StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
@@ -121,12 +122,16 @@ const IJ_STARTUP: Product = {
           label: "Pulse",
         },
         {
-          url: ROUTES.StartupProgress,
-          label: "Progress Over Time",
-        },
-        {
           url: ROUTES.StartupModuleLoading,
           label: "Module Loading",
+        },
+        {
+          url: ROUTES.StartupGcAndMemory,
+          label: "GC and Memory",
+        },
+        {
+          url: ROUTES.StartupProgress,
+          label: "Progress Over Time",
         },
         {
           url: ROUTES.StartupExplore,
@@ -525,7 +530,6 @@ export function getNavigationElement(path: string): Product {
   return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
 
-
 export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
   return [
     {
@@ -536,14 +540,19 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           meta: {pageTitle: "Pulse"},
         },
         {
-          path: ROUTES.StartupProgress,
-          component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
-          meta: {pageTitle: "Progress Over Time"},
-        },
-        {
           path: ROUTES.StartupModuleLoading,
           component: () => import("./components/startup/IntelliJModuleLoading.vue"),
           meta: {pageTitle: "Module Loading"},
+        },
+        {
+          path: ROUTES.StartupGcAndMemory,
+          component: () => import("./components/startup/GcAndMemory.vue"),
+          meta: {pageTitle: "GC and Memory"},
+        },
+        {
+          path: ROUTES.StartupProgress,
+          component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
+          meta: {pageTitle: "Progress Over Time"},
         },
         {
           path: ROUTES.StartupExplore,

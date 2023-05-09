@@ -197,6 +197,7 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
+import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -208,6 +209,7 @@ import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 
+provideReportUrlProvider(false)
 
 const dbName = "perfintDev"
 const dbTable = "kotlin"

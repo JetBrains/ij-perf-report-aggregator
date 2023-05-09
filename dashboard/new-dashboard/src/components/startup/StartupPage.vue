@@ -12,6 +12,7 @@
       </TimeRangeSelect>
       <BranchSelect
         :branch-configurator="branchConfigurator"
+        :triggered-by-configurator="triggeredByConfigurator"
       />
       <DimensionSelect
         label="Product"
@@ -38,16 +39,6 @@
 </template>
 <script setup lang="ts">
 
-const productCodeToName = new Map([
-  ["DB", "DataGrip"],
-  ["IU", "IntelliJ IDEA"],
-  ["PS", "PhpStorm"],
-  ["WS", "WebStorm"],
-  ["GO", "GoLand"],
-  ["PY", "PyCharm Professional"],
-  ["RM", "RubyMine"],
-])
-
 import { initDataComponent } from "shared/src/DataQueryExecutor"
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { chartDefaultStyle } from "shared/src/chart"
@@ -58,6 +49,7 @@ import { AggregationOperatorConfigurator } from "shared/src/configurators/Aggreg
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
+import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } from "shared/src/injectionKeys"
@@ -67,6 +59,17 @@ import { useRouter } from "vue-router"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
+
+const productCodeToName = new Map([
+  ["DB", "DataGrip"],
+  ["IU", "IntelliJ IDEA"],
+  ["PS", "PhpStorm"],
+  ["WS", "WebStorm"],
+  ["GO", "GoLand"],
+  ["PY", "PyCharm Professional"],
+  ["RM", "RubyMine"],
+])
+
 
 provideReportUrlProvider()
 provide(chartStyleKey, {
@@ -98,6 +101,11 @@ const machineConfigurator = new MachineConfigurator(
 )
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [branchConfigurator, timeRangeConfigurator],
+)
 const configurators = [
   serverConfigurator,
   machineConfigurator,

@@ -113,6 +113,7 @@ const configurators = [
   productConfigurator,
   projectConfigurator,
   branchConfigurator,
+  triggeredByConfigurator
 ]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))

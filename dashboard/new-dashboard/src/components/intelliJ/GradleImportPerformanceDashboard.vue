@@ -34,6 +34,91 @@
       >
         <section>
           <GroupProjectsChart
+            label="gradle.sync.duration"
+            measure="gradle.sync.duration"
+            :projects="[
+              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
+              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
+              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
+              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
+              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
+              'project-import-gradle-openliberty/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+            :accidents="warnings"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="GRADLE_CALL"
+            measure="GRADLE_CALL"
+            :projects="[
+              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
+              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
+              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
+              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
+              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
+              'project-import-gradle-openliberty/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+            :accidents="warnings"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="PROJECT_RESOLVERS"
+            measure="PROJECT_RESOLVERS"
+            :projects="[
+              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
+              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
+              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
+              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
+              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
+              'project-import-gradle-openliberty/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+            :accidents="warnings"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="DATA_SERVICES"
+            measure="DATA_SERVICES"
+            :projects="[
+              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
+              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
+              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
+              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
+              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
+              'project-import-gradle-openliberty/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+            :accidents="warnings"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="WORKSPACE_MODEL_APPLY"
+            measure="WORKSPACE_MODEL_APPLY"
+            :projects="[
+              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
+              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
+              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
+              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
+              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
+              'project-import-gradle-openliberty/measureStartup'
+            ]"
+            :server-configurator="serverConfigurator"
+            :configurators="dashboardConfigurators"
+            :accidents="warnings"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="CPU | Load |Total % 95th pctl"
             measure="CPU | Load |Total % 95th pctl"
             :projects="[
@@ -172,91 +257,6 @@
           <GroupProjectsChart
             label="totalHeapUsedMax"
             measure="totalHeapUsedMax"
-            :projects="[
-              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
-              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
-              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
-              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
-              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
-              'project-import-gradle-openliberty/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="gradle.sync.duration"
-            measure="gradle.sync.duration"
-            :projects="[
-              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
-              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
-              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
-              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
-              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
-              'project-import-gradle-openliberty/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="GRADLE_CALL"
-            measure="GRADLE_CALL"
-            :projects="[
-              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
-              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
-              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
-              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
-              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
-              'project-import-gradle-openliberty/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="PROJECT_RESOLVERS"
-            measure="PROJECT_RESOLVERS"
-            :projects="[
-              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
-              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
-              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
-              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
-              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
-              'project-import-gradle-openliberty/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="DATA_SERVICES"
-            measure="DATA_SERVICES"
-            :projects="[
-              'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
-              'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',
-              'project-import-gradle-cas/measureStartup', 'project-import-gradle-500-modules/measureStartup',
-              'project-import-gradle-1000-modules/measureStartup', 'project-reimport-space/measureStartup',
-              'project-import-space/measureStartup', 'project-import-open-telemetry/measureStartup',
-              'project-import-gradle-openliberty/measureStartup'
-            ]"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
-            label="WORKSPACE_MODEL_APPLY"
-            measure="WORKSPACE_MODEL_APPLY"
             :projects="[
               'project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup',
               'project-import-gradle-micronaut/measureStartup', 'project-import-gradle-hibernate-orm/measureStartup',

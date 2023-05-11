@@ -8,7 +8,7 @@
           :on-change="onChangeRange"
         >
           <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
+            <CalendarIcon class="w-4 h-4 text-gray-500"/>
           </template>
         </TimeRangeSelect>
         <BranchSelect
@@ -21,7 +21,7 @@
           :dimension="machineConfigurator"
         >
           <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500"/>
           </template>
         </DimensionHierarchicalSelect>
       </template>
@@ -45,7 +45,7 @@
           />
         </section>
       </div>
-      <InfoSidebar />
+      <InfoSidebar/>
     </main>
   </div>
 </template>
@@ -86,8 +86,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const metricsName = ["after_apply_duration_ms", "before_apply_duration_ms", "collect_folders_duration_ms", "config_modules_duration_ms", "total_duration_ms"]
-const metricsDeclaration = ["CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax", "maven.sync.duration", "maven.import.after.import.configuration",
+const metricsDeclaration = ["maven.sync.duration", "maven.import.after.import.configuration",
   "maven.import.stats.applying.model.task", "maven.import.stats.importing.task", "maven.import.stats.importing.task.old", "maven.project.importer.base.refreshing.files.task",
   "maven.projects.processor.plugin.resolving.task", "maven.projects.processor.reading.task", "maven.projects.processor.resolving.task",
   "maven.projects.processor.wait.for.completion.task", "quarkus.maven.importer.base.task", "quarkus.maven.post.processor.task", "jpa.facet.importer.lambdas",
@@ -120,6 +119,8 @@ const metricsDeclaration = ["CPU | Load |Total % 95th pctl", "Memory | IDE | RES
   "workspace_import.duration_ms", "workspace_import.legacy_importers.duration_ms", "workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms",
   "workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms", "workspace_import.populate.duration_ms", "maven.project.importer.post.importing.task.marker",
   "post_import_tasks_run.total_duration_ms",
+  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
 ]
 
 
@@ -144,7 +145,7 @@ const charts = combineCharts(chartsDeclaration)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 
-const persistenceForDashboard = new PersistentStateManager("idea_gradle_dashboard", {
+const persistenceForDashboard = new PersistentStateManager("idea_maven_dashboard", {
   machine: initialMachine,
   project: [],
   branch: "master",
@@ -157,7 +158,7 @@ const scenarioConfigurator = dimensionConfigurator(
   serverConfigurator,
   null,
   true,
-  [timeRangeConfigurator]
+  [timeRangeConfigurator],
 )
 scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
 
@@ -184,6 +185,7 @@ const dashboardConfigurators = [
 function onChangeRange(value: string) {
   timeRangeConfigurator.value.value = value
 }
+
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, null, data as TimeRange)

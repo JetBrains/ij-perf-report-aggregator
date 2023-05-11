@@ -127,7 +127,7 @@ const unitToDescriptor = new Map<string, UnitDescriptor>([
 function parseDuration(s: string): DurationParseResult {
   const result: DurationParseResult = {}
   // ignore commas
-  s = s.replaceAll(/(\d),(\d)/, "$1$2")
+  s = s.replaceAll(/(\d),(\d)/g, "$1$2")
   s.replaceAll(duration, (_, ...args: string[]) => {
     const n = args[0]
     const unit = args[1]

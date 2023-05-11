@@ -167,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 }
 
 export function measureNameToLabel(key: string): string {
-  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/, "")
+  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/g, "")
 }
 
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {

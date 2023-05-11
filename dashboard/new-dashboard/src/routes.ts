@@ -31,6 +31,7 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
+  IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJ}/scalabilityDashboard`,
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
@@ -160,6 +161,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJDevDashboard,
           label: "Dashboard (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJScalabilityDashboard,
+          label: "Scalability"
         },
         {
           url: ROUTES.IntelliJTests,
@@ -573,6 +578,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.IntelliJDashboard,
           component: () => import("./components/intelliJ/PerformanceDashboard.vue"),
           meta: {pageTitle: "IntelliJ Performance dashboard"},
+        },
+        {
+          path: ROUTES.IntelliJScalabilityDashboard,
+          component: () => import("./components/intelliJ/ScalabilityDashboard.vue"),
+          meta: {pageTitle: "IntelliJ Scalability dashboard"},
         },
         {
           path: ROUTES.IntelliJGradleDashboard,

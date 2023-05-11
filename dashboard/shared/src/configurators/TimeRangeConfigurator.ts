@@ -24,7 +24,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
 
   static readonly timeRangeValueToItem: Map<string, TimeRangeItem> = new Map(TimeRangeConfigurator.timeRanges.map(it => [it.value, it]))
 
-  readonly value = ref<string>(TimeRangeConfigurator.timeRanges[0].value)
+  readonly value = ref<TimeRange>(TimeRangeConfigurator.timeRanges[0].value)
 
   constructor(persistentStateManager: PersistentStateManager) {
     provide(timeRangeKey, this.value)
@@ -129,8 +129,7 @@ function parseDuration(s: string): DurationParseResult {
   // ignore commas
   s = s.replaceAll(/(\d),(\d)/g, "$1$2")
   s.replaceAll(duration, (_, ...args: string[]) => {
-    const n = args[0]
-    const unit = args[1]
+    const [n, unit] = args
     const unitDescriptor = unitToDescriptor.get(unit) ?? unitToDescriptor.get(unit.replace(/s$/, ""))
     if (unitDescriptor == null) {
       console.error(`unknown unit: ${unit}`)

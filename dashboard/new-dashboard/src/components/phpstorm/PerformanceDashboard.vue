@@ -370,13 +370,13 @@ const typingOnlyConfigurator = {
   },
 }
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data as TimeRange)
+  getAccidentsFromMetaDb(warnings, null, data)
 })
 </script>
 

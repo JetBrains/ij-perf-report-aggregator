@@ -73,7 +73,7 @@ import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -127,7 +127,7 @@ const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64
   "macOS12aarch64Metal"].map(config => "Mapbench_" + config)
 const windowsConfigurations = ["Windows10x64"].map(config => "Mapbench_" + config)
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 

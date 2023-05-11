@@ -12,7 +12,7 @@ export class PersistentStateManager {
 
   private readonly route: RouteLocationNormalizedLoaded | null
 
-  constructor(private id: string, defaultState: State | null = null, private readonly router: Router | null = null) {
+  constructor(private readonly id: string, defaultState: State | null = null, private readonly router: Router | null = null) {
     const storedState = localStorage.getItem(this.getKey())
     if (storedState == null) {
       this.state = defaultState ?? {}

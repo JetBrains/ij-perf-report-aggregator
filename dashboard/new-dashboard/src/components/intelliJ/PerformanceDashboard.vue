@@ -298,7 +298,7 @@ const dashboardConfigurators = [
 const projects = chartsDeclaration.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, projects, data as TimeRange)
+  getAccidentsFromMetaDb(warnings, projects, data)
 })
 
 const typingOnlyConfigurator = {
@@ -311,7 +311,7 @@ const typingOnlyConfigurator = {
   },
 }
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 </script>

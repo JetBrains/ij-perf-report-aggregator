@@ -50,7 +50,7 @@ export function buildConfigurator(name: string, serverConfigurator: ServerConfig
         return
       }
 
-      configurator.values.value = data.filter(value => !(value == "")).filter(value => value.split(".").length == 3).map(value => {
+      configurator.values.value = data.filter(value => value != "").filter(value => value.split(".").length == 3).map(value => {
         const buildParts = value.split(".")
         return buildParts[2] == "0" ? buildParts[0] + "." + buildParts[1] : value
       }).sort(compareBuilds)

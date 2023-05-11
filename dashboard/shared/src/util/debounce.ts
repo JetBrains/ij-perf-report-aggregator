@@ -4,7 +4,7 @@ export interface DebouncedFunction {
   clear: () => void
 }
 
-export function debounceSync(func: () => void, wait: number = 100): DebouncedFunction {
+export function debounceSync(func: () => void, wait = 100): DebouncedFunction {
   let timeout = 0
   let isScheduled = false
   let timestamp = 0

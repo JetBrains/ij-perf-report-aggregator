@@ -67,7 +67,7 @@ import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigu
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
@@ -131,7 +131,7 @@ const configurators = [
   triggeredByConfigurator,
 ]
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 

@@ -43,7 +43,7 @@ export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
         return
       }
 
-      configurator.values.value = data.filter((value, _n, _a) => !(value == ""))
+      configurator.values.value = data.filter((value, _n, _a) => value != "")
 
       filterSelected(configurator, data, name)
     })

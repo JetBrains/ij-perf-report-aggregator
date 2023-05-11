@@ -6,7 +6,7 @@ import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, o
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 import { Ref, watch } from "vue"
 
-export function refToObservable<T>(ref: Ref<T>, deep: boolean = false): Observable<T> {
+export function refToObservable<T>(ref: Ref<T>, deep= false): Observable<T> {
   return new Observable<T>(context => {
     watch(ref, value => {
       return context.next(value)

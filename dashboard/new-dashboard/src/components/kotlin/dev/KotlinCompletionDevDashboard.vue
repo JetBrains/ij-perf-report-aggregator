@@ -259,10 +259,10 @@ const dashboardConfigurators = [
 
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data as TimeRange)
+  getAccidentsFromMetaDb(warnings, null, data)
 })
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 </script>

@@ -8,7 +8,7 @@
           :on-change="onChangeRange"
         >
           <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500"/>
+            <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
         <BranchSelect
@@ -21,7 +21,7 @@
           :dimension="machineConfigurator"
         >
           <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500"/>
+            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
           </template>
         </DimensionHierarchicalSelect>
       </template>
@@ -45,7 +45,7 @@
           />
         </section>
       </div>
-      <InfoSidebar/>
+      <InfoSidebar />
     </main>
   </div>
 </template>
@@ -182,13 +182,13 @@ const dashboardConfigurators = [
   triggeredByConfigurator,
 ]
 
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data as TimeRange)
+  getAccidentsFromMetaDb(warnings, null, data)
 })
 </script>
 

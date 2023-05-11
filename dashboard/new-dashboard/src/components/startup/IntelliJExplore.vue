@@ -68,7 +68,7 @@ import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigu
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } from "shared/src/injectionKeys"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
@@ -127,7 +127,7 @@ const configurators = [
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 initDataComponent(configurators)
-function onChangeRange(value: string) {
+function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 </script>

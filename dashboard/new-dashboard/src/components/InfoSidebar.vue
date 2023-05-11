@@ -216,7 +216,7 @@ function openTestInIDE(methodName: string) {
 function handleNavigateToTest() {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
-  parts[parts.length - 1] = parts[parts.length - 1].toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+  parts[parts.length - 1] = parts.at(-1).toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
   const query: Record<string, string> = {...currentRoute.query, project: vm.data.value?.projectName ?? ""} as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()

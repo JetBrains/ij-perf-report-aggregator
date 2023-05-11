@@ -162,7 +162,7 @@ export class TimeLineChartManager implements ChartManager {
       if (minStart > list[0][4].s) {
         minStart = list[0][4].s
       }
-      const last = list[list.length - 1]
+      const last = list.at(-1) as ChartDataItem
       if (maxEnd < (last[4].s + last[4].d)) {
         maxEnd = (last[4].s + last[4].d)
       }
@@ -288,7 +288,7 @@ function configureMarkAreas(dataManager: DataManager, series: Array<CustomSeries
       {xAxis: item.s + item.d},
     ])
   }
-  const lastSeries = series[series.length - 1]
+  const lastSeries = series.at(-1) as CustomSeriesOption
   lastSeries.markArea = areaData.length === 0 ? undefined : {
     silent: true,
     data: areaData,

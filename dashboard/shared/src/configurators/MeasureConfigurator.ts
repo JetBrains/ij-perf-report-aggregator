@@ -167,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 }
 
 export function measureNameToLabel(key: string): string {
-  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replace(/_[a-z]$/g, "")
+  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/, "")
 }
 
 function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
@@ -282,7 +282,7 @@ function configureChart(
 
     if (seriesData.length > 2) {
       // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-      const type = seriesData[2][seriesData[2].length - 1]
+      const type = seriesData[2].at(-1)
       if (type === "c") {
         useDurationFormatter = false
       }

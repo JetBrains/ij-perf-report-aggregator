@@ -32,7 +32,7 @@
           <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
         </template>
       </DimensionHierarchicalSelect>
-      <slot name="toolbar"></slot>
+      <slot name="toolbar" />
     </template>
   </Toolbar>
   <slot />

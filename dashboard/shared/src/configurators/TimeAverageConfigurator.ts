@@ -46,7 +46,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
 
       if (seriesData.length > 2) {
         // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-        const type = seriesData[2][seriesData[2].length - 1]
+        const type = seriesData[2].at(-1)
         if (type === "c") {
           useDurationFormatter = false
         }

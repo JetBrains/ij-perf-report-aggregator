@@ -3,7 +3,7 @@
   "private": true,
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
-    "@heroicons/vue": "2.0.17",
+    "@heroicons/vue": "2.0.18",
     "echarts": "5.4.2",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
@@ -11,7 +11,7 @@
     "p-limit": "^4.0.0",
     "primevue": "3.28.0",
     "rxjs": "8.0.0-alpha.7",
-    "vue": "3.2.47",
+    "vue": "3.3.1",
     "vue-router": "4.1.6"
   },
   "devDependencies": {

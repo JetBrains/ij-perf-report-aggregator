@@ -37,6 +37,7 @@ enum ROUTES {
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
+  IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
@@ -184,6 +185,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJMavenDashboard,
           label: "Maven Import",
+        },
+        {
+          url: ROUTES.IntelliJJpsDashboard,
+          label: "JPS Import",
         },
         {
           url: ROUTES.IntelliJBuildTests,
@@ -578,6 +583,11 @@ export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
           path: ROUTES.IntelliJMavenDashboard,
           component: () => import("./components/intelliJ/MavenImportPerformanceDashboard.vue"),
           meta: {pageTitle: "Maven Import dashboard"},
+        },
+        {
+          path: ROUTES.IntelliJJpsDashboard,
+          component: () => import("./components/intelliJ/JpsImportPerformanceDashboard.vue"),
+          meta: {pageTitle: "JPS Import dashboard"},
         },
         {
           path: ROUTES.IntelliJUltimateDashboard,

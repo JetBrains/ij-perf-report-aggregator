@@ -76,7 +76,7 @@ provideReportUrlProvider()
 
 const dbName = "perfint"
 const dbTable = "idea"
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+const initialMachine = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 const sidebarVm = new InfoSidebarVmImpl()
@@ -88,7 +88,7 @@ const processorCounts = [1, 2, 4, 8, 16, 32, 64]
 const chartsDeclaration: Array<ChartDefinition> = [{
   labels: ["Indexing (Empty Project)", "Scanning(Empty Project)", "Number of indexed files(Empty Project)"],
   measures: ["indexing", "scanning", "numberOfIndexedFiles"],
-  projects: processorCounts.map(it => `emptyProject/indexing_processorCount_${it}`)
+  projects: processorCounts.map(it => `empty_project/indexing_processorCount_${it}`)
 },
   {
     labels: ["Indexing (IntelliJ Sources)", "Scanning(IntelliJ Sources)", "Number of indexed files(IntelliJ Sources)"],

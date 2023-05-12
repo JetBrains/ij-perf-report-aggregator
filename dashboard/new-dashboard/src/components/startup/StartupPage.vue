@@ -36,6 +36,9 @@
     </template>
   </Toolbar>
   <slot />
+  <ChartTooltip
+    ref="tooltip"
+  />
 </template>
 <script setup lang="ts">
 

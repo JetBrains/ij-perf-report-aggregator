@@ -6,7 +6,7 @@
     "@fontsource/jetbrains-mono": "4.5.12",
     "floating-vue": "2.0.0-beta.20",
     "new-dashboard": "workspace:*",
-    "primevue": "3.29.0",
+    "primevue": "3.29.1",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",

@@ -25,9 +25,9 @@
         <a
           v-if="tooltipData.firstSeriesData.length >= 4"
           title="Changes"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=buildChangesDiv`"
           target="_blank"
-          class="info"
+          class="info cursor-pointer"
+          @click="navigateToSpace"
         >
           <UsersIcon class="w-5 h-5" />
         </a>
@@ -45,7 +45,7 @@
         <a
           v-if="tooltipData.firstSeriesData.length >= 5"
           title="Installer Artifacts"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=artifacts`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[5]}&tab=artifacts`"
           target="_blank"
           class="info"
         >
@@ -92,6 +92,7 @@ import { ArchiveBoxIcon, ArrowDownTrayIcon, ServerIcon, UsersIcon } from "@heroi
 import OverlayPanel from "primevue/overlaypanel"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
 import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
+import { calculateChanges } from "../util/changes"
 import { debounceSync } from "../util/debounce"
 import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
 
@@ -106,8 +107,8 @@ const linkText = computed(() => {
 
   const generatedTime = data[0]
   let result = timeFormatWithoutSeconds.format(generatedTime)
-  if (data[5] && data[6]) {
-    result += ` (${data[5]}.${data[6]}${data[7] === 0 ? "" : `.${data[7]}`})`
+  if (data[6] && data[7]) {
+    result += ` (${data[6]}.${data[7]}${data[8] === 0 ? "" : `.${data[8]}`})`
   }
   return result
 })
@@ -174,6 +175,16 @@ function panelClosedExplicitly() {
 
 function cancelHide() {
   hide.clear()
+}
+
+function navigateToSpace() {
+  calculateChanges("ij", tooltipData.value?.firstSeriesData[5], (decodedChanges: string|null) => {
+    if(decodedChanges == null) {
+      window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
+    } else {
+      window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
+    }
+  })
 }
 
 defineExpose({

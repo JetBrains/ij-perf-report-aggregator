@@ -1,12 +1,11 @@
 import { Observable } from "rxjs"
-import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "shared/src/dataQuery"
 import { shallowRef } from "vue"
-import { InfoData, InfoSidebarVm } from "../InfoSidebarVm"
+import { DataQueryExecutor } from "../DataQueryExecutor"
+import { ServerConfigurator } from "../configurators/ServerConfigurator"
+import { refToObservable } from "../configurators/rxjs"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "../dataQuery"
 
-function base64ToHex(base64: string): string {
+export function base64ToHex(base64: string): string {
   const decodedArray = new Uint8Array([...atob(base64)].map(c => c.codePointAt(0) ?? 0))
   let hex = ""
   for (const byte of decodedArray) {
@@ -15,11 +14,9 @@ function base64ToHex(base64: string): string {
   return hex
 }
 
-export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
+export function calculateChanges(db: string, id: number, whenDone: (decodedChanges: string|null) => void){
   const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL))
   const separator = ".."
-  const db = infoData.installerId ? "perfint" : "perfintDev"
-  const id = infoData.installerId ?? infoData.buildId
   new DataQueryExecutor([new ServerConfigurator(db, "installer", serverUrlObservable), new class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       configuration.queryProducers.push(new SimpleQueryProducer())
@@ -39,8 +36,10 @@ export function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: Info
     const changes = data.flat(3)[0]
     if(typeof changes === "string"){
       //commit has to be decoded as base64 and converted to hex
-      infoData.changes = changes.split(separator).map(it => base64ToHex(it)).join("%2C")
+      const changesDecoded = changes.split(separator).map(it => base64ToHex(it)).join("%2C")
+      whenDone(changesDecoded)
+    } else {
+      whenDone(null)
     }
-    sidebarVm?.show(infoData)
   })
 }

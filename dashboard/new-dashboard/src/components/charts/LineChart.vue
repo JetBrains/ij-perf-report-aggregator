@@ -20,10 +20,10 @@ import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { Accident } from "shared/src/meta"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
-import { getInfoDataFrom} from "../InfoSidebarVm"
+import { getInfoDataFrom, InfoData, InfoSidebarVm } from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
-import { showSideBar } from "./ShowSideBar"
+import { base64ToHex, calculateChanges } from "shared/src/util/changes"
 
 interface LineChartProps {
   title: string
@@ -101,6 +101,18 @@ onMounted(() => {
     }
   })
 })
+
+function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
+  const separator = ".."
+  const db = infoData.installerId ? "perfint" : "perfintDev"
+  const id = infoData.installerId ?? infoData.buildId
+  calculateChanges(db, id, (decodedChanges: string|null) => {
+    if(decodedChanges != null) {
+      infoData.changes = decodedChanges
+    }
+    sidebarVm?.show(infoData)
+  })
+}
 
 onUnmounted(() => {
   if(unsubscribe != null) unsubscribe()

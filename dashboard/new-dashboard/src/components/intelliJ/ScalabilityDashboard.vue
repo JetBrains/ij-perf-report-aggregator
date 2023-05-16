@@ -88,22 +88,22 @@ const processorCounts = [1, 2, 4, 8, 16, 32, 64]
 const chartsDeclaration: Array<ChartDefinition> = [{
   labels: ["Indexing (Empty Project)", "Scanning(Empty Project)", "Number of indexed files(Empty Project)"],
   measures: ["indexing", "scanning", "numberOfIndexedFiles"],
-  projects: processorCounts.map(it => `empty_project/indexing_processorCount_${it}`)
+  projects: processorCounts.map(it => `empty_project/indexing/processorCount_${it}`)
 },
   {
     labels: ["Indexing (IntelliJ Sources)", "Scanning(IntelliJ Sources)", "Number of indexed files(IntelliJ Sources)"],
     measures: ["indexing", "scanning", "numberOfIndexedFiles"],
-    projects: processorCounts.map(it => `intellij_sources/indexing_processorCount_${it}`)
+    projects: processorCounts.map(it => `intellij_sources/indexing/processorCount_${it}`)
   },
   {
     labels: ["Indexing (Kotlin Coroutines)", "Scanning(Kotlin Coroutines)", "Number of indexed files(Kotlin Coroutines)"],
     measures: ["indexing", "scanning", "numberOfIndexedFiles"],
-    projects: processorCounts.map(it => `kotlin_coroutines/indexing_processorCount_${it}`)
+    projects: processorCounts.map(it => `kotlin_coroutines/indexing/processorCount_${it}`)
   },
   {
     labels: ["Indexing (Spring Boot)", "Scanning(Spring Boot)", "Number of indexed files(Spring Boot)"],
     measures: ["indexing", "scanning", "numberOfIndexedFiles"],
-    projects: processorCounts.map(it => `spring_boot/indexing_processorCount_${it}`)
+    projects: processorCounts.map(it => `spring_boot/indexing/processorCount_${it}`)
   }]
 
 const charts = combineCharts(chartsDeclaration)

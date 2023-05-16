@@ -684,6 +684,45 @@
             />
           </div>
         </section>
+
+        <section class="flex gap-x-6">
+          <div class=" flex-1 min-w-0">
+            <GroupProjectsChart
+              label="'Ktor samples' highlight mean value with Library cache K1"
+              measure="highlighting#mean_value"
+              :projects="[
+                'ktor_samples/highlight/ApplicationTest_with_library_cache_k1',
+                'ktor_samples/highlight/HttpBinApplication_with_library_cache_k1',
+                'ktor_samples/highlight/Upload_with_library_cache_k1',
+                'ktor_samples/highlight/Videos_with_library_cache_k1',
+                'ktor_samples/highlight/LocationHeaderApplication_with_library_cache_k1',
+                'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k1',
+                'ktor_samples/highlight/SseApplication_with_library_cache_k1',
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <GroupProjectsChart
+              label="'Ktor samples' highlight mean value with Library cache K2"
+              measure="highlighting#mean_value"
+              :projects="[
+                'ktor_samples/highlight/ApplicationTest_with_library_cache_k2',
+                'ktor_samples/highlight/HttpBinApplication_with_library_cache_k2',
+                'ktor_samples/highlight/Upload_with_library_cache_k2',
+                'ktor_samples/highlight/Videos_with_library_cache_k2',
+                'ktor_samples/highlight/LocationHeaderApplication_with_library_cache_k2',
+                'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k2',
+                'ktor_samples/highlight/SseApplication_with_library_cache_k2',
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+        </section>
         <section class="flex gap-x-6">
           <div class="flex-1 min-w-0">
             <GroupProjectsChart

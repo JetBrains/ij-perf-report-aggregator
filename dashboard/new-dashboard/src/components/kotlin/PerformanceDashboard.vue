@@ -753,6 +753,47 @@
             />
           </div>
         </section>
+        
+        <section class="flex gap-x-6">
+          <div class=" flex-1 min-w-0">
+            <GroupProjectsChart
+              label="'TBE' findUsages mean value with Library cache K1"
+              measure="findUsages#mean_value"
+              :projects="[
+                'toolbox_enterprise/findUsages/ErrorReport_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/genUuid_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/getAll_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/getTempDirectory_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
+                'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+          <div class=" flex-1 min-w-0">
+            <GroupProjectsChart
+              label="'TBE' findUsages mean value with Library cache K2"
+              measure="findUsages#mean_value"
+              :projects="[
+                'toolbox_enterprise/findUsages/ErrorReport_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/genUuid_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/getAll_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/getTempDirectory_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
+                'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
+              ]"
+              :server-configurator="serverConfigurator"
+              :configurators="dashboardConfigurators"
+              :accidents="warnings"
+            />
+          </div>
+        </section>
         <section class="flex gap-x-6">
           <div class=" flex-1 min-w-0">
             <GroupProjectsChart

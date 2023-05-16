@@ -26,12 +26,12 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { TimeRangeItem } from "shared/src/configurators/TimeRangeConfigurator"
+import { TimeRange, TimeRangeItem } from "shared/src/configurators/TimeRangeConfigurator"
 import { computed, shallowRef } from "vue"
 
 const props = defineProps<{
-  value: string
-  onChange: (value: string) => void
+  value: TimeRange
+  onChange: (value: TimeRange) => void
   ranges: TimeRangeItem[]
 }>()
 
@@ -39,7 +39,7 @@ const model = computed({
   get() {
     return props.value
   },
-  set(value: string) {
+  set(value: TimeRange) {
     props.onChange(value)
   },
 })

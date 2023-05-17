@@ -23,13 +23,22 @@
         </div>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 4"
           title="Changes"
           target="_blank"
           class="info cursor-pointer"
           @click="navigateToSpace"
         >
-          <UsersIcon class="w-5 h-5" />
+          <SpaceIcon class="w-5 h-5" />
+        </a>
+
+        <a
+          v-if="tooltipData.firstSeriesData.length >= 4"
+          title="Changes"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=buildChangesDiv`"
+          target="_blank"
+          class="info"
+        >
+          <UserIcon class="w-5 h-5" />
         </a>
 
         <a
@@ -88,13 +97,13 @@
 </template>
 <script setup lang="ts">
 
-import { ArchiveBoxIcon, ArrowDownTrayIcon, ServerIcon, UsersIcon } from "@heroicons/vue/24/outline"
 import OverlayPanel from "primevue/overlaypanel"
+import { ChartToolTipManager, TooltipData } from "shared/src/components/ChartToolTipManager"
+import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "shared/src/formatter"
+import { calculateChanges } from "shared/src/util/changes"
+import { debounceSync } from "shared/src/util/debounce"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
-import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
-import { calculateChanges } from "../util/changes"
-import { debounceSync } from "../util/debounce"
-import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
+import SpaceIcon from "../common/SpaceIcon.vue"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
 const panel = shallowRef<OverlayPanel | null>()

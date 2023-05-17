@@ -1,31 +1,13 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
-      <template #start>
-        <TimeRangeSelect
-          :ranges="TimeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        >
-          <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
-          :triggered-by-configurator="triggeredByConfigurator"
-        />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
-      </template>
-    </Toolbar>
+    <DashboardToolbar
+      :branch-configurator="branchConfigurator"
+      :machine-configurator="machineConfigurator"
+      :release-configurator="releaseConfigurator"
+      :on-change-range="onChangeRange"
+      :time-range-configurator="timeRangeConfigurator"
+      :triggered-by-configurator="triggeredByConfigurator"
+    />
 
     <main class="flex">
       <div
@@ -52,7 +34,6 @@
 
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
@@ -70,8 +51,7 @@ import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import DashboardToolbar from "../common/DashboardToolbar.vue"
 
 provideReportUrlProvider()
 
@@ -232,11 +212,3 @@ refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, null, data)
 })
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-</style>

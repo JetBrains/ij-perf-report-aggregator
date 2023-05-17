@@ -18,12 +18,12 @@ import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureC
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration} from "shared/src/dataQuery"
 import { reportInfoProviderKey } from "shared/src/injectionKeys"
 import { Accident } from "shared/src/meta"
+import { calculateChanges } from "shared/src/util/changes"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, withDefaults } from "vue"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { getInfoDataFrom, InfoData, InfoSidebarVm } from "../InfoSidebarVm"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
-import { base64ToHex, calculateChanges } from "shared/src/util/changes"
 
 interface LineChartProps {
   title: string

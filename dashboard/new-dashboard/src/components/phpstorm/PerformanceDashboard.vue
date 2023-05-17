@@ -1,31 +1,13 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
-      <template #start>
-        <TimeRangeSelect
-          :ranges="TimeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        >
-          <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-          :release-configurator="releaseConfigurator"
-          :triggered-by-configurator="triggeredByConfigurator"
-        />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
-      </template>
-    </Toolbar>
+    <DashboardToolbar
+      :branch-configurator="branchConfigurator"
+      :machine-configurator="machineConfigurator"
+      :release-configurator="releaseConfigurator"
+      :on-change-range="onChangeRange"
+      :time-range-configurator="timeRangeConfigurator"
+      :triggered-by-configurator="triggeredByConfigurator"
+    />
     <main class="flex">
       <div
         ref="container"
@@ -118,7 +100,7 @@
           <GroupProjectsChart
             label="Indexing"
             measure="updatingTime"
-            :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing', 
+            :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing',
                         'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
             :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
@@ -171,7 +153,7 @@
           <GroupProjectsChart
             label="PHP Typing Time"
             measure="typing"
-            :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing', 
+            :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                         'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                         'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
             :server-configurator="serverConfigurator"
@@ -290,7 +272,6 @@
 
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
@@ -308,8 +289,7 @@ import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import DashboardToolbar from "../common/DashboardToolbar.vue"
 
 provideReportUrlProvider()
 
@@ -379,11 +359,3 @@ refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, null, data)
 })
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-</style>

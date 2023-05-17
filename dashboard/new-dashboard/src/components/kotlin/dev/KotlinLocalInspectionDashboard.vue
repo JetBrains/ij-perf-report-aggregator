@@ -1,31 +1,13 @@
 
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
-      <template #start>
-        <TimeRangeSelect
-          :ranges="TimeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        >
-          <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-          :triggered-by-configurator="triggeredByConfigurator"
-        />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
-      </template>
-    </Toolbar>
+    <DashboardToolbar
+      :branch-configurator="branchConfigurator"
+      :machine-configurator="machineConfigurator"
+      :on-change-range="onChangeRange"
+      :time-range-configurator="timeRangeConfigurator"
+      :triggered-by-configurator="triggeredByConfigurator"
+    />
 
     <main class="flex">
       <div
@@ -312,7 +294,6 @@
 
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
@@ -326,10 +307,8 @@ import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../../shared/keys"
 import InfoSidebar from "../../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
-import AggregationChart from "../../charts/AggregationChart.vue"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
-import BranchSelect from "../../common/BranchSelect.vue"
-import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
+import DashboardToolbar from "../../common/DashboardToolbar.vue"
 
 provideReportUrlProvider(false)
 
@@ -388,11 +367,3 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-</style>

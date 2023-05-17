@@ -1,23 +1,11 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
-      <template #start>
-        <TimeRangeSelect
-          :ranges="TimeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        >
-          <template #icon>
-            <CalendarIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-          :triggered-by-configurator="triggeredByConfigurator"
-        />
-      </template>
-    </Toolbar>
-
+    <DashboardToolbar
+      :branch-configurator="branchConfigurator"
+      :on-change-range="onChangeRange"
+      :time-range-configurator="timeRangeConfigurator"
+      :triggered-by-configurator="triggeredByConfigurator"
+    />
     <main class="flex">
       <div
         ref="container"
@@ -81,8 +69,7 @@ import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import BranchSelect from "../common/BranchSelect.vue"
-import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import DashboardToolbar from "../common/DashboardToolbar.vue"
 
 provideReportUrlProvider(false, true)
 
@@ -128,11 +115,3 @@ function onChangeRange(value: TimeRange) {
 }
 
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-</style>

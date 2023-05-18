@@ -131,45 +131,45 @@ const chartsDeclaration: Array<ChartDefinition> = [{
   measures: ["build_compilation_duration"],
   projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
 }, {
-  labels: ["Inspection", "Lookups number", "Lookups duration"],
-  measures: ["globalInspections", "lookups", "lookupsDurationMs"],
+  labels: ["Inspection"],
+  measures: ["globalInspections"],
   projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
 }, {
   labels: ["FindUsages PsiManager#getInstance Before and After Compilation", "Lookups number", "Lookups duration"],
   measures: ["findUsages", "lookups", "lookupsDurationMs"],
   projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
 }, {
-  labels: ["FindUsages Library#getName Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages Library#getName Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
 }, {
-  labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/LocalInspectionTool_getID_Before", "community/findUsages/LocalInspectionTool_getID_After"],
 }, {
-  labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages ActionsKt#runReadAction and Application#runReadAction Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/ActionsKt_runReadAction_After",
     "community/findUsages/Application_runReadAction_Before", "community/findUsages/Application_runReadAction_After"],
 }, {
-  labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages Persistent#absolutePath and PropertyMapping#value Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/Persistent_absolutePath_Before", "community/findUsages/Persistent_absolutePath_After",
     "community/findUsages/PropertyMapping_value_Before", "community/findUsages/PropertyMapping_value_After"
   ],
 }, {
-    labels: ["FindUsages Object#hashCode and Path#toString Before and After Compilation", "Lookups number", "Lookups duration"],
-    measures: ["findUsages", "lookups", "lookupsDurationMs"],
+    labels: ["FindUsages Object#hashCode and Path#toString Before and After Compilation"],
+    measures: ["findUsages"],
     projects: ["community/findUsages/Object_hashCode_Before", "community/findUsages/Object_hashCode_After",
       "community/findUsages/Path_toString_Before", "community/findUsages/Path_toString_After"
     ],
   }, {
-  labels: ["FindUsages Objects#hashCode Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages Objects#hashCode Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/Objects_hashCode_Before", "community/findUsages/Objects_hashCode_After"],
 }, {
-  labels: ["FindUsages Path#div Before and After Compilation", "Lookups number", "Lookups duration"],
-  measures: ["findUsages", "lookups", "lookupsDurationMs"],
+  labels: ["FindUsages Path#div Before and After Compilation"],
+  measures: ["findUsages"],
   projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After"],
 }, {
   labels: ["Find Usages with idea.is.internal=true Before Compilation"],

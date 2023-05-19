@@ -1,9 +1,9 @@
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
+import { FilterConfigurator } from "shared/src/configurators/filter"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { Accident } from "shared/src/meta"
 import { InjectionKey, Ref } from "vue"
 import { InfoSidebarVm } from "../components/InfoSidebarVm"
-import { FilterConfigurator } from "shared/src/configurators/filter"
 
 export const sidebarVmKey: InjectionKey<InfoSidebarVm> = Symbol("sidebarVm")
 export const containerKey: InjectionKey<Ref<HTMLElement|undefined>> = Symbol("chartContainerKey")

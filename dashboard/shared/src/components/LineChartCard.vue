@@ -27,7 +27,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect, withDefaults } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect } from "vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../chart"
 import { PredefinedMeasureConfigurator } from "../configurators/MeasureConfigurator"

@@ -33,17 +33,16 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "shared/src/configurators/filter"
 import { refToObservable } from "shared/src/configurators/rxjs"
+import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
-import { provide, ref, withDefaults } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import DashboardToolbar from "./DashboardToolbar.vue"
-import { DataQueryConfigurator } from "shared/src/dataQuery"
-
 
 interface PerformanceDashboardProps {
   dbName: string

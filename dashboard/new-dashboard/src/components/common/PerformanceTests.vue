@@ -91,7 +91,7 @@ import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeR
 import { refToObservable } from "shared/src/configurators/rxjs"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
-import { provide, ref, withDefaults } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"

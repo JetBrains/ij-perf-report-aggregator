@@ -25,7 +25,7 @@ import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ValueUnit } from "shared/src/chart"
 import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { inject, onMounted, onUnmounted, shallowRef, withDefaults } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef } from "vue"
 import { containerKey } from "../../shared/keys"
 import { AggregationChartVM } from "./AggregationChartVM"
 

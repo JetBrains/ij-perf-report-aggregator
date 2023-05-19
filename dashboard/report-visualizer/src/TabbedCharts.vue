@@ -41,7 +41,7 @@
 <script setup lang="ts">
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue"
 import { asyncScheduler, distinctUntilChanged, observeOn, Subject, switchMap } from "rxjs"
-import { computed, ref, watch, withDefaults } from "vue"
+import { computed, ref, watch } from "vue"
 import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
 import { chartDescriptors } from "./ActivityChartDescriptor"

@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfint"
     table="pycharm"
     persistent-id="pycharm_dashboard"
@@ -22,7 +22,6 @@
         label="Indexing"
         measure="indexing"
         :projects="['django/indexing', 'empty_project/indexing', 'flusk/indexing', 'matplotlib/indexing', 'pandas/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -32,7 +31,6 @@
         label="Number Of Indexed Files"
         measure="numberOfIndexedFiles"
         :projects="['django/indexing', 'empty_project/indexing', 'flask/indexing', 'matplotlib/indexing', 'pandas/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -42,7 +40,6 @@
         label="Inspection execution time"
         measure="globalInspections"
         :projects="['django/inspection', 'flask/inspection', 'matplotlib/inspection', 'pandas/inspection']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />

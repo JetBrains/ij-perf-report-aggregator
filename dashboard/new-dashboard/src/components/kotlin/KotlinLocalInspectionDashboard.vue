@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, warnings}"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_inspection_dashboard"
@@ -14,7 +14,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -26,7 +25,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -52,7 +50,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -76,7 +73,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -95,7 +91,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -111,7 +106,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -130,7 +124,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -146,7 +139,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -167,7 +159,6 @@
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k1',
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -187,7 +178,6 @@
 
 
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -212,7 +202,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -234,7 +223,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -254,7 +242,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k1',
             'ktor_samples/highlight/SseApplication_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -272,7 +259,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k2',
             'ktor_samples/highlight/SseApplication_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />

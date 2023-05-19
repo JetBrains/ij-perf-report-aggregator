@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_findusage_dashboard"
@@ -39,7 +39,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -55,7 +54,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -74,7 +72,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k1',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -90,7 +87,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k2',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -111,7 +107,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -130,7 +125,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />

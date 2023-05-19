@@ -14,7 +14,6 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <slot
-          :server-configurator="serverConfigurator"
           :dashboard-configurators="dashboardConfigurators"
           :averages-configurators="averagesConfigurators"
           :warnings="warnings"
@@ -40,7 +39,7 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
@@ -74,6 +73,8 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+provide(serverConfiguratorKey, serverConfigurator)
+
 const persistenceForDashboard = new PersistentStateManager(props.persistentId, {
   machine: props.initialMachine ?? "",
   project: [],

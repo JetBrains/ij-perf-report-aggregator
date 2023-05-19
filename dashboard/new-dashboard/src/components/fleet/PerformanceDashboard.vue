@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, warnings}"
     db-name="fleet"
     table="measure"
     persistent-id="fleetPerf_dashboard"
@@ -14,7 +14,6 @@
         measure="fleet.test"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
         value-unit="ns"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -25,7 +24,6 @@
         measure="fleet.test"
         value-unit="ns"
         :projects="['openGoDelveProject', 'openJeditermProject', 'openRustSimpleServerProject', 'openSpringPetClinicJavaProject', 'openSpringPetClinicKotlinProject']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -36,7 +34,6 @@
         measure="awt.delay"
         value-unit="ns"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -47,7 +44,6 @@
         measure="max.awt.delay"
         value-unit="ns"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -58,7 +54,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['stressHighlighting']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -69,7 +64,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['wideTree', 'deepTree']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -81,7 +75,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -92,7 +85,6 @@
         value-unit="ns"
         measure="awt.delay"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -103,7 +95,6 @@
         value-unit="ns"
         measure="max.awt.delay"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -114,7 +105,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['Open mPDF', 'Frontend Completion in mPDF']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />

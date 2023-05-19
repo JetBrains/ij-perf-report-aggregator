@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_completion_dashboard"
@@ -32,7 +32,6 @@
           label="Indexing K1"
           measure="indexing"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -41,7 +40,6 @@
           label="Indexing K2"
           measure="indexing"
           :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -54,7 +52,6 @@
           label="Completion mean value on hello-world"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_with_library_cache_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -72,7 +69,6 @@
             'kotlin_lang/completion/after_parameter_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -87,7 +83,6 @@
             'kotlin_lang/completion/after_parameter_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -107,7 +102,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -124,7 +118,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -139,7 +132,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />

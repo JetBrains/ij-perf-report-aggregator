@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfint"
     table="idea"
     persistent-id="idea_dashboard"
@@ -50,7 +50,6 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />

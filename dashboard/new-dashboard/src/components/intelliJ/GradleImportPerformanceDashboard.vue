@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, warnings}"
     db-name="perfint"
     table="idea"
     persistent-id="idea_gradle_dashboard"
@@ -14,7 +14,6 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />

@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, warnings}"
     db-name="perfint"
     table="goland"
     persistent-id="goland_dashboard"
@@ -11,7 +11,6 @@
         label="Indexing: Lightweight projects"
         measure="indexing"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -21,7 +20,6 @@
         label="Number Of Indexed Files: Lightweight projects"
         measure="numberOfIndexedFiles"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -31,7 +29,6 @@
         label="Indexing: Heavyweight projects"
         measure="indexing"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -41,7 +38,6 @@
         label="Number Of Indexed Files: Heavyweight projects"
         measure="numberOfIndexedFiles"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -51,7 +47,6 @@
         label="Inspection execution time: Lightweight projects"
         measure="globalInspections"
         :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -61,7 +56,6 @@
         label="Inspection execution time: Heavyweight projects"
         measure="globalInspections"
         :projects="['cockroach/inspection', 'kubernetes/inspection']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -71,7 +65,6 @@
         label="Local inspection execution time"
         measure="localInspections"
         :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -81,7 +74,6 @@
         label="Typing: average responsiveness time"
         measure="test#average_awt_delay"
         :projects="['mattermost-server/typing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -91,7 +83,6 @@
         label="Typing: total time"
         measure="typing"
         :projects="['mattermost-server/typing']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -101,7 +92,6 @@
         label="Find Usages execution time"
         measure="findUsages"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />
@@ -111,7 +101,6 @@
         label="Find Usages number of found usages"
         measure="findUsages#number"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
         :accidents="warnings"
       />

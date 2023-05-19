@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_refactoring_dashboard"
@@ -71,7 +71,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -82,7 +81,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -96,7 +94,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -107,7 +104,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -121,7 +117,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -132,7 +127,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />

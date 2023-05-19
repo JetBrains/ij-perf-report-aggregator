@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators}"
+    v-slot="{ dashboardConfigurators}"
     db-name="jbr"
     table="report"
     persistent-id="jbr_javadraw_dashboard"
@@ -21,7 +21,6 @@
           label="macOS"
           :measure="metric"
           :projects="macOSConfigurations"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </section>
@@ -31,7 +30,6 @@
             label="Ubuntu"
             :measure="metric"
             :projects="ubuntuConfigurations"
-            :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
         </div>
@@ -40,7 +38,6 @@
             label="Windows"
             :measure="metric"
             :projects="windowsConfigurations"
-            :server-configurator="serverConfigurator"
             :configurators="dashboardConfigurators"
           />
         </div>

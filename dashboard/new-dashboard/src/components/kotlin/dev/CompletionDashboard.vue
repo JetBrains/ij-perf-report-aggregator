@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_completion_dashboard"
@@ -33,7 +33,6 @@
           label="'Hello-world' completion mean value on  K1"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -43,7 +42,6 @@
           label="'Hello-world' completion mean value on hello-world K2"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -55,7 +53,6 @@
           label="'Hello-world' firstElementShown mean value on hello-world K1"
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -65,7 +62,6 @@
           label="'Hello-world' firstElementShown mean value on hello-world K2"
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -82,7 +78,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -96,7 +91,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -112,7 +106,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -126,7 +119,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -143,7 +135,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -158,7 +149,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -175,7 +165,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -190,7 +179,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -206,7 +194,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -220,7 +207,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -237,7 +223,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -251,7 +236,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -268,7 +252,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -282,7 +265,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -298,7 +280,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -312,7 +293,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -329,7 +309,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -344,7 +323,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -361,7 +339,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />
@@ -376,7 +353,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
           :accidents="warnings"
         />

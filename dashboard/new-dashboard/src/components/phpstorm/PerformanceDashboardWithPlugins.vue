@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators}"
+    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="phpstormWithPlugins"
     persistent-id="phpstorm_plugins_dashboard"
@@ -11,7 +11,6 @@
         label="Batch Inspections"
         measure="globalInspections"
         :projects="['drupal8-master-with-plugin/inspection', 'magento/inspection', 'wordpress/inspection', 'laravel-io/inspection']"
-        :server-configurator="serverConfigurator"
         :configurators="dashboardConfigurators"
       />
     </section>
@@ -21,7 +20,6 @@
           label="Batch Inspections"
           measure="globalInspections"
           :projects="['mediawiki/inspection']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -30,7 +28,6 @@
           label="Local Inspections"
           measure="localInspections"
           :projects="['mpdf/localInspection']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -41,7 +38,6 @@
           label="Indexing"
           measure="updatingTime"
           :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -50,7 +46,6 @@
           label="Indexing"
           measure="updatingTime"
           :projects="['magento/indexing']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -62,7 +57,6 @@
           label="Typing Time"
           measure="typing"
           :projects="['mpdf/typing', 'mpdf_powersave/typing']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -71,7 +65,6 @@
           label="Typing Average Responsiveness"
           measure="test#average_awt_delay"
           :projects="[ 'mpdf/typing', 'mpdf_powersave/typing']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>
@@ -80,7 +73,6 @@
           label="Typing Responsiveness"
           measure="test#max_awt_delay"
           :projects="['mpdf/typing', 'mpdf_powersave/typing']"
-          :server-configurator="serverConfigurator"
           :configurators="dashboardConfigurators"
         />
       </div>

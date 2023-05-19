@@ -56,7 +56,6 @@
       />
     </section>
   </DashboardPage>
-  >
 </template>
 
 <script setup lang="ts">

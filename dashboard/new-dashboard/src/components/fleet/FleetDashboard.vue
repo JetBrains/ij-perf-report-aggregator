@@ -35,37 +35,31 @@
             title="editor appeared"
             :measures='["editor appeared.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="time to edit"
             :measures='["time to edit.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="terminal ready"
             :measures='["terminal ready.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="file tree rendered"
             :measures='["file tree rendered.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="highlighting done"
             :measures='["highlighting done.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="window appeared"
             :measures='["window appeared.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
         </div>
 
@@ -75,37 +69,31 @@
             title="editor appeared"
             :measures='["shortCircuit.editor appeared.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="time to edit"
             :measures='["shortCircuit.time to edit.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="terminal ready"
             :measures='["shortCircuit.terminal ready.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="file tree rendered"
             :measures='["shortCircuit.file tree rendered.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="highlighting done"
             :measures='["shortCircuit.highlighting done.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
           <LineChart
             title="window appeared"
             :measures='["shortCircuit.window appeared.end"]'
             :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
           />
         </div>
       </div>

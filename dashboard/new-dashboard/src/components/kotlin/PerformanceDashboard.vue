@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators}"
+    v-slot="{averagesConfigurators}"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_dashboard"
@@ -68,7 +68,6 @@
           label="'Hello-world' completion mean value on hello-world K1"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -76,7 +75,6 @@
           label="'Hello-world' completion mean value on hello-world K2"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -87,7 +85,6 @@
           label="'Hello-world' firstElementShown mean value on hello-world K1"
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -95,7 +92,6 @@
           label="'Hello-world' firstElementShown mean value on hello-world K2"
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -110,7 +106,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -122,7 +117,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -137,7 +131,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -149,7 +142,6 @@
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -165,7 +157,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -178,7 +169,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -194,7 +184,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -207,7 +196,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -222,7 +210,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -234,7 +221,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -249,7 +235,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -261,7 +246,6 @@
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -275,7 +259,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -287,7 +270,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -302,7 +284,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -314,7 +295,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -329,7 +309,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -342,7 +321,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -358,7 +336,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k1',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -371,7 +348,6 @@
             'kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache_k2',
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -384,7 +360,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -394,7 +369,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -418,7 +392,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -440,7 +413,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -457,7 +429,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -471,7 +442,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -488,7 +458,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -502,7 +471,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -521,7 +489,6 @@
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k1',
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -539,7 +506,6 @@
 
 
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -562,7 +528,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -582,7 +547,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -601,7 +565,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k1',
             'ktor_samples/highlight/SseApplication_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -617,7 +580,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k2',
             'ktor_samples/highlight/SseApplication_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -633,7 +595,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -647,7 +608,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -664,7 +624,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k1',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -678,7 +637,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k2',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -698,7 +656,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -715,7 +672,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -726,7 +682,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -735,7 +690,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -747,7 +701,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -756,7 +709,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -768,7 +720,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -777,7 +728,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>

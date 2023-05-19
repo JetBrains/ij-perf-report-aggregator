@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="fleet"
     table="measure"
     persistent-id="fleetPerf_dashboard"
@@ -14,7 +13,6 @@
         measure="fleet.test"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
         value-unit="ns"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -23,7 +21,6 @@
         measure="fleet.test"
         value-unit="ns"
         :projects="['openGoDelveProject', 'openJeditermProject', 'openRustSimpleServerProject', 'openSpringPetClinicJavaProject', 'openSpringPetClinicKotlinProject']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -32,7 +29,6 @@
         measure="awt.delay"
         value-unit="ns"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -41,7 +37,6 @@
         measure="max.awt.delay"
         value-unit="ns"
         :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -50,7 +45,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['stressHighlighting']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -59,7 +53,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['wideTree', 'deepTree']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <Divider title="PHP" />
@@ -69,7 +62,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -78,7 +70,6 @@
         value-unit="ns"
         measure="awt.delay"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -87,7 +78,6 @@
         value-unit="ns"
         measure="max.awt.delay"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -96,7 +86,6 @@
         value-unit="ns"
         measure="fleet.test"
         :projects="['Open mPDF', 'Frontend Completion in mPDF']"
-        :configurators="dashboardConfigurators"
       />
     </section>
   </DashboardPage>>

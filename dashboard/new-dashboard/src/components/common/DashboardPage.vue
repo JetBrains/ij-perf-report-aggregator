@@ -14,7 +14,6 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <slot
-          :dashboard-configurators="dashboardConfigurators"
           :averages-configurators="averagesConfigurators"
         />
       </div>
@@ -32,17 +31,18 @@ import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildC
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { FilterConfigurator } from "shared/src/configurators/filter"
 import { refToObservable } from "shared/src/configurators/rxjs"
-import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
-import { accidentsKeys, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import DashboardToolbar from "./DashboardToolbar.vue"
+import { DataQueryConfigurator } from "shared/src/dataQuery"
 
 
 interface PerformanceDashboardProps {
@@ -119,7 +119,7 @@ const dashboardConfigurators = [
   branchConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
-] as DataQueryConfigurator[]
+] as FilterConfigurator[]
 
 if (machineConfigurator != null) {
   dashboardConfigurators.push(machineConfigurator)
@@ -129,7 +129,7 @@ const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurat
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
-
+provide(dashboardConfiguratorsKey, dashboardConfigurators)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

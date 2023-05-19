@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="goland"
     persistent-id="goland_dashboard"
@@ -11,7 +10,6 @@
         label="Indexing: Lightweight projects"
         measure="indexing"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -19,7 +17,6 @@
         label="Number Of Indexed Files: Lightweight projects"
         measure="numberOfIndexedFiles"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -27,7 +24,6 @@
         label="Indexing: Heavyweight projects"
         measure="indexing"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -35,7 +31,6 @@
         label="Number Of Indexed Files: Heavyweight projects"
         measure="numberOfIndexedFiles"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -43,7 +38,6 @@
         label="Inspection execution time: Lightweight projects"
         measure="globalInspections"
         :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -51,7 +45,6 @@
         label="Inspection execution time: Heavyweight projects"
         measure="globalInspections"
         :projects="['cockroach/inspection', 'kubernetes/inspection']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -59,7 +52,6 @@
         label="Local inspection execution time"
         measure="localInspections"
         :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -67,7 +59,6 @@
         label="Typing: average responsiveness time"
         measure="test#average_awt_delay"
         :projects="['mattermost-server/typing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -75,7 +66,6 @@
         label="Typing: total time"
         measure="typing"
         :projects="['mattermost-server/typing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -83,7 +73,6 @@
         label="Find Usages execution time"
         measure="findUsages"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -91,7 +80,6 @@
         label="Find Usages number of found usages"
         measure="findUsages#number"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
-        :configurators="dashboardConfigurators"
       />
     </section>
   </DashboardPage>>

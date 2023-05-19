@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="ideaSharedIndices"
     persistent-id="shared_indexes_dashboard"
@@ -15,7 +14,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -27,7 +25,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -39,7 +36,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -51,7 +47,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -63,7 +58,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -75,7 +69,6 @@
                     'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -87,7 +80,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -99,7 +91,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -111,7 +102,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -123,7 +113,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -135,7 +124,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -147,7 +135,6 @@
                     'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-intellij-community-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -159,7 +146,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -171,7 +157,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -183,7 +168,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -195,7 +179,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -207,7 +190,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -219,7 +201,6 @@
                     'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-maven-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -231,7 +212,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -243,7 +223,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -255,7 +234,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -267,7 +245,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -279,7 +256,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -291,7 +267,6 @@
                     'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
                     'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
                     'ijx-jdk-gradle-speed/usual-indexes']"
-        :configurators="dashboardConfigurators"
       />
     </section>
   </DashboardPage>

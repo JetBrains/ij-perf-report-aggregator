@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="phpstormWithPlugins"
     persistent-id="phpstorm_plugins_dashboard"
@@ -11,7 +10,6 @@
         label="Batch Inspections"
         measure="globalInspections"
         :projects="['drupal8-master-with-plugin/inspection', 'magento/inspection', 'wordpress/inspection', 'laravel-io/inspection']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section class="flex gap-x-6">
@@ -20,7 +18,6 @@
           label="Batch Inspections"
           measure="globalInspections"
           :projects="['mediawiki/inspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -28,7 +25,6 @@
           label="Local Inspections"
           measure="localInspections"
           :projects="['mpdf/localInspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -38,7 +34,6 @@
           label="Indexing"
           measure="updatingTime"
           :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -46,7 +41,6 @@
           label="Indexing"
           measure="updatingTime"
           :projects="['magento/indexing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -57,7 +51,6 @@
           label="Typing Time"
           measure="typing"
           :projects="['mpdf/typing', 'mpdf_powersave/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -65,7 +58,6 @@
           label="Typing Average Responsiveness"
           measure="test#average_awt_delay"
           :projects="[ 'mpdf/typing', 'mpdf_powersave/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -73,7 +65,6 @@
           label="Typing Responsiveness"
           measure="test#max_awt_delay"
           :projects="['mpdf/typing', 'mpdf_powersave/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>

@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators}"
+    v-slot="{averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_findusage_dashboard"
@@ -39,7 +39,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -53,7 +52,6 @@
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -70,7 +68,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k1',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -84,7 +81,6 @@
             'kotlin_lang/findUsages/Flag_with_library_cache_k2',
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -103,7 +99,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -120,7 +115,6 @@
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>

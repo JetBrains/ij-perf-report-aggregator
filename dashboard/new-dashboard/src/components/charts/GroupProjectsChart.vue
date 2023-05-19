@@ -3,7 +3,7 @@
     :title="props.label"
     :value-unit="props.valueUnit"
     :measures="[measure]"
-    :configurators="configurators"
+    :configurators="configurators as DataQueryConfigurator[]"
     :skip-zero-values="false"
     :accidents="accidents"
   />
@@ -16,14 +16,13 @@ import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { FilterConfigurator } from "shared/src/configurators/filter"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { inject, onMounted } from "vue"
-import { accidentsKeys, serverConfiguratorKey } from "../../shared/keys"
+import { accidentsKeys, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import LineChart from "./LineChart.vue"
 
 interface Props {
   label: string
   measure: string
   projects: Array<string>
-  configurators: Array<DataQueryConfigurator>
   valueUnit?: ValueUnit
 }
 
@@ -33,15 +32,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const serverConfigurator = inject(serverConfiguratorKey) as ServerConfigurator
 const accidents = inject(accidentsKeys)
-
+const dashboardConfigurators = inject(dashboardConfiguratorsKey) as DataQueryConfigurator[]|FilterConfigurator[]
 const scenarioConfigurator = dimensionConfigurator(
   "project", 
   serverConfigurator,
   null, 
   true,
-  [...props.configurators] as Array<FilterConfigurator>
+  [...dashboardConfigurators as FilterConfigurator[]]
 )
-const configurators = [...props.configurators, scenarioConfigurator, serverConfigurator]
+const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
 onMounted(() => {
   scenarioConfigurator.selected.value = props.projects

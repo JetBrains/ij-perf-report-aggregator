@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators}"
+    v-slot="{averagesConfigurators}"
     db-name="perfint"
     table="phpstorm"
     persistent-id="phpstorm_dashboard"
@@ -39,7 +39,6 @@
         measure="globalInspections"
         :projects="['drupal8-master-with-plugin/inspection', 'shopware/inspection', 'b2c-demo-shop/inspection', 'magento/inspection', 'wordpress/inspection',
                     'laravel-io/inspection']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section class="flex gap-x-6">
@@ -48,7 +47,6 @@
           label="Batch Inspections"
           measure="globalInspections"
           :projects="['mediawiki/inspection','php-cs-fixer/inspection', 'proxyManager/inspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -56,7 +54,6 @@
           label="Batch Inspections"
           measure="globalInspections"
           :projects="['akaunting/inspection','aggregateStitcher/inspection', 'prestaShop/inspection', 'kunstmaanBundlesCMS/inspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -67,7 +64,6 @@
           label="Local Inspections"
           measure="localInspections"
           :projects="['mpdf/localInspection', 'WI_65655/localInspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -75,7 +71,6 @@
           label="Local Inspections"
           measure="localInspections"
           :projects="['WI_59961/localInspection', 'bitrix/localInspection', 'WI_65893/localInspection']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -85,7 +80,6 @@
         measure="updatingTime"
         :projects="['b2c-demo-shop/indexing', 'bitrix/indexing', 'oro/indexing', 'ilias/indexing', 'magento2/indexing', 'drupal8-master-with-plugin/indexing',
                     'laravel-io/indexing','wordpress/indexing','mediawiki/indexing', 'WI_66681/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -93,7 +87,6 @@
         label="Indexing"
         measure="updatingTime"
         :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing', 'shopware/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -102,7 +95,6 @@
         measure="updatingTime"
         :projects="['WI_39333-5x/indexing', 'php-cs-fixer/indexing','many_classes/indexing', 'magento/indexing', 'proxyManager/indexing',
                     'dql/indexing', 'tcpdf/indexing', 'WI_51645/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -110,7 +102,6 @@
         label="Indexing"
         measure="updatingTime"
         :projects="['empty_project/indexing','complex_meta/indexing', 'WI_53502-10x/indexing', 'many_array_access/indexing-10x', 'WI_66279-10x/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -119,7 +110,6 @@
         measure="completion"
         :projects="['many_classes/completion/classes','magento2/completion/function_var', 'magento2/completion/function_stlr', 'magento2/completion/classes','dql/completion',
                     'WI_64694/completion','WI_58919/completion', 'WI_58807/completion', 'WI_58306/completion']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -129,7 +119,6 @@
         :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                     'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                     'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section class="flex gap-x-6">
@@ -138,7 +127,6 @@
           label="PHP SearchEverywhere Class"
           measure="searchEverywhere_class"
           :projects="['bitrix/go-to-class/BCCo', 'magento2/go-to-class/MaAdMUser']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -146,7 +134,6 @@
           label="Code Vision (PhpReferencesCodeVisionProvider)"
           measure="PhpReferencesCodeVisionProvider"
           :projects="['mpdf/localInspection', 'WI_65655/localInspection', 'laravel-io/localInspection/HasAuthor', 'laravel-io/localInspection/Tag']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -158,7 +145,6 @@
           :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                       'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                       'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -168,7 +154,6 @@
           :projects="['WI_29056/typing', 'WI_41934/typing', 'WI_44525/typing', 'WI_60709/typing', 'bitrix/typing', 'heredoc/typing', 'html_in_fragment/typing',
                       'html_in_fragment_powersave/typing', 'html_in_literal/typing', 'html_in_literal_powersave/typing', 'large_method_phpdoc/typing', 'large_phpdoc/typing',
                       'large_phpdoc_comment/typing', 'lots_phpdoc_methods/typing', 'mpdf/typing', 'mpdf_powersave/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -179,7 +164,6 @@
           measure="typing"
           :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                       'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -188,7 +172,6 @@
           measure="test#average_awt_delay"
           :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                       'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -197,7 +180,6 @@
           measure="test#max_awt_delay"
           :projects="['blade_in_php_fragment_large_file/typing', 'blade_in_blade_fragment_large_file/typing', 'blade_new_line_large_file/typing',
                       'blade_in_blade_fragment_laravel/typing', 'blade_in_php_fragment_laravel/typing']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -206,7 +188,6 @@
         label="Index size"
         measure="indexSize"
         :projects="['akaunting/indexing', 'aggregateStitcher/indexing', 'prestaShop/indexing', 'kunstmaanBundlesCMS/indexing']"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -214,7 +195,6 @@
         label="Inline Rename"
         measure="startInlineRename"
         :projects="['mpdf/inlineRename']"
-        :configurators="dashboardConfigurators"
       />
     </section>
   </DashboardPage>

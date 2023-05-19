@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_dashboard"
@@ -13,14 +12,12 @@
           label="Indexing K1"
           measure="indexing"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>          <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing K2"
           measure="indexing"
           :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -30,7 +27,6 @@
           label="Completion mean value on hello-world"
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_with_library_cache_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -46,7 +42,6 @@
             'kotlin_lang/completion/after_parameter_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -59,7 +54,6 @@
             'kotlin_lang/completion/after_parameter_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -77,7 +71,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -96,7 +89,6 @@
           'intellij_commit/highlight/AndroidModelTest_with_library_cache_k1',
           'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
         ]"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -113,7 +105,6 @@
           'intellij_commit/highlight/AndroidModelTest_with_library_cache_k2',
           'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
         ]"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -132,7 +123,6 @@
           'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
           'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
         ]"
-        :configurators="dashboardConfigurators"
       />
       <GroupProjectsChart
         label="Highlight mean value with Library cache K2"
@@ -149,7 +139,6 @@
           'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
           'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
         ]"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -168,7 +157,6 @@
           'kotlin_lang/findUsages/SymbolTable_with_library_cache_k1',
           'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
         ]"
-        :configurators="dashboardConfigurators"
       />
     </section>
     <section>
@@ -187,7 +175,6 @@
           'kotlin_lang/findUsages/SymbolTable_with_library_cache_k2',
           'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
         ]"
-        :configurators="dashboardConfigurators"
       />
     </section>
   </DashboardPage>>

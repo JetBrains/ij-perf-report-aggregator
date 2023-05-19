@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators}"
+    v-slot="{averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_refactoring_dashboard"
@@ -71,7 +71,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -80,7 +79,6 @@
           measure="performInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -92,7 +90,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -101,7 +98,6 @@
           measure="startInlineRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -113,7 +109,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -122,7 +117,6 @@
           measure="prepareForRename#mean_value"
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>

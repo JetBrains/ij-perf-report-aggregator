@@ -57,7 +57,7 @@ const measuresConfigurator = {
     return null
   },
 }
-const configurators = [...props.configurators, timeAverageConfigurator, measuresConfigurator]
+const configurators = [...props.configurators, timeAverageConfigurator, measuresConfigurator] as DataQueryConfigurator[]
 const queryExecutor = new DataQueryExecutor(configurators)
 const element = shallowRef<HTMLElement>()
 const vm = new AggregationChartVM(queryExecutor, props.chartColor)

@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators}"
+    v-slot="{averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_highlighting_dashboard"
@@ -35,7 +35,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -45,7 +44,6 @@
           :projects="[
             'kotlin_empty/highlight/Main_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -69,7 +67,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -91,7 +88,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -108,7 +104,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -122,7 +117,6 @@
             'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -139,7 +133,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k1',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -153,7 +146,6 @@
             'kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache_k2',
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -172,7 +164,6 @@
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k1',
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -190,7 +181,6 @@
 
 
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -212,7 +202,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -232,7 +221,6 @@
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>
@@ -250,7 +238,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k1',
             'ktor_samples/highlight/SseApplication_with_library_cache_k1',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -266,7 +253,6 @@
             'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k2',
             'ktor_samples/highlight/SseApplication_with_library_cache_k2',
           ]"
-          :configurators="dashboardConfigurators"
         />
       </div>
     </section>

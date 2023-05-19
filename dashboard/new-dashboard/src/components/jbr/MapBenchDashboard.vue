@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators}"
     db-name="jbr"
     table="report"
     persistent-id="jbr_mapbench_dashboard"
@@ -21,7 +20,6 @@
           label="macOS"
           :measure="metric"
           :projects="macOSConfigurations"
-          :configurators="dashboardConfigurators"
         />
       </section>
       <section class="flex gap-x-6">
@@ -30,7 +28,6 @@
             label="Ubuntu"
             :measure="metric"
             :projects="ubuntuConfigurations"
-            :configurators="dashboardConfigurators"
           />
         </div>
         <div class="flex-1 min-w-0">
@@ -38,7 +35,6 @@
             label="Windows"
             :measure="metric"
             :projects="windowsConfigurations"
-            :configurators="dashboardConfigurators"
           />
         </div>
       </section>

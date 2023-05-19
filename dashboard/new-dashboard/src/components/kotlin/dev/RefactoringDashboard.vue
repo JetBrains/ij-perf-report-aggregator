@@ -1,227 +1,149 @@
 <template>
-  <div class="flex flex-col gap-5">
-    <DashboardToolbar
-      :branch-configurator="branchConfigurator"
-      :machine-configurator="machineConfigurator"
-      :on-change-range="onChangeRange"
-      :time-range-configurator="timeRangeConfigurator"
-      :triggered-by-configurator="triggeredByConfigurator"
-    />
-
-    <main class="flex">
-      <div
-        ref="container"
-        class="flex flex-1 flex-col gap-6 overflow-hidden"
-      >
-        <section class="flex gap-6">
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'performInlineRename\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'mean all rename K1'"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'performInlineRename\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'mean all rename K2'"
-            />
-          </div>
-
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'prepareForRename\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'mean all prepare-rename K1'"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'performInlineRename\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'mean all prepare-rename K2'"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'startInlineRename\_%'"
-              :aggregated-project="'%\_k1'"
-              :is-like="true"
-              :title="'mean all start-rename K1'"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <AggregationChart
-              :configurators="averagesConfigurators"
-              :aggregated-measure="'startInlineRename\_%'"
-              :aggregated-project="'%\_k2'"
-              :is-like="true"
-              :title="'mean all start-rename K2'"
-            />
-          </div>
-        </section>
-        <section class="flex gap-x-6">
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="'PerformInlineRename mean value on  K1"
-              measure="performInlineRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="PerformInlineRename mean value on  K2"
-              measure="performInlineRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-        </section>
-
-        <section class="flex gap-x-6">
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="'StartInlineRename mean value on  K1"
-              measure="startInlineRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="StartInlineRename mean value on  K2"
-              measure="startInlineRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-        </section>
-
-        <section class="flex gap-x-6">
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="'PrepareForRename mean value on  K1"
-              measure="prepareForRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <GroupProjectsChart
-              label="PrepareForRename mean value on  K2"
-              measure="prepareForRename#mean_value"
-              :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                          'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
-              :server-configurator="serverConfigurator"
-              :configurators="dashboardConfigurators"
-              :accidents="warnings"
-            />
-          </div>
-        </section>
+  <DashboardPage
+    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    db-name="perfintDev"
+    table="kotlin"
+    persistent-id="kotlinDev_refactoring_dashboard"
+    initial-machine="linux-blade-hetzner"
+    :with-installer="false"
+  >
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'performInlineRename\_%'"
+          :aggregated-project="'%\_k1'"
+          :is-like="true"
+          :title="'mean all rename K1'"
+        />
       </div>
-      <InfoSidebar />
-    </main>
-  </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'performInlineRename\_%'"
+          :aggregated-project="'%\_k2'"
+          :is-like="true"
+          :title="'mean all rename K2'"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'prepareForRename\_%'"
+          :aggregated-project="'%\_k1'"
+          :is-like="true"
+          :title="'mean all prepare-rename K1'"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'performInlineRename\_%'"
+          :aggregated-project="'%\_k2'"
+          :is-like="true"
+          :title="'mean all prepare-rename K2'"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'startInlineRename\_%'"
+          :aggregated-project="'%\_k1'"
+          :is-like="true"
+          :title="'mean all start-rename K1'"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'startInlineRename\_%'"
+          :aggregated-project="'%\_k2'"
+          :is-like="true"
+          :title="'mean all start-rename K2'"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'PerformInlineRename mean value on  K1"
+          measure="performInlineRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PerformInlineRename mean value on  K2"
+          measure="performInlineRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'StartInlineRename mean value on  K1"
+          measure="startInlineRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="StartInlineRename mean value on  K2"
+          measure="startInlineRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'PrepareForRename mean value on  K1"
+          measure="prepareForRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PrepareForRename mean value on  K2"
+          measure="prepareForRename#mean_value"
+          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :server-configurator="serverConfigurator"
+          :configurators="dashboardConfigurators"
+          :accidents="warnings"
+        />
+      </div>
+    </section>
+  </DashboardPage>>
 </template>
 
 <script setup lang="ts">
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
-import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
-import { provide, ref } from "vue"
-import { useRouter } from "vue-router"
-import { containerKey, sidebarVmKey } from "../../../shared/keys"
-import InfoSidebar from "../../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../../InfoSidebarVm"
 import AggregationChart from "../../charts/AggregationChart.vue"
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
-import DashboardToolbar from "../../common/DashboardToolbar.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
 
-provideReportUrlProvider(false)
-
-const dbName = "perfintDev"
-const dbTable = "kotlin"
-const initialMachine = "linux-blade-hetzner"
-const container = ref<HTMLElement>()
-const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
-
-provide(containerKey, container)
-provide(sidebarVmKey, sidebarVm)
-
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("kotlinDev_dashboard", {
-  machine: initialMachine,
-  project: [],
-  branch: "master",
-}, router)
-
-const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
-
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  [timeRangeConfigurator, branchConfigurator],
-)
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  [branchConfigurator, timeRangeConfigurator],
-)
-
-const averagesConfigurators = [
-  serverConfigurator,
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-]
-
-const dashboardConfigurators = [
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  triggeredByConfigurator,
-]
-
-const warnings = ref<Array<Accident>>()
-refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data)
-})
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
 </script>

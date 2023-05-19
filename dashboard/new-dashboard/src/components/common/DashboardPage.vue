@@ -56,7 +56,7 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
   withInstaller: true,
 })
 
-provideReportUrlProvider()
+provideReportUrlProvider(props.withInstaller)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
@@ -80,7 +80,7 @@ const machineConfigurator = new MachineConfigurator(
   persistenceForDashboard,
   [timeRangeConfigurator, branchConfigurator],
 )
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
+
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
@@ -98,9 +98,13 @@ const dashboardConfigurators = [
   branchConfigurator,
   machineConfigurator,
   timeRangeConfigurator,
-  releaseConfigurator,
   triggeredByConfigurator,
 ]
+
+const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurator(persistenceForDashboard) : null
+if(props.withInstaller) {
+  dashboardConfigurators.push(releaseConfigurator)
+}
 
 
 function onChangeRange(value: TimeRange) {

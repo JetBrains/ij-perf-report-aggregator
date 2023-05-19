@@ -20,7 +20,7 @@
           :warnings="warnings"
         />
       </div>
-      <InfoSidebar/>
+      <InfoSidebar />
     </main>
   </div>
 </template>
@@ -28,12 +28,14 @@
 <script setup lang="ts">
 import { PersistentStateManager } from "shared/src/PersistentStateManager"
 import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
+import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
 import { refToObservable } from "shared/src/configurators/rxjs"
+import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
@@ -41,22 +43,28 @@ import { useRouter } from "vue-router"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import DashboardToolbar from "./DashboardToolbar.vue"
 
 
 interface PerformanceDashboardProps {
   dbName: string
   table: string
-  initialMachine: string
+  initialMachine?: string
   persistentId: string
   withInstaller?: boolean
+  charts?: Array<Chart>
+  isBuildNumberExists?: boolean
 }
 
 const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
   withInstaller: true,
+  isBuildNumberExists: false,
+  charts: null,
+  initialMachine: null,
 })
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
@@ -67,42 +75,58 @@ provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistenceForDashboard = new PersistentStateManager(props.persistentId, {
-  machine: props.initialMachine,
+  machine: props.initialMachine ?? "",
   project: [],
   branch: "master",
 }, router)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
+const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator(
+  "project",
+  serverConfigurator,
+  null,
+  true,
+  [timeRangeConfigurator],
+)
+if (scenarioConfigurator != null) {
+  scenarioConfigurator.selected.value = extractUniqueProjects(props.charts)
+}
+
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
+const machineConfigurator = props.initialMachine == null ? null : new MachineConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [timeRangeConfigurator, branchConfigurator],
+  scenarioConfigurator == null ? [timeRangeConfigurator, branchConfigurator] : [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
 )
 
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  [branchConfigurator, timeRangeConfigurator],
+  scenarioConfigurator == null ? [branchConfigurator, timeRangeConfigurator] : [branchConfigurator, timeRangeConfigurator, scenarioConfigurator],
 )
 
 const averagesConfigurators = [
   serverConfigurator,
   branchConfigurator,
-  machineConfigurator,
   timeRangeConfigurator,
-]
+] as DataQueryConfigurator[]
+if (machineConfigurator != null) {
+  averagesConfigurators.push(machineConfigurator)
+}
 
 const dashboardConfigurators = [
   branchConfigurator,
-  machineConfigurator,
   timeRangeConfigurator,
   triggeredByConfigurator,
-]
+] as DataQueryConfigurator[]
+
+if (machineConfigurator != null) {
+  dashboardConfigurators.push(machineConfigurator)
+}
 
 const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurator(persistenceForDashboard) : null
-if(props.withInstaller) {
+if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
 
@@ -111,8 +135,9 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
+const projects = props.charts?.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
 const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data)
+  getAccidentsFromMetaDb(warnings, projects, data)
 })
 </script>

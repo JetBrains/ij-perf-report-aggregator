@@ -34,7 +34,7 @@ export function combineCharts(charts: Array<ChartDefinition>): Array<Chart> {
   return resultingCharts
 }
 
-export function extractUniqueProjects(charts: Array<ChartDefinition>): Array<string> {
+export function extractUniqueProjects(charts: Array<Chart>): Array<string> {
   const allProjects = new Set<string>
   for (const chart of charts) {
     for (const project of chart.projects) {

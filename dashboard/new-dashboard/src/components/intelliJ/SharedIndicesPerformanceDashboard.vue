@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{serverConfigurator, dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
     db-name="perfint"
     table="ideaSharedIndices"
     persistent-id="shared_indexes_dashboard"

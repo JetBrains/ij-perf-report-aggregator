@@ -1,69 +1,31 @@
 <template>
-  <div class="flex flex-col gap-5">
-    <DashboardToolbar
-      :branch-configurator="branchConfigurator"
-      :machine-configurator="machineConfigurator"
-      :release-configurator="releaseConfigurator"
-      :on-change-range="onChangeRange"
-      :time-range-configurator="timeRangeConfigurator"
-      :triggered-by-configurator="triggeredByConfigurator"
-    />
-
-    <main class="flex">
-      <div
-        ref="container"
-        class="flex flex-1 flex-col gap-6 overflow-hidden"
-      >
-        <section>
-          <GroupProjectsChart
-            v-for="chart in charts"
-            :key="chart.definition.label"
-            :label="chart.definition.label"
-            :measure="chart.definition.measure"
-            :projects="chart.projects"
-            :server-configurator="serverConfigurator"
-            :configurators="dashboardConfigurators"
-            :accidents="warnings"
-          />
-        </section>
-      </div>
-      <InfoSidebar />
-    </main>
-  </div>
+  <DashboardPage
+    v-slot="{serverConfigurator, dashboardConfigurators, warnings}"
+    db-name="perfint"
+    table="idea"
+    persistent-id="idea_gradle_dashboard"
+    initial-machine="Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+    :charts="charts"
+  >
+    <section>
+      <GroupProjectsChart
+        v-for="chart in charts"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+        :server-configurator="serverConfigurator"
+        :configurators="dashboardConfigurators"
+        :accidents="warnings"
+      />
+    </section>
+  </DashboardPage>>
 </template>
 
 <script setup lang="ts">
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { refToObservable } from "shared/src/configurators/rxjs"
-import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
-import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
-import { provide, ref } from "vue"
-import { useRouter } from "vue-router"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
-import InfoSidebar from "../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
-import { ChartDefinition, combineCharts, extractUniqueProjects } from "../charts/DashboardCharts"
+import { ChartDefinition, combineCharts} from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import DashboardToolbar from "../common/DashboardToolbar.vue"
-
-provideReportUrlProvider()
-
-const dbName = "perfint"
-const dbTable = "idea"
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
-const container = ref<HTMLElement>()
-const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
-
-provide(containerKey, container)
-provide(sidebarVmKey, sidebarVm)
+import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
   "gradle.sync.duration",
@@ -175,52 +137,4 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
 })
 const charts = combineCharts(chartsDeclaration)
 
-
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-
-const persistenceForDashboard = new PersistentStateManager("idea_gradle_dashboard", {
-  machine: initialMachine,
-  project: [],
-  branch: "master",
-}, router)
-
-const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
-
-const scenarioConfigurator = dimensionConfigurator(
-  "project",
-  serverConfigurator,
-  null,
-  true,
-  [timeRangeConfigurator],
-)
-scenarioConfigurator.selected.value = extractUniqueProjects(chartsDeclaration)
-
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator, scenarioConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
-)
-const releaseConfigurator = new ReleaseNightlyConfigurator(persistenceForDashboard)
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  [branchConfigurator, timeRangeConfigurator, scenarioConfigurator],
-)
-const dashboardConfigurators = [
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  releaseConfigurator,
-  triggeredByConfigurator,
-]
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
-
-const warnings = ref<Array<Accident>>()
-refToObservable(timeRangeConfigurator.value).subscribe(data => {
-  getAccidentsFromMetaDb(warnings, null, data)
-})
 </script>

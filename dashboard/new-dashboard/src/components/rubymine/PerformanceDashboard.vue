@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="ruby"
     persistent-id="rubymine_dashboard"
@@ -12,7 +12,6 @@
         measure="indexing"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -21,7 +20,6 @@
         measure="numberOfIndexedFiles"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -30,7 +28,6 @@
         measure="scanning"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -40,7 +37,6 @@
         :projects="['diaspora-project-inspections-test/inspection-RubyResolve-app', 'diaspora-project-inspections-test/inspection-app',
                     'gitlab-project-inspections-test/inspection-RubyResolve-app', 'gitlab-project-inspections-test/inspection-app']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -49,7 +45,6 @@
         measure="findUsages"
         :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -58,7 +53,6 @@
         measure="findUsages#number"
         :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -67,7 +61,6 @@
         measure="completion"
         :projects="['diaspora-project-test/completion/routes', 'diaspora-project-test/completion/exceptions', 'diaspora-project-test/completion/localization']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -76,7 +69,6 @@
         measure="completion"
         :projects="['gitlab-project-test/completion/routes', 'gitlab-project-test/completion/exceptions', 'gitlab-project-test/completion/localization']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -85,7 +77,6 @@
         measure="completion"
         :projects="['redmine-project-test/completion/routes', 'redmine-project-test/completion/exceptions', 'redmine-project-test/completion/localization']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -94,7 +85,6 @@
         measure="test#average_awt_delay"
         :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -103,7 +93,6 @@
         measure="typing"
         :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -114,7 +103,6 @@
                     'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true',
                     'redmine-project-test/getSymbolMembers-ApplicationController-false', 'redmine-project-test/getSymbolMembers-ApplicationController-true']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -125,7 +113,6 @@
                     'gitlab-project-test/getSymbolMembers-ApplicationController-false', 'gitlab-project-test/getSymbolMembers-ApplicationController-true',
                     'redmine-project-test/getSymbolMembers-ApplicationController-false', 'redmine-project-test/getSymbolMembers-ApplicationController-true']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
   </DashboardPage>

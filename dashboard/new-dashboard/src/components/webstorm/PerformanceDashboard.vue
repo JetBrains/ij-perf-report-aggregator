@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfint"
     table="webstorm"
     persistent-id="webstorm_dashboard"
@@ -41,7 +41,6 @@
         measure="indexing"
         :projects="['aws_cdk/indexing', 'vkui/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -50,7 +49,6 @@
         measure="numberOfIndexedFiles"
         :projects="['aws_cdk/indexing', 'vkui/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -59,7 +57,6 @@
         measure="completion"
         :projects="['vkui_completion/completion']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
   </DashboardPage>

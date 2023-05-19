@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_dashboard"
@@ -14,7 +14,6 @@
           measure="indexing"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>          <div class="flex-1 min-w-0">
         <GroupProjectsChart
@@ -22,7 +21,6 @@
           measure="indexing"
           :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -33,7 +31,6 @@
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_with_library_cache_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -50,7 +47,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -64,7 +60,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -83,7 +78,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -103,7 +97,6 @@
           'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -121,7 +114,6 @@
           'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -141,7 +133,6 @@
           'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
       <GroupProjectsChart
         label="Highlight mean value with Library cache K2"
@@ -159,7 +150,6 @@
           'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -179,7 +169,6 @@
           'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k1',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -199,7 +188,6 @@
           'kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache_k2',
         ]"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
   </DashboardPage>>

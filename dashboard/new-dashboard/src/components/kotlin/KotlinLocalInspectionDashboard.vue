@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_inspection_dashboard"
@@ -15,7 +15,6 @@
             'kotlin_empty/highlight/Main_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -26,7 +25,6 @@
             'kotlin_empty/highlight/Main_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -51,7 +49,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -74,7 +71,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -92,7 +88,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -107,7 +102,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -125,7 +119,6 @@
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -140,7 +133,6 @@
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -160,7 +152,6 @@
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -179,7 +170,6 @@
 
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -203,7 +193,6 @@
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -224,7 +213,6 @@
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -243,7 +231,6 @@
             'ktor_samples/highlight/SseApplication_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -260,7 +247,6 @@
             'ktor_samples/highlight/SseApplication_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>

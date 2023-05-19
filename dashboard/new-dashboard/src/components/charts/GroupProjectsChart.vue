@@ -15,9 +15,8 @@ import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigu
 import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { FilterConfigurator } from "shared/src/configurators/filter"
 import { DataQueryConfigurator } from "shared/src/dataQuery"
-import { Accident } from "shared/src/meta"
 import { inject, onMounted } from "vue"
-import { serverConfiguratorKey } from "../../shared/keys"
+import { accidentsKeys, serverConfiguratorKey } from "../../shared/keys"
 import LineChart from "./LineChart.vue"
 
 interface Props {
@@ -26,15 +25,14 @@ interface Props {
   projects: Array<string>
   configurators: Array<DataQueryConfigurator>
   valueUnit?: ValueUnit
-  accidents?: Array<Accident>|null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms",
-  accidents: null
 })
 
 const serverConfigurator = inject(serverConfiguratorKey) as ServerConfigurator
+const accidents = inject(accidentsKeys)
 
 const scenarioConfigurator = dimensionConfigurator(
   "project", 

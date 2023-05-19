@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_refactoring_dashboard"
@@ -72,7 +72,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -82,7 +81,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -95,7 +93,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -105,7 +102,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -118,7 +114,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -128,7 +123,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>

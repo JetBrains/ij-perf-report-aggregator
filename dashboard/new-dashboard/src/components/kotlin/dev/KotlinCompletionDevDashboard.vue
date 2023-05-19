@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_completion_dashboard"
@@ -34,7 +34,6 @@
           measure="completion#mean_value"
           :projects="['arrow/completion/completion_kts_with_library_cache_k1', 'kotlin_lang/completion/completion_kts_with_library_cache_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -45,7 +44,6 @@
           measure="indexing"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>          <div class="flex-1 min-w-0">
         <GroupProjectsChart
@@ -53,7 +51,6 @@
           measure="indexing"
           :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -65,7 +62,6 @@
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_with_library_cache_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -82,7 +78,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -96,7 +91,6 @@
             'kotlin_lang/completion/empty_place_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -115,7 +109,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -131,7 +124,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -145,7 +137,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>

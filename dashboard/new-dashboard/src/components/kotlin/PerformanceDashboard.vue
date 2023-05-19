@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_dashboard"
@@ -69,7 +69,6 @@
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -78,7 +77,6 @@
           measure="completion#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -90,7 +88,6 @@
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k1', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -99,7 +96,6 @@
           measure="completion#firstElementShown#mean_value"
           :projects="['kotlin_empty/completion/empty_place_with_library_cache_k2', 'kotlin_empty/completion/empty_place_typing_with_library_cache_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -115,7 +111,6 @@
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -128,7 +123,6 @@
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -144,7 +138,6 @@
             'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -157,7 +150,6 @@
             'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -174,7 +166,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -188,7 +179,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -205,7 +195,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -219,7 +208,6 @@
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -235,7 +223,6 @@
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -248,7 +235,6 @@
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -264,7 +250,6 @@
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -277,7 +262,6 @@
             'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -292,7 +276,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -305,7 +288,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -321,7 +303,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -334,7 +315,6 @@
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -350,7 +330,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -364,7 +343,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -381,7 +359,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -395,7 +372,6 @@
             'kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -409,7 +385,6 @@
             'kotlin_empty/highlight/Main_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -420,7 +395,6 @@
             'kotlin_empty/highlight/Main_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -445,7 +419,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -468,7 +441,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -486,7 +458,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -501,7 +472,6 @@
             'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -519,7 +489,6 @@
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -534,7 +503,6 @@
             'kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -554,7 +522,6 @@
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -573,7 +540,6 @@
 
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -597,7 +563,6 @@
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -618,7 +583,6 @@
             'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -638,7 +602,6 @@
             'ktor_samples/highlight/SseApplication_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -655,7 +618,6 @@
             'ktor_samples/highlight/SseApplication_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -672,7 +634,6 @@
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -687,7 +648,6 @@
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -705,7 +665,6 @@
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -720,7 +679,6 @@
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -741,7 +699,6 @@
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -759,7 +716,6 @@
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -771,7 +727,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -781,7 +736,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -794,7 +748,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -804,7 +757,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -817,7 +769,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -827,7 +778,6 @@
           :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
                       'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>

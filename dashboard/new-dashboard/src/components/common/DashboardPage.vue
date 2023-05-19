@@ -16,7 +16,6 @@
         <slot
           :dashboard-configurators="dashboardConfigurators"
           :averages-configurators="averagesConfigurators"
-          :warnings="warnings"
         />
       </div>
       <InfoSidebar />
@@ -39,7 +38,7 @@ import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvide
 import { Accident, getAccidentsFromMetaDb } from "shared/src/meta"
 import { provide, ref, withDefaults } from "vue"
 import { useRouter } from "vue-router"
-import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
@@ -141,4 +140,6 @@ const warnings = ref<Array<Accident>>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, projects, data)
 })
+provide(accidentsKeys, warnings)
+
 </script>

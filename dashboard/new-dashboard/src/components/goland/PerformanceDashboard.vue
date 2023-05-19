@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators}"
     db-name="perfint"
     table="goland"
     persistent-id="goland_dashboard"
@@ -12,7 +12,6 @@
         measure="indexing"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -21,7 +20,6 @@
         measure="numberOfIndexedFiles"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -30,7 +28,6 @@
         measure="indexing"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -39,7 +36,6 @@
         measure="numberOfIndexedFiles"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -48,7 +44,6 @@
         measure="globalInspections"
         :projects="['istio/inspection', 'moby/inspection', 'flux/inspection', 'delve/inspection']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -57,7 +52,6 @@
         measure="globalInspections"
         :projects="['cockroach/inspection', 'kubernetes/inspection']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -66,7 +60,6 @@
         measure="localInspections"
         :projects="['kubernetes/localInspection', 'mattermost-server/localInspection', 'GO-5422/localInspection']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -75,7 +68,6 @@
         measure="test#average_awt_delay"
         :projects="['mattermost-server/typing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -84,7 +76,6 @@
         measure="typing"
         :projects="['mattermost-server/typing']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -93,7 +84,6 @@
         measure="findUsages"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -102,7 +92,6 @@
         measure="findUsages#number"
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
   </DashboardPage>>

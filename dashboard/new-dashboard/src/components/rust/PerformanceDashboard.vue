@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfint"
     table="rust"
     persistent-id="rust_dashboard"
@@ -24,7 +24,6 @@
         :projects="['intelli-j-with-rust-test/test-rustling-cargo-sync', 'intelli-j-with-rust-test/run-ide-with-rust-plugin',
                     'intelli-j-with-rust-test/test-drogue-cloud-c-p-u-usage']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -33,7 +32,6 @@
         measure="globalInspections"
         :projects="['intelli-j-with-rust-test/test-cargo-inspection']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -42,7 +40,6 @@
         measure="globalInspections"
         :projects="['intelli-j-with-rust-test/test-cargo-inspection']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -51,7 +48,6 @@
         measure="completion"
         :projects="['intelli-j-with-rust-test/test-arrow-rs-completion', 'intelli-j-with-rust-test/test-vec-completion']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -60,7 +56,6 @@
         measure="findUsages"
         :projects="['intelli-j-with-rust-test/run-ide-with-rust-plugin-find-usages', 'intelli-j-with-rust-test/run-ide-with-rust-plugin-wasm-find-usages']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -70,7 +65,6 @@
         :projects="[ 'intelli-j-with-rust-test/test-arrow-rs-highlighting', 'intelli-j-with-rust-test/test-cargo-highlighting', 
                      'intelli-j-with-rust-test/test-my-sql-async-highlighting']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
     <section>
@@ -79,7 +73,6 @@
         measure="cargo_sync_execution_time"
         :projects="[ 'intelli-j-with-rust-test/test-rustling-cargo-sync']"
         :configurators="dashboardConfigurators"
-        :accidents="warnings"
       />
     </section>
   </DashboardPage>

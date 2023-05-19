@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{ dashboardConfigurators, averagesConfigurators, warnings}"
+    v-slot="{ dashboardConfigurators, averagesConfigurators}"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_findusage_dashboard"
@@ -40,7 +40,6 @@
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -55,7 +54,6 @@
             'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -73,7 +71,6 @@
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k1',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -88,7 +85,6 @@
             'kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache_k2',
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>
@@ -108,7 +104,6 @@
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
       <div class=" flex-1 min-w-0">
@@ -126,7 +121,6 @@
             'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
           ]"
           :configurators="dashboardConfigurators"
-          :accidents="warnings"
         />
       </div>
     </section>

@@ -15,7 +15,7 @@
         :projects="chart.projects"
       />
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
@@ -112,10 +112,29 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
     labels: [metric],
     measures: [metric],
     projects: [
+      // JPS projects
       "project-import-jps-kotlin-10_000-modules/measureStartup",
       "project-import-jps-kotlin-50_000-modules/measureStartup",
       "project-import-jps-java-50_000-modules/measureStartup",
       "project-import-idea-community-jps/measureStartup",
+
+      // Gradle projects
+      "project-import-gradle-cas/measureStartup",
+      "project-import-gradle-1000-modules/measureStartup",
+      "project-import-gradle-5000-modules/measureStartup",
+      "project-import-gradle-android-extra-large/measureStartup",
+      "project-reimport-space/measureStartup",
+      "project-import-space/measureStartup",
+      "project-import-open-telemetry/measureStartup",
+
+      // Maven projects
+      "project-import-maven-quarkus/measureStartup",
+      "project-import-maven-1000-modules/measureStartup",
+      "project-import-maven-5000-modules/measureStartup",
+      "project-import-maven-keycloak/measureStartup",
+      "project-import-maven-javaee7/measureStartup",
+      "project-import-maven-jersey/measureStartup",
+      "project-import-maven-azure-sdk-java/measureStartup",
     ],
   }
 })

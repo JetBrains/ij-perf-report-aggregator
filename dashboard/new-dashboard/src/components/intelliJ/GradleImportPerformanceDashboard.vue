@@ -124,6 +124,7 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
       "project-import-gradle-cas/measureStartup",
       "project-import-gradle-500-modules/measureStartup",
       "project-import-gradle-1000-modules/measureStartup",
+      "project-import-gradle-5000-modules/measureStartup",
       "project-reimport-space/measureStartup",
       "project-import-space/measureStartup",
       "project-import-open-telemetry/measureStartup",

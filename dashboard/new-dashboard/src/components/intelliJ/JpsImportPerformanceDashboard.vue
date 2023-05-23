@@ -115,11 +115,17 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
       // JPS projects
       "project-import-jps-kotlin-10_000-modules/measureStartup",
       "project-import-jps-kotlin-50_000-modules/measureStartup",
+      "project-reimport-jps-kotlin-50_000-modules/measureStartup",
+      "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
       "project-import-jps-java-50_000-modules/measureStartup",
+      "project-reimport-jps-java-50_000-modules/measureStartup",
+      "project-import-from-cache-jps-java-50_000-modules/measureStartup",
       "project-import-idea-community-jps/measureStartup",
 
       // Gradle projects
       "project-import-gradle-cas/measureStartup",
+      "project-reimport-gradle-cas/measureStartup",
+      "project-import-from-cache-gradle-cas/measureStartup",
       "project-import-gradle-1000-modules/measureStartup",
       "project-import-gradle-5000-modules/measureStartup",
       "project-import-gradle-android-extra-large/measureStartup",
@@ -129,6 +135,8 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
 
       // Maven projects
       "project-import-maven-quarkus/measureStartup",
+      "project-reimport-maven-quarkus/measureStartup",
+      "project-import-from-cache-maven-quarkus/measureStartup",
       "project-import-maven-1000-modules/measureStartup",
       "project-import-maven-5000-modules/measureStartup",
       "project-import-maven-keycloak/measureStartup",

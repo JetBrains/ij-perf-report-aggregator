@@ -69,6 +69,8 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
     measures: [metric],
     projects: [
       "project-import-maven-quarkus/measureStartup",
+      "project-reimport-maven-quarkus/measureStartup",
+      "project-import-from-cache-maven-quarkus/measureStartup",
       "project-import-maven-500-modules/measureStartup",
       "project-import-maven-1000-modules/measureStartup",
       "project-import-maven-5000-modules/measureStartup",

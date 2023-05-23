@@ -44,6 +44,8 @@ const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric 
       "project-import-gradle-micronaut/measureStartup",
       "project-import-gradle-hibernate-orm/measureStartup",
       "project-import-gradle-cas/measureStartup",
+      "project-reimport-gradle-cas/measureStartup",
+      "project-import-from-cache-gradle-cas/measureStartup",
       "project-import-gradle-500-modules/measureStartup",
       "project-import-gradle-1000-modules/measureStartup",
       "project-import-gradle-5000-modules/measureStartup",

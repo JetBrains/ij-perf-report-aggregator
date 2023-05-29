@@ -3,10 +3,10 @@
     <Divider label="Bootstrap" />
     <section class="grid grid-cols-2 gap-x-6">
       <LineChartCard
-        :measures='["bootstrap_d", "appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "euaShowing_d", "appStarter_d"]'
+        :measures='["appInitPreparation_d", "appInit_d", "pluginDescriptorLoading_d", "app initialization.end"]'
       />
       <LineChartCard
-        :measures='["pluginDescriptorInitV18_d", "RunManager initialization"]'
+        :measures='["bootstrap_d", "appStarter_d", "pluginDescriptorInitV18_d", "RunManager initialization", "euaShowing_d"]'
       />
     </section>
 

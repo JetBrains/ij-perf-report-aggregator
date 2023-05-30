@@ -22,7 +22,7 @@ module.exports = {
   // plugins: ["simple-import-sort"],
   parser: "vue-eslint-parser",
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2022,
     project: ["./dashboard/**/tsconfig.json"],
     parser: "@typescript-eslint/parser"
   },

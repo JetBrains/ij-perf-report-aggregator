@@ -9,12 +9,14 @@ RUN cd /usr/local/bin && \
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
-  corepack enable && corepack prepare pnpm@8.5.0 --activate
+  corepack enable && corepack prepare pnpm@8.6.0 --activate
 
 ENV GOPATH /go
 
 RUN curl -L https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz | tar xz -C /usr/local && \
   mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
+
+RUN echo $(pnpm --version)
 
 ENV PATH /usr/local/go/bin:$GOPATH/bin:$PATH
 ENV GOROOT=/usr/local/go

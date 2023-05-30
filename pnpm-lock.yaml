@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@types/node':
-        specifier: ^20.1.7
+        specifier: ^20.2.0
         version: 20.2.5
       eslint-plugin-unicorn:
         specifier: ^47.0.0

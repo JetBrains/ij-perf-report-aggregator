@@ -5,18 +5,15 @@ import (
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "net/http"
-  "time"
 )
 
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-  sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from ij.report"
+  sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from report where generated_time >subtractMonths(now(),12)"
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{t.dbUrl},
     Auth: clickhouse.Auth{
       Database: "ij",
     },
-    DialTimeout:     10 * time.Second,
-    ConnMaxLifetime: time.Hour,
     Settings: map[string]interface{}{
       "readonly":         1,
       "max_query_size":   1000000,

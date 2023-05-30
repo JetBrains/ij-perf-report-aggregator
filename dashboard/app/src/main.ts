@@ -1,5 +1,5 @@
-import "@fontsource/jetbrains-mono/variable.css"
-import "@fontsource/inter/variable.css"
+import "@fontsource/jetbrains-mono"
+import "@fontsource/inter"
 import "floating-vue/dist/style.css"
 import "./main.css"
 import FloatingVue from "floating-vue"

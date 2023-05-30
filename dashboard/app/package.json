@@ -2,15 +2,15 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "4.5.15",
-    "@fontsource/jetbrains-mono": "4.5.12",
+    "@fontsource/inter": "5.0.1",
+    "@fontsource/jetbrains-mono": "5.0.1",
     "floating-vue": "2.0.0-beta.20",
     "new-dashboard": "workspace:*",
     "primevue": "3.29.1",
     "report-visualizer": "workspace:*",
     "rxjs": "8.0.0-alpha.7",
     "shared": "workspace:*",
-    "vue": "3.3.2",
-    "vue-router": "4.2.0"
+    "vue": "3.3.4",
+    "vue-router": "4.2.2"
   }
 }

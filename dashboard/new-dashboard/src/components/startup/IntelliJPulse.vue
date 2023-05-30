@@ -54,24 +54,17 @@
     <LineChartCard
       :measures='["metrics.exitMetrics/application.exit", "metrics.exitMetrics/saveSettingsOnExit", "metrics.exitMetrics/disposeProjects"]'
     />
+
+    <slot></slot>
   </StartupPage>
 </template>
 <script setup lang="ts">
 import LineChartCard from "shared/src/components/LineChartCard.vue"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
 import { ref } from "vue"
 import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
+import { fetchHighlightingPasses } from "./utils"
 
 const highlightingPasses = ref<Array<string>>()
-fetchHighlightingPasses()
-
-function fetchHighlightingPasses(){
-  fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/highlightingPasses")
-    .then(response => response.json())
-    .then((data: Array<string>) => {
-      highlightingPasses.value = data.map(it => "metrics."  + it)
-    })
-    .catch(error => console.error(error))
-}
+fetchHighlightingPasses(highlightingPasses)
 </script>

@@ -78,6 +78,8 @@ func run() error {
 
       // no mime type on distroless image
       switch {
+      case strings.HasSuffix(key, ".woff"):
+        info.contentType = "font/woff"
       case strings.HasSuffix(key, ".woff2"):
         info.contentType = "font/woff2"
       case strings.HasSuffix(key, ".svg"):

@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@types/node':
-        specifier: ^20.2.0
-        version: 20.2.5
       eslint-plugin-unicorn:
         specifier: ^47.0.0
         version: 47.0.0(eslint@8.41.0)
@@ -74,7 +71,7 @@ importers:
         version: 0.24.1(rollup@3.23.0)(vue@3.3.4)
       vite:
         specifier: 4.3.9
-        version: 4.3.9(@types/node@20.2.5)(sass@1.62.1)
+        version: 4.3.9(sass@1.62.1)
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -651,9 +648,6 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/node@20.2.5:
-    resolution: {integrity: sha512-JJulVEQXmiY9Px5axXHeYGLSjhkZEnD+MDPDGbCbIAbMslkKwmygtZFy1X6s/075Yo94sf8GuSlFfPzysQrWZQ==}
-
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: false
@@ -799,7 +793,7 @@ packages:
       vite: ^4.0.0 || 4
       vue: ^3.2.25
     dependencies:
-      vite: 4.3.9(@types/node@20.2.5)(sass@1.62.1)
+      vite: 4.3.9(sass@1.62.1)
       vue: 3.3.4
     dev: true
 
@@ -3099,7 +3093,7 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite@4.3.9(@types/node@20.2.5)(sass@1.62.1):
+  /vite@4.3.9(sass@1.62.1):
     resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3124,7 +3118,6 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.2.5
       esbuild: 0.17.19
       postcss: 8.4.24
       rollup: 3.23.0

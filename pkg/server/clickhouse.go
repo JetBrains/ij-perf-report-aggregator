@@ -10,13 +10,6 @@ import (
 
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
   sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from ij.report"
-  buffer := byteBufferPool.Get()
-  defer byteBufferPool.Put(buffer)
-  templateWriter := quicktemplate.AcquireWriter(buffer)
-  defer quicktemplate.ReleaseWriter(templateWriter)
-  jsonWriter := templateWriter.N()
-  jsonWriter.S("[")
-
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{t.dbUrl},
     Auth: clickhouse.Auth{
@@ -33,16 +26,24 @@ func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*byt
   var result []struct {
     PassName string
   }
+  if err != nil {
+    return nil, false, err
+  }
   err = db.Select(request.Context(), &result, sql)
+
+  buffer := byteBufferPool.Get()
   if err == nil {
+    templateWriter := quicktemplate.AcquireWriter(buffer)
+    defer quicktemplate.ReleaseWriter(templateWriter)
+    jsonWriter := templateWriter.N()
+    jsonWriter.S("[")
     for i, v := range result {
       if i != 0 {
         jsonWriter.S(",")
       }
       jsonWriter.Q(v.PassName)
     }
+    jsonWriter.S("]")
   }
-
-  jsonWriter.S("]")
   return buffer, true, err
 }

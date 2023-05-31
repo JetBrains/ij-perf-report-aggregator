@@ -2,7 +2,7 @@ import { deepEqual } from "fast-equals"
 import pLimit, { LimitFunction } from "p-limit"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
-import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry, takeUntil, timer } from "rxjs"
+import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry } from "rxjs"
 import { fromPromise } from "rxjs/internal/observable/innerFrom"
 import { Ref, watch } from "vue"
 
@@ -44,8 +44,6 @@ export function fromFetchWithRetryAndErrorHandling<T>(
           throw new Error(`cannot load (status=${response.status})`)
         }
       }),
-      // timeout
-      takeUntil(timer(120_000)),
       // retry at least three times
       retry({
         count: 3,

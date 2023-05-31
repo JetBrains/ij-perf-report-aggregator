@@ -55,7 +55,7 @@
       :measures='["metrics.exitMetrics/application.exit", "metrics.exitMetrics/saveSettingsOnExit", "metrics.exitMetrics/disposeProjects"]'
     />
 
-    <slot></slot>
+    <slot />
   </StartupPage>
 </template>
 <script setup lang="ts">

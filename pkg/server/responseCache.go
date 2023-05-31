@@ -4,8 +4,8 @@ import (
   "context"
   "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
+  "github.com/VictoriaMetrics/fastcache"
   e "github.com/develar/errors"
-  "github.com/dgraph-io/ristretto"
   "github.com/valyala/bytebufferpool"
   "github.com/zeebo/xxh3"
   "go.uber.org/zap"
@@ -26,20 +26,13 @@ func (ch *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type ResponseCacheManager struct {
-  cache  *ristretto.Cache
+  cache  *fastcache.Cache
   logger *zap.Logger
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
-  cacheSize := 1000 * 1000 * 100
-  cache, err := ristretto.NewCache(&ristretto.Config{
-    NumCounters: int64((cacheSize / 50 /* assume that each response ~ 50 KB */) * 10) /* number of keys to track frequency of */,
-    MaxCost:     int64(cacheSize),
-    BufferItems: 64 /* number of keys per Get buffer */,
-  })
-  if err != nil {
-    return nil, e.WithStack(err)
-  }
+  cacheSize := 1000 * 1000 * 1000
+  cache := fastcache.New(cacheSize)
   return &ResponseCacheManager{
     cache:  cache,
     logger: logger,
@@ -57,15 +50,11 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
   w.Header().Set("Vary", "Accept-Encoding")
 
   cacheKey := generateCacheKey(request)
-  value, found := rcm.cache.Get(cacheKey)
+  value := rcm.cache.Get(nil, cacheKey)
   var result []byte
-  if found {
-    cacheData, ok := value.([]byte)
-    if !ok {
-      return
-    }
+  if value != nil {
     var err error
-    result, err = decompressData(cacheData)
+    result, err = decompressData(value)
     if err != nil {
       rcm.handleError(err, w)
     }
@@ -88,7 +77,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
       http.Error(w, err.Error(), http.StatusServiceUnavailable)
       return
     }
-    rcm.cache.Set(cacheKey, result, int64(len(result)))
+    rcm.cache.Set(cacheKey, result)
     result = buffer.B
     if releaseBuffer {
       bytebufferpool.Put(buffer)
@@ -146,7 +135,7 @@ func computeEtag(result []byte) string {
 }
 
 func (rcm *ResponseCacheManager) Clear() {
-  rcm.cache.Clear()
+  rcm.cache.Reset()
 }
 
 func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {

@@ -90,7 +90,6 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     MaxAge:         50,
   }).Handler)
   r.Use(middleware.Heartbeat("/health-check"))
-  r.Use(middleware.Logger)
   r.Use(middleware.Recoverer)
   compressor := middleware.NewCompressor(5)
   compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {

@@ -31,7 +31,7 @@ type ResponseCacheManager struct {
 }
 
 func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
-  cacheSize := 1000 * 1000 * 300
+  cacheSize := 1000 * 1000 * 100
   cache, err := ristretto.NewCache(&ristretto.Config{
     NumCounters: int64((cacheSize / 50 /* assume that each response ~ 50 KB */) * 10) /* number of keys to track frequency of */,
     MaxCost:     int64(cacheSize),

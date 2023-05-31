@@ -2,8 +2,8 @@ import { deepEqual } from "fast-equals"
 import pLimit, { LimitFunction } from "p-limit"
 import { ToastSeverity } from "primevue/api"
 import ToastEventBus from "primevue/toasteventbus"
-import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry } from "rxjs"
-import { fromPromise } from "rxjs/internal/observable/innerFrom"
+import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry} from "rxjs"
+import { fromPromise } from "rxjs/internal/observable/from"
 import { Ref, watch } from "vue"
 
 export function refToObservable<T>(ref: Ref<T>, deep= false): Observable<T> {

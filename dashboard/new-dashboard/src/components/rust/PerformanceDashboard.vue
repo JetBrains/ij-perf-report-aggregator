@@ -21,51 +21,69 @@
       <GroupProjectsChart
         label="Indexing"
         measure="indexing"
-        :projects="['intelli-j-with-rust-test/test-rustling-cargo-sync', 'intelli-j-with-rust-test/run-ide-with-rust-plugin',
-                    'intelli-j-with-rust-test/test-drogue-cloud-c-p-u-usage']"
+        :projects="['rustling/cargo-sync', 'yew/indexing',
+                    'drogue-cloud/cpu']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Inspection execution time"
+        label="Global Inspection execution time"
         measure="globalInspections"
-        :projects="['intelli-j-with-rust-test/test-cargo-inspection']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Inspection execution time"
-        measure="globalInspections"
-        :projects="['intelli-j-with-rust-test/test-cargo-inspection']"
+        :projects="['cargo/global-inspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion"
-        measure="completion"
-        :projects="['intelli-j-with-rust-test/test-arrow-rs-completion', 'intelli-j-with-rust-test/test-vec-completion']"
+        measure="completion#mean_value"
+        :projects="['arrow-rs/completion', 'vec/completion']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages"
         measure="findUsages"
-        :projects="['intelli-j-with-rust-test/run-ide-with-rust-plugin-find-usages', 'intelli-j-with-rust-test/run-ide-with-rust-plugin-wasm-find-usages']"
+        :projects="['yew/find-usages', 'wasm/find-usages']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Local Inspections (on file open)"
         measure="firstCodeAnalysis"
-        :projects="[ 'intelli-j-with-rust-test/test-arrow-rs-highlighting', 'intelli-j-with-rust-test/test-cargo-highlighting', 
-                     'intelli-j-with-rust-test/test-my-sql-async-highlighting']"
+        :projects="[ 'arrow-rs/local-inspection', 'cargo/local-inspection',
+                     'my-sql/local-inspection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Local Inspections (on typing)"
+        measure="typingCodeAnalyzing#mean_value"
+        :projects="[ 'arrow-rs/local-inspection', 'cargo/local-inspection',
+                     'my-sql/local-inspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Cargo Sync"
         measure="cargo_sync_execution_time"
-        :projects="[ 'intelli-j-with-rust-test/test-rustling-cargo-sync']"
+        :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
+        'arrow-rs/local-inspection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Rust macro expansion time"
+        measure="rust_macro_expansion_execution_time"
+        :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
+        'arrow-rs/local-inspection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Rust DefMaps execution time"
+        measure="rust_def_maps_execution_time"
+        :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
+        'arrow-rs/local-inspection']"
       />
     </section>
   </DashboardPage>

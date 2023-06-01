@@ -67,7 +67,7 @@
         label="Cargo Sync"
         measure="cargo_sync_execution_time"
         :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
-        'arrow-rs/local-inspection']"
+                     'arrow-rs/local-inspection']"
       />
     </section>
     <section>
@@ -75,7 +75,7 @@
         label="Rust macro expansion time"
         measure="rust_macro_expansion_execution_time"
         :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
-        'arrow-rs/local-inspection']"
+                     'arrow-rs/local-inspection']"
       />
     </section>
     <section>
@@ -83,7 +83,7 @@
         label="Rust DefMaps execution time"
         measure="rust_def_maps_execution_time"
         :projects="[ 'cargo/local-inspection', 'my-sql/local-inspection',
-        'arrow-rs/local-inspection']"
+                     'arrow-rs/local-inspection']"
       />
     </section>
   </DashboardPage>

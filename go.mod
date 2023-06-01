@@ -3,6 +3,7 @@ module github.com/JetBrains/ij-perf-report-aggregator
 go 1.20
 
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
+replace github.com/ClickHouse/ch-go v0.56.0 => github.com/MaXal/ch-go v0.57.0
 
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7
@@ -24,7 +25,7 @@ require (
 	github.com/nats-io/nats.go v1.26.0
 	github.com/rs/cors v1.9.0
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/stretchr/testify v1.8.3
+	github.com/stretchr/testify v1.8.4
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/valyala/quicktemplate v1.7.0

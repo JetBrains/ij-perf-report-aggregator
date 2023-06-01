@@ -44,11 +44,10 @@ export function fromFetchWithRetryAndErrorHandling<T>(
           throw new Error(`cannot load (status=${response.status})`)
         }
       }),
-      // retry at least three times
       retry({
-        count: 3,
-        delay(error, retryCount) {
-          return of(error).pipe(delay(1_000 * retryCount))
+        count: 5,
+        delay(error) {
+          return of(error).pipe(delay(500))
         },
       }),
       catchError((error, _caught) => {

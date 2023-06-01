@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, Observable, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, Observable, switchMap, withLatestFrom } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"
@@ -40,11 +40,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update
-    this.observable = combineLatest([
-      refToObservable(this.selected, true),
-      listObservable,
-    ]).pipe(
-      distinctUntilChanged(deepEqual),
+    this.observable = listObservable.pipe(
+      withLatestFrom(refToObservable(this.selected, true)),
+      distinctUntilChanged(deepEqual)
     )
   }
 

@@ -46,8 +46,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     ]).pipe(
       distinctUntilChanged(deepEqual),
     )
-    // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart
-    this.groupValues(Object.keys(MachineConfigurator.valueToGroup))
   }
 
   createObservable(): Observable<unknown> {

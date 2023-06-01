@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, merge, Observable, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, Observable, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"

@@ -3,7 +3,7 @@ module github.com/JetBrains/ij-perf-report-aggregator
 go 1.20
 
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
-replace github.com/ClickHouse/ch-go v0.56.0 => github.com/MaXal/ch-go v0.57.0
+replace github.com/ClickHouse/ch-go v0.56.0 => github.com/MaXal/ch-go v0.57.1
 
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7

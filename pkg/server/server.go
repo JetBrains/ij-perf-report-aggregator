@@ -156,7 +156,6 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[
       client, err := ch.Dial(ctx, ch.Options{
         Address:  t.dbUrl,
         Database: name,
-        Logger:   t.logger,
         Settings: []ch.Setting{
           ch.SettingInt("readonly", 1),
           ch.SettingInt("max_query_size", 1000000),

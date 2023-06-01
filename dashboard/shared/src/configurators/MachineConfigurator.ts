@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import { distinctUntilChanged, Observable, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, merge, Observable, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"
@@ -40,7 +40,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update
-    this.observable = refToObservable(this.selected, true).pipe(
+    this.observable = combineLatest([
+      refToObservable(this.selected, true),
+      listObservable,
+    ]).pipe(
       distinctUntilChanged(deepEqual),
     )
     // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart

@@ -3,11 +3,9 @@ module github.com/JetBrains/ij-perf-report-aggregator
 go 1.20
 
 //replace github.com/go-faster/ch => /Volumes/data/Documents/ch
-replace github.com/ClickHouse/ch-go v0.56.0 => github.com/MaXal/ch-go v0.57.2
-
 require (
 	github.com/AlexAkulov/clickhouse-backup v1.6.3-0.20221129084706-70fd6e03cfa7
-	github.com/ClickHouse/ch-go v0.56.0
+	github.com/ClickHouse/ch-go v0.56.1
 	github.com/ClickHouse/clickhouse-go/v2 v2.10.0
 	github.com/VictoriaMetrics/fastcache v1.12.1
 	github.com/alecthomas/kingpin v2.2.6+incompatible
@@ -34,7 +32,7 @@ require (
 	go.uber.org/atomic v1.11.0
 	go.uber.org/zap v1.24.0
 	golang.org/x/sync v0.2.0
-	golang.org/x/tools v0.9.1
+	golang.org/x/tools v0.9.3
 )
 
 require (
@@ -55,7 +53,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/apex/log v1.9.0 // indirect
-	github.com/aws/aws-sdk-go v1.44.273 // indirect
+	github.com/aws/aws-sdk-go v1.44.274 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bodgit/plumbing v1.3.0 // indirect
 	github.com/bodgit/sevenzip v1.4.2 // indirect
@@ -96,7 +94,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/jolestar/go-commons-pool/v2 v2.1.2 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/text v0.2.0 // indirect

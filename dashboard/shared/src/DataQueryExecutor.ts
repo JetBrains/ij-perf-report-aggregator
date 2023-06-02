@@ -82,7 +82,7 @@ export class DataQueryExecutor {
 // https://stackoverflow.com/a/43053803
 function computeCartesian<T>(input: T[][]): T[][] {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error
   // eslint-disable-next-line unicorn/no-array-reduce
   return input.reduce((a, b) => {
     return a.flatMap(d => b.map(e => [d, e].flat()))

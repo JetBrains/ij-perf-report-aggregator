@@ -198,7 +198,7 @@ export class TimeLineChartManager implements ChartManager {
             },
             itemStyle: {
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-ignore: https://github.com/apache/echarts/issues/16775
+              //@ts-expect-error: https://github.com/apache/echarts/issues/16775
               color(value: { data: ChartDataItem; color: string }): string {
                 const chartItem = value.data
                 return chartItem[6] === "service waiting" ? "#FF0000" : value.color
@@ -218,7 +218,7 @@ export class TimeLineChartManager implements ChartManager {
             data: [],
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          // @ts-expect-error
           rowToItems.set(rowName, series)
         }
 
@@ -322,12 +322,11 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
   const start = api.coord([api.value(1), categoryIndex])
   const end = api.coord([api.value(2), categoryIndex])
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const height = (api.size!([0, 1]) as number[])[1] * 0.8
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error
   const coordinateSystem = params.coordSys as {x: number; y: number; width: number; height: number}
   const rectShape = graphic.clipRectByRect({
     x: start[0],

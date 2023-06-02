@@ -50,7 +50,7 @@ export function makeUrlSafe(x: string): string {
 function doEncode(value: any) {
   // typeof for array also object
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   return Array.isArray(value) ? array(value) : encoders[typeof value](value) as string
 }
@@ -130,7 +130,7 @@ const encoders = {
  */
 export function encodeRison(v: unknown): string {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
+  // @ts-expect-error
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return Array.isArray(v) ? array(v) : object(v)
 }

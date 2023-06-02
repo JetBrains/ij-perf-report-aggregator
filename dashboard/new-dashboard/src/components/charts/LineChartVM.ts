@@ -60,7 +60,7 @@ export class LineChartVM {
         bottom: 16,
         containLabel: true,
       },
-      // @ts-ignore
+      // @ts-expect-error
       tooltip: {
         show: true,
         trigger: "item",

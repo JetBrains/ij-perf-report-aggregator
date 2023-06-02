@@ -24,7 +24,7 @@ const dataZoomConfig = [
 use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineChart, ScatterChart, LegendComponent, CanvasRenderer])
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
 registerTransform(ecStat.transform.regression)
 export type PopupTrigger = "item" | "axis" | "none"

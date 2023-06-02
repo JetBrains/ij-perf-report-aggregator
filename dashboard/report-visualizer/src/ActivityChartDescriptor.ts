@@ -19,7 +19,7 @@ export interface ActivityChartDescriptor {
 
 export function getShortName(item: { name?: string; n?: string }): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const name = item.name || item.n!
+  const name = item.name ?? item.n!
   const lastDotIndex = name.lastIndexOf(".")
   return lastDotIndex < 0 ? name : name.slice(lastDotIndex + 1)
 }

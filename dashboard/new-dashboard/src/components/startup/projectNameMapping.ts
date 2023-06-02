@@ -16,7 +16,7 @@ projectNameToTitle.set("JeNLJFVa04IA+Wasc+Hjj3z64R0", "simple for WS")
 Object.seal(projectNameToTitle)
 
 export function getProjectName(value: string): string {
-  return projectNameToTitle.get(value) || value
+  return projectNameToTitle.get(value) ?? value
 }
 
 export function createProjectConfigurator(productConfigurator: DimensionConfigurator,

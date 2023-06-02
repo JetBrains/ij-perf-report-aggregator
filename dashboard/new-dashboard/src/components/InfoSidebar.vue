@@ -187,7 +187,7 @@ import { sidebarVmKey } from "../shared/keys"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
 import SpaceIcon from "./common/SpaceIcon.vue"
 
-const vm = inject(sidebarVmKey) || new InfoSidebarVmImpl()
+const vm = inject(sidebarVmKey) ?? new InfoSidebarVmImpl()
 const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()

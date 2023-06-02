@@ -17,7 +17,8 @@ module.exports = {
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:@typescript-eslint/strict"
   ],
   // plugins: ["simple-import-sort"],
   parser: "vue-eslint-parser",
@@ -54,6 +55,9 @@ module.exports = {
       },
     }],
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-dynamic-delete" : "off",
+    "@typescript-eslint/no-unsafe-enum-comparison" : "off",
+    "@typescript-eslint/non-nullable-type-assertion-style" : "off",
     "vue/html-quotes": ["error", "double", {"avoidEscape": true}],
     "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared", "rxjs/operators"],
     "vue/multi-word-component-names": ["error", {

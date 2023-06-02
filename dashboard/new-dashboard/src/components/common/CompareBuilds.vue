@@ -250,25 +250,31 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string): Observable<Result[]> {
+function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string | null): Observable<Result[]> {
   return new Observable<Result[]>(subscriber => {
     new DataQueryExecutor([serverConfigurator, new class implements DataQueryConfigurator {
       configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-        configuration.queryProducers.push(new SimpleQueryProducer())
-        query.addField("project")
-        query.addField({n: "measures", subName: "name"})
-        query.addField({n: "measures", subName: "value"})
-        const buildParts = build.split(".")
-        query.addFilter({f: "build_c1", v: buildParts[0]})
-        if (buildParts[1] != undefined) {
-          query.addFilter({f: "build_c2", v: buildParts[1]})
+        if (build == null) {
+          return false
+        } else {
+          configuration.queryProducers.push(new SimpleQueryProducer())
+          query.addField("project")
+          query.addField({n: "measures", subName: "name"})
+          query.addField({n: "measures", subName: "value"})
+          const buildParts = build.split(".")
+          query.addFilter({f: "build_c1", v: buildParts[0]})
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (buildParts[1] != undefined) {
+            query.addFilter({f: "build_c2", v: buildParts[1]})
+          }
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (buildParts[2] != undefined) {
+            query.addFilter({f: "build_c3", v: buildParts[2]})
+          }
+          machineConfigurator.configureFilter(query)
+          query.order = "project"
+          return true
         }
-        if (buildParts[2] != undefined) {
-          query.addFilter({f: "build_c3", v: buildParts[2]})
-        }
-        machineConfigurator.configureFilter(query)
-        query.order = "project"
-        return true
       }
 
       createObservable(): Observable<unknown> | null {

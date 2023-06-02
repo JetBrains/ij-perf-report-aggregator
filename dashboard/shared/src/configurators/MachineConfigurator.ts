@@ -58,7 +58,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private groupValues(values: string[]): GroupedDimensionValue[] {
     const grouped: GroupedDimensionValue[] = []
     for (const value of values) {
-      let groupName = ""
+      let groupName: string|null = ""
       if (value.startsWith("intellij-linux-hw-blade-")) {
         groupName = "linux-blade"
       }
@@ -112,7 +112,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
         }
         else {
-          groupName = MachineConfigurator.valueToGroup[value]
+          groupName = MachineConfigurator.valueToGroup[value] as string|null
         }
 
         if (groupName == null) {
@@ -196,7 +196,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   configureFilter(query: DataQuery): boolean {
     const value = this.selected.value
-    if (value == null || value.length === 0) {
+    if (value.length === 0) {
       return false
     }
 

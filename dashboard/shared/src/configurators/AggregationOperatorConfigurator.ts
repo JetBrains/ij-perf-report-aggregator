@@ -27,7 +27,7 @@ export class AggregationOperatorConfigurator implements DataQueryConfigurator {
       query.aggregator = "quantileTDigest(0.5)"
     }
     else if (operator === "quantile") {
-      query.aggregator = `quantileTDigest(${(this.quantile.value ?? 50) / 100})`
+      query.aggregator = `quantileTDigest(${(this.quantile.value) / 100})`
     }
     else {
       query.aggregator = operator

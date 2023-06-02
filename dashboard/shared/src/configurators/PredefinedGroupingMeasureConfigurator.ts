@@ -18,7 +18,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    const timeRange = this.timeRange.value || TimeRangeConfigurator.timeRanges[0].value
+    const timeRange = this.timeRange.value
     const interval = getClickHouseIntervalByDuration(timeRange)
     query.addDimension({
       n: "t",

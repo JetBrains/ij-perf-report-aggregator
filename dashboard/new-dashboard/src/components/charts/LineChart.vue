@@ -95,15 +95,12 @@ onMounted(() => {
   unsubscribe = chartVm.subscribe()
 
   chartManager.chart.on("click", (params: CallbackDataParams) => {
-    if (params.dataIndex != undefined) {
-      const infoData = getInfoDataFrom(params, props.valueUnit, props.accidents)
-      showSideBar(sidebarVm, infoData)
-    }
+    const infoData = getInfoDataFrom(params, props.valueUnit, props.accidents)
+    showSideBar(sidebarVm, infoData)
   })
 })
 
 function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
-  const separator = ".."
   const db = infoData.installerId ? "perfint" : "perfintDev"
   const id = infoData.installerId ?? infoData.buildId
   calculateChanges(db, id, (decodedChanges: string|null) => {

@@ -194,7 +194,7 @@ function createValueFrom(configurator?: DimensionConfigurator) {
         return null
       }
       const values = configurator.values.value
-      if (values == null || values.length === 0) {
+      if (values.length === 0) {
         return null
       }
 

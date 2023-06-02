@@ -47,10 +47,10 @@ import DashboardToolbar from "./DashboardToolbar.vue"
 interface PerformanceDashboardProps {
   dbName: string
   table: string
-  initialMachine?: string
+  initialMachine?: string|null
   persistentId: string
   withInstaller?: boolean
-  charts?: Chart[]
+  charts?: Chart[]|null
   isBuildNumberExists?: boolean
 }
 

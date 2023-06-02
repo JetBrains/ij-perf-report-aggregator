@@ -71,6 +71,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  dispose?.()
+  dispose()
 })
 </script>

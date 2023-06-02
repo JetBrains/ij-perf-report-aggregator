@@ -82,10 +82,6 @@ export class PersistentStateManager {
   }
 
   add(name: string, value: Ref<unknown>, existingValueTransformer: ((v: unknown) => unknown) | null = null): void {
-    if (value == null) {
-      throw new Error("value must be not null")
-    }
-
     watch(value, value => {
       const oldValue = this.state[name]
       if (value !== oldValue) {

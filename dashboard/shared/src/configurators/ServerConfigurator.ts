@@ -39,10 +39,6 @@ export class ServerConfigurator implements DataQueryConfigurator {
   }
 
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    if (this._serverUrl == null || this._serverUrl.length === 0) {
-      return false
-    }
-
     query.db = this.db
     if (this.table != null) {
       query.table = this.table

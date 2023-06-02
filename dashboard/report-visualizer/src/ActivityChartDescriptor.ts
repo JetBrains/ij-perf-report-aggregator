@@ -102,7 +102,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
           },
           {
             category: "prepareAppInitActivities",
-            items: dataManager.data.prepareAppInitActivities ?? []
+            items: dataManager.data.prepareAppInitActivities
           },
         ]
       }, {

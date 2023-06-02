@@ -148,7 +148,7 @@ function optionToLabel(value: string): string {
 const value = computed<string | string[] | null>({
   get() {
     const values = props.dimension.values.value
-    if (values == null || values.length === 0) {
+    if (values.length === 0) {
       return null
     }
 

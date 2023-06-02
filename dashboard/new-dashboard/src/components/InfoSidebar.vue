@@ -234,7 +234,7 @@ function handleCloseClick() {
 function getTestActions() {
   const actions = []
   if (vm.data.value?.description.value != undefined) {
-    const url = vm.data.value.description.value?.url
+    const url = vm.data.value.description.value.url
     if (url && url != "") {
       actions.push({
         label: "Download test project",
@@ -244,7 +244,7 @@ function getTestActions() {
         },
       })
     }
-    const methodName = vm.data.value?.description.value?.methodName
+    const methodName = vm.data.value.description.value.methodName
     if (methodName && methodName != "") {
       actions.push({
         label: "Copy test method name",
@@ -266,7 +266,7 @@ function getTestActions() {
 
 function getSpaceUrl() {
   if (vm.data.value?.changes != null) {
-    return "https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + vm.data.value?.changes + "%22&tab=changes"
+    return "https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + vm.data.value.changes + "%22&tab=changes"
   }
   return
 }

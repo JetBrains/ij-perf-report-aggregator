@@ -91,7 +91,7 @@ const value = computed({
     const configurator = props.configurator
     const selectedValue = configurator.selected.value
     const allValues = configurator.data.value
-    if (selectedValue != null && selectedValue.length > 0 && !allValues.some(it => selectedValue != null && selectedValue.includes(it))) {
+    if (selectedValue != null && selectedValue.length > 0 && !allValues.some(it => selectedValue.includes(it))) {
       return null
     }
     return allValues.length === 0 ? null : selectedValue

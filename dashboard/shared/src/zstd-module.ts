@@ -66,7 +66,7 @@ export let ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: nu
 
 export const zstdReady = from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
   map(output => {
-    const asm = (output.instance || output).exports as Record<string, never>
+    const asm = output.instance.exports as Record<string, never>
     malloc = asm["f"]
     free = asm["g"]
     ZSTD_isError = asm["h"]

@@ -70,11 +70,11 @@ const tooltip = inject(chartToolTipKey)!
 
 const show = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  tooltip.value?.["show"](chartToolTipManager)
+  tooltip.value["show"](chartToolTipManager)
 }
 const hide = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  tooltip.value?.["hide"]()
+  tooltip.value["hide"]()
 }
 
 let dataQueryExecutor: DataQueryExecutor | null

@@ -28,6 +28,7 @@ const router = useRouter()
 const currentPath = router.currentRoute.value.path
 const product = getNavigationElement(currentPath)
 const tabs: Tab[] = product.children.find(child => {
+  // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
   return currentPath.slice(0, Math.max(0, currentPath.lastIndexOf("/"))) == child.url
 })?.tabs ?? product.children[0].tabs
 

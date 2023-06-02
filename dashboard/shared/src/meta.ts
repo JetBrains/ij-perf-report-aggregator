@@ -69,12 +69,10 @@ export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, t
   fetch(accidents_url + encodeRison(params))
     .then(response => response.json())
     .then((data: AccidentFromServer[]) => {
-      if (data != null) {
-        const mappedData = data.map(value => {
-          return {...value, kind: capitalizeFirstLetter(value.kind)}
-        })
-        accidents.value?.push(...mappedData)
-      }
+      const mappedData = data.map(value => {
+        return {...value, kind: capitalizeFirstLetter(value.kind)}
+      })
+      accidents.value?.push(...mappedData)
     })
     .catch(error => console.error(error))
 }
@@ -100,12 +98,12 @@ export class Description {
 }
 
 export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefined>, project: string | undefined, branch: string) {
-  if (project != undefined && branch != undefined) {
+  if (project != undefined) {
     fetch(description_url + encodeRison({project, branch}))
       .then(response => {
         return response.ok ? response.json() : null
       })
-      .then((data: Description) => {
+      .then((data: Description | null) => {
         if (data != null) {
           descriptionRef.value = data
         }

@@ -41,7 +41,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   }
 
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration|null): boolean {
-    const duration = this.value.value ?? TimeRangeConfigurator.timeRanges[0].value
+    const duration = this.value.value
     if (duration === "all") {
       return true
     }

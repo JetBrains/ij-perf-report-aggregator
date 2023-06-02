@@ -56,7 +56,7 @@ export class ChartComponent {
 
   private renderDataIfAvailable(container: HTMLElement): void {
     const data = reportData.value
-    if (data == null || data.length === 0) {
+    if (data.length === 0) {
       // do not re-render as empty - null value not expected to be set in valid cases
       return
     }

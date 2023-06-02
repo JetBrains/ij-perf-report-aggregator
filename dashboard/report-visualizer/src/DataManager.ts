@@ -90,8 +90,8 @@ export class DataManager {
       return this._markerItems
     }
 
-    const items = this.data == null ? null : this.data.items
-    if (items == null || items.length === 0) {
+    const items = this.data.items
+    if (items.length === 0) {
       return []
     }
 

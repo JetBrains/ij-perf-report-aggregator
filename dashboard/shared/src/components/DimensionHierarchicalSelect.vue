@@ -56,9 +56,7 @@ const props = defineProps<{
   dimension: MachineConfigurator
 }>()
 
-interface SelectedValue {
-  [key: string]: boolean
-}
+type SelectedValue = Record<string, boolean>
 
 const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
 

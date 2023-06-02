@@ -20,7 +20,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   readonly state = createComponentState()
   private readonly groupNameToItem = new Map<string, GroupedDimensionValue>()
 
-  private static readonly valueToGroup: { [key: string]: string } = getValueToGroup()
+  private static readonly valueToGroup: Record<string, string> = getValueToGroup()
 
   constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: FilterConfigurator[] = [], readonly multiple: boolean = true) {
     const name = "machine"

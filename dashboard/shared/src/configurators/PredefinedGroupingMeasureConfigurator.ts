@@ -78,7 +78,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
   let useDurationFormatter = true
 
   const dimensionNameSet = new Set<string>()
-  const source: { [key: string]: string | number }[] = []
+  const source: Record<string, string | number>[] = []
 
   // outer cycle over measures to group it together (e.g. if several machines are selected)
   for (let measureIndex = 0; measureIndex < configuration.measures.length; measureIndex++) {
@@ -93,7 +93,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
       if (classifier.length > 0) {
         dimension += ` | ${classifier}`
       }
-      const column: { [key: string]: string | number } = {dimension}
+      const column: Record<string, string | number> = {dimension}
       source.push(column)
       const result = dataList[dataIndex]
       for (let i = 0; i < result[0].length; i++) {
@@ -136,7 +136,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
 function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: ValueUnit): (p: CallbackDataParams) => string {
   const converter: (it: number) => number = valueUnit === "ns" ? nsToMs : it => it
   return function (data: CallbackDataParams): string {
-    const value = converter((data.value as { [key: string]: string | number })[data.seriesName as string] as number)
+    const value = converter((data.value as Record<string, string | number>)[data.seriesName as string] as number)
     return useDurationFormatter && value > 10_000 ? durationAxisPointerFormatter(value) : numberFormat.format(value)
   }
 }

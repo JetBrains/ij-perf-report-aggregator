@@ -88,7 +88,7 @@ export interface Stats {
   readonly component: StatItem
   readonly service: StatItem
 
-  readonly loadedClasses?: { [key: string]: number }
+  readonly loadedClasses?: Record<string, number>
 }
 
 export interface PluginStatItem {

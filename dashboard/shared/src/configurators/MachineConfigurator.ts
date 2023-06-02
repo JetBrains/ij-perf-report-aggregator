@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, Observable, share, shareReplay, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, Observable, share, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../dataQuery"
@@ -80,6 +80,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+        } if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
+          // https://aws.amazon.com/ec2/instance-types/c6i/
+          // noinspection SpellCheckingInspection
+          groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
         }
         else if (value.startsWith("intellij-windows-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6id/

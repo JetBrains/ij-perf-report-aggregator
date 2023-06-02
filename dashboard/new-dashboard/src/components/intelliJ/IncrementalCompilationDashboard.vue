@@ -23,7 +23,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const chartsDeclaration: Array<ChartDefinition> = [
+const chartsDeclaration: ChartDefinition[] = [
   {
   labels: ["Elastic Rebuild/Build time"],
   measures: ["build_compilation_duration"],

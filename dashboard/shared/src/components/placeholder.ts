@@ -2,8 +2,8 @@ import { computed, ComputedRef } from "vue"
 
 export function usePlaceholder(
   props: { label: string },
-  model: () => string | Array<unknown> | null,
-  selected: () => string | Array<string> | null,
+  model: () => string | unknown[] | null,
+  selected: () => string | string[] | null,
 ): ComputedRef<string> {
   return computed<string>(() => {
     const values = model()

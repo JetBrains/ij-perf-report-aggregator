@@ -19,7 +19,7 @@ export class BuildConfigurator extends DimensionConfigurator {
   }
 }
 
-function loadBuilds(serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>, state: ComponentState){
+function loadBuilds(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState){
   const query = new DataQuery()
   query.addField({n: "build", sql: "distinct concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))"})
   query.order = "build"
@@ -31,12 +31,12 @@ function loadBuilds(serverConfigurator: ServerConfigurator, filters: Array<Filte
   }
 
   state.loading = true
-  return fromFetchWithRetryAndErrorHandling<Array<string>>(serverConfigurator.computeQueryUrl(query))
+  return fromFetchWithRetryAndErrorHandling<string[]>(serverConfigurator.computeQueryUrl(query))
 }
 
 export function buildConfigurator(name: string, serverConfigurator: ServerConfigurator,
                                   persistentStateManager: PersistentStateManager | null,
-                                  filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+                                  filters: FilterConfigurator[] = []): DimensionConfigurator {
   const configurator = new BuildConfigurator(name)
   persistentStateManager?.add(name, configurator.selected)
 

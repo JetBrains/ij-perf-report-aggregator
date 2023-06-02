@@ -10,7 +10,7 @@ import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>,
+  constructor(private readonly measures: string[],
               private readonly timeRange: Ref<TimeRange>,
               private readonly chartStyle: ChartStyle) {}
   createObservable() {
@@ -74,11 +74,11 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
   }
 }
 
-function configureWithQueryProducers(dataList: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
+function configureWithQueryProducers(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
   let useDurationFormatter = true
 
   const dimensionNameSet = new Set<string>()
-  const source: Array<{ [key: string]: string | number }> = []
+  const source: { [key: string]: string | number }[] = []
 
   // outer cycle over measures to group it together (e.g. if several machines are selected)
   for (let measureIndex = 0; measureIndex < configuration.measures.length; measureIndex++) {
@@ -105,7 +105,7 @@ function configureWithQueryProducers(dataList: Array<Array<Array<string | number
   }
 
   // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
-  const dimensions: Array<DimensionDefinition> = []
+  const dimensions: DimensionDefinition[] = []
   dimensions.push({name: "dimension", type: "ordinal"})
   for (const name of dimensionNameSet) {
     dimensions.push({name, type: "number"})

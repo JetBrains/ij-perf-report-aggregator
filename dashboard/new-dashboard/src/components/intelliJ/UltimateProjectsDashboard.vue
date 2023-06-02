@@ -23,7 +23,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const chartsDeclaration: Array<ChartDefinition> = [{
+const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing", "Scanning", "Number of indexed files"],
   measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["keycloak_release_20/indexing", "train-ticket/indexing", "toolbox_enterprise/indexing"],

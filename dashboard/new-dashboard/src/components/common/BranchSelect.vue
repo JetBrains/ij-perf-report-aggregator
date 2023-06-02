@@ -179,7 +179,7 @@ function createItems(configurator?: DimensionConfigurator) {
     if (configurator == undefined) {
       return []
     }
-    const values = configurator.values.value as Array<string>
+    const values = configurator.values.value as string[]
 
     return values.map(it => {
       return {label: it.toString(), value: it}
@@ -188,7 +188,7 @@ function createItems(configurator?: DimensionConfigurator) {
 }
 
 function createValueFrom(configurator?: DimensionConfigurator) {
-  return computed<Array<string> | null>({
+  return computed<string[] | null>({
     get() {
       if(configurator == null){
         return null

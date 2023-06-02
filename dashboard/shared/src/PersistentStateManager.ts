@@ -2,7 +2,7 @@ import { debounceTime, Subject } from "rxjs"
 import { Ref, watch } from "vue"
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
 
-declare type State = { [key: string]: number | string | Array<string> | unknown }
+declare type State = { [key: string]: number | string | string[] | unknown }
 
 export class PersistentStateManager {
   private readonly state: State
@@ -36,7 +36,7 @@ export class PersistentStateManager {
       const route = this.route
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
-        this.state[name] = Array.isArray(value) ? (value as Array<string>).map(element => boolFromString(element)) : boolFromString(value)
+        this.state[name] = Array.isArray(value) ? (value as string[]).map(element => boolFromString(element)) : boolFromString(value)
       }
     }
 

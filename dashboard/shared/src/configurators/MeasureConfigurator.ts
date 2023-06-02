@@ -17,30 +17,30 @@ import { configureQueryFilters, createFilterObservable, FilterConfigurator } fro
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  readonly data = shallowRef<Array<string>>([])
-  private readonly _selected = shallowRef<Array<string> | string | null>(null)
+  readonly data = shallowRef<string[]>([])
+  private readonly _selected = shallowRef<string[] | string | null>(null)
   readonly state = createComponentState()
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.selected, true)
   }
 
-  setSelected(value: Array<string> | string | null) {
+  setSelected(value: string[] | string | null) {
     this._selected.value = value
   }
 
-  get selected(): Ref<Array<string> | null> {
+  get selected(): Ref<string[] | null> {
     const ref = this._selected
     if (typeof ref.value === "string") {
       ref.value = [ref.value]
     }
-    return ref as Ref<Array<string> | null>
+    return ref as Ref<string[] | null>
   }
 
   constructor(
     serverConfigurator: ServerConfigurator,
     persistentStateManager: PersistentStateManager,
-    filters: Array<FilterConfigurator> = [],
+    filters: FilterConfigurator[] = [],
     readonly skipZeroValues: boolean = true,
     readonly chartType: ChartType = "line",
     readonly symbolOptions: SymbolOptions = {},
@@ -61,14 +61,14 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
           this.state.loading = true
           return isIj ? forkJoin([
-            fromFetchWithRetryAndErrorHandling<Array<string>>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
-            fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl),
+            fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
+            fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
           ])
             .pipe(
               map(data => {
                 return data.flat(1)
               }),
-            ) : fromFetchWithRetryAndErrorHandling<Array<string>>(loadMeasureListUrl)
+            ) : fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
         }),
         updateComponentState(this.state),
       )
@@ -114,7 +114,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 }
 
-function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>): string | null {
+function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {
@@ -142,12 +142,12 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: Array<string>,
+  constructor(private readonly measures: string[],
               readonly skipZeroValues: Ref<boolean> = shallowRef(true),
               private readonly chartType: ChartType = "line",
               private readonly valueUnit: ValueUnit = "ms",
               readonly symbolOptions: SymbolOptions = {},
-              readonly accidents: Array<Accident> | null = null,
+              readonly accidents: Accident[] | null = null,
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -170,7 +170,7 @@ export function measureNameToLabel(key: string): string {
   return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/g, "")
 }
 
-function configureQuery(measureNames: Array<string>, query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
+function configureQuery(measureNames: string[], query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
 
@@ -190,7 +190,7 @@ function configureQuery(measureNames: Array<string>, query: DataQuery, configura
     query.addField({n: "measures", subName: "type"})
   }
 
-  const prevFilters: Array<DataQueryFilter> = []
+  const prevFilters: DataQueryFilter[] = []
 
   const addFilter = (filter: DataQueryFilter): void => {
     prevFilters.push(filter)
@@ -268,12 +268,12 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidents: Array<Accident> | null = null,
+  accidents: Accident[] | null = null,
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
 
-  const dataset: Array<DatasetOption> = []
+  const dataset: DatasetOption[] = []
 
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
     const measureName = configuration.measureNames[dataIndex]
@@ -312,11 +312,11 @@ function configureChart(
         type: chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
-        symbolSize(value: Array<string>): number {
+        symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize || (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
           return isValueShouldBeMarkedWithPin(accidentsMap, value) ? symbolSize * 4 : symbolSize
         },
-        symbol(value: Array<string>) {
+        symbol(value: string[]) {
           return isValueShouldBeMarkedWithPin(accidentsMap, value) ? "pin" : symbolOptions.symbol ?? "circle"
         },
         triggerLineEvent: true,
@@ -327,7 +327,7 @@ function configureChart(
         dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
         itemStyle: {
           color(seriesIndex) {
-            const accident = getAccident(accidentsMap, seriesIndex.value as Array<string>)
+            const accident = getAccident(accidentsMap, seriesIndex.value as string[])
             if (accident == null) {
               return seriesIndex.color as ZRColor
             }

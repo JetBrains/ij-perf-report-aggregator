@@ -22,7 +22,7 @@ import LineChart from "./LineChart.vue"
 interface Props {
   label: string
   measure: string
-  projects: Array<string>
+  projects: string[]
   valueUnit?: ValueUnit
 }
 

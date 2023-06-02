@@ -76,7 +76,7 @@ function object(x: any): string {
   return result + ")"
 }
 
-function array(x: Array<unknown>): string {
+function array(x: unknown[]): string {
   let result = "!("
   let isNonFirst, i
   const l = x.length

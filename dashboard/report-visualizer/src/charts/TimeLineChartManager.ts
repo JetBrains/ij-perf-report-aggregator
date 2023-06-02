@@ -56,7 +56,7 @@ export class TimeLineChartManager implements ChartManager {
           const info = params[0]
           const chartItem = info.data as ChartDataItem
           const item = chartItem[4]
-          const lines: Array<TooltipLineDescriptor> = [
+          const lines: TooltipLineDescriptor[] = [
             {name: chartItem[5], main: true, value: durationAxisPointerFormatter(getDuration(chartItem))},
             {name: "range", value: `${(formatDuration(item.s, this.dataDescriptor))}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}`},
             {name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : ""},
@@ -107,7 +107,7 @@ export class TimeLineChartManager implements ChartManager {
   }
 
   render(dataManager: DataManager): void {
-    const data = new Map<string, Array<ChartDataItem>>()
+    const data = new Map<string, ChartDataItem[]>()
     const threshold = (this.dataDescriptor.threshold ?? 10) * this.dataDescriptor.unitConverter.factor
     for (const group of this.dataProvider(dataManager)) {
       if (group.items == null) {
@@ -223,7 +223,7 @@ export class TimeLineChartManager implements ChartManager {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (series!.data as Array<ChartDataItem>).push(chartItem)
+        (series!.data as ChartDataItem[]).push(chartItem)
 
         const newEnd = item.s + item.d
         const info = rowToEnd.get(rowIndex)
@@ -246,7 +246,7 @@ export class TimeLineChartManager implements ChartManager {
     this.setInitialOption()
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
+    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color as string
     configureMarkAreas(dataManager, series, axisLineColor)
 
     this.chart.chart.setOption<CustomChartOptions>({
@@ -263,8 +263,8 @@ export class TimeLineChartManager implements ChartManager {
   }
 }
 
-function configureMarkAreas(dataManager: DataManager, series: Array<CustomSeriesOption>, axisLineColor: string): void {
-  const areaData: Array<MarkArea2DDataItemOption> = []
+function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption[], axisLineColor: string): void {
+  const areaData: MarkArea2DDataItemOption[] = []
   for (const item of (dataManager.isUnifiedItems ? dataManager.items : dataManager.data.prepareAppInitActivities)) {
     if (!(item.n.endsWith(" async preloading") || item.n.endsWith(" sync preloading"))) {
       continue
@@ -294,7 +294,7 @@ function configureMarkAreas(dataManager: DataManager, series: Array<CustomSeries
     data: areaData,
   }
 
-  const markLineData: Array<MarkLine1DDataItemOption> = []
+  const markLineData: MarkLine1DDataItemOption[] = []
   for (const item of dataManager.data.traceEvents) {
     if (item.name !== "splash shown" && item.name !== "project opened") {
       continue
@@ -324,7 +324,7 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const height = (api.size!([0, 1]) as Array<number>)[1] * 0.8
+  const height = (api.size!([0, 1]) as number[])[1] * 0.8
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

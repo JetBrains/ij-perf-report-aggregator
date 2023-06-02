@@ -32,7 +32,7 @@ import { AggregationChartVM } from "./AggregationChartVM"
 interface AggregationChartProps {
   valueUnit?: ValueUnit
   chartColor?: string
-  configurators: Array<DataQueryConfigurator>
+  configurators: DataQueryConfigurator[]
   aggregatedMeasure: string
   aggregatedProject?: string
   isLike?: boolean

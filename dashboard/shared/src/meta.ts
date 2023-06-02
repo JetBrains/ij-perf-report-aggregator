@@ -31,7 +31,7 @@ function intervalToPostgresInterval(interval: TimeRange): string {
   return intervalMapping[interval]
 }
 
-export function getAccidentTypes(): Array<string> {
+export function getAccidentTypes(): string[] {
   return Object.values(AccidentKind)
 }
 
@@ -59,7 +59,7 @@ export function writeAccidentToMetaDb(date: string, affected_test: string, reaso
   ).catch(error => console.error(error))
 }
 
-export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefined>, tests: Array<string> | string | null, timeRange: TimeRange) {
+export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, tests: string[] | string | null, timeRange: TimeRange) {
   if (tests != null && !Array.isArray(tests)) {
     tests = [tests]
   }
@@ -68,7 +68,7 @@ export function getAccidentsFromMetaDb(accidents: Ref<Array<Accident> | undefine
   const params = tests == null ? {interval} : {interval, tests}
   fetch(accidents_url + encodeRison(params))
     .then(response => response.json())
-    .then((data: Array<AccidentFromServer>) => {
+    .then((data: AccidentFromServer[]) => {
       if (data != null) {
         const mappedData = data.map(value => {
           return {...value, kind: capitalizeFirstLetter(value.kind)}
@@ -118,7 +118,7 @@ export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefin
  * This is needed for optimization since we search for accidents on each point on the plot.
  * @param accidents
  */
-export function convertAccidentsToMap(accidents: Array<Accident> | null): Map<string, Accident> {
+export function convertAccidentsToMap(accidents: Accident[] | null): Map<string, Accident> {
   const accidentsMap = new Map<string, Accident>()
   if (accidents) {
     for (const accident of accidents) {
@@ -129,12 +129,12 @@ export function convertAccidentsToMap(accidents: Array<Accident> | null): Map<st
   return accidentsMap
 }
 
-export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | null, value: Array<string>): boolean {
+export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | null, value: string[]): boolean {
   const accident = getAccident(accidents, value)
   return accident != null && accident.kind != AccidentKind.Exception
 }
 
-export function getAccident(accidents: Map<string, Accident> | null, value: Array<string>): Accident | null {
+export function getAccident(accidents: Map<string, Accident> | null, value: string[]): Accident | null {
   if (accidents != null) {
     //perf db
     if (value.length == 10) {

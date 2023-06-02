@@ -26,14 +26,14 @@ export interface InfoData {
   date: string
   installerId: number|undefined
   changes: string | undefined
-  accidents: Array<Accident> | undefined
+  accidents: Accident[] | undefined
   buildId: number
   description: Ref<Description|undefined>
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Array<Accident> | null = null): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Accident[] | null = null): InfoData {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -46,7 +46,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let buildNum2: number | undefined
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
-  let filteredAccidents: Array<Accident> | undefined
+  let filteredAccidents: Accident[] | undefined
   let accidentBuild: string | undefined
   //dev fleet builds
   if (dataSeries.length == 5) {

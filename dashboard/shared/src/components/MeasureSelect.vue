@@ -87,7 +87,7 @@ const items = computed(() => {
 })
 
 const value = computed({
-  get(): Array<string> | null {
+  get(): string[] | null {
     const configurator = props.configurator
     const selectedValue = configurator.selected.value
     const allValues = configurator.data.value
@@ -96,7 +96,7 @@ const value = computed({
     }
     return allValues.length === 0 ? null : selectedValue
   },
-  set(value: Array<string> | null) {
+  set(value: string[] | null) {
     props.configurator.setSelected(value)
   },
 })

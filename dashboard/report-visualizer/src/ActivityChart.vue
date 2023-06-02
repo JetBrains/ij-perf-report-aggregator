@@ -40,7 +40,7 @@ export default defineComponent({
           const result: GroupedItems = []
           for (const name of names) {
             const data = dataManager.data as never
-            const items = data[name] as Array<ItemV20> | null
+            const items = data[name] as ItemV20[] | null
             if (items != null) {
               result.push({category: name, items})
             }

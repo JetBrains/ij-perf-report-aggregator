@@ -65,6 +65,6 @@ import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"
 
-const highlightingPasses = ref<Array<string>>()
+const highlightingPasses = ref<string[]>()
 fetchHighlightingPasses(highlightingPasses)
 </script>

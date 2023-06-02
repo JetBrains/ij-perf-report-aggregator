@@ -26,8 +26,8 @@ function createReportUrl(generatedTime: number, query: DataQuery, serverUrl: Obs
   delete q["fields"]
   delete q["order"]
   delete q["flat"]
-  q["filters"] = (q["filters"] as Array<DataQueryFilter>).filter(it => it.f === "product" || it.f === "project" || it.f === "machine" || it.f === "generated_time")
-  const filters = q["filters"] as Array<DataQueryFilter>
+  q["filters"] = (q["filters"] as DataQueryFilter[]).filter(it => it.f === "product" || it.f === "project" || it.f === "machine" || it.f === "generated_time")
+  const filters = q["filters"] as DataQueryFilter[]
   for (let i = 0; i < filters.length; i++){
     if (filters[i].f === "generated_time") {
       filters[i] = {f: "generated_time", v: generatedTime / 1000}

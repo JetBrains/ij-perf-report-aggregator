@@ -27,12 +27,12 @@ import { LineChartVM } from "./LineChartVM"
 
 interface LineChartProps {
   title: string
-  measures: Array<string>
-  configurators: Array<DataQueryConfigurator>
+  measures: string[]
+  configurators: DataQueryConfigurator[]
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
-  accidents?: Array<Accident>|null
+  accidents?: Accident[]|null
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {

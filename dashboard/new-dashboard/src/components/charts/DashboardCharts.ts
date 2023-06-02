@@ -5,16 +5,16 @@ export interface Definition {
 
 export interface Chart {
   definition: Definition
-  projects: Array<string>
+  projects: string[]
 }
 
 export interface ChartDefinition {
-  labels: Array<string>
-  measures: Array<string>
-  projects: Array<string>
+  labels: string[]
+  measures: string[]
+  projects: string[]
 }
 
-export function combineCharts(charts: Array<ChartDefinition>): Array<Chart> {
+export function combineCharts(charts: ChartDefinition[]): Chart[] {
   const resultingCharts = new Array<Chart>
   for (const chart of charts) {
     if (chart.labels.length != chart.measures.length) {
@@ -34,7 +34,7 @@ export function combineCharts(charts: Array<ChartDefinition>): Array<Chart> {
   return resultingCharts
 }
 
-export function extractUniqueProjects(charts: Array<Chart>): Array<string> {
+export function extractUniqueProjects(charts: Chart[]): string[] {
   const allProjects = new Set<string>
   for (const chart of charts) {
     for (const project of chart.projects) {

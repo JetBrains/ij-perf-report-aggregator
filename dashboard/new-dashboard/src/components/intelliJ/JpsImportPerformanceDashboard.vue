@@ -107,7 +107,7 @@ const metricsDeclaration = [
 ]
 
 
-const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric => {
+const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
   return {
     labels: [metric],
     measures: [metric],

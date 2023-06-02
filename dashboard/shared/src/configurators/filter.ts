@@ -2,7 +2,7 @@ import { combineLatest, Observable } from "rxjs"
 import { DataQuery } from "../dataQuery"
 import { ServerConfigurator } from "./ServerConfigurator"
 
-export function createFilterObservable(serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>): Observable<unknown> {
+export function createFilterObservable(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): Observable<unknown> {
   if (filters.length === 0) {
     return serverConfigurator.createObservable()
   }
@@ -24,7 +24,7 @@ export interface FilterConfigurator {
   createObservable(): Observable<unknown> | null
 }
 
-export function configureQueryFilters(query: DataQuery, filters: Array<FilterConfigurator>): boolean {
+export function configureQueryFilters(query: DataQuery, filters: FilterConfigurator[]): boolean {
   for (const filter of filters) {
     if (!filter.configureFilter(query)) {
       return false

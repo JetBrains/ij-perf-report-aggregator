@@ -50,7 +50,7 @@ interface PerformanceDashboardProps {
   initialMachine?: string
   persistentId: string
   withInstaller?: boolean
-  charts?: Array<Chart>
+  charts?: Chart[]
   isBuildNumberExists?: boolean
 }
 
@@ -134,8 +134,8 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
-const projects = props.charts?.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as Array<string>
-const warnings = ref<Array<Accident>>()
+const projects = props.charts?.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
+const warnings = ref<Accident[]>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, projects, data)
 })

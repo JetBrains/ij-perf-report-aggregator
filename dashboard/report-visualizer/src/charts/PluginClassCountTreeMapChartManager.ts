@@ -48,7 +48,7 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
   }
 
   render(data: DataManager): void {
-    const items: Array<TreemapSeriesNodeItemOption & ItemExtraInfo> = []
+    const items: (TreemapSeriesNodeItemOption & ItemExtraInfo)[] = []
 
     const loadedClasses = data.data.stats.loadedClasses
     if (loadedClasses == null) {

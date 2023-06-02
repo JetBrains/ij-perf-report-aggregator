@@ -13,8 +13,8 @@ import { refToObservable } from "./rxjs"
 const macLarge = "mac large"
 
 export class MachineConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  readonly selected = shallowRef<Array<string>>([])
-  readonly values = shallowRef<Array<GroupedDimensionValue>>([])
+  readonly selected = shallowRef<string[]>([])
+  readonly values = shallowRef<GroupedDimensionValue[]>([])
 
   private readonly observable: Observable<unknown>
   readonly state = createComponentState()
@@ -22,7 +22,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private static readonly valueToGroup: { [key: string]: string } = getValueToGroup()
 
-  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: Array<FilterConfigurator> = [], readonly multiple: boolean = true) {
+  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: FilterConfigurator[] = [], readonly multiple: boolean = true) {
     const name = "machine"
     persistentStateManager.add(name, this.selected, it => toArray(it as never))
     const listObservable = createFilterObservable(serverConfigurator, filters)
@@ -55,8 +55,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return this.observable
   }
 
-  private groupValues(values: Array<string>): Array<GroupedDimensionValue> {
-    const grouped: Array<GroupedDimensionValue> = []
+  private groupValues(values: string[]): GroupedDimensionValue[] {
+    const grouped: GroupedDimensionValue[] = []
     for (const value of values) {
       let groupName = ""
       if (value.startsWith("intellij-linux-hw-blade-")) {
@@ -152,7 +152,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
     const groupNameToItem = this.groupNameToItem
 
-    const values: Array<string> = []
+    const values: string[] = []
     const filter: DataQueryFilter = {f: "machine", v: values}
     query.addFilter(filter)
     configuration.queryProducers.push({
@@ -204,8 +204,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return true
   }
 
-  private configureQueryAsFilter(selected: Array<string>, query: DataQuery) {
-    const values: Array<string> = []
+  private configureQueryAsFilter(selected: string[], query: DataQuery) {
+    const values: string[] = []
     for (const value of selected) {
       const groupItem = this.groupNameToItem.get(value)
       if (groupItem == null) {
@@ -234,10 +234,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
 export interface GroupedDimensionValue {
   value: string
-  children?: Array<GroupedDimensionValue>
+  children?: GroupedDimensionValue[]
 }
 
-function prefix(words: Array<string>):string{
+function prefix(words: string[]):string{
   if (!words[0] || words.length ==  1) return words[0] || ""
   let i = 0
   while(words[0][i] && words.every(w => w[i] === words[0][i]))

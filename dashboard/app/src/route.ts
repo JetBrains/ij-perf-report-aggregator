@@ -3,14 +3,14 @@ import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
 
-function addRoutes(routes: Array<ParentRouteRecord>, result: Array<RouteRecordRaw>) {
+function addRoutes(routes: ParentRouteRecord[], result: RouteRecordRaw[]) {
   for (const route of routes) {
     result.push(...route.children)
   }
 }
 
 export function createAndConfigureRouter(): Router {
-  const routes: Array<RouteRecordRaw> = [
+  const routes: RouteRecordRaw[] = [
     {
       path: "",
       redirect: "/intellij/dashboard",

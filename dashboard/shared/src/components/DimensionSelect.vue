@@ -145,7 +145,7 @@ function optionToLabel(value: string): string {
   return props.valueToLabel(value)
 }
 
-const value = computed<string | Array<string> | null>({
+const value = computed<string | string[] | null>({
   get() {
     const values = props.dimension.values.value
     if (values == null || values.length === 0) {
@@ -200,7 +200,7 @@ const items = computed(() => {
     return result
   }
   else {
-    return group(values as Array<string>, props.valueToGroup, valueToLabel)
+    return group(values as string[], props.valueToGroup, valueToLabel)
   }
 })
 
@@ -211,12 +211,12 @@ interface Item {
 
 interface GroupItem {
   label: string
-  options: Array<Item>
+  options: Item[]
 }
 
-function group(values: Array<string>, groupFunction: (v: string) => string, valueToLabel: (v: string) => string): Array<GroupItem> {
+function group(values: string[], groupFunction: (v: string) => string, valueToLabel: (v: string) => string): GroupItem[] {
   const groupNameToGroup = new Map<string, GroupItem>()
-  const groups: Array<GroupItem> = []
+  const groups: GroupItem[] = []
   for (const value of values) {
     const groupName = groupFunction(value)
     let group = groupNameToGroup.get(groupName)

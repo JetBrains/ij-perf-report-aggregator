@@ -63,7 +63,7 @@ const metricsDeclaration = ["maven.sync.duration", "maven.import.after.import.co
 ]
 
 
-const chartsDeclaration: Array<ChartDefinition> = metricsDeclaration.map(metric => {
+const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
   return {
     labels: [metric],
     measures: [metric],

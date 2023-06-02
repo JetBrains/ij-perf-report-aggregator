@@ -24,7 +24,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const chartsDeclaration: Array<ChartDefinition> = [{
+const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing", "Scanning", "Updating time"],
   measures: ["indexing", "scanning", "updatingTime"],
   projects: ["intellij_sources/indexing", "intellij_commit/indexing"],

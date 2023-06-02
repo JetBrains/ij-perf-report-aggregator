@@ -41,7 +41,7 @@ export class LineChartManager {
     const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941
-    let lastParams: Array<CallbackDataParams> | null = null
+    let lastParams: CallbackDataParams[] | null = null
     if (chartToolTipManager != null) {
       this.chart.chart.getZr().on("click", event => {
         chartToolTipManager.showTooltip(lastParams, event.event)

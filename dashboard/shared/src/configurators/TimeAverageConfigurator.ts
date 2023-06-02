@@ -26,11 +26,11 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
     return null
   }
 
-  configureChart(dataList: Array<Array<Array<string | number>>>, configuration: DataQueryExecutorConfiguration): LineChartOptions {
+  configureChart(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration): LineChartOptions {
     const series = new Array<LineSeriesOption | ScatterSeriesOption>()
     let useDurationFormatter = true
 
-    const dataset: Array<DatasetOption> = []
+    const dataset: DatasetOption[] = []
 
     for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
       const measureName = configuration.measureNames[dataIndex]

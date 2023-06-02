@@ -48,7 +48,7 @@ export class TimeDistributionChartManager implements ChartManager {
   }
 
   render(data: DataManager): void {
-    const items: Array<TreemapSeriesNodeItemOption & ItemExtraInfo> = []
+    const items: (TreemapSeriesNodeItemOption & ItemExtraInfo)[] = []
 
     addServicesOrComponents(data, items, "component", "appComponents", "projectComponents")
     addServicesOrComponents(data, items, "service", "appServices", "projectServices")
@@ -83,11 +83,11 @@ export class TimeDistributionChartManager implements ChartManager {
 }
 
 function addServicesOrComponents(dataManager: DataManager,
-                                 items: Array<TreemapSeriesNodeItemOption & ItemExtraInfo>,
+                                 items: (TreemapSeriesNodeItemOption & ItemExtraInfo)[],
                                  statName: "component" | "service",
                                  appFieldName: "appServices" | "appComponents",
                                  projectFieldName: "projectComponents" | "projectServices"): void {
-  const children: Array<TreemapSeriesNodeItemOption & ItemExtraInfo> = []
+  const children: (TreemapSeriesNodeItemOption & ItemExtraInfo)[] = []
   const data = dataManager.data as InputDataV20
   const stats = data.stats[statName]
   children.push({
@@ -107,13 +107,13 @@ function addServicesOrComponents(dataManager: DataManager,
   })
 }
 
-function addIcons(data: DataManager, items: Array<TreemapSeriesNodeItemOption>) {
+function addIcons(data: DataManager, items: TreemapSeriesNodeItemOption[]) {
   const icons = data.data.icons
   if (icons == null) {
     return
   }
 
-  const iconList: Array<TreemapSeriesNodeItemOption> = []
+  const iconList: TreemapSeriesNodeItemOption[] = []
   let duration = 0
   for (const item of icons) {
     duration += item.loading
@@ -133,7 +133,7 @@ function addIcons(data: DataManager, items: Array<TreemapSeriesNodeItemOption>) 
   })
 }
 
-function toTreeMapItem(items: Array<ItemV20> | null | undefined): Array<TreemapSeriesNodeItemOption> {
+function toTreeMapItem(items: ItemV20[] | null | undefined): TreemapSeriesNodeItemOption[] {
   return items == null ? [] : items.map(it => {
     return {name: getShortName(it), value: it.d / 1000}
   })

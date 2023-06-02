@@ -7,7 +7,7 @@ import { fromFetchWithRetryAndErrorHandling } from "./configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 import { configuratorListKey } from "./injectionKeys"
 
-export declare type DataQueryResult = Array<Array<Array<string | number>>>
+export declare type DataQueryResult = (string | number)[][][]
 export declare type DataQueryConsumer = (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
 
 interface Result {
@@ -29,7 +29,7 @@ export class DataQueryExecutor {
   /**
    * `isGroup = true` means that this DataQueryExecutor only manages dependent executors but doesn't load data itself.
    */
-  constructor(configurators: Array<DataQueryConfigurator>) {
+  constructor(configurators: DataQueryConfigurator[]) {
     const serverConfigurator = configurators.find(it => it instanceof ServerConfigurator) as ServerConfigurator
     let abortController = new AbortController()
     this.observable = combineLatest(configurators.map(configurator => {
@@ -80,7 +80,7 @@ export class DataQueryExecutor {
 }
 
 // https://stackoverflow.com/a/43053803
-function computeCartesian<T>(input: Array<Array<T>>): Array<Array<T>> {
+function computeCartesian<T>(input: T[][]): T[][] {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line unicorn/no-array-reduce
@@ -89,7 +89,7 @@ function computeCartesian<T>(input: Array<Array<T>>): Array<Array<T>> {
   })
 }
 
-export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): Array<string> {
+export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): string[] {
   let producers = configuration.queryProducers
   if (producers.length === 0) {
     producers = [{
@@ -108,7 +108,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     }]
   }
 
-  const cartesian: Array<Array<number>> = producers.length === 1 ? Array.from({length: producers[0].size()}).map((_, i) => [i]) : computeCartesian(producers.map(it => {
+  const cartesian: number[][] = producers.length === 1 ? Array.from({length: producers[0].size()}).map((_, i) => [i]) : computeCartesian(producers.map(it => {
     return Array.from({length: it.size()}).map((_, i) => i)
   }))
 
@@ -116,7 +116,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
 
   // https://en.wikipedia.org/wiki/Cartesian_product
 
-  const result: Array<string> = []
+  const result: string[] = []
   const last = Array.from({length: producers.length - 1}).map((_, i) => cartesian[0][i])
   for (const item of cartesian) {
     // each column it is a producer
@@ -174,6 +174,6 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
   return result
 }
 
-export function initDataComponent(configurators: Array<DataQueryConfigurator>): void {
+export function initDataComponent(configurators: DataQueryConfigurator[]): void {
   provide(configuratorListKey, [...configurators, new ReloadConfigurator()])
 }

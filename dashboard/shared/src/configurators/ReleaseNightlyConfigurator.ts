@@ -9,8 +9,8 @@ const eap = "EAP / Release"
 type ReleaseType = typeof eap | typeof nightly
 
 export class ReleaseNightlyConfigurator extends DimensionConfigurator {
-  declare readonly selected: ShallowRef<ReleaseType | Array<ReleaseType> | null>
-  readonly values: ShallowRef<Array<ReleaseType>> = ref<Array<ReleaseType>>([eap, nightly])
+  declare readonly selected: ShallowRef<ReleaseType | ReleaseType[] | null>
+  readonly values: ShallowRef<ReleaseType[]> = ref<ReleaseType[]>([eap, nightly])
 
   constructor(persistentStateManager: PersistentStateManager | null) {
     super("releaseConfigurator", true)
@@ -56,8 +56,8 @@ export class ReleaseNightlyConfigurator extends DimensionConfigurator {
   }
 }
 function getFilter(value: ReleaseType): DataQueryFilter
-function getFilter(value: ReleaseType | Array<ReleaseType> | null): DataQueryFilter | null
-function getFilter(value: ReleaseType | Array<ReleaseType> | null): DataQueryFilter | null {
+function getFilter(value: ReleaseType | ReleaseType[] | null): DataQueryFilter | null
+function getFilter(value: ReleaseType | ReleaseType[] | null): DataQueryFilter | null {
   if (value == null || value.length === 0) {
     return null
   }

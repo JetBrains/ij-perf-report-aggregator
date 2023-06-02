@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 import { ParentRouteRecord } from "shared/src/route"
 
 const enum ROUTE_PREFIX {
@@ -545,7 +546,7 @@ export function getNavigationElement(path: string): Product {
   return PRODUCTS.find(PRODUCTS => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
 
-export function getNewDashboardRoutes(): Array<ParentRouteRecord> {
+export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
       children: [

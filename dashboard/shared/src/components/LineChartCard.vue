@@ -40,10 +40,10 @@ const props = withDefaults(defineProps<{
   skipZeroValues?: boolean
   compoundTooltip?: boolean
   dataZoom?: boolean
-  measures?: Array<string> | null
+  measures?: string[] | null
   chartType?: ChartType
   valueUnit?: ValueUnit
-  configurators?: Array<DataQueryConfigurator>|null
+  configurators?: DataQueryConfigurator[]|null
   trigger?: PopupTrigger
   label?: string
   aggregatedMeasure?: string | null

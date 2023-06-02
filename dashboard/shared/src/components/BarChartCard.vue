@@ -15,7 +15,7 @@ import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey,
 
 const props = withDefaults(defineProps<{
   height?: number
-  measures: Array<string>
+  measures: string[]
 }>(), {
   height: 440,
   valueUnit: "ms",

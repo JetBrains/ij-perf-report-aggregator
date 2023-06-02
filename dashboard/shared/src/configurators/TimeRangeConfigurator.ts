@@ -14,7 +14,7 @@ export interface TimeRangeItem {
 }
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  static readonly timeRanges: Array<TimeRangeItem> = [
+  static readonly timeRanges: TimeRangeItem[] = [
     {label: "Last week", value: "1w"},
     {label: "Last month", value: "1M"},
     {label: "Last 3 months", value: "3M"},
@@ -85,7 +85,7 @@ interface UnitDescriptor {
   getValue(result: DurationParseResult): number | undefined
 }
 
-const units: Array<UnitDescriptor> = [
+const units: UnitDescriptor[] = [
   {
     subtractFunction: "subtractDays",
     apply(value: number, result: DurationParseResult): void {

@@ -250,8 +250,8 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string): Observable<Array<Result>> {
-  return new Observable<Array<Result>>(subscriber => {
+function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build: string): Observable<Result[]> {
+  return new Observable<Result[]>(subscriber => {
     new DataQueryExecutor([serverConfigurator, new class implements DataQueryConfigurator {
       configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
         configuration.queryProducers.push(new SimpleQueryProducer())
@@ -278,7 +278,7 @@ function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build:
       if (isLoading || data == null){
         return
       }
-      const result: Array<Result> = new Array<Result>()
+      const result: Result[] = new Array<Result>()
       const datum = data[0]
       for (let i = 0; i < datum[0].length; i++) {
         result.push(new Result(datum[0][i] as string, datum[1][i] as string, datum[2][i] as number))

@@ -47,7 +47,7 @@ export class BranchConfigurator extends DimensionConfigurator {
 
 export function createBranchConfigurator(serverConfigurator: ServerConfigurator,
                                          persistentStateManager: PersistentStateManager | null,
-                                         filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+                                         filters: FilterConfigurator[] = []): DimensionConfigurator {
   const configurator = new BranchConfigurator()
   const name = "branch"
   persistentStateManager?.add(name, configurator.selected)

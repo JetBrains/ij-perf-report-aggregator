@@ -6,7 +6,7 @@ export interface TooltipLineDescriptor {
   extraStyle?: string
 }
 
-export function buildTooltip(lines: Array<TooltipLineDescriptor>): string {
+export function buildTooltip(lines: TooltipLineDescriptor[]): string {
   let result = ""
   for (const line of lines) {
     result += line.main ? `<span style="user-select: text">${line.name}</span>` : `<br/>${line.name}`

@@ -44,42 +44,42 @@ export interface TraceEventArgs {
 }
 
 export interface InputDataV20 extends InputData {
-  readonly appComponents?: Array<ItemV20>
-  readonly projectComponents?: Array<ItemV20>
-  readonly moduleComponents?: Array<ItemV20>
+  readonly appComponents?: ItemV20[]
+  readonly projectComponents?: ItemV20[]
+  readonly moduleComponents?: ItemV20[]
 
-  readonly appServices?: Array<ItemV20>
-  readonly projectServices?: Array<ItemV20>
-  readonly moduleServices?: Array<ItemV20>
+  readonly appServices?: ItemV20[]
+  readonly projectServices?: ItemV20[]
+  readonly moduleServices?: ItemV20[]
 
-  readonly serviceWaiting?: Array<ItemV20>
+  readonly serviceWaiting?: ItemV20[]
 }
 
 export interface InputData {
-  readonly traceEvents: Array<TraceEvent>
+  readonly traceEvents: TraceEvent[]
 
   readonly version: string
 
   readonly stats: Stats
-  readonly plugins?: Array<PluginStatItem>
+  readonly plugins?: PluginStatItem[]
 
-  readonly icons?: Array<IconData>
-
-  // time in ms
-  readonly items: Array<ItemV0>
+  readonly icons?: IconData[]
 
   // time in ms
-  readonly prepareAppInitActivities: Array<ItemV20>
+  readonly items: ItemV0[]
 
-  readonly appExtensions?: Array<ItemV0>
-  readonly projectExtensions?: Array<ItemV0>
-  readonly moduleExtensions?: Array<ItemV0>
+  // time in ms
+  readonly prepareAppInitActivities: ItemV20[]
 
-  readonly preloadActivities?: Array<ItemV0>
-  readonly appOptionsTopHitProviders?: Array<ItemV0>
-  readonly projectOptionsTopHitProviders?: Array<ItemV0>
+  readonly appExtensions?: ItemV0[]
+  readonly projectExtensions?: ItemV0[]
+  readonly moduleExtensions?: ItemV0[]
 
-  readonly projectPostStartupActivities?: Array<ItemV0>
+  readonly preloadActivities?: ItemV0[]
+  readonly appOptionsTopHitProviders?: ItemV0[]
+  readonly projectOptionsTopHitProviders?: ItemV0[]
+
+  readonly projectPostStartupActivities?: ItemV0[]
 }
 
 export interface Stats {

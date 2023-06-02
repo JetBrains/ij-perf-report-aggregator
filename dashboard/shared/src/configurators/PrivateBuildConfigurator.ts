@@ -28,7 +28,7 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
 
 export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
                                          persistentStateManager: PersistentStateManager | null,
-                                         filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+                                         filters: FilterConfigurator[] = []): DimensionConfigurator {
   const configurator = new PrivateBuildConfigurator()
   const name = "triggeredBy"
   persistentStateManager?.add(name, configurator.selected)

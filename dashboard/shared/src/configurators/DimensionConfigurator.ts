@@ -10,10 +10,10 @@ import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 export class DimensionConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly state = createComponentState()
 
-  readonly selected = shallowRef<string | Array<string> | null>(null)
-  readonly values = shallowRef<Array<string|boolean>>([])
+  readonly selected = shallowRef<string | string[] | null>(null)
+  readonly values = shallowRef<(string|boolean)[]>([])
 
-  private readonly observable: Observable<string | Array<string> | null>
+  private readonly observable: Observable<string | string[] | null>
 
   constructor(readonly name: string, readonly multiple: boolean) {
     this.observable = refToObservable(this.selected, true).pipe(
@@ -21,7 +21,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
     )
   }
 
-  createObservable(): Observable<string | Array<string> | null> {
+  createObservable(): Observable<string | string[] | null> {
     return this.observable
   }
 
@@ -53,7 +53,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   }
 }
 
-export function loadDimension(name: string, serverConfigurator: ServerConfigurator, filters: Array<FilterConfigurator>, state: ComponentState) {
+export function loadDimension(name: string, serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState) {
   const query = new DataQuery()
   query.addField({n: name, sql: `distinct ${name}`})
   query.order = name
@@ -65,14 +65,14 @@ export function loadDimension(name: string, serverConfigurator: ServerConfigurat
   }
 
   state.loading = true
-  return fromFetchWithRetryAndErrorHandling<Array<string>>(serverConfigurator.computeQueryUrl(query))
+  return fromFetchWithRetryAndErrorHandling<string[]>(serverConfigurator.computeQueryUrl(query))
 }
 
 export function dimensionConfigurator(name: string,
                                       serverConfigurator: ServerConfigurator,
                                       persistentStateManager: PersistentStateManager | null,
                                       multiple: boolean = false,
-                                      filters: Array<FilterConfigurator> = [],
+                                      filters: FilterConfigurator[] = [],
                                       customValueSort: ((a: string, b: string) => number) | null = null): DimensionConfigurator {
   const configurator = new DimensionConfigurator(name, multiple)
   persistentStateManager?.add(name, configurator.selected)
@@ -97,7 +97,7 @@ export function dimensionConfigurator(name: string,
   return configurator
 }
 
-export function filterSelected(configurator: DimensionConfigurator, data: Array<string>, name: string) {
+export function filterSelected(configurator: DimensionConfigurator, data: string[], name: string) {
   const selectedRef = configurator.selected
   if (data.length === 0) {
     // do not update value - don't unset if values temporary not set
@@ -117,7 +117,7 @@ export function filterSelected(configurator: DimensionConfigurator, data: Array<
   }
 }
 
-export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: Array<string>): void {
+export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[]): void {
   configuration.queryProducers.push({
       size(): number {
         return values.length

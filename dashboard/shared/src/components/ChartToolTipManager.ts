@@ -8,12 +8,12 @@ import { reportInfoProviderKey } from "../injectionKeys"
 export interface ReportInfoProvider {
   createReportUrl(generatedTime: number, query: DataQuery): string
 
-  readonly infoFields: Array<string>
+  readonly infoFields: string[]
 }
 
 export interface TooltipData {
-  items: Array<TooltipDataItem>
-  firstSeriesData: Array<number>
+  items: TooltipDataItem[]
+  firstSeriesData: number[]
   reportInfoProvider: ReportInfoProvider | null
   query: DataQuery | null
 }
@@ -41,7 +41,7 @@ export class ChartToolTipManager {
     this.consumer = consumer
   }
 
-  showTooltip(params: Array<CallbackDataParams> | null, target: Event | null) {
+  showTooltip(params: CallbackDataParams[] | null, target: Event | null) {
     const query = this.dataQueryExecutor.lastQuery
     if (query == null) {
       return
@@ -58,12 +58,12 @@ export class ChartToolTipManager {
     }
 
     // same for all series
-    const values = params[0].value as Array<number>
+    const values = params[0].value as number[]
 
     consumer({
       items: params.map(measure => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const measureValue = (measure.value as Array<number>)[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
+        const measureValue = (measure.value as number[])[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
         return {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           name: measure.seriesName!,

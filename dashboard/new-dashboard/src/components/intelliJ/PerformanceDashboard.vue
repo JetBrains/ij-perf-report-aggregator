@@ -62,7 +62,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const chartsDeclaration: Array<ChartDefinition> = [{
+const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexed files (Big projects)"],
   measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: ["community/indexing", "intellij_sources/indexing"],

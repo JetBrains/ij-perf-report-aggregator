@@ -33,7 +33,7 @@ export class LineChartVM {
     private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
-    accidents: Array<Accident>|null
+    accidents: Accident[]|null
   ) {
     const accidentsMap = convertAccidentsToMap(accidents)
     const isMs = valueUnit == "ms"
@@ -94,7 +94,7 @@ export class LineChartVM {
 
           element.append(document.createElement("br"))
           element.append(`${params.seriesName}`)
-          const accident = getAccident(accidentsMap, data as Array<string>)
+          const accident = getAccident(accidentsMap, data as string[])
           if(accident != null){
             //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
             element.append(document.createElement("br"))

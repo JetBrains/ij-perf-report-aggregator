@@ -22,7 +22,7 @@ export function getProjectName(value: string): string {
 export function createProjectConfigurator(productConfigurator: DimensionConfigurator,
                                           serverConfigurator: ServerConfigurator,
                                           persistentStateManager: PersistentStateManager,
-                                          filters: Array<FilterConfigurator> = []): DimensionConfigurator {
+                                          filters: FilterConfigurator[] = []): DimensionConfigurator {
   return dimensionConfigurator("project", serverConfigurator, persistentStateManager, false /* doesn't matter */, [productConfigurator, ...filters], (a, b) => {
     const t1 = getProjectName(a)
     const t2 = getProjectName(b)

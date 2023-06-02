@@ -5,7 +5,7 @@ import { InputData, InputDataV20, ItemV0, ItemV20, UnitConverter } from "./data"
 const markerNames = ["app initialized callback", "module loading"]
 export const markerNameToRangeTitle = new Map<string, string>([["app initialized callback", "app initialized"], ["module loading", "project initialized"]])
 
-export type GroupedItems = Array<{ category: string; items: Array<ItemV20> }>
+export type GroupedItems = { category: string; items: ItemV20[] }[]
 
 export interface DataDescriptor {
   readonly unitConverter: UnitConverter
@@ -27,15 +27,15 @@ export class DataManager {
     this.version = data.version
   }
 
-  private _markerItems: Array<ItemV0 | null> | null = null
+  private _markerItems: (ItemV0 | null)[] | null = null
 
   get isUnifiedItems(): boolean {
     const version = this.version
     return version != null && compareVersions(version, "32", ">=")
   }
 
-  get items(): Array<ItemV20> {
-    return this.data.items as unknown as Array<ItemV20>
+  get items(): ItemV20[] {
+    return this.data.items as unknown as ItemV20[]
   }
 
   // start, duration in microseconds
@@ -85,7 +85,7 @@ export class DataManager {
     }
   }
 
-  get markerItems(): Array<ItemV0 | null> {
+  get markerItems(): (ItemV0 | null)[] {
     if (this._markerItems != null) {
       return this._markerItems
     }

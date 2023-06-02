@@ -11,15 +11,15 @@ export class DataQuery {
   table?: string
 
   // noinspection JSMismatchedCollectionQueryUpdate
-  private readonly fields: Array<string | DataQueryDimension> = []
-  private filters?: Array<DataQueryFilter>
+  private readonly fields: (string | DataQueryDimension)[] = []
+  private filters?: DataQueryFilter[]
 
-  order?: Array<string> | string
+  order?: string[] | string
 
   // used only for grouped query
   aggregator?: string
   // cube.js term (group by)
-  private dimensions?: Array<DataQueryDimension>
+  private dimensions?: DataQueryDimension[]
 
   // used only for grouped query
   timeDimensionFormat?: string
@@ -55,7 +55,7 @@ export class DataQuery {
     filters.push(filter)
   }
 
-  removeFilters(toRemove: Array<DataQueryFilter>): void {
+  removeFilters(toRemove: DataQueryFilter[]): void {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     this.filters = this.filters!.filter(it => !toRemove.includes(it))
   }
@@ -72,7 +72,7 @@ export class DataQuery {
 
 export interface DataQueryFilter {
   f: string
-  v?: number | string | Array<string> | boolean
+  v?: number | string | string[] | boolean
   q?: string
   // `=` by default
   // operator
@@ -132,10 +132,10 @@ export class SimpleQueryProducer implements QueryProducer {
 }
 
 export class DataQueryExecutorConfiguration {
-  readonly seriesNames: Array<string> = []
-  readonly measureNames: Array<string> = []
+  readonly seriesNames: string[] = []
+  readonly measureNames: string[] = []
 
-  readonly queryProducers: Array<QueryProducer> = []
+  readonly queryProducers: QueryProducer[] = []
 
   private _chartConfigurator: ChartConfigurator | null = null
   get chartConfigurator(): ChartConfigurator {
@@ -153,15 +153,15 @@ export class DataQueryExecutorConfiguration {
     this._chartConfigurator = value
   }
 
-  private _measures: Array<string> | null = null
-  get measures(): Array<string> {
+  private _measures: string[] | null = null
+  get measures(): string[] {
     const result = this._measures
     if (result == null) {
       throw new Error("measure list is not yet set")
     }
     return result
   }
-  set measures(value: Array<string>) {
+  set measures(value: string[]) {
     if (this._measures != null) {
       throw new Error("measure list is already set")
     }
@@ -173,10 +173,10 @@ export interface Machine {
   readonly name: string
 }
 
-export function toMutableArray(value: string | Array<string> | null): Array<string> {
+export function toMutableArray(value: string | string[] | null): string[] {
   return (value == null || value === "") ? [] : (Array.isArray(value) ? [...value] : [value])
 }
 
-export function toArray(value: string | Array<string> | null): Array<string> {
+export function toArray(value: string | string[] | null): string[] {
   return (value == null || value === "") ? [] : (Array.isArray(value) ? value : [value])
 }

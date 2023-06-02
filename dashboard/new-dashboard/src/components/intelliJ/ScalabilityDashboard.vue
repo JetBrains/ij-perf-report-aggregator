@@ -24,7 +24,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const processorCounts = [1, 2, 4, 8, 16, 32, 64]
-const chartsDeclaration: Array<ChartDefinition> = [{
+const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing (Empty Project)", "Scanning(Empty Project)", "Number of indexed files(Empty Project)"],
   measures: ["indexing", "scanning", "numberOfIndexedFiles"],
   projects: processorCounts.map(it => `empty_project/indexing/processorCount_${it}`)

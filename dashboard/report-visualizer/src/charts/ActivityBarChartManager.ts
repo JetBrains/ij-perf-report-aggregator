@@ -19,7 +19,7 @@ type ChartDataItem = [string, number, ItemV20, string]
 
 export class ActivityBarChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
-  private lastData!: Array<ChartDataItem>
+  private lastData!: ChartDataItem[]
 
   constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
     this.chart = new ChartManagerHelper(container)
@@ -49,7 +49,7 @@ export class ActivityBarChartManager implements ChartManager {
           const info = params[0]
           const chartItem = info.data as ChartDataItem
           const item = chartItem[2]
-          const lines: Array<TooltipLineDescriptor> = [
+          const lines: TooltipLineDescriptor[] = [
             {name: chartItem[0], main: true, value: durationAxisPointerFormatter(chartItem[1])},
             {name: "range", value: `${(formatDuration(item.s, this.dataDescriptor))}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}`},
             {name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : ""},
@@ -77,7 +77,7 @@ export class ActivityBarChartManager implements ChartManager {
             else {
               const currentOption = this.chart.chart.getOption() as BarChartOptions
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              return (currentOption.xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color as string
+              return (currentOption.xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color as string
             }
           },
         },
@@ -104,8 +104,8 @@ export class ActivityBarChartManager implements ChartManager {
   }
 
   render(dataManager: DataManager): void {
-    const data: Array<ChartDataItem> = []
-    const seriesNames: Array<string> = []
+    const data: ChartDataItem[] = []
+    const seriesNames: string[] = []
     // 10 ms
     const threshold = (this.dataDescriptor.threshold ?? 10) * this.dataDescriptor.unitConverter.factor
     for (const group of this.dataProvider(dataManager)) {
@@ -133,11 +133,11 @@ export class ActivityBarChartManager implements ChartManager {
     data.sort((a, b) => a[2].s - b[2].s)
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as Array<XAXisOption>)[0].axisLine!.lineStyle!.color
+    const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color
 
     const series = new Array<BarSeriesOption>(seriesNames.length)
     for (const [seriesIndex, seriesName] of seriesNames.entries()){
-      const seriesData: Array<ChartDataItem | null> = [...data]
+      const seriesData: (ChartDataItem | null)[] = [...data]
       for (let i = 0; i < seriesData.length; i++){
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (seriesData[i]![3] !== seriesName) {
@@ -176,8 +176,8 @@ export class ActivityBarChartManager implements ChartManager {
   }
 }
 
-function createMarkLineData(dataManager: DataManager, data: Array<ChartDataItem>, unitConverter: UnitConverter): Array<MarkLine1DDataItemOption> {
-  const markLineData: Array<MarkLine1DDataItemOption> = []
+function createMarkLineData(dataManager: DataManager, data: ChartDataItem[], unitConverter: UnitConverter): MarkLine1DDataItemOption[] {
+  const markLineData: MarkLine1DDataItemOption[] = []
   for (const markerItem of dataManager.markerItems) {
     if (markerItem != null) {
       const item = data.find(it => unitConverter.convert(it[2].s) >= markerItem.end)

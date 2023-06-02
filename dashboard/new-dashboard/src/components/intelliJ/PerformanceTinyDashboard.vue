@@ -65,12 +65,11 @@ import DashboardPage from "../common/DashboardPage.vue"
 const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing (Big projects)", "Scanning (Big projects)"],
   measures: ["indexing", "scanning"],
-  projects: ["empty_project/indexing"],
+  projects: ["grails/indexing", "kotlin_coroutines/indexing", "kotlin/indexing", "spring_boot/indexing"],
 },  {
   labels: ["Indexing", "Scanning"],
   measures: ["indexing", "scanning"],
-  projects: ["grails/indexing", "java/indexing", "kotlin/indexing", "kotlin_coroutines/indexing",
-    "spring_boot/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
+  projects: ["empty_project/indexing", "java/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
 },  {
   labels: ["Rebuild"],
   measures: ["build_compilation_duration"],

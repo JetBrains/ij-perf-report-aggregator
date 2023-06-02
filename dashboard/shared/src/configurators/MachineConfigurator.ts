@@ -80,7 +80,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
-        } if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
+        }
+        else if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"

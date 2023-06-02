@@ -90,7 +90,7 @@ export class ActivityBarChartManager implements ChartManager {
         axisPointer: {
           label: {
             formatter (data): string {
-              return typeof data["value"] == "number" ? numberFormat.format(data["value"]) : ""
+              return typeof data.value == "number" ? numberFormat.format(data.value) : ""
             },
           },
         },

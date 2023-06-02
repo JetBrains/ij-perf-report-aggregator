@@ -93,7 +93,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         axisPointer: {
           label: {
             formatter(data): string {
-              return formatter(data["value"] as number)
+              return formatter(data.value as number)
             },
           },
         },

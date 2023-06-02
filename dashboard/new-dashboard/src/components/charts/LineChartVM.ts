@@ -125,7 +125,7 @@ export class LineChartVM {
           snap: false,
           label: {
             formatter(data) {
-              return timeFormat.format(data["value"] as number)
+              return timeFormat.format(data.value as number)
             },
           },
         },

@@ -80,7 +80,7 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
         leafDepth: 2,
         label: {
           formatter(data) {
-            return `${(data.data as ItemExtraInfo).abbreviatedName} (${numberFormat.format(data["value"] as number)})`
+            return `${(data.data as ItemExtraInfo).abbreviatedName} (${numberFormat.format(data.value as number)})`
           }
         }
       }],

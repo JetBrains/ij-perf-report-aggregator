@@ -53,7 +53,7 @@ export class StatsChartManager implements ChartManager {
         ],
         label: {
           formatter(data) {
-            return `${data.name} (${numberFormat.format(data["value"] as number)})`
+            return `${data.name} (${numberFormat.format(data.value as number)})`
           }
         }
       }],

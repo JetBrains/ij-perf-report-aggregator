@@ -74,7 +74,7 @@ export class TimeDistributionChartManager implements ChartManager {
         leafDepth: 3,
         label: {
           formatter(data) {
-            return `${data.name} (${numberFormat.format(data["value"] as number)})`
+            return `${data.name} (${numberFormat.format(data.value as number)})`
           },
         },
       }],

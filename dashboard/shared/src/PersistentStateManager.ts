@@ -2,7 +2,7 @@ import { debounceTime, Subject } from "rxjs"
 import { Ref, watch } from "vue"
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
 
-declare type State = { [key: string]: number | string | string[] | unknown }
+declare interface State { [key: string]: number | string | string[] | unknown }
 
 export class PersistentStateManager {
   private readonly state: State

@@ -6,7 +6,7 @@ import { ref } from "vue"
 import { ChartManager } from "./ChartManager"
 
 // LabelFormatterParams isn't exported from lib
-type LabelFormatterParams = {
+interface LabelFormatterParams {
   value: ScaleDataValue
   axisDimension: string
   axisIndex: number

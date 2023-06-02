@@ -18,7 +18,7 @@ export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: Cal
 
 export type ChartType = "line" | "scatter"
 
-export type SymbolOptions = {
+export interface SymbolOptions {
   symbol?: ChartSymbolType
   symbolSize?: number
   showSymbol?: boolean

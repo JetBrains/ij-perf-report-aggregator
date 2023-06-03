@@ -23,6 +23,7 @@
         </div>
 
         <a
+          v-if="tooltipData.firstSeriesData[5]"
           title="Changes"
           target="_blank"
           class="info cursor-pointer"
@@ -187,13 +188,16 @@ function cancelHide() {
 }
 
 function navigateToSpace() {
-  calculateChanges("ij", tooltipData.value?.firstSeriesData[5], (decodedChanges: string|null) => {
-    if(decodedChanges == null) {
-      window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
-    } else {
-      window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
-    }
-  })
+  if(tooltipData.value != null) {
+    calculateChanges("ij", tooltipData.value.firstSeriesData[5], (decodedChanges: string | null) => {
+      if (decodedChanges == null) {
+        window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
+      }
+      else {
+        window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
+      }
+    })
+  }
 }
 
 defineExpose({

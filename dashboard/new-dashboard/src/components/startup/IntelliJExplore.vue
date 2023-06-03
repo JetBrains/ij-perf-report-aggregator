@@ -16,7 +16,7 @@
         />
         <DimensionSelect
           label="Product"
-          :value-to-label="it => productCodeToName.get(it) ?? it"
+          :value-to-label="(it: string ) => productCodeToName.get(it) ?? it"
           :dimension="productConfigurator"
         />
         <DimensionSelect
@@ -54,7 +54,7 @@
   />
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -94,7 +94,7 @@ provide(chartStyleKey, {
   barSeriesLabelPosition: "right",
 })
 const tooltip = ref<typeof ChartTooltip>()
-provide(chartToolTipKey, tooltip)
+provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 
 const dbName = "ij"
 const dbTable = "report"

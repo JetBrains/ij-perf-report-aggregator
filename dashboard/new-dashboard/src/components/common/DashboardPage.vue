@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -88,12 +88,12 @@ const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator
   true,
   [timeRangeConfigurator],
 )
-if (scenarioConfigurator != null) {
+if (scenarioConfigurator != null && props.charts != null) {
   scenarioConfigurator.selected.value = extractUniqueProjects(props.charts)
 }
 
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
-const machineConfigurator = props.initialMachine == null ? null : new MachineConfigurator(
+const machineConfigurator = props.initialMachine == null ? undefined : new MachineConfigurator(
   serverConfigurator,
   persistenceForDashboard,
   scenarioConfigurator == null ? [timeRangeConfigurator, branchConfigurator] : [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
@@ -124,7 +124,7 @@ if (machineConfigurator != null) {
   dashboardConfigurators.push(machineConfigurator)
 }
 
-const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurator(persistenceForDashboard) : null
+const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurator(persistenceForDashboard) : undefined
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
@@ -139,6 +139,6 @@ const warnings = ref<Accident[]>()
 refToObservable(timeRangeConfigurator.value).subscribe(data => {
   getAccidentsFromMetaDb(warnings, projects, data)
 })
-provide(accidentsKeys, warnings)
+provide(accidentsKeys, warnings as Ref<Accident[]>)
 
 </script>

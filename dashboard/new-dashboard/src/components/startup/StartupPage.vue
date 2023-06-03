@@ -16,7 +16,7 @@
       />
       <DimensionSelect
         label="Product"
-        :value-to-label="it => productCodeToName.get(it) ?? it"
+        :value-to-label="(it: string ) => productCodeToName.get(it) ?? it"
         :dimension="productConfigurator"
       />
       <DimensionSelect
@@ -42,7 +42,7 @@
 </template>
 <script setup lang="ts">
 
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -81,11 +81,10 @@ provide(chartStyleKey, {
   barSeriesLabelPosition: "right",
 })
 const tooltip = ref<typeof ChartTooltip>()
-provide(chartToolTipKey, tooltip)
+provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 
 const dbName = "ij"
 const dbTable = "report"
-const container = ref<HTMLElement>()
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-dashboard", {

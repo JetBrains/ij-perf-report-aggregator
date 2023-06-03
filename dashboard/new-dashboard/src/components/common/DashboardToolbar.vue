@@ -3,7 +3,7 @@
     <template #start>
       <TimeRangeSelect
         :ranges="TimeRangeConfigurator.timeRanges"
-        :value="timeRangeConfigurator.value.value"
+        :value="props.timeRangeConfigurator.value.value"
         :on-change="onChangeRange"
       >
         <template #icon>
@@ -11,14 +11,14 @@
         </template>
       </TimeRangeSelect>
       <BranchSelect
-        :branch-configurator="branchConfigurator"
-        :release-configurator="releaseConfigurator"
-        :triggered-by-configurator="triggeredByConfigurator"
+        :branch-configurator="props.branchConfigurator"
+        :release-configurator="props.releaseConfigurator"
+        :triggered-by-configurator="props.triggeredByConfigurator"
       />
       <DimensionHierarchicalSelect
-        v-if="machineConfigurator != null"
+        v-if="props.machineConfigurator != null"
         label="Machine"
-        :dimension="machineConfigurator"
+        :dimension="props.machineConfigurator"
       >
         <template #icon>
           <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />

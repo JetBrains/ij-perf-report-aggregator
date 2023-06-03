@@ -12,6 +12,7 @@ assets:
 lint:
 	golangci-lint run cmd/... pkg/...
 	eslint . --ext .js,.vue,.ts
+	vue-tsc --noEmit
 
 build-server:
 	go build -tags -ldflags='-s -w' -o dist/server ./cmd/backend

@@ -85,7 +85,7 @@
     option-value="value"
     option-group-children="options"
     option-group-label="label"
-    :selection-limit="multiple ? null : 1"
+    :selection-limit="multiple ? undefined : 1"
     :max-selected-labels="1"
     :filter="hasManyElements"
     :auto-filter-focus="true"

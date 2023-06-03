@@ -1,4 +1,3 @@
-import { ToastSeverity } from "primevue/api"
 import { ToastServiceMethods } from "primevue/toastservice"
 import { useToast } from "primevue/usetoast"
 import { combineLatest, debounceTime, Subject } from "rxjs"
@@ -71,7 +70,7 @@ export class ChartComponent {
         })
         .catch(error => {
           console.error("Cannot create chart", error)
-          this.toast.add({severity: ToastSeverity.ERROR, summary: "Cannot create chart", detail: (error as Error).toString()})
+          this.toast.add({severity: "error", summary: "Cannot create chart", detail: (error as Error).toString()})
         })
     }
     else {

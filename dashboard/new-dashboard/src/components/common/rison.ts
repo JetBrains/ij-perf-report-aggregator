@@ -130,7 +130,6 @@ const encoders = {
  */
 export function encodeRison(v: unknown): string {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return Array.isArray(v) ? array(v) : object(v)
 }

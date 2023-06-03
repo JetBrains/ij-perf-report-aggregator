@@ -1,4 +1,4 @@
-import { compareVersions } from "compare-versions"
+import { compare } from "compare-versions"
 import { numberFormat } from "../components/common/formatter"
 import { InputData, InputDataV20, ItemV0, ItemV20, UnitConverter } from "./data"
 
@@ -31,7 +31,7 @@ export class DataManager {
 
   get isUnifiedItems(): boolean {
     const version = this.version
-    return version != null && compareVersions(version, "32", ">=")
+    return version != null && compare(version, "32", ">=")
   }
 
   get items(): ItemV20[] {
@@ -41,7 +41,7 @@ export class DataManager {
   // start, duration in microseconds
   getServiceItems(): GroupedItems {
     const version = this.version
-    const isNewCompactFormat = version != null && compareVersions(version, "20", ">=")
+    const isNewCompactFormat = version != null && compare(version, "20", ">=")
     if (isNewCompactFormat) {
       const data = this.data as InputDataV20
       return [
@@ -54,7 +54,7 @@ export class DataManager {
         {category: "module services", items: data.moduleServices ?? []},
       ]
     }
-    else if (version != null && compareVersions(version, "12", ">=")) {
+    else if (version != null && compare(version, "12", ">=")) {
       throw new Error(`Report version ${version} is not supported, ask if needed`)
       // this._serviceEvents = this.data.traceEvents.filter(value => value.cat != null && serviceEventCategorySet.has(value.cat)) as Array<CompleteTraceEvent>
       // return this._serviceEvents.map(it => {

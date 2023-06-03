@@ -1,10 +1,10 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { DataQueryExecutor, DataQueryResult } from "shared/src/DataQueryExecutor"
-import { timeFormat, ValueUnit } from "shared/src/chart"
-import { DataQueryExecutorConfiguration } from "shared/src/dataQuery"
-import { LineChartOptions } from "shared/src/echarts"
-import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "shared/src/formatter"
-import { Accident, convertAccidentsToMap, getAccident } from "shared/src/meta"
+import { Accident, convertAccidentsToMap, getAccident } from "../../util/meta"
+import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
+import { timeFormat, ValueUnit } from "../common/chart"
+import { DataQueryExecutorConfiguration } from "../common/dataQuery"
+import { LineChartOptions } from "../common/echarts"
+import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
 import { ChartManager } from "./ChartManager"
 
 function getWarningIcon() {

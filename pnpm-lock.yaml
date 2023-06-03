@@ -96,15 +96,9 @@ importers:
       primevue:
         specifier: 3.29.2
         version: 3.29.2(vue@3.3.4)
-      report-visualizer:
-        specifier: workspace:*
-        version: link:../report-visualizer
       rxjs:
         specifier: 8.0.0-alpha.10
         version: 8.0.0-alpha.10
-      shared:
-        specifier: workspace:*
-        version: link:../shared
       vue:
         specifier: 3.3.4
         version: 3.3.4
@@ -114,72 +108,15 @@ importers:
 
   dashboard/new-dashboard:
     dependencies:
-      '@heroicons/vue':
-        specifier: 2.0.18
-        version: 2.0.18(vue@3.3.4)
-      echarts:
-        specifier: 5.4.2
-        version: 5.4.2
-      floating-vue:
-        specifier: 2.0.0-beta.20
-        version: 2.0.0-beta.20(vue@3.3.4)
-      primevue:
-        specifier: 3.29.2
-        version: 3.29.2(vue@3.3.4)
-      report-visualizer:
-        specifier: workspace:*
-        version: link:../report-visualizer
-      rxjs:
-        specifier: 8.0.0-alpha.10
-        version: 8.0.0-alpha.10
-      shared:
-        specifier: workspace:*
-        version: link:../shared
-      vue:
-        specifier: 3.3.4
-        version: 3.3.4
-      vue-router:
-        specifier: 4.2.2
-        version: 4.2.2(vue@3.3.4)
-
-  dashboard/report-visualizer:
-    dependencies:
       '@headlessui/vue':
         specifier: ^1.7.13
         version: 1.7.13(vue@3.3.4)
+      '@heroicons/vue':
+        specifier: 2.0.18
+        version: 2.0.18(vue@3.3.4)
       compare-versions:
         specifier: 6.0.0-rc.1
         version: 6.0.0-rc.1
-      echarts:
-        specifier: 5.4.2
-        version: 5.4.2
-      fast-equals:
-        specifier: 5.0.1
-        version: 5.0.1
-      primevue:
-        specifier: 3.29.2
-        version: 3.29.2(vue@3.3.4)
-      rxjs:
-        specifier: 8.0.0-alpha.10
-        version: 8.0.0-alpha.10
-      shared:
-        specifier: workspace:*
-        version: link:../shared
-      vue:
-        specifier: 3.3.4
-        version: 3.3.4
-      vue-router:
-        specifier: 4.2.2
-        version: 4.2.2(vue@3.3.4)
-
-  dashboard/shared:
-    dependencies:
-      '@headlessui/vue':
-        specifier: ^1.7.13
-        version: 1.7.13(vue@3.3.4)
-      '@heroicons/vue':
-        specifier: 2.0.18
-        version: 2.0.18(vue@3.3.4)
       echarts:
         specifier: 5.4.2
         version: 5.4.2
@@ -189,6 +126,9 @@ importers:
       fast-equals:
         specifier: 5.0.1
         version: 5.0.1
+      floating-vue:
+        specifier: 2.0.0-beta.20
+        version: 2.0.0-beta.20(vue@3.3.4)
       humanize-duration:
         specifier: 3.28.0
         version: 3.28.0

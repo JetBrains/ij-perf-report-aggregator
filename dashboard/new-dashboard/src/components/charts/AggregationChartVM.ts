@@ -1,8 +1,8 @@
 import { LineSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } from "echarts/types/src/util/types"
-import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
 import { ref } from "vue"
+import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartManager } from "./ChartManager"
 
 // LabelFormatterParams isn't exported from lib

@@ -141,10 +141,10 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { usePlaceholder } from "shared/src/components/placeholder"
-import { DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
 import { computed, ref } from "vue"
+import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { branchesSelectLabelFormat } from "../../shared/labels"
+import { usePlaceholder } from "../charts/placeholder"
 import BranchIcon from "./BranchIcon.vue"
 
 interface Props {

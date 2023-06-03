@@ -201,10 +201,10 @@
 </template>
 
 <script setup lang="ts">
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 const typingOnlyConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {

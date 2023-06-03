@@ -20,6 +20,6 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import LineChartCard from "shared/src/components/LineChartCard.vue"
+import LineChartCard from "../charts/LineChartCard.vue"
 import StartupPage from "./StartupPage.vue"
 </script>

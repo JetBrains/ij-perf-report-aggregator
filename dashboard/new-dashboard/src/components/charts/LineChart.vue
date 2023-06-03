@@ -12,16 +12,16 @@
 </template>
 <script setup lang="ts">
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "shared/src/chart"
-import { PredefinedMeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration} from "shared/src/dataQuery"
-import { reportInfoProviderKey } from "shared/src/injectionKeys"
-import { Accident } from "shared/src/meta"
-import { calculateChanges } from "shared/src/util/changes"
 import { inject, onMounted, onUnmounted, shallowRef, toRef } from "vue"
+import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { reportInfoProviderKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { calculateChanges } from "../../util/changes"
+import { Accident } from "../../util/meta"
 import { getInfoDataFrom, InfoData, InfoSidebarVm } from "../InfoSidebarVm"
+import { DataQueryExecutor } from "../common/DataQueryExecutor"
+import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
 

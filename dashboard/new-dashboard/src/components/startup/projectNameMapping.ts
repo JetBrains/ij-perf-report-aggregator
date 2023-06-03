@@ -1,7 +1,7 @@
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import { dimensionConfigurator, DimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { FilterConfigurator } from "shared/src/configurators/filter"
+import { DimensionConfigurator, dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { FilterConfigurator } from "../../configurators/filter"
+import { PersistentStateManager } from "../common/PersistentStateManager"
 
 const projectNameToTitle = new Map<string, string>()
 // noinspection SpellCheckingInspection

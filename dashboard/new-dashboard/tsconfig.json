@@ -3,8 +3,8 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.vue",
-    "../shared/src/shims-vue.d.ts",
-    "../shared/src/toast-event-bus.d.ts",
-    "../shared/src/components.d.ts"
+    "./src/components/common/shims-vue.d.ts",
+    "./src/components/common/toast-event-bus.d.ts",
+    "./src/components/common/components.d.ts"
   ]
 }

@@ -26,8 +26,8 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { TimeRange, TimeRangeItem } from "shared/src/configurators/TimeRangeConfigurator"
 import { computed, shallowRef } from "vue"
+import { TimeRange, TimeRangeItem } from "../../configurators/TimeRangeConfigurator"
 
 const props = defineProps<{
   value: TimeRange

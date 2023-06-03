@@ -98,12 +98,12 @@
 <script setup lang="ts">
 
 import OverlayPanel from "primevue/overlaypanel"
-import { ChartToolTipManager, TooltipData } from "shared/src/components/ChartToolTipManager"
-import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "shared/src/formatter"
-import { calculateChanges } from "shared/src/util/changes"
-import { debounceSync } from "shared/src/util/debounce"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
+import { calculateChanges } from "../../util/changes"
+import { debounceSync } from "../../util/debounce"
 import SpaceIcon from "../common/SpaceIcon.vue"
+import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../common/formatter"
+import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
 const panel = shallowRef<OverlayPanel | null>()

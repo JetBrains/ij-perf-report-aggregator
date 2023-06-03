@@ -116,20 +116,20 @@
 
 
 <script setup lang="ts">
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { MachineConfigurator } from "../../configurators/MachineConfigurator"
+import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
+import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 
 provideReportUrlProvider()
 

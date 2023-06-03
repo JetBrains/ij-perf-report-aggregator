@@ -30,7 +30,7 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import AggregationOperatorSelect from "shared/src/components/AggregationOperatorSelect.vue"
-import BarChartCard from "shared/src/components/BarChartCard.vue"
+import AggregationOperatorSelect from "../charts/AggregationOperatorSelect.vue"
+import BarChartCard from "../charts/BarChartCard.vue"
 import StartupPage from "./StartupPage.vue"
 </script>

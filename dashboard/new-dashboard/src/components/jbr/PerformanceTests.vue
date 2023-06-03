@@ -59,25 +59,25 @@
 </template>
 
 <script setup lang="ts">
-import { PersistentStateManager } from "shared/src/PersistentStateManager"
-import DimensionSelect from "shared/src/components/DimensionSelect.vue"
-import MeasureSelect from "shared/src/components/MeasureSelect.vue"
-import { createBranchConfigurator } from "shared/src/configurators/BranchConfigurator"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { MeasureConfigurator } from "shared/src/configurators/MeasureConfigurator"
-import { privateBuildConfigurator } from "shared/src/configurators/PrivateBuildConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
-import { provideReportUrlProvider } from "shared/src/lineChartTooltipLinkProvider"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
+import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
+import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
+import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
+import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
+import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 
 provideReportUrlProvider(false, true)
 

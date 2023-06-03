@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/prefer-literal-enum-member */
-import { ParentRouteRecord } from "shared/src/route"
+
+import { ParentRouteRecord } from "./components/common/route"
 
 const enum ROUTE_PREFIX {
   Startup = "/ij",
@@ -582,7 +583,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.StartupReport,
-          component: () => import("../../report-visualizer/src/Report.vue"),
+          component: () => import("./report-visualizer/Report.vue"),
           meta: {pageTitle: "Startup Report"},
         },
         {

@@ -29,12 +29,12 @@
 </template>
 
 <script setup lang="ts">
-import DimensionHierarchicalSelect from "shared/src/components/DimensionHierarchicalSelect.vue"
-import { BranchConfigurator } from "shared/src/configurators/BranchConfigurator"
-import { BuildConfigurator } from "shared/src/configurators/BuildConfigurator"
-import { MachineConfigurator } from "shared/src/configurators/MachineConfigurator"
-import { ReleaseNightlyConfigurator } from "shared/src/configurators/ReleaseNightlyConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "shared/src/configurators/TimeRangeConfigurator"
+import { BranchConfigurator } from "../../configurators/BranchConfigurator"
+import { BuildConfigurator } from "../../configurators/BuildConfigurator"
+import { MachineConfigurator } from "../../configurators/MachineConfigurator"
+import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
+import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import BranchSelect from "./BranchSelect.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
 

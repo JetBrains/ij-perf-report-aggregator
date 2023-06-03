@@ -1,5 +1,5 @@
+import { ParentRouteRecord } from "new-dashboard/src/components/common/route"
 import { getNewDashboardRoutes } from "new-dashboard/src/routes"
-import { ParentRouteRecord } from "shared/src/route"
 import { nextTick } from "vue"
 import { createRouter, createWebHistory, Router, RouteRecordRaw } from "vue-router"
 
@@ -18,7 +18,7 @@ export function createAndConfigureRouter(): Router {
     {
       path: "/:catchAll(.*)",
       name: "Page Not Found",
-      component: () => import("shared/src/components/PageNotFound.vue"),
+      component: () => import("new-dashboard/src/components/charts/PageNotFound.vue"),
     },
   ]
 

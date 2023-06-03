@@ -56,11 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import { DataQuery, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import AggregationChart from "../charts/AggregationChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 const chartsDeclaration: ChartDefinition[] = [{
   labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexed files (Big projects)"],

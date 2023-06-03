@@ -1,8 +1,8 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { ValueUnit } from "shared/src/chart"
-import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "shared/src/formatter"
-import { Accident, Description, getDescriptionFromMetaDb } from "shared/src/meta"
 import { computed, Ref, ref, ShallowRef, shallowRef } from "vue"
+import { Accident, Description, getDescriptionFromMetaDb } from "../util/meta"
+import { ValueUnit } from "./common/chart"
+import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "./common/formatter"
 
 export interface InfoSidebarVm {
   data: ShallowRef<InfoData | null>

@@ -10,13 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import { ValueUnit } from "shared/src/chart"
-import { dimensionConfigurator } from "shared/src/configurators/DimensionConfigurator"
-import { ServerConfigurator } from "shared/src/configurators/ServerConfigurator"
-import { FilterConfigurator } from "shared/src/configurators/filter"
-import { DataQueryConfigurator } from "shared/src/dataQuery"
 import { inject, onMounted } from "vue"
+import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { FilterConfigurator } from "../../configurators/filter"
 import { accidentsKeys, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { ValueUnit } from "../common/chart"
+import { DataQueryConfigurator } from "../common/dataQuery"
 import LineChart from "./LineChart.vue"
 
 interface Props {

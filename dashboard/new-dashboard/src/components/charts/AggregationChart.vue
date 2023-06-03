@@ -21,12 +21,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { DataQueryExecutor } from "shared/src/DataQueryExecutor"
-import { ValueUnit } from "shared/src/chart"
-import { TimeAverageConfigurator } from "shared/src/configurators/TimeAverageConfigurator"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "shared/src/dataQuery"
 import { inject, onMounted, onUnmounted, shallowRef } from "vue"
+import { TimeAverageConfigurator } from "../../configurators/TimeAverageConfigurator"
 import { containerKey } from "../../shared/keys"
+import { DataQueryExecutor } from "../common/DataQueryExecutor"
+import { ValueUnit } from "../common/chart"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { AggregationChartVM } from "./AggregationChartVM"
 
 interface AggregationChartProps {

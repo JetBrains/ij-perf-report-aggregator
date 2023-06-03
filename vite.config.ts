@@ -18,7 +18,7 @@ export default defineConfig({
     vue(),
     // visualizer({template: "sunburst"}),
     Components({
-      dts: path.resolve(__dirname, "dashboard/shared/src/components.d.ts"),
+      dts: path.resolve(__dirname, "dashboard/new-dashboard/src/components.d.ts"),
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),
@@ -207,7 +207,7 @@ const componentWithStyles = new Set<string>([
 ])
 
 function PrimeVueResolver(): ComponentResolver {
-  const styleDir = path.join(__dirname, "dashboard/shared/src/primevue-theme")
+  const styleDir = path.join(__dirname, "dashboard/new-dashboard/src/primevue-theme")
   return {
     type: "component",
     resolve(name: string) {

@@ -180,10 +180,10 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "shared/src/meta"
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
+import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../util/meta"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
 import SpaceIcon from "./common/SpaceIcon.vue"
 

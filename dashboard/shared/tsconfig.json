@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig-base.json",
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "src/shims-vue.d.ts",
-    "src/components.d.ts"
-  ]
-}

@@ -101,7 +101,7 @@ const machineConfigurator = new MachineConfigurator(
   persistentStateManager,
   [timeRangeConfigurator, branchConfigurator],
 )
-const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
+const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,

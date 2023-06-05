@@ -26,7 +26,7 @@ spec:
                   memory: 512Mi
                 limits:
                   cpu: "4"
-                  memory: 2Gi
+                  memory: 1Gi
               env:
                 - name: TC_TOKEN
                   valueFrom:

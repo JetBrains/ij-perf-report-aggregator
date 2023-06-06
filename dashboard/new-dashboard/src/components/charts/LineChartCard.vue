@@ -80,6 +80,9 @@ const hide = () => {
 let dataQueryExecutor: DataQueryExecutor | null
 
 const providedConfigurators = inject(configuratorListKey)
+
+let unsubscribe: (() => void) | null = null
+
 watchEffect(function () {
   let configurators = props.configurators ?? providedConfigurators
   if (configurators == null) {
@@ -120,9 +123,6 @@ watchEffect(function () {
   }
   dataQueryExecutor = new DataQueryExecutor(configurators)
   chartToolTipManager.dataQueryExecutor = dataQueryExecutor
-  if (chartManager != null) {
-    chartManager.dataQueryExecutor = dataQueryExecutor
-  }
 })
 
 onMounted(() => {
@@ -136,13 +136,11 @@ onMounted(() => {
     props.valueUnit,
     props.trigger,
   )
+  unsubscribe = chartManager.subscribe()
 })
 onUnmounted(() => {
-  const it = chartManager
-  if (it != null) {
-    chartManager = null
-    it.dispose()
-  }
+  if(unsubscribe != null) unsubscribe()
+  chartManager?.dispose()
 })
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT

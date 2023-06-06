@@ -1,10 +1,7 @@
 import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
-import { provide } from "vue"
 import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
-import { ReloadConfigurator } from "../../configurators/ReloadConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
-import { configuratorListKey } from "../../shared/injectionKeys"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
@@ -172,8 +169,4 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
     result.push(serializedQuery)
   }
   return result
-}
-
-export function initDataComponent(configurators: DataQueryConfigurator[]): void {
-  provide(configuratorListKey, [...configurators, new ReloadConfigurator()])
 }

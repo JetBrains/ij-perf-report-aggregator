@@ -7,11 +7,12 @@ import * as ecStat from "echarts-stat"
 import { debounceTime } from "rxjs"
 import { Ref } from "vue"
 import { refToObservable } from "../../configurators/rxjs"
-import { ChartManagerHelper } from "../common/ChartManagerHelper"
-import { DataQueryExecutor } from "../common/DataQueryExecutor"
+import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ValueUnit } from "../common/chart"
+import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { nsToMs, numberFormat } from "../common/formatter"
+import { ChartManager } from "./ChartManager"
 import { ChartToolTipManager } from "./ChartToolTipManager"
 
 const dataZoomConfig = [
@@ -29,7 +30,7 @@ use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineCh
 registerTransform(ecStat.transform.regression)
 export type PopupTrigger = "item" | "axis" | "none"
 export class LineChartManager {
-  private readonly chart: ChartManagerHelper
+  private readonly chart: ChartManager
 
   constructor(container: HTMLElement,
               private _dataQueryExecutor: DataQueryExecutor,
@@ -37,7 +38,7 @@ export class LineChartManager {
               chartToolTipManager: ChartToolTipManager | null,
               valueUnit: ValueUnit,
               trigger: PopupTrigger = "axis") {
-    this.chart = new ChartManagerHelper(container)
+    this.chart = new ChartManager(container)
     const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941
@@ -106,7 +107,11 @@ export class LineChartManager {
       replaceMerge: ["legend"],
     })
 
-    this.chart.enableZoomTool()
+    this.chart.chart.dispatchAction({
+      type: "takeGlobalCursor",
+      key: "dataZoomSelect",
+      dataZoomSelectActive: true,
+    })
     this.subscribe()
     refToObservable(dataZoom)
       .pipe(debounceTime(100))
@@ -117,33 +122,21 @@ export class LineChartManager {
       })
   }
 
-  private unsubscribe: () => void = () => {
-    return
-  }
-
-  private subscribe() {
-    this.unsubscribe()
-    this.unsubscribe = this.dataQueryExecutor.subscribe((data, configuration,isLoading) => {
-      if(isLoading || data == null){
-        this.chart.chart.showLoading("default", {showSpinner: false})
-        return
-      }
-      this.chart.chart.hideLoading()
-      this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
-    })
-  }
-
-  get dataQueryExecutor(): DataQueryExecutor {
-    return this._dataQueryExecutor
-  }
-
-  set dataQueryExecutor(newDataQueryExecutor: DataQueryExecutor) {
-    this._dataQueryExecutor = newDataQueryExecutor
-    this.subscribe()
+  subscribe(): () => void {
+    return this._dataQueryExecutor.subscribe(
+      (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+        if(isLoading || data == null){
+          this.chart.chart.showLoading("default", {showSpinner: false})
+          return
+        }
+        this.chart.chart.hideLoading()
+        this.chart.updateChart(
+          configuration.chartConfigurator.configureChart(data, configuration)
+        )
+      })
   }
 
   dispose(): void {
-    this.unsubscribe()
     this.chart.dispose()
   }
 }

@@ -62,7 +62,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey } from "../../shared/injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
@@ -70,7 +70,6 @@ import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChartCard from "../charts/LineChartCard.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
-import { initDataComponent } from "../common/DataQueryExecutor"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
@@ -126,7 +125,7 @@ const configurators = [
 ]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
-initDataComponent(configurators)
+provide(configuratorListKey, configurators)
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }

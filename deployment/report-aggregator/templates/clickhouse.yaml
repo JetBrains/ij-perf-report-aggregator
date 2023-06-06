@@ -44,11 +44,11 @@ spec:
           image: {{ .Values.images.clickhouse }}
           resources:
             requests:
-              cpu: "6"
+              cpu: "4"
               memory: "8Gi"
               ephemeral-storage: "5Gi"
             limits:
-              cpu: "8"
+              cpu: "6"
               memory: "16Gi"
               ephemeral-storage: "5Gi"
           volumeMounts: *clickhouseVolumeMounts

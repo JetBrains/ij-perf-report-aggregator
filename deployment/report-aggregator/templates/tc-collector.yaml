@@ -27,7 +27,7 @@ spec:
                   cpu: "0.5"
                   memory: 512Mi
                 limits:
-                  cpu: "4"
+                  cpu: "1"
                   memory: 1Gi
               env:
                 - name: TC_TOKEN

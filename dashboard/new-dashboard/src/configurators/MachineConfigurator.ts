@@ -1,5 +1,5 @@
 import { deepEqual } from "fast-equals"
-import { combineLatest, distinctUntilChanged, Observable, share, switchMap } from "rxjs"
+import { combineLatest, distinctUntilChanged, Observable, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, toArray } from "../components/common/dataQuery"
@@ -29,7 +29,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       .pipe(
         switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
         updateComponentState(this.state),
-        share()
+        shareReplay(1)
       )
     listObservable.subscribe(data => {
       if (data == null) {

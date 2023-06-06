@@ -66,7 +66,13 @@ export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, t
   accidents.value = []
   const interval = intervalToPostgresInterval(timeRange)
   const params = tests == null ? {interval} : {interval, tests}
-  fetch(accidents_url + encodeRison(params))
+  fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+  })
     .then(response => response.json())
     .then((data: AccidentFromServer[]) => {
       const mappedData = data.map(value => {

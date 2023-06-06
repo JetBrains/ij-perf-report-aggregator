@@ -14,7 +14,7 @@ export function refToObservable<T>(ref: Ref<T>, deep= false): Observable<T> {
     deep ? distinctUntilChanged(deepEqual) : distinctUntilChanged(), 
   )
 }
-export const limit: LimitFunction = pLimit(100)
+export const limit: LimitFunction = pLimit(25)
 
 export function defaultBodyConsumer<T>(response: Response): Promise<T> {
   return response.clone().text().then(text => {
@@ -45,9 +45,9 @@ export function fromFetchWithRetryAndErrorHandling<T>(
         }
       }),
       retry({
-        count: 10,
+        count: 30,
         delay(error) {
-          return of(error).pipe(delay(1000))
+          return of(error).pipe(delay(2000))
         },
       }),
       catchError((error, _caught) => {

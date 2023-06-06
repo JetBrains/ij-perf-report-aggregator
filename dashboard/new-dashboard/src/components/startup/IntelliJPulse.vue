@@ -45,10 +45,12 @@
       />
     </section>
 
-    <Divider label="Highlighting Passes" />
-    <LineChartCard
-      :measures="highlightingPasses"
-    />
+    <span v-if="highlightingPasses">
+      <Divider label="Highlighting Passes" />
+      <LineChartCard
+        :measures="highlightingPasses"
+      />
+    </span>
 
     <Divider label="Exit" />
     <LineChartCard

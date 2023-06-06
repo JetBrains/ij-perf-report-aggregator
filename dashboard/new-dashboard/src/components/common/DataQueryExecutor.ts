@@ -1,7 +1,7 @@
 import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
+import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
@@ -53,7 +53,7 @@ export class DataQueryExecutor {
           const loadingResults = of({query, configuration, data: null, isLoading: true})
           abortController = new AbortController()
           return concat(loadingResults, forkJoin(queries.map(it => {
-            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`), null, it => it.json() , abortController)
+            return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`), defaultBodyConsumer, abortController)
           })).pipe(
             // pass context along with data and flatten result
             map((data): Result => ({query, configuration, data: data.flat(1), isLoading: false})),

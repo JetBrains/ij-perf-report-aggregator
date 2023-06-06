@@ -37,7 +37,7 @@ if (import.meta.hot) {
 
 // zstdDictionaryUrl - if zstd dictionary will be changed on a server side, then server must introduce a new endpoint for query (currently, `/api/q`)
 export const initZstdObservable = forkJoin([
-  fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, null, it => it.arrayBuffer()),
+  fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, it => it.arrayBuffer()),
   zstdReady,
 ]).pipe(
   map(([dictionaryData, _]) => {

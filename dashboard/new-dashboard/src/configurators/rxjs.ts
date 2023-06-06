@@ -1,8 +1,6 @@
 import { deepEqual } from "fast-equals"
 import pLimit, { LimitFunction } from "p-limit"
-import { ToastSeverity } from "primevue/api"
-import ToastEventBus from "primevue/toasteventbus"
-import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry} from "rxjs"
+import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry } from "rxjs"
 import { fromPromise } from "rxjs/internal/observable/from"
 import { Ref, watch } from "vue"
 
@@ -16,20 +14,22 @@ export function refToObservable<T>(ref: Ref<T>, deep= false): Observable<T> {
     deep ? distinctUntilChanged(deepEqual) : distinctUntilChanged(), 
   )
 }
-
-const serverNotAvailableMessage = {
-  severity: ToastSeverity.ERROR,
-  summary: "Server is not available",
-  detail: "Please check that server is running.",
-  life: 3_000,
-}
-
 export const limit: LimitFunction = pLimit(100)
+
+export function defaultBodyConsumer<T>(response: Response): Promise<T> {
+  return response.clone().text().then(text => {
+    try {
+      return JSON.parse(text) as T
+    }
+    catch {
+      throw new Error("Invalid JSON")
+    }
+  })
+}
 
 export function fromFetchWithRetryAndErrorHandling<T>(
   request: Request | string,
-  unavailableErrorMessage: ({ summary: string; detail: string }) | null = null,
-  bodyConsumer: (response: Response) => Promise<T> = it => it.json() as Promise<T>,
+  bodyConsumer: (response: Response) => Promise<T> = defaultBodyConsumer,
   controller: AbortController | null = null,
 ): Observable<T> {
   const signal = (controller ?? new AbortController()).signal
@@ -45,34 +45,12 @@ export function fromFetchWithRetryAndErrorHandling<T>(
         }
       }),
       retry({
-        count: 5,
+        count: 10,
         delay(error) {
-          return of(error).pipe(delay(500))
+          return of(error).pipe(delay(1000))
         },
       }),
       catchError((error, _caught) => {
-        if (error instanceof TypeError) {
-          if (unavailableErrorMessage == null) {
-            ToastEventBus.emit("remove", serverNotAvailableMessage)
-            ToastEventBus.emit("add", serverNotAvailableMessage)
-          }
-          else {
-            ToastEventBus.emit("add", {
-              severity: ToastSeverity.ERROR,
-              summary: unavailableErrorMessage.summary,
-              detail: unavailableErrorMessage.detail,
-              life: 3_000,
-            })
-          }
-        }
-        else {
-          ToastEventBus.emit("add", {
-            severity: ToastSeverity.ERROR,
-            summary: "Cannot load",
-            detail: `${(error as Error).message}`,
-            life: 3_000
-          })
-        }
         console.error("cannot load", request, error)
         return EMPTY
       })

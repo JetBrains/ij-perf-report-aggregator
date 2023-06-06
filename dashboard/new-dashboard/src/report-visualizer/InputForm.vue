@@ -59,11 +59,8 @@ subject
       }
       const statusRef = isDev ? isFetchingDev : isFetching
       statusRef.value = true
-      return fromFetchWithRetryAndErrorHandling<string>(url, {
-        summary: "Cannot connect to IDE",
-        detail: "Please check that port is correct."
-      })
-        .pipe(
+      return fromFetchWithRetryAndErrorHandling<string>(url)
+          .pipe(
           finalize(() => {
             statusRef.value = false
           }),

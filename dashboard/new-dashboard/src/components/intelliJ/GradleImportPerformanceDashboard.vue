@@ -30,6 +30,7 @@ const metricsDeclaration = [
   "DATA_SERVICES",
   "WORKSPACE_MODEL_APPLY",
 
+  "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",
   "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
   "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",

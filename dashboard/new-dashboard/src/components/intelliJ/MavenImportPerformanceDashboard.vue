@@ -81,6 +81,7 @@ const metricsDeclaration = [
   "maven.project.importer.post.importing.task.marker",
   "post_import_tasks_run.total_duration_ms",
 
+  "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",
   "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
   "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",

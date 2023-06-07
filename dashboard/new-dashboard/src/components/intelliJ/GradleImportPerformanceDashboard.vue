@@ -30,8 +30,15 @@ const metricsDeclaration = [
   "DATA_SERVICES",
   "WORKSPACE_MODEL_APPLY",
 
-  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
+  "AWTEventQueue.dispatchTimeTotal",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
 ]
 
 

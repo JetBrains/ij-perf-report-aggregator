@@ -102,8 +102,15 @@ const metricsDeclaration = [
   "workspaceModel.updates.ms",
   "workspaceModel.updates.precise.ms",
 
-  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
+  "AWTEventQueue.dispatchTimeTotal",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
 ]
 
 

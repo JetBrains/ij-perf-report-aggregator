@@ -58,8 +58,15 @@ const metricsDeclaration = ["maven.sync.duration", "maven.import.after.import.co
   "workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms", "workspace_import.populate.duration_ms", "maven.project.importer.post.importing.task.marker",
   "post_import_tasks_run.total_duration_ms",
 
-  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
+  "AWTEventQueue.dispatchTimeTotal",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
 ]
 
 

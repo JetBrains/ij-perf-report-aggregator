@@ -38,7 +38,6 @@
     <DataTable
       v-model:filters="filters"
       :value="metricData"
-      responsive-layout="scroll"
       show-gridlines
       filter-display="row"
       class="p-datatable-sm"
@@ -50,7 +49,7 @@
       >
         <template #filter="{ filterModel }">
           <InputText
-            v-model="filterModel.value"
+            v-model="(filterModel as ColumnFilterModelType).value"
             type="text"
             class="p-column-filter"
             placeholder="Search by name"
@@ -121,6 +120,7 @@
 
 <script setup lang="ts">
 import { FilterMatchMode, FilterService } from "primevue/api"
+import { ColumnFilterModelType } from "primevue/column"
 import { combineLatest, Observable } from "rxjs"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"

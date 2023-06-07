@@ -114,6 +114,12 @@ export class TimeLineChartManager implements ChartManager {
     const threshold = (this.dataDescriptor.threshold ?? 10) * this.dataDescriptor.unitConverter.factor
     for (const group of this.dataProvider(dataManager)) {
       const namePrefix = group.category === "service waiting" ? "wait for " : ""
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (group.items == null) {
+        console.error("No `items` for group", group)
+        continue
+      }
+
       for (const item of group.items) {
         if (item.d < threshold) {
           continue

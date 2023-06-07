@@ -188,7 +188,7 @@ function createMarkLineData(dataManager: DataManager, data: ChartDataItem[], uni
         xAxis: item[0] as never,
         label: {
           show: true,
-          formatter: markerNameToRangeTitle.get(markerItem.name),
+          formatter: markerNameToRangeTitle.get(markerItem.n),
         },
       })
     }

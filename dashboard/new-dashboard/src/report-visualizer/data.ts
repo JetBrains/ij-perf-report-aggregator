@@ -1,16 +1,4 @@
 // Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
-export interface ItemV0 extends CommonItem {
-  readonly name: string
-  readonly description?: string
-
-  readonly start: number
-  readonly end: number
-
-  readonly duration: number
-
-  readonly thread: string
-}
-
 export interface ItemV20 {
   readonly s: number
   readonly d: number
@@ -66,20 +54,20 @@ export interface InputData {
   readonly icons?: IconData[]
 
   // time in ms
-  readonly items: ItemV0[]
+  readonly items: ItemV20[]
 
   // time in ms
   readonly prepareAppInitActivities: ItemV20[]
 
-  readonly appExtensions?: ItemV0[]
-  readonly projectExtensions?: ItemV0[]
-  readonly moduleExtensions?: ItemV0[]
+  readonly appExtensions?: ItemV20[]
+  readonly projectExtensions?: ItemV20[]
+  readonly moduleExtensions?: ItemV20[]
 
-  readonly preloadActivities?: ItemV0[]
-  readonly appOptionsTopHitProviders?: ItemV0[]
-  readonly projectOptionsTopHitProviders?: ItemV0[]
+  readonly preloadActivities?: ItemV20[]
+  readonly appOptionsTopHitProviders?: ItemV20[]
+  readonly projectOptionsTopHitProviders?: ItemV20[]
 
-  readonly projectPostStartupActivities?: ItemV0[]
+  readonly projectPostStartupActivities?: ItemV20[]
 }
 
 export interface Stats {

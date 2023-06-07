@@ -1,6 +1,6 @@
 import { compare } from "compare-versions"
 import { numberFormat } from "../components/common/formatter"
-import { InputData, InputDataV20, ItemV0, ItemV20, UnitConverter } from "./data"
+import { InputData, InputDataV20, ItemV20, UnitConverter } from "./data"
 
 const markerNames = ["app initialized callback", "module loading"]
 export const markerNameToRangeTitle = new Map<string, string>([
@@ -30,7 +30,7 @@ export class DataManager {
     this.version = data.version
   }
 
-  private _markerItems: (ItemV0 | null)[] | null = null
+  private _markerItems: (ItemV20 | null)[] | null = null
 
   get isUnifiedItems(): boolean {
     const version = this.version
@@ -38,7 +38,7 @@ export class DataManager {
   }
 
   get items(): ItemV20[] {
-    return this.data.items as unknown as ItemV20[]
+    return this.data.items
   }
 
   // start, duration in microseconds
@@ -58,35 +58,12 @@ export class DataManager {
       ]
     } else if (version != null && compare(version, "12", ">=")) {
       throw new Error(`Report version ${version} is not supported, ask if needed`)
-      // this._serviceEvents = this.data.traceEvents.filter(value => value.cat != null && serviceEventCategorySet.has(value.cat)) as Array<CompleteTraceEvent>
-      // return this._serviceEvents.map(it => {
-      //   return {
-      //     n: it.name,
-      //     d: it.dur,
-      //     t: it.tid,
-      //     s: it.ts - it.dur,
-      //     p: "",
-      //   }
-      // })
     } else {
       throw new Error(`Report version ${version} is not supported, ask if needed`)
-      // const list: Array<CompleteTraceEvent> = []
-      // const data = this.data as InputDataV11AndLess
-      //
-      // convertV11ToTraceEvent(data.appComponents, "appComponents", list)
-      // convertV11ToTraceEvent(data.projectComponents, "projectComponents", list)
-      // convertV11ToTraceEvent(data.moduleComponents, "moduleComponents", list)
-      //
-      // convertV11ToTraceEvent(data.appServices, "appServices", list)
-      // convertV11ToTraceEvent(data.projectServices, "projectServices", list)
-      // convertV11ToTraceEvent(data.moduleServices, "moduleServices", list)
-      //
-      // this._serviceEvents = list
-      // return list
     }
   }
 
-  get markerItems(): (ItemV0 | null)[] {
+  get markerItems(): (ItemV20 | null)[] {
     if (this._markerItems != null) {
       return this._markerItems
     }
@@ -96,12 +73,12 @@ export class DataManager {
       return []
     }
 
-    const result = new Array<ItemV0 | null>(markerNames.length)
+    const result = new Array<ItemV20 | null>(markerNames.length)
     // JS array is sparse and setting length doesn't pre-fill array
     result.fill(null)
     itemLoop: for (const item of items) {
       for (const [i, markerName] of markerNames.entries()) {
-        if (result[i] == null && item.name === markerName) {
+        if (result[i] == null && item.n === markerName) {
           result[i] = item
 
           // stop if all items are found

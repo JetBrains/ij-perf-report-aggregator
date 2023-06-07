@@ -1,5 +1,5 @@
 import { ChartManager } from "./charts/ChartComponent"
-import { CommonItem, InputDataV20, ItemV20, UnitConverter } from "./data"
+import { CommonItem, InputDataV20, UnitConverter } from "./data"
 
 export interface ActivityChartDescriptor {
   readonly label: string
@@ -19,7 +19,7 @@ export interface ActivityChartDescriptor {
 
 export function getShortName(item: { name?: string; n?: string }): string {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const name = item.name ?? item.n!
+  const name = item.n!
   const lastDotIndex = name.lastIndexOf(".")
   return lastDotIndex < 0 ? name : name.slice(lastDotIndex + 1)
 }
@@ -91,24 +91,16 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
           return [
             {
               category: "items",
-              items: dataManager.isUnifiedItems
-                ? dataManager.items
-                : dataManager.data.items.map((it) => {
-                    const item: ItemV20 = {
-                      n: it.name,
-                      s: it.start,
-                      d: it.duration,
-                      t: it.thread,
-                      p: undefined,
-                    }
-                    return item
-                  }),
+              items: dataManager.items,
             },
             {
               category: "prepareAppInitActivities",
               items: dataManager.data.prepareAppInitActivities,
             },
-          ]
+          ].filter((it) => {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            return it.items != null
+          })
         },
         {
           unitConverter: UnitConverter.MILLISECONDS,

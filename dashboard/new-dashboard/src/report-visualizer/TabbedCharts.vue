@@ -4,9 +4,7 @@
     @change="navigate"
   >
     <div class="border-b border-gray-200">
-      <TabList
-        class="-mb-px flex space-x-8"
-      >
+      <TabList class="-mb-px flex space-x-8">
         <Tab
           v-for="item in charts"
           :key="item.id"
@@ -15,8 +13,8 @@
         >
           <button
             :class="[
-              selected ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
+              selected ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm',
             ]"
           >
             {{ item.label }}
@@ -24,7 +22,7 @@
         </Tab>
       </TabList>
     </div>
-  
+
     <TabPanels>
       <TabPanel
         v-for="item in charts"
@@ -46,13 +44,16 @@ import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
 import { chartDescriptors } from "./ActivityChartDescriptor"
 
-const props = withDefaults(defineProps<{
-  isInfoChart: boolean
-}>(), {
-  isInfoChart: false,
-})
+const props = withDefaults(
+  defineProps<{
+    isInfoChart: boolean
+  }>(),
+  {
+    isInfoChart: false,
+  }
+)
 
-const charts = chartDescriptors.filter(it => it.isInfoChart === props.isInfoChart || (!props.isInfoChart && it.isInfoChart === undefined))
+const charts = chartDescriptors.filter((it) => it.isInfoChart === props.isInfoChart || (!props.isInfoChart && it.isInfoChart === undefined))
 
 const activeId = ref(0)
 const activeName = computed(() => {
@@ -63,12 +64,18 @@ const queryParamName = props.isInfoChart ? "infoTab" : "tab"
 function updateLocation(location: RouteLocationNormalizedLoaded): void {
   const tab = location.query[queryParamName]
   // do not check `location.path === "/"` because if component displayed, so, active
-  activeId.value = tab == null ? 0 : Math.max(charts.findIndex(it => it.id === tab), 0)
+  activeId.value =
+    tab == null
+      ? 0
+      : Math.max(
+          charts.findIndex((it) => it.id === tab),
+          0
+        )
 }
 
 const route = useRoute()
 updateLocation(route)
-watch(route, location => {
+watch(route, (location) => {
   updateLocation(location)
 })
 
@@ -76,7 +83,7 @@ const subject = new Subject<string>()
 subject
   .pipe(
     distinctUntilChanged(),
-    switchMap(activeName => {
+    switchMap((activeName) => {
       return router.push({
         query: {
           ...route.query,
@@ -84,7 +91,7 @@ subject
         },
       })
     }),
-    observeOn(asyncScheduler),
+    observeOn(asyncScheduler)
   )
   .subscribe(() => {
     // empty

@@ -1,10 +1,4 @@
 {
   "extends": "../../tsconfig-base.json",
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "./src/components/common/shims-vue.d.ts",
-    "./src/components/common/toast-event-bus.d.ts",
-    "./src/components/common/components.d.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.vue", "./src/components/common/shims-vue.d.ts", "./src/components/common/toast-event-bus.d.ts", "./src/components/common/components.d.ts"]
 }

@@ -18,7 +18,7 @@ import { ChartToolTipManager } from "./ChartToolTipManager"
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
   // type inside means that mouse maybe used to zoom.
-  {type: "inside"},
+  { type: "inside" },
   {},
 ]
 
@@ -32,80 +32,87 @@ export type PopupTrigger = "item" | "axis" | "none"
 export class LineChartManager {
   private readonly chart: ChartManager
 
-  constructor(container: HTMLElement,
-              private _dataQueryExecutor: DataQueryExecutor,
-              dataZoom: Ref<boolean>,
-              chartToolTipManager: ChartToolTipManager | null,
-              valueUnit: ValueUnit,
-              trigger: PopupTrigger = "axis") {
+  constructor(
+    container: HTMLElement,
+    private _dataQueryExecutor: DataQueryExecutor,
+    dataZoom: Ref<boolean>,
+    chartToolTipManager: ChartToolTipManager | null,
+    valueUnit: ValueUnit,
+    trigger: PopupTrigger = "axis"
+  ) {
     this.chart = new ChartManager(container)
     const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null
     if (chartToolTipManager != null) {
-      this.chart.chart.getZr().on("click", event => {
+      this.chart.chart.getZr().on("click", (event) => {
         chartToolTipManager.showTooltip(lastParams, event.event)
       })
     }
 
     const isCompoundTooltip = chartToolTipManager == null
-    this.chart.chart.setOption<LineChartOptions>({
-      legend: {
-        top: 0,
-        left: 0,
-        itemHeight: 3,
-        itemWidth: 15,
-        icon: "rect",
-        type: "scroll",
-      },
-      animation: false,
-      toolbox: {
-        top: 20,
-        feature: {
-          dataZoom: {
-            yAxisIndex: false,
+    this.chart.chart.setOption<LineChartOptions>(
+      {
+        legend: {
+          top: 0,
+          left: 0,
+          itemHeight: 3,
+          itemWidth: 15,
+          icon: "rect",
+          type: "scroll",
+        },
+        animation: false,
+        toolbox: {
+          top: 20,
+          feature: {
+            dataZoom: {
+              yAxisIndex: false,
+            },
+            saveAsImage: {},
           },
-          saveAsImage: {},
         },
-      },
-      tooltip: {
-        show: true,
-        trigger,
-        enterable: true,
-        // select text in tooltip
-        extraCssText: "user-select: text",
-        axisPointer: {
-          type: "cross",
-          snap: true
+        tooltip: {
+          show: true,
+          trigger,
+          enterable: true,
+          // select text in tooltip
+          extraCssText: "user-select: text",
+          axisPointer: {
+            type: "cross",
+            snap: true,
+          },
+          formatter: isCompoundTooltip
+            ? undefined
+            : adaptToolTipFormatter((params) => {
+                lastParams = params
+                return null
+              }),
+          valueFormatter: isCompoundTooltip ? (it) => numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms" : undefined,
         },
-        formatter: isCompoundTooltip ? undefined : adaptToolTipFormatter(params => {
-          lastParams = params
-          return null
-        }),
-        valueFormatter: isCompoundTooltip ? it => (numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms") : undefined
-      },
-      xAxis: {
-        type: "time",
-        axisPointer: {
-          snap: true,
-          label: {
-            formatter(data) {
-              return timeFormat.format(data.value as number)
+        xAxis: {
+          type: "time",
+          axisPointer: {
+            snap: true,
+            label: {
+              formatter(data) {
+                return timeFormat.format(data.value as number)
+              },
             },
           },
         },
+        yAxis: {
+          type: "value",
+          axisPointer: {
+            snap: true,
+          },
+        },
+        dataZoom: dataZoom.value ? dataZoomConfig : undefined,
       },
-      yAxis: {
-        type: "value",
-        axisPointer: {
-          snap: true,
-        }
-      },
-      dataZoom: dataZoom.value ? dataZoomConfig : undefined,
-    }, {
-      replaceMerge: ["legend"],
-    })
+      {
+        replaceMerge: ["legend"],
+      }
+    )
 
     this.chart.chart.dispatchAction({
       type: "takeGlobalCursor",
@@ -115,7 +122,7 @@ export class LineChartManager {
     this.subscribe()
     refToObservable(dataZoom)
       .pipe(debounceTime(100))
-      .subscribe(value => {
+      .subscribe((value) => {
         this.chart.chart.setOption({
           dataZoom: value ? dataZoomConfig : undefined,
         })
@@ -123,17 +130,14 @@ export class LineChartManager {
   }
 
   subscribe(): () => void {
-    return this._dataQueryExecutor.subscribe(
-      (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading) => {
-        if(isLoading || data == null){
-          this.chart.chart.showLoading("default", {showSpinner: false})
-          return
-        }
-        this.chart.chart.hideLoading()
-        this.chart.updateChart(
-          configuration.chartConfigurator.configureChart(data, configuration)
-        )
-      })
+    return this._dataQueryExecutor.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+      if (isLoading || data == null) {
+        this.chart.chart.showLoading("default", { showSpinner: false })
+        return
+      }
+      this.chart.chart.hideLoading()
+      this.chart.updateChart(configuration.chartConfigurator.configureChart(data, configuration))
+    })
   }
 
   dispose(): void {

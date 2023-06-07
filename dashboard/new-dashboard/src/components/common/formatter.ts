@@ -48,9 +48,13 @@ export function numberAxisLabelFormatter(value: number): string {
 
 export function isDurationFormatterApplicable(measureName: string): boolean {
   return !(
-    measureName.endsWith("Mb")  || measureName.includes("totalHeapUsedMax") || measureName.includes("freedMemoryByGC") ||
-    measureName.includes("number") || measureName.includes("Number") ||
-    measureName.includes("count") || measureName.includes("Count") ||
+    measureName.endsWith("Mb") ||
+    measureName.includes("totalHeapUsedMax") ||
+    measureName.includes("freedMemoryByGC") ||
+    measureName.includes("number") ||
+    measureName.includes("Number") ||
+    measureName.includes("count") ||
+    measureName.includes("Count") ||
     measureName.endsWith("_sources")
   )
 }

@@ -12,8 +12,10 @@
   @apply py-2 px-3;
 }
 
-.p-dropdown-panel .p-dropdown-items, .p-multiselect .p-multiselect-items,
-.p-multiselect-panel .p-multiselect-items, .p-multiselect .p-multiselect-items,
+.p-dropdown-panel .p-dropdown-items,
+.p-multiselect .p-multiselect-items,
+.p-multiselect-panel .p-multiselect-items,
+.p-multiselect .p-multiselect-items,
 .p-autocomplete-panel .p-autocomplete-items {
   @apply py-1;
 }
@@ -59,7 +61,7 @@ Styling in Tailwind UI way requires as result a lot of efforts, but PrimeVue des
 }
 
 .p-tree-toggler-icon:hover {
-  @apply text-gray-500
+  @apply text-gray-500;
 }
 
 .p-treenode-label {

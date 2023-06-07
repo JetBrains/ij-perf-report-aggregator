@@ -39,21 +39,34 @@
         </div>
       </section>
     </div>
-  </DashboardPage>>
+  </DashboardPage>
+  >
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-
-const metricsNames = ["graphics.imaging.benchmarks.tests.drawimage", "graphics.imaging.benchmarks.tests.drawimagescaleup",
-  "graphics.imaging.benchmarks.tests.drawimagetxform", "graphics.render.tests.drawLine", "graphics.render.tests.fillOval", "graphics.render.tests.fillRect",
-  "graphics.render.tests.shape.fillCubic", "text.Rendering.tests.drawString"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "J2DBench_" + config)
-const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map(config => "J2DBench_" + config)
-const windowsConfigurations = ["Windows10x64"].map(config => "J2DBench_" + config)
-
-
+const metricsNames = [
+  "graphics.imaging.benchmarks.tests.drawimage",
+  "graphics.imaging.benchmarks.tests.drawimagescaleup",
+  "graphics.imaging.benchmarks.tests.drawimagetxform",
+  "graphics.render.tests.drawLine",
+  "graphics.render.tests.fillOval",
+  "graphics.render.tests.fillRect",
+  "graphics.render.tests.shape.fillCubic",
+  "text.Rendering.tests.drawString",
+]
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config) => "J2DBench_" + config)
+const macOSConfigurations = [
+  "macOS13x64OGL",
+  "macOS13x64Metal",
+  "macOS13aarch64OGL",
+  "macOS13aarch64Metal",
+  "macOS12x64OGL",
+  "macOS12x64Metal",
+  "macOS12aarch64OGL",
+  "macOS12aarch64Metal",
+].map((config) => "J2DBench_" + config)
+const windowsConfigurations = ["Windows10x64"].map((config) => "J2DBench_" + config)
 </script>

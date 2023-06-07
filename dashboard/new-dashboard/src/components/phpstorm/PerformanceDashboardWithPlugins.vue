@@ -33,7 +33,7 @@
         <GroupProjectsChart
           label="Indexing"
           measure="updatingTime"
-          :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing','wordpress/indexing','mediawiki/indexing']"
+          :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing', 'wordpress/indexing', 'mediawiki/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -57,7 +57,7 @@
         <GroupProjectsChart
           label="Typing Average Responsiveness"
           measure="test#average_awt_delay"
-          :projects="[ 'mpdf/typing', 'mpdf_powersave/typing']"
+          :projects="['mpdf/typing', 'mpdf_powersave/typing']"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -68,7 +68,7 @@
         />
       </div>
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">

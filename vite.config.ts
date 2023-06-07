@@ -22,20 +22,18 @@ export default defineConfig({
       resolvers: [
         PrimeVueResolver(),
         // HeadlessUiResolver(),
-        name => {
+        (name) => {
           // @ts-ignore
           const kind = process.env.NODE_ENV === "test" ? "" : "esm/"
           if (name.endsWith("Icon")) {
             return {
               path: `@heroicons/vue/24/outline/${kind}${name}.js`,
             }
-          }
-          else if (name.endsWith("IconSolid")) {
+          } else if (name.endsWith("IconSolid")) {
             return {
               path: `@heroicons/vue/20/solid/${kind}${name.substring(0, name.length - "Solid".length)}.js`,
             }
-          }
-          else {
+          } else {
             return null
           }
         },
@@ -43,7 +41,7 @@ export default defineConfig({
     }),
     brotli(),
   ],
-  root:  "dashboard/app",
+  root: "dashboard/app",
   publicDir: path.resolve(__dirname, "dashboard/app/public"),
   server: {
     host: "localhost",
@@ -65,7 +63,7 @@ function brotli(): PluginOption {
     name: "offline-compression",
     writeBundle(outputOptions, bundle) {
       const outDir = outputOptions.dir!
-      return Promise.all(Object.values(bundle).map(it => brotliCompressFile(it, outDir))) as Promise<never>
+      return Promise.all(Object.values(bundle).map((it) => brotliCompressFile(it, outDir))) as Promise<never>
     },
     apply: "build",
   }
@@ -86,19 +84,23 @@ async function brotliCompressFile(asset: OutputAsset | OutputChunk, outDir: stri
 
   const mode = file.endsWith(".wasm") ? zlib.constants.BROTLI_MODE_GENERIC : zlib.constants.BROTLI_MODE_TEXT
   await new Promise((resolve, reject) => {
-    zlib.brotliCompress(data, {
-      params: {
-        [zlib.constants.BROTLI_PARAM_MODE]: mode,
-        [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+    zlib.brotliCompress(
+      data,
+      {
+        params: {
+          [zlib.constants.BROTLI_PARAM_MODE]: mode,
+          [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+        },
       },
-    }, (error, buffer) => {
-      if (error != null) {
-        reject(error)
-        return
-      }
+      (error, buffer) => {
+        if (error != null) {
+          reject(error)
+          return
+        }
 
-      writeFile(`${file}.br`, buffer).then(resolve, reject)
-    })
+        writeFile(`${file}.br`, buffer).then(resolve, reject)
+      }
+    )
   })
 }
 
@@ -199,12 +201,7 @@ const components = new Set<string>([
   "VirtualScroller",
 ])
 
-const componentWithStyles = new Set<string>([
-  "Toolbar",
-  "Menubar",
-  "Button",
-  "TabMenu",
-])
+const componentWithStyles = new Set<string>(["Toolbar", "Menubar", "Button", "TabMenu"])
 
 function PrimeVueResolver(): ComponentResolver {
   const styleDir = path.join(__dirname, "dashboard/new-dashboard/src/primevue-theme")
@@ -216,13 +213,11 @@ function PrimeVueResolver(): ComponentResolver {
           from: `primevue/${name.toLowerCase()}/${name}.vue`,
           sideEffects: [path.join(styleDir, `${name.toLowerCase()}.css`)],
         }
-      }
-      else if (components.has(name)) {
+      } else if (components.has(name)) {
         return {
           from: `primevue/${name.toLowerCase()}/${name}.vue`,
         }
-      }
-      else {
+      } else {
         return null
       }
     },

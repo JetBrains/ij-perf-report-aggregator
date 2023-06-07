@@ -41,7 +41,7 @@
       <div class="border-t border-solid border-neutral-200 relative">
         <ul class="p-multiselect-items p-component">
           <li
-            v-if="versionItems!== undefined && versionItems.length > 0"
+            v-if="versionItems !== undefined && versionItems.length > 0"
             class="p-multiselect-item flex items-center gap-2"
             @click="openVersionSubmenu"
           >
@@ -51,7 +51,7 @@
                 v-if="versionValue !== null && versionValue.length > 0"
                 class="text-gray-500 truncate"
               >
-                {{ versionValue?.length < 2 ? versionValue[0] : `Selected ${versionValue?.length }` }}
+                {{ versionValue?.length < 2 ? versionValue[0] : `Selected ${versionValue?.length}` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
@@ -67,7 +67,7 @@
                 v-if="triggeredValue !== null && triggeredValue.length > 0"
                 class="text-gray-500 truncate"
               >
-                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length }` }}
+                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length}` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
@@ -77,7 +77,7 @@
         <div
           v-if="activeSubMenu === SubMenu.VERSION_TYPE && versionItems.length > 0"
           class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
-          style="left: 100%;"
+          style="left: 100%"
         >
           <ul class="p-multiselect-items p-component">
             <li
@@ -105,12 +105,10 @@
         <div
           v-if="activeSubMenu === SubMenu.TRIGGERED_BY && triggeredItems.length > 0"
           class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
-          style="left: 100%;"
+          style="left: 100%"
         >
           <ul class="p-multiselect-items p-component">
-            <div v-if="triggeredItems.length === 0">
-              No available options
-            </div>
+            <div v-if="triggeredItems.length === 0">No available options</div>
             <li
               v-for="item in triggeredItems"
               :key="item.label"
@@ -181,8 +179,8 @@ function createItems(configurator?: DimensionConfigurator) {
     }
     const values = configurator.values.value as string[]
 
-    return values.map(it => {
-      return {label: it.toString(), value: it}
+    return values.map((it) => {
+      return { label: it.toString(), value: it }
     })
   })
 }
@@ -190,7 +188,7 @@ function createItems(configurator?: DimensionConfigurator) {
 function createValueFrom(configurator?: DimensionConfigurator) {
   return computed<string[] | null>({
     get() {
-      if(configurator == null){
+      if (configurator == null) {
         return null
       }
       const values = configurator.values.value
@@ -207,7 +205,7 @@ function createValueFrom(configurator?: DimensionConfigurator) {
       return value == null || value === "" ? [] : [value]
     },
     set(value) {
-      if(configurator == null) return
+      if (configurator == null) return
       // eslint-disable-next-line vue/no-mutating-props
       configurator.selected.value = value == null || value.length === 0 ? null : value
     },
@@ -223,9 +221,9 @@ const versionItems = createItems(props.releaseConfigurator)
 const triggeredItems = createItems(props.triggeredByConfigurator)
 
 const placeholder = usePlaceholder(
-  {label: "Branch"},
+  { label: "Branch" },
   () => props.branchConfigurator.values.value,
-  () => props.branchConfigurator.selected.value,
+  () => props.branchConfigurator.selected.value
 )
 </script>
 <style>

@@ -18,50 +18,56 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:unicorn/recommended",
-    "plugin:@typescript-eslint/strict"
+    "plugin:@typescript-eslint/strict",
+    "prettier",
   ],
   // plugins: ["simple-import-sort"],
   parser: "vue-eslint-parser",
   parserOptions: {
     ecmaVersion: 2022,
     project: ["./dashboard/**/tsconfig.json"],
-    parser: "@typescript-eslint/parser"
+    parser: "@typescript-eslint/parser",
   },
   rules: {
     // "no-console": process.env.NODE_ENV === "production" ? ["warn", {allow: ["warn", "error"]}] : "off",
     "unicorn/prevent-abbreviations": "off",
     "unicorn/filename-case": "off",
     "unicorn/switch-case-braces": "off",
-    "unicorn/no-null" : "off",
+    "unicorn/no-null": "off",
     "unicorn/numeric-separators-style": "off",
-    "unicorn/consistent-function-scoping" : ["error", {"checkArrowFunctions" : false}],
+    "unicorn/consistent-function-scoping": ["error", { checkArrowFunctions: false }],
     "unicorn/no-new-array": "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "max-len": ["error", {"code": 180}],
-    "object-shorthand": ["error", "always", {"avoidExplicitReturnArrows": true}],
-    "quotes": ["error", "double", {avoidEscape: true}],
+    "max-len": ["error", { code: 180 }],
+    "object-shorthand": ["error", "always", { avoidExplicitReturnArrows: true }],
+    quotes: ["error", "double", { avoidEscape: true }],
     "@typescript-eslint/no-unused-vars": "off",
-    "semi": "off",
-    "import/order": [process.env.NODE_ENV === "production" ? "error" : "warn", {alphabetize: {order: "asc"}}],
+    semi: "off",
+    "import/order": [process.env.NODE_ENV === "production" ? "error" : "warn", { alphabetize: { order: "asc" } }],
     "import/no-unresolved": "off",
     "import/no-extraneous-dependencies": "error",
-    "arrow-parens": ["error", "as-needed"],
     "@typescript-eslint/semi": ["error", "never"],
-    "@typescript-eslint/restrict-template-expressions": ["error", {allowNullish: true}],
-    "@typescript-eslint/no-inferrable-types": ["error", {"ignoreParameters": true}],
-    "@typescript-eslint/member-delimiter-style": ["error", {
-      "multiline": {
-        "delimiter": "none",
+    "@typescript-eslint/restrict-template-expressions": ["error", { allowNullish: true }],
+    "@typescript-eslint/no-inferrable-types": ["error", { ignoreParameters: true }],
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        multiline: {
+          delimiter: "none",
+        },
       },
-    }],
+    ],
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/no-dynamic-delete" : "off",
-    "@typescript-eslint/no-unsafe-enum-comparison" : "off",
-    "@typescript-eslint/non-nullable-type-assertion-style" : "off",
-    "vue/html-quotes": ["error", "double", {"avoidEscape": true}],
-    "no-restricted-imports": ["error",  "echarts", "../shared", "../../shared", "rxjs/operators"],
-    "vue/multi-word-component-names": ["error", {
-      "ignores": ["Dashboard", "Report", "Divider"]
-    }]
+    "@typescript-eslint/no-dynamic-delete": "off",
+    "@typescript-eslint/no-unsafe-enum-comparison": "off",
+    "@typescript-eslint/non-nullable-type-assertion-style": "off",
+    "vue/html-quotes": ["error", "double", { avoidEscape: true }],
+    "no-restricted-imports": ["error", "echarts", "../shared", "../../shared", "rxjs/operators"],
+    "vue/multi-word-component-names": [
+      "error",
+      {
+        ignores: ["Dashboard", "Report", "Divider"],
+      },
+    ],
   },
 }

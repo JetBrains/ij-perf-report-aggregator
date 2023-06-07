@@ -11,9 +11,7 @@
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
-        <BranchSelect
-          :branch-configurator="branchConfigurator"
-        />
+        <BranchSelect :branch-configurator="branchConfigurator" />
         <DimensionSelect
           label="Product"
           :value-to-label="(it: string ) => productCodeToName.get(it) ?? it"
@@ -49,9 +47,7 @@
       </div>
     </main>
   </div>
-  <ChartTooltip
-    ref="tooltip"
-  />
+  <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
 import { provide, Ref, ref } from "vue"
@@ -104,25 +100,13 @@ const persistentStateManager = new PersistentStateManager("ij-explore")
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [timeRangeConfigurator, branchConfigurator],
-)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
 
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-const configurators = [
-  serverConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  measureConfigurator,
-  productConfigurator,
-  projectConfigurator,
-  branchConfigurator
-]
+const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, measureConfigurator, productConfigurator, projectConfigurator, branchConfigurator]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)

@@ -48,26 +48,25 @@ const route = useRoute()
 const isFetching = shallowRef(false)
 const isFetchingDev = shallowRef(false)
 
-const subject = new Subject<{url: string; isDev: boolean}>()
+const subject = new Subject<{ url: string; isDev: boolean }>()
 // distinctUntilChanged is not used here because report maybe loaded from the same instance multiple times
 subject
   .pipe(
     debounceTime(100),
-    switchMap(({url, isDev}) => {
+    switchMap(({ url, isDev }) => {
       if (url.length === 0) {
         return of(null)
       }
       const statusRef = isDev ? isFetchingDev : isFetching
       statusRef.value = true
-      return fromFetchWithRetryAndErrorHandling<string>(url)
-          .pipe(
-          finalize(() => {
-            statusRef.value = false
-          }),
-        )
-    }),
+      return fromFetchWithRetryAndErrorHandling<string>(url).pipe(
+        finalize(() => {
+          statusRef.value = false
+        })
+      )
+    })
   )
-  .subscribe(data => {
+  .subscribe((data) => {
     if (data != null) {
       reportData.value = JSON.stringify(data, null, 2)
     }
@@ -76,7 +75,7 @@ subject
 function loadReportUrlIfSpecified(query: LocationQuery) {
   const reportUrl = query["reportUrl"]
   if (reportUrl != null && reportUrl.length > 0) {
-    subject.next({url: reportUrl as string, isDev: false})
+    subject.next({ url: reportUrl as string, isDev: false })
   }
 }
 
@@ -87,10 +86,10 @@ const inputData = reportData
 const portNumber = recentlyUsedIdePort
 
 function getFromRunningInstance() {
-  subject.next({url: getIdeaReportUrl(recentlyUsedIdePort.value), isDev: false})
+  subject.next({ url: getIdeaReportUrl(recentlyUsedIdePort.value), isDev: false })
 }
 function getFromRunningDevInstance() {
-  subject.next({url: getIdeaReportUrl(63343), isDev: true})
+  subject.next({ url: getIdeaReportUrl(63343), isDev: true })
 }
 
 function getIdeaReportUrl(port: number) {

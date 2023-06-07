@@ -13,7 +13,10 @@ export class AggregationOperatorConfigurator implements DataQueryConfigurator {
   private readonly observable: Observable<unknown>
 
   constructor(persistentStateManager: PersistentStateManager) {
-    persistentStateManager.add("aggregationOperator", computed(() => ({operator: this.operator.value, quantile: this.quantile.value})))
+    persistentStateManager.add(
+      "aggregationOperator",
+      computed(() => ({ operator: this.operator.value, quantile: this.quantile.value }))
+    )
     this.observable = combineLatest([refToObservable(this.operator), refToObservable(this.quantile)]).pipe(shareReplay(1))
   }
 
@@ -25,11 +28,9 @@ export class AggregationOperatorConfigurator implements DataQueryConfigurator {
     const operator = this.operator.value
     if (operator === "median" || operator.length === 0) {
       query.aggregator = "quantileTDigest(0.5)"
-    }
-    else if (operator === "quantile") {
-      query.aggregator = `quantileTDigest(${(this.quantile.value) / 100})`
-    }
-    else {
+    } else if (operator === "quantile") {
+      query.aggregator = `quantileTDigest(${this.quantile.value / 100})`
+    } else {
       query.aggregator = operator
     }
     return true

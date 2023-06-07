@@ -1,5 +1,8 @@
 .new-dashboard {
-  .p-dropdown, .p-multiselect, .p-cascadeselect, .p-treeselect {
+  .p-dropdown,
+  .p-multiselect,
+  .p-cascadeselect,
+  .p-treeselect {
     border-color: var(--input-border-color);
     background-color: var(--input-bg-color);
     @apply rounded-md border shadow-sm border-gray-300 text-sm;

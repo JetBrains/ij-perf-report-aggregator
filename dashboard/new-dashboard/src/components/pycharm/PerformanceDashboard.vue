@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="pycharm"
     persistent-id="pycharm_dashboard"

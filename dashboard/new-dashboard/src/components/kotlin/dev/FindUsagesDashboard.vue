@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlinDev_findusage_dashboard"
@@ -37,7 +37,7 @@
             'intellij_commit/findUsages/setUp_with_library_cache_k1',
             'intellij_commit/findUsages/SolutionModel_with_library_cache_k1',
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
-            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
+            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1',
           ]"
         />
       </div>
@@ -50,7 +50,7 @@
             'intellij_commit/findUsages/setUp_with_library_cache_k2',
             'intellij_commit/findUsages/SolutionModel_with_library_cache_k2',
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
-            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
+            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2',
           ]"
         />
       </div>
@@ -85,7 +85,7 @@
       </div>
     </section>
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' findUsages mean value with Library cache K1"
           measure="findUsages#mean_value"
@@ -97,11 +97,11 @@
             'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k1',
             'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k1',
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
-            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
+            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1',
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' findUsages mean value with Library cache K2"
           measure="findUsages#mean_value"
@@ -113,12 +113,13 @@
             'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k2',
             'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k2',
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
-            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
+            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2',
           ]"
         />
       </div>
     </section>
-  </DashboardPage>>
+  </DashboardPage>
+  >
 </template>
 
 <script setup lang="ts">

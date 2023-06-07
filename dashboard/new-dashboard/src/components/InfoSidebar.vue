@@ -12,7 +12,7 @@
           @click="handleCloseClick"
         />
       </span>
-      
+
       <VTooltip
         v-if="vm.data.value?.description.value?.description"
         theme="info"
@@ -54,7 +54,8 @@
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
           <CalendarIcon class="w-4 h-4" />
-          {{ vm.data.value?.date }} <span v-if="vm.data.value?.build"> build {{ vm.data.value?.build }} </span>
+          {{ vm.data.value?.date }}
+          <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
         </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ClockIcon class="w-4 h-4" />
@@ -69,19 +70,20 @@
           v-if="vm.data.value?.accidents"
           class="flex gap-1.5 text-sm items-center"
         >
-          <ExclamationTriangleIcon class="w-4 h-4" /> Known events:
+          <ExclamationTriangleIcon class="w-4 h-4" />
+          Known events:
         </span>
         <ul
           v-if="vm.data.value?.accidents"
-          class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80  "
+          class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80"
         >
           <li
             v-for="accident in vm.data.value?.accidents"
             :key="accident.id"
           >
-            <span class="flex items-start justify-between gap-1.5 text-sm">&bull;
-              <span class="w-full">{{ accident.kind }}: {{ accident.reason }}
-              </span>
+            <span class="flex items-start justify-between gap-1.5 text-sm">
+              &bull;
+              <span class="w-full">{{ accident.kind }}: {{ accident.reason }}</span>
               <TrashIcon
                 class="w-4 h-4 text-red-500 flex-none"
                 @click="handleRemove(accident.id)"
@@ -97,14 +99,16 @@
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ArrowPathIcon class="w-4 h-4" /> Changes
+          <ArrowPathIcon class="w-4 h-4" />
+          Changes
         </a>
         <a
           :href="vm.data.value?.artifactsUrl"
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
-          <ServerStackIcon class="w-4 h-4" /> Test Artifacts
+          <ServerStackIcon class="w-4 h-4" />
+          Test Artifacts
         </a>
         <a
           v-if="vm.data.value?.installerUrl !== undefined"
@@ -133,7 +137,6 @@
         label="Report Event"
         text
         size="small"
-
         @click="showDialog = true"
       />
     </div>
@@ -160,7 +163,8 @@
         <label
           class="text-sm"
           for="reason"
-        >Reason</label>
+          >Reason</label
+        >
       </span>
     </div>
     <template #footer>
@@ -198,8 +202,7 @@ function reportRegression() {
   const value = vm.data.value
   if (value == null) {
     console.log("value is zero! This shouldn't happen")
-  }
-  else {
+  } else {
     writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString(), accidentType.value)
   }
 }
@@ -218,7 +221,7 @@ function handleNavigateToTest() {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
-  const query: Record<string, string> = {...currentRoute.query, project: vm.data.value?.projectName ?? ""} as Record<string, string>
+  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "" } as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL + "?" + queryParams)
 }
@@ -246,19 +249,22 @@ function getTestActions() {
     }
     const methodName = vm.data.value.description.value.methodName
     if (methodName && methodName != "") {
-      actions.push({
-        label: "Copy test method name",
-        icon: "pi pi-copy",
-        command() {
-          copyMethodNameToClipboard(methodName)
+      actions.push(
+        {
+          label: "Copy test method name",
+          icon: "pi pi-copy",
+          command() {
+            copyMethodNameToClipboard(methodName)
+          },
         },
-      }, {
-        label: "Open test method",
-        icon: "pi pi-folder-open",
-        command() {
-          openTestInIDE(methodName)
-        },
-      })
+        {
+          label: "Open test method",
+          icon: "pi pi-folder-open",
+          command() {
+            openTestInIDE(methodName)
+          },
+        }
+      )
     }
   }
   return actions
@@ -270,7 +276,6 @@ function getSpaceUrl() {
   }
   return
 }
-
 </script>
 <style>
 .infoSidebar {
@@ -280,7 +285,7 @@ function getSpaceUrl() {
 
 .infoSidebar_icon::after {
   position: absolute;
-  content: '';
+  content: "";
   inset: -8px;
   transform: rotate(-45deg);
 }

@@ -65,7 +65,7 @@
             :configurators="configurators"
             :skip-zero-values="false"
             :value-unit="props.unit"
-            :chart-type="props.unit =='ns'?'scatter':'line'"
+            :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
             :accidents="warnings"
           />
         </template>
@@ -132,43 +132,18 @@ const persistentStateManager = new PersistentStateManager(
     branch: "master",
     project: [],
     measure: [],
-  }, router)
+  },
+  router
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [timeRangeConfigurator, branchConfigurator],
-)
-const scenarioConfigurator = dimensionConfigurator(
-  "project",
-  serverConfigurator,
-  persistentStateManager,
-  true,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const measureConfigurator = new MeasureConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [scenarioConfigurator, branchConfigurator, timeRangeConfigurator],
-  true,
-  "line",
-)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators = [
-  serverConfigurator,
-  scenarioConfigurator,
-  branchConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  triggeredByConfigurator,
-]
+const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator]
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {
@@ -181,10 +156,9 @@ function onChangeRange(value: TimeRange) {
 
 const warnings = ref<Accident[]>()
 
-combineLatest([refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value), ]).subscribe(data => {
+combineLatest([refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value)]).subscribe((data) => {
   getAccidentsFromMetaDb(warnings, data[0], data[1])
 })
-
 </script>
 
 <style>

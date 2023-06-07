@@ -59,7 +59,7 @@
     :auto-filter-focus="hasManyElements"
   >
     <!-- eslint-disable vue/no-template-shadow -->
-    <template #value="{value}">
+    <template #value="{ value }">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         {{ value ? valueToLabel(value) : value }}
         <ChevronDownIcon
@@ -124,22 +124,29 @@ import { computed } from "vue"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
 
-const props = withDefaults(defineProps<{
-  label: string
-  dimension: DimensionConfigurator
-  valueToLabel?: (v: string) => string
-  // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-  valueToGroup?: ((v: string) => string) | null
-  selectedLabel?: (items: string[]) => string
-}>(), {
-  selectedLabel: (items: string[]) => `${items.length} items selected`,
-  valueToLabel: (v: string) => v,
-  valueToGroup: null,
-})
+const props = withDefaults(
+  defineProps<{
+    label: string
+    dimension: DimensionConfigurator
+    valueToLabel?: (v: string) => string
+    // todo not working correctly for now (if value is set to not existing value, runtime error on select)
+    valueToGroup?: ((v: string) => string) | null
+    selectedLabel?: (items: string[]) => string
+  }>(),
+  {
+    selectedLabel: (items: string[]) => `${items.length} items selected`,
+    valueToLabel: (v: string) => v,
+    valueToGroup: null,
+  }
+)
 
 const multiple = computed(() => props.dimension.multiple)
 
-const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
+const placeholder = usePlaceholder(
+  props,
+  () => props.dimension.values.value,
+  () => props.dimension.selected.value
+)
 
 function optionToLabel(value: string): string {
   return props.valueToLabel(value)
@@ -156,16 +163,13 @@ const value = computed<string | string[] | null>({
     if (props.dimension.multiple) {
       if (Array.isArray(value)) {
         return value
-      }
-      else {
+      } else {
         return value == null || value === "" ? [] : [value]
       }
-    }
-    else {
+    } else {
       if (Array.isArray(value)) {
         return value[0]
-      }
-      else {
+      } else {
         return value === "" ? null : value
       }
     }
@@ -185,8 +189,8 @@ const items = computed(() => {
   const values = props.dimension.values.value
   // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
   if (props.valueToGroup == null) {
-    const result = values.map(it => {
-      return {label: valueToLabel(it.toString()), value: it}
+    const result = values.map((it) => {
+      return { label: valueToLabel(it.toString()), value: it }
     })
     if (values.length > 20) {
       // put selected values on top
@@ -194,12 +198,11 @@ const items = computed(() => {
         if (value.value == null || !Array.isArray(value.value)) {
           return 0
         }
-        return value.value.includes(a.label) ? -1 : (value.value.includes(b.label) ? 1 : 0)
+        return value.value.includes(a.label) ? -1 : value.value.includes(b.label) ? 1 : 0
       })
     }
     return result
-  }
-  else {
+  } else {
     return group(values as string[], props.valueToGroup, valueToLabel)
   }
 })
@@ -228,7 +231,7 @@ function group(values: string[], groupFunction: (v: string) => string, valueToLa
       groupNameToGroup.set(groupName, group)
       groups.push(group)
     }
-    group.options.push({label: valueToLabel(value), value})
+    group.options.push({ label: valueToLabel(value), value })
   }
   // console.log(JSON.stringify(groups, null, 2))
   return groups

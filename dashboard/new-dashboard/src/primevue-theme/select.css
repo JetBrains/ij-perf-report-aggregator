@@ -5,7 +5,10 @@
   @apply rounded-md border shadow-sm border-gray-300 text-sm;
 }
 
-.p-dropdown, .p-multiselect, .p-cascadeselect, .p-treeselect {
+.p-dropdown,
+.p-multiselect,
+.p-cascadeselect,
+.p-treeselect {
   /*border-color: var(--input-border-color);*/
   /*background-color: var(--input-bg-color);*/
   @apply text-sm;
@@ -44,7 +47,8 @@
 /*  @apply text-gray-400 rounded-r-md pr-2 w-5;*/
 /*}*/
 
-.p-dropdown .p-dropdown-label, .p-cascadeselect .p-cascadeselect-label {
+.p-dropdown .p-dropdown-label,
+.p-cascadeselect .p-cascadeselect-label {
   /* shadow-none is required because label also has .p-inputtext class */
   @apply border-none shadow-none;
 }

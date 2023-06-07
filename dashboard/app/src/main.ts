@@ -28,16 +28,14 @@ async function initApp() {
   app.use(FloatingVue, {
     themes: {
       info: {
-        "$extend": "tooltip",
+        $extend: "tooltip",
         placement: "top-start",
       },
     },
   })
 
-  await router.isReady()
-    .then(() => app.mount("#app"))
+  await router.isReady().then(() => app.mount("#app"))
 }
 
 // eslint-disable-next-line unicorn/prefer-top-level-await
 void initApp()
-

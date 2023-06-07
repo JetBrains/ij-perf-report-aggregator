@@ -39,21 +39,76 @@
         </div>
       </section>
     </div>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const metricsNames = ["ArgbSurfaceBlitImageRenderer", "LinGrad3RotatedOvalAA", "LinGradRotatedOval", "LinGradRotatedOvalAA", "ArgbSwBlitImage", "BgrSurfaceBlitImage",
-  "LinGrad3RotatedOval", "RadGrad3RotatedOval", "RadGrad3RotatedOvalAA", "FlatBox", "RotatedOval", "WiredBubbles", "ClipFlatOvalAA", "ClipFlatBoxAA", "FlatBoxAA", "FlatOvalAA",
-  "ClipFlatOval", "RotatedOvalAA", "VolImageAA", "ImageAA", "RotatedBox", "RotatedBoxAA", "WiredBox", "FlatOval", "WiredBoxAA", "WiredBubblesAA", "Lines", "Image", "ClipFlatBox",
-  "VolImage", "LargeTextGray", "LargeTextNoAA", "Image_XOR", "WhiteTextGray", "LargeTextLCD", "BgrSwBlitImage", "FlatQuad", "TextLCD", "WhiteTextLCD", "TextNoAA", "FlatOval_XOR",
-  "TextGray", "WhiteTextNoAA", "LinesAA", "WiredQuadAA", "Lines_XOR", "RotatedBox_XOR", "WiredQuad", "TextNoAA_XOR", "FlatQuadAA", "TextLCD_XOR"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map(config => "Render_" + config)
-const macOSConfigurations = ["macOS13x64OGL", "macOS13x64Metal", "macOS13aarch64OGL", "macOS13aarch64Metal", "macOS12x64OGL", "macOS12x64Metal", "macOS12aarch64OGL",
-  "macOS12aarch64Metal"].map(config => "Render_" + config)
-const windowsConfigurations = ["Windows10x64"].map(config => "Render_" + config)
-
+const metricsNames = [
+  "ArgbSurfaceBlitImageRenderer",
+  "LinGrad3RotatedOvalAA",
+  "LinGradRotatedOval",
+  "LinGradRotatedOvalAA",
+  "ArgbSwBlitImage",
+  "BgrSurfaceBlitImage",
+  "LinGrad3RotatedOval",
+  "RadGrad3RotatedOval",
+  "RadGrad3RotatedOvalAA",
+  "FlatBox",
+  "RotatedOval",
+  "WiredBubbles",
+  "ClipFlatOvalAA",
+  "ClipFlatBoxAA",
+  "FlatBoxAA",
+  "FlatOvalAA",
+  "ClipFlatOval",
+  "RotatedOvalAA",
+  "VolImageAA",
+  "ImageAA",
+  "RotatedBox",
+  "RotatedBoxAA",
+  "WiredBox",
+  "FlatOval",
+  "WiredBoxAA",
+  "WiredBubblesAA",
+  "Lines",
+  "Image",
+  "ClipFlatBox",
+  "VolImage",
+  "LargeTextGray",
+  "LargeTextNoAA",
+  "Image_XOR",
+  "WhiteTextGray",
+  "LargeTextLCD",
+  "BgrSwBlitImage",
+  "FlatQuad",
+  "TextLCD",
+  "WhiteTextLCD",
+  "TextNoAA",
+  "FlatOval_XOR",
+  "TextGray",
+  "WhiteTextNoAA",
+  "LinesAA",
+  "WiredQuadAA",
+  "Lines_XOR",
+  "RotatedBox_XOR",
+  "WiredQuad",
+  "TextNoAA_XOR",
+  "FlatQuadAA",
+  "TextLCD_XOR",
+]
+const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config) => "Render_" + config)
+const macOSConfigurations = [
+  "macOS13x64OGL",
+  "macOS13x64Metal",
+  "macOS13aarch64OGL",
+  "macOS13aarch64Metal",
+  "macOS12x64OGL",
+  "macOS12x64Metal",
+  "macOS12aarch64OGL",
+  "macOS12aarch64Metal",
+].map((config) => "Render_" + config)
+const windowsConfigurations = ["Windows10x64"].map((config) => "Render_" + config)
 </script>

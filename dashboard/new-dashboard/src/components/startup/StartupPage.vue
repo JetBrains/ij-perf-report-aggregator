@@ -36,12 +36,9 @@
     </template>
   </Toolbar>
   <slot />
-  <ChartTooltip
-    ref="tooltip"
-  />
+  <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-
 import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
@@ -72,7 +69,6 @@ const productCodeToName = new Map([
   ["RM", "RubyMine"],
 ])
 
-
 provideReportUrlProvider()
 provide(chartStyleKey, {
   ...chartDefaultStyle,
@@ -86,36 +82,24 @@ const dbName = "ij"
 const dbTable = "report"
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistentStateManager = new PersistentStateManager("ij-dashboard", {
-  product: "IU",
-  project: "simple for IJ",
-  machine: "macMini M1, 16GB",
-  branch: "master",
-}, useRouter())
+const persistentStateManager = new PersistentStateManager(
+  "ij-dashboard",
+  {
+    product: "IU",
+    project: "simple for IJ",
+    machine: "macMini M1, 16GB",
+    branch: "master",
+  },
+  useRouter()
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [timeRangeConfigurator, branchConfigurator],
-)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const configurators = [
-  serverConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  productConfigurator,
-  projectConfigurator,
-  branchConfigurator,
-  triggeredByConfigurator
-]
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator, triggeredByConfigurator]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)

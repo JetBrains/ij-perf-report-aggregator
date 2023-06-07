@@ -33,37 +33,37 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
             title="editor appeared"
-            :measures='["editor appeared.end"]'
+            :measures="['editor appeared.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="time to edit"
-            :measures='["time to edit.end"]'
+            :measures="['time to edit.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="terminal ready"
-            :measures='["terminal ready.end"]'
+            :measures="['terminal ready.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="file tree rendered"
-            :measures='["file tree rendered.end"]'
+            :measures="['file tree rendered.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="highlighting done"
-            :measures='["highlighting done.end"]'
+            :measures="['highlighting done.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="window appeared"
-            :measures='["window appeared.end"]'
+            :measures="['window appeared.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
@@ -73,37 +73,37 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
             title="editor appeared"
-            :measures='["shortCircuit.editor appeared.end"]'
+            :measures="['shortCircuit.editor appeared.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="time to edit"
-            :measures='["shortCircuit.time to edit.end"]'
+            :measures="['shortCircuit.time to edit.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="terminal ready"
-            :measures='["shortCircuit.terminal ready.end"]'
+            :measures="['shortCircuit.terminal ready.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="file tree rendered"
-            :measures='["shortCircuit.file tree rendered.end"]'
+            :measures="['shortCircuit.file tree rendered.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="highlighting done"
-            :measures='["shortCircuit.highlighting done.end"]'
+            :measures="['shortCircuit.highlighting done.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
           <LineChart
             title="window appeared"
-            :measures='["shortCircuit.window appeared.end"]'
+            :measures="['shortCircuit.window appeared.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
           />
@@ -113,7 +113,6 @@
     </main>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { provide, ref } from "vue"
@@ -144,25 +143,21 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
-const persistenceForDashboard = new PersistentStateManager("fleetStartup_dashboard", {
-  machine: initialMachine,
-  project: [],
-  branch: "master",
-}, router)
+const persistenceForDashboard = new PersistentStateManager(
+  "fleetStartup_dashboard",
+  {
+    machine: initialMachine,
+    project: [],
+    branch: "master",
+  },
+  router
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const machineConfigurator = new MachineConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  [timeRangeConfigurator],
-)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 
-const dashboardConfigurators = [
-  serverConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-]
+const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator]
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

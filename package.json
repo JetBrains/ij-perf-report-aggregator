@@ -22,6 +22,7 @@
     "add": "^2.0.6",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.42.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vue": "^9.14.1",
     "postcss": "^8.4.24",
@@ -49,6 +50,8 @@
     "pnpm": ">=8"
   },
   "dependencies": {
-    "eslint-plugin-unicorn": "^47.0.0"
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-unicorn": "^47.0.0",
+    "prettier": "^2.8.8"
   }
 }

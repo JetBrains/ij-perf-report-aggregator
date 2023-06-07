@@ -18,8 +18,11 @@ function getWarningIcon() {
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
   path.setAttribute("stroke-linecap", "round")
   path.setAttribute("stroke-linejoin", "round")
-  path.setAttribute("d", "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 " +
-    "0L2.697 16.126zM12 15.75h.007v.008H12v-.008z")
+  path.setAttribute(
+    "d",
+    "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 " +
+      "0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+  )
   svg.append(path)
 
   const div = document.createElement("div")
@@ -29,15 +32,10 @@ function getWarningIcon() {
 }
 
 export class LineChartVM {
-  constructor(
-    private readonly eChart: ChartManager,
-    private readonly dataQuery: DataQueryExecutor,
-    valueUnit: ValueUnit,
-    accidents: Accident[]|null
-  ) {
+  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Accident[] | null) {
     const accidentsMap = convertAccidentsToMap(accidents)
     const isMs = valueUnit == "ms"
-    this.eChart.chart.showLoading("default", {showSpinner: false})
+    this.eChart.chart.showLoading("default", { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
         top: 0,
@@ -71,14 +69,11 @@ export class LineChartVM {
         renderMode: "html",
         position: (pointerCoords, _, tooltipElement) => {
           const [pointerLeft, pointerTop] = pointerCoords
-          const element = (tooltipElement as HTMLDivElement)
+          const element = tooltipElement as HTMLDivElement
           const chartRect = this.eChart.chart.getDom().getBoundingClientRect()
-          const isOverflowWindow = (chartRect.left + pointerLeft + element.offsetWidth) > chartRect.right
+          const isOverflowWindow = chartRect.left + pointerLeft + element.offsetWidth > chartRect.right
 
-          return [
-            isOverflowWindow ? (pointerLeft - element.offsetWidth) : pointerLeft,
-            pointerTop - element.clientHeight - 10,
-          ]
+          return [isOverflowWindow ? pointerLeft - element.offsetWidth : pointerLeft, pointerTop - element.clientHeight - 10]
         },
         // Formatting
         formatter(params: CallbackDataParams) {
@@ -87,15 +82,15 @@ export class LineChartVM {
           const [dateMs, durationMs, type] = data
 
           element.append(
-            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? durationMs as number : durationMs as number / 1000 / 1000),
+            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000),
             document.createElement("br"),
-            timeFormatWithoutSeconds.format(dateMs as number),
+            timeFormatWithoutSeconds.format(dateMs as number)
           )
 
           element.append(document.createElement("br"))
           element.append(`${params.seriesName}`)
           const accident = getAccident(accidentsMap, data as string[])
-          if(accident != null){
+          if (accident != null) {
             //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
             element.append(document.createElement("br"))
             const accidentHtml = document.createElement("span")
@@ -109,14 +104,14 @@ export class LineChartVM {
           return element
         },
         valueFormatter(it) {
-          return numberFormat.format(isMs ? it as number : nsToMs(it as number)) + " ms"
+          return numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms"
         },
         // Styling
         extraCssText: "user-select: text",
         borderColor: "#E5E7EB",
         padding: [6, 8],
         textStyle: {
-          fontSize: 12
+          fontSize: 12,
         },
       },
       xAxis: {
@@ -140,26 +135,23 @@ export class LineChartVM {
   }
 
   subscribe(): () => void {
-    return this.dataQuery.subscribe(
-      (data: DataQueryResult|null, configuration: DataQueryExecutorConfiguration, isLoading) => {
-        if(isLoading || data == null){
-          this.eChart.chart.showLoading("default", {showSpinner: false})
-          return
+    return this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+      if (isLoading || data == null) {
+        this.eChart.chart.showLoading("default", { showSpinner: false })
+        return
+      }
+      this.eChart.chart.hideLoading()
+      this.eChart.chart.setOption(
+        {
+          legend: { type: "scroll" },
+          toolbox: { top: 20 },
+        },
+        {
+          replaceMerge: ["legend"],
         }
-        this.eChart.chart.hideLoading()
-        this.eChart.chart.setOption(
-          {
-            legend: {type: "scroll"},
-            toolbox: {top: 20},
-          },
-          {
-            replaceMerge: ["legend"],
-          },
-        )
-        this.eChart.updateChart(
-          configuration.chartConfigurator.configureChart(data, configuration)
-        )
-      })
+      )
+      this.eChart.updateChart(configuration.chartConfigurator.configureChart(data, configuration))
+    })
   }
 
   dispose(): void {

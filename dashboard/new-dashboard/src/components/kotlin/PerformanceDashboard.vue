@@ -1,13 +1,13 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
     <section class="flex gap-6">
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'completion\_%'"
@@ -16,7 +16,7 @@
           :title="'completion K1'"
         />
       </div>
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'completion\_%'"
@@ -25,7 +25,7 @@
           :title="'completion K2'"
         />
       </div>
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'highlighting\_%'"
@@ -34,7 +34,7 @@
           :title="'highlighting K1'"
         />
       </div>
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'highlighting\_%'"
@@ -43,7 +43,7 @@
           :title="'highlighting K2'"
         />
       </div>
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'findUsage\_%'"
@@ -52,7 +52,7 @@
           :title="'findUsage K1'"
         />
       </div>
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'findUsage\_%'"
@@ -63,7 +63,7 @@
       </div>
     </section>
     <section class="flex gap-x-6">
-      <div class="flex-1  min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Hello-world' completion mean value on hello-world K1"
           measure="completion#mean_value"
@@ -104,7 +104,7 @@
           :projects="[
             'intellij_commit/completion/empty_place_with_library_cache_k1',
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
-            'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
+            'intellij_commit/completion/empty_place_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -115,7 +115,7 @@
           :projects="[
             'intellij_commit/completion/empty_place_with_library_cache_k2',
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
-            'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
+            'intellij_commit/completion/empty_place_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -129,7 +129,7 @@
           :projects="[
             'intellij_commit/completion/empty_place_with_library_cache_k1',
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
-            'intellij_commit/completion/empty_place_typing_with_library_cache_k1'
+            'intellij_commit/completion/empty_place_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -140,7 +140,7 @@
           :projects="[
             'intellij_commit/completion/empty_place_with_library_cache_k2',
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
-            'intellij_commit/completion/empty_place_typing_with_library_cache_k2'
+            'intellij_commit/completion/empty_place_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -155,7 +155,7 @@
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache_k1',
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
-            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
+            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1',
           ]"
         />
       </div>
@@ -167,7 +167,7 @@
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache_k2',
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
-            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
+            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2',
           ]"
         />
       </div>
@@ -182,7 +182,7 @@
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache_k1',
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_with_library_cache_k1',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k1',
-            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1'
+            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k1',
           ]"
         />
       </div>
@@ -194,7 +194,7 @@
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache_k2',
             'intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_with_library_cache_k2',
             'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache_k2',
-            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2'
+            'intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache_k2',
           ]"
         />
       </div>
@@ -208,7 +208,7 @@
           :projects="[
             'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
-            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
+            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -219,7 +219,7 @@
           :projects="[
             'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k2',
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
-            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
+            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -233,7 +233,7 @@
           :projects="[
             'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k1',
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k1',
-            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1'
+            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -244,7 +244,7 @@
           :projects="[
             'intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache_k2',
             'intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache_k2',
-            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2'
+            'intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -257,7 +257,7 @@
           :projects="[
             'kotlin_lang/completion/after_parameter_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
-            'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
+            'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -268,7 +268,7 @@
           :projects="[
             'kotlin_lang/completion/after_parameter_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
-            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
+            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -282,7 +282,7 @@
           :projects="[
             'kotlin_lang/completion/after_parameter_with_library_cache_k1',
             'kotlin_lang/completion/empty_place_with_library_cache_k1',
-            'kotlin_lang/completion/empty_place_typing_with_library_cache_k1'
+            'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
           ]"
         />
       </div>
@@ -293,7 +293,7 @@
           :projects="[
             'kotlin_lang/completion/after_parameter_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_with_library_cache_k2',
-            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
+            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -365,7 +365,7 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k1',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k1',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k1',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1'
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
           ]"
         />
       </div>
@@ -381,7 +381,7 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k2',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1'
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
           ]"
         />
       </div>
@@ -399,7 +399,7 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k1',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k1',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k1',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1'
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
           ]"
         />
       </div>
@@ -415,30 +415,25 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k2',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1'
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
           ]"
         />
       </div>
     </section>
-
 
     <section class="flex gap-x-6">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin empty' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
-          :projects="[
-            'kotlin_empty/highlight/Main_with_library_cache_k1'
-          ]"
+          :projects="['kotlin_empty/highlight/Main_with_library_cache_k1']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin empty' highlight mean value with Library cache K2"
           measure="highlighting#mean_value"
-          :projects="[
-            'kotlin_empty/highlight/Main_with_library_cache_k2'
-          ]"
+          :projects="['kotlin_empty/highlight/Main_with_library_cache_k2']"
         />
       </div>
     </section>
@@ -488,7 +483,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Intellij suite 2' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
@@ -501,7 +496,7 @@
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Intellij suite 2' highlight mean value with Library cache K2"
           measure="highlighting#mean_value"
@@ -517,7 +512,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
@@ -530,7 +525,7 @@
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' highlight mean value with Library cache K2"
           measure="highlighting#mean_value"
@@ -546,7 +541,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin language server' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
@@ -557,11 +552,11 @@
             'kotlin_language_server/highlight/JavaElementConverter_with_library_cache_k1',
             'kotlin_language_server/highlight/KotlinTextDocumentService_with_library_cache_k1',
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k1',
-            'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
+            'kotlin_language_server/highlight/SourcePath_with_library_cache_k1',
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin language server' highlight mean value with Library cache K2"
           measure="highlighting#mean_value"
@@ -573,15 +568,13 @@
             'kotlin_language_server/highlight/KotlinTextDocumentService_with_library_cache_k2',
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k2',
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k2',
-
-
           ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
@@ -596,7 +589,7 @@
             'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k1',
             'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k1',
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
-            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
+            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1',
           ]"
         />
       </div>
@@ -615,14 +608,14 @@
             'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k2',
             'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k2',
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
-            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
+            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2',
           ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Ktor samples' highlight mean value with Library cache K1"
           measure="highlighting#mean_value"
@@ -663,11 +656,11 @@
             'intellij_commit/findUsages/setUp_with_library_cache_k1',
             'intellij_commit/findUsages/SolutionModel_with_library_cache_k1',
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k1',
-            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1'
+            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k1',
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Intellij findUsages mean value with Library cache K2"
           measure="findUsages#mean_value"
@@ -676,14 +669,14 @@
             'intellij_commit/findUsages/setUp_with_library_cache_k2',
             'intellij_commit/findUsages/SolutionModel_with_library_cache_k2',
             'intellij_commit/findUsages/SqlBlock_with_library_cache_k2',
-            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2'
+            'intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache_k2',
           ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' findUsages mean value with Library cache K1"
           measure="findUsages#mean_value"
@@ -696,7 +689,7 @@
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' findUsages mean value with Library cache K2"
           measure="findUsages#mean_value"
@@ -710,9 +703,9 @@
         />
       </div>
     </section>
-        
+
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' findUsages mean value with Library cache K1"
           measure="findUsages#mean_value"
@@ -724,11 +717,11 @@
             'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k1',
             'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k1',
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k1',
-            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1'
+            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k1',
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' findUsages mean value with Library cache K2"
           measure="findUsages#mean_value"
@@ -740,73 +733,90 @@
             'toolbox_enterprise/findUsages/PrincipalContext_with_library_cache_k2',
             'toolbox_enterprise/findUsages/RequestMapping_with_library_cache_k2',
             'toolbox_enterprise/findUsages/RestController_with_library_cache_k2',
-            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2'
+            'toolbox_enterprise/findUsages/ROLE_ADMIN_with_library_cache_k2',
           ]"
         />
       </div>
     </section>
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'PerformInlineRename mean value on  K1"
           measure="performInlineRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1',
+          ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="PerformInlineRename mean value on  K2"
           measure="performInlineRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2',
+          ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'StartInlineRename mean value on  K1"
           measure="startInlineRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1',
+          ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="StartInlineRename mean value on  K2"
           measure="startInlineRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2',
+          ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'PrepareForRename mean value on  K1"
           measure="prepareForRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1', 'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k1',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k1',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k1',
+          ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="PrepareForRename mean value on  K2"
           measure="prepareForRename#mean_value"
-          :projects="['intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2', 'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
-                      'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2']"
+          :projects="[
+            'intellij_commit/rename/SqlBlock_SqlBlockRenamed_k2',
+            'kotlin_language_server/insertCode/Rename_renameSymbol_k2',
+            'kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k_k2',
+          ]"
         />
       </div>
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-
 </script>

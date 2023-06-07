@@ -45,5 +45,5 @@ const model = computed({
 })
 
 const timeRanges = shallowRef(props.ranges)
-const currentValue = computed(() => props.ranges.find(item => item.value === model.value))
+const currentValue = computed(() => props.ranges.find((item) => item.value === model.value))
 </script>

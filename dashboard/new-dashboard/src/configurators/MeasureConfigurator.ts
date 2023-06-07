@@ -43,7 +43,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     filters: FilterConfigurator[] = [],
     readonly skipZeroValues: boolean = true,
     readonly chartType: ChartType = "line",
-    readonly symbolOptions: SymbolOptions = {},
+    readonly symbolOptions: SymbolOptions = {}
   ) {
     persistentStateManager.add("measure", this._selected)
 
@@ -60,40 +60,41 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           }
 
           this.state.loading = true
-          return isIj ? forkJoin([
-            fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
-            fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
-          ])
-            .pipe(
-              map(data => {
-                return data.flat(1)
-              }),
-            ) : fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
+          return isIj
+            ? forkJoin([
+                fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
+                fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
+              ]).pipe(
+                map((data) => {
+                  return data.flat(1)
+                })
+              )
+            : fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl)
         }),
-        updateComponentState(this.state),
+        updateComponentState(this.state)
       )
-      .subscribe(data => {
+      .subscribe((data) => {
         if (data == null) {
           return
         }
 
         if (isIj) {
-          data = [...new Set(data.map(it => /^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it))]
+          data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
 
         const selectedRef = this.selected
         //filter out _23 metrics, we need them in DB but not in UI
-        data = data.filter(it => !/.*_\d+(#.*)?$/.test(it))
+        data = data.filter((it) => !/.*_\d+(#.*)?$/.test(it))
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const filtered = selected.filter(it => data!.includes(it))
+          const filtered = selected.filter((it) => data!.includes(it))
           if (filtered.length !== selected.length) {
             selectedRef.value = filtered
           }
         }
-        selectedRef.value = [...new Set([...selectedRef.value as string[], ...data.filter(value => MAIN_METRICS.has(value))])]
+        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...data.filter((value) => MAIN_METRICS.has(value))])]
       })
   }
 
@@ -128,13 +129,12 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   let fieldPrefix: string
   if (serverConfigurator.db === "ij") {
     fieldPrefix = "measure"
-  }
-  else {
+  } else {
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
   }
 
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
-  query.addDimension(fieldPrefix.length === 0 ? {n: "name"} : {n: fieldPrefix, subName: "name"})
+  query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
   query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
   query.table = serverConfigurator.table ?? "report"
   query.flat = true
@@ -142,12 +142,13 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
 }
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: string[],
-              readonly skipZeroValues: Ref<boolean> = shallowRef(true),
-              private readonly chartType: ChartType = "line",
-              private readonly valueUnit: ValueUnit = "ms",
-              readonly symbolOptions: SymbolOptions = {},
-              readonly accidents: Accident[] | null = null,
+  constructor(
+    private readonly measures: string[],
+    readonly skipZeroValues: Ref<boolean> = shallowRef(true),
+    private readonly chartType: ChartType = "line",
+    private readonly valueUnit: ValueUnit = "ms",
+    readonly symbolOptions: SymbolOptions = {},
+    readonly accidents: Accident[] | null = null
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -174,20 +175,23 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
 
-  query.insertField({
-    n: "t",
-    sql: "toUnixTimestamp(generated_time)*1000",
-  }, 0)
+  query.insertField(
+    {
+      n: "t",
+      sql: "toUnixTimestamp(generated_time)*1000",
+    },
+    0
+  )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
   const isIj = query.db === "ij"
   const structureName = isIj ? "measure" : "measures"
   const valueName = isIj ? "duration" : "value"
-  const field: DataQueryDimension = {n: ""}
+  const field: DataQueryDimension = { n: "" }
   query.insertField(field, 1)
 
   if (query.db === "perfint" || query.db === "jbr" || query.db === "perfintDev") {
-    query.addField({n: "measures", subName: "type"})
+    query.addField({ n: "measures", subName: "type" })
   }
 
   const prevFilters: DataQueryFilter[] = []
@@ -216,36 +220,32 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
       if (query.table === "measure") {
         field.n = "value"
         field.resultKey = measure.replaceAll(".", "_")
-        addFilter({f: "name", v: measure})
+        addFilter({ f: "name", v: measure })
         valueFieldName = "value"
-      }
-      else if(isIj && measure.includes("metrics.")){
+      } else if (isIj && measure.includes("metrics.")) {
         field.n = "metrics"
-        field.subName="value"
-        addFilter({f:"metrics.name", v: measure.split("metrics.",2)[1]})
+        field.subName = "value"
+        addFilter({ f: "metrics.name", v: measure.split("metrics.", 2)[1] })
         valueFieldName = "metrics.value"
-      }
-      else if (isIj && !measure.includes(" ") && measure != "elementTypeCount") {
+      } else if (isIj && !measure.includes(" ") && measure != "elementTypeCount") {
         field.n = measure
         valueFieldName = measure
-      }
-      else {
+      } else {
         if (measure.endsWith(".end")) {
           field.n = structureName
           field.subName = "end"
           field.sql = `(${structureName}.start+${structureName}.${valueName})`
-        }
-        else {
+        } else {
           field.n = structureName
           field.subName = valueName
         }
 
-        addFilter({f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure})
+        addFilter({ f: `${structureName}.name`, v: measure.endsWith(".end") ? measure.slice(0, measure.length - ".end".length) : measure })
         valueFieldName = `${structureName}.${valueName}`
       }
 
       if (skipZeroValues) {
-        addFilter({f: valueFieldName, o: "!=", v: 0})
+        addFilter({ f: valueFieldName, o: "!=", v: 0 })
       }
     },
     getSeriesName(index: number): string {
@@ -268,7 +268,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidents: Accident[] | null = null,
+  accidents: Accident[] | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -285,8 +285,7 @@ function configureChart(
       const type = seriesData[2].at(-1)
       if (type === "c") {
         useDurationFormatter = false
-      }
-      else if (type === "d") {
+      } else if (type === "d") {
         useDurationFormatter = true
       }
     }
@@ -324,7 +323,10 @@ function configureChart(
         sampling: "lttb",
         seriesLayoutBy: "row",
         datasetIndex: dataIndex,
-        dimensions: [{name: useDurationFormatter ? "time" : "count", type: "time"}, {name: seriesName, type: "int"}],
+        dimensions: [
+          { name: useDurationFormatter ? "time" : "count", type: "time" },
+          { name: seriesName, type: "int" },
+        ],
         itemStyle: {
           color(seriesIndex) {
             const accident = getAccident(accidentsMap, seriesIndex.value as string[])
@@ -381,7 +383,7 @@ function configureChart(
 
   const isNs = valueUnit == "ns"
   const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
-  const formatter: (valueInMs: number) => string = isNs ? v => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter
+  const formatter: (valueInMs: number) => string = isNs ? (v) => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter
   return {
     dataset,
     yAxis: {

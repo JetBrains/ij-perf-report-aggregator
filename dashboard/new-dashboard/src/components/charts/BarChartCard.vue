@@ -2,7 +2,7 @@
   <div
     ref="chartElement"
     class="bg-white overflow-hidden shadow rounded-lg w-full"
-    :style="{height: `${height}px`}"
+    :style="{ height: `${height}px` }"
   />
 </template>
 <script setup lang="ts">
@@ -13,14 +13,17 @@ import { BarChartManager } from "../common/BarChartManager"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { chartDefaultStyle } from "../common/chart"
 
-const props = withDefaults(defineProps<{
-  height?: number
-  measures: string[]
-}>(), {
-  height: 440,
-  valueUnit: "ms",
-  measures: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    height?: number
+    measures: string[]
+  }>(),
+  {
+    height: 440,
+    valueUnit: "ms",
+    measures: () => [],
+  }
+)
 
 const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: BarChartManager | null = null

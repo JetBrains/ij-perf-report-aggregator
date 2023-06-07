@@ -6,14 +6,13 @@ import { LineChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, numberAxisLabelFormatter } from "../components/common/formatter"
 
 export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConfigurator {
-
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     query.addDimension({
       n: "t",
       //2018-04-10T00:00:00
       sql: "toYYYYMMDD(generated_time)",
     })
-    query.addField({n: "measures", subName: "value"})
+    query.addField({ n: "measures", subName: "value" })
     query.aggregator = "avg"
     query.order = "t"
 
@@ -49,8 +48,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         const type = seriesData[2].at(-1)
         if (type === "c") {
           useDurationFormatter = false
-        }
-        else if (type === "d") {
+        } else if (type === "d") {
           useDurationFormatter = true
         }
       }
@@ -69,9 +67,11 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         sampling: "lttb",
         seriesLayoutBy: "row",
         datasetIndex: dataIndex,
-        dimensions: [{name: "date", type: "time"}, {name: seriesName, type: "int"}],
+        dimensions: [
+          { name: "date", type: "time" },
+          { name: seriesName, type: "int" },
+        ],
       })
-
 
       if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
         useDurationFormatter = false

@@ -16,10 +16,7 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "jsx": "preserve",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "types": ["vite/client"]
   }
 }

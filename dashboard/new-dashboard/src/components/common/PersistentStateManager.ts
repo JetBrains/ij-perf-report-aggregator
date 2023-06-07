@@ -16,8 +16,7 @@ export class PersistentStateManager {
     const storedState = localStorage.getItem(this.getKey())
     if (storedState == null) {
       this.state = defaultState ?? {}
-    }
-    else {
+    } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       this.state = JSON.parse(storedState)
       if (defaultState != null) {
@@ -30,29 +29,22 @@ export class PersistentStateManager {
 
     if (this.router == null) {
       this.route = null
-    }
-    else {
+    } else {
       this.route = useRoute()
       const route = this.route
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
-        this.state[name] = Array.isArray(value) ? (value as string[]).map(element => boolFromString(element)) : boolFromString(value)
+        this.state[name] = Array.isArray(value) ? (value as string[]).map((element) => boolFromString(element)) : boolFromString(value)
       }
     }
 
-    this.saveSubject.pipe(
-      debounceTime(300),
-    )
-      .subscribe(() => {
-        localStorage.setItem(this.getKey(), JSON.stringify(this.state))
+    this.saveSubject.pipe(debounceTime(300)).subscribe(() => {
+      localStorage.setItem(this.getKey(), JSON.stringify(this.state))
 
-        this.updateUrlQuery()
-      })
+      this.updateUrlQuery()
+    })
 
-    this.updateUrlSubject.pipe(
-      debounceTime(300),
-    )
-      .subscribe(() => this.updateUrlQuery())
+    this.updateUrlSubject.pipe(debounceTime(300)).subscribe(() => this.updateUrlQuery())
   }
 
   private getKey(): string {
@@ -66,7 +58,7 @@ export class PersistentStateManager {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const currentRoute = this.route!
-    const query: LocationQueryRaw = {...currentRoute.query}
+    const query: LocationQueryRaw = { ...currentRoute.query }
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
@@ -77,12 +69,12 @@ export class PersistentStateManager {
 
     if (isChanged) {
       // noinspection JSIgnoredPromiseFromCall
-      void this.router.push({query})
+      void this.router.push({ query })
     }
   }
 
   add(name: string, value: Ref<unknown>, existingValueTransformer: ((v: unknown) => unknown) | null = null): void {
-    watch(value, value => {
+    watch(value, (value) => {
       const oldValue = this.state[name]
       if (value !== oldValue) {
         this.state[name] = value
@@ -99,7 +91,7 @@ export class PersistentStateManager {
   }
 }
 
-function boolFromString(s: string|null) {
+function boolFromString(s: string | null) {
   if (s == "true") return true
   if (s == "false") return false
   return s

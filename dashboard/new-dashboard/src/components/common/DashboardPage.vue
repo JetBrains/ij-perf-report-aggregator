@@ -13,9 +13,7 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <slot
-          :averages-configurators="averagesConfigurators"
-        />
+        <slot :averages-configurators="averagesConfigurators" />
       </div>
       <InfoSidebar />
     </main>
@@ -47,10 +45,10 @@ import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 interface PerformanceDashboardProps {
   dbName: string
   table: string
-  initialMachine?: string|null
+  initialMachine?: string | null
   persistentId: string
   withInstaller?: boolean
-  charts?: Chart[]|null
+  charts?: Chart[] | null
   isBuildNumberExists?: boolean
 }
 
@@ -73,58 +71,51 @@ provide(sidebarVmKey, sidebarVm)
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 provide(serverConfiguratorKey, serverConfigurator)
 
-const persistenceForDashboard = new PersistentStateManager(props.persistentId, {
-  machine: props.initialMachine ?? "",
-  project: [],
-  branch: "master",
-}, router)
+const persistenceForDashboard = new PersistentStateManager(
+  props.persistentId,
+  {
+    machine: props.initialMachine ?? "",
+    project: [],
+    branch: "master",
+  },
+  router
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator(
-  "project",
-  serverConfigurator,
-  null,
-  true,
-  [timeRangeConfigurator],
-)
+const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true, [timeRangeConfigurator])
 if (scenarioConfigurator != null && props.charts != null) {
   scenarioConfigurator.selected.value = extractUniqueProjects(props.charts)
 }
 
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
-const machineConfigurator = props.initialMachine == null ? undefined : new MachineConfigurator(
-  serverConfigurator,
-  persistenceForDashboard,
-  scenarioConfigurator == null ? [timeRangeConfigurator, branchConfigurator] : [timeRangeConfigurator, branchConfigurator, scenarioConfigurator],
-)
+const machineConfigurator =
+  props.initialMachine == null
+    ? undefined
+    : new MachineConfigurator(
+        serverConfigurator,
+        persistenceForDashboard,
+        scenarioConfigurator == null ? [timeRangeConfigurator, branchConfigurator] : [timeRangeConfigurator, branchConfigurator, scenarioConfigurator]
+      )
 
 const triggeredByConfigurator = privateBuildConfigurator(
   serverConfigurator,
   persistenceForDashboard,
-  scenarioConfigurator == null ? [branchConfigurator, timeRangeConfigurator] : [branchConfigurator, timeRangeConfigurator, scenarioConfigurator],
+  scenarioConfigurator == null ? [branchConfigurator, timeRangeConfigurator] : [branchConfigurator, timeRangeConfigurator, scenarioConfigurator]
 )
 
-const averagesConfigurators = [
-  serverConfigurator,
-  branchConfigurator,
-  timeRangeConfigurator,
-] as DataQueryConfigurator[]
+const averagesConfigurators = [serverConfigurator, branchConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
 if (machineConfigurator != null) {
   averagesConfigurators.push(machineConfigurator)
 }
 
-const dashboardConfigurators = [
-  branchConfigurator,
-  timeRangeConfigurator,
-  triggeredByConfigurator,
-] as FilterConfigurator[]
+const dashboardConfigurators = [branchConfigurator, timeRangeConfigurator, triggeredByConfigurator] as FilterConfigurator[]
 
 if (machineConfigurator != null) {
   dashboardConfigurators.push(machineConfigurator)
 }
 
-const releaseConfigurator = (props.withInstaller) ? new ReleaseNightlyConfigurator(persistenceForDashboard) : undefined
+const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistenceForDashboard) : undefined
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
@@ -134,11 +125,10 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
-const projects = props.charts?.map(it => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
+const projects = props.charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
 const warnings = ref<Accident[]>()
-refToObservable(timeRangeConfigurator.value).subscribe(data => {
+refToObservable(timeRangeConfigurator.value).subscribe((data) => {
   getAccidentsFromMetaDb(warnings, projects, data)
 })
 provide(accidentsKeys, warnings as Ref<Accident[]>)
-
 </script>

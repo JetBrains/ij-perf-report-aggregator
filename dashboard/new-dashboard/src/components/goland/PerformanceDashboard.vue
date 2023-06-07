@@ -82,11 +82,10 @@
         :projects="['vault/findUsages/Backend', 'vault/findUsages/List', 'vault/findUsages/Path', 'vault/findUsages/String']"
       />
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-
 </script>

@@ -35,7 +35,7 @@ export class ChartToolTipManager {
 
   readonly reportInfoProvider = inject(reportInfoProviderKey, null)
 
-  private consumer: ((data: TooltipData  | null, target: Event | null) => void) | null = null
+  private consumer: ((data: TooltipData | null, target: Event | null) => void) | null = null
 
   setConsumer(consumer: ((data: TooltipData | null, target: Event | null) => void) | null) {
     this.consumer = consumer
@@ -60,21 +60,24 @@ export class ChartToolTipManager {
     // same for all series
     const values = params[0].value as number[]
 
-    consumer({
-      items: params.map(measure => {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const measureValue = (measure.value as number[])[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
-        return {
+    consumer(
+      {
+        items: params.map((measure) => {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          name: measure.seriesName!,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          value: measureValue,
-          color: measure.color as string,
-        }
-      }),
-      firstSeriesData: query.db === "perfint" ? [...values.slice(0, 2), ...values.slice(3)] : values,
-      reportInfoProvider: this.reportInfoProvider,
-      query,
-    }, target)
+          const measureValue = (measure.value as number[])[measure.encode!["y"][0]] / (this.valueUnit == "ns" ? 1_000_000 : 1)
+          return {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            name: measure.seriesName!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            value: measureValue,
+            color: measure.color as string,
+          }
+        }),
+        firstSeriesData: query.db === "perfint" ? [...values.slice(0, 2), ...values.slice(3)] : values,
+        reportInfoProvider: this.reportInfoProvider,
+        query,
+      },
+      target
+    )
   }
 }

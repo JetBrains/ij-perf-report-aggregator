@@ -88,12 +88,11 @@
         :projects="['Open mPDF', 'Frontend Completion in mPDF']"
       />
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
-
 </script>

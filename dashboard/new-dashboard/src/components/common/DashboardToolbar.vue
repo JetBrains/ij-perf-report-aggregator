@@ -46,7 +46,6 @@ const props = defineProps<{
   machineConfigurator?: MachineConfigurator
   onChangeRange: (value: TimeRange) => void
 }>()
-
 </script>
 
 <style>

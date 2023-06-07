@@ -102,12 +102,17 @@ const metricsDeclaration = [
   "workspaceModel.updates.ms",
   "workspaceModel.updates.precise.ms",
 
-  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
 ]
 
-
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
+const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
   return {
     labels: [metric],
     measures: [metric],
@@ -147,5 +152,4 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
   }
 })
 const charts = combineCharts(chartsDeclaration)
-
 </script>

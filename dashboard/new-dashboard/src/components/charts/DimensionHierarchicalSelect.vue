@@ -10,7 +10,7 @@
     class="max-w-lg"
   >
     <!-- eslint-disable vue/no-template-shadow -->
-    <template #value="{value}">
+    <template #value="{ value }">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         <template v-if="value && value.length > 0">
           <span class="flex items-center gap-1">
@@ -58,7 +58,11 @@ const props = defineProps<{
 
 type SelectedValue = Record<string, boolean>
 
-const placeholder = usePlaceholder(props, () => props.dimension.values.value, () => props.dimension.selected.value)
+const placeholder = usePlaceholder(
+  props,
+  () => props.dimension.values.value,
+  () => props.dimension.selected.value
+)
 
 const value = computed<SelectedValue>({
   get(): SelectedValue {
@@ -70,10 +74,12 @@ const value = computed<SelectedValue>({
   },
   set(value: SelectedValue) {
     // eslint-disable-next-line vue/no-mutating-props
-    props.dimension.selected.value = Object.entries(value).filter(it => it[1]).map(it => it[0])
+    props.dimension.selected.value = Object.entries(value)
+      .filter((it) => it[1])
+      .map((it) => it[0])
   },
 })
 const values = computed(() => {
-  return props.dimension.values.value.map(element => convertItemToTreeSelectModel(element))
+  return props.dimension.values.value.map((element) => convertItemToTreeSelectModel(element))
 })
 </script>

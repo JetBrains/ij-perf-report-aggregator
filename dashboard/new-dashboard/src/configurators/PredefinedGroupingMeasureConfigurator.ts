@@ -10,9 +10,7 @@ import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: string[],
-              private readonly timeRange: Ref<TimeRange>,
-              private readonly chartStyle: ChartStyle) {}
+  constructor(private readonly measures: string[], private readonly timeRange: Ref<TimeRange>, private readonly chartStyle: ChartStyle) {}
   createObservable() {
     return null
   }
@@ -28,11 +26,9 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     // do not use "Jan 06" because not clear - 06 here it is month or year
     if (timeRange === "1M") {
       query.timeDimensionFormat = "2 Jan"
-    }
-    else if (timeRange === "3M") {
+    } else if (timeRange === "3M") {
       query.timeDimensionFormat = "Jan"
-    }
-    else {
+    } else {
       query.timeDimensionFormat = "2 Jan 2006"
     }
 
@@ -43,19 +39,17 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
       for (const measureName of measureNames) {
         query.addField(measureName)
       }
-    }
-    else {
+    } else {
       if (measureNames.length > 1) {
         throw new Error("multiple measures are not supported")
       }
 
       if (query.table === "measure") {
-        query.addField({n: "value"})
-        query.addFilter({f: "name", v: measureNames[0]})
-      }
-      else {
-        query.addField({n: "measures", subName: "value"})
-        query.addFilter({f: "measures.name", v: measureNames})
+        query.addField({ n: "value" })
+        query.addFilter({ f: "name", v: measureNames[0] })
+      } else {
+        query.addField({ n: "measures", subName: "value" })
+        query.addFilter({ f: "measures.name", v: measureNames })
         if (measureNames.length > 1) {
           throw new Error("multiple measures are not supported")
         }
@@ -93,7 +87,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
       if (classifier.length > 0) {
         dimension += ` | ${classifier}`
       }
-      const column: Record<string, string | number> = {dimension}
+      const column: Record<string, string | number> = { dimension }
       source.push(column)
       const result = dataList[dataIndex]
       for (let i = 0; i < result[0].length; i++) {
@@ -106,9 +100,9 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
 
   // https://echarts.apache.org/examples/en/editor.html?c=dataset-simple1
   const dimensions: DimensionDefinition[] = []
-  dimensions.push({name: "dimension", type: "ordinal"})
+  dimensions.push({ name: "dimension", type: "ordinal" })
   for (const name of dimensionNameSet) {
-    dimensions.push({name, type: "number"})
+    dimensions.push({ name, type: "number" })
   }
 
   const series = new Array<BarSeriesOption>(dimensions.length - 1)
@@ -134,7 +128,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
 }
 
 function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: ValueUnit): (p: CallbackDataParams) => string {
-  const converter: (it: number) => number = valueUnit === "ns" ? nsToMs : it => it
+  const converter: (it: number) => number = valueUnit === "ns" ? nsToMs : (it) => it
   return function (data: CallbackDataParams): string {
     const value = converter((data.value as Record<string, string | number>)[data.seriesName as string] as number)
     return useDurationFormatter && value > 10_000 ? durationAxisPointerFormatter(value) : numberFormat.format(value)

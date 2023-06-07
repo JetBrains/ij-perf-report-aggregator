@@ -15,7 +15,8 @@
         :projects="chart.projects"
       />
     </section>
-  </DashboardPage>>
+  </DashboardPage>
+  >
 </template>
 
 <script setup lang="ts">
@@ -25,34 +26,40 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-  labels: ["Elastic Rebuild/Build time"],
-  measures: ["build_compilation_duration"],
-  projects: ["incremental-build-java/build_incremental", "incremental-build-java/rebuild_initial"],
-  }, {
+    labels: ["Elastic Rebuild/Build time"],
+    measures: ["build_compilation_duration"],
+    projects: ["incremental-build-java/build_incremental", "incremental-build-java/rebuild_initial"],
+  },
+  {
     labels: ["IntelliJ Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-intellij/build_incremental", "incremental-build-intellij/rebuild_initial"],
-  }, {
+  },
+  {
     labels: ["Coroutines Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-kotlin/build_incremental", "incremental-build-kotlin/rebuild_initial"],
-  }, {
+  },
+  {
     labels: ["Youtrack JPS Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-youtrack-jps/build_incremental", "incremental-build-youtrack-jps/rebuild_initial"],
-  }, {
+  },
+  {
     labels: ["Youtrack Gradle Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-youtrack-gradle/build_incremental", "incremental-build-youtrack-gradle/rebuild_initial"],
-  }, {
+  },
+  {
     labels: ["Hub JPS Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-hub-jps/build_incremental", "incremental-build-hub-jps/rebuild_initial"],
-  }, {
+  },
+  {
     labels: ["Hub Gradle Rebuild/Build time"],
     measures: ["build_compilation_duration"],
     projects: ["incremental-build-hub-gradle/build_incremental", "incremental-build-hub-gradle/rebuild_initial"],
-  }
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -28,26 +28,24 @@ export class ReleaseNightlyConfigurator extends DimensionConfigurator {
 
     if (Array.isArray(value) && value.length > 1) {
       configuration.queryProducers.push({
-          size(): number {
-            return value.length
-          },
-          mutate(index: number) {
-            if (filter == null) {
-              filter = getFilter(value[index])
-              query.addFilter(filter)
-            }
-            else {
-              filter.o = value[index] == eap ? "!=" : "="
-            }
-          },
-          getSeriesName(index: number): string {
-            return value[index]
-          },
-          getMeasureName(_index: number): string {
-            return configuration.measures[0]
-          },
+        size(): number {
+          return value.length
         },
-      )
+        mutate(index: number) {
+          if (filter == null) {
+            filter = getFilter(value[index])
+            query.addFilter(filter)
+          } else {
+            filter.o = value[index] == eap ? "!=" : "="
+          }
+        },
+        getSeriesName(index: number): string {
+          return value[index]
+        },
+        getMeasureName(_index: number): string {
+          return configuration.measures[0]
+        },
+      })
     }
     if (filter != null) {
       query.addFilter(filter)
@@ -61,14 +59,13 @@ function getFilter(value: ReleaseType | ReleaseType[] | null): DataQueryFilter |
   if (value == null || value.length === 0) {
     return null
   }
-  const filter: DataQueryFilter = {f: "build_c3", v: 0}
+  const filter: DataQueryFilter = { f: "build_c3", v: 0 }
   if (Array.isArray(value)) {
     if (value.includes(eap) && value.includes(nightly)) {
       return null
     }
     filter.o = value.includes(eap) ? "!=" : "="
-  }
-  else {
+  } else {
     filter.o = value == eap ? "!=" : "="
   }
   return filter

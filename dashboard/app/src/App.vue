@@ -24,18 +24,20 @@ const serverUrl = shallowRef(ServerConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
 const serverUrlObservable = refToObservable(serverUrl).pipe(
   filter((it: string | null): it is string => it !== null && it.length > 0),
-  shareReplay(1),
+  shareReplay(1)
 )
 provide(serverUrlObservableKey, serverUrlObservable)
 
 const activePath = shallowRef("")
 const _route = useRoute()
-watch(() => _route.path, p => {
-  activePath.value = p
-  limit.clearQueue()
-})
+watch(
+  () => _route.path,
+  (p) => {
+    activePath.value = p
+    limit.clearQueue()
+  }
+)
 
-const persistentStateManager = new PersistentStateManager("common", {serverUrl: ServerConfigurator.DEFAULT_SERVER_URL})
+const persistentStateManager = new PersistentStateManager("common", { serverUrl: ServerConfigurator.DEFAULT_SERVER_URL })
 persistentStateManager.add("serverUrl", serverUrl)
-
 </script>

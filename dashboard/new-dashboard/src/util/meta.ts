@@ -5,7 +5,6 @@ import { TimeRange } from "../configurators/TimeRangeConfigurator"
 
 const accidents_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
 
-
 export enum AccidentKind {
   Regression = "Regression",
   Exception = "Exception",
@@ -26,7 +25,7 @@ function intervalToPostgresInterval(interval: TimeRange): string {
     "1M": "1 MONTH",
     "3M": "3 MONTHS",
     "1y": "1 YEAR",
-    "all": "100 YEAR",
+    all: "100 YEAR",
   }
   return intervalMapping[interval]
 }
@@ -41,22 +40,22 @@ export function removeAccidentFromMetaDb(id: number) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({id}),
-  }).then(
-    _ => window.location.reload(),
-  ).catch(error => console.error(error))
+    body: JSON.stringify({ id }),
+  })
+    .then((_) => window.location.reload())
+    .catch((error) => console.error(error))
 }
 
-export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string|undefined) {
+export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
   fetch(accidents_url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({date, affected_test, reason, build_number: build_number.toString(), kind}),
-  }).then(
-    _ => window.location.reload(),
-  ).catch(error => console.error(error))
+    body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind }),
+  })
+    .then((_) => window.location.reload())
+    .catch((error) => console.error(error))
 }
 
 export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, tests: string[] | string | null, timeRange: TimeRange) {
@@ -65,7 +64,7 @@ export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, t
   }
   accidents.value = []
   const interval = intervalToPostgresInterval(timeRange)
-  const params = tests == null ? {interval} : {interval, tests}
+  const params = tests == null ? { interval } : { interval, tests }
   fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
     method: "POST",
     headers: {
@@ -73,16 +72,15 @@ export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, t
     },
     body: JSON.stringify(params),
   })
-    .then(response => response.json())
+    .then((response) => response.json())
     .then((data: AccidentFromServer[]) => {
-      const mappedData = data.map(value => {
-        return {...value, kind: capitalizeFirstLetter(value.kind)}
+      const mappedData = data.map((value) => {
+        return { ...value, kind: capitalizeFirstLetter(value.kind) }
       })
       accidents.value?.push(...mappedData)
     })
-    .catch(error => console.error(error))
+    .catch((error) => console.error(error))
 }
-
 
 function capitalizeFirstLetter(str: string): AccidentKind {
   const result = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
@@ -103,10 +101,10 @@ export class Description {
   constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {}
 }
 
-export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefined>, project: string | undefined, branch: string) {
+export function getDescriptionFromMetaDb(descriptionRef: Ref<Description | undefined>, project: string | undefined, branch: string) {
   if (project != undefined) {
-    fetch(description_url + encodeRison({project, branch}))
-      .then(response => {
+    fetch(description_url + encodeRison({ project, branch }))
+      .then((response) => {
         return response.ok ? response.json() : null
       })
       .then((data: Description | null) => {
@@ -114,7 +112,7 @@ export function getDescriptionFromMetaDb(descriptionRef: Ref<Description|undefin
           descriptionRef.value = data
         }
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error))
   }
 }
 

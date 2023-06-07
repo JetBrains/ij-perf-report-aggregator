@@ -15,7 +15,7 @@ interface LabelFormatterParams {
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   month: "short",
-  day: "numeric"
+  day: "numeric",
 })
 
 export class AggregationChartVM {
@@ -23,10 +23,7 @@ export class AggregationChartVM {
 
   private chartManager?: ChartManager
 
-  constructor(
-    private readonly query: DataQueryExecutor,
-    private readonly color: string = "#4B84EE",
-  ) {}
+  constructor(private readonly query: DataQueryExecutor, private readonly color: string = "#4B84EE") {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
     this.chartManager = new ChartManager(element, resizeContainer)
@@ -65,14 +62,14 @@ export class AggregationChartVM {
             },
             color: "#6B7280",
             backgroundColor: "transparent",
-            padding: [5, 0, 0, 0]
-          }
-        }
+            padding: [5, 0, 0, 0],
+          },
+        },
       },
       yAxis: {
         type: "value",
         show: false,
-      }
+      },
     })
 
     const unsubscribe = this.dataSubscribe()
@@ -84,17 +81,16 @@ export class AggregationChartVM {
   }
 
   private dataSubscribe(): () => void {
-    return this.query.subscribe(
-      (data, configuration, isLoading: boolean) => {
-        if(isLoading || data == null){
-          this.chartManager?.chart.showLoading("default", {showSpinner: false})
-          return
-        }
-        this.chartManager?.chart.hideLoading()
-        const options = configuration.chartConfigurator.configureChart(data, configuration)
+    return this.query.subscribe((data, configuration, isLoading: boolean) => {
+      if (isLoading || data == null) {
+        this.chartManager?.chart.showLoading("default", { showSpinner: false })
+        return
+      }
+      this.chartManager?.chart.hideLoading()
+      const options = configuration.chartConfigurator.configureChart(data, configuration)
 
-        this.updateChartData(options)
-      })
+      this.updateChartData(options)
+    })
   }
 
   private calculateAverage(values: number[]) {
@@ -108,10 +104,9 @@ export class AggregationChartVM {
     return average % 1 === 0 ? average : Number(average.toFixed(1))
   }
 
-
   private updateChartData(options: ECBasicOption) {
     if (options["series"]) {
-      options["series"] = (options["series"] as LineSeriesOption[]).map(item => ({
+      options["series"] = (options["series"] as LineSeriesOption[]).map((item) => ({
         ...item,
         showSymbol: false,
         color: this.color,

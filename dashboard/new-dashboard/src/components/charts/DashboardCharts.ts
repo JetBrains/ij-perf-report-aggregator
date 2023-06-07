@@ -1,6 +1,6 @@
 export interface Definition {
   label: string
-  measure: string|string[]
+  measure: string | string[]
 }
 
 export interface Chart {
@@ -10,12 +10,12 @@ export interface Chart {
 
 export interface ChartDefinition {
   labels: string[]
-  measures: string[]|string[][]
+  measures: string[] | string[][]
   projects: string[]
 }
 
 export function combineCharts(charts: ChartDefinition[]): Chart[] {
-  const resultingCharts = new Array<Chart>
+  const resultingCharts = new Array<Chart>()
   for (const chart of charts) {
     if (chart.labels.length != chart.measures.length) {
       throw new Error("Chart labels and measures arrays must be of the same length.")
@@ -35,7 +35,7 @@ export function combineCharts(charts: ChartDefinition[]): Chart[] {
 }
 
 export function extractUniqueProjects(charts: Chart[]): string[] {
-  const allProjects = new Set<string>
+  const allProjects = new Set<string>()
   for (const chart of charts) {
     for (const project of chart.projects) {
       allProjects.add(project)

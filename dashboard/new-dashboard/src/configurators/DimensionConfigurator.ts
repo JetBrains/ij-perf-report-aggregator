@@ -11,14 +11,12 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   readonly state = createComponentState()
 
   readonly selected = shallowRef<string | string[] | null>(null)
-  readonly values = shallowRef<(string|boolean)[]>([])
+  readonly values = shallowRef<(string | boolean)[]>([])
 
   private readonly observable: Observable<string | string[] | null>
 
   constructor(readonly name: string, readonly multiple: boolean) {
-    this.observable = refToObservable(this.selected, true).pipe(
-      shareReplay(1),
-    )
+    this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
   }
 
   createObservable(): Observable<string | string[] | null> {
@@ -31,7 +29,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
       return false
     }
 
-    const filter: DataQueryFilter = {f: this.name, v: value}
+    const filter: DataQueryFilter = { f: this.name, v: value }
     if (this.multiple && Array.isArray(value)) {
       filter.v = value[0]
       if (value.length > 1) {
@@ -48,14 +46,14 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
       return false
     }
 
-    query.addFilter({f: this.name, v: value})
+    query.addFilter({ f: this.name, v: value })
     return true
   }
 }
 
 export function loadDimension(name: string, serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState) {
   const query = new DataQuery()
-  query.addField({n: name, sql: `distinct ${name}`})
+  query.addField({ n: name, sql: `distinct ${name}` })
   query.order = name
   query.flat = true
 
@@ -68,21 +66,23 @@ export function loadDimension(name: string, serverConfigurator: ServerConfigurat
   return fromFetchWithRetryAndErrorHandling<string[]>(serverConfigurator.computeQueryUrl(query))
 }
 
-export function dimensionConfigurator(name: string,
-                                      serverConfigurator: ServerConfigurator,
-                                      persistentStateManager: PersistentStateManager | null,
-                                      multiple: boolean = false,
-                                      filters: FilterConfigurator[] = [],
-                                      customValueSort: ((a: string, b: string) => number) | null = null): DimensionConfigurator {
+export function dimensionConfigurator(
+  name: string,
+  serverConfigurator: ServerConfigurator,
+  persistentStateManager: PersistentStateManager | null,
+  multiple: boolean = false,
+  filters: FilterConfigurator[] = [],
+  customValueSort: ((a: string, b: string) => number) | null = null
+): DimensionConfigurator {
   const configurator = new DimensionConfigurator(name, multiple)
   persistentStateManager?.add(name, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
     .pipe(
       switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state),
+      updateComponentState(configurator.state)
     )
-    .subscribe(data => {
+    .subscribe((data) => {
       if (data == null) {
         return
       }
@@ -102,16 +102,14 @@ export function filterSelected(configurator: DimensionConfigurator, data: string
   if (data.length === 0) {
     // do not update value - don't unset if values temporary not set
     console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
-  }
-  else {
+  } else {
     const selected = selectedRef.value
     if (Array.isArray(selected) && selected.length > 0) {
-      const filtered = selected.filter(it => data.includes(it))
+      const filtered = selected.filter((it) => data.includes(it))
       if (filtered.length !== selected.length) {
         selectedRef.value = filtered
       }
-    }
-    else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
+    } else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
       selectedRef.value = data[0]
     }
   }
@@ -119,18 +117,17 @@ export function filterSelected(configurator: DimensionConfigurator, data: string
 
 export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[]): void {
   configuration.queryProducers.push({
-      size(): number {
-        return values.length
-      },
-      mutate(index: number) {
-        filter.v = values[index]
-      },
-      getSeriesName(index: number): string {
-        return values[index]
-      },
-      getMeasureName(_index: number): string {
-        return configuration.measures[0]
-      },
+    size(): number {
+      return values.length
     },
-  )
+    mutate(index: number) {
+      filter.v = values[index]
+    },
+    getSeriesName(index: number): string {
+      return values[index]
+    },
+    getMeasureName(_index: number): string {
+      return configuration.measures[0]
+    },
+  })
 }

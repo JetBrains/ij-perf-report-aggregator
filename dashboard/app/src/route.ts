@@ -30,7 +30,7 @@ export function createAndConfigureRouter(): Router {
   })
   router.afterEach((to, _from) => {
     void nextTick(() => {
-      document.title = to.meta["pageTitle"] as string|null ?? ""
+      document.title = (to.meta["pageTitle"] as string | null) ?? ""
     })
   })
   return router

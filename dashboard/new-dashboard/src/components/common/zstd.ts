@@ -36,10 +36,7 @@ if (import.meta.hot) {
 }
 
 // zstdDictionaryUrl - if zstd dictionary will be changed on a server side, then server must introduce a new endpoint for query (currently, `/api/q`)
-export const initZstdObservable = forkJoin([
-  fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, it => it.arrayBuffer()),
-  zstdReady,
-]).pipe(
+export const initZstdObservable = forkJoin([fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, (it) => it.arrayBuffer()), zstdReady]).pipe(
   map(([dictionaryData, _]) => {
     if (compressor !== null) {
       compressor.dispose()
@@ -47,7 +44,7 @@ export const initZstdObservable = forkJoin([
     compressor = new CompressorUsingDictionary(dictionaryData)
     return null
   }),
-  shareReplay(1),
+  shareReplay(1)
 )
 
 function isError(code: number): boolean {
@@ -62,7 +59,7 @@ const zstdCompressionLevel = 7
 
 export class CompressorUsingDictionary {
   private readonly zstdDictionaryPointer: number
-  private readonly zstdDictionarySize:number
+  private readonly zstdDictionarySize: number
   private readonly dict: number
   private readonly context: number
 
@@ -97,12 +94,10 @@ export class CompressorUsingDictionary {
         }
         // console.timeEnd("zstd")
         return bytesToBase64(HEAPU8, compressedOffset, sizeOrError)
-      }
-      finally {
+      } finally {
         free(compressedOffset, maxCompressedSize)
       }
-    }
-    finally {
+    } finally {
       free(uncompressedOffset, maxUncompressedSize)
     }
   }
@@ -115,11 +110,70 @@ export class CompressorUsingDictionary {
 }
 
 const base64UrlSafe = [
-  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-  "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-  "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-  "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "_",
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T",
+  "U",
+  "V",
+  "W",
+  "X",
+  "Y",
+  "Z",
+  "a",
+  "b",
+  "c",
+  "d",
+  "e",
+  "f",
+  "g",
+  "h",
+  "i",
+  "j",
+  "k",
+  "l",
+  "m",
+  "n",
+  "o",
+  "p",
+  "q",
+  "r",
+  "s",
+  "t",
+  "u",
+  "v",
+  "w",
+  "x",
+  "y",
+  "z",
+  "0",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "-",
+  "_",
 ]
 
 function bytesToBase64(bytes: Uint8Array, offset: number, size: number) {
@@ -129,8 +183,8 @@ function bytesToBase64(bytes: Uint8Array, offset: number, size: number) {
   for (; i < end; i += 3) {
     result += base64UrlSafe[bytes[i - 2] >> 2]
     result += base64UrlSafe[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)]
-    result += base64UrlSafe[((bytes[i - 1] & 0x0F) << 2) | (bytes[i] >> 6)]
-    result += base64UrlSafe[bytes[i] & 0x3F]
+    result += base64UrlSafe[((bytes[i - 1] & 0x0f) << 2) | (bytes[i] >> 6)]
+    result += base64UrlSafe[bytes[i] & 0x3f]
   }
   // 1 octet yet to write
   if (i === end + 1) {
@@ -141,7 +195,7 @@ function bytesToBase64(bytes: Uint8Array, offset: number, size: number) {
   if (i === end) {
     result += base64UrlSafe[bytes[i - 2] >> 2]
     result += base64UrlSafe[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)]
-    result += base64UrlSafe[(bytes[i - 1] & 0x0F) << 2]
+    result += base64UrlSafe[(bytes[i - 1] & 0x0f) << 2]
   }
   return result
 }

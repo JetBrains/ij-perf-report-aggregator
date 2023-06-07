@@ -7,7 +7,6 @@ import { updateComponentState } from "./componentState"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 
 export class PrivateBuildConfigurator extends DimensionConfigurator {
-
   constructor() {
     super("triggeredBy", true)
   }
@@ -18,7 +17,7 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
       return true
     }
 
-    const filter: DataQueryFilter = {f: this.name, v: ""}
+    const filter: DataQueryFilter = { f: this.name, v: "" }
     const values = Array.isArray(value) ? ["", ...value] : ["", value]
     configureQueryProducer(configuration, filter, values)
     query.addFilter(filter)
@@ -26,9 +25,11 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
   }
 }
 
-export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
-                                         persistentStateManager: PersistentStateManager | null,
-                                         filters: FilterConfigurator[] = []): DimensionConfigurator {
+export function privateBuildConfigurator(
+  serverConfigurator: ServerConfigurator,
+  persistentStateManager: PersistentStateManager | null,
+  filters: FilterConfigurator[] = []
+): DimensionConfigurator {
   const configurator = new PrivateBuildConfigurator()
   const name = "triggeredBy"
   persistentStateManager?.add(name, configurator.selected)
@@ -36,9 +37,9 @@ export function privateBuildConfigurator(serverConfigurator: ServerConfigurator,
   createFilterObservable(serverConfigurator, filters)
     .pipe(
       switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
-      updateComponentState(configurator.state),
+      updateComponentState(configurator.state)
     )
-    .subscribe(data => {
+    .subscribe((data) => {
       if (data == null) {
         return
       }

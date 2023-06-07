@@ -1,0 +1,7 @@
+jb/prime-theme/
+cmd/frontend/resources/
+.idea/
+.github/
+*.yaml
+*.yml
+components.d.ts

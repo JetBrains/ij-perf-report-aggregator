@@ -7,7 +7,7 @@ export const DEFAULT_LINE_CHART_HEIGHT = 340
 export declare type ToolTipFormatter = (params: CallbackDataParams[]) => string | null
 
 // natural sort of alphanumerical strings
-export const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: "base"})
+export const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "base" })
 
 export function adaptToolTipFormatter(formatter: ToolTipFormatter): (params: CallbackDataParams | CallbackDataParams[]) => string {
   return function (params: CallbackDataParams | CallbackDataParams[]): string {
@@ -44,11 +44,23 @@ export const chartDefaultStyle: ChartStyle = {
 
 export type ValueUnit = "ms" | "ns" | "counter"
 
-export type ChartSymbolType = "circle"| "rect"| "roundRect"| "triangle"| "diamond"| "pin"| "arrow"| "none"
+export type ChartSymbolType = "circle" | "rect" | "roundRect" | "triangle" | "diamond" | "pin" | "arrow" | "none"
 
 export interface ChartStyle {
-  barSeriesLabelPosition: "left" | "right" | "top" | "bottom" | "inside" | "insideLeft" | "insideRight" | "insideTop" |
-    "insideBottom" | "insideTopLeft" | "insideTopRight" | "insideBottomLeft" | "insideBottomRight"
+  barSeriesLabelPosition:
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "inside"
+    | "insideLeft"
+    | "insideRight"
+    | "insideTop"
+    | "insideBottom"
+    | "insideTopLeft"
+    | "insideTopRight"
+    | "insideBottomLeft"
+    | "insideBottomRight"
 
   valueUnit: ValueUnit
 }

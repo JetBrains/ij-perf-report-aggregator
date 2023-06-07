@@ -15,9 +15,7 @@
       <div class="group flex items-center gap-1">
         <slot name="icon" />
 
-        <span
-          v-if="!slotProps.value || slotProps.value.length === 0"
-        >
+        <span v-if="!slotProps.value || slotProps.value.length === 0">
           {{ title }}
         </span>
 
@@ -25,9 +23,7 @@
           {{ slotProps.value[0] }}
         </span>
 
-        <span
-          v-if="slotProps.value && slotProps.value.length > 1"
-        >
+        <span v-if="slotProps.value && slotProps.value.length > 1">
           {{ props.selectedLabel(slotProps.value) }}
         </span>
 
@@ -78,8 +74,7 @@ const items = computed(() => {
   result.sort((a, b) => {
     if (selectedValue.includes(a)) {
       return selectedValue.includes(b) ? 0 : -1
-    }
-    else {
+    } else {
       return selectedValue.includes(b) ? 1 : 0
     }
   })
@@ -91,7 +86,7 @@ const value = computed({
     const configurator = props.configurator
     const selectedValue = configurator.selected.value
     const allValues = configurator.data.value
-    if (selectedValue != null && selectedValue.length > 0 && !allValues.some(it => selectedValue.includes(it))) {
+    if (selectedValue != null && selectedValue.length > 0 && !allValues.some((it) => selectedValue.includes(it))) {
       return null
     }
     return allValues.length === 0 ? null : selectedValue

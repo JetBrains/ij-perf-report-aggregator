@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_completion_dashboard"
@@ -33,7 +33,8 @@
           measure="indexing"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
         />
-      </div>          <div class="flex-1 min-w-0">
+      </div>
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing K2"
           measure="indexing"
@@ -61,7 +62,7 @@
             'intellij_commit/completion/empty_place_with_library_cache_k1',
             'intellij_commit/completion/after_parameter_with_library_cache_k1',
             'kotlin_lang/completion/after_parameter_with_library_cache_k1',
-            'kotlin_lang/completion/empty_place_with_library_cache_k1'
+            'kotlin_lang/completion/empty_place_with_library_cache_k1',
           ]"
         />
       </div>
@@ -73,7 +74,7 @@
             'intellij_commit/completion/empty_place_with_library_cache_k2',
             'intellij_commit/completion/after_parameter_with_library_cache_k2',
             'kotlin_lang/completion/after_parameter_with_library_cache_k2',
-            'kotlin_lang/completion/empty_place_with_library_cache_k2'
+            'kotlin_lang/completion/empty_place_with_library_cache_k2',
           ]"
         />
       </div>
@@ -90,7 +91,7 @@
             'kotlin_empty/completion/empty_place_typing_with_library_cache_k1',
             'kotlin_empty/completion/empty_place_typing_with_library_cache_k2',
             'kotlin_lang/completion/empty_place_typing_with_library_cache_k1',
-            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2'
+            'kotlin_lang/completion/empty_place_typing_with_library_cache_k2',
           ]"
         />
       </div>
@@ -121,12 +122,11 @@
         />
       </div>
     </section>
-  </DashboardPage>>
+  </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-
 </script>

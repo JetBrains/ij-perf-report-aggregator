@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts} from "../charts/DashboardCharts"
+import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
@@ -30,12 +30,17 @@ const metricsDeclaration = [
   "DATA_SERVICES",
   "WORKSPACE_MODEL_APPLY",
 
-  "CPU | Load |Total % 95th pctl", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl", "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause", "gcPauseCount", "fullGCPause", "freedMemoryByGC", "totalHeapUsedMax",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
 ]
 
-
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
+const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
   return {
     labels: [metric],
     measures: [metric],
@@ -53,10 +58,9 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map(metric => {
       "project-reimport-space/measureStartup",
       "project-import-space/measureStartup",
       "project-import-open-telemetry/measureStartup",
-      "project-import-gradle-openliberty/measureStartup"
+      "project-import-gradle-openliberty/measureStartup",
     ],
   }
 })
 const charts = combineCharts(chartsDeclaration)
-
 </script>

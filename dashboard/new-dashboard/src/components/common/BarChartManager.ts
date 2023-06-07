@@ -41,8 +41,8 @@ export class BarChartManager {
     })
 
     this.unsubscribe = dataQueryExecutor.subscribe((data, configuration, isLoading) => {
-      if(isLoading || data == null){
-        this.chart.chart.showLoading("default", {showSpinner: false})
+      if (isLoading || data == null) {
+        this.chart.chart.showLoading("default", { showSpinner: false })
         return
       }
       this.chart.chart.hideLoading()

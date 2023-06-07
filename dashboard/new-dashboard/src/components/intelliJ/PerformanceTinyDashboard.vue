@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="idea"
     persistent-id="idea_tiny_dashboard"
@@ -62,42 +62,49 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
-const chartsDeclaration: ChartDefinition[] = [{
-  labels: ["Indexing (Big projects)", "Scanning (Big projects)"],
-  measures: ["indexing", "scanning"],
-  projects: ["grails/indexing", "kotlin_coroutines/indexing", "kotlin/indexing", "spring_boot/indexing"],
-},  {
-  labels: ["Indexing", "Scanning"],
-  measures: ["indexing", "scanning"],
-  projects: ["empty_project/indexing", "java/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
-},  {
-  labels: ["Rebuild"],
-  measures: ["build_compilation_duration"],
-  projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
-},  {
-  labels: ["Local Inspection", "First Code Analysis"],
-  measures: ["localInspections", "firstCodeAnalysis"],
-  projects: ["kotlin/localInspection",
-    "kotlin_coroutines/localInspection"],
-}, {
-  labels: ["Completion"],
-  measures: ["completion"],
-  projects: ["grails/completion/groovy_file", "grails/completion/java_file"],
-},  {
-  labels: ["Show Intentions (average awt delay)"],
-  measures: ["test#average_awt_delay"],
-  projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
-}, {
-  labels: ["Highlight"],
-  measures: ["highlighting"],
-  projects: ["kotlin/highlight", "kotlin_coroutines/highlight"],
-}]
+const chartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Indexing (Big projects)", "Scanning (Big projects)"],
+    measures: ["indexing", "scanning"],
+    projects: ["grails/indexing", "kotlin_coroutines/indexing", "kotlin/indexing", "spring_boot/indexing"],
+  },
+  {
+    labels: ["Indexing", "Scanning"],
+    measures: ["indexing", "scanning"],
+    projects: ["empty_project/indexing", "java/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
+  },
+  {
+    labels: ["Rebuild"],
+    measures: ["build_compilation_duration"],
+    projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
+  },
+  {
+    labels: ["Local Inspection", "First Code Analysis"],
+    measures: ["localInspections", "firstCodeAnalysis"],
+    projects: ["kotlin/localInspection", "kotlin_coroutines/localInspection"],
+  },
+  {
+    labels: ["Completion"],
+    measures: ["completion"],
+    projects: ["grails/completion/groovy_file", "grails/completion/java_file"],
+  },
+  {
+    labels: ["Show Intentions (average awt delay)"],
+    measures: ["test#average_awt_delay"],
+    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+  },
+  {
+    labels: ["Highlight"],
+    measures: ["highlighting"],
+    projects: ["kotlin/highlight", "kotlin_coroutines/highlight"],
+  },
+]
 
 const charts = combineCharts(chartsDeclaration)
 
 const typingOnlyConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "project", v: "%typing", o: "like"})
+    query.addFilter({ f: "project", v: "%typing", o: "like" })
     return true
   },
   createObservable() {

@@ -57,7 +57,7 @@ export class DataQuery {
 
   removeFilters(toRemove: DataQueryFilter[]): void {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.filters = this.filters!.filter(it => !toRemove.includes(it))
+    this.filters = this.filters!.filter((it) => !toRemove.includes(it))
   }
 
   addDimension(dimension: DataQueryDimension): void {
@@ -174,9 +174,9 @@ export interface Machine {
 }
 
 export function toMutableArray(value: string | string[] | null): string[] {
-  return (value == null || value === "") ? [] : (Array.isArray(value) ? [...value] : [value])
+  return value == null || value === "" ? [] : Array.isArray(value) ? [...value] : [value]
 }
 
 export function toArray(value: string | string[] | null): string[] {
-  return (value == null || value === "") ? [] : (Array.isArray(value) ? value : [value])
+  return value == null || value === "" ? [] : Array.isArray(value) ? value : [value]
 }

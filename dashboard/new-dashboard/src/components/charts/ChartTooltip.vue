@@ -62,16 +62,14 @@
           <ArrowDownTrayIcon class="w-5 h-5" />
         </a>
       </div>
-      <div
-        class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose"
-      >
+      <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose">
         <template
           v-for="item in tooltipData.items"
           :key="item.name"
         >
           <span
             class="rounded-lg w-2.5 h-2.5"
-            :style='{"background-color": item.color}'
+            :style="{ 'background-color': item.color }"
           />
           <span>{{ item.name }}</span>
           <span class="font-mono place-self-end">{{ getValueFormatterByMeasureName(item.name)(item.value) }}</span>
@@ -97,7 +95,6 @@
   </OverlayPanel>
 </template>
 <script setup lang="ts">
-
 import OverlayPanel from "primevue/overlaypanel"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
 import { calculateChanges } from "../../util/changes"
@@ -156,13 +153,12 @@ const consumer: (data: TooltipData | null, event: Event | null) => void = (data,
   let stopHandle: WatchStopHandle | null = null
   const panelElement = panel.value
   if (panelElement == null) {
-    stopHandle = watch(panel, value => {
+    stopHandle = watch(panel, (value) => {
       value?.show(event)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       stopHandle!()
     })
-  }
-  else {
+  } else {
     if (panelTargetIsChanged) {
       panelTargetIsChanged = false
       // make sure that we show panel near the target - PrimeVue doesn't handle that if panel is shown
@@ -171,8 +167,7 @@ const consumer: (data: TooltipData | null, event: Event | null) => void = (data,
       void nextTick(() => {
         panelElement.show(event)
       })
-    }
-    else {
+    } else {
       panelElement.show(event)
     }
   }
@@ -188,12 +183,11 @@ function cancelHide() {
 }
 
 function navigateToSpace() {
-  if(tooltipData.value != null) {
+  if (tooltipData.value != null) {
     calculateChanges("ij", tooltipData.value.firstSeriesData[5], (decodedChanges: string | null) => {
       if (decodedChanges == null) {
         window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
-      }
-      else {
+      } else {
         window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
       }
     })
@@ -205,8 +199,7 @@ defineExpose({
     if (lastManager === manager) {
       hide.clear()
       panelTargetIsChanged = false
-    }
-    else if (lastManager != null) {
+    } else if (lastManager != null) {
       panelTargetIsChanged = true
     }
 
@@ -218,5 +211,4 @@ defineExpose({
     hide()
   },
 })
-
 </script>

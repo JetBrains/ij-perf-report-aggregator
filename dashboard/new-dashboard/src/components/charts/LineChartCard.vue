@@ -3,7 +3,7 @@
     v-if="label == null"
     ref="chartElement"
     class="bg-white shadow rounded-lg"
-    :style="{height: `${chartHeight}px`}"
+    :style="{ height: `${chartHeight}px` }"
     @mouseenter="show"
     @mouseleave="hide"
   />
@@ -14,15 +14,13 @@
     @mouseleave="hide"
   >
     <div class="flex justify-center mt-3 mb-2">
-      <h3
-        class="px-2 bg-white text-sm text-gray-900 capitalize"
-      >
+      <h3 class="px-2 bg-white text-sm text-gray-900 capitalize">
         {{ label }}
       </h3>
     </div>
     <div
       ref="chartElement"
-      :style="{height: `${chartHeight}px`}"
+      :style="{ height: `${chartHeight}px` }"
     />
   </div>
 </template>
@@ -36,29 +34,32 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from
 import { ChartToolTipManager } from "./ChartToolTipManager"
 import { LineChartManager, PopupTrigger } from "./LineChartManager"
 
-const props = withDefaults(defineProps<{
-  skipZeroValues?: boolean
-  compoundTooltip?: boolean
-  dataZoom?: boolean
-  measures?: string[] | null
-  chartType?: ChartType
-  valueUnit?: ValueUnit
-  configurators?: DataQueryConfigurator[]|null
-  trigger?: PopupTrigger
-  label?: string
-  aggregatedMeasure?: string | null
-}>(), {
-  skipZeroValues: true,
-  compoundTooltip: true,
-  dataZoom: false,
-  measures: null,
-  chartType: "line",
-  valueUnit: "ms",
-  configurators: null,
-  trigger: "axis",
-  aggregatedMeasure: null,
-  label: undefined,
-})
+const props = withDefaults(
+  defineProps<{
+    skipZeroValues?: boolean
+    compoundTooltip?: boolean
+    dataZoom?: boolean
+    measures?: string[] | null
+    chartType?: ChartType
+    valueUnit?: ValueUnit
+    configurators?: DataQueryConfigurator[] | null
+    trigger?: PopupTrigger
+    label?: string
+    aggregatedMeasure?: string | null
+  }>(),
+  {
+    skipZeroValues: true,
+    compoundTooltip: true,
+    dataZoom: false,
+    measures: null,
+    chartType: "line",
+    valueUnit: "ms",
+    configurators: null,
+    trigger: "axis",
+    aggregatedMeasure: null,
+    label: undefined,
+  }
+)
 
 const chartElement = shallowRef<HTMLElement | null>(null)
 let chartManager: LineChartManager | null = null
@@ -103,7 +104,7 @@ watchEffect(function () {
             query.addField(infoField)
           }
           return true
-        }
+        },
       })
     }
   }
@@ -113,10 +114,11 @@ watchEffect(function () {
     configurators.push({
       configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
         if (props.aggregatedMeasure != null) {
-          query.addFilter({f: "measures.name", v: props.aggregatedMeasure})
+          query.addFilter({ f: "measures.name", v: props.aggregatedMeasure })
         }
         return true
-      }, createObservable() {
+      },
+      createObservable() {
         return null
       },
     })
@@ -134,12 +136,12 @@ onMounted(() => {
     toRef(props, "dataZoom"),
     props.compoundTooltip ? chartToolTipManager : null,
     props.valueUnit,
-    props.trigger,
+    props.trigger
   )
   unsubscribe = chartManager.subscribe()
 })
 onUnmounted(() => {
-  if(unsubscribe != null) unsubscribe()
+  if (unsubscribe != null) unsubscribe()
   chartManager?.dispose()
 })
 

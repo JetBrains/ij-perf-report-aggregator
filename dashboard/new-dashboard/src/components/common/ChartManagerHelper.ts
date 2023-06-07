@@ -8,9 +8,11 @@ export class ChartManagerHelper {
   constructor(chartContainer: HTMLElement, private readonly resizeContainer: HTMLElement = document.body) {
     this.chart = initChart(chartContainer)
 
-    this.resizeObserver = new ResizeObserver(throttle(() => {
-      this.chart.resize()
-    }, 300))
+    this.resizeObserver = new ResizeObserver(
+      throttle(() => {
+        this.chart.resize()
+      }, 300)
+    )
     this.resizeObserver.observe(resizeContainer)
   }
 
@@ -24,7 +26,7 @@ export class ChartManagerHelper {
   }
 
   replaceDataSetAndSeries(options: ECBasicOption): void {
-    this.chart.setOption(options, {replaceMerge: ["dataset", "series"]})
+    this.chart.setOption(options, { replaceMerge: ["dataset", "series"] })
   }
 
   dispose(): void {

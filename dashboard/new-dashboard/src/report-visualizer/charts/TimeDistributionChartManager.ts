@@ -30,7 +30,7 @@ export class TimeDistributionChartManager implements ChartManager {
         },
       },
       tooltip: {
-        formatter: adaptToolTipFormatter(params => {
+        formatter: adaptToolTipFormatter((params) => {
           const info = params[0]
           let result = `${info.marker as string} ${info.name}`
           const count = (info.data as ItemExtraInfo).count
@@ -55,50 +55,57 @@ export class TimeDistributionChartManager implements ChartManager {
     addIcons(data, items)
 
     this.chart.chart.setOption<TreeMapChartOptions>({
-      series: [{
-        type: "treemap",
-        data: items,
-        levels: [
-          {},
-          {},
-          {
-            colorSaturation: [0.35, 0.5],
-            itemStyle: {
-              borderWidth: 5,
-              gapWidth: 1,
-              borderColorSaturation: 0.6,
+      series: [
+        {
+          type: "treemap",
+          data: items,
+          levels: [
+            {},
+            {},
+            {
+              colorSaturation: [0.35, 0.5],
+              itemStyle: {
+                borderWidth: 5,
+                gapWidth: 1,
+                borderColorSaturation: 0.6,
+              },
+              upperLabel: { show: true },
             },
-            upperLabel: {show: true},
-          },
-        ],
-        leafDepth: 3,
-        label: {
-          formatter(data) {
-            return `${data.name} (${numberFormat.format(data.value as number)})`
+          ],
+          leafDepth: 3,
+          label: {
+            formatter(data) {
+              return `${data.name} (${numberFormat.format(data.value as number)})`
+            },
           },
         },
-      }],
+      ],
     })
   }
 }
 
-function addServicesOrComponents(dataManager: DataManager,
-                                 items: (TreemapSeriesNodeItemOption & ItemExtraInfo)[],
-                                 statName: "component" | "service",
-                                 appFieldName: "appServices" | "appComponents",
-                                 projectFieldName: "projectComponents" | "projectServices"): void {
+function addServicesOrComponents(
+  dataManager: DataManager,
+  items: (TreemapSeriesNodeItemOption & ItemExtraInfo)[],
+  statName: "component" | "service",
+  appFieldName: "appServices" | "appComponents",
+  projectFieldName: "projectComponents" | "projectServices"
+): void {
   const children: (TreemapSeriesNodeItemOption & ItemExtraInfo)[] = []
   const data = dataManager.data as InputDataV20
   const stats = data.stats[statName]
-  children.push({
-    name: `app ${statName}s`,
-    children: toTreeMapItem(data[appFieldName]),
-    count: numberFormat.format(stats.app),
-  }, {
-    name: `project ${statName}s`,
-    children: toTreeMapItem(data[projectFieldName]),
-    count: numberFormat.format(stats.project),
-  })
+  children.push(
+    {
+      name: `app ${statName}s`,
+      children: toTreeMapItem(data[appFieldName]),
+      count: numberFormat.format(stats.app),
+    },
+    {
+      name: `project ${statName}s`,
+      children: toTreeMapItem(data[projectFieldName]),
+      count: numberFormat.format(stats.project),
+    }
+  )
 
   items.push({
     name: `${statName}s`,
@@ -121,8 +128,8 @@ function addIcons(data: DataManager, items: TreemapSeriesNodeItemOption[]) {
       value: item.loading,
       ...item,
       children: [
-        {name: "searching", value: item.loading - item.decoding},
-        {name: "decoding", value: item.decoding},
+        { name: "searching", value: item.loading - item.decoding },
+        { name: "decoding", value: item.decoding },
       ],
     })
   }
@@ -134,7 +141,9 @@ function addIcons(data: DataManager, items: TreemapSeriesNodeItemOption[]) {
 }
 
 function toTreeMapItem(items: ItemV20[] | null | undefined): TreemapSeriesNodeItemOption[] {
-  return items == null ? [] : items.map(it => {
-    return {name: getShortName(it), value: it.d / 1000}
-  })
+  return items == null
+    ? []
+    : items.map((it) => {
+        return { name: getShortName(it), value: it.d / 1000 }
+      })
 }

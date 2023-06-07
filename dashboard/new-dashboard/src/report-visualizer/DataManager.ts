@@ -3,7 +3,10 @@ import { numberFormat } from "../components/common/formatter"
 import { InputData, InputDataV20, ItemV0, ItemV20, UnitConverter } from "./data"
 
 const markerNames = ["app initialized callback", "module loading"]
-export const markerNameToRangeTitle = new Map<string, string>([["app initialized callback", "app initialized"], ["module loading", "project initialized"]])
+export const markerNameToRangeTitle = new Map<string, string>([
+  ["app initialized callback", "app initialized"],
+  ["module loading", "project initialized"],
+])
 
 export type GroupedItems = { category: string; items: ItemV20[] }[]
 
@@ -45,16 +48,15 @@ export class DataManager {
     if (isNewCompactFormat) {
       const data = this.data as InputDataV20
       return [
-        {category: "app components", items: data.appComponents ?? []},
-        {category: "project components", items: data.projectComponents ?? []},
-        {category: "module components", items: data.moduleComponents ?? []},
+        { category: "app components", items: data.appComponents ?? [] },
+        { category: "project components", items: data.projectComponents ?? [] },
+        { category: "module components", items: data.moduleComponents ?? [] },
 
-        {category: "app services", items: data.appServices ?? []},
-        {category: "project services", items: data.projectServices ?? []},
-        {category: "module services", items: data.moduleServices ?? []},
+        { category: "app services", items: data.appServices ?? [] },
+        { category: "project services", items: data.projectServices ?? [] },
+        { category: "module services", items: data.moduleServices ?? [] },
       ]
-    }
-    else if (version != null && compare(version, "12", ">=")) {
+    } else if (version != null && compare(version, "12", ">=")) {
       throw new Error(`Report version ${version} is not supported, ask if needed`)
       // this._serviceEvents = this.data.traceEvents.filter(value => value.cat != null && serviceEventCategorySet.has(value.cat)) as Array<CompleteTraceEvent>
       // return this._serviceEvents.map(it => {
@@ -66,8 +68,7 @@ export class DataManager {
       //     p: "",
       //   }
       // })
-    }
-    else {
+    } else {
       throw new Error(`Report version ${version} is not supported, ask if needed`)
       // const list: Array<CompleteTraceEvent> = []
       // const data = this.data as InputDataV11AndLess
@@ -104,7 +105,7 @@ export class DataManager {
           result[i] = item
 
           // stop if all items are found
-          if (result.every(it => it != null)) {
+          if (result.every((it) => it != null)) {
             break itemLoop
           }
         }

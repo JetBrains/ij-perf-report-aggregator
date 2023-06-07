@@ -39,12 +39,14 @@ export class ChartComponent {
       this.requestRender()
     })
 
-    combineLatest([this.subject, containerObservable]).pipe(debounceTime(10)).subscribe(value => {
-      const container = value[1]
-      if (container != null) {
-        this.renderDataIfAvailable(container)
-      }
-    })
+    combineLatest([this.subject, containerObservable])
+      .pipe(debounceTime(10))
+      .subscribe((value) => {
+        const container = value[1]
+        if (container != null) {
+          this.renderDataIfAvailable(container)
+        }
+      })
 
     this.toast = useToast()
   }
@@ -64,16 +66,15 @@ export class ChartComponent {
     const chartManager = this.chartManager
     if (chartManager == null) {
       this.createChartManager(container)
-        .then(chartManager => {
+        .then((chartManager) => {
           this.chartManager = chartManager
           chartManager.render(dataManager)
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Cannot create chart", error)
-          this.toast.add({severity: "error", summary: "Cannot create chart", detail: (error as Error).toString()})
+          this.toast.add({ severity: "error", summary: "Cannot create chart", detail: (error as Error).toString() })
         })
-    }
-    else {
+    } else {
       chartManager.render(dataManager)
     }
   }

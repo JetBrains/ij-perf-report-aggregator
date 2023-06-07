@@ -38,30 +38,30 @@ export class ActivityBarChartManager implements ChartManager {
           saveAsImage: {},
         },
       },
-      dataZoom: [{type: "inside"}],
+      dataZoom: [{ type: "inside" }],
       tooltip: {
         trigger: "axis",
         axisPointer: {
           type: "cross",
         },
         enterable: true,
-        formatter: adaptToolTipFormatter(params => {
+        formatter: adaptToolTipFormatter((params) => {
           const info = params[0]
           const chartItem = info.data as ChartDataItem
           const item = chartItem[2]
           const lines: TooltipLineDescriptor[] = [
-            {name: chartItem[0], main: true, value: durationAxisPointerFormatter(chartItem[1])},
-            {name: "range", value: `${(formatDuration(item.s, this.dataDescriptor))}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}`},
-            {name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : ""},
+            { name: chartItem[0], main: true, value: durationAxisPointerFormatter(chartItem[1]) },
+            { name: "range", value: `${formatDuration(item.s, this.dataDescriptor)}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}` },
+            { name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : "" },
           ]
           if (item.p !== undefined) {
-            lines.push({name: "plugin", selectable: true, value: item.p})
+            lines.push({ name: "plugin", selectable: true, value: item.p })
           }
           if ("od" in item) {
-            lines.push({name: "total duration", value: durationAxisPointerFormatter(this.dataDescriptor.unitConverter.convert(item.d))})
+            lines.push({ name: "total duration", value: durationAxisPointerFormatter(this.dataDescriptor.unitConverter.convert(item.d)) })
           }
           return `${info.marker as string} ${buildTooltip(lines)}`
-        })
+        }),
       },
       xAxis: {
         type: "category",
@@ -73,8 +73,7 @@ export class ActivityBarChartManager implements ChartManager {
             const item = this.lastData[index as number]
             if (item[2].t === "edt") {
               return "orange"
-            }
-            else {
+            } else {
               const currentOption = this.chart.chart.getOption() as BarChartOptions
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
               return (currentOption.xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color as string
@@ -89,7 +88,7 @@ export class ActivityBarChartManager implements ChartManager {
         type: "value",
         axisPointer: {
           label: {
-            formatter (data): string {
+            formatter(data): string {
               return typeof data.value == "number" ? numberFormat.format(data.value) : ""
             },
           },
@@ -136,9 +135,9 @@ export class ActivityBarChartManager implements ChartManager {
     const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color
 
     const series = new Array<BarSeriesOption>(seriesNames.length)
-    for (const [seriesIndex, seriesName] of seriesNames.entries()){
+    for (const [seriesIndex, seriesName] of seriesNames.entries()) {
       const seriesData: (ChartDataItem | null)[] = [...data]
-      for (let i = 0; i < seriesData.length; i++){
+      for (let i = 0; i < seriesData.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         if (seriesData[i]![3] !== seriesName) {
           seriesData[i] = null
@@ -169,7 +168,7 @@ export class ActivityBarChartManager implements ChartManager {
     this.lastData = data
     this.chart.chart.setOption<BarChartOptions>({
       xAxis: {
-        data: data.map(it => it[0]),
+        data: data.map((it) => it[0]),
       },
       series,
     })
@@ -180,7 +179,7 @@ function createMarkLineData(dataManager: DataManager, data: ChartDataItem[], uni
   const markLineData: MarkLine1DDataItemOption[] = []
   for (const markerItem of dataManager.markerItems) {
     if (markerItem != null) {
-      const item = data.find(it => unitConverter.convert(it[2].s) >= markerItem.end)
+      const item = data.find((it) => unitConverter.convert(it[2].s) >= markerItem.end)
       if (item == null) {
         continue
       }

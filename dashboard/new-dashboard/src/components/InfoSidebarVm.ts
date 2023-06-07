@@ -19,16 +19,16 @@ export interface InfoData {
   projectName: string
   changesUrl: string
   artifactsUrl: string
-  installerUrl: string|undefined
+  installerUrl: string | undefined
   machineName: string
   value: string
-  build: string|undefined
+  build: string | undefined
   date: string
-  installerId: number|undefined
+  installerId: number | undefined
   changes: string | undefined
   accidents: Accident[] | undefined
   buildId: number
-  description: Ref<Description|undefined>
+  description: Ref<Description | undefined>
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
@@ -65,7 +65,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     accidentBuild = buildId.toString()
   }
   //fleet
-  if(dataSeries.length == 9){
+  if (dataSeries.length == 9) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
@@ -98,10 +98,10 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
 
-  const fullBuildId = buildVersion == undefined ? buildNumber :`${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
-  const changesUrl = installerId == undefined  ? `${buildUrl(buildId as number)}&tab=changes` : `${buildUrl(installerId)}&tab=changes`
+  const fullBuildId = buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+  const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&tab=changes` : `${buildUrl(installerId)}&tab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
-  const installerUrl = installerId == undefined ? undefined :`${buildUrl(installerId)}&tab=artifacts`
+  const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
 
   let showValue = value.toString()
   if (type != "counter") {
@@ -109,8 +109,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   }
 
   if (accidents != null) {
-    filteredAccidents = accidents
-      .filter(accident => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
+    filteredAccidents = accidents.filter((accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
     filteredAccidents = filteredAccidents.length > 0 ? filteredAccidents : undefined
   }
 
@@ -132,7 +131,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     changes: undefined,
     accidents: filteredAccidents,
     buildId: buildId as number,
-    description
+    description,
   }
 }
 

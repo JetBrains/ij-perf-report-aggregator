@@ -99,42 +99,21 @@ const persistentStateManager = new PersistentStateManager(
     branch: "master",
     project: [],
     measure: [],
-  }, router)
+  },
+  router
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const scenarioConfigurator = dimensionConfigurator(
-  "project",
-  serverConfigurator,
-  persistentStateManager,
-  true,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const triggeredByConfigurator = privateBuildConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [branchConfigurator, timeRangeConfigurator],
-)
-const measureConfigurator = new MeasureConfigurator(
-  serverConfigurator,
-  persistentStateManager,
-  [scenarioConfigurator, branchConfigurator, timeRangeConfigurator],
-  true,
-  "line",
-)
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators = [
-  serverConfigurator,
-  scenarioConfigurator,
-  branchConfigurator,
-  timeRangeConfigurator,
-  triggeredByConfigurator,
-]
+const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, timeRangeConfigurator, triggeredByConfigurator]
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
-
 </script>
 
 <style>

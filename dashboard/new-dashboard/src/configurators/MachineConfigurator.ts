@@ -24,14 +24,13 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: FilterConfigurator[] = [], readonly multiple: boolean = true) {
     const name = "machine"
-    persistentStateManager.add(name, this.selected, it => toArray(it as never))
-    const listObservable = createFilterObservable(serverConfigurator, filters)
-      .pipe(
-        switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
-        updateComponentState(this.state),
-        shareReplay(1)
-      )
-    listObservable.subscribe(data => {
+    persistentStateManager.add(name, this.selected, (it) => toArray(it as never))
+    const listObservable = createFilterObservable(serverConfigurator, filters).pipe(
+      switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
+      updateComponentState(this.state),
+      shareReplay(1)
+    )
+    listObservable.subscribe((data) => {
       if (data == null) {
         return
       }
@@ -41,12 +40,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     })
 
     // selected value may be a group name, so, we must re-execute query on machine list update
-    this.observable = combineLatest([
-      refToObservable(this.selected, true),
-      listObservable,
-    ]).pipe(
-      distinctUntilChanged(deepEqual),
-    )
+    this.observable = combineLatest([refToObservable(this.selected, true), listObservable]).pipe(distinctUntilChanged(deepEqual))
     // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart
     this.groupValues(Object.keys(MachineConfigurator.valueToGroup))
   }
@@ -58,61 +52,47 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private groupValues(values: string[]): GroupedDimensionValue[] {
     const grouped: GroupedDimensionValue[] = []
     for (const value of values) {
-      let groupName: string|null = ""
+      let groupName: string | null = ""
       if (value.startsWith("intellij-linux-hw-blade-")) {
         groupName = "linux-blade"
-      }
-      else if (value.startsWith("intellij-windows-hw-blade-")) {
+      } else if (value.startsWith("intellij-windows-hw-blade-")) {
         groupName = "windows-blade"
-      }
-      else if (value.startsWith("intellij-windows-hw-munit-")) {
+      } else if (value.startsWith("intellij-windows-hw-munit-")) {
         groupName = "Windows Munich i7-3770, 32Gb"
-      }
-      else {
+      } else {
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
-        }
-        else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
+        } else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
-        }
-        else if (value.startsWith("intellij-linux-performance-aws-i-")) {
+        } else if (value.startsWith("intellij-linux-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
-        }
-        else if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
+        } else if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
-        }
-        else if (value.startsWith("intellij-windows-performance-aws-i-")) {
+        } else if (value.startsWith("intellij-windows-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6id/
           // noinspection SpellCheckingInspection
           groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-        }
-        else if (value.startsWith("intellij-linux-hw-munit-")) {
+        } else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
-        }
-        else if (value.startsWith("intellij-linux-hw-EXC")) {
+        } else if (value.startsWith("intellij-linux-hw-EXC")) {
           // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
           groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-        }
-        else if (value.startsWith("intellij-linux-hw-hetzner")){
+        } else if (value.startsWith("intellij-linux-hw-hetzner")) {
           groupName = "linux-blade-hetzner"
-        }
-        else if (value.startsWith("intellij-windows-hw-hetzner")){
+        } else if (value.startsWith("intellij-windows-hw-hetzner")) {
           groupName = "windows-blade-hetzner"
-        }
-        else if (value.startsWith("intellij-macos-munit-741-large")){
+        } else if (value.startsWith("intellij-macos-munit-741-large")) {
           //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
           groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
-        }
-        else if (value.startsWith("intellij-linux-performance-huge-aws-i")){
+        } else if (value.startsWith("intellij-linux-performance-huge-aws-i")) {
           groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
-        }
-        else {
-          groupName = MachineConfigurator.valueToGroup[value] as string|null
+        } else {
+          groupName = MachineConfigurator.valueToGroup[value] as string | null
         }
 
         if (groupName == null) {
@@ -132,7 +112,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      item.children!.push({value})
+      item.children!.push({ value })
     }
     grouped.sort((a, b) => a.value.localeCompare(b.value))
     return grouped
@@ -153,7 +133,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     const groupNameToItem = this.groupNameToItem
 
     const values: string[] = []
-    const filter: DataQueryFilter = {f: "machine", v: values}
+    const filter: DataQueryFilter = { f: "machine", v: values }
     query.addFilter(filter)
     configuration.queryProducers.push({
       size(): number {
@@ -166,12 +146,11 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         values.length = 0
         if (groupItem == null) {
           values.push(value)
-        }
-        else {
+        } else {
           // it's group
-          if(groupItem.children != null) {
+          if (groupItem.children != null) {
             if (groupItem.children.length > 50) {
-              filter.v = prefix(groupItem.children.map(it => it.value)) + "%"
+              filter.v = prefix(groupItem.children.map((it) => it.value)) + "%"
               filter.o = "like"
               return
             }
@@ -210,8 +189,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       const groupItem = this.groupNameToItem.get(value)
       if (groupItem == null) {
         values.push(value)
-      }
-      else {
+      } else {
         // it's group
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         for (const child of groupItem.children!) {
@@ -224,9 +202,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       // stable order of fields in query (caching)
       values.sort()
       if (values.length > 50) {
-        query.addFilter({f:"machine", v: prefix(values) + "%", o: "like"})
+        query.addFilter({ f: "machine", v: prefix(values) + "%", o: "like" })
       } else {
-        query.addFilter({f: "machine", v: values})
+        query.addFilter({ f: "machine", v: values })
       }
     }
   }
@@ -237,11 +215,10 @@ export interface GroupedDimensionValue {
   children?: GroupedDimensionValue[]
 }
 
-function prefix(words: string[]):string{
-  if (!words[0] || words.length ==  1) return words[0] || ""
+function prefix(words: string[]): string {
+  if (!words[0] || words.length == 1) return words[0] || ""
   let i = 0
-  while(words[0][i] && words.every(w => w[i] === words[0][i]))
-    i++
+  while (words[0][i] && words.every((w) => w[i] === words[0][i])) i++
   return words[0].slice(0, Math.max(0, i))
 }
 

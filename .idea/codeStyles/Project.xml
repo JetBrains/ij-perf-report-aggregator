@@ -7,17 +7,24 @@
         <option name="TAB_SIZE" value="2" />
       </value>
     </option>
-    <option name="LINE_SEPARATOR" value="&#10;" />
+    <option name="LINE_SEPARATOR" />
     <option name="RIGHT_MARGIN" value="180" />
     <GoCodeStyleSettings>
       <option name="RUN_GO_FMT_ON_REFORMAT" value="false" />
       <option name="LOCAL_PACKAGE_PREFIXES" />
     </GoCodeStyleSettings>
+    <HTMLCodeStyleSettings>
+      <option name="HTML_SPACE_INSIDE_EMPTY_TAG" value="true" />
+      <option name="HTML_ENFORCE_QUOTES" value="true" />
+    </HTMLCodeStyleSettings>
     <JSCodeStyleSettings version="0">
       <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />
       <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
       <option name="FORCE_QUOTE_STYlE" value="true" />
-      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="ENFORCE_TRAILING_COMMA" value="Remove" />
+      <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
+      <option name="SPACES_WITHIN_IMPORTS" value="true" />
     </JSCodeStyleSettings>
     <SQLiteCodeStyleSettings version="6">
       <option name="USE_GENERIC_STYLE" value="true" />
@@ -25,11 +32,17 @@
     <TypeScriptCodeStyleSettings version="0">
       <option name="USE_SEMICOLON_AFTER_STATEMENT" value="false" />
       <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="SPACE_BEFORE_FUNCTION_LEFT_PARENTH" value="false" />
       <option name="FORCE_QUOTE_STYlE" value="true" />
-      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+      <option name="ENFORCE_TRAILING_COMMA" value="Remove" />
+      <option name="SPACES_WITHIN_OBJECT_LITERAL_BRACES" value="true" />
       <option name="SPACES_WITHIN_IMPORTS" value="true" />
       <option name="IMPORT_USE_NODE_RESOLUTION" value="GLOBAL" />
     </TypeScriptCodeStyleSettings>
+    <VueCodeStyleSettings>
+      <option name="INTERPOLATION_NEW_LINE_AFTER_START_DELIMITER" value="false" />
+      <option name="INTERPOLATION_NEW_LINE_BEFORE_END_DELIMITER" value="false" />
+    </VueCodeStyleSettings>
     <codeStyleSettings language="DB2">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
@@ -68,6 +81,7 @@
     <codeStyleSettings language="HTML">
       <option name="LINE_COMMENT_AT_FIRST_COLUMN" value="false" />
       <option name="BLOCK_COMMENT_AT_FIRST_COLUMN" value="false" />
+      <option name="SOFT_MARGINS" value="180" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -98,6 +112,7 @@
       <option name="ALIGN_MULTILINE_CHAINED_METHODS" value="true" />
       <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
+      <option name="SOFT_MARGINS" value="180" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
@@ -148,10 +163,17 @@
     </codeStyleSettings>
     <codeStyleSettings language="TypeScript">
       <option name="ELSE_ON_NEW_LINE" value="true" />
+      <option name="SOFT_MARGINS" value="180" />
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
         <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="Vue">
+      <option name="SOFT_MARGINS" value="180" />
+      <indentOptions>
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="XML">

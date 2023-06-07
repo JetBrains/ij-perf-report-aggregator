@@ -15,14 +15,14 @@ export interface TimeRangeItem {
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   static readonly timeRanges: TimeRangeItem[] = [
-    {label: "Last week", value: "1w"},
-    {label: "Last month", value: "1M"},
-    {label: "Last 3 months", value: "3M"},
-    {label: "Last year", value: "1y"},
-    {label: "All", value: "all"},
+    { label: "Last week", value: "1w" },
+    { label: "Last month", value: "1M" },
+    { label: "Last 3 months", value: "3M" },
+    { label: "Last year", value: "1y" },
+    { label: "All", value: "all" },
   ]
 
-  static readonly timeRangeValueToItem = new Map<string, TimeRangeItem>(TimeRangeConfigurator.timeRanges.map(it => [it.value, it]))
+  static readonly timeRangeValueToItem = new Map<string, TimeRangeItem>(TimeRangeConfigurator.timeRanges.map((it) => [it.value, it]))
 
   readonly value = ref<TimeRange>(TimeRangeConfigurator.timeRanges[0].value)
 
@@ -40,14 +40,14 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return this.configureQuery(query, null)
   }
 
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration|null): boolean {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration | null): boolean {
     const duration = this.value.value
     if (duration === "all") {
       return true
     }
 
     const sql = `>${toClickhouseSql(parseDuration(duration))}`
-    query.addFilter({f: "generated_time", q: sql})
+    query.addFilter({ f: "generated_time", q: sql })
     return true
   }
 }
@@ -91,28 +91,28 @@ const units: UnitDescriptor[] = [
     apply(value: number, result: DurationParseResult): void {
       result.days = value
     },
-    getValue: result => result.days,
+    getValue: (result) => result.days,
   },
   {
     subtractFunction: "subtractWeeks",
     apply(value: number, result: DurationParseResult): void {
       result.weeks = value
     },
-    getValue: result => result.weeks,
+    getValue: (result) => result.weeks,
   },
   {
     subtractFunction: "subtractMonths",
     apply(value: number, result: DurationParseResult): void {
       result.months = value
     },
-    getValue: result => result.months,
+    getValue: (result) => result.months,
   },
   {
     subtractFunction: "subtractYears",
     apply(value: number, result: DurationParseResult): void {
       result.years = value
     },
-    getValue: result => result.years,
+    getValue: (result) => result.years,
   },
 ]
 
@@ -133,8 +133,7 @@ function parseDuration(s: string): DurationParseResult {
     const unitDescriptor = unitToDescriptor.get(unit) ?? unitToDescriptor.get(unit.replace(/s$/, ""))
     if (unitDescriptor == null) {
       console.error(`unknown unit: ${unit}`)
-    }
-    else {
+    } else {
       unitDescriptor.apply(Number.parseInt(n, 10), result)
     }
     return ""

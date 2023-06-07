@@ -35,11 +35,11 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     sourceNames: serviceSourceNames,
     shortNameProducer: getShortName,
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {ActivityBarChartManager: ActivityBarChartManager} = await import("./charts/ActivityBarChartManager")
-      return new ActivityBarChartManager(container, dataManager => dataManager.getServiceItems(), {
+      const { ActivityBarChartManager: ActivityBarChartManager } = await import("./charts/ActivityBarChartManager")
+      return new ActivityBarChartManager(container, (dataManager) => dataManager.getServiceItems(), {
         unitConverter: UnitConverter.MICROSECONDS,
       })
-    }
+    },
   },
   {
     label: "Extensions",
@@ -84,32 +84,38 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     isInfoChart: true,
     id: "timeline",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {TimeLineChartManager: TimeLineChartManager}  = await import("./charts/TimeLineChartManager")
-      return new TimeLineChartManager(container, dataManager => {
-        return [
-          {
-            category: "items",
-            items: dataManager.isUnifiedItems ? dataManager.items : dataManager.data.items.map(it => {
-              const item: ItemV20 = {
-                n: it.name,
-                s: it.start,
-                d: it.duration,
-                t: it.thread,
-                p: undefined,
-              }
-              return item
-            }),
-          },
-          {
-            category: "prepareAppInitActivities",
-            items: dataManager.data.prepareAppInitActivities
-          },
-        ]
-      }, {
-        unitConverter: UnitConverter.MILLISECONDS,
-        threshold: 0,
-        shortenName: false,
-      })
+      const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
+      return new TimeLineChartManager(
+        container,
+        (dataManager) => {
+          return [
+            {
+              category: "items",
+              items: dataManager.isUnifiedItems
+                ? dataManager.items
+                : dataManager.data.items.map((it) => {
+                    const item: ItemV20 = {
+                      n: it.name,
+                      s: it.start,
+                      d: it.duration,
+                      t: it.thread,
+                      p: undefined,
+                    }
+                    return item
+                  }),
+            },
+            {
+              category: "prepareAppInitActivities",
+              items: dataManager.data.prepareAppInitActivities,
+            },
+          ]
+        },
+        {
+          unitConverter: UnitConverter.MILLISECONDS,
+          threshold: 0,
+          shortenName: false,
+        }
+      )
     },
   },
   {
@@ -117,15 +123,16 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     isInfoChart: true,
     id: "serviceTimeline",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {TimeLineChartManager: TimeLineChartManager}  = await import("./charts/TimeLineChartManager")
-      return new TimeLineChartManager(container, dataManager => {
-        return [
-          ...dataManager.getServiceItems(),
-          {category: "service waiting", items: (dataManager.data as InputDataV20).serviceWaiting ?? []},
-        ]
-      }, {
-        unitConverter: UnitConverter.MICROSECONDS,
-      })
+      const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
+      return new TimeLineChartManager(
+        container,
+        (dataManager) => {
+          return [...dataManager.getServiceItems(), { category: "service waiting", items: (dataManager.data as InputDataV20).serviceWaiting ?? [] }]
+        },
+        {
+          unitConverter: UnitConverter.MICROSECONDS,
+        }
+      )
     },
   },
   {
@@ -133,7 +140,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     isInfoChart: true,
     id: "timeDistribution",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {TimeDistributionChartManager: TimeDistributionChartManager}  = await import("./charts/TimeDistributionChartManager")
+      const { TimeDistributionChartManager: TimeDistributionChartManager } = await import("./charts/TimeDistributionChartManager")
       return new TimeDistributionChartManager(container)
     },
   },
@@ -142,7 +149,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     isInfoChart: true,
     id: "pluginClassCount",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {PluginClassCountTreeMapChartManager: PluginClassCountTreeMapChartManager}  = await import("./charts/PluginClassCountTreeMapChartManager")
+      const { PluginClassCountTreeMapChartManager: PluginClassCountTreeMapChartManager } = await import("./charts/PluginClassCountTreeMapChartManager")
       return new PluginClassCountTreeMapChartManager(container)
     },
   },
@@ -151,7 +158,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     isInfoChart: true,
     id: "stats",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const {StatsChartManager: StatsChartManager}  = await import("./charts/StatsChartManager")
+      const { StatsChartManager: StatsChartManager } = await import("./charts/StatsChartManager")
       return new StatsChartManager(container)
     },
   },

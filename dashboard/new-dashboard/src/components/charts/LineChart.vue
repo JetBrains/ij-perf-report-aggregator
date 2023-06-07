@@ -6,7 +6,7 @@
     <div
       ref="chartElement"
       class="bg-white"
-      :style="{height: `${chartHeight}px`}"
+      :style="{ height: `${chartHeight}px` }"
     />
   </div>
 </template>
@@ -32,14 +32,14 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
-  accidents?: Accident[]|null
+  accidents?: Accident[] | null
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
   skipZeroValues: true,
   valueUnit: "ms",
   chartType: "line",
-  accidents: null
+  accidents: null,
 })
 
 const chartElement = shallowRef<HTMLElement>()
@@ -57,23 +57,21 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   props.accidents
 )
 
-const infoFieldsConfigurator = reportInfoProvider && reportInfoProvider.infoFields.length > 0 ?
-  {
-    createObservable() {
-      return null
-    },
-    configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-      for (const infoField of reportInfoProvider.infoFields) {
-        query.addField(infoField)
+const infoFieldsConfigurator =
+  reportInfoProvider && reportInfoProvider.infoFields.length > 0
+    ? {
+        createObservable() {
+          return null
+        },
+        configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+          for (const infoField of reportInfoProvider.infoFields) {
+            query.addField(infoField)
+          }
+          return true
+        },
       }
-      return true
-    },
-  } : null
-const dataQueryExecutor = new DataQueryExecutor([
-  ...props.configurators,
-  measureConfigurator,
-  infoFieldsConfigurator,
-].filter((item): item is DataQueryConfigurator => item != null))
+    : null
+const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null))
 
 const container = inject(containerKey)
 const sidebarVm = inject(sidebarVmKey)
@@ -85,12 +83,7 @@ let unsubscribe: (() => void) | null = null
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new ChartManager(chartElement.value!, container?.value)
-  chartVm = new LineChartVM(
-    chartManager,
-    dataQueryExecutor,
-    props.valueUnit,
-    props.accidents
-  )
+  chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, props.accidents)
 
   unsubscribe = chartVm.subscribe()
 
@@ -103,8 +96,8 @@ onMounted(() => {
 function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
   const db = infoData.installerId ? "perfint" : "perfintDev"
   const id = infoData.installerId ?? infoData.buildId
-  calculateChanges(db, id, (decodedChanges: string|null) => {
-    if(decodedChanges != null) {
+  calculateChanges(db, id, (decodedChanges: string | null) => {
+    if (decodedChanges != null) {
       infoData.changes = decodedChanges
     }
     sidebarVm?.show(infoData)
@@ -112,7 +105,7 @@ function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
 }
 
 onUnmounted(() => {
-  if(unsubscribe != null) unsubscribe()
+  if (unsubscribe != null) unsubscribe()
   chartManager.dispose()
 })
 

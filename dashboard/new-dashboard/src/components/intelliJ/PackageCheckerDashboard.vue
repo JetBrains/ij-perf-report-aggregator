@@ -15,7 +15,8 @@
         :projects="chart.projects"
       />
     </section>
-  </DashboardPage>>
+  </DashboardPage>
+  >
 </template>
 
 <script setup lang="ts">
@@ -23,12 +24,17 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const chartsDeclaration: ChartDefinition[] = [{
-  labels: ["Package Checker execution time", "Total heap max", "Freed memory by GC", "GC pause count", "Full GC pause", "GC pause"],
-  measures: ["runServiceInPlugin", "totalHeapUsedMax", "freedMemoryByGC", "gcPauseCount", "fullGCPause", "gcPause"],
-  projects: ["package-checker-gradle-500-modules/get_declared_dependencies", "package-checker-gradle-500-modules/get_all_modules/maven",
-    "package-checker-gradle-500-modules/get_all_modules/gradle"]
-}]
+const chartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Package Checker execution time", "Total heap max", "Freed memory by GC", "GC pause count", "Full GC pause", "GC pause"],
+    measures: ["runServiceInPlugin", "totalHeapUsedMax", "freedMemoryByGC", "gcPauseCount", "fullGCPause", "gcPause"],
+    projects: [
+      "package-checker-gradle-500-modules/get_declared_dependencies",
+      "package-checker-gradle-500-modules/get_all_modules/maven",
+      "package-checker-gradle-500-modules/get_all_modules/gradle",
+    ],
+  },
+]
 
 const charts = combineCharts(chartsDeclaration)
 </script>

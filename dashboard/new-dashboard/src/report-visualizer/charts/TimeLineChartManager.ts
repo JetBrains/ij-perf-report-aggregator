@@ -2,7 +2,7 @@ import { CustomChart, CustomSeriesOption } from "echarts/charts"
 import { DataZoomInsideComponent, GridComponent, LegendComponent, MarkAreaComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { graphic, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption} from "echarts/types/dist/shared"
+import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption } from "echarts/types/dist/shared"
 import { MarkArea2DDataItemOption } from "echarts/types/src/component/marker/MarkAreaModel"
 import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
 import { SeriesLabelOption } from "echarts/types/src/util/types"
@@ -33,73 +33,76 @@ export class TimeLineChartManager implements ChartManager {
   }
 
   private setInitialOption() {
-    this.chart.chart.setOption<CustomChartOptions>({
-      toolbox: {
-        feature: {
-          dataZoom: {
-            yAxisIndex: false,
-          },
-          saveAsImage: {},
-        },
-      },
-      grid: {
-        top: 20,
-        left: 40,
-        // place for item label (as we set max for xAxis)
-        right: 80,
-        bottom: 20,
-        containLabel: true,
-      },
-      tooltip: {
-        enterable: true,
-        formatter: adaptToolTipFormatter(params => {
-          const info = params[0]
-          const chartItem = info.data as ChartDataItem
-          const item = chartItem[4]
-          const lines: TooltipLineDescriptor[] = [
-            {name: chartItem[5], main: true, value: durationAxisPointerFormatter(getDuration(chartItem))},
-            {name: "range", value: `${(formatDuration(item.s, this.dataDescriptor))}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}`},
-            {name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : ""},
-          ]
-          if (item.p != undefined) {
-            lines.push({name: "plugin", selectable: true, value: item.p})
-          }
-          if ("od" in item) {
-            lines.push({name: "total duration", value: durationAxisPointerFormatter(this.dataDescriptor.unitConverter.convert(item.d))})
-          }
-          return `${info.marker as string} ${buildTooltip(lines)}`
-        }),
-      },
-      // chart is too tall - not convenient to use mouse for zoom, as mouse is better to use for scrolling
-      dataZoom: [{type: "inside", filterMode: "weakFilter", disabled: true}],
-      xAxis: {
-        scale: true,
-        maxInterval: 1_000,
-        axisLabel: {
-          formatter(value: number) {
-            // return Math.max(0, value - startTime) + " ms"
-            return numberFormat.format(value)
+    this.chart.chart.setOption<CustomChartOptions>(
+      {
+        toolbox: {
+          feature: {
+            dataZoom: {
+              yAxisIndex: false,
+            },
+            saveAsImage: {},
           },
         },
-      },
-      yAxis: {
-        type: "category",
-        splitLine: {
-          show: true,
-          interval(_index: number, value: string | number) {
-            return !(value as string).includes("__")
+        grid: {
+          top: 20,
+          left: 40,
+          // place for item label (as we set max for xAxis)
+          right: 80,
+          bottom: 20,
+          containLabel: true,
+        },
+        tooltip: {
+          enterable: true,
+          formatter: adaptToolTipFormatter((params) => {
+            const info = params[0]
+            const chartItem = info.data as ChartDataItem
+            const item = chartItem[4]
+            const lines: TooltipLineDescriptor[] = [
+              { name: chartItem[5], main: true, value: durationAxisPointerFormatter(getDuration(chartItem)) },
+              { name: "range", value: `${formatDuration(item.s, this.dataDescriptor)}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}` },
+              { name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : "" },
+            ]
+            if (item.p != undefined) {
+              lines.push({ name: "plugin", selectable: true, value: item.p })
+            }
+            if ("od" in item) {
+              lines.push({ name: "total duration", value: durationAxisPointerFormatter(this.dataDescriptor.unitConverter.convert(item.d)) })
+            }
+            return `${info.marker as string} ${buildTooltip(lines)}`
+          }),
+        },
+        // chart is too tall - not convenient to use mouse for zoom, as mouse is better to use for scrolling
+        dataZoom: [{ type: "inside", filterMode: "weakFilter", disabled: true }],
+        xAxis: {
+          scale: true,
+          maxInterval: 1_000,
+          axisLabel: {
+            formatter(value: number) {
+              // return Math.max(0, value - startTime) + " ms"
+              return numberFormat.format(value)
+            },
           },
         },
-        axisLabel: {
-          formatter(value: string | number, _index: number) {
-            return (value as string).includes("__") ? "" : value as string
+        yAxis: {
+          type: "category",
+          splitLine: {
+            show: true,
+            interval(_index: number, value: string | number) {
+              return !(value as string).includes("__")
+            },
+          },
+          axisLabel: {
+            formatter(value: string | number, _index: number) {
+              return (value as string).includes("__") ? "" : (value as string)
+            },
+          },
+          axisTick: {
+            show: false,
           },
         },
-        axisTick: {
-          show: false,
-        },
       },
-    }, {notMerge: true})
+      { notMerge: true }
+    )
   }
 
   dispose(): void {
@@ -158,8 +161,8 @@ export class TimeLineChartManager implements ChartManager {
         minStart = list[0][4].s
       }
       const last = list.at(-1) as ChartDataItem
-      if (maxEnd < (last[4].s + last[4].d)) {
-        maxEnd = (last[4].s + last[4].d)
+      if (maxEnd < last[4].s + last[4].d) {
+        maxEnd = last[4].s + last[4].d
       }
 
       let rowIndex = 0
@@ -171,8 +174,7 @@ export class TimeLineChartManager implements ChartManager {
           if (newRowIndex === -1) {
             // no place
             rowIndex++
-          }
-          else {
+          } else {
             rowIndex = newRowIndex
           }
         }
@@ -204,11 +206,11 @@ export class TimeLineChartManager implements ChartManager {
               position: "insideLeft",
               distance: 1,
               fontFamily: "monospace",
-              formatter: adaptToolTipFormatter(params => {
+              formatter: adaptToolTipFormatter((params) => {
                 const info = params[0]
                 const chartItem = info.data as ChartDataItem
                 return getDuration(chartItem) < LABEL_THRESHOLD ? "" : chartItem[5]
-              })
+              }),
             },
             data: [],
           }
@@ -218,14 +220,13 @@ export class TimeLineChartManager implements ChartManager {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        (series!.data as ChartDataItem[]).push(chartItem)
+        ;(series!.data as ChartDataItem[]).push(chartItem)
 
         const newEnd = item.s + item.d
         const info = rowToEnd.get(rowIndex)
         if (info === undefined) {
-          rowToEnd.set(rowIndex, {end: newEnd, item})
-        }
-        else if (info.end < newEnd) {
+          rowToEnd.set(rowIndex, { end: newEnd, item })
+        } else if (info.end < newEnd) {
           info.end = newEnd
           info.item = item
         }
@@ -244,15 +245,18 @@ export class TimeLineChartManager implements ChartManager {
     const axisLineColor = ((this.chart.chart.getOption() as BarChartOptions).xAxis as XAXisOption[])[0].axisLine!.lineStyle!.color as string
     configureMarkAreas(dataManager, series, axisLineColor)
 
-    this.chart.chart.setOption<CustomChartOptions>({
-      xAxis: {
-        min: this.dataDescriptor.unitConverter.convert(minStart),
-        max: this.dataDescriptor.unitConverter.convert(maxEnd),
+    this.chart.chart.setOption<CustomChartOptions>(
+      {
+        xAxis: {
+          min: this.dataDescriptor.unitConverter.convert(minStart),
+          max: this.dataDescriptor.unitConverter.convert(maxEnd),
+        },
+        series,
       },
-      series,
-    }, {
-      replaceMerge: ["series"],
-    })
+      {
+        replaceMerge: ["series"],
+      }
+    )
     this.chart.enableZoomTool()
     this.chart.chart.resize()
   }
@@ -260,7 +264,7 @@ export class TimeLineChartManager implements ChartManager {
 
 function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption[], axisLineColor: string): void {
   const areaData: MarkArea2DDataItemOption[] = []
-  for (const item of (dataManager.isUnifiedItems ? dataManager.items : dataManager.data.prepareAppInitActivities)) {
+  for (const item of dataManager.isUnifiedItems ? dataManager.items : dataManager.data.prepareAppInitActivities) {
     if (!(item.n.endsWith(" async preloading") || item.n.endsWith(" sync preloading"))) {
       continue
     }
@@ -280,14 +284,17 @@ function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption
         },
         xAxis: item.s,
       },
-      {xAxis: item.s + item.d},
+      { xAxis: item.s + item.d },
     ])
   }
   const lastSeries = series.at(-1) as CustomSeriesOption
-  lastSeries.markArea = areaData.length === 0 ? undefined : {
-    silent: true,
-    data: areaData,
-  }
+  lastSeries.markArea =
+    areaData.length === 0
+      ? undefined
+      : {
+          silent: true,
+          data: areaData,
+        }
 
   const markLineData: MarkLine1DDataItemOption[] = []
   for (const item of dataManager.data.traceEvents) {
@@ -296,21 +303,23 @@ function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption
     }
 
     markLineData.push({
-      label: {formatter: item.name},
+      label: { formatter: item.name },
       xAxis: item.ts / 1000,
     })
   }
-  lastSeries.markLine = markLineData.length === 0 ? undefined : {
-    symbol: "none",
-    silent: true,
-    lineStyle: {
-      type: "dashed",
-      color: axisLineColor,
-    },
-    data: markLineData,
-  }
+  lastSeries.markLine =
+    markLineData.length === 0
+      ? undefined
+      : {
+          symbol: "none",
+          silent: true,
+          lineStyle: {
+            type: "dashed",
+            color: axisLineColor,
+          },
+          data: markLineData,
+        }
 }
-
 
 function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI) {
   const categoryIndex = api.value(0)
@@ -322,19 +331,22 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  const coordinateSystem = params.coordSys as {x: number; y: number; width: number; height: number}
-  const rectShape = graphic.clipRectByRect({
-    x: start[0],
-    y: start[1] - height / 2,
-    width: end[0] - start[0],
-    height,
-  }, {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    x: coordinateSystem.x,
-    y: coordinateSystem.y,
-    width: coordinateSystem.width,
-    height: coordinateSystem.height,
-  })
+  const coordinateSystem = params.coordSys as { x: number; y: number; width: number; height: number }
+  const rectShape = graphic.clipRectByRect(
+    {
+      x: start[0],
+      y: start[1] - height / 2,
+      width: end[0] - start[0],
+      height,
+    },
+    {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      x: coordinateSystem.x,
+      y: coordinateSystem.y,
+      width: coordinateSystem.width,
+      height: coordinateSystem.height,
+    }
+  )
 
   return {
     type: "rect",
@@ -368,11 +380,10 @@ function findRowIndex(rowIndex: number, rowToEnd: Map<number, RowInfo>, item: It
     // so two adjacent items are rendered in the same row if next one will not have a label
     // item.d < LABEL_THRESHOLD ||
 
-    if ((item.s + item.d) < rowItem.end) {
+    if (item.s + item.d < rowItem.end) {
       // sub item should be at higher level
       return -1
-    }
-    else if (item.d < LABEL_THRESHOLD || (item.s - rowItem.end) > rowIndexThreshold) {
+    } else if (item.d < LABEL_THRESHOLD || item.s - rowItem.end > rowIndexThreshold) {
       return i
     }
   }

@@ -6,7 +6,6 @@
 //  the parser is based on
 //    http://osteele.com/sources/openlaszlo/json
 
-
 /*
  * we divide the uri-safe glyphs into three sets
  *   <rison> - used by rison                         ' ! : ( ) ,
@@ -41,10 +40,10 @@ export function makeUrlSafe(x: string): string {
   // }
 
   return encodeURIComponent(x)
-    // .replace(/%2C/g, ",")
-    // .replace(/%3A/g, ":")
-    // .replace(/%40/g, "@")
-    // .replace(/%24/g, "$")
+  // .replace(/%2C/g, ",")
+  // .replace(/%3A/g, ":")
+  // .replace(/%40/g, "@")
+  // .replace(/%24/g, "$")
 }
 
 function doEncode(value: any) {
@@ -52,7 +51,7 @@ function doEncode(value: any) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-  return Array.isArray(value) ? array(value) : encoders[typeof value](value) as string
+  return Array.isArray(value) ? array(value) : (encoders[typeof value](value) as string)
 }
 
 function object(x: any): string {
@@ -65,9 +64,8 @@ function object(x: any): string {
     }
 
     if (isNonFirst) {
-      result  += ","
-    }
-    else {
+      result += ","
+    } else {
       isNonFirst = true
     }
 
@@ -88,8 +86,7 @@ function array(x: unknown[]): string {
 
     if (isNonFirst) {
       result += ","
-    }
-    else {
+    } else {
       isNonFirst = true
     }
 
@@ -104,7 +101,7 @@ function array(x: unknown[]): string {
 
 const encoders = {
   object,
-  "boolean"(x: boolean) {
+  boolean(x: boolean) {
     return x ? "!t" : "!f"
   },
   number(x: number): string {
@@ -113,14 +110,11 @@ const encoders = {
   string(x: string): string {
     if (x.length === 0) {
       return "''"
-    }
-    else if (idOk.test(x)) {
+    } else if (idOk.test(x)) {
       return x
     }
 
-    x = x
-      .replaceAll("!", "!!")
-      .replaceAll("'", "!'")
+    x = x.replaceAll("!", "!!").replaceAll("'", "!'")
     return `'${x}'`
   },
 }

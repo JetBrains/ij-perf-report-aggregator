@@ -9,14 +9,15 @@
         {{ vm.average }}
       </span>
       <div class="text-sm text-neutral-500 font-normal">
-        Avg<span v-if="props.valueUnit !== 'counter'">, ms</span>
+        Avg
+        <span v-if="props.valueUnit !== 'counter'">, ms</span>
       </div>
     </div>
 
     <div
       ref="element"
       class="bg-white"
-      :style="{height: `${55}px`}"
+      :style="{ height: `${55}px` }"
     />
   </div>
 </template>
@@ -42,14 +43,14 @@ interface AggregationChartProps {
 const props = withDefaults(defineProps<AggregationChartProps>(), {
   valueUnit: "ms",
   chartColor: "#4B84EE",
-  aggregatedProject: undefined
+  aggregatedProject: undefined,
 })
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({f: "measures.name", v: props.aggregatedMeasure, o: props.isLike ? "like" : "="})
+    query.addFilter({ f: "measures.name", v: props.aggregatedMeasure, o: props.isLike ? "like" : "=" })
     if (props.aggregatedProject !== undefined) {
-      query.addFilter({f: "project", v: props.aggregatedProject, o: props.isLike ? "like" : "="})
+      query.addFilter({ f: "project", v: props.aggregatedProject, o: props.isLike ? "like" : "=" })
     }
     return true
   },

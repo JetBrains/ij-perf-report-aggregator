@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    v-slot="{averagesConfigurators}"
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="webstorm"
     persistent-id="webstorm_dashboard"
@@ -63,5 +63,4 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-
 </script>

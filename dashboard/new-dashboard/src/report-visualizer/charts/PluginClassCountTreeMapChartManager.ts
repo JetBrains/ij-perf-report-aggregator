@@ -30,14 +30,17 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
         },
       },
       tooltip: {
-        formatter: adaptToolTipFormatter(params => {
+        formatter: adaptToolTipFormatter((params) => {
           const info = params[0]
           const item = (info.data as ItemExtraInfo).item
-          return `${info.marker as string} ` + buildTooltip([
-            {name: info.name, main: true, value: numberFormat.format(info.value as number)},
-            {name: "class loading time in EDT", value: numberFormat.format(item.classLoadingEdtTime)},
-            {name: "class loading time in background", value: numberFormat.format(item.classLoadingBackgroundTime)},
-          ])
+          return (
+            `${info.marker as string} ` +
+            buildTooltip([
+              { name: info.name, main: true, value: numberFormat.format(info.value as number) },
+              { name: "class loading time in EDT", value: numberFormat.format(item.classLoadingEdtTime) },
+              { name: "class loading time in background", value: numberFormat.format(item.classLoadingBackgroundTime) },
+            ])
+          )
         }),
       },
     })
@@ -53,7 +56,7 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
     const loadedClasses = data.data.stats.loadedClasses
     if (loadedClasses == null) {
       // v20+
-      for (const item of (data.data.plugins ?? [])) {
+      for (const item of data.data.plugins ?? []) {
         items.push({
           name: item.id,
           abbreviatedName: getAbbreviatedName(item.id),
@@ -61,29 +64,30 @@ export class PluginClassCountTreeMapChartManager implements ChartManager {
           item,
         })
       }
-    }
-    else {
+    } else {
       for (const name of Object.keys(loadedClasses)) {
         items.push({
           name,
           abbreviatedName: getAbbreviatedName(name),
           value: loadedClasses[name],
-          item: {classCount: 0, classLoadingBackgroundTime: 0, classLoadingEdtTime: 0, id: name}
+          item: { classCount: 0, classLoadingBackgroundTime: 0, classLoadingEdtTime: 0, id: name },
         })
       }
     }
 
     this.chart.chart.setOption<TreeMapChartOptions>({
-      series: [{
-        type: "treemap",
-        data: items,
-        leafDepth: 2,
-        label: {
-          formatter(data) {
-            return `${(data.data as ItemExtraInfo).abbreviatedName} (${numberFormat.format(data.value as number)})`
-          }
-        }
-      }],
+      series: [
+        {
+          type: "treemap",
+          data: items,
+          leafDepth: 2,
+          label: {
+            formatter(data) {
+              return `${(data.data as ItemExtraInfo).abbreviatedName} (${numberFormat.format(data.value as number)})`
+            },
+          },
+        },
+      ],
     })
   }
 }
@@ -97,7 +101,7 @@ function getAbbreviatedName(name: string): string {
   const names = name.split(".")
   for (let i = 0; i < names.length; i++) {
     const unqualifiedName = names[i]
-    abbreviatedName += i == (names.length - 1) ? unqualifiedName : unqualifiedName.slice(0, 1) + "."
+    abbreviatedName += i == names.length - 1 ? unqualifiedName : unqualifiedName.slice(0, 1) + "."
   }
   return abbreviatedName
 }

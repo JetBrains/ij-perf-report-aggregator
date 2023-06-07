@@ -11,18 +11,14 @@
         <GroupProjectsChart
           label="'Kotlin empty' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
-          :projects="[
-            'kotlin_empty/highlight/Main_with_library_cache_k1'
-          ]"
+          :projects="['kotlin_empty/highlight/Main_with_library_cache_k1']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin empty' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
-          :projects="[
-            'kotlin_empty/highlight/Main_with_library_cache_k2'
-          ]"
+          :projects="['kotlin_empty/highlight/Main_with_library_cache_k2']"
         />
       </div>
     </section>
@@ -72,7 +68,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Intellij suite 2' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
@@ -85,7 +81,7 @@
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Intellij suite 2' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
@@ -101,7 +97,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
@@ -114,7 +110,7 @@
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin lang' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
@@ -130,7 +126,7 @@
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin language server' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
@@ -141,11 +137,11 @@
             'kotlin_language_server/highlight/JavaElementConverter_with_library_cache_k1',
             'kotlin_language_server/highlight/KotlinTextDocumentService_with_library_cache_k1',
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k1',
-            'kotlin_language_server/highlight/SourcePath_with_library_cache_k1'
+            'kotlin_language_server/highlight/SourcePath_with_library_cache_k1',
           ]"
         />
       </div>
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Kotlin language server' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
@@ -157,15 +153,13 @@
             'kotlin_language_server/highlight/KotlinTextDocumentService_with_library_cache_k2',
             'kotlin_language_server/highlight/QuickFixesTest_with_library_cache_k2',
             'kotlin_language_server/highlight/SourcePath_with_library_cache_k2',
-
-
           ]"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'TBE' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
@@ -180,7 +174,7 @@
             'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k1',
             'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k1',
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k1',
-            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1'
+            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k1',
           ]"
         />
       </div>
@@ -199,13 +193,13 @@
             'toolbox_enterprise/highlight/ProfileServiceTest_with_library_cache_k2',
             'toolbox_enterprise/highlight/SecurityTests_with_library_cache_k2',
             'toolbox_enterprise/highlight/UsageDataFlowTests_with_library_cache_k2',
-            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2'
+            'toolbox_enterprise/highlight/VmOptionSettingTest_with_library_cache_k2',
           ]"
         />
       </div>
     </section>
     <section class="flex gap-x-6">
-      <div class=" flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="'Ktor samples' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
@@ -242,5 +236,4 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-
 </script>

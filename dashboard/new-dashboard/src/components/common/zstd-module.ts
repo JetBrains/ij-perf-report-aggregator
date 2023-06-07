@@ -17,7 +17,7 @@ function UTF8ToString(ptr: number, maxBytesToRead: number = 0) {
 
   const maxPtr = ptr + maxBytesToRead
   let end = ptr
-  for (; !(end >= maxPtr) && HEAPU8[end];) {
+  for (; !(end >= maxPtr) && HEAPU8[end]; ) {
     ++end
   }
   return UTF8Decoder.decode(HEAPU8.subarray(ptr, end))
@@ -25,8 +25,10 @@ function UTF8ToString(ptr: number, maxBytesToRead: number = 0) {
 
 const asmLibraryArg = {
   a(condition: number, filename: number, line: number, func?: number) {
-    abort(`Assertion failed: ${UTF8ToString(condition)}, at: ` +
-      `[${filename ? UTF8ToString(filename) : "unknown filename"}, ${line}, ${func ? UTF8ToString(func) : "unknown function"}]`)
+    abort(
+      `Assertion failed: ${UTF8ToString(condition)}, at: ` +
+        `[${filename ? UTF8ToString(filename) : "unknown filename"}, ${line}, ${func ? UTF8ToString(func) : "unknown function"}]`
+    )
   },
   c(dest: number, src: number, num: number) {
     HEAPU8.copyWithin(dest, src, src + num)
@@ -42,7 +44,7 @@ function initRuntime(asm: Record<string, () => void>) {
 }
 
 const imports = {
-  "a": asmLibraryArg,
+  a: asmLibraryArg,
 }
 
 export let malloc: (size: number) => number
@@ -65,7 +67,7 @@ export let ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: nu
 // let stackAlloc
 
 export const zstdReady = from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
-  map(output => {
+  map((output) => {
     const asm = output.instance.exports as Record<string, never>
     malloc = asm["f"]
     free = asm["g"]

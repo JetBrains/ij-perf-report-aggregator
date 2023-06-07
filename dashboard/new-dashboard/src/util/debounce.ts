@@ -12,8 +12,7 @@ export function debounceSync(func: () => void, wait = 100): DebouncedFunction {
     const last = Date.now() - timestamp
     if (last < wait && last >= 0) {
       timeout = window.setTimeout(later, wait - last)
-    }
-    else {
+    } else {
       isScheduled = false
       func()
     }

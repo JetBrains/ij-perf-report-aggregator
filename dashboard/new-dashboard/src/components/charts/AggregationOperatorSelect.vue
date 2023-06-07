@@ -8,7 +8,7 @@
     placeholder="Operator"
   >
     <!-- eslint-disable vue/no-template-shadow -->
-    <template #value="{value}">
+    <template #value="{ value }">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         {{ value }}
         <ChevronDownIcon
@@ -38,7 +38,7 @@ import { computed, inject } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { aggregationOperatorConfiguratorKey } from "../../shared/injectionKeys"
 
-const props =  defineProps<{
+const props = defineProps<{
   configurator?: AggregationOperatorConfigurator
 }>()
 
@@ -49,7 +49,7 @@ function getConfigurator(): AggregationOperatorConfigurator {
   return props.configurator ?? providedConfigurator!
 }
 
-const operators = ["median", "min", "max", "quantile"].map(it => ({label: it, value: it}))
+const operators = ["median", "min", "max", "quantile"].map((it) => ({ label: it, value: it }))
 const value = computed({
   get() {
     return getConfigurator().operator.value

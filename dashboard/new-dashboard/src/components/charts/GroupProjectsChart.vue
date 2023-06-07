@@ -2,7 +2,7 @@
   <LineChart
     :title="props.label"
     :value-unit="props.valueUnit"
-    :measures="[measure]"
+    :measures="Array.isArray(measure) ? measure : [measure]"
     :configurators="configurators as DataQueryConfigurator[]"
     :skip-zero-values="false"
     :accidents="accidents"
@@ -21,7 +21,7 @@ import LineChart from "./LineChart.vue"
 
 interface Props {
   label: string
-  measure: string
+  measure: string | string[]
   projects: string[]
   valueUnit?: ValueUnit
 }

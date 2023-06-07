@@ -1,6 +1,6 @@
 export interface Definition {
   label: string
-  measure: string
+  measure: string|string[]
 }
 
 export interface Chart {
@@ -10,7 +10,7 @@ export interface Chart {
 
 export interface ChartDefinition {
   labels: string[]
-  measures: string[]
+  measures: string[]|string[][]
   projects: string[]
 }
 

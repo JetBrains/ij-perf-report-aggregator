@@ -124,8 +124,8 @@ const chartsDeclaration: ChartDefinition[] = [{
       "community/findUsages/Path_toString_Before", "community/findUsages/Path_toString_After"
     ],
   }, {
-  labels: ["FindUsages Objects#hashCode Before and After Compilation"],
-  measures: ["findUsages"],
+  labels: ["FindUsages Objects#hashCode Before and After Compilation", "FindUsages Objects#hashCode Before and After Compilation (first usage)"],
+  measures: [["findUsages", "fus_find_usages_all"], ["findUsages_firstUsage", "fus_find_usages_first"]],
   projects: ["community/findUsages/Objects_hashCode_Before", "community/findUsages/Objects_hashCode_After"],
 }, {
   labels: ["FindUsages Path#div Before and After Compilation"],

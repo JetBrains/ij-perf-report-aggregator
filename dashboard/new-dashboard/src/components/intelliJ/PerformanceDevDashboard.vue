@@ -31,37 +31,83 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_sources/indexing", "intellij_commit/indexing"],
   },
   {
-    labels: ["Find Usages Java"],
-    measures: ["findUsages"],
+    labels: ["Find Usages Java Application_runReadAction (all usages)", "Find Usages Java Application_runReadAction (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
     projects: [
-      "intellij_sources/findUsages/Application_runReadAction",
-      "intellij_sources/findUsages/LocalInspectionTool_getID",
-      "intellij_sources/findUsages/PsiManager_getInstance",
-      "intellij_sources/findUsages/PropertyMapping_value",
-      "intellij_commit/findUsages/Application_runReadAction",
-      "intellij_commit/findUsages/LocalInspectionTool_getID",
-      "intellij_commit/findUsages/PsiManager_getInstance",
-      "intellij_commit/findUsages/PropertyMapping_value",
+      "intellij_commit/findUsages/Application_runReadAction"
     ],
   },
   {
-    labels: ["Find Usages Kotlin"],
-    measures: ["findUsages"],
+    labels: ["Find Usages Java Library_getName (all usages)", "Find Usages Java Library_getName (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
     projects: [
-      "intellij_sources/findUsages/ActionsKt_runReadAction",
-      "intellij_sources/findUsages/DynamicPluginListener_TOPIC",
-      "intellij_sources/findUsages/Path_div",
-      "intellij_sources/findUsages/Persistent_absolutePath",
-      "intellij_sources/findUsages/RelativeTextEdit_rangeTo",
-      "intellij_sources/findUsages/TemporaryFolder_invoke",
-      "intellij_sources/findUsages/Project_guessProjectDir",
-      "intellij_commit/findUsages/ActionsKt_runReadAction",
+      "intellij_commit/findUsages/Library_getName",
+    ],
+  },
+  {
+    labels: ["Find Usages Java PsiManager_getInstance (all usages)", "Find Usages Java PsiManager_getInstance (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
+      "intellij_commit/findUsages/PsiManager_getInstance"
+    ],
+  },
+  {
+    labels: ["Find Usages Java PropertyMapping_value (all usages)", "Find Usages Java PropertyMapping_value (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
+      "intellij_commit/findUsages/PropertyMapping_value"
+    ],
+  },
+  {
+    labels: ["Find Usages Kotlin ActionsKt_runReadAction (all usages)", "Find Usages Kotlin ActionsKt_runReadAction (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
+      "intellij_commit/findUsages/ActionsKt_runReadAction"
+    ],
+  },
+  {
+    labels: ["Find Usages Kotlin DynamicPluginListener_TOPIC (all usages)", "Find Usages Kotlin DynamicPluginListener_TOPIC (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
       "intellij_commit/findUsages/DynamicPluginListener_TOPIC",
-      "intellij_commit/findUsages/Path_div",
-      "intellij_commit/findUsages/Persistent_absolutePath",
-      "intellij_commit/findUsages/RelativeTextEdit_rangeTo",
-      "intellij_commit/findUsages/TemporaryFolder_invoke",
-      "intellij_commit/findUsages/Project_guessProjectDir",
+    ],
+  },
+  {
+    labels: ["Find Usages Kotlin Path_div (all usages)", "Find Usages Kotlin Path_div (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
+      "intellij_commit/findUsages/Path_div"
+    ],
+  },
+  {
+    labels: ["Find Usages Kotlin Persistent_absolutePath (all usages)", "Find Usages Kotlin Persistent_absolutePath (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: [
+      "intellij_commit/findUsages/Persistent_absolutePath"
     ],
   },
   {

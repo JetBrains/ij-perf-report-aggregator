@@ -119,8 +119,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
   },
   {
-    labels: ["FindUsages Library#getName Before and After Compilation"],
-    measures: ["findUsages"],
+    labels: ["FindUsages Library#getName (all usages)", "FindUsages Library#getName (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
     projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
   },
   {
@@ -207,8 +210,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/go-to-action/Runtime", "community/go-to-class/Kotlin", "community/go-to-file/properties"],
   },
   {
-    labels: ["Show Intentions (average awt delay)"],
-    measures: ["test#average_awt_delay"],
+    labels: ["Show Intentions (average awt delay)", "Show Intentions (showQuickFixes)", "Show Intentions (awt dispatch time)"],
+    measures: ["test#average_awt_delay", "showQuickFixes", "AWTEventQueue.dispatchTimeTotal"],
     projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
   },
   {

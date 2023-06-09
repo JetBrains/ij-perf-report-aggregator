@@ -38,6 +38,7 @@
     <span v-if="highlightingPasses">
       <Divider label="Highlighting Passes" />
       <LineChartCard :measures="highlightingPasses" />
+      <LineChartCard :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']" />
     </span>
 
     <Divider label="Exit" />

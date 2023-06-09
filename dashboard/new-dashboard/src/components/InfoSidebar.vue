@@ -57,6 +57,13 @@
           {{ vm.data.value?.date }}
           <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
         </span>
+        <span
+          v-if="vm.data.value?.metric"
+          class="flex gap-1.5 text-sm items-center"
+        >
+          <BeakerIcon class="w-4 h-4" />
+          <span>{{ vm.data.value?.metric }}</span>
+        </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ClockIcon class="w-4 h-4" />
           {{ vm.data.value?.value }}

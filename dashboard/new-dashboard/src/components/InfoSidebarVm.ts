@@ -29,6 +29,7 @@ export interface InfoData {
   accidents: Accident[] | undefined
   buildId: number
   description: Ref<Description | undefined>
+  metric: string | undefined
 }
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
@@ -39,6 +40,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   const value: number = dataSeries[1] as number
   let projectName: string = params.seriesName as string
   let machineName: string | undefined
+  let metric: string | undefined
   let buildId: number | undefined
   let installerId: number | undefined
   let buildVersion: number | undefined
@@ -55,13 +57,14 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     projectName = dataSeries[4] as string
   }
   //dev builds intellij
-  if (dataSeries.length == 6) {
-    if (dataSeries[2] == "c") {
+  if (dataSeries.length == 7) {
+    metric = dataSeries[2] as string
+    if (dataSeries[3] == "c") {
       type = "counter"
     }
-    machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
-    projectName = dataSeries[5] as string
+    machineName = dataSeries[4] as string
+    buildId = dataSeries[5] as number
+    projectName = dataSeries[6] as string
     accidentBuild = buildId.toString()
   }
   //fleet
@@ -75,26 +78,28 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum2 = dataSeries[8] as number
   }
   //jbr
-  if (dataSeries.length == 7) {
-    if (dataSeries[2] == "c") {
+  if (dataSeries.length == 8) {
+    metric = dataSeries[2] as string
+    if (dataSeries[3] == "c") {
       type = "counter"
     }
-    machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
-    projectName = dataSeries[5] as string
-    buildNumber = dataSeries[6] as string
+    machineName = dataSeries[4] as string
+    buildId = dataSeries[5] as number
+    projectName = dataSeries[6] as string
+    buildNumber = dataSeries[7] as string
   }
-  if (dataSeries.length == 10) {
-    if (dataSeries[2] == "c") {
+  if (dataSeries.length == 11) {
+    metric = dataSeries[2] as string
+    if (dataSeries[3] == "c") {
       type = "counter"
     }
-    machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
-    projectName = dataSeries[5] as string
-    installerId = dataSeries[6] as number
-    buildVersion = dataSeries[7] as number
-    buildNum1 = dataSeries[8] as number
-    buildNum2 = dataSeries[9] as number
+    machineName = dataSeries[4] as string
+    buildId = dataSeries[5] as number
+    projectName = dataSeries[6] as string
+    installerId = dataSeries[7] as number
+    buildVersion = dataSeries[8] as number
+    buildNum1 = dataSeries[9] as number
+    buildNum2 = dataSeries[10] as number
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
 
@@ -132,6 +137,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     accidents: filteredAccidents,
     buildId: buildId as number,
     description,
+    metric,
   }
 }
 

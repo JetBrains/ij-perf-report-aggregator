@@ -191,6 +191,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.insertField(field, 1)
 
   if (query.db === "perfint" || query.db === "jbr" || query.db === "perfintDev") {
+    query.addField({ n: "measures", subName: "name" })
     query.addField({ n: "measures", subName: "type" })
   }
 

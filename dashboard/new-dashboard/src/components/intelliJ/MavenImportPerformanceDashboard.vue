@@ -100,7 +100,6 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-import-maven-quarkus/measureStartup",
       "project-reimport-maven-quarkus/measureStartup",
       "project-import-from-cache-maven-quarkus/measureStartup",
-      "project-import-maven-500-modules/measureStartup",
       "project-import-maven-1000-modules/measureStartup",
       "project-import-maven-5000-modules/measureStartup",
       "project-import-maven-keycloak/measureStartup",
@@ -112,7 +111,6 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-import-maven-azure-sdk-java/measureStartup",
       "project-import-maven-hive/measureStartup",
       "project-import-maven-quarkus-to-legacy-model/measureStartup",
-      "project-import-maven-500-modules-to-legacy-model/measureStartup",
       "project-import-maven-1000-modules-to-legacy-model/measureStartup",
     ],
   }

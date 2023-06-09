@@ -52,14 +52,12 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-import-gradle-cas/measureStartup",
       "project-reimport-gradle-cas/measureStartup",
       "project-import-from-cache-gradle-cas/measureStartup",
-      "project-import-gradle-500-modules/measureStartup",
       "project-import-gradle-1000-modules/measureStartup",
       "project-import-gradle-5000-modules/measureStartup",
       "project-import-gradle-android-extra-large/measureStartup",
       "project-reimport-space/measureStartup",
       "project-import-space/measureStartup",
       "project-import-open-telemetry/measureStartup",
-      "project-import-gradle-openliberty/measureStartup",
     ],
   }
 })

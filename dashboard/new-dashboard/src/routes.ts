@@ -47,6 +47,7 @@ enum ROUTES {
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
   IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/${DASHBOARD_ROUTE}`,
+  IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJ}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
@@ -174,6 +175,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJIncrementalCompilationDashboard,
           label: "Incremental Compilation",
+        },
+        {
+          url: ROUTES.IntelliJGCDashboard,
+          label: "Garbage Collectors",
         },
         {
           url: ROUTES.IntelliJScalabilityDashboard,
@@ -644,6 +649,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJSharedIndicesDashboard,
           component: () => import("./components/intelliJ/SharedIndicesPerformanceDashboard.vue"),
           meta: { pageTitle: "IntelliJ Integration Performance Tests For Shared Indices Dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJGCDashboard,
+          component: () => import("./components/intelliJ/GarbageCollectorDashboard.vue"),
+          meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
         },
         {
           path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/tests`,

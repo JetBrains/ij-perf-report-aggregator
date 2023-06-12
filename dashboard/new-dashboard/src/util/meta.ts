@@ -139,13 +139,13 @@ export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | 
 export function getAccident(accidents: Map<string, Accident> | null, value: string[]): Accident | null {
   if (accidents != null) {
     //perf db
-    if (value.length == 10) {
-      const key = `${value[5]}_${value[7]}.${value[8]}`
+    if (value.length == 11) {
+      const key = `${value[6]}_${value[8]}.${value[9]}`
       return accidents.get(key) ?? null
     }
     //perf dev db
-    if (value.length == 6) {
-      const key = `${value[5]}_${value[4]}`
+    if (value.length == 7) {
+      const key = `${value[6]}_${value[5]}`
       return accidents.get(key) ?? null
     }
   }

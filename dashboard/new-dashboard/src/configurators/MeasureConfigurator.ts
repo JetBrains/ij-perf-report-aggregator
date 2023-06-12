@@ -281,9 +281,9 @@ function configureChart(
     let seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
 
-    if (seriesData.length > 2) {
+    if (seriesData.length > 3) {
       // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
-      const type = seriesData[2].at(-1)
+      const type = seriesData[3].at(-1)
       if (type === "c") {
         useDurationFormatter = false
       } else if (type === "d") {
@@ -293,9 +293,9 @@ function configureChart(
     //fleet
     if (seriesName == "" && (seriesData.length == 5 || seriesData.length == 9)) {
       seriesName = seriesData[4][0] as string
-    } else if (seriesName == "" && seriesData.length > 5) {
+    } else if (seriesName == "" && seriesData.length > 6) {
       // we take only the one project name, there can't be more
-      seriesName = seriesData[5][0] as string
+      seriesName = seriesData[6][0] as string
     }
 
     let isNotEmpty = false

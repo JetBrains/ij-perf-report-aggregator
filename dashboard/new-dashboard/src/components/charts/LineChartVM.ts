@@ -79,7 +79,7 @@ export class LineChartVM {
         formatter(params: CallbackDataParams) {
           const element = document.createElement("div")
           const data = params.value as OptionDataValue[]
-          const [dateMs, durationMs, type] = data
+          const [dateMs, durationMs, _, type] = data
 
           element.append(
             type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000),

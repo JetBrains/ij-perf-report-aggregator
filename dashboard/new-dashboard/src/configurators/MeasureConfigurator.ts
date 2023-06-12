@@ -9,6 +9,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
+import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -314,10 +315,24 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          return isValueShouldBeMarkedWithPin(accidentsMap, value) ? symbolSize * 4 : symbolSize
+          if (isValueShouldBeMarkedWithPin(accidentsMap, value)) {
+            return symbolSize *  4
+          }
+          const accident = getAccident(accidentsMap, value)
+          if (accident?.kind == AccidentKind.Exception) {
+            return symbolSize * 1.2
+          }
+          return symbolSize
         },
         symbol(value: string[]) {
-          return isValueShouldBeMarkedWithPin(accidentsMap, value) ? "pin" : symbolOptions.symbol ?? "circle"
+          if (isValueShouldBeMarkedWithPin(accidentsMap, value)) {
+            return "pin"
+          }
+          const accident = getAccident(accidentsMap, value)
+          if (accident?.kind == AccidentKind.Exception) {
+            return "diamond"
+          }
+          return "circle"
         },
         triggerLineEvent: true,
         // applicable only for line chart
@@ -340,7 +355,7 @@ function configureChart(
               case AccidentKind.Improvement:
                 return "green"
               case AccidentKind.Exception:
-                return "black"
+                return toColor(accident.reason)
             }
           },
         },
@@ -355,6 +370,8 @@ function configureChart(
       sourceHeader: false,
     })
   }
+
+
 
   // if (chartType == "scatter") {
   //   dataset.push({
@@ -402,3 +419,4 @@ function configureChart(
     series: series as LineSeriesOption,
   }
 }
+

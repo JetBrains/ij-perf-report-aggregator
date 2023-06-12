@@ -26,7 +26,7 @@ export interface InfoData {
   date: string
   installerId: number | undefined
   changes: string | undefined
-  accidents: Accident[] | undefined
+  accidents: Ref<Accident[] | undefined> | undefined
   buildId: number
   description: Ref<Description | null>
   metric: string | undefined
@@ -34,7 +34,7 @@ export interface InfoData {
 
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Accident[] | null = null): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | undefined): InfoData {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -48,7 +48,6 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let buildNum2: number | undefined
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
-  let filteredAccidents: Accident[] | undefined
   let accidentBuild: string | undefined
   //dev fleet builds
   if (dataSeries.length == 5) {
@@ -113,10 +112,10 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value)
   }
 
-  if (accidents != null) {
-    filteredAccidents = accidents.filter((accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
-    filteredAccidents = filteredAccidents.length > 0 ? filteredAccidents : undefined
-  }
+  const filteredAccidents = computed(() => {
+    console.log(accidents?.value)
+    return accidents?.value.filter((accident: Accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
+  })
 
   const description = getDescriptionFromMetaDb(projectName, "master")
 

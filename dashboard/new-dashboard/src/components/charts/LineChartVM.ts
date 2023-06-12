@@ -1,4 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
+import { computed, Ref } from "vue"
 import { Accident, convertAccidentsToMap, getAccident } from "../../util/meta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
@@ -32,8 +33,38 @@ function getWarningIcon() {
 }
 
 export class LineChartVM {
-  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Accident[] | undefined) {
-    const accidentsMap = convertAccidentsToMap(accidents)
+  private getFormatter(isMs: boolean) {
+    return (params: CallbackDataParams) => {
+      const element = document.createElement("div")
+      const data = params.value as OptionDataValue[]
+      const [dateMs, durationMs, _, type] = data
+
+      element.append(
+        type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000),
+        document.createElement("br"),
+        timeFormatWithoutSeconds.format(dateMs as number)
+      )
+
+      element.append(document.createElement("br"))
+      element.append(`${params.seriesName}`)
+      const accident = getAccident(this.accidentsMap.value, data as string[])
+      if (accident != null) {
+        //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
+        element.append(document.createElement("br"))
+        const accidentHtml = document.createElement("span")
+        accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
+        const div = getWarningIcon()
+        accidentHtml.append(div)
+        accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
+        element.append(accidentHtml)
+      }
+
+      return element
+    }
+  }
+  private accidentsMap: Ref<Map<string, Accident>>
+  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Ref<Accident[]> | undefined) {
+    this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
@@ -76,33 +107,7 @@ export class LineChartVM {
           return [isOverflowWindow ? pointerLeft - element.offsetWidth : pointerLeft, pointerTop - element.clientHeight - 10]
         },
         // Formatting
-        formatter(params: CallbackDataParams) {
-          const element = document.createElement("div")
-          const data = params.value as OptionDataValue[]
-          const [dateMs, durationMs, _, type] = data
-
-          element.append(
-            type == "c" ? durationMs.toString() : durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000),
-            document.createElement("br"),
-            timeFormatWithoutSeconds.format(dateMs as number)
-          )
-
-          element.append(document.createElement("br"))
-          element.append(`${params.seriesName}`)
-          const accident = getAccident(accidentsMap, data as string[])
-          if (accident != null) {
-            //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
-            element.append(document.createElement("br"))
-            const accidentHtml = document.createElement("span")
-            accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
-            const div = getWarningIcon()
-            accidentHtml.append(div)
-            accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
-            element.append(accidentHtml)
-          }
-
-          return element
-        },
+        formatter: this.getFormatter(isMs),
         valueFormatter(it) {
           return numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms"
         },

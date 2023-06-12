@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { combineLatest } from "rxjs"
+import { computedAsync } from "@vueuse/core"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -87,10 +87,9 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { refToObservable } from "../../configurators/rxjs"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
+import { getAccidentsFromMetaDb } from "../../util/meta"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
@@ -154,11 +153,8 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
-const warnings = ref<Accident[]>()
-
-combineLatest([refToObservable(scenarioConfigurator.selected), refToObservable(timeRangeConfigurator.value)]).subscribe((data) => {
-  getAccidentsFromMetaDb(warnings, data[0], data[1])
-})
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(scenarioConfigurator.selected.value, timeRangeConfigurator.value), [])
+provide(accidentsKeys, warnings)
 </script>
 
 <style>

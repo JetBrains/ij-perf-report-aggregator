@@ -21,7 +21,8 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
+import { computedAsync } from "@vueuse/core"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -31,9 +32,8 @@ import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyCo
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { refToObservable } from "../../configurators/rxjs"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
+import { getAccidentsFromMetaDb } from "../../util/meta"
 import InfoSidebar from "../InfoSidebar.vue"
 import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
@@ -126,9 +126,6 @@ function onChangeRange(value: TimeRange) {
 }
 
 const projects = props.charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
-const warnings = ref<Accident[]>()
-refToObservable(timeRangeConfigurator.value).subscribe((data) => {
-  getAccidentsFromMetaDb(warnings, projects, data)
-})
-provide(accidentsKeys, warnings as Ref<Accident[]>)
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(projects, timeRangeConfigurator.value), [])
+provide(accidentsKeys, warnings)
 </script>

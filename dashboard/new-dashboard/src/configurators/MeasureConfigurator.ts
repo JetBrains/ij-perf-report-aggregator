@@ -2,7 +2,7 @@ import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import { deepEqual } from "fast-equals"
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
-import { Ref, shallowRef } from "vue"
+import { computed, Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
@@ -149,8 +149,11 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Accident[] | null = null
-  ) {}
+    readonly accidents: Ref<Accident[]> | undefined | null = null,
+    readonly accidentsMap: Ref<Map<string, Accident>> | null = null
+  ) {
+    this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
+  }
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.skipZeroValues)
@@ -164,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidents)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsMap)
   }
 }
 
@@ -270,7 +273,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidents: Accident[] | null = null
+  accidentsMap: Ref<Map<string, Accident>> | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -304,7 +307,6 @@ function configureChart(
       isNotEmpty = isNotEmpty || data.length > 0
     }
 
-    const accidentsMap = convertAccidentsToMap(accidents)
     if (isNotEmpty) {
       series.push({
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
@@ -315,20 +317,20 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          if (isValueShouldBeMarkedWithPin(accidentsMap, value)) {
-            return symbolSize *  4
+          if (isValueShouldBeMarkedWithPin(accidentsMap?.value, value)) {
+            return symbolSize * 4
           }
-          const accident = getAccident(accidentsMap, value)
+          const accident = getAccident(accidentsMap?.value, value)
           if (accident?.kind == AccidentKind.Exception) {
             return symbolSize * 1.2
           }
           return symbolSize
         },
         symbol(value: string[]) {
-          if (isValueShouldBeMarkedWithPin(accidentsMap, value)) {
+          if (isValueShouldBeMarkedWithPin(accidentsMap?.value, value)) {
             return "pin"
           }
-          const accident = getAccident(accidentsMap, value)
+          const accident = getAccident(accidentsMap?.value, value)
           if (accident?.kind == AccidentKind.Exception) {
             return "diamond"
           }
@@ -345,7 +347,7 @@ function configureChart(
         ],
         itemStyle: {
           color(seriesIndex) {
-            const accident = getAccident(accidentsMap, seriesIndex.value as string[])
+            const accident = getAccident(accidentsMap?.value, seriesIndex.value as string[])
             if (accident == null) {
               return seriesIndex.color as ZRColor
             }
@@ -370,8 +372,6 @@ function configureChart(
       sourceHeader: false,
     })
   }
-
-
 
   // if (chartType == "scatter") {
   //   dataset.push({
@@ -419,4 +419,3 @@ function configureChart(
     series: series as LineSeriesOption,
   }
 }
-

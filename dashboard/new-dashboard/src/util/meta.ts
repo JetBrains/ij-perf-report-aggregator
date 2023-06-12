@@ -59,14 +59,13 @@ export function writeAccidentToMetaDb(date: string, affected_test: string, reaso
     .catch((error) => console.error(error))
 }
 
-export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, tests: string[] | string | null, timeRange: TimeRange) {
+export function getAccidentsFromMetaDb(tests: string[] | string | null, timeRange: Ref<TimeRange>): Promise<Accident[]> {
   if (tests != null && !Array.isArray(tests)) {
     tests = [tests]
   }
-  accidents.value = []
-  const interval = intervalToPostgresInterval(timeRange)
+  const interval = intervalToPostgresInterval(timeRange.value)
   const params = tests == null ? { interval } : { interval, tests }
-  fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
+  return fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -75,12 +74,14 @@ export function getAccidentsFromMetaDb(accidents: Ref<Accident[] | undefined>, t
   })
     .then((response) => response.json())
     .then((data: AccidentFromServer[]) => {
-      const mappedData = data.map((value) => {
+      return data.map((value) => {
         return { ...value, kind: capitalizeFirstLetter(value.kind) }
       })
-      accidents.value?.push(...mappedData)
     })
-    .catch((error) => console.error(error))
+    .catch((error) => {
+      console.error(error)
+      return []
+    })
 }
 
 function capitalizeFirstLetter(str: string): AccidentKind {
@@ -116,7 +117,7 @@ export function getDescriptionFromMetaDb(project: string | undefined, branch: st
  * This is needed for optimization since we search for accidents on each point on the plot.
  * @param accidents
  */
-export function convertAccidentsToMap(accidents: Accident[] | undefined): Map<string, Accident> {
+export function convertAccidentsToMap(accidents: Accident[] | undefined | null): Map<string, Accident> {
   const accidentsMap = new Map<string, Accident>()
   if (accidents) {
     for (const accident of accidents) {
@@ -127,12 +128,12 @@ export function convertAccidentsToMap(accidents: Accident[] | undefined): Map<st
   return accidentsMap
 }
 
-export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | null, value: string[]): boolean {
+export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | undefined, value: string[]): boolean {
   const accident = getAccident(accidents, value)
   return accident != null && accident.kind != AccidentKind.Exception
 }
 
-export function getAccident(accidents: Map<string, Accident> | null, value: string[]): Accident | null {
+export function getAccident(accidents: Map<string, Accident> | undefined, value: string[]): Accident | null {
   if (accidents != null) {
     //perf db
     if (value.length == 11) {

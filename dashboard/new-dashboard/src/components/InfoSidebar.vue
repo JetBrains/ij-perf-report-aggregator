@@ -85,8 +85,8 @@
           class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80"
         >
           <li
-            v-for="accident in vm.data.value?.accidents"
-            :key="accident.id"
+            v-for="accident in vm.data.value?.accidents.value"
+            :key="accident?.id"
           >
             <span class="flex items-start justify-between gap-1.5 text-sm">
               &bull;

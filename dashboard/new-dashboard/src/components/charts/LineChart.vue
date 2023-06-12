@@ -52,7 +52,7 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
     symbolSize: 7,
     showSymbol: false,
   },
-  accidents?.value
+  accidents
 )
 
 const infoFieldsConfigurator =
@@ -81,12 +81,12 @@ let unsubscribe: (() => void) | null = null
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   chartManager = new ChartManager(chartElement.value!, container?.value)
-  chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents?.value)
+  chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents)
 
   unsubscribe = chartVm.subscribe()
 
   chartManager.chart.on("click", (params: CallbackDataParams) => {
-    const infoData = getInfoDataFrom(params, props.valueUnit, accidents?.value)
+    const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
     showSideBar(sidebarVm, infoData)
   })
 })

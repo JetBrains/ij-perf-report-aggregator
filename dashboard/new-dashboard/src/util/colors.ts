@@ -1,4 +1,3 @@
-
 export function toColor(str: string): string {
   let i
   let hash = 0
@@ -13,7 +12,7 @@ export function toColor(str: string): string {
   }
   let colour = "#"
   for (i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xFF
+    const value = (hash >> (i * 8)) & 0xff
     colour += ("00" + value.toString(16)).slice(-2)
   }
   return colour

@@ -36,9 +36,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/Application_runReadAction"
-    ],
+    projects: ["intellij_commit/findUsages/Application_runReadAction"],
   },
   {
     labels: ["Find Usages Java Library_getName (all usages)", "Find Usages Java Library_getName (first usage)"],
@@ -46,9 +44,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/Library_getName",
-    ],
+    projects: ["intellij_commit/findUsages/Library_getName"],
   },
   {
     labels: ["Find Usages Java PsiManager_getInstance (all usages)", "Find Usages Java PsiManager_getInstance (first usage)"],
@@ -56,9 +52,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/PsiManager_getInstance"
-    ],
+    projects: ["intellij_commit/findUsages/PsiManager_getInstance"],
   },
   {
     labels: ["Find Usages Java PropertyMapping_value (all usages)", "Find Usages Java PropertyMapping_value (first usage)"],
@@ -66,9 +60,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/PropertyMapping_value"
-    ],
+    projects: ["intellij_commit/findUsages/PropertyMapping_value"],
   },
   {
     labels: ["Find Usages Kotlin ActionsKt_runReadAction (all usages)", "Find Usages Kotlin ActionsKt_runReadAction (first usage)"],
@@ -76,9 +68,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/ActionsKt_runReadAction"
-    ],
+    projects: ["intellij_commit/findUsages/ActionsKt_runReadAction"],
   },
   {
     labels: ["Find Usages Kotlin DynamicPluginListener_TOPIC (all usages)", "Find Usages Kotlin DynamicPluginListener_TOPIC (first usage)"],
@@ -86,9 +76,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/DynamicPluginListener_TOPIC",
-    ],
+    projects: ["intellij_commit/findUsages/DynamicPluginListener_TOPIC"],
   },
   {
     labels: ["Find Usages Kotlin Path_div (all usages)", "Find Usages Kotlin Path_div (first usage)"],
@@ -96,9 +84,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/Path_div"
-    ],
+    projects: ["intellij_commit/findUsages/Path_div"],
   },
   {
     labels: ["Find Usages Kotlin Persistent_absolutePath (all usages)", "Find Usages Kotlin Persistent_absolutePath (first usage)"],
@@ -106,9 +92,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: [
-      "intellij_commit/findUsages/Persistent_absolutePath"
-    ],
+    projects: ["intellij_commit/findUsages/Persistent_absolutePath"],
   },
   {
     labels: ["Local Inspection"],

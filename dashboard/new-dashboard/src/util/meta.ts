@@ -116,7 +116,7 @@ export function getDescriptionFromMetaDb(project: string | undefined, branch: st
  * This is needed for optimization since we search for accidents on each point on the plot.
  * @param accidents
  */
-export function convertAccidentsToMap(accidents: Accident[] | null): Map<string, Accident> {
+export function convertAccidentsToMap(accidents: Accident[] | undefined): Map<string, Accident> {
   const accidentsMap = new Map<string, Accident>()
   if (accidents) {
     for (const accident of accidents) {

@@ -32,7 +32,7 @@ function getWarningIcon() {
 }
 
 export class LineChartVM {
-  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Accident[] | null) {
+  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Accident[] | undefined) {
     const accidentsMap = convertAccidentsToMap(accidents)
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })

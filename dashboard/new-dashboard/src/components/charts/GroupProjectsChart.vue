@@ -5,7 +5,6 @@
     :measures="Array.isArray(measure) ? measure : [measure]"
     :configurators="configurators as DataQueryConfigurator[]"
     :skip-zero-values="false"
-    :accidents="accidents"
   />
 </template>
 
@@ -14,7 +13,7 @@ import { inject, onMounted } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { accidentsKeys, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { ValueUnit } from "../common/chart"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import LineChart from "./LineChart.vue"
@@ -31,7 +30,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const serverConfigurator = inject(serverConfiguratorKey) as ServerConfigurator
-const accidents = inject(accidentsKeys)
 const dashboardConfigurators = inject(dashboardConfiguratorsKey) as DataQueryConfigurator[] | FilterConfigurator[]
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])])
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]

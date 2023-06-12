@@ -1,5 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { computed, Ref, ref, ShallowRef, shallowRef } from "vue"
+import { computed, Ref, ShallowRef, shallowRef } from "vue"
 import { Accident, Description, getDescriptionFromMetaDb } from "../util/meta"
 import { ValueUnit } from "./common/chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "./common/formatter"
@@ -28,7 +28,7 @@ export interface InfoData {
   changes: string | undefined
   accidents: Accident[] | undefined
   buildId: number
-  description: Ref<Description | undefined>
+  description: Ref<Description | null>
   metric: string | undefined
 }
 
@@ -118,8 +118,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     filteredAccidents = filteredAccidents.length > 0 ? filteredAccidents : undefined
   }
 
-  const description = ref<Description>()
-  getDescriptionFromMetaDb(description, projectName, "master")
+  const description = getDescriptionFromMetaDb(projectName, "master")
 
   return {
     build: fullBuildId,

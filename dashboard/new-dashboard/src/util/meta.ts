@@ -1,3 +1,4 @@
+import { useAsyncState } from "@vueuse/core"
 import { Ref } from "vue"
 import { encodeRison } from "../components/common/rison"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
@@ -101,19 +102,14 @@ export class Description {
   constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {}
 }
 
-export function getDescriptionFromMetaDb(descriptionRef: Ref<Description | undefined>, project: string | undefined, branch: string) {
-  if (project != undefined) {
-    fetch(description_url + encodeRison({ project, branch }))
-      .then((response) => {
-        return response.ok ? response.json() : null
-      })
-      .then((data: Description | null) => {
-        if (data != null) {
-          descriptionRef.value = data
-        }
-      })
-      .catch((error) => console.error(error))
-  }
+export function getDescriptionFromMetaDb(project: string | undefined, branch: string): Ref<Description | null> {
+  const { state } = useAsyncState(
+    fetch(description_url + encodeRison({ project, branch })).then((response) => {
+      return response.ok ? response.json() : null
+    }),
+    null
+  )
+  return state as Ref<Description | null>
 }
 
 /**

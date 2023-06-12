@@ -243,7 +243,7 @@ function handleCloseClick() {
 
 function getTestActions() {
   const actions = []
-  if (vm.data.value?.description.value != undefined) {
+  if (vm.data.value?.description.value) {
     const url = vm.data.value.description.value.url
     if (url && url != "") {
       actions.push({

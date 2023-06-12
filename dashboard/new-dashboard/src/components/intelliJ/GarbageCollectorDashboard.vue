@@ -27,7 +27,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Finding Usages", "First Code Analysis", "Completion", "Dispatch total time"],
     measures: ["findUsages", "firstCodeAnalysis", "completion", "AWTEventQueue.dispatchTimeTotal"],
-    projects: ["userScenario_defaultGC/userScenario", "userScenario_ZGC/userScenario"]
+    projects: ["userScenario_defaultGC/userScenario", "userScenario_ZGC/userScenario", "userScenario_ZGC_ZUncommit/userScenario", "userScenario_ZGC_transparentHugePages/userScenario", "userScenario_ZGC_largePages/userScenario"]
   }
 ]
 

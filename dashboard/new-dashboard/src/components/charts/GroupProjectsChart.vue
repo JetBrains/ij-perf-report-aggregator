@@ -3,7 +3,7 @@
     :title="props.label"
     :value-unit="props.valueUnit"
     :measures="Array.isArray(measure) ? measure : [measure]"
-    :configurators="configurators as DataQueryConfigurator[]"
+    :configurators="configurators"
     :skip-zero-values="false"
   />
 </template>

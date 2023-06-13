@@ -200,16 +200,16 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
   })
 })
 
-FilterService.register("metricsFilter", (value) => {
-  return MAIN_METRICS.has(value as string)
+FilterService.register("metricsFilter", (value: string) => {
+  return MAIN_METRICS.has(value)
 })
 const indexingMetrics = new Set(["indexing", "scanning", "numberOfIndexingRuns"])
-FilterService.register("indexingFilter", (value) => {
-  return indexingMetrics.has(value as string)
+FilterService.register("indexingFilter", (value: string) => {
+  return indexingMetrics.has(value)
 })
 const memoryMetrics = new Set(["freedMemoryByGC", "fullGCPause", "gcPause", "gcPauseCount", "totalHeapUsedMax", "Memory | IDE | RESIDENT SIZE (MB) 95th pctl"])
-FilterService.register("memoryFilter", (value) => {
-  return memoryMetrics.has(value as string)
+FilterService.register("memoryFilter", (value: string) => {
+  return memoryMetrics.has(value)
 })
 
 const metricsMatchModes = [

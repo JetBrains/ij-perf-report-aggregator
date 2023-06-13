@@ -87,6 +87,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Use(cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
     AllowedMethods: []string{"GET", "POST", "DELETE"},
+    AllowedHeaders: []string{"*"},
     MaxAge:         50,
   }).Handler)
   r.Use(middleware.Heartbeat("/health-check"))

@@ -52,7 +52,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
   cacheKey := generateCacheKey(request)
   value := rcm.cache.Get(nil, cacheKey)
   var result []byte
-  if value != nil {
+  if value != nil && request.Header.Get("Cache-Control") != "no-cache" {
     var err error
     result, err = decompressData(value)
     if err != nil {

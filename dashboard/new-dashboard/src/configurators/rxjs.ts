@@ -1,8 +1,7 @@
 import { deepEqual } from "fast-equals"
 import pLimit, { LimitFunction } from "p-limit"
-import { catchError, delay, distinctUntilChanged, EMPTY, mergeMap, Observable, of, retry } from "rxjs"
-import { fromPromise } from "rxjs/internal/observable/from"
-import { Ref, watch } from "vue"
+import { catchError, defer, delay, distinctUntilChanged, EMPTY, from, mergeMap, Observable, of, retry } from "rxjs"
+import { ref, Ref, watch } from "vue"
 
 export function refToObservable<T>(ref: Ref<T>, deep = false): Observable<T> {
   return new Observable<T>((context) => {
@@ -36,8 +35,20 @@ export function fromFetchWithRetryAndErrorHandling<T>(
   bodyConsumer: (response: Response) => Promise<T> = defaultBodyConsumer,
   controller: AbortController | null = null
 ): Observable<T> {
-  const signal = (controller ?? new AbortController()).signal
-  return fromPromise(limit(() => fetch(request, { signal }))).pipe(
+  const numberOfRetries = ref(0)
+  return defer(() => {
+    const signal = (controller ?? new AbortController()).signal
+    return from(
+      limit(() =>
+        fetch(request, {
+          signal,
+          headers: {
+            ...(numberOfRetries.value > 0 ? { "Cache-Control": "no-cache" } : {}),
+          },
+        })
+      )
+    )
+  }).pipe(
     // promise to result
     mergeMap((response) => {
       if (response.ok) {
@@ -47,9 +58,10 @@ export function fromFetchWithRetryAndErrorHandling<T>(
       }
     }),
     retry({
-      count: 30,
+      count: 10,
       delay(error) {
-        return of(error).pipe(delay(2000))
+        numberOfRetries.value++
+        return of(error).pipe(delay(1000))
       },
     }),
     catchError((error, _caught) => {

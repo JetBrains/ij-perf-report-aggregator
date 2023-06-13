@@ -48,12 +48,10 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import { ref } from "vue"
 import LineChartCard from "../charts/LineChartCard.vue"
 import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"
 
-const highlightingPasses = ref<string[]>()
-fetchHighlightingPasses(highlightingPasses)
+const highlightingPasses = fetchHighlightingPasses()
 </script>

@@ -11,8 +11,9 @@
   </div>
 </template>
 <script setup lang="ts">
+import { isDefined } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, onMounted, onUnmounted, shallowRef, toRef } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { reportInfoProviderKey } from "../../shared/injectionKeys"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
@@ -74,21 +75,36 @@ const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measure
 const container = inject(containerKey)
 const sidebarVm = inject(sidebarVmKey)
 
-let chartManager: ChartManager
+let chartManager: ChartManager | null
 let chartVm: LineChartVM
 let unsubscribe: (() => void) | null = null
 
+function initializePlot() {
+  if (chartElement.value) {
+    chartManager?.dispose()
+    unsubscribe?.()
+    chartManager = new ChartManager(chartElement.value, container?.value)
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents)
+    unsubscribe = chartVm.subscribe()
+    chartManager.chart.on("click", (params: CallbackDataParams) => {
+      const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
+      showSideBar(sidebarVm, infoData)
+    })
+  } else {
+    console.error("Dom was not yet initialized")
+  }
+}
+
 onMounted(() => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  chartManager = new ChartManager(chartElement.value!, container?.value)
-  chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents)
-
-  unsubscribe = chartVm.subscribe()
-
-  chartManager.chart.on("click", (params: CallbackDataParams) => {
-    const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
-    showSideBar(sidebarVm, infoData)
-  })
+  if (isDefined(accidents)) {
+    watch(accidents, () => {
+      if (isDefined(accidents)) {
+        initializePlot()
+      }
+    })
+  } else {
+    initializePlot()
+  }
 })
 
 function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
@@ -103,8 +119,8 @@ function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
 }
 
 onUnmounted(() => {
-  if (unsubscribe != null) unsubscribe()
-  chartManager.dispose()
+  unsubscribe?.()
+  chartManager?.dispose()
 })
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT

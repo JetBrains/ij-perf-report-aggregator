@@ -67,8 +67,8 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2(rollup@3.25.1)
       sass:
-        specifier: ^1.63.3
-        version: 1.63.3
+        specifier: ^1.63.4
+        version: 1.63.4
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -80,7 +80,7 @@ importers:
         version: 0.25.1(rollup@3.25.1)(vue@3.3.4)
       vite:
         specifier: 4.3.9
-        version: 4.3.9(sass@1.63.3)
+        version: 4.3.9(sass@1.63.4)
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -749,7 +749,7 @@ packages:
       vite: ^4.0.0 || 4
       vue: ^3.2.25
     dependencies:
-      vite: 4.3.9(sass@1.63.3)
+      vite: 4.3.9(sass@1.63.4)
       vue: 3.3.4
     dev: true
 
@@ -2751,8 +2751,8 @@ packages:
       regexp-tree: 0.1.27
     dev: false
 
-  /sass@1.63.3:
-    resolution: {integrity: sha512-ySdXN+DVpfwq49jG1+hmtDslYqpS7SkOR5GpF6o2bmb1RL/xS+wvPmegMvMywyfsmAV6p7TgwXYGrCZIFFbAHg==}
+  /sass@1.63.4:
+    resolution: {integrity: sha512-Sx/+weUmK+oiIlI+9sdD0wZHsqpbgQg8wSwSnGBjwb5GwqFhYNwwnI+UWZtLjKvKyFlKkatRK235qQ3mokyPoQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -3116,7 +3116,7 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite@4.3.9(sass@1.63.3):
+  /vite@4.3.9(sass@1.63.4):
     resolution: {integrity: sha512-qsTNZjO9NoJNW7KnOrgYwczm0WctJ8m/yqYAMAK9Lxt4SoySUfS5S8ia9K7JHpa3KEeMfyF8LoJ3c5NeBJy6pg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -3144,7 +3144,7 @@ packages:
       esbuild: 0.17.19
       postcss: 8.4.24
       rollup: 3.25.1
-      sass: 1.63.3
+      sass: 1.63.4
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

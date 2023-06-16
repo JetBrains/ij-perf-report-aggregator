@@ -1,6 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, ShallowRef, shallowRef } from "vue"
-import { calculateChanges } from "../util/changes"
 import { timeFormatWithoutSeconds } from "./common/formatter"
 
 export interface InfoSidebarStartup {
@@ -30,7 +29,6 @@ export interface InfoDataFromStartup {
   title: string
   installerId: number
   buildId: number
-  changes: string | undefined
 }
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
@@ -71,8 +69,6 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
     const artifactsUrl = `${buildUrl(buildId)}&tab=artifacts`
     const installerUrl = `${buildUrl(installerId)}&tab=artifacts`
 
-
-
     return {
       build: fullBuildId,
       artifactsUrl,
@@ -83,7 +79,6 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
       machineName,
       projectName,
       title: "Details",
-      changes: undefined,
       installerId,
       buildId,
     }

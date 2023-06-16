@@ -98,7 +98,11 @@
         label="Indexing (TBE project)"
         measure="indexing"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -107,7 +111,11 @@
         label="Scanning (TBE project)"
         measure="scanning"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -116,7 +124,11 @@
         label="Number of indexing files by usual indexes (TBE project)"
         measure="numberOfIndexedFiles"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -125,7 +137,11 @@
         label="Number of indexing files by shared indexes (TBE project)"
         measure="numberOfFilesIndexedByExtensions"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -134,7 +150,11 @@
         label="Completion (TBE project)"
         measure="completion"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -143,7 +163,11 @@
         label="First Code Analysis (TBE project)"
         measure="firstCodeAnalysis"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>
@@ -152,7 +176,11 @@
         label="Find Usages (TBE project)"
         measure="findUsages"
         :projects="[
-          'tbe-downloaded-sharedIndexes'
+          'tbe-downloaded-sharedIndexes',
+          'tbe-with-java-sharedIndexes',
+          'tbe-with-maven-sharedIndexes',
+          'tbe-with-project-sharedIndexes',
+          'tbe-without-sharedIndexes'
         ]"
       />
     </section>

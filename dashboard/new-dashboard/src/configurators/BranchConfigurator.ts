@@ -64,7 +64,7 @@ export function createBranchConfigurator(
 
       data.sort((a) => (a.includes("/") ? 1 : -1))
 
-      configurator.values.value = data.filter((value, _n, _a) => !/\d+\.\d+/.test(value))
+      configurator.values.value = data.filter((value, _n, _a) => !/^\d+\.\d+$/.test(value))
       filterSelected(configurator, data, name)
     })
   return configurator

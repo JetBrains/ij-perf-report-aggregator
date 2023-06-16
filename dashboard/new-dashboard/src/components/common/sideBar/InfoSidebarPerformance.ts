@@ -1,45 +1,22 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { computed, Ref, ShallowRef, shallowRef } from "vue"
-import { Accident, Description, getDescriptionFromMetaDb } from "../util/meta"
-import { ValueUnit } from "./common/chart"
-import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "./common/formatter"
+import { computed, Ref } from "vue"
+import { Accident, Description, getDescriptionFromMetaDb } from "../../../util/meta"
+import { ValueUnit } from "../chart"
+import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
+import { buildUrl, DataSeries, InfoData } from "./InfoSidebar"
 
-export interface InfoSidebarVm {
-  data: ShallowRef<InfoData | null>
-  visible: ShallowRef<boolean>
-
-  show(data: InfoData): void
-
-  close(): void
-}
-
-export interface InfoData {
-  color: string
-  title: string
-  projectName: string
-  changesUrl: string
-  artifactsUrl: string
-  installerUrl: string | undefined
-  machineName: string
-  value: string
-  build: string | undefined
-  date: string
-  installerId: number | undefined
+export interface InfoDataPerformance extends DataSeries, InfoData {
   accidents: Ref<Accident[] | undefined> | undefined
-  buildId: number
   description: Ref<Description | null>
-  metric: string | undefined
 }
 
-const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
-
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | undefined): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | undefined): InfoDataPerformance {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
   let projectName: string = params.seriesName as string
   let machineName: string | undefined
-  let metric: string | undefined
+  let metricName: string | undefined
   let buildId: number | undefined
   let installerId: number | undefined
   let buildVersion: number | undefined
@@ -56,7 +33,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   }
   //dev builds intellij
   if (dataSeries.length == 7) {
-    metric = dataSeries[2] as string
+    metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
     }
@@ -77,7 +54,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   }
   //jbr
   if (dataSeries.length == 8) {
-    metric = dataSeries[2] as string
+    metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
     }
@@ -87,7 +64,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNumber = dataSeries[7] as string
   }
   if (dataSeries.length == 11) {
-    metric = dataSeries[2] as string
+    metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
     }
@@ -133,19 +110,6 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     accidents: filteredAccidents,
     buildId: buildId as number,
     description,
-    metric,
-  }
-}
-
-export class InfoSidebarVmImpl implements InfoSidebarVm {
-  readonly data = shallowRef<InfoData | null>(null)
-  readonly visible = computed(() => this.data.value != null)
-
-  show(data: InfoData): void {
-    this.data.value = data
-  }
-
-  close() {
-    this.data.value = null
+    metricName,
   }
 }

@@ -58,11 +58,11 @@
           <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
         </span>
         <span
-          v-if="vm.data.value?.metric"
+          v-if="vm.data.value?.metricName"
           class="flex gap-1.5 text-sm items-center"
         >
           <BeakerIcon class="w-4 h-4" />
-          <span>{{ vm.data.value?.metric }}</span>
+          <span>{{ vm.data.value?.metricName }}</span>
         </span>
         <span class="flex gap-1.5 text-sm items-center">
           <ClockIcon class="w-4 h-4" />
@@ -192,13 +192,14 @@
 <script setup lang="ts">
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
-import { sidebarVmKey } from "../shared/keys"
-import { calculateChanges } from "../util/changes"
-import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../util/meta"
-import { InfoSidebarVmImpl } from "./InfoSidebarVm"
-import SpaceIcon from "./common/SpaceIcon.vue"
+import { sidebarVmKey } from "../../../shared/keys"
+import { calculateChanges } from "../../../util/changes"
+import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
+import SpaceIcon from "../SpaceIcon.vue"
+import { InfoSidebarImpl } from "./InfoSidebar"
+import { InfoDataPerformance } from "./InfoSidebarPerformance"
 
-const vm = inject(sidebarVmKey) ?? new InfoSidebarVmImpl()
+const vm = inject(sidebarVmKey) ?? new InfoSidebarImpl<InfoDataPerformance>()
 const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()

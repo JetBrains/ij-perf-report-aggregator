@@ -16,14 +16,15 @@
 import { provide } from "vue"
 import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
-import { InfoSidebarVmImpl } from "./components/InfoSidebarVm"
 import NavigationTabs from "./components/NavigationTabs.vue"
+import { InfoSidebarImpl } from "./components/common/sideBar/InfoSidebar"
+import { InfoDataPerformance } from "./components/common/sideBar/InfoSidebarPerformance"
 import { getNavigationElement, Tab } from "./routes"
 import { sidebarVmKey } from "./shared/keys"
 
 import "./shared/overrides.scss"
 
-const sidebarVm = new InfoSidebarVmImpl()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
 const router = useRouter()
 const currentPath = router.currentRoute.value.path
 const product = getNavigationElement(currentPath)

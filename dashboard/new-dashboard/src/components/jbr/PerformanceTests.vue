@@ -69,8 +69,6 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import InfoSidebar from "../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
@@ -78,6 +76,9 @@ import BranchSelect from "../common/BranchSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
+import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
+import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 
 provideReportUrlProvider(false, true)
 
@@ -86,7 +87,7 @@ const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

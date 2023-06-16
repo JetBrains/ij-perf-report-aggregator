@@ -34,13 +34,14 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import { FilterConfigurator } from "../../configurators/filter"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { getAccidentsFromMetaDb } from "../../util/meta"
-import InfoSidebar from "../InfoSidebar.vue"
-import { InfoSidebarVmImpl } from "../InfoSidebarVm"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import DashboardToolbar from "./DashboardToolbar.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
+import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
+import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
+import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
 
 interface PerformanceDashboardProps {
   dbName: string
@@ -63,7 +64,7 @@ provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarVmImpl()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

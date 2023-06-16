@@ -56,8 +56,6 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { chartStyleKey, configuratorListKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
-import { InfoSidebarStartupImpl } from "../InfoSidebarStartup"
-import InfoSidebarStartup from "../InfoSidebarStartup.vue"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -65,10 +63,13 @@ import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
+import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
+import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const container = ref<HTMLElement>()
-const sidebarVm = new InfoSidebarStartupImpl()
+const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>()
 
 provide(containerKey, container)
 provide(sidebarStartupKey, sidebarVm)

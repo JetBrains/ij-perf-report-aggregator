@@ -1,36 +1,10 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { computed, ShallowRef, shallowRef } from "vue"
-import { timeFormatWithoutSeconds } from "./common/formatter"
+import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../formatter"
+import { buildUrl, DataSeries, InfoData } from "./InfoSidebar"
 
-export interface InfoSidebarStartup {
-  data: ShallowRef<InfoDataFromStartup | null>
-  visible: ShallowRef<boolean>
-
-  show(data: InfoDataFromStartup | null): void
-
-  close(): void
+export interface InfoDataFromStartup extends InfoData {
+  series: DataSeries[]
 }
-
-export interface DataSerie {
-  value: number
-  name: string
-  color: string
-}
-
-export interface InfoDataFromStartup {
-  build: string
-  artifactsUrl: string
-  changesUrl: string
-  installerUrl: string
-  date: string
-  series: DataSerie[]
-  machineName: string
-  projectName: string
-  title: string
-  installerId: number
-  buildId: number
-}
-const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
 function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataParams[] | undefined {
   const seen = new Set()
@@ -54,13 +28,14 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
     const buildNum1: number = dataSeries[7] as number
     const buildNum2: number = dataSeries[8] as number
 
-    const series: DataSerie[] = []
+    const series: DataSeries[] = []
     const prefixes = params.map((param) => getPrefix(param.seriesName as string))
     const commonPrefix = getCommonPrefix(prefixes)
     for (const param of params) {
       const currentSeriesData = param.value as OptionDataValue[]
       param.seriesName = removePrefix(param.seriesName as string, commonPrefix)
-      series.push({ name: param.seriesName, value: currentSeriesData[1] as number, color: param.color as string })
+      const value = getValueFormatterByMeasureName(param.seriesName)(currentSeriesData[1] as number)
+      series.push({ metricName: param.seriesName, value, color: param.color as string })
     }
 
     const fullBuildId = `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
@@ -114,17 +89,4 @@ function removePrefix(name: string, prefix: string): string {
     return name.slice(Math.max(0, prefix.length + 1))
   }
   return name
-}
-
-export class InfoSidebarStartupImpl implements InfoSidebarStartup {
-  readonly data = shallowRef<InfoDataFromStartup | null>(null)
-  readonly visible = computed(() => this.data.value != null)
-
-  show(data: InfoDataFromStartup): void {
-    this.data.value = data
-  }
-
-  close() {
-    this.data.value = null
-  }
 }

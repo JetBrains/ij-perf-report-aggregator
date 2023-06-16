@@ -20,14 +20,19 @@
       <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose text-sm">
         <template
           v-for="item in vm.data.value?.series"
-          :key="item.name"
+          :key="item.metricName"
         >
           <span
+            v-if="item.metricName"
             class="rounded-lg w-2.5 h-2.5"
             :style="{ 'background-color': item.color }"
           />
-          <span>{{ item.name.replace("metrics.", "") }}</span>
-          <span class="font-mono place-self-end">{{ getValueFormatterByMeasureName(item.name)(item.value) }}</span>
+          <span v-if="item.metricName">{{ item.metricName.replace("metrics.", "") }}</span>
+          <span
+            v-if="item.metricName"
+            class="font-mono place-self-end"
+            >{{ item.value }}</span
+          >
         </template>
       </div>
 
@@ -85,13 +90,13 @@
 </template>
 <script setup lang="ts">
 import { inject } from "vue"
-import { sidebarStartupKey } from "../shared/keys"
-import { calculateChanges } from "../util/changes"
-import { InfoSidebarStartupImpl } from "./InfoSidebarStartup"
-import SpaceIcon from "./common/SpaceIcon.vue"
-import { getValueFormatterByMeasureName } from "./common/formatter"
+import { sidebarStartupKey } from "../../../shared/keys"
+import { calculateChanges } from "../../../util/changes"
+import SpaceIcon from "../SpaceIcon.vue"
+import { InfoSidebarImpl } from "./InfoSidebar"
+import { InfoDataFromStartup } from "./InfoSidebarStartup"
 
-const vm = inject(sidebarStartupKey) ?? new InfoSidebarStartupImpl()
+const vm = inject(sidebarStartupKey) ?? new InfoSidebarImpl<InfoDataFromStartup>()
 
 function getSpaceUrl() {
   if (vm.data.value?.installerId) {

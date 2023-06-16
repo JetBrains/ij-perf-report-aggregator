@@ -7,13 +7,13 @@ import * as ecStat from "echarts-stat"
 import { debounceTime } from "rxjs"
 import { Ref } from "vue"
 import { refToObservable } from "../../configurators/rxjs"
+import { getInfoDataForStartup, InfoSidebarStartup } from "../InfoSidebarStartup"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { adaptToolTipFormatter, timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { nsToMs, numberFormat } from "../common/formatter"
 import { ChartManager } from "./ChartManager"
-import { ChartToolTipManager } from "./ChartToolTipManager"
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -36,7 +36,7 @@ export class LineChartManager {
     container: HTMLElement,
     private _dataQueryExecutor: DataQueryExecutor,
     dataZoom: Ref<boolean>,
-    chartToolTipManager: ChartToolTipManager | null,
+    chartToolTipManager: InfoSidebarStartup | undefined,
     valueUnit: ValueUnit,
     trigger: PopupTrigger = "axis"
   ) {
@@ -46,8 +46,8 @@ export class LineChartManager {
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null
     if (chartToolTipManager != null) {
-      this.chart.chart.getZr().on("click", (event) => {
-        chartToolTipManager.showTooltip(lastParams, event.event)
+      this.chart.chart.getZr().on("click", () => {
+        chartToolTipManager.show(getInfoDataForStartup(lastParams))
       })
     }
 

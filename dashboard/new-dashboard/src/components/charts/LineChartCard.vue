@@ -28,6 +28,7 @@
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
+import { sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -68,6 +69,7 @@ const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = inject(chartToolTipKey)!
+const sidebarVm = inject(sidebarStartupKey)
 
 const show = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -134,7 +136,7 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     dataQueryExecutor!,
     toRef(props, "dataZoom"),
-    props.compoundTooltip ? chartToolTipManager : null,
+    sidebarVm,
     props.valueUnit,
     props.trigger
   )

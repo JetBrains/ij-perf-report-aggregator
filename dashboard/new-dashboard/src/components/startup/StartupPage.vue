@@ -35,21 +35,29 @@
       <slot name="toolbar" />
     </template>
   </Toolbar>
-  <slot />
-  <ChartTooltip ref="tooltip" />
+  <main class="flex">
+    <div
+      ref="container"
+      class="flex flex-1 flex-col gap-6 overflow-hidden"
+    >
+      <slot />
+    </div>
+    <InfoSidebarStartup />
+  </main>
 </template>
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
-import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
-import ChartTooltip from "../charts/ChartTooltip.vue"
+import { chartStyleKey, configuratorListKey } from "../../shared/injectionKeys"
+import { containerKey, sidebarStartupKey } from "../../shared/keys"
+import { InfoSidebarStartupImpl } from "../InfoSidebarStartup"
+import InfoSidebarStartup from "../InfoSidebarStartup.vue"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -58,6 +66,12 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
+
+const container = ref<HTMLElement>()
+const sidebarVm = new InfoSidebarStartupImpl()
+
+provide(containerKey, container)
+provide(sidebarStartupKey, sidebarVm)
 
 const productCodeToName = new Map([
   ["DB", "DataGrip"],
@@ -72,11 +86,7 @@ const productCodeToName = new Map([
 provideReportUrlProvider()
 provide(chartStyleKey, {
   ...chartDefaultStyle,
-  // a lot of bars, as result, height of bar is not enough to make label readable
-  barSeriesLabelPosition: "right",
 })
-const tooltip = ref<typeof ChartTooltip>()
-provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 
 const dbName = "ij"
 const dbTable = "report"
@@ -101,7 +111,6 @@ const projectConfigurator = createProjectConfigurator(productConfigurator, serve
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator, triggeredByConfigurator]
 
-provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)
 
 function onChangeRange(value: TimeRange) {

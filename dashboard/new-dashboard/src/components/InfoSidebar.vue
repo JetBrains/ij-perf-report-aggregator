@@ -129,10 +129,9 @@
       </div>
       <div class="flex gap-4 text-blue-500 justify-center">
         <a
-          v-if="getSpaceUrl()"
-          :href="getSpaceUrl()"
-          target="_blank"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          v-if="vm.data.value?.installerId"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          @click="getSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />
           Changes
@@ -194,6 +193,7 @@
 import { inject, ref } from "vue"
 import { useRouter } from "vue-router"
 import { sidebarVmKey } from "../shared/keys"
+import { calculateChanges } from "../util/changes"
 import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../util/meta"
 import { InfoSidebarVmImpl } from "./InfoSidebarVm"
 import SpaceIcon from "./common/SpaceIcon.vue"
@@ -278,10 +278,11 @@ function getTestActions() {
 }
 
 function getSpaceUrl() {
-  if (vm.data.value?.changes != null) {
-    return "https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + vm.data.value.changes + "%22&tab=changes"
+  if(vm.data.value?.installerId) {
+    calculateChanges("ij", vm.data.value.installerId, (decodedChanges: string | null) => {
+      window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
+    })
   }
-  return
 }
 </script>
 <style>

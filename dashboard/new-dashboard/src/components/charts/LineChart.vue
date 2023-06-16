@@ -88,7 +88,7 @@ function initializePlot() {
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
       const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
-      showSideBar(sidebarVm, infoData)
+      sidebarVm?.show(infoData)
     })
   } else {
     console.error("Dom was not yet initialized")
@@ -106,17 +106,6 @@ onMounted(() => {
     initializePlot()
   }
 })
-
-function showSideBar(sidebarVm: InfoSidebarVm | undefined, infoData: InfoData) {
-  const db = infoData.installerId ? "perfint" : "perfintDev"
-  const id = infoData.installerId ?? infoData.buildId
-  calculateChanges(db, id, (decodedChanges: string | null) => {
-    if (decodedChanges != null) {
-      infoData.changes = decodedChanges
-    }
-    sidebarVm?.show(infoData)
-  })
-}
 
 onUnmounted(() => {
   unsubscribe?.()

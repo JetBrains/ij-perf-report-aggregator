@@ -25,7 +25,6 @@ export interface InfoData {
   build: string | undefined
   date: string
   installerId: number | undefined
-  changes: string | undefined
   accidents: Ref<Accident[] | undefined> | undefined
   buildId: number
   description: Ref<Description | null>
@@ -131,7 +130,6 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     projectName,
     title: "Details",
     installerId,
-    changes: undefined,
     accidents: filteredAccidents,
     buildId: buildId as number,
     description,

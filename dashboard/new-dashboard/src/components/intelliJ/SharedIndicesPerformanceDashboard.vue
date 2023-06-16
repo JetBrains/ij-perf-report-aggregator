@@ -12,8 +12,6 @@
         :projects="[
           'ijx-intellij-speed/downloading-shared-indexes',
           'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-intellij-speed/usual-indexes',
         ]"
       />
@@ -25,21 +23,6 @@
         :projects="[
           'ijx-intellij-speed/downloading-shared-indexes',
           'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing runs (IntelliJ project)"
-        measure="numberOfIndexingRuns"
-        :projects="[
-          'ijx-intellij-speed/downloading-shared-indexes',
-          'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-intellij-speed/usual-indexes',
         ]"
       />
@@ -51,8 +34,6 @@
         :projects="[
           'ijx-intellij-speed/downloading-shared-indexes',
           'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-intellij-speed/usual-indexes',
         ]"
       />
@@ -64,100 +45,7 @@
         :projects="[
           'ijx-intellij-speed/downloading-shared-indexes',
           'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-intellij-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Updating time (IntelliJ project)"
-        measure="updatingTime"
-        :projects="[
-          'ijx-intellij-speed/downloading-shared-indexes',
-          'ijx-intellij-speed/shared-indexes',
-          'ijx-intellij-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing (Community project)"
-        measure="indexing"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning (Community project)"
-        measure="scanning"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing runs (Community project)"
-        measure="numberOfIndexingRuns"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing files by usual indexes (Community project)"
-        measure="numberOfIndexedFiles"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing files by shared indexes (Community project)"
-        measure="numberOfFilesIndexedByExtensions"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Updating time (Community project)"
-        measure="updatingTime"
-        :projects="[
-          'ijx-intellij-community-speed/downloading-shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes',
-          'ijx-intellij-community-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-intellij-community-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-intellij-community-speed/usual-indexes',
         ]"
       />
     </section>
@@ -168,8 +56,6 @@
         :projects="[
           'ijx-jdk-maven-speed/downloading-shared-indexes',
           'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-jdk-maven-speed/usual-indexes',
         ]"
       />
@@ -181,21 +67,6 @@
         :projects="[
           'ijx-jdk-maven-speed/downloading-shared-indexes',
           'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-maven-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing runs (JDK Maven project)"
-        measure="numberOfIndexingRuns"
-        :projects="[
-          'ijx-jdk-maven-speed/downloading-shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-jdk-maven-speed/usual-indexes',
         ]"
       />
@@ -207,8 +78,6 @@
         :projects="[
           'ijx-jdk-maven-speed/downloading-shared-indexes',
           'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-jdk-maven-speed/usual-indexes',
         ]"
       />
@@ -220,100 +89,70 @@
         :projects="[
           'ijx-jdk-maven-speed/downloading-shared-indexes',
           'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
           'ijx-jdk-maven-speed/usual-indexes',
         ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Updating time (JDK Maven project)"
-        measure="updatingTime"
-        :projects="[
-          'ijx-jdk-maven-speed/downloading-shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes',
-          'ijx-jdk-maven-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-maven-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-maven-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing (JDK Gradle project)"
+        label="Indexing (TBE project)"
         measure="indexing"
         :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
+          'tbe-downloaded-sharedIndexes'
         ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Scanning (JDK Gradle project)"
+        label="Scanning (TBE project)"
         measure="scanning"
         :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
+          'tbe-downloaded-sharedIndexes'
         ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Number of indexing runs (JDK Gradle project)"
-        measure="numberOfIndexingRuns"
-        :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number of indexing files by usual indexes (JDK Gradle project)"
+        label="Number of indexing files by usual indexes (TBE project)"
         measure="numberOfIndexedFiles"
         :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
+          'tbe-downloaded-sharedIndexes'
         ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Number of indexing files by shared indexes (JDK Gradle project)"
+        label="Number of indexing files by shared indexes (TBE project)"
         measure="numberOfFilesIndexedByExtensions"
         :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
+          'tbe-downloaded-sharedIndexes'
         ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Updating time (JDK Gradle project)"
-        measure="updatingTime"
+        label="Completion (TBE project)"
+        measure="completion"
         :projects="[
-          'ijx-jdk-gradle-speed/downloading-shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-archive-and-git-hashes',
-          'ijx-jdk-gradle-speed/shared-indexes-with-hashes-without-javaScript-plugin',
-          'ijx-jdk-gradle-speed/usual-indexes',
+          'tbe-downloaded-sharedIndexes'
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="First Code Analysis (TBE project)"
+        measure="firstCodeAnalysis"
+        :projects="[
+          'tbe-downloaded-sharedIndexes'
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (TBE project)"
+        measure="findUsages"
+        :projects="[
+          'tbe-downloaded-sharedIndexes'
         ]"
       />
     </section>

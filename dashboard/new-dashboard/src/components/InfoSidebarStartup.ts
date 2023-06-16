@@ -32,15 +32,14 @@ export interface InfoDataFromStartup {
 }
 const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
 
-function filterUniqueByName(objects: CallbackDataParams[]| null): CallbackDataParams[]|undefined {
+function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataParams[] | undefined {
   const seen = new Set()
-  return objects?.filter(item => {
+  return objects?.filter((item) => {
     const duplicate = seen.has(item.seriesName)
     seen.add(item.seriesName)
     return !duplicate
   })
 }
-
 
 export function getInfoDataForStartup(originalParams: CallbackDataParams[] | null): InfoDataFromStartup | null {
   const params = filterUniqueByName(originalParams)
@@ -56,7 +55,7 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
     const buildNum2: number = dataSeries[8] as number
 
     const series: DataSerie[] = []
-    const prefixes = params.map(param => getPrefix(param.seriesName as string))
+    const prefixes = params.map((param) => getPrefix(param.seriesName as string))
     const commonPrefix = getCommonPrefix(prefixes)
     for (const param of params) {
       const currentSeriesData = param.value as OptionDataValue[]

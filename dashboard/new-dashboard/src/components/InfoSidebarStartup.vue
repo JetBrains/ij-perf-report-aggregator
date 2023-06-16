@@ -84,7 +84,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject} from "vue"
+import { inject } from "vue"
 import { sidebarStartupKey } from "../shared/keys"
 import { calculateChanges } from "../util/changes"
 import { InfoSidebarStartupImpl } from "./InfoSidebarStartup"
@@ -94,7 +94,7 @@ import { getValueFormatterByMeasureName } from "./common/formatter"
 const vm = inject(sidebarStartupKey) ?? new InfoSidebarStartupImpl()
 
 function getSpaceUrl() {
-  if(vm.data.value?.installerId) {
+  if (vm.data.value?.installerId) {
     calculateChanges("ij", vm.data.value.installerId, (decodedChanges: string | null) => {
       window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
     })

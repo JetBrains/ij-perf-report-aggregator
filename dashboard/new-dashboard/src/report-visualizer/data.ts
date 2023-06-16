@@ -2,6 +2,7 @@
 export interface ItemV20 {
   readonly s: number
   readonly d: number
+  readonly e: number
   // own duration is specified only if differs from duration
   readonly od?: number
   readonly n: string

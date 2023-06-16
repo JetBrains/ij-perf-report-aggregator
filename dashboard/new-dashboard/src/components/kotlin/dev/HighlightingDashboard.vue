@@ -239,7 +239,7 @@
           label="'Ktor samples' highlight mean value with Library cache K2"
           measure="highlighting#mean_value"
           :projects="[
-             'ktor_samples_mongodb/highlight/ApplicationTest_with_library_cache_k2',
+            'ktor_samples_mongodb/highlight/ApplicationTest_with_library_cache_k2',
             'ktor_samples_httpbin/highlight/HttpBinApplication_with_library_cache_k2',
             'ktor_samples_youkube/highlight/Upload_with_library_cache_k2',
             'ktor_samples_youkube/highlight/Videos_with_library_cache_k2',

@@ -179,7 +179,7 @@ function createMarkLineData(dataManager: DataManager, data: ChartDataItem[], uni
   const markLineData: MarkLine1DDataItemOption[] = []
   for (const markerItem of dataManager.markerItems) {
     if (markerItem != null) {
-      const item = data.find((it) => unitConverter.convert(it[2].s) >= markerItem.end)
+      const item = data.find((it) => unitConverter.convert(it[2].s) >= markerItem.e)
       if (item == null) {
         continue
       }

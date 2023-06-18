@@ -245,6 +245,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file"],
   },
   {
+    labels: ["Creating a new file"],
+    measures: [["createJavaFile", "createKotlinFile"]],
+    projects: ["intellij_sources/createJavaClass", "intellij_sources/createKotlinClass"],
+  },
+  {
     labels: ["Typing during indexing (average awt delay)", "Typing during indexing (max awt delay)"],
     measures: ["test#average_awt_delay", "test#max_awt_delay"],
     projects: ["typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing", "typingInKotlinFile_16Threads/typing", "typingInKotlinFile_4Threads/typing"],

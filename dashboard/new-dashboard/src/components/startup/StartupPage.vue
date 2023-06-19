@@ -118,3 +118,11 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 </script>
+
+<style>
+.customToolbar {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+</style>

@@ -34,13 +34,6 @@
             'intellij_commit/highlight/JdkList_with_library_cache_k1',
             'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k1',
             'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k1',
-            'intellij_commit/highlight/AndroidModelTest_with_library_cache_k1',
-            'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
-            'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
-            'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
-            'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
-            'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k1',
-            'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k1',
           ]"
         />
       </div>
@@ -55,13 +48,6 @@
             'intellij_commit/highlight/JdkList_with_library_cache_k2',
             'intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache_k2',
             'intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache_k2',
-            'intellij_commit/highlight/AndroidModelTest_with_library_cache_k2',
-            'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
-            'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k2',
-            'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k2',
-            'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',
-            'intellij_commit/highlight/SolutionModel.Generated_with_library_cache_k2',
-            'intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache_k2',
           ]"
         />
       </div>
@@ -73,6 +59,8 @@
           label="'Intellij suite 2' localInspections mean value with Library cache K1"
           measure="localInspections#mean_value"
           :projects="[
+            'intellij_commit/highlight/AndroidModelTest_with_library_cache_k1',
+            'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k1',
             'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k1',
             'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k1',
             'intellij_commit/highlight/OraIntrospector_with_library_cache_k1',
@@ -86,6 +74,8 @@
           label="'Intellij suite 2' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
           :projects="[
+            'intellij_commit/highlight/AndroidModelTest_with_library_cache_k2',
+            'intellij_commit/highlight/SecureWireOverStreamTransport_with_library_cache_k2',
             'intellij_commit/highlight/DexInlineCallStackComparisonTest_with_library_cache_k2',
             'intellij_commit/highlight/DexLocalVariableTableBreakpointTest_with_library_cache_k2',
             'intellij_commit/highlight/OraIntrospector_with_library_cache_k2',

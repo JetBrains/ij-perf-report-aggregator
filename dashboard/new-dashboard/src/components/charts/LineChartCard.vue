@@ -28,7 +28,7 @@
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
-import { sidebarStartupKey } from "../../shared/keys"
+import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -67,6 +67,7 @@ let chartManager: LineChartManager | null = null
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
+const container = inject(containerKey)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = inject(chartToolTipKey)!
 const sidebarVm = inject(sidebarStartupKey)
@@ -138,7 +139,8 @@ onMounted(() => {
     toRef(props, "dataZoom"),
     sidebarVm,
     props.valueUnit,
-    props.trigger
+    props.trigger,
+    container?.value
   )
   unsubscribe = chartManager.subscribe()
 })

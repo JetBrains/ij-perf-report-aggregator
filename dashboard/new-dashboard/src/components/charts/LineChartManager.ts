@@ -39,9 +39,10 @@ export class LineChartManager {
     dataZoom: Ref<boolean>,
     chartToolTipManager: InfoSidebar<InfoDataFromStartup> | undefined,
     valueUnit: ValueUnit,
-    trigger: PopupTrigger = "axis"
+    trigger: PopupTrigger = "axis",
+    resizeContainer: HTMLElement | null
   ) {
-    this.chart = new ChartManager(container)
+    this.chart = new ChartManager(container, resizeContainer ?? document.body)
     const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941

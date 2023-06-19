@@ -48,13 +48,11 @@
     </div>
     <InfoSidebarStartup />
   </main>
-  <ChartTooltip
-    v-if="!sidebarEnabled"
-    ref="tooltip"
-  />
+  <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
+import { useCookies } from "@vueuse/integrations/useCookies"
+import { provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -125,8 +123,10 @@ const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigu
 
 provide(configuratorListKey, configurators)
 
-const sidebarEnabled = ref(true)
-provide(sidebarEnabledKey, sidebarEnabled)
+const cookies = useCookies()
+const sidebarEnabled = ref(cookies.get<boolean>("sidebarEnabled"))
+watch(sidebarEnabled, (value) => cookies.set("sidebarEnabled", value))
+provide(sidebarEnabledKey, ref(sidebarEnabled))
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

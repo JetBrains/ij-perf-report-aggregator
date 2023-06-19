@@ -25,9 +25,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, ref, shallowRef, toRef, watchEffect } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
-import { chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
+import { chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
@@ -69,16 +69,21 @@ const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
 const container = inject(containerKey)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const tooltip = inject(chartToolTipKey)!
+const tooltip = inject(chartToolTipKey)
 const sidebarVm = inject(sidebarStartupKey)
+const sidebarEnabled = inject(sidebarEnabledKey) ?? ref(false)
 
 const show = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  tooltip.value["show"](chartToolTipManager)
+  if (tooltip?.value) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    tooltip.value["show"](chartToolTipManager)
+  }
 }
 const hide = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  tooltip.value["hide"]()
+  if (tooltip?.value) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    tooltip.value["hide"]()
+  }
 }
 
 let dataQueryExecutor: DataQueryExecutor | null
@@ -137,6 +142,8 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     dataQueryExecutor!,
     toRef(props, "dataZoom"),
+    sidebarEnabled,
+    chartToolTipManager,
     sidebarVm,
     props.valueUnit,
     props.trigger,

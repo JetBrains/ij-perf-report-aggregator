@@ -15,7 +15,6 @@ export interface TooltipData {
   items: TooltipDataItem[]
   firstSeriesData: number[]
   reportInfoProvider: ReportInfoProvider | null
-  query: DataQuery | null
 }
 
 interface TooltipDataItem {
@@ -42,11 +41,6 @@ export class ChartToolTipManager {
   }
 
   showTooltip(params: CallbackDataParams[] | null, target: Event | null) {
-    const query = this.dataQueryExecutor.lastQuery
-    if (query == null) {
-      return
-    }
-
     const consumer = this.consumer
     if (consumer == null) {
       return
@@ -73,9 +67,8 @@ export class ChartToolTipManager {
             color: measure.color as string,
           }
         }),
-        firstSeriesData: query.db === "perfint" ? [...values.slice(0, 2), ...values.slice(3)] : values,
+        firstSeriesData: values,
         reportInfoProvider: this.reportInfoProvider,
-        query,
       },
       target
     )

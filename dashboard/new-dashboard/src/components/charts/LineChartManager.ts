@@ -15,6 +15,7 @@ import { nsToMs, numberFormat } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getInfoDataForStartup, InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import { ChartManager } from "./ChartManager"
+import { ChartToolTipManager } from "./ChartToolTipManager"
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -37,24 +38,28 @@ export class LineChartManager {
     container: HTMLElement,
     private _dataQueryExecutor: DataQueryExecutor,
     dataZoom: Ref<boolean>,
-    chartToolTipManager: InfoSidebar<InfoDataFromStartup> | undefined,
+    sidebarEnabled: Ref<boolean>,
+    chartToolTipManager: ChartToolTipManager,
+    chartSidebarManager: InfoSidebar<InfoDataFromStartup> | undefined,
     valueUnit: ValueUnit,
     trigger: PopupTrigger = "axis",
-    resizeContainer: HTMLElement | null
+    resizeContainer: HTMLElement | undefined
   ) {
     this.chart = new ChartManager(container, resizeContainer ?? document.body)
     const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null
-    if (chartToolTipManager != null) {
-      this.chart.chart.getZr().on("click", () => {
+    this.chart.chart.getZr().on("click", (event) => {
+      if (chartSidebarManager != null && sidebarEnabled.value) {
         const infoDataForStartup = getInfoDataForStartup(lastParams)
         if (infoDataForStartup) {
-          chartToolTipManager.show(infoDataForStartup)
+          chartSidebarManager.show(infoDataForStartup)
         }
-      })
-    }
+      } else {
+        chartToolTipManager.showTooltip(lastParams, event.event)
+      }
+    })
 
     const isCompoundTooltip = chartToolTipManager == null
     this.chart.chart.setOption<LineChartOptions>(

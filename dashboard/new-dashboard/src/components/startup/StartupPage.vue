@@ -34,6 +34,10 @@
       </DimensionHierarchicalSelect>
       <slot name="toolbar" />
     </template>
+    <template #end>
+      Sidebar:
+      <InputSwitch v-model="sidebarEnabled" />
+    </template>
   </Toolbar>
   <main class="flex">
     <div
@@ -44,9 +48,13 @@
     </div>
     <InfoSidebarStartup />
   </main>
+  <ChartTooltip
+    v-if="!sidebarEnabled"
+    ref="tooltip"
+  />
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -54,8 +62,9 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { chartStyleKey, configuratorListKey } from "../../shared/injectionKeys"
+import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
+import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -71,6 +80,8 @@ import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 const container = ref<HTMLElement>()
 const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>()
 
+const tooltip = ref<typeof ChartTooltip>()
+provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 provide(containerKey, container)
 provide(sidebarStartupKey, sidebarVm)
 
@@ -113,6 +124,9 @@ const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, per
 const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator, triggeredByConfigurator]
 
 provide(configuratorListKey, configurators)
+
+const sidebarEnabled = ref(true)
+provide(sidebarEnabledKey, sidebarEnabled)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

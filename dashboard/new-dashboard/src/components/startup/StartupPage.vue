@@ -125,7 +125,12 @@ provide(configuratorListKey, configurators)
 
 const cookies = useCookies()
 const sidebarEnabled = ref(cookies.get<boolean>("sidebarEnabled"))
-watch(sidebarEnabled, (value) => cookies.set("sidebarEnabled", value))
+watch(sidebarEnabled, (value) => {
+  cookies.set("sidebarEnabled", value)
+  if (!value) {
+    sidebarVm.close()
+  }
+})
 provide(sidebarEnabledKey, ref(sidebarEnabled))
 
 function onChangeRange(value: TimeRange) {

@@ -15,6 +15,7 @@ import { isDefined } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { FilterConfigurator } from "../../configurators/filter"
 import { reportInfoProviderKey } from "../../shared/injectionKeys"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
@@ -27,7 +28,7 @@ import { LineChartVM } from "./LineChartVM"
 interface LineChartProps {
   title: string
   measures: string[]
-  configurators: DataQueryConfigurator[]
+  configurators: (DataQueryConfigurator | FilterConfigurator)[]
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit

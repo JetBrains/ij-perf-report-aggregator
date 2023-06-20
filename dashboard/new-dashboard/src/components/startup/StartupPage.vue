@@ -129,7 +129,7 @@ watch(sidebarEnabled, (value) => {
     sidebarVm.close()
   }
 })
-provide(sidebarEnabledKey, ref(sidebarEnabled))
+provide(sidebarEnabledKey, sidebarEnabled)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

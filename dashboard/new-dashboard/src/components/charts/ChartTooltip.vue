@@ -12,14 +12,7 @@
     >
       <div class="flex gap-x-2 justify-end">
         <div class="w-full">
-          <a
-            v-if="linkUrl != null"
-            :href="linkUrl"
-            target="_blank"
-          >
-            {{ linkText }}
-          </a>
-          <span v-else>{{ linkText }}</span>
+          <span>{{ linkText }}</span>
         </div>
 
         <a
@@ -118,15 +111,6 @@ const linkText = computed(() => {
     result += ` (${data[6]}.${data[7]}${data[8] === 0 ? "" : `.${data[8]}`})`
   }
   return result
-})
-
-const linkUrl = computed(() => {
-  const data = tooltipData.value
-  const query = data?.query
-  if (query == null) {
-    return null
-  }
-  return data?.reportInfoProvider?.createReportUrl(data.firstSeriesData[0], query)
 })
 
 // do not show tooltip if cursor was not pointed again to some item

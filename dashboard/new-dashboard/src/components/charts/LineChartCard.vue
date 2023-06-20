@@ -145,7 +145,6 @@ onMounted(() => {
     sidebarEnabled,
     chartToolTipManager,
     sidebarVm,
-    props.valueUnit,
     props.trigger,
     container?.value
   )

@@ -3,11 +3,8 @@ import { inject } from "vue"
 import { reportInfoProviderKey } from "../../shared/injectionKeys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"
-import { DataQuery } from "../common/dataQuery"
 
 export interface ReportInfoProvider {
-  createReportUrl(generatedTime: number, query: DataQuery): string
-
   readonly infoFields: string[]
 }
 

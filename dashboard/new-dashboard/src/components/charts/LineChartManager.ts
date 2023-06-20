@@ -8,10 +8,9 @@ import { debounceTime } from "rxjs"
 import { Ref } from "vue"
 import { refToObservable } from "../../configurators/rxjs"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
-import { adaptToolTipFormatter, timeFormat, ValueUnit } from "../common/chart"
+import { adaptToolTipFormatter, timeFormat } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
-import { nsToMs, numberFormat } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getInfoDataForStartup, InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import { ChartManager } from "./ChartManager"
@@ -41,12 +40,10 @@ export class LineChartManager {
     sidebarEnabled: Ref<boolean>,
     chartToolTipManager: ChartToolTipManager,
     chartSidebarManager: InfoSidebar<InfoDataFromStartup> | undefined,
-    valueUnit: ValueUnit,
     trigger: PopupTrigger = "axis",
     resizeContainer: HTMLElement | undefined
   ) {
     this.chart = new ChartManager(container, resizeContainer ?? document.body)
-    const isMs = valueUnit == "ms"
 
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null
@@ -61,7 +58,6 @@ export class LineChartManager {
       }
     })
 
-    const isCompoundTooltip = chartToolTipManager == null
     this.chart.chart.setOption<LineChartOptions>(
       {
         legend: {
@@ -92,13 +88,10 @@ export class LineChartManager {
             type: "cross",
             snap: true,
           },
-          formatter: isCompoundTooltip
-            ? undefined
-            : adaptToolTipFormatter((params) => {
-                lastParams = params
-                return null
-              }),
-          valueFormatter: isCompoundTooltip ? (it) => numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms" : undefined,
+          formatter: adaptToolTipFormatter((params) => {
+            lastParams = params
+            return null
+          }),
         },
         xAxis: {
           type: "time",

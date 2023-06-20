@@ -10,7 +10,7 @@ export interface InfoDataPerformance extends DataSeries, InfoData {
   description: Ref<Description | null>
 }
 
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | undefined): InfoDataPerformance {
+export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number

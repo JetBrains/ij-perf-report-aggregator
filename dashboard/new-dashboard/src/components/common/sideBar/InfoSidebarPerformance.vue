@@ -190,16 +190,15 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { inject, ref } from "vue"
+import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { injectOrError } from "../../../shared/injectionKeys"
 import { sidebarVmKey } from "../../../shared/keys"
 import { calculateChanges } from "../../../util/changes"
 import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
 import SpaceIcon from "../SpaceIcon.vue"
-import { InfoSidebarImpl } from "./InfoSidebar"
-import { InfoDataPerformance } from "./InfoSidebarPerformance"
 
-const vm = inject(sidebarVmKey) ?? new InfoSidebarImpl<InfoDataPerformance>()
+const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()

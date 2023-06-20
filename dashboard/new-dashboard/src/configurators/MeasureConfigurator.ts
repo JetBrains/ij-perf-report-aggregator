@@ -149,7 +149,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Ref<Accident[]> | undefined | null = null,
+    readonly accidents: Ref<Accident[]> | null = null,
     readonly accidentsMap: Ref<Map<string, Accident>> | null = null
   ) {
     this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))

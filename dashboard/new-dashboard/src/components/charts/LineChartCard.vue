@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, ref, shallowRef, toRef, watchEffect } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
-import { chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
+import { chartToolTipKey, configuratorListKey, injectOrError, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
@@ -67,23 +67,19 @@ let chartManager: LineChartManager | null = null
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
-const container = inject(containerKey)
+const container = injectOrError(containerKey)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const tooltip = inject(chartToolTipKey)
-const sidebarVm = inject(sidebarStartupKey)
-const sidebarEnabled = inject(sidebarEnabledKey) ?? ref(false)
+const tooltip = injectOrError(chartToolTipKey)
+const sidebarVm = injectOrError(sidebarStartupKey)
+const sidebarEnabled = inject(sidebarEnabledKey, ref(false))
 
 const show = () => {
-  if (tooltip?.value) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    tooltip.value["show"](chartToolTipManager)
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  tooltip.value["show"](chartToolTipManager)
 }
 const hide = () => {
-  if (tooltip?.value) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    tooltip.value["hide"]()
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  tooltip.value["hide"]()
 }
 
 let dataQueryExecutor: DataQueryExecutor | null
@@ -146,7 +142,7 @@ onMounted(() => {
     chartToolTipManager,
     sidebarVm,
     props.trigger,
-    container?.value
+    container.value
   )
   unsubscribe = chartManager.subscribe()
 })

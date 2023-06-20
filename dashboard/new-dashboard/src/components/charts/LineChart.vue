@@ -16,7 +16,7 @@ import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { reportInfoProviderKey } from "../../shared/injectionKeys"
+import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   chartType: "line",
 })
 
-const accidents = inject(accidentsKeys)
+const accidents = inject(accidentsKeys, null)
 const chartElement = shallowRef<HTMLElement>()
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
@@ -72,8 +72,8 @@ const infoFieldsConfigurator =
     : null
 const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null))
 
-const container = inject(containerKey)
-const sidebarVm = inject(sidebarVmKey)
+const container = injectOrError(containerKey)
+const sidebarVm = injectOrError(sidebarVmKey)
 
 let chartManager: ChartManager | null
 let chartVm: LineChartVM
@@ -83,12 +83,12 @@ function initializePlot() {
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
-    chartManager = new ChartManager(chartElement.value, container?.value)
+    chartManager = new ChartManager(chartElement.value, container.value)
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
       const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
-      sidebarVm?.show(infoData)
+      sidebarVm.show(infoData)
     })
   } else {
     console.error("Dom was not yet initialized")

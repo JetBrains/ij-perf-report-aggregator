@@ -89,14 +89,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject } from "vue"
+import { injectOrError } from "../../../shared/injectionKeys"
 import { sidebarStartupKey } from "../../../shared/keys"
 import { calculateChanges } from "../../../util/changes"
 import SpaceIcon from "../SpaceIcon.vue"
-import { InfoSidebarImpl } from "./InfoSidebar"
-import { InfoDataFromStartup } from "./InfoSidebarStartup"
 
-const vm = inject(sidebarStartupKey) ?? new InfoSidebarImpl<InfoDataFromStartup>()
+const vm = injectOrError(sidebarStartupKey)
 
 function getSpaceUrl() {
   if (vm.data.value?.installerId) {

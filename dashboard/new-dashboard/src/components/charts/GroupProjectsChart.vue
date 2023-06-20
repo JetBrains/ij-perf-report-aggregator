@@ -9,13 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted } from "vue"
+import { onMounted } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
+import { injectOrError } from "../../shared/injectionKeys"
 import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { ValueUnit } from "../common/chart"
-import { DataQueryConfigurator } from "../common/dataQuery"
 import LineChart from "./LineChart.vue"
 
 interface Props {
@@ -29,8 +28,8 @@ const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms",
 })
 
-const serverConfigurator = inject(serverConfiguratorKey) as ServerConfigurator
-const dashboardConfigurators = inject(dashboardConfiguratorsKey) as DataQueryConfigurator[] | FilterConfigurator[]
+const serverConfigurator = injectOrError(serverConfiguratorKey)
+const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])])
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 

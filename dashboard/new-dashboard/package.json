@@ -5,7 +5,6 @@
     "@headlessui/vue": "^1.7.14",
     "@heroicons/vue": "2.0.18",
     "@vueuse/core": "^10.2.0",
-    "@vueuse/integrations": "^10.2.0",
     "compare-versions": "6.0.0-rc.1",
     "echarts": "5.4.2",
     "echarts-stat": "1.2.0",
@@ -15,7 +14,6 @@
     "p-limit": "^4.0.0",
     "primevue": "3.29.2",
     "rxjs": "8.0.0-alpha.10",
-    "universal-cookie": "^4.0.4",
     "vue": "3.3.4",
     "vue-router": "4.2.2"
   },

@@ -51,7 +51,7 @@
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { useCookies } from "@vueuse/integrations/useCookies"
+import { useStorage } from "@vueuse/core"
 import { provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -123,10 +123,8 @@ const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigu
 
 provide(configuratorListKey, configurators)
 
-const cookies = useCookies()
-const sidebarEnabled = ref(cookies.get<boolean>("sidebarEnabled"))
+const sidebarEnabled = useStorage("sidebarEnabled", true)
 watch(sidebarEnabled, (value) => {
-  cookies.set("sidebarEnabled", value)
   if (!value) {
     sidebarVm.close()
   }

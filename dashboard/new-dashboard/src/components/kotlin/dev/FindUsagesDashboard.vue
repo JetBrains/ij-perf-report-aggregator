@@ -118,6 +118,36 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Android canary leak' findUsages mean value with Library cache K1"
+          measure="findUsages#mean_value"
+          :projects="[
+            'leak-canary-android/findUsages/BOOLEAN_with_library_cache_k1',
+            'leak-canary-android/findUsages/HeapGraph_with_library_cache_k1',
+            'leak-canary-android/findUsages/HeapObject_with_library_cache_k1',
+            'leak-canary-android/findUsages/HprofRecordTag_with_library_cache_k1',
+            'leak-canary-android/findUsages/INT_with_library_cache_k1',
+            'leak-canary-android/findUsages/PrimitiveType_with_library_cache_k1'
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Android canary leak' findUsages mean value with Library cache K2"
+          measure="findUsages#mean_value"
+          :projects="[
+           'leak-canary-android/findUsages/BOOLEAN_with_library_cache_k2',
+           'leak-canary-android/findUsages/HeapGraph_with_library_cache_k2',
+           'leak-canary-android/findUsages/HeapObject_with_library_cache_k2',
+           'leak-canary-android/findUsages/HprofRecordTag_with_library_cache_k2',
+           'leak-canary-android/findUsages/INT_with_library_cache_k2',
+           'leak-canary-android/findUsages/PrimitiveType_with_library_cache_k2'
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
   >
 </template>

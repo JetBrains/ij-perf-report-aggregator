@@ -154,7 +154,7 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(scenarioConfigurator.selected.value, timeRangeConfigurator.value), [])
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(scenarioConfigurator.selected.value, timeRangeConfigurator.value))
 provide(accidentsKeys, warnings)
 </script>
 

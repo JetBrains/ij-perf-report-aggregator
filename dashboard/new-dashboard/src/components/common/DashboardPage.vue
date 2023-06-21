@@ -127,6 +127,6 @@ function onChangeRange(value: TimeRange) {
 }
 
 const projects = props.charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(projects, timeRangeConfigurator.value), [])
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(projects, timeRangeConfigurator.value))
 provide(accidentsKeys, warnings)
 </script>

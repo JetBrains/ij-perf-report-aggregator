@@ -13,11 +13,12 @@
 <script setup lang="ts">
 import { isDefined } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
+import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
+import { Accident } from "../../util/meta"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -79,7 +80,7 @@ let chartManager: ChartManager | null
 let chartVm: LineChartVM
 let unsubscribe: (() => void) | null = null
 
-function initializePlot() {
+function initializePlot(accidents: Ref<Accident[]> | null = null) {
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
@@ -96,10 +97,11 @@ function initializePlot() {
 }
 
 onMounted(() => {
-  if (isDefined(accidents)) {
+  //there is injection key but the value is not fetched yet
+  if (accidents != null && accidents.value == undefined) {
     watch(accidents, () => {
       if (isDefined(accidents)) {
-        initializePlot()
+        initializePlot(accidents)
       }
     })
   } else {

@@ -31,7 +31,7 @@ func analyzePerfBazelReport(runResult *RunResult) bool {
       if err == nil {
         measureNames = append(measureNames, name)
         measureValues = append(measureValues, value)
-        if strings.HasSuffix("ms", name) {
+        if strings.HasSuffix(name, "ms") {
           measureTypes = append(measureTypes, "d")
         } else {
           measureTypes = append(measureTypes, "c")

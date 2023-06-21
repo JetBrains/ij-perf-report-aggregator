@@ -194,7 +194,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   const field: DataQueryDimension = { n: "" }
   query.insertField(field, 1)
 
-  if (query.db === "perfint" || query.db === "jbr" || query.db === "perfintDev") {
+  if (query.db === "perfint" || query.db === "jbr" || query.db === "perfintDev" || query.db == "bazel") {
     query.addField({ n: "measures", subName: "name" })
     query.addField({ n: "measures", subName: "type" })
   }

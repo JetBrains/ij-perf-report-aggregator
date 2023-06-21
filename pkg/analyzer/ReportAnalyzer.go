@@ -117,6 +117,12 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
       // ignore empty report
       return nil
     }
+  } else if t.config.DbName == "bazel" {
+    ignore := analyzePerfBazelReport(runResult)
+    if ignore {
+      // ignore empty report
+      return nil
+    }
   } else {
     err = ReadReport(runResult, t.config, t.logger)
   }

@@ -19,6 +19,7 @@ const enum ROUTE_PREFIX {
   Fleet = "/fleet",
   PyCharm = "/pycharm",
   WebStorm = "/webstorm",
+  Bazel = "/bazel",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -93,6 +94,7 @@ enum ROUTES {
   FleetTest = `${ROUTE_PREFIX.Fleet}/${TEST_ROUTE}`,
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
+  BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -556,7 +558,24 @@ const FLEET: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET]
+const BAZEL: Product = {
+  url: ROUTE_PREFIX.Bazel,
+  label: "Bazel",
+  children: [
+    {
+      url: ROUTE_PREFIX.Bazel,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.BazelTest,
+          label: TESTS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -994,6 +1013,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.FleetStartupDashboard,
           component: () => import("./components/fleet/FleetDashboard.vue"),
           meta: { pageTitle: "Fleet Startup dashboard" },
+        },
+        {
+          path: ROUTES.BazelTest,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "bazel",
+            table: "report",
+            initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "Bazel Performance tests" },
         },
       ],
     },

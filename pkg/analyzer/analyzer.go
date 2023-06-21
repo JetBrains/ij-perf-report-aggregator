@@ -114,6 +114,15 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
+  case id == "bazel":
+    return DatabaseConfiguration{
+      DbName:          "bazel",
+      TableName:       "report",
+      extraFieldCount: 3,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", measures.name, measures.value, measures.type")
+      },
+    }
   default:
     panic("unknown project: " + id)
   }

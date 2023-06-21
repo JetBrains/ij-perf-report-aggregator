@@ -73,6 +73,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
+        } else if (value.startsWith("default-linux-aws-large-disk-")) {
+          // https://aws.amazon.com/ec2/instance-types/m5/
+          // noinspection SpellCheckingInspection
+          groupName = "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)"
         } else if (value.startsWith("intellij-windows-performance-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6id/
           // noinspection SpellCheckingInspection

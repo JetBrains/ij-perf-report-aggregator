@@ -111,20 +111,22 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TriggeredBy:        extraData.TriggeredBy,
   }
 
-  if t.config.DbName == "jbr" {
+  switch t.config.DbName {
+  case "jbr":
     ignore := analyzePerfJbrReport(runResult, extraData)
     if ignore {
       // ignore empty report
       return nil
     }
-  } else if t.config.DbName == "bazel" {
+  case "bazel":
     ignore := analyzePerfBazelReport(runResult)
     if ignore {
       // ignore empty report
       return nil
     }
-  } else {
+  default:
     err = ReadReport(runResult, t.config, t.logger)
+
   }
   projectId := t.config.DbName
   if err != nil {

@@ -1,10 +1,49 @@
 <template>
   <DashboardPage
+    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="ruby"
     persistent-id="rubymine_dashboard"
     initial-machine="Linux Munich i7-3770, 32 Gb"
   >
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'processingSpeed#Ruby'"
+          :title="'Indexing Ruby (kB/s)'"
+          :chart-color="'#219653'"
+          :value-unit="'counter'"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'processingSpeed#JavaScript'"
+          :title="'Indexing JavaScript (kB/s)'"
+          :chart-color="'#219653'"
+          :value-unit="'counter'"
+        />
+      </div>
+    </section>
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="averagesConfigurators"
+          :aggregated-measure="'completion\_%'"
+          :is-like="true"
+          :title="'Completion'"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+          :aggregated-measure="'test#average_awt_delay'"
+          :title="'UI responsiveness during typing'"
+          :chart-color="'#F2994A'"
+        />
+      </div>
+    </section>
     <section>
       <GroupProjectsChart
         label="Indexing"
@@ -119,6 +158,18 @@
 </template>
 
 <script setup lang="ts">
+import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({ f: "project", v: "%typing", o: "like" })
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 </script>

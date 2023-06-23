@@ -36,6 +36,10 @@
           </template>
         </DimensionHierarchicalSelect>
       </template>
+      <template #end>
+        Sidebar:
+        <InputSwitch v-model="sidebarEnabled" />
+      </template>
     </Toolbar>
 
     <main class="flex">
@@ -45,12 +49,14 @@
       >
         <LineChartCard />
       </div>
+      <InfoSidebarStartup />
     </main>
   </div>
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
+import { useStorage } from "@vueuse/core"
+import { provide, Ref, ref, watch } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -58,7 +64,8 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
+import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
@@ -70,6 +77,9 @@ import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
+import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
+import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const productCodeToName = new Map([
@@ -94,6 +104,17 @@ provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 const dbName = "ij"
 const dbTable = "report"
 const container = ref<HTMLElement>()
+provide(containerKey, container)
+
+const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>()
+provide(sidebarStartupKey, sidebarVm)
+const sidebarEnabled = useStorage("sidebarEnabled", true)
+watch(sidebarEnabled, (value) => {
+  if (!value) {
+    sidebarVm.close()
+  }
+})
+provide(sidebarEnabledKey, sidebarEnabled)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-explore")

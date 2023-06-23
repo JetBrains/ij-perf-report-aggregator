@@ -123,9 +123,9 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
-const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator])
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
-const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [branchConfigurator])
+const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, measureConfigurator, productConfigurator, projectConfigurator, branchConfigurator]
 

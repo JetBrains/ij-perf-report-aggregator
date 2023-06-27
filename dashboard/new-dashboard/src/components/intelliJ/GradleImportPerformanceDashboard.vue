@@ -3,7 +3,7 @@
     db-name="perfint"
     table="idea"
     persistent-id="idea_gradle_dashboard"
-    initial-machine="Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+    initial-machine="linux-blade-hetzner"
     :charts="charts"
   >
     <section>

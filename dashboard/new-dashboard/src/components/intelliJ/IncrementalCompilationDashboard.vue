@@ -41,24 +41,24 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["incremental-build-kotlin/build_incremental", "incremental-build-kotlin/rebuild_initial"],
   },
   {
-    labels: ["Youtrack JPS Rebuild/Build time"],
+    labels: ["Youtrack JPS and Gradle Rebuild/Build time"],
     measures: ["build_compilation_duration"],
-    projects: ["incremental-build-youtrack-jps/build_incremental", "incremental-build-youtrack-jps/rebuild_initial"],
+    projects: [
+      "incremental-build-youtrack-jps/build_incremental",
+      "incremental-build-youtrack-jps/rebuild_initial",
+      "incremental-build-youtrack-gradle/build_incremental",
+      "incremental-build-youtrack-gradle/rebuild_initial",
+    ],
   },
   {
-    labels: ["Youtrack Gradle Rebuild/Build time"],
+    labels: ["Hub JPS and Gradle Rebuild/Build time"],
     measures: ["build_compilation_duration"],
-    projects: ["incremental-build-youtrack-gradle/build_incremental", "incremental-build-youtrack-gradle/rebuild_initial"],
-  },
-  {
-    labels: ["Hub JPS Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
-    projects: ["incremental-build-hub-jps/build_incremental", "incremental-build-hub-jps/rebuild_initial"],
-  },
-  {
-    labels: ["Hub Gradle Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
-    projects: ["incremental-build-hub-gradle/build_incremental", "incremental-build-hub-gradle/rebuild_initial"],
+    projects: [
+      "incremental-build-hub-jps/build_incremental",
+      "incremental-build-hub-jps/rebuild_initial",
+      "incremental-build-hub-gradle/build_incremental",
+      "incremental-build-hub-gradle/rebuild_initial",
+    ],
   },
 ]
 

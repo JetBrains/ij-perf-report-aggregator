@@ -1,11 +1,12 @@
 export const MAIN_METRICS = new Set([
   "indexing",
   "scanning",
-  "numberOfIndexingRuns",
+  "numberOfIndexedFiles",
   "vfs_initial_refresh",
   "build_compilation_duration",
   "globalInspections",
   "findUsages",
+  "findUsages#number",
   "localInspections",
   "firstCodeAnalysis",
   "completion",
@@ -15,6 +16,6 @@ export const MAIN_METRICS = new Set([
   "highlighting",
   "FileStructurePopup",
   "typing",
-  "test#average_awt_delay",
-  "test#max_awt_delay",
+  "git-log-indexing",
+  "git-log-indexing#totalCommits",
 ])

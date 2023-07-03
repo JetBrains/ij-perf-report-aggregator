@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlinDev_localinspections_dashboard"
+    persistent-id="kotlinDev_dashboard"
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >

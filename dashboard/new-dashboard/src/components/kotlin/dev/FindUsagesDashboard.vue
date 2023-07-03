@@ -3,7 +3,7 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlinDev_findusage_dashboard"
+    persistent-id="kotlinDev_dashboard"
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >

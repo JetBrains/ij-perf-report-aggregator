@@ -129,7 +129,7 @@
       </div>
       <div class="flex gap-4 text-blue-500 justify-center">
         <a
-          v-if="vm.data.value?.installerId"
+          v-if="vm.data.value?.installerId || vm.data.value?.buildId"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
           @click="getSpaceUrl"
         >
@@ -278,8 +278,9 @@ function getTestActions() {
 }
 
 function getSpaceUrl() {
-  if (vm.data.value?.installerId) {
-    calculateChanges("ij", vm.data.value.installerId, (decodedChanges: string | null) => {
+  const db = vm.data.value?.installerId ? "perfint" : "perfintDev"
+  if (vm.data.value?.installerId || vm.data.value?.buildId) {
+    calculateChanges(db, vm.data.value.installerId ?? vm.data.value.buildId, (decodedChanges: string | null) => {
       window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
     })
   }

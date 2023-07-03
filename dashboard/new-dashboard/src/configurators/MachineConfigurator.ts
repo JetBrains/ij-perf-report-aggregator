@@ -84,7 +84,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         } else if (value.startsWith("intellij-linux-2004-aws-i")) {
           // https://aws.amazon.com/ec2/instance-types/c5/
           // noinspection SpellCheckingInspection
-          groupName = "Windows EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
+          groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
         } else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
         } else if (value.startsWith("intellij-linux-hw-EXC")) {

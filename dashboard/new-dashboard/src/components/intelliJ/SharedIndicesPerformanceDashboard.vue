@@ -138,11 +138,11 @@
         label="Indexing (SpringBoot)"
         measure="indexing"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -223,11 +223,11 @@
         label="Scanning (SpringBoot)"
         measure="scanning"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -308,11 +308,11 @@
         label="Number of indexing files (SpringBoot)"
         measure="numberOfIndexedFiles"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -393,11 +393,11 @@
         label="Number of indexing files by shared indexes (SpringBoot)"
         measure="numberOfFilesIndexedByExtensions"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -478,11 +478,11 @@
         label="Completion (SpringBoot)"
         measure="completion"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -563,11 +563,11 @@
         label="First Code Analysis (SpringBoot)"
         measure="firstCodeAnalysis"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>
@@ -648,11 +648,11 @@
         label="Find Usages (SpringBoot)"
         measure="findUsages"
         :projects="[
-          'spring-boot--downloaded-sharedIndexes',
-          'spring-boot--with-java-sharedIndexes',
-          'spring-boot--with-maven-sharedIndexes',
-          'spring-boot--with-project-sharedIndexes',
-          'spring-boot--without-sharedIndexes',
+          'spring-boot-downloaded-sharedIndexes',
+          'spring-boot-with-java-sharedIndexes',
+          'spring-boot-with-maven-sharedIndexes',
+          'spring-boot-with-project-sharedIndexes',
+          'spring-boot-without-sharedIndexes',
         ]"
       />
     </section>

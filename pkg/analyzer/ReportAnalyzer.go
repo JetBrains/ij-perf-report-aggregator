@@ -111,6 +111,10 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TriggeredBy:        extraData.TriggeredBy,
   }
 
+  if isBisectRun(extraData, t.logger) {
+    return nil
+  }
+
   switch t.config.DbName {
   case "jbr":
     ignore := analyzePerfJbrReport(runResult, extraData)
@@ -205,6 +209,18 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     runResult: runResult,
   }
   return nil
+}
+
+func isBisectRun(extraData model.ExtraData, logger *zap.Logger) bool {
+  parser := structParsers.Get()
+  defer structParsers.Put(parser)
+
+  props, err := parser.ParseBytes(extraData.TcBuildProperties)
+  if err != nil {
+    logger.Warn("failed to parse build properties", zap.Error(err))
+    return false
+  }
+  return props.GetBool("env.IS_BISECT_RUN") == true
 }
 
 func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string, logger *zap.Logger) (string, error) {

@@ -220,7 +220,7 @@ func isBisectRun(extraData model.ExtraData, logger *zap.Logger) bool {
     logger.Warn("failed to parse build properties", zap.Error(err))
     return false
   }
-  return props.GetBool("env.IS_BISECT_RUN") == true
+  return props.GetBool("env.IS_BISECT_RUN")
 }
 
 func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string, logger *zap.Logger) (string, error) {

@@ -10,6 +10,7 @@ assets:
 	qtc -dir pkg/tc-properties
 
 lint:
+	go test ./...
 	golangci-lint run cmd/... pkg/...
 	pnpm prettier --check . --loglevel warn
 	eslint . --ext .js,.vue,.ts

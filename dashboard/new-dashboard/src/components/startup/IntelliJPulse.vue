@@ -41,6 +41,9 @@
       <LineChartCard :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']" />
     </span>
 
+    <Divider label="Notifications" />
+    <LineChartCard :measures="['metrics.notifications/number']" />
+
     <Divider label="Exit" />
     <LineChartCard :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']" />
 

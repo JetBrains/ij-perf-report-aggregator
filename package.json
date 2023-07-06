@@ -25,6 +25,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vue": "^9.15.1",
+    "lightningcss": "^1.21.5",
     "postcss": "^8.4.24",
     "rollup": "^3.26.1",
     "rollup-plugin-visualizer": "^5.9.2",
@@ -32,7 +33,7 @@
     "tailwindcss": "^3.3.2",
     "typescript": "^5.1.6",
     "unplugin-vue-components": "^0.25.1",
-    "vite": "4.3.9",
+    "vite": "4.4.0",
     "vue": "^3.3.4",
     "vue-tsc": "^1.8.4"
   },

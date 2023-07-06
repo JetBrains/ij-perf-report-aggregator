@@ -4,7 +4,7 @@
     db-name="perfint"
     table="idea"
     persistent-id="idea_dashboard"
-    initial-machine="Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
   >
     <section class="flex gap-6">

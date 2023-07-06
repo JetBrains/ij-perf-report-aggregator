@@ -680,7 +680,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "idea",
-            initialMachine: "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "IntelliJ Performance tests" },
         },
@@ -690,7 +690,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfintDev",
             table: "idea",
-            initialMachine: "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
             withInstaller: false,
           },
           meta: { pageTitle: "IntelliJ Integration Performance Tests On Fast Installer" },

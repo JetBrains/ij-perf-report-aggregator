@@ -145,7 +145,7 @@ const props = defineProps<{
   table: string
 }>()
 
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 

@@ -55,6 +55,7 @@ export default defineConfig({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     outDir: path.resolve(__dirname, "cmd/frontend/resources"),
+    cssMinify: "lightningcss",
   },
 })
 

@@ -16,7 +16,7 @@
       />
       <DimensionSelect
         label="Product"
-        :value-to-label="(it: string ) => productCodeToName.get(it) ?? it"
+        :value-to-label="(it: string) => productCodeToName.get(it) ?? it"
         :dimension="productConfigurator"
       />
       <DimensionSelect

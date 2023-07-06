@@ -23,7 +23,10 @@ export class AggregationChartVM {
 
   private chartManager?: ChartManager
 
-  constructor(private readonly query: DataQueryExecutor, private readonly color: string = "#4B84EE") {}
+  constructor(
+    private readonly query: DataQueryExecutor,
+    private readonly color: string = "#4B84EE"
+  ) {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
     this.chartManager = new ChartManager(element, resizeContainer)

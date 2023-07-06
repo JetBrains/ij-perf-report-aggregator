@@ -19,7 +19,10 @@ export class ChartComponent {
 
   private readonly subject = new Subject<void>()
 
-  constructor(containerRef: Ref<HTMLElement | null>, private readonly createChartManager: (container: HTMLElement) => Promise<ChartManager>) {
+  constructor(
+    containerRef: Ref<HTMLElement | null>,
+    private readonly createChartManager: (container: HTMLElement) => Promise<ChartManager>
+  ) {
     const containerObservable = refToObservable(containerRef)
 
     onBeforeUnmount(() => {

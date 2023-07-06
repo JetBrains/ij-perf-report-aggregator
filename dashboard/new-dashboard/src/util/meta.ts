@@ -13,11 +13,25 @@ export enum AccidentKind {
 }
 
 export class Accident {
-  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string, readonly kind: AccidentKind) {}
+  constructor(
+    readonly id: number,
+    readonly affectedTest: string,
+    readonly date: string,
+    readonly reason: string,
+    readonly buildNumber: string,
+    readonly kind: AccidentKind
+  ) {}
 }
 
 export class AccidentFromServer {
-  constructor(readonly id: number, readonly affectedTest: string, readonly date: string, readonly reason: string, readonly buildNumber: string, readonly kind: string) {}
+  constructor(
+    readonly id: number,
+    readonly affectedTest: string,
+    readonly date: string,
+    readonly reason: string,
+    readonly buildNumber: string,
+    readonly kind: string
+  ) {}
 }
 
 function intervalToPostgresInterval(interval: TimeRange): string {
@@ -100,7 +114,13 @@ function isAccidentKind(str: string): str is AccidentKind {
 const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
 
 export class Description {
-  constructor(readonly project: string, readonly branch: string, readonly url: string, readonly methodName: string, readonly description: string) {}
+  constructor(
+    readonly project: string,
+    readonly branch: string,
+    readonly url: string,
+    readonly methodName: string,
+    readonly description: string
+  ) {}
 }
 
 export function getDescriptionFromMetaDb(project: string | undefined, branch: string): Ref<Description | null> {

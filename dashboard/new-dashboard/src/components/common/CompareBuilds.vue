@@ -231,7 +231,11 @@ const filters = ref({
 })
 
 class Result {
-  public constructor(readonly test: string, readonly metric: string, readonly value: number) {}
+  public constructor(
+    readonly test: string,
+    readonly metric: string,
+    readonly value: number
+  ) {}
 }
 
 function getColorForBuild(build1: number, build2: number) {

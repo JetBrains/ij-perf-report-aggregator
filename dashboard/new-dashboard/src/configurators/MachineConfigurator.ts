@@ -22,7 +22,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private static readonly valueToGroup: Record<string, string> = getValueToGroup()
 
-  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: FilterConfigurator[] = [], readonly multiple: boolean = true) {
+  constructor(
+    serverConfigurator: ServerConfigurator,
+    persistentStateManager: PersistentStateManager,
+    filters: FilterConfigurator[] = [],
+    readonly multiple: boolean = true
+  ) {
     const name = "machine"
     persistentStateManager.add(name, this.selected, (it) => toArray(it as never))
     const listObservable = createFilterObservable(serverConfigurator, filters).pipe(

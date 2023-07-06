@@ -28,7 +28,11 @@ const LABEL_THRESHOLD = 20
 export class TimeLineChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
 
-  constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
+  constructor(
+    container: HTMLElement,
+    private readonly dataProvider: (dataManager: DataManager) => GroupedItems,
+    private readonly dataDescriptor: DataDescriptor
+  ) {
     this.chart = new ChartManagerHelper(container)
   }
 

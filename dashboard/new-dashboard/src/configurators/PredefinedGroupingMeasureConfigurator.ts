@@ -10,7 +10,11 @@ import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
-  constructor(private readonly measures: string[], private readonly timeRange: Ref<TimeRange>, private readonly chartStyle: ChartStyle) {}
+  constructor(
+    private readonly measures: string[],
+    private readonly timeRange: Ref<TimeRange>,
+    private readonly chartStyle: ChartStyle
+  ) {}
   createObservable() {
     return null
   }

@@ -20,6 +20,7 @@ const enum ROUTE_PREFIX {
   PyCharm = "/pycharm",
   WebStorm = "/webstorm",
   Bazel = "/bazel",
+  Qodana = "/qodana",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -94,6 +95,7 @@ enum ROUTES {
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
+  QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -570,7 +572,24 @@ const BAZEL: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL]
+const QODANA: Product = {
+  url: ROUTE_PREFIX.Qodana,
+  label: "Qodana",
+  children: [
+    {
+      url: ROUTE_PREFIX.Qodana,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.QodanaTest,
+          label: TESTS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1014,6 +1033,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Bazel Performance tests" },
+        },
+        {
+          path: ROUTES.QodanaTest,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "qodana",
+            table: "report",
+            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "Qodana tests" },
         },
       ],
     },

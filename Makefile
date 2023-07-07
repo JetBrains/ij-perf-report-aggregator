@@ -12,7 +12,7 @@ assets:
 lint:
 	go test ./...
 	golangci-lint run cmd/... pkg/...
-	pnpm prettier --check . --loglevel warn
+	pnpm prettier --check . --log-level warn
 	eslint . --ext .js,.vue,.ts
 	vue-tsc --noEmit
 

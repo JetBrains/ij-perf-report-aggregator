@@ -11,9 +11,9 @@ func TestFilter(t *testing.T) {
     t.Fatalf("Failed to read file: %v", err)
   }
 
-  testCases := map[string]int{
-    "project.opening":   5035345,
-    "globalInspections": 141561862,
+  testCases := map[string]int32{
+    "project.opening":   5035,
+    "globalInspections": 141561,
   }
 
   got := analyzeOtJson(data, []string{"globalInspections", "project.opening"})

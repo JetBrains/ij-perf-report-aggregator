@@ -128,6 +128,12 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
       // ignore empty report
       return nil
     }
+  case "qodana":
+    ignore := analyzeQodanaReport(runResult, extraData)
+    if ignore {
+      // ignore empty report
+      return nil
+    }
   default:
     err = ReadReport(runResult, t.config, t.logger)
 
@@ -244,6 +250,16 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
     return "", e.New("cannot infer branch from JBR project id")
   }
+  if projectId == "qodana" {
+    qodanaImage := string(props.GetStringBytes("image"))
+    lastSlash := strings.LastIndex(qodanaImage, "/")
+
+    if lastSlash >= 0 {
+      return qodanaImage[lastSlash+1:], nil
+    }
+    logger.Warn("No slash found in string")
+  }
+
   //goland:noinspection SpellCheckingInspection
   branch := string(props.GetStringBytes("teamcity.build.branch"))
   if len(branch) != 0 && branch != "<default>" {

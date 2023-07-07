@@ -104,6 +104,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
         } else if (value.startsWith("intellij-linux-performance-huge-aws-i")) {
           groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
+        } else if (value.startsWith("qodana-aws-cpu-x64")) {
+          groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
         } else {
           groupName = MachineConfigurator.valueToGroup[value] as string | null
         }

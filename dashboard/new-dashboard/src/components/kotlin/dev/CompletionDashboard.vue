@@ -379,6 +379,54 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' completion mean value K1"
+          measure="completion#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k1',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k1',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' completion mean value K2"
+          measure="completion#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k2',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k2',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' firstElementShown mean value K1"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k1',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k1',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' firstElementShown mean value K2"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k2',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k2',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
   >
 </template>

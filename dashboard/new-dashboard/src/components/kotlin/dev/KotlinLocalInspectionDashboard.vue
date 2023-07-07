@@ -253,6 +253,30 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' highlight mean value with Library cache K1"
+          measure="localInspections#mean_value"
+          :projects="[
+            'arrow/highlight/build.gradle_with_library_cache_k1',
+            'kotlin_empty_kts/highlight/build.gradle_with_library_cache_k1',
+            'kotlin_lang/highlight/build.gradle_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' highlight mean value with Library cache K2"
+          measure="localInspections#mean_value"
+          :projects="[
+            'arrow/highlight/build.gradle_with_library_cache_k2',
+            'kotlin_empty_kts/highlight/build.gradle_with_library_cache_k2',
+            'kotlin_lang/highlight/build.gradle_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

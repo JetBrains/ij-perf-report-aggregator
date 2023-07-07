@@ -60,7 +60,6 @@ enum ROUTES {
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
   KotlinLocalInspection = `${ROUTE_PREFIX.Kotlin}/localInspection`,
   KotlinLocalInspectionDev = `${ROUTE_PREFIX.Kotlin}/localInspectionDev`,
-  KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/dashboardDev`,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
@@ -317,10 +316,6 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinLocalInspection,
           label: "Local inspection",
-        },
-        {
-          url: ROUTES.KotlinDashboardDev,
-          label: "Dashboard (dev/fast installer)",
         },
         {
           url: ROUTES.KotlinTestsDev,
@@ -874,11 +869,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinDashboard,
           component: () => import("./components/kotlin/PerformanceDashboard.vue"),
           meta: { pageTitle: "Kotlin Performance dashboard" },
-        },
-        {
-          path: ROUTES.KotlinDashboardDev,
-          component: () => import("./components/kotlin/dev/PerformanceDevDashboard.vue"),
-          meta: { pageTitle: "Kotlin Performance dashboard (dev/fast installer)" },
         },
         {
           path: ROUTES.KotlinLocalInspection,

@@ -42,7 +42,10 @@
     </span>
 
     <Divider label="Notifications" />
-    <LineChartCard :measures="['metrics.notifications/number']" />
+    <LineChartCard
+      :measures="['metrics.notifications/number']"
+      :skip-zero-values="false"
+    />
 
     <Divider label="Exit" />
     <LineChartCard :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']" />

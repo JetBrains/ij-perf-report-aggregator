@@ -65,7 +65,7 @@ import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Dumb mode time", "Number of indexed files (Big projects)"],
-    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: ["community/indexing", "intellij_sources/indexing"],
   },
   {
@@ -75,7 +75,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "Dumb mode time",
       "Number of indexed files (IntelliJ project)",
     ],
-    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: [
       "vfs-record-storage/in-memory-intellij_sources/indexing",
       "vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing",
@@ -86,7 +86,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Indexing", "Scanning", "Dumb mode time", "Number of indexed files"],
-    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: [
       "empty_project/indexing",
       "grails/indexing",

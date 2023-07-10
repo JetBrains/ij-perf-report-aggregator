@@ -203,7 +203,7 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
 FilterService.register("metricsFilter", (value: string) => {
   return MAIN_METRICS.has(value)
 })
-const indexingMetrics = new Set(["indexing", "indexingWithoutPauses", "scanning", "scanningWithoutPauses", "numberOfIndexingRuns"])
+const indexingMetrics = new Set(["indexing", "indexingTimeWithoutPauses", "scanning", "scanningTimeWithoutPauses", "numberOfIndexingRuns"])
 FilterService.register("indexingFilter", (value: string) => {
   return indexingMetrics.has(value)
 })

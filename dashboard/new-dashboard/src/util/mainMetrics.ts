@@ -1,8 +1,8 @@
 export const MAIN_METRICS = new Set([
   "indexing",
-  "indexingWithoutPauses",
+  "indexingTimeWithoutPauses",
   "scanning",
-  "scanningWithoutPauses",
+  "scanningTimeWithoutPauses",
   "dumbModeWithPauses",
   "numberOfIndexedFiles",
   "vfs_initial_refresh",

@@ -27,22 +27,22 @@ const processorCounts = [1, 2, 4, 8, 16, 32, 64]
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Empty Project)", "Scanning(Empty Project)", "Dumb mode time", "Number of indexed files(Empty Project)"],
-    measures: [["indexing", "indexingWithoutPauses"], ["scanning", "scanningWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexing", "indexingTimeWithoutPauses"], ["scanning", "scanningTimeWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: processorCounts.map((it) => `empty_project/indexing/processorCount_${it}`),
   },
   {
     labels: ["Indexing (IntelliJ Sources)", "Scanning(IntelliJ Sources)", "Dumb mode time", "Number of indexed files(IntelliJ Sources)"],
-    measures: [["indexing", "indexingWithoutPauses"], ["scanning", "scanningWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexing", "indexingTimeWithoutPauses"], ["scanning", "scanningTimeWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: processorCounts.map((it) => `intellij_sources/indexing/processorCount_${it}`),
   },
   {
     labels: ["Indexing (Kotlin Coroutines)", "Scanning(Kotlin Coroutines)", "Dumb mode time", "Number of indexed files(Kotlin Coroutines)"],
-    measures: [["indexing", "indexingWithoutPauses"], ["scanning", "scanningWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexing", "indexingTimeWithoutPauses"], ["scanning", "scanningTimeWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: processorCounts.map((it) => `kotlin_coroutines/indexing/processorCount_${it}`),
   },
   {
     labels: ["Indexing (Spring Boot)", "Scanning(Spring Boot)", "Dumb mode time", "Number of indexed files(Spring Boot)"],
-    measures: [["indexing", "indexingWithoutPauses"], ["scanning", "scanningWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexing", "indexingTimeWithoutPauses"], ["scanning", "scanningTimeWithoutPauses"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: processorCounts.map((it) => `spring_boot/indexing/processorCount_${it}`),
   },
 ]

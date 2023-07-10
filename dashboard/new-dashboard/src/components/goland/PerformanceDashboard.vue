@@ -8,7 +8,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing: Lightweight projects"
-        measure="indexingWithoutPauses"
+        measure="indexingTimeWithoutPauses"
         :projects="['flux/indexing', 'delve/indexing', 'istio/indexing']"
       />
     </section>
@@ -22,7 +22,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing: Heavyweight projects"
-        :measure="['indexingWithoutPauses', 'indexing']"
+        :measure="['indexingTimeWithoutPauses', 'indexing']"
         :projects="['moby/indexing', 'mattermost-server/indexing', 'cockroach/indexing', 'kubernetes/indexing']"
       />
     </section>

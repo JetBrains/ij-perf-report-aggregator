@@ -20,7 +20,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['django/indexing', 'empty_project/indexing', 'flusk/indexing', 'matplotlib/indexing', 'pandas/indexing']"
       />
     </section>

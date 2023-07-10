@@ -47,7 +47,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
       />
     </section>
@@ -61,7 +61,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
       />
     </section>

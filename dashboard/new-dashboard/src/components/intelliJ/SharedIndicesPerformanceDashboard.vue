@@ -8,14 +8,14 @@
     <section>
       <GroupProjectsChart
         label="Indexing (IntelliJ project)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['ijx-intellij-speed/downloading-shared-indexes', 'ijx-intellij-speed/shared-indexes', 'ijx-intellij-speed/usual-indexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning (IntelliJ project)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['ijx-intellij-speed/downloading-shared-indexes', 'ijx-intellij-speed/shared-indexes', 'ijx-intellij-speed/usual-indexes']"
       />
     </section>
@@ -43,14 +43,14 @@
     <section>
       <GroupProjectsChart
         label="Indexing (JDK Maven project)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['ijx-jdk-maven-speed/downloading-shared-indexes', 'ijx-jdk-maven-speed/shared-indexes', 'ijx-jdk-maven-speed/usual-indexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning (JDK Maven project)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['ijx-jdk-maven-speed/downloading-shared-indexes', 'ijx-jdk-maven-speed/shared-indexes', 'ijx-jdk-maven-speed/usual-indexes']"
       />
     </section>
@@ -78,14 +78,14 @@
     <section>
       <GroupProjectsChart
         label="Indexing (ToolboxEnterprise)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['tbe-downloaded-sharedIndexes', 'tbe-with-java-sharedIndexes', 'tbe-with-maven-sharedIndexes', 'tbe-with-project-sharedIndexes', 'tbe-without-sharedIndexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Indexing (Kotlin Serialization)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'serialization-downloaded-sharedIndexes',
           'serialization-with-java-sharedIndexes',
@@ -98,7 +98,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing (Kotlin Coroutines)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'coroutines-downloaded-sharedIndexes',
           'coroutines-with-java-sharedIndexes',
@@ -111,7 +111,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing (Grails)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'grails-downloaded-sharedIndexes',
           'grails-with-java-sharedIndexes',
@@ -124,7 +124,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing (Java Design Patterns)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'javaDesignPatterns-downloaded-sharedIndexes',
           'javaDesignPatterns-with-java-sharedIndexes',
@@ -137,7 +137,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing (IntelliJ)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'intellij-downloaded-sharedIndexes',
           'intellij-with-java-sharedIndexes',
@@ -150,7 +150,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing (SpringBoot)"
-        :measure="['indexing', 'indexingWithoutPauses']"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
           'spring-boot-downloaded-sharedIndexes',
           'spring-boot-with-java-sharedIndexes',
@@ -163,14 +163,14 @@
     <section>
       <GroupProjectsChart
         label="Scanning (ToolboxEnterprise)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['tbe-downloaded-sharedIndexes', 'tbe-with-java-sharedIndexes', 'tbe-with-maven-sharedIndexes', 'tbe-with-project-sharedIndexes', 'tbe-without-sharedIndexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning (Kotlin Serialization)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'serialization-downloaded-sharedIndexes',
           'serialization-with-java-sharedIndexes',
@@ -183,7 +183,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning (Kotlin Coroutines)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'coroutines-downloaded-sharedIndexes',
           'coroutines-with-java-sharedIndexes',
@@ -196,7 +196,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning (Grails)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'grails-downloaded-sharedIndexes',
           'grails-with-java-sharedIndexes',
@@ -209,7 +209,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning (Java Design Patterns)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'javaDesignPatterns-downloaded-sharedIndexes',
           'javaDesignPatterns-with-java-sharedIndexes',
@@ -222,7 +222,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning (IntelliJ)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'intellij-downloaded-sharedIndexes',
           'intellij-with-java-sharedIndexes',
@@ -235,7 +235,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning (SpringBoot)"
-        :measure="['scanning', 'scanningWithoutPauses']"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="[
           'spring-boot-downloaded-sharedIndexes',
           'spring-boot-with-java-sharedIndexes',

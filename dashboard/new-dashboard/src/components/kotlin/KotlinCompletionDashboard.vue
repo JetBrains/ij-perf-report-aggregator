@@ -30,14 +30,14 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing K1"
-          :measure="['indexing', 'indexingWithoutPauses']"
+          :measure="['indexing', 'indexingTimeWithoutPauses']"
           :projects="['kotlin_empty/indexing_k1', 'intellij_commit/indexing_k1', 'kotlin_lang/indexing_k1']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing K2"
-          :measure="['indexing', 'indexingWithoutPauses']"
+          :measure="['indexing', 'indexingTimeWithoutPauses']"
           :projects="['kotlin_empty/indexing_k2', 'intellij_commit/indexing_k2', 'kotlin_lang/indexing_k2']"
         />
       </div>

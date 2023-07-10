@@ -25,8 +25,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing", "Scanning", "Number of indexed files"],
-    measures: ["indexing", "scanning", "numberOfIndexedFiles"],
+    labels: ["Indexing", "Scanning", "Dumb mode time", "Number of indexed files"],
+    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: ["keycloak_release_20/indexing", "train-ticket/indexing", "toolbox_enterprise/indexing"],
   },
   {

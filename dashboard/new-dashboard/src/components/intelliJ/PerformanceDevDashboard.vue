@@ -26,8 +26,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing", "Scanning", "Updating time"],
-    measures: ["indexing", "scanning", "updatingTime"],
+    labels: ["Indexing", "Scanning", "Dumb mode time", "Updating time"],
+    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "updatingTime"],
     projects: ["intellij_sources/indexing", "intellij_commit/indexing"],
   },
   {

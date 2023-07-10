@@ -64,13 +64,13 @@ import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing (Big projects)", "Scanning (Big projects)"],
-    measures: ["indexing", "scanning"],
+    labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Dumb mode time"],
+    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses"],
     projects: ["grails/indexing", "kotlin_coroutines/indexing", "kotlin/indexing", "spring_boot/indexing"],
   },
   {
-    labels: ["Indexing", "Scanning"],
-    measures: ["indexing", "scanning"],
+    labels: ["Indexing", "Scanning", "Dumb mode time"],
+    measures: [["indexingWithoutPauses", "indexing"], ["scanningWithoutPauses", "scanning"], "dumbModeTimeWithPauses"],
     projects: ["empty_project/indexing", "java/indexing", "spring_boot_maven/indexing", "kotlin_petclinic/indexing"],
   },
   {

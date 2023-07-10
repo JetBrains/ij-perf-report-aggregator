@@ -20,7 +20,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing"
-        measure="indexing"
+        :measure="['indexing', 'indexingWithoutPauses']"
         :projects="['rustling/cargo-sync', 'yew/indexing', 'drogue-cloud/cpu']"
       />
     </section>

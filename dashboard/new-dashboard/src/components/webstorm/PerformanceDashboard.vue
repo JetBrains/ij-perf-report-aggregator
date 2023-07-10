@@ -38,7 +38,7 @@
     <section>
       <GroupProjectsChart
         label="Indexing"
-        measure="indexing"
+        :measure="['indexing', 'indexingWithoutPauses']"
         :projects="['aws_cdk/indexing', 'vkui/indexing']"
       />
     </section>

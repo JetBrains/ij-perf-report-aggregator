@@ -1,5 +1,18 @@
 <template>
   <IntelliJPulse>
+    <Divider label="Classloading Files Size" />
+    <LineChartCard
+      :skip-zero-values="false"
+      :measures="[
+        'metrics.classLoadingMetrics/totalSizeKb',
+        'metrics.classLoadingMetrics/companionSizeKb',
+        'metrics.classLoadingMetrics/lambdaSizeKb',
+        'metrics.classLoadingMetrics/actionSizeKb',
+        'metrics.classLoadingMetrics/inspectionSizeKb',
+        'metrics.classLoadingMetrics/kotlinReflectSizeKb',
+        'metrics.classLoadingMetrics/androidSizeKb',
+      ]"
+    />
     <Divider label="Memory" />
     <LineChartCard
       :skip-zero-values="false"

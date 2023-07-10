@@ -1,5 +1,6 @@
 {
   "semi": false,
   "printWidth": 180,
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "trailingComma": "es5"
 }

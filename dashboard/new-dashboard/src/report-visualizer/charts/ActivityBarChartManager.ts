@@ -21,7 +21,11 @@ export class ActivityBarChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
   private lastData!: ChartDataItem[]
 
-  constructor(container: HTMLElement, private readonly dataProvider: (dataManager: DataManager) => GroupedItems, private readonly dataDescriptor: DataDescriptor) {
+  constructor(
+    container: HTMLElement,
+    private readonly dataProvider: (dataManager: DataManager) => GroupedItems,
+    private readonly dataDescriptor: DataDescriptor
+  ) {
     this.chart = new ChartManagerHelper(container)
     this.chart.chart.setOption<BarChartOptions>({
       legend: {},

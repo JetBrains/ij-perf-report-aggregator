@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfint"
     table="kotlin"
-    persistent-id="kotlin_inspection_dashboard"
+    persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
     <section class="flex gap-x-6">

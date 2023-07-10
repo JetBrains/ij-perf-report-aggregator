@@ -80,7 +80,7 @@ func TestAverageAggregate(t *testing.T) {
   if err != nil {
     t.Error(err)
   }
-  assert.Equal("select toYYYYMMDD(generated_time) as `t`, avg(measures.value) as measure_value from test array join measures where measures.name in ('responsiveness_time') and branch='master' group by t order by t", sql)
+  assert.Equal("select toYYYYMMDD(generated_time) as `t`, avg(measures.value) as measure_value from test array join measures where measures.name in ('responsiveness_time') and branch = 'master' group by t order by t", sql)
 }
 
 func TestDecode(t *testing.T) {

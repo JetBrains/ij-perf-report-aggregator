@@ -3,14 +3,17 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, seria
 import { getCompressor, initZstdObservable } from "../components/common/zstd"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
-
 export class ServerConfigurator implements DataQueryConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL
 
-  constructor(readonly db: string, readonly table: string | null = null, serverUrlObservable: Observable<string> | null = null) {
+  constructor(
+    readonly db: string,
+    readonly table: string | null = null,
+    serverUrlObservable: Observable<string> | null = null
+  ) {
     if (serverUrlObservable == null) {
       serverUrlObservable = injectOrError(serverUrlObservableKey)
     }
@@ -19,7 +22,7 @@ export class ServerConfigurator implements DataQueryConfigurator {
         this._serverUrl = url
         return null
       }),
-      shareReplay(1),
+      shareReplay(1)
     )
   }
 

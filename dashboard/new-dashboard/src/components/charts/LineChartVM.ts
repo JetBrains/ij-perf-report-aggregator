@@ -63,7 +63,12 @@ export class LineChartVM {
     }
   }
   private accidentsMap: Ref<Map<string, Accident>>
-  constructor(private readonly eChart: ChartManager, private readonly dataQuery: DataQueryExecutor, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null) {
+  constructor(
+    private readonly eChart: ChartManager,
+    private readonly dataQuery: DataQueryExecutor,
+    valueUnit: ValueUnit,
+    accidents: Ref<Accident[]> | null
+  ) {
     this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })

@@ -35,7 +35,8 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
       strings.HasSuffix(name, ".performance.json") ||
       strings.HasSuffix(artifact.Url, ".json") && (strings.Contains(artifact.Url, "metrics") && name != "action.invoked.json" && name != "spans.json") ||
       t.config.DbName == "jbr" && strings.HasSuffix(name, ".txt") ||
-      t.config.DbName == "bazel" && name == "metrics.txt" {
+      t.config.DbName == "bazel" && name == "metrics.txt" ||
+      t.config.DbName == "qodana" && name == "open-telemetry.json" {
       artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
       report, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
       if err != nil {

@@ -111,6 +111,10 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     TriggeredBy:        extraData.TriggeredBy,
   }
 
+  if isBisectRun(extraData, t.logger) {
+    return nil
+  }
+
   switch t.config.DbName {
   case "jbr":
     ignore := analyzePerfJbrReport(runResult, extraData)
@@ -120,6 +124,12 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     }
   case "bazel":
     ignore := analyzePerfBazelReport(runResult)
+    if ignore {
+      // ignore empty report
+      return nil
+    }
+  case "qodana":
+    ignore := analyzeQodanaReport(runResult, extraData)
     if ignore {
       // ignore empty report
       return nil
@@ -207,6 +217,18 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   return nil
 }
 
+func isBisectRun(extraData model.ExtraData, logger *zap.Logger) bool {
+  parser := structParsers.Get()
+  defer structParsers.Put(parser)
+
+  props, err := parser.ParseBytes(extraData.TcBuildProperties)
+  if err != nil {
+    logger.Warn("failed to parse build properties", zap.Error(err))
+    return false
+  }
+  return props.GetBool("env.IS_BISECT_RUN")
+}
+
 func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string, logger *zap.Logger) (string, error) {
   parser := structParsers.Get()
   defer structParsers.Put(parser)
@@ -228,6 +250,16 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
     return "", e.New("cannot infer branch from JBR project id")
   }
+  if projectId == "qodana" {
+    qodanaImage := string(props.GetStringBytes("image"))
+    lastSlash := strings.LastIndex(qodanaImage, "/")
+
+    if lastSlash >= 0 {
+      return qodanaImage[lastSlash+1:], nil
+    }
+    logger.Warn("No slash found in string")
+  }
+
   //goland:noinspection SpellCheckingInspection
   branch := string(props.GetStringBytes("teamcity.build.branch"))
   if len(branch) != 0 && branch != "<default>" {

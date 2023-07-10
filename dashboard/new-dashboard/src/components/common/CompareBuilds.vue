@@ -145,7 +145,7 @@ const props = defineProps<{
   table: string
 }>()
 
-const initialMachine = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
 const router = useRouter()
 
@@ -231,7 +231,11 @@ const filters = ref({
 })
 
 class Result {
-  public constructor(readonly test: string, readonly metric: string, readonly value: number) {}
+  public constructor(
+    readonly test: string,
+    readonly metric: string,
+    readonly value: number
+  ) {}
 }
 
 function getColorForBuild(build1: number, build2: number) {

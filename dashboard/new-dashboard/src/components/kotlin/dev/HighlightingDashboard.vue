@@ -3,7 +3,7 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlinDev_highlighting_dashboard"
+    persistent-id="kotlinDev_dashboard"
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
@@ -268,6 +268,30 @@
             'leak-canary-android/highlight/HprofWriter_with_library_cache_k2',
             'leak-canary-android/highlight/LeakStatusTest_with_library_cache_k2',
             'leak-canary-android/highlight/Neo4JCommand_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' highlight mean value with Library cache K1"
+          measure="highlighting#mean_value"
+          :projects="[
+            'arrow/highlight/build.gradle_with_library_cache_k1',
+            'kotlin_empty_kts/highlight/build.gradle_with_library_cache_k1',
+            'kotlin_lang/highlight/build.gradle_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' highlight mean value with Library cache K2"
+          measure="highlighting#mean_value"
+          :projects="[
+            'arrow/highlight/build.gradle_with_library_cache_k2',
+            'kotlin_empty_kts/highlight/build.gradle_with_library_cache_k2',
+            'kotlin_lang/highlight/build.gradle_with_library_cache_k2',
           ]"
         />
       </div>

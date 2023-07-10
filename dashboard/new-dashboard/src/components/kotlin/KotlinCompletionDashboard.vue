@@ -3,7 +3,7 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="kotlin"
-    persistent-id="kotlin_completion_dashboard"
+    persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
     <section class="flex gap-6">

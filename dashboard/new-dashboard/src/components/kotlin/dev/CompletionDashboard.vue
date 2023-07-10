@@ -3,7 +3,7 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlinDev_completion_dashboard"
+    persistent-id="kotlinDev_dashboard"
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
@@ -375,6 +375,54 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
+          ]"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' completion mean value K1"
+          measure="completion#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k1',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k1',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' completion mean value K2"
+          measure="completion#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k2',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k2',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' firstElementShown mean value K1"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k1',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k1',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Kotlin script' firstElementShown mean value K2"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'arrow/completion/completion_kts_with_library_cache_k2',
+            'kotlin_empty_kts/completion/completion_kts_with_library_cache_k2',
+            'kotlin_lang/completion/completion_kts_with_library_cache_k2',
           ]"
         />
       </div>

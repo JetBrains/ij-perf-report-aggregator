@@ -5,7 +5,10 @@ export class ChartManagerHelper {
   readonly chart: EChartsType
   private readonly resizeObserver: ResizeObserver
 
-  constructor(chartContainer: HTMLElement, private readonly resizeContainer: HTMLElement = document.body) {
+  constructor(
+    chartContainer: HTMLElement,
+    private readonly resizeContainer: HTMLElement = document.body
+  ) {
     this.chart = initChart(chartContainer)
 
     this.resizeObserver = new ResizeObserver(

@@ -15,7 +15,10 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
 
   private readonly observable: Observable<string | string[] | null>
 
-  constructor(readonly name: string, readonly multiple: boolean) {
+  constructor(
+    readonly name: string,
+    readonly multiple: boolean
+  ) {
     this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
   }
 

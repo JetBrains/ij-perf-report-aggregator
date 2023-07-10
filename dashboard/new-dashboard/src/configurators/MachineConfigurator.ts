@@ -22,7 +22,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private static readonly valueToGroup: Record<string, string> = getValueToGroup()
 
-  constructor(serverConfigurator: ServerConfigurator, persistentStateManager: PersistentStateManager, filters: FilterConfigurator[] = [], readonly multiple: boolean = true) {
+  constructor(
+    serverConfigurator: ServerConfigurator,
+    persistentStateManager: PersistentStateManager,
+    filters: FilterConfigurator[] = [],
+    readonly multiple: boolean = true
+  ) {
     const name = "machine"
     persistentStateManager.add(name, this.selected, (it) => toArray(it as never))
     const listObservable = createFilterObservable(serverConfigurator, filters).pipe(
@@ -65,10 +70,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         } else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
-        } else if (value.startsWith("intellij-linux-performance-aws-i-")) {
+        } else if (value.startsWith("intellij-linux-performance-aws-i-") || value.startsWith("intellij-linux-performance-aws-lt")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 C6i.8xlarge (32 vCPU Xeon, 64 GB)"
+          groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
         } else if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
@@ -84,7 +89,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         } else if (value.startsWith("intellij-linux-2004-aws-i")) {
           // https://aws.amazon.com/ec2/instance-types/c5/
           // noinspection SpellCheckingInspection
-          groupName = "Windows EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
+          groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
         } else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
         } else if (value.startsWith("intellij-linux-hw-EXC")) {
@@ -99,6 +104,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
         } else if (value.startsWith("intellij-linux-performance-huge-aws-i")) {
           groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
+        } else if (value.startsWith("qodana-aws-cpu-x64")) {
+          groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
         } else {
           groupName = MachineConfigurator.valueToGroup[value] as string | null
         }

@@ -21,6 +21,7 @@ const enum ROUTE_PREFIX {
   WebStorm = "/webstorm",
   Bazel = "/bazel",
   Qodana = "/qodana",
+  Clion = "/clion",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -96,6 +97,8 @@ enum ROUTES {
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
+  ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
+  ClionDashboard = `${ROUTE_PREFIX.Clion}/${DASHBOARD_ROUTE}`,
 }
 
 export interface Tab {
@@ -589,7 +592,28 @@ const QODANA: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA]
+const CLION: Product = {
+  url: ROUTE_PREFIX.Clion,
+  label: "Clion",
+  children: [
+    {
+      url: ROUTE_PREFIX.Clion,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.ClionDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.ClionTest,
+          label: TESTS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA, CLION]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1044,6 +1068,26 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Qodana tests" },
+        },
+        {
+          path: ROUTES.ClionTest,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfint",
+            table: "clion",
+            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+          },
+          meta: { pageTitle: "Clion tests" },
+        },
+        {
+          path: ROUTES.ClionDashboard,
+          component: () => import("./components/clion/PerformanceDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "clion",
+            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+          },
+          meta: { pageTitle: "Clion dashboard" },
         },
       ],
     },

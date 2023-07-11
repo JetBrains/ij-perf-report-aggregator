@@ -2,6 +2,7 @@ import { debounceTime, Subject } from "rxjs"
 import { Ref, watch } from "vue"
 import { LocationQueryRaw, RouteLocationNormalizedLoaded, Router, useRoute } from "vue-router"
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 type State = Record<string, number | string | string[] | unknown>
 
 export class PersistentStateManager {
@@ -48,7 +49,9 @@ export class PersistentStateManager {
       this.updateUrlQuery()
     })
 
-    this.updateUrlSubject.pipe(debounceTime(300)).subscribe(() => this.updateUrlQuery())
+    this.updateUrlSubject.pipe(debounceTime(300)).subscribe(() => {
+      this.updateUrlQuery()
+    })
   }
 
   private getKey(): string {

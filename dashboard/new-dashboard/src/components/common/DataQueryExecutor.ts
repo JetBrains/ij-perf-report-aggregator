@@ -74,7 +74,9 @@ export class DataQueryExecutor {
       // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
       listener(data, configuration, isLoading)
     })
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+    }
   }
 }
 

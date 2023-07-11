@@ -279,7 +279,7 @@ function getTestActions() {
 
 function getSpaceUrl() {
   const db = vm.data.value?.installerId ? "perfint" : "perfintDev"
-  if (vm.data.value?.installerId || vm.data.value?.buildId) {
+  if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
     calculateChanges(db, vm.data.value.installerId ?? vm.data.value.buildId, (decodedChanges: string | null) => {
       window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
     })

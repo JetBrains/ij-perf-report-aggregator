@@ -8,7 +8,7 @@ export function refToObservable<T>(ref: Ref<T>, deep = false): Observable<T> {
     watch(
       ref,
       (value) => {
-        return context.next(value)
+        context.next(value)
       },
       { deep }
     )

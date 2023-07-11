@@ -94,7 +94,7 @@ export class LineChartVM {
         bottom: 16,
         containLabel: true,
       },
-      // @ts-expect-error
+      // @ts-expect-error bug in echarts types
       tooltip: {
         show: true,
         trigger: "item",

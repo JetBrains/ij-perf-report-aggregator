@@ -57,8 +57,12 @@ export function removeAccidentFromMetaDb(id: number) {
     },
     body: JSON.stringify({ id }),
   })
-    .then((_) => window.location.reload())
-    .catch((error) => console.error(error))
+    .then((_) => {
+      window.location.reload()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
 export function writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
@@ -69,8 +73,12 @@ export function writeAccidentToMetaDb(date: string, affected_test: string, reaso
     },
     body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind }),
   })
-    .then((_) => window.location.reload())
-    .catch((error) => console.error(error))
+    .then((_) => {
+      window.location.reload()
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 }
 
 export function getAccidentsFromMetaDb(tests: string[] | string | null, timeRange: Ref<TimeRange>): Promise<Accident[]> {

@@ -30,6 +30,7 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["runServiceInPlugin", "totalHeapUsedMax", "freedMemoryByGC", "gcPauseCount", "fullGCPause", "gcPause"],
     projects: [
       "package-checker-gradle-500-modules/get_declared_dependencies",
+      "package-checker-gradle-500-modules/get_imported_dependencies",
       "package-checker-gradle-500-modules/get_all_modules/maven",
       "package-checker-gradle-500-modules/get_all_modules/gradle",
     ],

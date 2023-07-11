@@ -1,9 +1,7 @@
 package main
 
 import (
-  "context"
   "encoding/json"
-  "errors"
   "flag"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
@@ -27,10 +25,8 @@ func main() {
 
   err := configureCollectFromTeamCity(logger)
   if err != nil {
-    if errors.Is(err, context.Canceled) {
-      os.Exit(78)
-    }
     logger.Fatal("cannot collect", zap.Error(err))
+    os.Exit(78)
   }
 }
 

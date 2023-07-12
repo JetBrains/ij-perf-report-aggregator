@@ -209,13 +209,13 @@
           label="'Ktor samples' localInspections mean value with Library cache K2"
           measure="localInspections#mean_value"
           :projects="[
-            'ktor_samples/highlight/ApplicationTest_with_library_cache_k2',
-            'ktor_samples/highlight/HttpBinApplication_with_library_cache_k2',
-            'ktor_samples/highlight/Upload_with_library_cache_k2',
-            'ktor_samples/highlight/Videos_with_library_cache_k2',
-            'ktor_samples/highlight/LocationHeaderApplication_with_library_cache_k2',
-            'ktor_samples/highlight/ReverseProxyApplication_with_library_cache_k2',
-            'ktor_samples/highlight/SseApplication_with_library_cache_k2',
+            'ktor_samples_mongodb/highlight/ApplicationTest_with_library_cache_k2',
+            'ktor_samples_httpbin/highlight/HttpBinApplication_with_library_cache_k2',
+            'ktor_samples_youkube/highlight/Upload_with_library_cache_k2',
+            'ktor_samples_youkube/highlight/Videos_with_library_cache_k2',
+            'ktor_samples_location-header/highlight/LocationHeaderApplication_with_library_cache_k2',
+            'ktor_samples_reverse-proxy/highlight/ReverseProxyApplication_with_library_cache_k2',
+            'ktor_samples_sse/highlight/SseApplication_with_library_cache_k2',
           ]"
         />
       </div>

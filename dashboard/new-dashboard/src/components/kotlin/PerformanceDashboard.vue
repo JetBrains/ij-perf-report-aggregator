@@ -381,7 +381,7 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k2',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k2',
           ]"
         />
       </div>
@@ -415,7 +415,7 @@
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_typing_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_constructor_with_library_cache_k2',
             'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache_k2',
-            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k1',
+            'toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache_k2',
           ]"
         />
       </div>

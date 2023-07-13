@@ -150,9 +150,9 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
     readonly accidents: Ref<Accident[] | undefined> | null = null,
-    readonly accidentsMap: Ref<Map<string, Accident>> | null = null
+    readonly accidentMap: Ref<Map<string, Accident>> | null = null
   ) {
-    this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
+    this.accidentMap = computed(() => convertAccidentsToMap(accidents?.value))
   }
 
   createObservable(): Observable<unknown> {
@@ -167,7 +167,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsMap)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentMap)
   }
 }
 
@@ -273,7 +273,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentsMap: Ref<Map<string, Accident>> | null = null
+  accidentMap: Ref<Map<string, Accident>> | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -311,26 +311,26 @@ function configureChart(
       series.push({
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
-        name: seriesName,
+        name: seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName,
         type: chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          if (isValueShouldBeMarkedWithPin(accidentsMap?.value, value)) {
+          if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
             return symbolSize * 4
           }
-          const accident = getAccident(accidentsMap?.value, value)
+          const accident = getAccident(accidentMap?.value, value)
           if (accident?.kind == AccidentKind.Exception) {
             return symbolSize * 1.2
           }
           return symbolSize
         },
         symbol(value: string[]) {
-          if (isValueShouldBeMarkedWithPin(accidentsMap?.value, value)) {
+          if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
             return "pin"
           }
-          const accident = getAccident(accidentsMap?.value, value)
+          const accident = getAccident(accidentMap?.value, value)
           if (accident?.kind == AccidentKind.Exception) {
             return "diamond"
           }
@@ -347,7 +347,7 @@ function configureChart(
         ],
         itemStyle: {
           color(seriesIndex) {
-            const accident = getAccident(accidentsMap?.value, seriesIndex.value as string[])
+            const accident = getAccident(accidentMap?.value, seriesIndex.value as string[])
             if (accident == null) {
               return seriesIndex.color as ZRColor
             }

@@ -594,7 +594,7 @@ const QODANA: Product = {
 
 const CLION: Product = {
   url: ROUTE_PREFIX.Clion,
-  label: "Clion",
+  label: "CLion",
   children: [
     {
       url: ROUTE_PREFIX.Clion,
@@ -1077,7 +1077,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "clion",
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
-          meta: { pageTitle: "Clion tests" },
+          meta: { pageTitle: "CLion tests" },
         },
         {
           path: ROUTES.ClionDashboard,
@@ -1087,7 +1087,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "clion",
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
-          meta: { pageTitle: "Clion dashboard" },
+          meta: { pageTitle: "CLion dashboard" },
         },
       ],
     },

@@ -128,17 +128,6 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-reimport-jps-java-50_000-modules/measureStartup",
       "project-import-from-cache-jps-java-50_000-modules/measureStartup",
       "project-import-idea-community-jps/measureStartup",
-
-      // Gradle projects
-      "project-import-gradle-cas/measureStartup",
-      "project-import-gradle-5000-modules/measureStartup",
-      "project-import-gradle-android-extra-large/measureStartup",
-      "project-reimport-space/measureStartup",
-
-      // Maven projects
-      "project-reimport-maven-quarkus/measureStartup",
-      "project-import-maven-5000-modules/measureStartup",
-      "project-import-maven-azure-sdk-java/measureStartup",
     ],
   }
 })

@@ -122,7 +122,7 @@ func collectBuildConfiguration(
   logger *zap.Logger,
 ) error {
   q := serverBuildUrl.Query()
-  locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:500"
+  locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:50"
 
   since := userSpecifiedSince
   if since.IsZero() {
@@ -243,11 +243,7 @@ func collectBuildConfiguration(
 }
 
 func buildTeamCityQuery() string {
-  q := "file(href)"
-  for i := 0; i < 3; i++ {
-    q = "file(href,children(href," + q + "))"
-  }
-  return "count,href,nextHref,build(id,buildTypeId,number,startDate,status,agent(name),artifacts(" + q + "),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
+  return "count,href,nextHref,build(id,buildTypeId,number,startDate,status,agent(name),artifacts($locator(recursive:true,directory:false),file(href)),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
 }
 
 func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn) error {

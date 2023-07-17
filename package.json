@@ -21,13 +21,13 @@
     "@vue/eslint-config-typescript": "^11.0.3",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.44.0",
+    "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-vue": "^9.15.1",
     "lightningcss": "^1.21.5",
     "postcss": "^8.4.26",
-    "rollup": "^3.26.2",
+    "rollup": "^3.26.3",
     "rollup-plugin-visualizer": "^5.9.2",
     "sass": "^1.63.6",
     "tailwindcss": "^3.3.3",
@@ -35,7 +35,7 @@
     "unplugin-vue-components": "^0.25.1",
     "vite": "4.4.4",
     "vue": "^3.3.4",
-    "vue-tsc": "^1.8.4"
+    "vue-tsc": "^1.8.5"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-unicorn": "^47.0.0",
+    "eslint-plugin-unicorn": "^48.0.0",
     "prettier": "^3.0.0"
   }
 }

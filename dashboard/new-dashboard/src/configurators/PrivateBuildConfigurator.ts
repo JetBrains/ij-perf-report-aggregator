@@ -13,11 +13,11 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const value = this.selected.value
+    const filter: DataQueryFilter = { f: this.name, v: "" }
     if (value == null || value.length === 0) {
+      query.addFilter(filter)
       return true
     }
-
-    const filter: DataQueryFilter = { f: this.name, v: "" }
     const values = Array.isArray(value) ? ["", ...value] : ["", value]
     configureQueryProducer(configuration, filter, values)
     query.addFilter(filter)

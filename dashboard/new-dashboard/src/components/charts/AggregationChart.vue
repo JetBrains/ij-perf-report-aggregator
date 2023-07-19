@@ -61,7 +61,7 @@ const measuresConfigurator = {
 const configurators = [...props.configurators, timeAverageConfigurator, measuresConfigurator]
 const queryExecutor = new DataQueryExecutor(configurators)
 const element = shallowRef<HTMLElement>()
-const vm = new AggregationChartVM(queryExecutor, props.chartColor)
+const vm = new AggregationChartVM(queryExecutor, props.chartColor, props.valueUnit)
 const container = inject(containerKey)
 
 let dispose: () => void

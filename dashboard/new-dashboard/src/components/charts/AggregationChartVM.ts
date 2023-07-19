@@ -3,6 +3,7 @@ import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
 import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } from "echarts/types/src/util/types"
 import { ref } from "vue"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
+import { ValueUnit } from "../common/chart"
 import { ChartManager } from "./ChartManager"
 
 // LabelFormatterParams isn't exported from lib
@@ -25,12 +26,13 @@ export class AggregationChartVM {
 
   constructor(
     private readonly query: DataQueryExecutor,
-    private readonly color: string = "#4B84EE"
+    private readonly color: string = "#4B84EE",
+    private valueUnit: ValueUnit = "ms"
   ) {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
     this.chartManager = new ChartManager(element, resizeContainer)
-
+    const isMs = this.valueUnit === "ms"
     this.chartManager.chart.setOption({
       legend: {
         show: false,
@@ -60,7 +62,7 @@ export class AggregationChartVM {
               const series = params.seriesData[0]
               const [date, durationMs] = series.data as OptionDataItem[]
               const dateLabel = dateFormatter.format(new Date(date as string))
-              const durationLabel = `${Math.round(Number(durationMs))} ms`
+              const durationLabel = `${Math.round(Number(durationMs))}` + (isMs ? " ms" : "")
               return `${dateLabel}, ${durationLabel}`
             },
             color: "#6B7280",

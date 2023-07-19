@@ -427,6 +427,50 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Petclinic' completion in evaluate expression mean value K1"
+          measure="completion#mean_value"
+          :projects="[
+            'kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache_k1',
+            'kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Petclinic' completion in evaluate expression mean value K2"
+          measure="completion#mean_value"
+          :projects="[
+            'kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache_k2',
+            'kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Petclinic' completion in evaluate expression mean value K1"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache_k1',
+            'kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="'Petclinic' completion in evaluate expression mean value K2"
+          measure="completion#firstElementShown#mean_value"
+          :projects="[
+            'kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache_k2',
+            'kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache_k2',
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
   >
 </template>

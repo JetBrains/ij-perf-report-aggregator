@@ -70,7 +70,7 @@
         />
       </div>
     </section>
-    <section class="flex gap-x-6">
+    <!--<section class="flex gap-x-6">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing (curl)"
@@ -85,7 +85,7 @@
           :projects="['clion/curl/indexing', 'radler/curl/indexing']"
         />
       </div>
-    </section>
+    </section>-->
     <section>
       <GroupProjectsChart
         label="Global Inspections (fmtlib)"

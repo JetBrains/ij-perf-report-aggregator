@@ -1,4 +1,3 @@
-import { compare } from "compare-versions"
 import { numberFormat } from "../components/common/formatter"
 import { InputData, InputDataV20, ItemV20, UnitConverter } from "./data"
 
@@ -14,9 +13,6 @@ export interface DataDescriptor {
   readonly unitConverter: UnitConverter
   readonly shortenName?: boolean
   readonly threshold?: number
-
-  // used only for time line chart
-  rowIndexThreshold?: number
 }
 
 export function formatDuration(value: number, dataDescriptor: DataDescriptor): string {
@@ -24,18 +20,9 @@ export function formatDuration(value: number, dataDescriptor: DataDescriptor): s
 }
 
 export class DataManager {
-  private readonly version: string | null
-
-  constructor(readonly data: InputData) {
-    this.version = data.version
-  }
+  constructor(readonly data: InputDataV20) {}
 
   private _markerItems: (ItemV20 | null)[] | null = null
-
-  get isUnifiedItems(): boolean {
-    const version = this.version
-    return version != null && compare(version, "32", ">=")
-  }
 
   get items(): ItemV20[] {
     return this.data.items
@@ -43,24 +30,16 @@ export class DataManager {
 
   // start, duration in microseconds
   getServiceItems(): GroupedItems {
-    const version = this.version
-    const isNewCompactFormat = version != null && compare(version, "20", ">=")
-    if (isNewCompactFormat) {
-      const data = this.data as InputDataV20
-      return [
-        { category: "app components", items: data.appComponents ?? [] },
-        { category: "project components", items: data.projectComponents ?? [] },
-        { category: "module components", items: data.moduleComponents ?? [] },
+    const data = this.data
+    return [
+      { category: "app components", items: data.appComponents ?? [] },
+      { category: "project components", items: data.projectComponents ?? [] },
+      { category: "module components", items: data.moduleComponents ?? [] },
 
-        { category: "app services", items: data.appServices ?? [] },
-        { category: "project services", items: data.projectServices ?? [] },
-        { category: "module services", items: data.moduleServices ?? [] },
-      ]
-    } else if (version != null && compare(version, "12", ">=")) {
-      throw new Error(`Report version ${version} is not supported, ask if needed`)
-    } else {
-      throw new Error(`Report version ${version} is not supported, ask if needed`)
-    }
+      { category: "app services", items: data.appServices ?? [] },
+      { category: "project services", items: data.projectServices ?? [] },
+      { category: "module services", items: data.moduleServices ?? [] },
+    ]
   }
 
   get markerItems(): (ItemV20 | null)[] {

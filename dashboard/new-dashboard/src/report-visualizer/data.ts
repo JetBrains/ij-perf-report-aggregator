@@ -8,6 +8,8 @@ export interface ItemV20 {
   readonly n: string
   readonly t: string
   readonly p?: string
+  // parent activity
+  readonly pa?: number
 }
 
 export interface CommonItem {
@@ -56,9 +58,6 @@ export interface InputData {
 
   // time in ms
   readonly items: ItemV20[]
-
-  // time in ms
-  readonly prepareAppInitActivities: ItemV20[]
 
   readonly appExtensions?: ItemV20[]
   readonly projectExtensions?: ItemV20[]

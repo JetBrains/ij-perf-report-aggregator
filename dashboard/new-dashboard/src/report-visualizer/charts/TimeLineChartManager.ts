@@ -1,13 +1,14 @@
+/* eslint-disable unicorn/prefer-ternary */
 import { CustomChart, CustomSeriesOption } from "echarts/charts"
 import { DataZoomInsideComponent, GridComponent, LegendComponent, MarkAreaComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { graphic, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
-import { CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, XAXisOption } from "echarts/types/dist/shared"
+import { XAXisOption, CustomSeriesRenderItemAPI, CustomSeriesRenderItemParams, CustomSeriesRenderItemReturn } from "echarts/types/dist/shared"
 import { MarkArea2DDataItemOption } from "echarts/types/src/component/marker/MarkAreaModel"
 import { MarkLine1DDataItemOption } from "echarts/types/src/component/marker/MarkLineModel"
 import { SeriesLabelOption } from "echarts/types/src/util/types"
 import { ChartManagerHelper } from "../../components/common/ChartManagerHelper"
-import { adaptToolTipFormatter, collator } from "../../components/common/chart"
+import { adaptToolTipFormatter } from "../../components/common/chart"
 import { BarChartOptions, CustomChartOptions } from "../../components/common/echarts"
 import { durationAxisPointerFormatter, numberFormat } from "../../components/common/formatter"
 import { DataDescriptor, DataManager, formatDuration, getShortName, GroupedItems } from "../DataManager"
@@ -23,15 +24,20 @@ function getDuration(chartItem: ChartDataItem) {
   return chartItem[3]
 }
 
-const LABEL_THRESHOLD = 20
+export interface TimeLineChartConfiguration {
+  readonly hasParent: boolean
+  readonly dataProvider: (dataManager: DataManager) => GroupedItems
+  readonly groupData: (item: ItemV20, category: string) => string
+  readonly sortGroups: (names: string[]) => void
+  readonly dataDescriptor: DataDescriptor
+}
 
 export class TimeLineChartManager implements ChartManager {
   private readonly chart: ChartManagerHelper
 
   constructor(
     container: HTMLElement,
-    private readonly dataProvider: (dataManager: DataManager) => GroupedItems,
-    private readonly dataDescriptor: DataDescriptor
+    private readonly config: TimeLineChartConfiguration
   ) {
     this.chart = new ChartManagerHelper(container)
   }
@@ -61,16 +67,17 @@ export class TimeLineChartManager implements ChartManager {
             const info = params[0]
             const chartItem = info.data as ChartDataItem
             const item = chartItem[4]
+            const dataDescriptor = this.config.dataDescriptor
             const lines: TooltipLineDescriptor[] = [
               { name: chartItem[5], main: true, value: durationAxisPointerFormatter(getDuration(chartItem)) },
-              { name: "range", value: `${formatDuration(item.s, this.dataDescriptor)}&ndash;${formatDuration(item.s + item.d, this.dataDescriptor)}` },
+              { name: "range", value: `${formatDuration(item.s, dataDescriptor)}&ndash;${formatDuration(item.s + item.d, dataDescriptor)}` },
               { name: "thread", selectable: true, value: item.t, extraStyle: item.t === "edt" ? "color: orange" : "" },
             ]
             if (item.p != undefined) {
               lines.push({ name: "plugin", selectable: true, value: item.p })
             }
             if ("od" in item) {
-              lines.push({ name: "total duration", value: durationAxisPointerFormatter(this.dataDescriptor.unitConverter.convert(item.d)) })
+              lines.push({ name: "total duration", value: durationAxisPointerFormatter(dataDescriptor.unitConverter.convert(item.d)) })
             }
             return `${info.marker as string} ${buildTooltip(lines)}`
           }),
@@ -97,6 +104,7 @@ export class TimeLineChartManager implements ChartManager {
           },
           axisLabel: {
             formatter(value: string | number, _index: number) {
+              // return value as string
               return (value as string).includes("__") ? "" : (value as string)
             },
           },
@@ -113,10 +121,16 @@ export class TimeLineChartManager implements ChartManager {
     this.chart.dispose()
   }
 
+  // prettier-ignore
   render(dataManager: DataManager): void {
     const data = new Map<string, ChartDataItem[]>()
-    const threshold = (this.dataDescriptor.threshold ?? 10) * this.dataDescriptor.unitConverter.factor
-    for (const group of this.dataProvider(dataManager)) {
+    const config = this.config
+    const dataDescriptor = config.dataDescriptor
+    const threshold = (dataDescriptor.threshold ?? 10) * dataDescriptor.unitConverter.factor
+
+    const activityList = config.dataProvider(dataManager)
+
+    for (const group of activityList) {
       const namePrefix = group.category === "service waiting" ? "wait for " : ""
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (group.items == null) {
@@ -129,43 +143,43 @@ export class TimeLineChartManager implements ChartManager {
           continue
         }
 
-        let list = data.get(item.t)
+        const category = config.groupData(item, group.category)
+        let list = data.get(category)
         if (list == null) {
           list = []
-          data.set(item.t, list)
+          data.set(category, list)
         }
 
         const chartItem: ChartDataItem = [
           "",
-          this.dataDescriptor.unitConverter.convert(item.s),
-          this.dataDescriptor.unitConverter.convert(item.s + item.d),
-          this.dataDescriptor.unitConverter.convert(item.d),
+          dataDescriptor.unitConverter.convert(item.s),
+          dataDescriptor.unitConverter.convert(item.s + item.d),
+          dataDescriptor.unitConverter.convert(item.d),
           item,
-          this.dataDescriptor.shortenName === false ? item.n : `${namePrefix}${getShortName(item.n)}`,
-          group.category,
+          dataDescriptor.shortenName === false ? item.n : `${namePrefix}${getShortName(item.n)}`,
+          group.category
         ]
         list.push(chartItem)
       }
     }
 
-    const threadNames = [...data.keys()]
-    threadNames.sort((a, b) => {
-      const aW = getThreadOrderWeight(a)
-      const bW = getThreadOrderWeight(b)
-      const wR = aW - bW
-      return wR === 0 ? collator.compare(a, b) : wR
-    })
-
     // compute categories - for each thread maybe several categories as one service can include another one and we render it above each other
     const rowToItems = new Map<string, CustomSeriesOption & { label: SeriesLabelOption; itemStyle: unknown }>()
-    // const labelThreshold = 20 * this.dataDescriptor.unitConverter.factor
+    const labelThreshold = 20 * config.dataDescriptor.unitConverter.factor
     let minStart = Number.MAX_VALUE
     let maxEnd = 0
-    const rowIndexThreshold = (this.dataDescriptor.rowIndexThreshold ?? 300) * this.dataDescriptor.unitConverter.factor
-    const rowToEnd = new Map<number, RowInfo>()
-    for (const threadName of threadNames) {
+    // const rowIndexThreshold = 300 * dataDescriptor.unitConverter.factor
+    const rowToInfo = new Map<number, RowInfo>()
+    const itemToActualIndex = new Map<ItemV20, number>()
+
+    let groupRowStart = 0
+
+    const groupNames = [...data.keys()]
+    config.sortGroups(groupNames)
+
+    for (const groupName of groupNames) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const list = data.get(threadName)!
+      const list = data.get(groupName)!
       list.sort((a, b) => a[4].s - b[4].s)
       if (minStart > list[0][4].s) {
         minStart = list[0][4].s
@@ -175,75 +189,92 @@ export class TimeLineChartManager implements ChartManager {
         maxEnd = last[4].s + last[4].d
       }
 
-      let rowIndex = 0
-      rowToEnd.clear()
+      if (rowToInfo.size > 0) {
+        groupRowStart = Math.max(...rowToInfo.keys())
+        rowToInfo.clear()
+      }
+
+      itemToActualIndex.clear()
+
       for (const chartItem of list) {
         const item = chartItem[4]
-        if (rowToEnd.size > 0) {
-          const newRowIndex = findRowIndex(rowIndex, rowToEnd, item, rowIndexThreshold)
-          if (newRowIndex === -1) {
-            // no place
-            rowIndex++
-          } else {
-            rowIndex = newRowIndex
+
+        let rowIndex = groupRowStart
+        // step one: put by one row above where parent item is
+        if (config.hasParent) {
+          const items = activityList[0].items
+          if (item.pa != null) {
+            const parent = items[item.pa]
+            // here is the issue - if parent belongs to another group, we do not check
+            // (so, there is chance that row index will be incorrect and splitLine will be drawn incorrectly)
+            if (config.groupData(parent, "") === config.groupData(item, "")) {
+              let parentRowIndex = itemToActualIndex.get(parent)
+              if (parentRowIndex == null) {
+                console.error("parentRowIndex is null")
+                parentRowIndex = 0
+              }
+              rowIndex = parentRowIndex + 1
+            }
           }
         }
 
-        const rowName = rowIndex === 0 ? threadName : `${threadName}__${rowIndex}`
+        // step two: make sure, that no overlap with other items in the row
+        rowIndex = findRowIndex(rowIndex, rowToInfo, item)
+
+        let info = rowToInfo.get(rowIndex)
+        if (info === undefined) {
+          info = { items: [] }
+          rowToInfo.set(rowIndex, info)
+        }
+        info.items.push(item)
+        itemToActualIndex.set(item, rowIndex)
+
+        const rowName = rowIndex === groupRowStart ? groupName : `${groupName}__${rowIndex}`
+
         chartItem[0] = rowName
         let series = rowToItems.get(rowName)
         if (series == null) {
+          if (groupName == "completing") {
+            debugger
+          }
+          // noinspection JSUnusedGlobalSymbols,TypeScriptValidateTypes
           series = {
-            // same name to ensure that color will be the same
-            name: threadName,
+            label: {},
+            colorBy: "data",
             id: rowName,
             type: "custom",
-            renderItem: renderItem as never,
+            renderItem(params, api) {
+              return renderItem(params, config.hasParent, api, labelThreshold)
+            },
             encode: {
               x: [1, 2, 3],
-              y: 0,
+              y: 0
             },
-            itemStyle: {
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-expect-error: https://github.com/apache/echarts/issues/16775
-              color(value: { data: ChartDataItem; color: string }): string {
-                const chartItem = value.data
-                return chartItem[6] === "service waiting" ? "#FF0000" : value.color
-              },
-            },
-            label: {
-              show: true,
-              position: "insideLeft",
-              distance: 1,
-              fontFamily: "monospace",
-              formatter: adaptToolTipFormatter((params) => {
-                const info = params[0]
-                const chartItem = info.data as ChartDataItem
-                return getDuration(chartItem) < LABEL_THRESHOLD ? "" : chartItem[5]
-              }),
-            },
-            data: [],
+            itemStyle:
+              groupName === "service waiting"
+                ? ({
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  //@ts-expect-error: https://github.com/apache/echarts/issues/16775
+                  color(_): string {
+                    return "#FF0000"
+                  }
+                } as never)
+                : undefined,
+            data: []
           }
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
           rowToItems.set(rowName, series)
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        ;(series!.data as ChartDataItem[]).push(chartItem)
-
-        const newEnd = item.s + item.d
-        const info = rowToEnd.get(rowIndex)
-        if (info === undefined) {
-          rowToEnd.set(rowIndex, { end: newEnd, item })
-        } else if (info.end < newEnd) {
-          info.end = newEnd
-          info.item = item
-        }
+        ;(series.data as ChartDataItem[]).push(chartItem)
       }
     }
 
     const series = [...rowToItems.values()]
+    series.sort((a, b) => {
+      return (a.id as string).localeCompare(b.id as string, undefined, {numeric: true, sensitivity: "base"})
+    })
 
     this.chart.chart.getDom().style.height = `${rowToItems.size * 24}px`
     // for unknown reasons `replaceMerge: ["series"]` doesn't work and data from previous report can be still rendered,
@@ -258,13 +289,13 @@ export class TimeLineChartManager implements ChartManager {
     this.chart.chart.setOption<CustomChartOptions>(
       {
         xAxis: {
-          min: this.dataDescriptor.unitConverter.convert(minStart),
-          max: this.dataDescriptor.unitConverter.convert(maxEnd),
+          min: dataDescriptor.unitConverter.convert(minStart),
+          max: dataDescriptor.unitConverter.convert(maxEnd)
         },
-        series,
+        series
       },
       {
-        replaceMerge: ["series"],
+        replaceMerge: ["series"]
       }
     )
     this.chart.enableZoomTool()
@@ -272,9 +303,10 @@ export class TimeLineChartManager implements ChartManager {
   }
 }
 
+// prettier-ignore
 function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption[], axisLineColor: string): void {
   const areaData: MarkArea2DDataItemOption[] = []
-  for (const item of dataManager.isUnifiedItems ? dataManager.items : dataManager.data.prepareAppInitActivities) {
+  for (const item of dataManager.items) {
     if (!(item.n.endsWith(" async preloading") || item.n.endsWith(" sync preloading"))) {
       continue
     }
@@ -284,27 +316,29 @@ function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption
       {
         name: item.n.replace(" service", "").replace("service", ""),
         label: {
-          verticalAlign: isAsync ? "top" : "bottom",
+          verticalAlign: isAsync ? "top" : "bottom"
         },
         itemStyle: {
           borderType: isAsync ? "dotted" : "solid",
           borderWidth: 1,
           borderColor: axisLineColor,
-          color: "rgba(0, 0, 0, 0)",
+          color: "rgba(0, 0, 0, 0)"
         },
-        xAxis: item.s,
+        xAxis: item.s
       },
-      { xAxis: item.s + item.d },
+      { xAxis: item.s + item.d }
     ])
   }
   const lastSeries = series.at(-1) as CustomSeriesOption
-  lastSeries.markArea =
-    areaData.length === 0
-      ? undefined
-      : {
-          silent: true,
-          data: areaData,
-        }
+  if (areaData.length === 0) {
+    lastSeries.markArea = undefined
+  }
+  else {
+    lastSeries.markArea = {
+      silent: true,
+      data: areaData,
+    }
+  }
 
   const markLineData: MarkLine1DDataItemOption[] = []
   for (const item of dataManager.data.traceEvents) {
@@ -314,24 +348,27 @@ function configureMarkAreas(dataManager: DataManager, series: CustomSeriesOption
 
     markLineData.push({
       label: { formatter: item.name },
-      xAxis: item.ts / 1000,
+      xAxis: item.ts / 1000
     })
   }
-  lastSeries.markLine =
-    markLineData.length === 0
-      ? undefined
-      : {
-          symbol: "none",
-          silent: true,
-          lineStyle: {
-            type: "dashed",
-            color: axisLineColor,
-          },
-          data: markLineData,
-        }
+  if (markLineData.length === 0) {
+    lastSeries.markLine = undefined
+  }
+  else {
+    lastSeries.markLine = {
+      symbol: "none",
+      silent: true,
+      lineStyle: {
+        type: "dashed",
+        color: axisLineColor
+      },
+      data: markLineData
+    }
+  }
 }
 
-function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRenderItemAPI) {
+// prettier-ignore
+function renderItem(params: CustomSeriesRenderItemParams, hasParent: boolean, api: CustomSeriesRenderItemAPI, labelThreshold: number): CustomSeriesRenderItemReturn {
   const categoryIndex = api.value(0)
   const start = api.coord([api.value(1), categoryIndex])
   const end = api.coord([api.value(2), categoryIndex])
@@ -342,6 +379,9 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
   const coordinateSystem = params.coordSys as { x: number; y: number; width: number; height: number }
+
+  const width = end[0] - start[0]
+  // clip on zoom
   const rectShape = graphic.clipRectByRect(
     {
       x: start[0],
@@ -362,45 +402,61 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
     type: "rect",
     transition: ["shape"],
     shape: rectShape,
-    style: api.style(),
+    style: {
+      fill: api.visual("color"),
+    },
+    emphasis: {
+      style: {
+        stroke: "#000",
+        lineWidth: 2,
+      },
+    },
+    textConfig: {
+      position: "insideLeft",
+    },
+    textContent: {
+      type: "text",
+      style: {
+        text: api.value(5).toString(),
+        fontFamily: "monospace",
+        width: width - 2,
+        overflow: hasParent || width < labelThreshold ? "truncate" : undefined,
+        ellipsis: "…",
+        truncateMinChar: 1,
+      },
+    },
   }
 }
 
-function getThreadOrderWeight(name: string): number {
-  switch (name) {
-    case "main":
-      return 1
-    case "idea main":
-      return 2
-    case "edt":
-      return 3
-    default:
-      return 100
-  }
-}
-
-function findRowIndex(rowIndex: number, rowToEnd: Map<number, RowInfo>, item: ItemV20, rowIndexThreshold: number): number {
-  for (let i = rowIndex; i >= 0; i--) {
-    const rowItem = rowToEnd.get(i)
-    if (rowItem === undefined) {
-      return -1
-    }
-
-    // for parallel activities ladder is used only to avoid text overlapping,
-    // so two adjacent items are rendered in the same row if next one will not have a label
-    // item.d < LABEL_THRESHOLD ||
-
-    if (item.s + item.d < rowItem.end) {
-      // sub item should be at higher level
-      return -1
-    } else if (item.d < LABEL_THRESHOLD || item.s - rowItem.end > rowIndexThreshold) {
+// prettier-ignore
+function findRowIndex(rowIndex: number, rowToInfo: Map<number, RowInfo>, item: ItemV20): number {
+  rowLoop: for (let i = rowIndex; ; i++) {
+    const rowInfo = rowToInfo.get(i)
+    if (rowInfo === undefined) {
       return i
     }
+
+    const itemStart = item.s
+    const itemEnd = item.s + item.d
+
+    for (const sibling of rowInfo.items) {
+      const siblingEnd = sibling.s + sibling.d
+      if (siblingEnd <= itemStart) {
+        continue
+      }
+
+      const siblingStart = sibling.s
+      if (siblingStart >= itemEnd) {
+        continue
+      }
+
+      // overlap - check next row
+      continue rowLoop
+    }
+    return i
   }
-  return -1
 }
 
 interface RowInfo {
-  end: number
-  item: ItemV20
+  items: ItemV20[]
 }

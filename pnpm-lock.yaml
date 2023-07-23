@@ -129,6 +129,9 @@ importers:
       '@vueuse/core':
         specifier: ^10.2.1
         version: 10.2.1(vue@3.3.4)
+      chroma-js:
+        specifier: 2.4.2
+        version: 2.4.2
       compare-versions:
         specifier: 6.0.0
         version: 6.0.0
@@ -163,6 +166,9 @@ importers:
         specifier: 4.2.4
         version: 4.2.4(vue@3.3.4)
     devDependencies:
+      '@types/chroma-js':
+        specifier: 2.4.0
+        version: 2.4.0
       '@types/humanize-duration':
         specifier: ^3.27.1
         version: 3.27.1
@@ -620,6 +626,10 @@ packages:
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.3.3
+    dev: true
+
+  /@types/chroma-js@2.4.0:
+    resolution: {integrity: sha512-JklMxityrwjBTjGY2anH8JaTx3yjRU3/sEHSblLH1ba5lqcSh1LnImXJZO5peJfXyqKYWjHTGy4s5Wz++hARrw==}
     dev: true
 
   /@types/estree@1.0.1:
@@ -1331,6 +1341,10 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
+
+  /chroma-js@2.4.2:
+    resolution: {integrity: sha512-U9eDw6+wt7V8z5NncY2jJfZa+hUH8XEj8FQHgFJTrUFnJfXYf4Ml4adI2vXZOjqRDpFWtYVWypDfZwnJ+HIR4A==}
+    dev: false
 
   /ci-info@3.8.0:
     resolution: {integrity: sha512-eXTggHWSooYhq49F2opQhuHWgzucfF2YgODK4e1566GQs5BIfP30B0oenwBJHfWxAs2fyPB1s7Mg949zLf61Yw==}

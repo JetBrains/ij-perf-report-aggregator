@@ -1,5 +1,5 @@
 import { ChartManager } from "./charts/ChartComponent"
-import { CommonItem, InputDataV20, UnitConverter } from "./data"
+import { CommonItem, UnitConverter } from "./data"
 
 export interface ActivityChartDescriptor {
   readonly label: string
@@ -28,6 +28,7 @@ export function getShortName(item: { name?: string; n?: string }): string {
 // (make sure that hot reloading will not reload all modules where `chartDescriptors` is used - especially `router`)
 export const serviceSourceNames = ["appServices", "projectServices", "moduleServices", "appComponents", "projectComponents", "moduleComponents"]
 
+// prettier-ignore
 export const chartDescriptors: ActivityChartDescriptor[] = [
   {
     label: "Services",
@@ -46,12 +47,6 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     id: "extensions",
     sourceNames: ["appExtensions", "projectExtensions", "moduleExtensions"],
     shortNameProducer: getShortName,
-  },
-  {
-    label: "Prepare App Init",
-    id: "prepareAppInitActivities",
-    groupByThread: true,
-    sourceHasPluginInformation: false,
   },
   {
     label: "Options Top Hit Providers",
@@ -85,29 +80,41 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     id: "timeline",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
       const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
-      return new TimeLineChartManager(
-        container,
-        (dataManager) => {
+      return new TimeLineChartManager(container, {
+        hasParent: true,
+        dataProvider(dataManager) {
           return [
             {
               category: "items",
               items: dataManager.items,
-            },
-            {
-              category: "prepareAppInitActivities",
-              items: dataManager.data.prepareAppInitActivities,
             },
           ].filter((it) => {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             return it.items != null
           })
         },
-        {
+        groupData(item) {
+          const name = item.n
+          if (name.endsWith(": scheduled")) {
+            return "schedule"
+          }
+          else if (name.endsWith(": completing")) {
+            return "completing"
+          }
+          else {
+            return "all"
+          }
+        },
+        sortGroups(names) {
+          const w = (n: string) => (n == "all" ? 0 : n == "completing" ? 1 : 2)
+          names.sort((a, b) => w(a) - w(b))
+        },
+        dataDescriptor: {
           unitConverter: UnitConverter.MILLISECONDS,
           threshold: 0,
           shortenName: false,
-        }
-      )
+        },
+      })
     },
   },
   {
@@ -116,15 +123,20 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     id: "serviceTimeline",
     async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
       const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
-      return new TimeLineChartManager(
-        container,
-        (dataManager) => {
-          return [...dataManager.getServiceItems(), { category: "service waiting", items: (dataManager.data as InputDataV20).serviceWaiting ?? [] }]
-        },
-        {
+      return new TimeLineChartManager(container, {
+        hasParent: false,
+        groupData: (_, category) => (category == "service waiting" ? "service waiting" : "all"),
+        dataDescriptor: {
           unitConverter: UnitConverter.MICROSECONDS,
-        }
-      )
+        },
+        sortGroups(names) {
+          const w = (n: string) => (n == "all" ? 0 : 1)
+          names.sort((a, b) => w(a) - w(b))
+        },
+        dataProvider(dataManager) {
+          return [...dataManager.getServiceItems(), { category: "service waiting", items: dataManager.data.serviceWaiting ?? [] }]
+        },
+      })
     },
   },
   {

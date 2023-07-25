@@ -154,7 +154,14 @@ export class LineChartVM {
       this.eChart.chart.setOption(
         {
           legend: { type: "scroll" },
-          toolbox: { top: 20 },
+          toolbox: {
+            top: 20,
+            feature: {
+              saveAsImage: {
+                name: "plot",
+              },
+            },
+          },
         },
         {
           replaceMerge: ["legend"],

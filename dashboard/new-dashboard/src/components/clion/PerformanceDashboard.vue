@@ -93,7 +93,7 @@
         :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
       />
     </section>
-    <section class="flex gap-x-6">
+    <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Completion, mean value (std::string, hot)"

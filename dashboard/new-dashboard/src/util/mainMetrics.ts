@@ -19,6 +19,6 @@ export const MAIN_METRICS = new Set([
   "highlighting",
   "FileStructurePopup",
   "typing",
-  "git-log-indexing",
-  "git-log-indexing#totalCommits",
+  "vcs-log-indexing",
+  "vcs-log-indexing#totalCommits",
 ])

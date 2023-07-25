@@ -116,6 +116,32 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion] Completion, mean value"
+          measure="completion#mean_value"
+          :projects="[
+            'clion/fmtlib/completion/std.string (cold)',
+            'clion/fmtlib/completion/std.string (hot)',
+            'clion/fmtlib/completion/std.shared_ptr (dep) (hot)',
+            'clion/fmtlib/completion/fmt.join_view (dep) (hot)',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler] Completion, mean value"
+          measure="completion#mean_value"
+          :projects="[
+            'radler/fmtlib/completion/std.string (cold)',
+            'radler/fmtlib/completion/std.string (hot)',
+            'radler/fmtlib/completion/std.shared_ptr (dep) (hot)',
+            'radler/fmtlib/completion/fmt.join_view (dep) (hot)',
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

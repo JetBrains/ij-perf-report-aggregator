@@ -153,6 +153,18 @@ export class LineChartVM {
       this.eChart.chart.hideLoading()
       this.eChart.chart.setOption(
         {
+          title: {
+            show: data.flat(3).length === 0,
+            text: "No data",
+            subtext: "Please check selectors: machine, branch, time range",
+            left: "center",
+            top: "center",
+            textStyle: {
+              fontSize: 20,
+              fontWeight: "normal",
+              color: "#6B7280",
+            },
+          },
           legend: { type: "scroll" },
           toolbox: {
             top: 20,

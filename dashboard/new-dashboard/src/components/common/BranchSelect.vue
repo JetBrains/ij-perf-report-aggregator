@@ -11,6 +11,7 @@
     :show-toggle-all="false"
     panel-class="w-fit"
     panel-style="overflow: visible"
+    :filter="hasManyElements"
     @hide="clearSubMenu"
   >
     <template #value="slotProps">
@@ -225,6 +226,10 @@ const placeholder = usePlaceholder(
   () => props.branchConfigurator.values.value,
   () => props.branchConfigurator.selected.value
 )
+
+const hasManyElements = computed(() => {
+  return branchItems.value.length > 4
+})
 </script>
 <style>
 .branch-select-dropdown {

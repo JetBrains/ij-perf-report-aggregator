@@ -93,6 +93,9 @@
         :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
       />
     </section>
+
+    <Divider title="Completion" />
+
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
@@ -142,6 +145,103 @@
         />
       </div>
     </section>
+
+    <Divider title="Find Usages" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Find Usages (enumerable)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/luau/findUsages/enumerable (LuauOpcode)', 'radler/luau/findUsages/enumerable (LuauOpcode)']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Find Usages (enumerator)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/luau/findUsages/enumerator (LOP_NOP)', 'radler/luau/findUsages/enumerator (LOP_NOP)']"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Find Usages (class template)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/luau/findUsages/class template (DenseHashTable)', 'radler/luau/findUsages/class template (DenseHashTable)']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Find Usages (macro)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/luau/findUsages/macro (LUAU_ASSERT)', 'radler/luau/findUsages/macro (LUAU_ASSERT)']"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion] Find Usages"
+          measure="%syncAction FindUsages"
+          :projects="[
+            'clion/luau/findUsages/enumerable (LuauOpcode)',
+            'clion/luau/findUsages/enumerator (LOP_NOP)',
+            'clion/luau/findUsages/class template (DenseHashTable)',
+            'clion/luau/findUsages/macro (LUAU_ASSERT)',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler] Find Usages"
+          measure="%syncAction FindUsages"
+          :projects="[
+            'radler/luau/findUsages/enumerable (LuauOpcode)',
+            'radler/luau/findUsages/enumerator (LOP_NOP)',
+            'radler/luau/findUsages/class template (DenseHashTable)',
+            'radler/luau/findUsages/macro (LUAU_ASSERT)',
+          ]"
+        />
+      </div>
+    </section>
+
+    <Divider title="Go to Declaration" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Go to Declaration (ctor)"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Go to Declaration (method)"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/TypeChecker.getScopes', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion] Go to Declaration"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'clion/luau/gotoDeclaration/TypeChecker.getScopes']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler] Go to Declaration"
+          measure="%syncAction GotoDeclaration"
+          :projects="['radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 
@@ -149,4 +249,5 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 </script>

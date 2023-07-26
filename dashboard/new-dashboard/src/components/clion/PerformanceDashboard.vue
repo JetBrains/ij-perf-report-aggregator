@@ -6,7 +6,7 @@
     persistent-id="clion_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
-    <section class="flex gap-6">
+    <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
@@ -38,7 +38,7 @@
         />
       </div>
     </section>
-    <section class="flex gap-6">
+    <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"

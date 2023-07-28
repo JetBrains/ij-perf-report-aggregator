@@ -124,9 +124,9 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-import-jps-kotlin-50_000-modules/measureStartup",
       "project-reimport-jps-kotlin-50_000-modules/measureStartup",
       "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
-      "project-import-jps-java-50_000-modules/measureStartup",
-      "project-reimport-jps-java-50_000-modules/measureStartup",
-      "project-import-from-cache-jps-java-50_000-modules/measureStartup",
+      "project-import-jps-java-1_000-modules/measureStartup",
+      "project-reimport-jps-java-1_000-modules/measureStartup",
+      "project-import-from-cache-jps-java-1_000-modules/measureStartup",
       "project-import-idea-community-jps/measureStartup",
     ],
   }

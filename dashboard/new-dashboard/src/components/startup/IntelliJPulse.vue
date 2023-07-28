@@ -2,7 +2,9 @@
   <StartupPage>
     <Divider label="Bootstrap" />
     <section class="grid grid-cols-2 gap-x-6">
-      <LineChartCard :measures="['appInitPreparation_d', 'appInit_d', 'pluginDescriptorLoading_d', 'app initialization.end', 'connect FSRecords']" />
+      <LineChartCard
+        :measures="['appInitPreparation_d', 'appInit_d', 'pluginDescriptorLoading_d', 'app initialization.end', 'connect FSRecords', 'waiting for preloadCriticalServicesJob.end']"
+      />
       <LineChartCard :measures="['bootstrap_d', 'appStarter_d', 'pluginDescriptorInitV18_d', 'RunManager initialization', 'euaShowing_d']" />
     </section>
 

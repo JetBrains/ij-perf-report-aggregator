@@ -14,28 +14,28 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.4",
     "@tailwindcss/typography": "^0.5.9",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.0",
+    "@typescript-eslint/parser": "^6.2.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/compiler-sfc": "^3.3.4",
     "@vue/eslint-config-typescript": "^11.0.3",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.45.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-vue": "^9.15.1",
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^8.9.0",
+    "eslint-plugin-import": "^2.28.0",
+    "eslint-plugin-vue": "^9.16.1",
     "lightningcss": "^1.21.5",
     "postcss": "^8.4.27",
-    "rollup": "^3.26.3",
+    "rollup": "^3.27.0",
     "rollup-plugin-visualizer": "^5.9.2",
     "sass": "^1.64.1",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.1.6",
     "unplugin-vue-components": "^0.25.1",
-    "vite": "4.4.6",
+    "vite": "4.4.7",
     "vue": "^3.3.4",
-    "vue-tsc": "^1.8.6"
+    "vue-tsc": "^1.8.8"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -52,7 +52,7 @@
   },
   "dependencies": {
     "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-unicorn": "^48.0.0",
+    "eslint-plugin-unicorn": "^48.0.1",
     "prettier": "^3.0.0"
   }
 }

@@ -18,7 +18,19 @@ type Trace struct {
 }
 
 func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
-  spansToReport := []string{"project.opening", "gradle.sync.duration", "application.exit", "qodana run"}
+  spansToReport := []string{
+    "project.opening",
+    "gradle.sync.duration",
+    "application.exit",
+    "qodana run",
+    "qodanaProjectOpening",
+    "qodanaScriptRun",
+    "qodanaProjectConfiguration",
+    "qodanaProjectAnalysis",
+    "refGraphBuilding",
+    "globalInspectionsAnalysis",
+    "localInspectionsAnalysis",
+  }
 
   runResult.Report = &model.Report{}
 

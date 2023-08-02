@@ -25,7 +25,7 @@ export function createProjectConfigurator(
   persistentStateManager: PersistentStateManager,
   filters: FilterConfigurator[] = []
 ): DimensionConfigurator {
-  return dimensionConfigurator("project", serverConfigurator, persistentStateManager, false /* doesn't matter */, [productConfigurator, ...filters], (a, b) => {
+  return dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [productConfigurator, ...filters], (a, b) => {
     const t1 = getProjectName(a)
     const t2 = getProjectName(b)
     if (t1.startsWith("simple ") && !t2.startsWith("simple ")) {

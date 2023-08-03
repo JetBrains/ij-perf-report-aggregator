@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-between pt-5 px-7 items-center">
-    <div class="flex space-x-0.5 font-semibold">
+    <div class="font-semibold">
       <span
         v-if="isSubMenuExists"
         class="text-xl"

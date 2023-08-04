@@ -110,7 +110,7 @@
           Changes
         </a>
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
           @click="getArtifactsUrl"
         >
           <ServerStackIcon class="w-4 h-4" />

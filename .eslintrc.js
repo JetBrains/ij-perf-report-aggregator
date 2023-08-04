@@ -58,5 +58,6 @@ module.exports = {
         ignores: ["Dashboard", "Report", "Divider"],
       },
     ],
+    "vue/no-setup-props-destructure": "off",
   },
 }

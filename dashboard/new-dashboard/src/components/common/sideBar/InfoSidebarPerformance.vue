@@ -110,9 +110,8 @@
           Changes
         </a>
         <a
-          :href="vm.data.value?.artifactsUrl"
-          target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          @click="getArtifactsUrl"
         >
           <ServerStackIcon class="w-4 h-4" />
           Test Artifacts
@@ -193,16 +192,19 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { injectOrError } from "../../../shared/injectionKeys"
-import { sidebarVmKey } from "../../../shared/keys"
+import { serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
 import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
 import SpaceIcon from "../SpaceIcon.vue"
+import { tcUrl } from "./InfoSidebar"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()
 const accidentType = ref<string>("Regression")
+const serverConfigurator = injectOrError(serverConfiguratorKey)
 
 function reportRegression() {
   showDialog.value = false
@@ -277,6 +279,23 @@ function getTestActions() {
   return actions
 }
 
+function getArtifactsUrl() {
+  const db = serverConfigurator.db
+  const table = serverConfigurator.table
+  if (table == null) {
+    window.open(vm.data.value?.artifactsUrl)
+  } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
+    getTeamcityBuildType(db, table, vm.data.value.buildId, (type: string | null) => {
+      if (vm.data.value) {
+        window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)
+      }
+    })
+  }
+}
+
+function replaceUnderscore(project: string) {
+  return project.replaceAll("_", "-")
+}
 function getSpaceUrl() {
   const db = vm.data.value?.installerId ? "perfint" : "perfintDev"
   if (vm.data.value?.installerId ?? vm.data.value?.buildId) {

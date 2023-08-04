@@ -1,6 +1,6 @@
 import { computed, ShallowRef, shallowRef } from "vue"
-
-export const buildUrl = (id: number) => `https://buildserver.labs.intellij.net/viewLog.html?buildId=${id}`
+export const tcUrl = "https://buildserver.labs.intellij.net/"
+export const buildUrl = (id: number) => `${tcUrl}viewLog.html?buildId=${id}`
 
 export interface InfoData {
   build: string | undefined

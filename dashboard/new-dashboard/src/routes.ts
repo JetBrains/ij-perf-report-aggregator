@@ -68,6 +68,7 @@ enum ROUTES {
   KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
   KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
+  KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   GoLandDashboard = `${ROUTE_PREFIX.GoLand}/${DASHBOARD_ROUTE}`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
@@ -345,6 +346,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinRefactoringDev,
           label: "Refactoring (dev)",
+        },
+        {
+          url: ROUTES.KotlinK1VsK2ComparisonDev,
+          label: "K1 vs. K2 (dev)",
         },
         {
           url: ROUTES.KotlinCompare,
@@ -942,6 +947,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinRefactoringDev,
           component: () => import("./components/kotlin/dev/RefactoringDashboard.vue"),
           meta: { pageTitle: "Kotlin refactoring (dev/fast)" },
+        },
+        {
+          path: ROUTES.KotlinK1VsK2ComparisonDev,
+          component: () => import("./components/kotlin/dev/K1VsK2ComparisonDashboard.vue"),
+          meta: { pageTitle: "Kotlin K1 vs. K2 (dev/fast)" },
         },
         {
           path: ROUTES.KotlinCompare,

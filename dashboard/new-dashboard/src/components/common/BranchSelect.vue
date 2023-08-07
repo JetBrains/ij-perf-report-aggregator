@@ -11,6 +11,7 @@
     :show-toggle-all="false"
     panel-class="w-fit"
     panel-style="overflow: visible"
+    :selection-limit="selectionLimit"
     :filter="hasManyElements"
     @hide="clearSubMenu"
   >
@@ -150,6 +151,8 @@ interface Props {
   branchConfigurator: DimensionConfigurator
   releaseConfigurator?: DimensionConfigurator
   triggeredByConfigurator?: DimensionConfigurator
+
+  selectionLimit?: number
 }
 
 const enum SubMenu {

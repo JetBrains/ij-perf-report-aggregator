@@ -191,7 +191,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useRouter } from "vue-router"
-import { injectOrError } from "../../../shared/injectionKeys"
+import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
@@ -204,7 +204,7 @@ const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()
 const accidentType = ref<string>("Regression")
-const serverConfigurator = injectOrError(serverConfiguratorKey)
+const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
 function reportRegression() {
   showDialog.value = false
@@ -280,11 +280,11 @@ function getTestActions() {
 }
 
 function getArtifactsUrl() {
-  const db = serverConfigurator.db
-  const table = serverConfigurator.table
-  if (table == null) {
+  if (serverConfigurator?.table == null) {
     window.open(vm.data.value?.artifactsUrl)
   } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
+    const db = serverConfigurator.db
+    const table = serverConfigurator.table
     getTeamcityBuildType(db, table, vm.data.value.buildId, (type: string | null) => {
       if (vm.data.value) {
         window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)

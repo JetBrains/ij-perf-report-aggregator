@@ -28,3 +28,11 @@ export function injectOrError<T>(key: InjectionKey<T> | string): T {
   }
   return value
 }
+
+export function injectOrNull<T>(key: InjectionKey<T> | string): T | null {
+  const value = inject(key)
+  if (value === undefined) {
+    return null
+  }
+  return value
+}

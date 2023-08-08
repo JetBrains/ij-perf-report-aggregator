@@ -8,7 +8,9 @@
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
-        <slot name="icon" />
+        <slot name="icon">
+          <CalendarIcon class="w-4 h-4 text-gray-500" />
+        </slot>
 
         <span v-if="!slotProps.value">Select range</span>
         <span>{{ currentValue?.label }}</span>

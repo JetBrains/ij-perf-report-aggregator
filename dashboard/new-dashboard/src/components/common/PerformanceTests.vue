@@ -40,14 +40,7 @@
             <BeakerIcon class="w-4 h-4 text-gray-500" />
           </template>
         </MeasureSelect>
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
+        <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
     </Toolbar>
     <main class="flex">
@@ -90,12 +83,12 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import { getAccidentsFromMetaDb } from "../../util/meta"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"

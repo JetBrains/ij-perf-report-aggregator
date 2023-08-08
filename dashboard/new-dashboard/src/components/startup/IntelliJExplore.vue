@@ -27,14 +27,7 @@
           title="Metrics"
           :selected-label="metricsSelectLabelFormat"
         />
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
+        <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
         Sidebar:
@@ -68,11 +61,11 @@ import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, con
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChartCard from "../charts/LineChartCard.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
+import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"

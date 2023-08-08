@@ -15,14 +15,7 @@
         :triggered-by-configurator="triggeredByConfigurator"
         :selection-limit="1"
       />
-      <DimensionHierarchicalSelect
-        label="Machine"
-        :dimension="machineConfigurator"
-      >
-        <template #icon>
-          <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-        </template>
-      </DimensionHierarchicalSelect>
+      <MachineSelect :machine-configurator="machineConfigurator" />
       <span class="p-buttonset ml-4">
         <Button
           v-for="(table, _, index) in tables"
@@ -76,8 +69,8 @@ import { privateBuildConfigurator } from "../../../configurators/PrivateBuildCon
 import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { serverConfiguratorKey } from "../../../shared/keys"
-import DimensionHierarchicalSelect from "../../charts/DimensionHierarchicalSelect.vue"
 import BranchSelect from "../../common/BranchSelect.vue"
+import MachineSelect from "../../common/MachineSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
 import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"

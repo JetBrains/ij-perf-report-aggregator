@@ -11,14 +11,7 @@
             <CalendarIcon class="w-4 h-4 text-gray-500" />
           </template>
         </TimeRangeSelect>
-        <DimensionHierarchicalSelect
-          label="Machine"
-          :dimension="machineConfigurator"
-        >
-          <template #icon>
-            <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-          </template>
-        </DimensionHierarchicalSelect>
+        <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
     </Toolbar>
 
@@ -121,9 +114,9 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
+import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"

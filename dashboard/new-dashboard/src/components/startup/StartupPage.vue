@@ -24,14 +24,7 @@
         :value-to-label="getProjectName"
         :dimension="projectConfigurator"
       />
-      <DimensionHierarchicalSelect
-        label="Machine"
-        :dimension="machineConfigurator"
-      >
-        <template #icon>
-          <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-        </template>
-      </DimensionHierarchicalSelect>
+      <MachineSelect :machine-configurator="machineConfigurator" />
       <slot name="toolbar" />
     </template>
     <template #end>
@@ -63,9 +56,9 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import ChartTooltip from "../charts/ChartTooltip.vue"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
+import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"

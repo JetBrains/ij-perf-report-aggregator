@@ -15,15 +15,10 @@
         :release-configurator="props.releaseConfigurator"
         :triggered-by-configurator="props.triggeredByConfigurator"
       />
-      <DimensionHierarchicalSelect
+      <MachineSelect
         v-if="props.machineConfigurator != null"
-        label="Machine"
-        :dimension="props.machineConfigurator"
-      >
-        <template #icon>
-          <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-        </template>
-      </DimensionHierarchicalSelect>
+        :machine-configurator="machineConfigurator"
+      />
     </template>
   </Toolbar>
 </template>
@@ -34,8 +29,8 @@ import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import BranchSelect from "./BranchSelect.vue"
+import MachineSelect from "./MachineSelect.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
 
 const props = defineProps<{

@@ -3,14 +3,7 @@
     <Toolbar class="customToolbar">
       <template #start>
         <div class="flex items-center">
-          <DimensionHierarchicalSelect
-            label="Machine"
-            :dimension="machineConfigurator"
-          >
-            <template #icon>
-              <ComputerDesktopIcon class="w-4 h-4 text-gray-500" />
-            </template>
-          </DimensionHierarchicalSelect>
+          <MachineSelect :machine-configurator="machineConfigurator" />
           <span class="ml-5">Build 1</span>
         </div>
         <BranchSelect
@@ -133,10 +126,10 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { refToObservable } from "../../configurators/rxjs"
 import { containerKey } from "../../shared/keys"
 import { MAIN_METRICS } from "../../util/mainMetrics"
-import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "./BranchSelect.vue"
 import { DataQueryExecutor } from "./DataQueryExecutor"
+import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "./dataQuery"
 

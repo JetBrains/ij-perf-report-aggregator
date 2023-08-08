@@ -5,11 +5,7 @@
         :ranges="TimeRangeConfigurator.timeRanges"
         :value="timeRangeConfigurator.value.value"
         :on-change="onChangeRange"
-      >
-        <template #icon>
-          <CalendarIcon class="w-4 h-4 text-gray-500" />
-        </template>
-      </TimeRangeSelect>
+      />
       <BranchSelect
         :branch-configurator="branchConfigurator"
         :triggered-by-configurator="triggeredByConfigurator"

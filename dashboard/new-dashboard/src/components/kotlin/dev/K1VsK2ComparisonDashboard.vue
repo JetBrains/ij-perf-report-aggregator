@@ -133,6 +133,12 @@ function flattenProjectCategories(projectsByCategory: Record<string, string[]>) 
 </script>
 
 <style>
+.customToolbar {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
 /* This together with the button set is basically a workaround for missing tabview styles, but I also like the button set design more
  * than the tab nav.
  */

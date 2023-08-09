@@ -67,8 +67,8 @@ import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "./DataQueryExecutor"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "./dataQuery"
-import { getValueFormatterByMeasureName } from "./formatter"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "./dataQuery"
+import { formatPercentage, getValueFormatterByMeasureName } from "./formatter"
 
 /**
  * Defines that a `baseline` test should be compared against a `current` test. This represents a single row in the comparison table.
@@ -91,7 +91,6 @@ export interface TestComparison {
 }
 
 interface TestComparisonTableProps {
-  headline: string
   measure: string
   comparisons: TestComparison[]
 
@@ -108,10 +107,12 @@ const props = withDefaults(defineProps<TestComparisonTableProps>(), {
   baselineColumnLabel: "Baseline",
   currentColumnLabel: "Current",
   differenceColumnLabel: "Difference (%)",
-  formatDifference: (difference) => Number(difference).toLocaleString(undefined, { style: "percent", minimumFractionDigits: 2 }),
+  formatDifference: formatPercentage,
 })
 
-interface TestComparisonTableEntry {
+const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTableEntry[]) => void>()
+
+export interface TestComparisonTableEntry {
   test: string
   baselineValue: number
   currentValue: number
@@ -187,6 +188,8 @@ function applyData(data: (string | number)[][][]) {
   }
 
   resultData.value = tableData
+
+  emit("update:resultData", resultData.value)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

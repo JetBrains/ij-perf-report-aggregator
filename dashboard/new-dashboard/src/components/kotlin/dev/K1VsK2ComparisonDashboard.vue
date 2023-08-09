@@ -58,6 +58,7 @@ import { PersistentStateManager } from "../../common/PersistentStateManager"
 import { TestComparison, TestComparisonTableEntry } from "../../common/TestComparisonTable.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 import K1VsK2ComparisonTable from "./K1VsK2ComparisonTable.vue"
+import { completionProjects, findUsagesProjects, highlightingProjects } from "./projects"
 
 const dbName = "perfintDev"
 const dbTable = "kotlin"
@@ -103,8 +104,31 @@ const tables = {
   completion: {
     name: "Completion",
     measure: "completion#mean_value",
-    projects: ["kotlin_empty/completion/empty_place_with_library_cache", "kotlin_empty/completion/empty_place_typing_with_library_cache"],
+    projects: flattenProjectCategories(completionProjects),
   },
+  highlighting: {
+    name: "Highlighting",
+    measure: "highlighting#mean_value",
+    projects: flattenProjectCategories(highlightingProjects),
+  },
+  localInspections: {
+    name: "Local Inspections",
+    measure: "localInspections#mean_value",
+    projects: flattenProjectCategories(highlightingProjects),
+  },
+  findUsages: {
+    name: "Find Usages",
+    measure: "findUsages#mean_value",
+    projects: flattenProjectCategories(findUsagesProjects),
+  },
+}
+
+function flattenProjectCategories(projectsByCategory: Record<string, string[]>) {
+  const result: string[] = []
+  for (const [_, projects] of Object.entries(projectsByCategory)) {
+    result.push(...projects)
+  }
+  return result
 }
 </script>
 

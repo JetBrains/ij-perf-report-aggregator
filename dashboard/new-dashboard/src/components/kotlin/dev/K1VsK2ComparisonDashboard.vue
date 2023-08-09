@@ -33,25 +33,12 @@
       :key="table.name"
       :header="table.name"
     >
-      <section class="flex flex-col w-full mt-8">
-        <div class="flex flex-row gap-6">
-          <div class="basis-1/2">
-            <h3 class="text-2xl mb-3">{{ table.name }}</h3>
-            <p class="text-sm text-gray-600">Measure: {{ table.measure }}</p>
-          </div>
-        </div>
-        <TestComparisonTable
-          :headline="table.name"
-          :measure="table.measure"
-          :comparisons="table.projects.map(transformToTestComparison)"
-          :configurators="configurators"
-          baseline-column-label="K1"
-          current-column-label="K2"
-          difference-column-label="Improvement (%)"
-          class="mt-8"
-        />
-        <p class="text-sm text-gray-500 text-right mt-4">The table only displays the results of the last build from the selected branch.</p>
-      </section>
+      <K1VsK2ComparisonTable
+        :name="table.name"
+        :measure="table.measure"
+        :projects="table.projects"
+        :configurators="configurators"
+      />
     </TabPanel>
   </TabView>
 </template>
@@ -68,8 +55,9 @@ import { serverConfiguratorKey } from "../../../shared/keys"
 import BranchSelect from "../../common/BranchSelect.vue"
 import MachineSelect from "../../common/MachineSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
-import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
+import { TestComparison, TestComparisonTableEntry } from "../../common/TestComparisonTable.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
+import K1VsK2ComparisonTable from "./K1VsK2ComparisonTable.vue"
 
 const dbName = "perfintDev"
 const dbTable = "kotlin"
@@ -105,15 +93,6 @@ function onTimeRangeChange(value: TimeRange) {
 
 function setActiveTab(index: number) {
   activeTab.value = index
-}
-
-function transformToTestComparison(projectName: string): TestComparison {
-  // We want to compare K1 and K2 tests against each other, and they are respectively suffixed with "_k1" and "_k2".
-  return {
-    label: projectName,
-    baselineTestName: `${projectName}_k1`,
-    currentTestName: `${projectName}_k2`,
-  }
 }
 
 /**

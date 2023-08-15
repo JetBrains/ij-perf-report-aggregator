@@ -83,7 +83,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
         for _, osName := range osList {
           buildConfigurationIds = append(buildConfigurationIds, configuration+osName)
         }
-        buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM1")
+        buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM1").append(buildConfigurationIds, configuration+"MacM2")
       }
     case chunk.Database == "jbr":
       jbrTypes := []string{"macOS12aarch64Metal", "macOS12aarch64OGL", "macOS12x64Metal", "macOS12x64OGL", "macOS13aarch64Metal", "macOS13aarch64OGL", "macOS13x64Metal",

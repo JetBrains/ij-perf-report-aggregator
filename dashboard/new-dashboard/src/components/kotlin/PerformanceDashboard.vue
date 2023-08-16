@@ -984,6 +984,39 @@
         />
       </div>
     </section>
+
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Optimize imports K1"
+          measure="execute_editor_optimizeimports"
+          :projects="[
+            'intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest_k1',
+            'intellij_commit/otimizeImports/FSD_k1',
+            'intellij_commit/otimizeImports/DiagramsModel.Generated_k1',
+            'intellij_commit/otimizeImports/OraIntrospector_k1',
+            'intellij_commit/otimizeImports/QuickFixRegistrar_k1',
+            'intellij_commit/otimizeImports/SwiftTypeAssignabilityTest_k1',
+            'intellij_commit/otimizeImports/TerraformConfigCompletionContributor_k1',
+          ]"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Optimize imports K2"
+          measure="execute_editor_optimizeimports"
+          :projects="[
+            'intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest_k2',
+            'intellij_commit/otimizeImports/FSD_k2',
+            'intellij_commit/otimizeImports/DiagramsModel.Generated_k2',
+            'intellij_commit/otimizeImports/OraIntrospector_k2',
+            'intellij_commit/otimizeImports/QuickFixRegistrar_k2',
+            'intellij_commit/otimizeImports/SwiftTypeAssignabilityTest_k2',
+            'intellij_commit/otimizeImports/TerraformConfigCompletionContributor_k2',
+          ]"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

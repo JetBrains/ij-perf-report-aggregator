@@ -205,18 +205,28 @@ export const refactoringProjects = [
   "kotlin_language_server/insertCode/Rename_renameSymbol",
   "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k",
 ]
-
-export const refactoringCharts: ProjectsChartDefinition[] = [
-  generateRefactoringDefinition("PerformInlineRename", "performInlineRename#mean_value"),
-  generateRefactoringDefinition("StartInlineRename", "startInlineRename#mean_value"),
-  generateRefactoringDefinition("PrepareForRename", "prepareForRename#mean_value"),
+export const optimizeImportsProjects = [
+  "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest",
+  "intellij_commit/otimizeImports/FSD",
+  "intellij_commit/otimizeImports/DiagramsModel.Generated",
+  "intellij_commit/otimizeImports/OraIntrospector",
+  "intellij_commit/otimizeImports/QuickFixRegistrar",
+  "intellij_commit/otimizeImports/SwiftTypeAssignabilityTest",
+  "intellij_commit/otimizeImports/TerraformConfigCompletionContributor",
 ]
 
-function generateRefactoringDefinition(labelPrefix: string, measure: string): ProjectsChartDefinition {
+export const refactoringCharts: ProjectsChartDefinition[] = [
+  generateRefactoringDefinition("PerformInlineRename", "performInlineRename#mean_value", refactoringProjects),
+  generateRefactoringDefinition("StartInlineRename", "startInlineRename#mean_value", refactoringProjects),
+  generateRefactoringDefinition("PrepareForRename", "prepareForRename#mean_value", refactoringProjects),
+  generateRefactoringDefinition("Optimize imports", "execute_editor_optimizeimports", optimizeImportsProjects),
+]
+
+function generateRefactoringDefinition(labelPrefix: string, measure: string, projectsData: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} mean value`,
     measure,
-    projects: refactoringProjects,
+    projects: projectsData,
   }
 }
 

@@ -78,10 +78,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: [
       "vfs-record-storage/in-memory-intellij_sources/indexing",
-      "vfs-record-storage/in-memory-with-non-strict-names-intellij_sources/indexing",
-      "vfs-record-storage/in-memory-with-non-strict-names-streamlined-attributes-intellij_sources/indexing",
-      "vfs-record-storage/in-memory-with-streamlined-attributes-intellij_sources/indexing",
-      "vfs-record-storage/lock-free-intellij_sources/indexing",
+      "vfs-record-storage/over-lock-free-file-page-cache-intellij_sources/indexing",
+      "vfs-record-storage/over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/over-mmapped-file-with-fast-names-intellij_sources/indexing",
+      "vfs-record-storage/regular-intellij_sources/indexing",
+      "vfs-record-storage/with-mru-file-name-cache-intellij_sources/indexing",
     ],
   },
   {

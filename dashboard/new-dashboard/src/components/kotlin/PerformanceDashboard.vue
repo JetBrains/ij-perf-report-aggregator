@@ -66,6 +66,7 @@
     <DashboardGroupCharts :definitions="localInspectionsCharts" />
     <DashboardGroupCharts :definitions="highlightingCharts" />
     <DashboardGroupCharts :definitions="findUsagesCharts" />
+    <DashboardGroupCharts :definitions="evaluateExpressionChars" />
     <DashboardGroupCharts :definitions="refactoringCharts" />
   </DashboardPage>
 </template>
@@ -74,5 +75,5 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { completionCharts, findUsagesCharts, highlightingCharts, localInspectionsCharts, refactoringCharts } from "./projects"
+import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, localInspectionsCharts, refactoringCharts } from "./projects"
 </script>

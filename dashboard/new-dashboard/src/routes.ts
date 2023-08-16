@@ -316,12 +316,12 @@ const KOTLIN: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.KotlinTests,
-          label: TESTS_LABEL,
-        },
-        {
           url: ROUTES.KotlinLocalInspection,
           label: "Local inspection",
+        },
+        {
+          url: ROUTES.KotlinTests,
+          label: TESTS_LABEL,
         },
         {
           url: ROUTES.KotlinTestsDev,

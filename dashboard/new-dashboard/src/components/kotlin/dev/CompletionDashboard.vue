@@ -35,6 +35,6 @@
 <script setup lang="ts">
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { completionCharts } from "./projects"
+import DashboardGroupCharts from "../DashboardGroupCharts.vue"
+import { completionCharts } from "../projects"
 </script>

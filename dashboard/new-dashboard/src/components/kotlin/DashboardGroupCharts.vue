@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { ProjectsChartDefinition } from "./projects"
 
 interface Props {

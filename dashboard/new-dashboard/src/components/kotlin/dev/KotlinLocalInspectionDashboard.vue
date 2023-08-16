@@ -12,6 +12,6 @@
 
 <script setup lang="ts">
 import DashboardPage from "../../common/DashboardPage.vue"
-import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { localInspectionsCharts } from "./projects"
+import DashboardGroupCharts from "../DashboardGroupCharts.vue"
+import { localInspectionsCharts } from "../projects"
 </script>

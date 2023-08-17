@@ -173,6 +173,13 @@ export const highlightingProjects = {
     "kotlin_empty_kts/highlight/build.gradle_with_library_cache",
     "kotlin_lang/highlight/build.gradle_with_library_cache",
   ],
+  removedImports: [
+    "kotlin_language_server/highlight/removedImports/CompletionsTest_with_library_cache",
+    "toolbox_enterprise/highlight/removedImports/IdeSettingControllerTest_with_library_cache",
+    "intellij_commit/highlight/removedImports/UIAutomationInteractionModel.Generated_with_library_cache",
+    "kotlin_language_server/highlight/removedImports/CompletionsTest_with_library_cache",
+    "kotlin_lang/highlight/removedImports/DefaultArgumentStubGenerator_with_library_cache",
+  ],
 }
 
 const highlightingLabelsAndProjects = [
@@ -185,6 +192,7 @@ const highlightingLabelsAndProjects = [
   { label: "'Ktor samples'", projects: highlightingProjects.ktorSamples },
   { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
   { label: "'Kotlin script'", projects: highlightingProjects.kotlinScript },
+  { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
 ]
 
 export const highlightingCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))

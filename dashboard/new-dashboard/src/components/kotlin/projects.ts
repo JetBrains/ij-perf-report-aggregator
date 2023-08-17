@@ -174,7 +174,6 @@ export const highlightingProjects = {
     "kotlin_lang/highlight/build.gradle_with_library_cache",
   ],
   removedImports: [
-    "kotlin_language_server/highlight/removedImports/CompletionsTest_with_library_cache",
     "toolbox_enterprise/highlight/removedImports/IdeSettingControllerTest_with_library_cache",
     "intellij_commit/highlight/removedImports/UIAutomationInteractionModel.Generated_with_library_cache",
     "kotlin_language_server/highlight/removedImports/CompletionsTest_with_library_cache",

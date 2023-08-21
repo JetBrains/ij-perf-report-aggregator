@@ -26,6 +26,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
   if networkRequestCount > 8 {
     networkRequestCount = 8
   }
+  t.logger.Info("Network request count", zap.Int("count", networkRequestCount))
 
   for index, build := range builds {
     if reportExistenceChecker.has(build.Id) {

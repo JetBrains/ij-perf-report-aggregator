@@ -28,11 +28,11 @@
     <section>
       <div>
         <GroupProjectsChart
-          v-for="chartDev in chartsDev"
-          :key="chartDev.definition.label"
-          :label="chartDev.definition.label"
-          :measure="chartDev.definition.measure"
-          :projects="chartDev.projects"
+          v-for="chart in chartsDev"
+          :key="chart.definition.label"
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
         />
       </div>
     </section>
@@ -47,11 +47,11 @@
     <section>
       <div>
         <GroupProjectsChart
-          v-for="chartsImport in chartsDev"
-          :key="chartsImport.definition.label"
-          :label="chartsImport.definition.label"
-          :measure="chartsImport.definition.measure"
-          :projects="chartsImport.projects"
+          v-for="chart in chartsImport"
+          :key="chart.definition.label"
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
         />
       </div>
     </section>

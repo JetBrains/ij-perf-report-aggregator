@@ -229,16 +229,52 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
+          label="Go to Declaration (std::string - alias)"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/std.string', 'radler/luau/gotoDeclaration/std.string']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Go to Declaration (macro)"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/LUAU_ASSERT', 'radler/luau/gotoDeclaration/LUAU_ASSERT']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Go to Declaration (time.h - header)"
+          measure="%syncAction GotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/time.h', 'radler/luau/gotoDeclaration/time.h']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
           label="[CLion] Go to Declaration"
           measure="%syncAction GotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'clion/luau/gotoDeclaration/TypeChecker.getScopes']"
+          :projects="[
+            'clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
+            'clion/luau/gotoDeclaration/TypeChecker.getScopes',
+            'clion/luau/gotoDeclaration/std.string',
+            'clion/luau/gotoDeclaration/LUAU_ASSERT',
+            'clion/luau/gotoDeclaration/time.h',
+          ]"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[Radler] Go to Declaration"
           measure="%syncAction GotoDeclaration"
-          :projects="['radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
+          :projects="[
+            'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
+            'radler/luau/gotoDeclaration/TypeChecker.getScopes',
+            'radler/luau/gotoDeclaration/std.string',
+            'radler/luau/gotoDeclaration/LUAU_ASSERT',
+            'radler/luau/gotoDeclaration/time.h',
+          ]"
         />
       </div>
     </section>

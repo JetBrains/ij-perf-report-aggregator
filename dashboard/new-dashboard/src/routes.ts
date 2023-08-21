@@ -9,6 +9,7 @@ const enum ROUTE_PREFIX {
   IntelliJSharedIndices = "/intellij/sharedIndices",
   IntelliJUltimate = "/intellij/ultimate",
   IntelliJPackageChecker = "/intellij/packageChecker",
+  IntelliJFus = "/intellij/fus",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -54,6 +55,7 @@ enum ROUTES {
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
+  IntelliJFusDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -267,6 +269,16 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJPackageCheckerTests,
           label: TESTS_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJFus,
+      label: "FUS",
+      tabs: [
+        {
+          url: ROUTES.IntelliJFusDashboard,
+          label: DASHBOARD_LABEL,
         },
       ],
     },
@@ -701,6 +713,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJPackageCheckerDashboard,
           component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
           meta: { pageTitle: "Package Checker" },
+        },
+        {
+          path: ROUTES.IntelliJFusDashboard,
+          component: () => import("./components/intelliJ/FUSDashboard.vue"),
+          meta: { pageTitle: "FUS dashboard" },
         },
         {
           path: ROUTES.IntelliJDevDashboard,

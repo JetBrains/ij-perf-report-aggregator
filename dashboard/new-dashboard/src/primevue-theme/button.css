@@ -25,5 +25,5 @@
 
 /* Without this style, buttons in a button set have a `border-right` on hover.  */
 .p-buttonset .p-button:not(:last-child):hover {
-    border-right: 0 none;
+  border-right: 0 none;
 }

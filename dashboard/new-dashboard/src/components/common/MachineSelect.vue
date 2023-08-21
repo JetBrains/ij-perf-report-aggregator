@@ -10,11 +10,11 @@
 </template>
 
 <script setup lang="ts">
-import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import DimensionHierarchicalSelect from "../charts/DimensionHierarchicalSelect.vue"
 
 interface Props {
-  machineConfigurator: DimensionConfigurator
+  machineConfigurator: MachineConfigurator
 }
 
 defineProps<Props>()

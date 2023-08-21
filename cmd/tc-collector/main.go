@@ -1,16 +1,16 @@
 package main
 
 import (
-	"encoding/json"
-	"flag"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"github.com/araddon/dateparse"
-	e "github.com/develar/errors"
-	"go.uber.org/zap"
-	"net/http"
-	"os"
-	"strings"
-	"time"
+  "encoding/json"
+  "flag"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/araddon/dateparse"
+  e "github.com/develar/errors"
+  "go.uber.org/zap"
+  "net/http"
+  "os"
+  "strings"
+  "time"
 )
 
 // 1. You need to provide CONFIG env variable that may look like:
@@ -18,134 +18,134 @@ import (
 // 2. You also need to provide TC_TOKEN env variable which can be generated at: https://buildserver.labs.intellij.net/profile.html?item=accessTokens#
 // 3. Clickhouse DB should be up and running (see readme.md "Adding a New Database" section)
 func main() {
-	logger := util.CreateLogger()
-	defer func() {
-		_ = logger.Sync()
-	}()
+  logger := util.CreateLogger()
+  defer func() {
+    _ = logger.Sync()
+  }()
 
-	err := configureCollectFromTeamCity(logger)
-	if err != nil {
-		logger.Fatal("cannot collect", zap.Error(err))
-		os.Exit(78)
-	}
+  err := configureCollectFromTeamCity(logger)
+  if err != nil {
+    logger.Fatal("cannot collect", zap.Error(err))
+    os.Exit(78)
+  }
 }
 
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
 func configureCollectFromTeamCity(logger *zap.Logger) error {
-	clickHouseUrl := util.GetEnv("CLICKHOUSE", "localhost:9000")
-	sinceDate := flag.String("since", "", "The date to force collecting since")
-	flag.Parse()
+  clickHouseUrl := util.GetEnv("CLICKHOUSE", "127.0.0.1:9000")
+  sinceDate := flag.String("since", "", "The date to force collecting since")
+  flag.Parse()
 
-	var since time.Time
-	if len(*sinceDate) > 0 {
-		var err error
-		since, err = dateparse.ParseStrict(*sinceDate)
-		if err != nil {
-			return e.WithStack(err)
-		}
-	}
+  var since time.Time
+  if len(*sinceDate) > 0 {
+    var err error
+    since, err = dateparse.ParseStrict(*sinceDate)
+    if err != nil {
+      return e.WithStack(err)
+    }
+  }
 
-	var config CollectorConfiguration
-	rawJson, err := util.GetEnvOrFile("CONFIG", "/etc/config/config.json")
-	if err != nil {
-		return err
-	}
+  var config CollectorConfiguration
+  rawJson, err := util.GetEnvOrFile("CONFIG", "/etc/config/config.json")
+  if err != nil {
+    return err
+  }
 
-	rawJson = strings.TrimSpace(rawJson)
-	if len(rawJson) == 0 {
-		return e.New("File /etc/config/config.json is empty or env CONFIG is not set")
-	}
+  rawJson = strings.TrimSpace(rawJson)
+  if len(rawJson) == 0 {
+    return e.New("File /etc/config/config.json is empty or env CONFIG is not set")
+  }
 
-	err = json.Unmarshal([]byte(rawJson), &config)
-	if err != nil {
-		return e.WithMessage(err, "cannot parse json: "+rawJson)
-	}
+  err = json.Unmarshal([]byte(rawJson), &config)
+  if err != nil {
+    return e.WithMessage(err, "cannot parse json: "+rawJson)
+  }
 
-	var httpClient = &http.Client{}
-	httpClient.CheckRedirect = checkRedirectFunc
+  var httpClient = &http.Client{}
+  httpClient.CheckRedirect = checkRedirectFunc
 
-	taskContext, cancel := util.CreateCommandContext()
-	defer cancel()
+  taskContext, cancel := util.CreateCommandContext()
+  defer cancel()
 
-	for _, chunk := range config.BuildConfigurations {
-		if taskContext.Err() != nil {
-			break
-		}
+  for _, chunk := range config.BuildConfigurations {
+    if taskContext.Err() != nil {
+      break
+    }
 
-		var initialSince time.Time
+    var initialSince time.Time
 
-		var buildConfigurationIds []string
-		switch {
-		case chunk.Database == "ij":
-			osList := []string{"Mac", "Linux", "Windows"}
-			for _, configuration := range chunk.Configurations {
-				for _, osName := range osList {
-					buildConfigurationIds = append(buildConfigurationIds, configuration+osName)
-				}
-				buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM1")
-				buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM2")
-			}
-		case chunk.Database == "jbr":
-			jbrTypes := []string{"macOS12aarch64Metal", "macOS12aarch64OGL", "macOS12x64Metal", "macOS12x64OGL", "macOS13aarch64Metal", "macOS13aarch64OGL", "macOS13x64Metal",
-				"macOS13x64OGL", "Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL", "Windows10x64", "Windows11x64"}
-			for _, configuration := range chunk.Configurations {
-				for _, jbrType := range jbrTypes {
-					buildConfigurationIds = append(buildConfigurationIds, configuration+"_"+jbrType)
-				}
-			}
-		default:
-			for _, configuration := range chunk.Configurations {
-				collector := &Collector{
-					serverUrl:  config.TeamcityUrl + "/app/rest",
-					httpClient: httpClient,
-					logger:     logger,
-				}
-				configurations, err := collector.getSnapshots(taskContext, configuration)
-				logger.Info("get snapshots", zap.Strings("configurations", configurations))
-				if err != nil {
-					logger.Warn("cannot get snapshots", zap.Error(err))
-				}
-				buildConfigurationIds = append(buildConfigurationIds, configurations...)
-			}
-		}
+    var buildConfigurationIds []string
+    switch {
+    case chunk.Database == "ij":
+      osList := []string{"Mac", "Linux", "Windows"}
+      for _, configuration := range chunk.Configurations {
+        for _, osName := range osList {
+          buildConfigurationIds = append(buildConfigurationIds, configuration+osName)
+        }
+        buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM1")
+        buildConfigurationIds = append(buildConfigurationIds, configuration+"MacM2")
+      }
+    case chunk.Database == "jbr":
+      jbrTypes := []string{"macOS12aarch64Metal", "macOS12aarch64OGL", "macOS12x64Metal", "macOS12x64OGL", "macOS13aarch64Metal", "macOS13aarch64OGL", "macOS13x64Metal",
+        "macOS13x64OGL", "Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL", "Windows10x64", "Windows11x64"}
+      for _, configuration := range chunk.Configurations {
+        for _, jbrType := range jbrTypes {
+          buildConfigurationIds = append(buildConfigurationIds, configuration+"_"+jbrType)
+        }
+      }
+    default:
+      for _, configuration := range chunk.Configurations {
+        collector := &Collector{
+          serverUrl:  config.TeamcityUrl + "/app/rest",
+          httpClient: httpClient,
+          logger:     logger,
+        }
+        configurations, err := collector.getSnapshots(taskContext, configuration)
+        logger.Info("get snapshots", zap.Strings("configurations", configurations))
+        if err != nil {
+          logger.Warn("cannot get snapshots", zap.Error(err))
+        }
+        buildConfigurationIds = append(buildConfigurationIds, configurations...)
+      }
+    }
 
-		if len(chunk.InitialSince) != 0 {
-			initialSince, err = dateparse.ParseStrict(chunk.InitialSince)
-			if err != nil {
-				return e.WithStack(err)
-			}
-		}
+    if len(chunk.InitialSince) != 0 {
+      initialSince, err = dateparse.ParseStrict(chunk.InitialSince)
+      if err != nil {
+        return e.WithStack(err)
+      }
+    }
 
-		err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger)
-		if err != nil {
-			return err
-		}
-	}
+    err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger)
+    if err != nil {
+      return err
+    }
+  }
 
-	natsUrl := os.Getenv("NATS")
-	if len(natsUrl) > 0 {
-		err = doNotifyServer(natsUrl, logger)
-		if err != nil {
-			return err
-		}
-	}
+  natsUrl := os.Getenv("NATS")
+  if len(natsUrl) > 0 {
+    err = doNotifyServer(natsUrl, logger)
+    if err != nil {
+      return err
+    }
+  }
 
-	return nil
+  return nil
 }
 
 func checkRedirectFunc(req *http.Request, via []*http.Request) error {
-	req.Header.Add("Authorization", via[0].Header.Get("Authorization"))
-	return nil
+  req.Header.Add("Authorization", via[0].Header.Get("Authorization"))
+  return nil
 }
 
 type CollectorConfiguration struct {
-	TeamcityUrl         string           `json:"teamcityUrl"`
-	BuildConfigurations []CollectorChunk `json:"buildConfigurations"`
+  TeamcityUrl         string           `json:"teamcityUrl"`
+  BuildConfigurations []CollectorChunk `json:"buildConfigurations"`
 }
 
 type CollectorChunk struct {
-	Database       string   `json:"db"`
-	InitialSince   string   `json:"initialSince"`
-	Configurations []string `json:"configurations"`
+  Database       string   `json:"db"`
+  InitialSince   string   `json:"initialSince"`
+  Configurations []string `json:"configurations"`
 }

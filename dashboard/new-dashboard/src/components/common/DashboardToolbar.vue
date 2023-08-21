@@ -12,7 +12,7 @@
         :triggered-by-configurator="props.triggeredByConfigurator"
       />
       <MachineSelect
-        v-if="props.machineConfigurator != null"
+        v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"
       />
     </template>

@@ -165,11 +165,11 @@ function applyData(data: (string | number)[][][]) {
   // The `data` array consists of one result for each configured "project", i.e. one result for each test name. We can then take the last entry
   // from the value arrays of that result to get the most up-to-date measure value.
   for (const resultForSingleProject of data) {
-    const testNames = resultForSingleProject[0]
+    const testNames = resultForSingleProject[0] as string[]
     if (testNames.length === 0) continue
 
-    const measureValues = resultForSingleProject[2]
-    rawMeasuresByTestName.set(testNames.at(-1), measureValues.at(-1))
+    const measureValues = resultForSingleProject[2] as number[]
+    rawMeasuresByTestName.set(testNames.at(-1) ?? "", measureValues.at(-1) ?? 0)
   }
 
   const tableData: TestComparisonTableEntry[] = []

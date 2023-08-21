@@ -106,8 +106,8 @@ importers:
         specifier: workspace:*
         version: link:../new-dashboard
       primevue:
-        specifier: 3.31.0
-        version: 3.31.0(vue@3.3.4)
+        specifier: 3.32.1
+        version: 3.32.1(vue@3.3.4)
       rxjs:
         specifier: 8.0.0-alpha.10
         version: 8.0.0-alpha.10
@@ -151,8 +151,8 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       primevue:
-        specifier: 3.31.0
-        version: 3.31.0(vue@3.3.4)
+        specifier: 3.32.1
+        version: 3.32.1(vue@3.3.4)
       rxjs:
         specifier: 8.0.0-alpha.10
         version: 8.0.0-alpha.10
@@ -3086,8 +3086,8 @@ packages:
     hasBin: true
     dev: false
 
-  /primevue@3.31.0(vue@3.3.4):
-    resolution: {integrity: sha512-4+NHYJ7enPDK/tcZAmVxWfSD3ciGK0NDtw68maFnBnWsXrWnQeiQfD6pOqyguesuIu4fOfO5JHZTGsqHuAL81A==}
+  /primevue@3.32.1(vue@3.3.4):
+    resolution: {integrity: sha512-SXeakYM2ZrRm7JHJ3pCqI0Nw2lHwZGXelt8oEsaG00uzHP+E2bDc2dLL2DrcHG5eLtp0E4ZSFmIYW4+q5joJFw==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:

@@ -7,7 +7,7 @@
     :charts="charts"
   >
     <section>
-      <div class="flex-1 min-w-0">
+      <div>
         <GroupProjectsChart
           v-for="chart in charts"
           :key="chart.definition.label"
@@ -26,13 +26,32 @@
     :charts="chartsDev"
   >
     <section>
-      <div class="flex-1 min-w-0">
+      <div>
         <GroupProjectsChart
           v-for="chartDev in chartsDev"
           :key="chartDev.definition.label"
           :label="chartDev.definition.label"
           :measure="chartDev.definition.measure"
           :projects="chartDev.projects"
+        />
+      </div>
+    </section>
+  </DashboardPage>
+  <DashboardPage
+    db-name="perfint"
+    table="idea"
+    persistent-id="fus_import_dashboard"
+    initial-machine="linux-blade-hetzner"
+    :charts="chartsImport"
+  >
+    <section>
+      <div>
+        <GroupProjectsChart
+          v-for="chartsImport in chartsDev"
+          :key="chartsImport.definition.label"
+          :label="chartsImport.definition.label"
+          :measure="chartsImport.definition.measure"
+          :projects="chartsImport.projects"
         />
       </div>
     </section>
@@ -59,17 +78,21 @@ const chartsDevDeclaration: ChartDefinition[] = [
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Maven Sync"],
-    measures: ["maven.import.stats.importing.task"],
-    projects: ["project-import-maven-flink/measureStartup"],
-  },
-  {
     labels: ["Completion time to show 90p", "Completion duration 90p"],
     measures: ["fus_time_to_show_90p", "fus_completion_duration_90p"],
     projects: ["grails/completion/groovy_file", "grails/completion/java_file", "keycloak_release_20/completion/QuarkusRuntimePomXml"],
   },
 ]
 
+const chartsImportDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Maven Sync"],
+    measures: ["maven.import.stats.importing.task"],
+    projects: ["project-import-maven-flink/measureStartup"],
+  },
+]
+
 const charts = combineCharts(chartsDeclaration)
 const chartsDev = combineCharts(chartsDevDeclaration)
+const chartsImport = combineCharts(chartsImportDeclaration)
 </script>

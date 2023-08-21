@@ -212,7 +212,7 @@ function PrimeVueResolver(): ComponentResolver {
       if (componentWithStyles.has(name)) {
         return {
           from: `primevue/${name.toLowerCase()}/${name}.vue`,
-          sideEffects: [path.join(styleDir, `${name.toLowerCase()}.css`)],
+          sideEffects: [path.join(styleDir, `${name.toLowerCase()}.css`).replaceAll('\\', '/')],
         }
       } else if (components.has(name)) {
         return {

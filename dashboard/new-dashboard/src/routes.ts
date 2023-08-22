@@ -100,6 +100,8 @@ enum ROUTES {
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
+  BazelBspDashboard = `${ROUTE_PREFIX.Bazel}/bazelBSPDashboard`,
+  IntelliJBspDashboard = `${ROUTE_PREFIX.Bazel}/intellijBSPDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionDashboard = `${ROUTE_PREFIX.Clion}/${DASHBOARD_ROUTE}`,
@@ -588,6 +590,14 @@ const BAZEL: Product = {
       url: ROUTE_PREFIX.Bazel,
       label: "",
       tabs: [
+        {
+          url: ROUTES.BazelBspDashboard,
+          label: "Bazel BSP Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJBspDashboard,
+          label: "IntelliJ BSP Dashboard",
+        },
         {
           url: ROUTES.BazelTest,
           label: TESTS_LABEL,
@@ -1094,6 +1104,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Bazel Performance tests" },
+        },
+        {
+          path: ROUTES.BazelBspDashboard,
+          component: () => import("./components/bazel/BazelBSPDashboard.vue"),
+          meta: { pageTitle: "Bazel BSP dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJBspDashboard,
+          component: () => import("./components/bazel/IntelliJBSPDashboard.vue"),
+          meta: { pageTitle: "IntelliJ BSP dashboard" },
         },
         {
           path: ROUTES.QodanaTest,

@@ -1,5 +1,5 @@
 <template>
-  <IntelliJPulse>
+  <StartupPage>
     <Divider label="Classloading Files Size" />
     <LineChartCard
       :skip-zero-values="false"
@@ -35,10 +35,10 @@
         :measures="['metrics.gc/fullGCPause', 'metrics.gc/gcPause']"
       />
     </div>
-  </IntelliJPulse>
+  </StartupPage>
 </template>
 <script setup lang="ts">
 import LineChartCard from "../charts/LineChartCard.vue"
 import Divider from "../common/Divider.vue"
-import IntelliJPulse from "./IntelliJPulse.vue"
+import StartupPage from "./StartupPage.vue"
 </script>

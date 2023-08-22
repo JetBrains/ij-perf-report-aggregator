@@ -31,7 +31,7 @@
   <main class="flex">
     <div
       ref="container"
-      class="flex flex-1 flex-col gap-6 overflow-hidden"
+      class="flex flex-1 flex-col gap-5 overflow-hidden pt-5"
     >
       <slot />
     </div>

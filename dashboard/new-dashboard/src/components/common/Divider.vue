@@ -8,7 +8,7 @@
     <div class="flex-grow border-t border-gray-400" />
   </div>
   <!-- https://tailwindui.com/components/application-ui/layout/dividers -->
-  <div class="v-else relative py-5">
+  <div class="v-else relative">
     <div
       class="absolute inset-0 flex items-center"
       aria-hidden="true"

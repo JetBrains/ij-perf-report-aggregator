@@ -11,7 +11,7 @@ export class ServerConfigurator implements DataQueryConfigurator {
 
   constructor(
     readonly db: string,
-    readonly table: string | null = null,
+    readonly table: string,
     serverUrlObservable: Observable<string> | null = null
   ) {
     if (serverUrlObservable == null) {
@@ -44,9 +44,7 @@ export class ServerConfigurator implements DataQueryConfigurator {
 
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
     query.db = this.db
-    if (this.table != null) {
-      query.table = this.table
-    }
+    query.table = this.table
     return true
   }
 }

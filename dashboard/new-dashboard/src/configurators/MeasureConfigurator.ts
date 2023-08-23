@@ -137,7 +137,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
   query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
   query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
-  query.table = serverConfigurator.table ?? "report"
+  query.table = serverConfigurator.table
   query.flat = true
   return serverConfigurator.computeQueryUrl(query)
 }

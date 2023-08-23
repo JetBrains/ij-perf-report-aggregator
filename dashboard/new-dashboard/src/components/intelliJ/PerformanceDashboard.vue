@@ -200,6 +200,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/completion/kotlin_file", "grails/completion/groovy_file", "grails/completion/java_file"],
   },
   {
+    labels: ["Debug run configuration", "Debug step into"],
+    measures: ["debugRunConfiguration", "debugStep_into"],
+    projects: ["debug-kotlin_petclinic/debug"],
+  },
+  {
     labels: ["Search Everywhere", "Search Everywhere (Dialog Shown)", "Search Everywhere (Items Loaded)"],
     measures: ["searchEverywhere", "searchEverywhere_dialog_shown", "searchEverywhere_items_loaded"],
     projects: [

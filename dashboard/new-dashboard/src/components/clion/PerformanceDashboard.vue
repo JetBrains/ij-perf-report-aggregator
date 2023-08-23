@@ -30,7 +30,7 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-project="'clion/%'"
+          :aggregated-project="'clion/%/typing/%'"
           :aggregated-measure="'%#average_awt_delay'"
           :is-like="true"
           :title="'[CLion] UI responsiveness during typing'"
@@ -62,7 +62,7 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-project="'radler/%'"
+          :aggregated-project="'radler/%/typing/%'"
           :aggregated-measure="'%#average_awt_delay'"
           :is-like="true"
           :title="'[Radler] UI responsiveness during typing'"

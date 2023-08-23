@@ -5,6 +5,7 @@
     persistent-id="fus_dev_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="chartsDev"
+    :with-installer="false"
   >
     <section>
       <div>

@@ -56,6 +56,8 @@ enum ROUTES {
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
   IntelliJFusDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
+  IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
+  IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -280,6 +282,14 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJFusDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJFusDevDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJFusHetznerDashboard,
           label: DASHBOARD_LABEL,
         },
       ],
@@ -726,8 +736,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJFusDashboard,
-          component: () => import("./components/intelliJ/FUSDashboard.vue"),
-          meta: { pageTitle: "FUS dashboard" },
+          component: () => import("./components/intelliJ/fus/FUSDashboard.vue"),
+          meta: { pageTitle: "FUS 1 dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJFusDevDashboard,
+          component: () => import("./components/intelliJ/fus/FUSDevDashboard.vue"),
+          meta: { pageTitle: "FUS 2 dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJFusHetznerDashboard,
+          component: () => import("./components/intelliJ/fus/FUSHetznerDashboard.vue"),
+          meta: { pageTitle: "FUS Import dashboard" },
         },
         {
           path: ROUTES.IntelliJDevDashboard,

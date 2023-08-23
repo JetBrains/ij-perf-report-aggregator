@@ -44,8 +44,6 @@
       <SplitButton
         label="Navigate to test"
         :model="getTestActions()"
-        text
-        plain
         link
         icon="pi pi-chart-line"
         @click="handleNavigateToTest"

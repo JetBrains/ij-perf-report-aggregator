@@ -56,8 +56,8 @@ enum ROUTES {
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
   IntelliJFusDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
-  IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
-  IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
+  IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardDev`,
+  IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -282,15 +282,15 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.IntelliJFusDashboard,
-          label: DASHBOARD_LABEL,
+          label: "Dashboard 1",
         },
         {
           url: ROUTES.IntelliJFusDevDashboard,
-          label: DASHBOARD_LABEL,
+          label: "Dashboard 2",
         },
         {
           url: ROUTES.IntelliJFusHetznerDashboard,
-          label: DASHBOARD_LABEL,
+          label: "Dashboard Import",
         },
       ],
     },

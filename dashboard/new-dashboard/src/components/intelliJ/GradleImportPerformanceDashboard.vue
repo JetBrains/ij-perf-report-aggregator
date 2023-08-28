@@ -29,6 +29,7 @@ const metricsDeclaration = [
   "PROJECT_RESOLVERS",
   "DATA_SERVICES",
   "WORKSPACE_MODEL_APPLY",
+  "fus_gradle.sync",
 
   "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",

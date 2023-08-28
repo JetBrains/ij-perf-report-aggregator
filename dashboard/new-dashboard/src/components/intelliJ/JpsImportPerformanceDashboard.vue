@@ -128,6 +128,7 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-reimport-jps-java-1_000-modules/measureStartup",
       "project-import-from-cache-jps-java-1_000-modules/measureStartup",
       "project-import-idea-community-jps/measureStartup",
+      "jps_10K-modules-checkout-branch-with-changes/measureStartup"
     ],
   }
 })

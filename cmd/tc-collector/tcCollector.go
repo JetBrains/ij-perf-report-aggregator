@@ -298,7 +298,7 @@ func (t *Collector) get(ctx context.Context, url string) (*http.Response, error)
   return response, nil
 }
 
-func (t *Collector) getSnapshots(ctx context.Context, configuration string) ([]string, error) {
+func (t *Collector) getBuildTypesFromComposite(ctx context.Context, configuration string) ([]string, error) {
   isComposite, err := t.isComposite(ctx, configuration)
   if err != nil {
     return nil, err
@@ -308,6 +308,50 @@ func (t *Collector) getSnapshots(ctx context.Context, configuration string) ([]s
   }
   configurations := make([]string, 0)
   err = t.getSnapshotsRecursive(ctx, configuration, &configurations)
+  return configurations, err
+}
+
+func (t *Collector) getSnapshots(ctx context.Context, configuration string) ([]string, error) {
+  configurations, err := t.getBuildTypesFromProject(ctx, configuration)
+  if err != nil {
+    return nil, err
+  }
+  //not a project
+  if len(configurations) == 0 {
+    configurations, err = t.getBuildTypesFromComposite(ctx, configuration)
+    if err != nil {
+      return nil, err
+    }
+    //not composite
+    if len(configurations) == 0 {
+      configurations = []string{configuration}
+    }
+  }
+  return configurations, err
+}
+
+func (t *Collector) getBuildTypesFromProject(ctx context.Context, configuration string) ([]string, error) {
+  response, err := t.get(ctx, t.serverUrl+"/buildTypes?locator=project:"+configuration)
+  configurations := make([]string, 0, 10)
+  if err != nil {
+    return configurations, err
+  }
+  defer response.Body.Close()
+  responseBody, _ := io.ReadAll(response.Body)
+  if response.StatusCode > 300 {
+    return configurations, e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+  }
+  type BuildType struct {
+    Id string
+  }
+  type Project struct {
+    BuildType []BuildType
+  }
+  var project Project
+  err = json.Unmarshal(responseBody, &project)
+  for _, buildType := range project.BuildType {
+    configurations = append(configurations, buildType.Id)
+  }
   return configurations, err
 }
 

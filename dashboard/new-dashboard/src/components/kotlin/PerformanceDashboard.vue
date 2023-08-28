@@ -75,5 +75,5 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, localInspectionsCharts, refactoringCharts } from "./projects"
+import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, localInspectionsCharts, refactoringCharts } from "./projects-with-semantic"
 </script>

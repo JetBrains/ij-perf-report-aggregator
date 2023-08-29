@@ -200,8 +200,8 @@ export const highlightingCharts: ProjectsChartDefinition[] = highlightingLabelsA
 
 function generateHighlightingDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
-    label: `${labelPrefix} highlighting mean value`,
-    measure: "highlighting#mean_value",
+    label: `${labelPrefix} semantic highlighting mean value`,
+    measure: "semanticHighlighting#mean_value",
     projects,
   }
 }

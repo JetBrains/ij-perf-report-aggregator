@@ -106,8 +106,8 @@ const tables = {
     projects: flattenProjectCategories(completionProjects),
   },
   highlighting: {
-    name: "Highlighting",
-    measure: "highlighting#mean_value",
+    name: "Semantic highlighting",
+    measure: "semanticHighlighting#mean_value",
     projects: flattenProjectCategories(highlightingProjects),
   },
   localInspections: {

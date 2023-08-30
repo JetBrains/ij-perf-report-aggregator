@@ -316,13 +316,13 @@ func (t *Collector) getSnapshots(ctx context.Context, configuration string) ([]s
   if err != nil {
     return nil, err
   }
-  //not a project
+  // not a project
   if len(configurations) == 0 {
     configurations, err = t.getBuildTypesFromComposite(ctx, configuration)
     if err != nil {
       return nil, err
     }
-    //not composite
+    // not composite
     if len(configurations) == 0 {
       configurations = []string{configuration}
     }

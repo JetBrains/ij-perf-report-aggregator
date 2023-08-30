@@ -79,7 +79,7 @@ export class CompressorUsingDictionary {
     const uncompressedOffset = malloc(maxUncompressedSize)
     try {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written!
+      const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written
 
       const maxCompressedSize = compressBound(sourceSize)
       const compressedOffset = malloc(maxCompressedSize)

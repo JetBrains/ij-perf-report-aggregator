@@ -106,6 +106,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
         } else if (value.startsWith("qodana-aws-cpu-x64")) {
           groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
+        } else if (value.startsWith("qodana-linux-amd64-large")) {
+          groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
+        } else if (value.startsWith("qodana-linux-amd64-xl")) {
+          groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
         } else if (value.startsWith("intellij-macos-perf-eqx")) {
           groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
         } else {

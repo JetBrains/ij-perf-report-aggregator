@@ -10,6 +10,7 @@ const enum ROUTE_PREFIX {
   IntelliJUltimate = "/intellij/ultimate",
   IntelliJPackageChecker = "/intellij/packageChecker",
   IntelliJFus = "/intellij/fus",
+  IntelliJExperiments = "/intellij/experiments",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -59,6 +60,8 @@ enum ROUTES {
   IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardDev`,
   IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
   IntelliJFusStartupDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardStartup`,
+  IntelliJExperimentsGradleSyncDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardGradleSync`,
+  IntelliJExperimentsMonorepoDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardMonorepo`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -296,6 +299,20 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJFusStartupDashboard,
           label: "Dashboard Startup",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJExperiments,
+      label: "Experiments",
+      tabs: [
+        {
+          url: ROUTES.IntelliJExperimentsGradleSyncDashboard,
+          label: "Gradle Sync Smart/Dumb",
+        },
+        {
+          url: ROUTES.IntelliJExperimentsMonorepoDashboard,
+          label: "IntelliJ + Dotnet dashboard",
         },
       ],
     },
@@ -763,6 +780,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJDevDashboard,
           component: () => import("./components/intelliJ/PerformanceDevDashboard.vue"),
           meta: { pageTitle: "IntelliJ Performance dashboard Fast Installer" },
+        },
+        {
+          path: ROUTES.IntelliJExperimentsMonorepoDashboard,
+          component: () => import("./components/intelliJ/experiments/IntelliJDotnetDashboard.vue"),
+          meta: { pageTitle: "IntelliJ + Dotnet performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJExperimentsGradleSyncDashboard,
+          component: () => import("./components/intelliJ/experiments/GradleSyncDashboard.vue"),
+          meta: { pageTitle: "Performance of Gradle Sync in Smart and Dumb modes" },
         },
         {
           path: ROUTES.IntelliJTinyDashboard,

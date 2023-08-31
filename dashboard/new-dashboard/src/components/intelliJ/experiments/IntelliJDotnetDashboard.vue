@@ -1,0 +1,42 @@
+<template>
+  <DashboardPage
+    db-name="perfint"
+    table="idea"
+    persistent-id="monorepo_dashboard"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :charts="charts"
+  >
+    <section>
+      <div>
+        <GroupProjectsChart
+          v-for="chart in charts"
+          :key="chart.definition.label"
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
+        />
+      </div>
+    </section>
+  </DashboardPage>
+</template>
+
+<script setup lang="ts">
+import { ChartDefinition, combineCharts } from "../../charts/DashboardCharts"
+import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
+
+const chartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Indexing time", "Scanning time", "Dumb mode with pauses", "Number of indexed files"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    projects: ["intellij_sources/indexing", "monorepo/indexing"],
+  },
+  {
+    labels: ["Compilation time", "Freed memory by GC"],
+    measures: ["build_compilation_duration", "freedMemoryByGC"],
+    projects: ["intellij_sources/indexing", "monorepo/indexing"],
+  },
+]
+
+const charts = combineCharts(chartsDeclaration)
+</script>

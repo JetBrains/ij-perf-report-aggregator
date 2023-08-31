@@ -31,6 +31,11 @@ const chartsImportDeclaration: ChartDefinition[] = [
     measures: ["maven.import.stats.importing.task"],
     projects: ["project-import-maven-flink/measureStartup"],
   },
+  {
+    labels: ["Gradle Sync"],
+    measures: ["fus_gradle.sync"],
+    projects: ["project-import-gradle-android-extra-large/measureStartup"],
+  },
 ]
 
 const chartsImport = combineCharts(chartsImportDeclaration)

@@ -5,6 +5,7 @@
     :measures="Array.isArray(measure) ? measure : [measure]"
     :configurators="configurators"
     :skip-zero-values="false"
+    :legend-formatter="props.legendFormatter"
   />
 </template>
 
@@ -22,10 +23,12 @@ interface Props {
   measure: string | string[]
   projects: string[]
   valueUnit?: ValueUnit
+  legendFormatter?: (name: string) => string
 }
 
 const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms",
+  legendFormatter: (name: string) => name,
 })
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

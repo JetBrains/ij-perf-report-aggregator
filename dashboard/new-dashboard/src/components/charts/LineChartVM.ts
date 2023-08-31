@@ -153,6 +153,7 @@ export class LineChartVM {
         return
       }
       this.eChart.chart.hideLoading()
+      const formatter = this.legendFormatter
       this.eChart.chart.setOption(
         {
           title: {
@@ -175,8 +176,12 @@ export class LineChartVM {
                 title: "reset",
               },
             ],
-
-            formatter: this.legendFormatter,
+            formatter(name: string): string {
+              if (formatter("test") != "") {
+                return formatter(name)
+              }
+              return name
+            },
           },
           toolbox: {
             top: 20,

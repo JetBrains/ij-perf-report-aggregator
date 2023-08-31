@@ -33,7 +33,7 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
-  legendFormatter?: (name: string) => string
+  legendFormatter: (name: string) => string
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {

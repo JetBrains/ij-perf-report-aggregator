@@ -34,7 +34,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Compilation time", "Freed memory by GC"],
     measures: ["build_compilation_duration", "freedMemoryByGC"],
-    projects: ["intellij_sources/indexing", "monorepo/indexing"],
+    projects: ["intellij_sources/rebuild", "monorepo/rebuild"],
   },
 ]
 

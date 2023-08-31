@@ -33,12 +33,16 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
+  legendFormatter?: (name: string) => string
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
   skipZeroValues: true,
   valueUnit: "ms",
   chartType: "line",
+  legendFormatter(name: string): string {
+    return name
+  },
 })
 
 const accidents = inject(accidentsKeys, null)
@@ -85,7 +89,7 @@ function initializePlot(accidents: Ref<Accident[]> | null = null) {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents)
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
       const infoData = getInfoDataFrom(params, props.valueUnit, accidents)

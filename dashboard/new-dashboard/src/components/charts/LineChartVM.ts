@@ -67,8 +67,10 @@ export class LineChartVM {
     private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
-    accidents: Ref<Accident[]> | null
+    accidents: Ref<Accident[]> | null,
+    private readonly legendFormatter: (name: string) => string
   ) {
+    this.legendFormatter = legendFormatter
     this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })
@@ -165,7 +167,17 @@ export class LineChartVM {
               color: "#6B7280",
             },
           },
-          legend: { type: "scroll" },
+          legend: {
+            type: "scroll",
+            selector: [
+              {
+                type: "inverse",
+                title: "reset",
+              },
+            ],
+
+            formatter: this.legendFormatter,
+          },
           toolbox: {
             top: 20,
             feature: {

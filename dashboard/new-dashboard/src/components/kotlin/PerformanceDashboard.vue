@@ -28,19 +28,19 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'highlighting\_%'"
+          :aggregated-measure="'semanticHighlighting\_%'"
           :aggregated-project="'%\_k1'"
           :is-like="true"
-          :title="'highlighting K1'"
+          :title="'semantic highlighting K1'"
         />
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'highlighting\_%'"
+          :aggregated-measure="'semanticHighlighting\_%'"
           :aggregated-project="'%\_k2'"
           :is-like="true"
-          :title="'highlighting K2'"
+          :title="'semantic highlighting K2'"
         />
       </div>
       <div class="flex-1 min-w-0">

@@ -30,6 +30,10 @@
           </template>
         </MeasureSelect>
       </template>
+      <template #end>
+        Smoothing:
+        <InputSwitch v-model="smoothingEnabled" />
+      </template>
     </Toolbar>
 
     <main class="flex">
@@ -55,7 +59,8 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { useStorage } from "@vueuse/core"
+import { provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -63,8 +68,10 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import { useSmoothingStore } from "../../shared/storage"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
@@ -83,10 +90,16 @@ const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbTable))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
+const smoothingEnabled = useStorage("smoothingEnabled", true)
+watch(smoothingEnabled, (value) => {
+  window.location.reload()
+  useSmoothingStore().isSmoothingEnabled = value
+})
+useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager(

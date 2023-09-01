@@ -1,5 +1,6 @@
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
+import { CallbackDataParams } from "echarts/types/src/util/types"
 import { deepEqual } from "fast-equals"
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { computed, Ref, shallowRef } from "vue"
@@ -9,7 +10,9 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
+import { useSmoothingStore } from "../shared/storage"
 import { toColor } from "../util/colors"
+import { exponentialSmoothingWithAlphaInference } from "../util/exponentialSmoothing"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -267,6 +270,25 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
+function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined) {
+  return {
+    color(seriesIndex: CallbackDataParams): ZRColor {
+      const accident = getAccident(accidentMap, seriesIndex.value as string[])
+      if (accident == null) {
+        return seriesIndex.color as ZRColor
+      }
+      switch (accident.kind) {
+        case AccidentKind.Regression:
+          return "red"
+        case AccidentKind.Improvement:
+          return "green"
+        case AccidentKind.Exception:
+          return toColor(accident.reason)
+      }
+    },
+  }
+}
+
 function configureChart(
   configuration: DataQueryExecutorConfiguration,
   dataList: DataQueryResult,
@@ -302,17 +324,29 @@ function configureChart(
       seriesName = seriesData[6][0] as string
     }
 
+    const isSmoothing = useSmoothingStore().isSmoothingEnabled
+
+    if (isSmoothing) {
+      const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])
+      seriesData.push(smoothedData)
+    }
+
     let isNotEmpty = false
     for (const data of seriesData) {
       isNotEmpty = isNotEmpty || data.length > 0
     }
 
     if (isNotEmpty) {
+      const name = seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName
+      const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+      const seriesLayoutBy = "row"
+      const datasetIndex = dataIndex
+      const xAxisName = useDurationFormatter ? "time" : "count"
       series.push({
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-        id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
-        name: seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName,
-        type: chartType,
+        id,
+        name,
+        type: isSmoothing ? "scatter" : chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
@@ -336,32 +370,31 @@ function configureChart(
           }
           return "circle"
         },
-        triggerLineEvent: true,
-        // applicable only for line chart
-        sampling: "lttb",
-        seriesLayoutBy: "row",
-        datasetIndex: dataIndex,
+        seriesLayoutBy,
+        datasetIndex,
         dimensions: [
-          { name: useDurationFormatter ? "time" : "count", type: "time" },
+          { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: {
-          color(seriesIndex) {
-            const accident = getAccident(accidentMap?.value, seriesIndex.value as string[])
-            if (accident == null) {
-              return seriesIndex.color as ZRColor
-            }
-            switch (accident.kind) {
-              case AccidentKind.Regression:
-                return "red"
-              case AccidentKind.Improvement:
-                return "green"
-              case AccidentKind.Exception:
-                return toColor(accident.reason)
-            }
-          },
-        },
+        itemStyle: getItemStyleForSeries(accidentMap?.value),
       })
+      if (isSmoothing) {
+        series.push({
+          // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
+          id: id + "smoothed",
+          name,
+          type: "line",
+          symbol: "none",
+          silent: true,
+          seriesLayoutBy,
+          datasetIndex,
+          encode: {
+            x: xAxisName,
+            y: seriesData.length - 1,
+          },
+          itemStyle: getItemStyleForSeries(accidentMap?.value),
+        })
+      }
     }
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false

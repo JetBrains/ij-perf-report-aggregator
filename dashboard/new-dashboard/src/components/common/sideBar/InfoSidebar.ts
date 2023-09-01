@@ -21,9 +21,19 @@ export interface DataSeries {
   color: string
 }
 
+export enum DBType {
+  FLEET = "fleet",
+  JBR = "jbr",
+  DEV_FLEET = "dev_fleet",
+  INTELLIJ = "intellij",
+  INTELLIJ_DEV = "intellij_dev",
+  UNKNOWN = "unknown",
+}
+
 export interface InfoSidebar<T extends InfoData> {
   data: ShallowRef<T | null>
   visible: ShallowRef<boolean>
+  type: DBType
 
   show(data: T): void
 
@@ -33,6 +43,11 @@ export interface InfoSidebar<T extends InfoData> {
 export class InfoSidebarImpl<D extends InfoData> implements InfoSidebar<D> {
   readonly data = shallowRef<D | null>(null)
   readonly visible = computed(() => this.data.value != null)
+  type = DBType.INTELLIJ
+
+  constructor(type: DBType) {
+    this.type = type
+  }
 
   show(data: D): void {
     this.data.value = data

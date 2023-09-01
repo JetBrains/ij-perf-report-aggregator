@@ -24,6 +24,8 @@
       <slot name="toolbar" />
     </template>
     <template #end>
+      Smoothing:
+      <InputSwitch v-model="smoothingEnabled" />
       Sidebar:
       <InputSwitch v-model="sidebarEnabled" />
     </template>
@@ -49,8 +51,10 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getDBType } from "../../shared/dbTypes"
 import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
+import { useSmoothingStore } from "../../shared/storage"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -65,12 +69,10 @@ import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const container = ref<HTMLElement>()
-const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>()
 
 const tooltip = ref<typeof ChartTooltip>()
 provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 provide(containerKey, container)
-provide(sidebarStartupKey, sidebarVm)
 
 const productCodeToName = new Map([
   ["DB", "DataGrip"],
@@ -89,6 +91,9 @@ provide(chartStyleKey, {
 
 const dbName = "ij"
 const dbTable = "report"
+
+const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>(getDBType(dbName, dbTable))
+provide(sidebarStartupKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager(
@@ -123,6 +128,13 @@ watch(sidebarEnabled, (value) => {
   }
 })
 provide(sidebarEnabledKey, sidebarEnabled)
+
+const smoothingEnabled = useStorage("smoothingEnabledInStartup", false)
+watch(smoothingEnabled, (value) => {
+  window.location.reload()
+  useSmoothingStore().isSmoothingEnabled = value
+})
+useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

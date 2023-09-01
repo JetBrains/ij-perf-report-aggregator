@@ -3,6 +3,7 @@ import "@fontsource/inter"
 import "floating-vue/dist/style.css"
 import "./main.css"
 import FloatingVue from "floating-vue"
+import { createPinia } from "pinia"
 import PrimeVue from "primevue/config"
 import ToastService from "primevue/toastservice"
 import { createApp } from "vue"
@@ -21,9 +22,11 @@ import "new-dashboard/src/primevue-theme/misc.css"
 async function initApp() {
   const app = createApp(App)
   const router = createAndConfigureRouter()
+  const pinia = createPinia()
   app.use(router)
   app.use(PrimeVue)
   app.use(ToastService)
+  app.use(pinia)
   app.use(FloatingVue, {
     themes: {
       info: {

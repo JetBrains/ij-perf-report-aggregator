@@ -32,6 +32,7 @@ import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyCo
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
+import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
@@ -64,7 +65,7 @@ provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(props.dbName, props.table))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

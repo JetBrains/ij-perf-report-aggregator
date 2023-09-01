@@ -33,7 +33,7 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
-  legendFormatter: (name: string) => string
+  legendFormatter?: (name: string) => string
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
@@ -92,7 +92,7 @@ function initializePlot(accidents: Ref<Accident[]> | null = null) {
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
-      const infoData = getInfoDataFrom(params, props.valueUnit, accidents)
+      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)
       sidebarVm.show(infoData)
     })
   } else {

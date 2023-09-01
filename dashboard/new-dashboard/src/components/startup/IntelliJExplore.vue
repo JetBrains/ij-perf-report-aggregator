@@ -53,6 +53,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getDBType } from "../../shared/dbTypes"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
@@ -95,7 +96,7 @@ const dbTable = "report"
 const container = ref<HTMLElement>()
 provide(containerKey, container)
 
-const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>()
+const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>(getDBType(dbName, dbTable))
 provide(sidebarStartupKey, sidebarVm)
 const sidebarEnabled = useStorage("sidebarEnabled", true)
 watch(sidebarEnabled, (value) => {

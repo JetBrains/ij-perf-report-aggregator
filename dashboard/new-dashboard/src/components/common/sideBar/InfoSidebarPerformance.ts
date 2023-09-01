@@ -3,14 +3,14 @@ import { computed, Ref } from "vue"
 import { Accident, Description, getDescriptionFromMetaDb } from "../../../util/meta"
 import { ValueUnit } from "../chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
-import { buildUrl, DataSeries, InfoData } from "./InfoSidebar"
+import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
 export interface InfoDataPerformance extends DataSeries, InfoData {
   accidents: Ref<Accident[] | undefined> | undefined
   description: Ref<Description | null>
 }
 
-export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
+export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -25,14 +25,12 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
   let accidentBuild: string | undefined
-  //dev fleet builds
-  if (dataSeries.length == 5) {
+  if (dbType == DBType.DEV_FLEET) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
   }
-  //dev builds intellij
-  if (dataSeries.length == 7) {
+  if (dbType == DBType.INTELLIJ_DEV) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
@@ -42,8 +40,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     projectName = dataSeries[6] as string
     accidentBuild = buildId.toString()
   }
-  //fleet
-  if (dataSeries.length == 9) {
+  if (dbType == DBType.FLEET) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
@@ -52,8 +49,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum1 = dataSeries[7] as number
     buildNum2 = dataSeries[8] as number
   }
-  //jbr
-  if (dataSeries.length == 8) {
+  if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
@@ -63,7 +59,7 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     projectName = dataSeries[6] as string
     buildNumber = dataSeries[7] as string
   }
-  if (dataSeries.length == 11) {
+  if (dbType == DBType.INTELLIJ) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
@@ -76,6 +72,9 @@ export function getInfoDataFrom(params: CallbackDataParams, valueUnit: ValueUnit
     buildNum1 = dataSeries[9] as number
     buildNum2 = dataSeries[10] as number
     accidentBuild = `${buildVersion}.${buildNum1}`
+  }
+  if (dbType == DBType.UNKNOWN) {
+    console.error("Unknown type of DB")
   }
 
   const fullBuildId = buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`

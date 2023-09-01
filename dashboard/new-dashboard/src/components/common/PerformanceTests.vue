@@ -38,6 +38,10 @@
         </MeasureSelect>
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
+      <template #end>
+        Smoothing:
+        <InputSwitch v-model="smoothingEnabled" />
+      </template>
     </Toolbar>
     <main class="flex">
       <div
@@ -66,8 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core"
-import { provide, ref } from "vue"
+import { computedAsync, useStorage } from "@vueuse/core"
+import { provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -77,8 +81,10 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import { useSmoothingStore } from "../../shared/storage"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -109,10 +115,17 @@ provideReportUrlProvider(props.withInstaller)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(props.dbName, props.table))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
+
+const smoothingEnabled = useStorage("smoothingEnabled", true)
+watch(smoothingEnabled, (value) => {
+  window.location.reload()
+  useSmoothingStore().isSmoothingEnabled = value
+})
+useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(

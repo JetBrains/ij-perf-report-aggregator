@@ -9,6 +9,10 @@
         />
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
+      <template #end>
+        Smoothing:
+        <InputSwitch v-model="smoothingEnabled" />
+      </template>
     </Toolbar>
 
     <main class="flex">
@@ -104,12 +108,15 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { useStorage } from "@vueuse/core"
+import { provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { containerKey, sidebarVmKey } from "../../shared/keys"
+import { getDBType } from "../../shared/dbTypes"
+import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { useSmoothingStore } from "../../shared/storage"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
@@ -127,12 +134,20 @@ const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>()
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbTable))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
+const smoothingEnabled = useStorage("smoothingEnabled", true)
+watch(smoothingEnabled, (value) => {
+  window.location.reload()
+  useSmoothingStore().isSmoothingEnabled = value
+})
+useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
+
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+provide(serverConfiguratorKey, serverConfigurator)
 const persistenceForDashboard = new PersistentStateManager(
   "fleetStartup_dashboard",
   {

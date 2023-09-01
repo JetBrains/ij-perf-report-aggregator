@@ -161,15 +161,15 @@ export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | 
   return accident != null && accident.kind != AccidentKind.Exception
 }
 
-export function getAccident(accidents: Map<string, Accident> | undefined, value: string[]): Accident | null {
+export function getAccident(accidents: Map<string, Accident> | undefined, value: string[] | null): Accident | null {
   if (accidents != null) {
     //perf db
-    if (value.length == 11) {
+    if (value?.length == 12 || value?.length == 11) {
       const key = `${value[6]}_${value[8]}.${value[9]}`
       return accidents.get(key) ?? null
     }
     //perf dev db
-    if (value.length == 7) {
+    if (value?.length == 8 || value?.length == 7) {
       const key = `${value[6]}_${value[5]}`
       return accidents.get(key) ?? null
     }

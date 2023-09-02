@@ -27,7 +27,7 @@
       @update:result-data="(newValue) => (resultData = newValue)"
     />
 
-    <p class="text-sm text-gray-500 text-right mt-4">The table only displays the results of the last build from the selected branch.</p>
+    <p class="text-sm text-gray-500 text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>
   </section>
 </template>
 
@@ -37,7 +37,7 @@ import { FilterConfigurator } from "../../../configurators/filter"
 import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
 import { DataQueryConfigurator } from "../../common/dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "../../common/formatter"
-import { TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
+import { isValidTestComparisonTableEntry, TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
 
 interface Props {
   name: string
@@ -59,13 +59,8 @@ const totalTimeK2 = computed(() => calculateTotalTime((entry) => entry.currentVa
 
 const totalImprovement = computed(() => (totalTimeK2.value == 0 ? 0 : (totalTimeK1.value - totalTimeK2.value) / totalTimeK2.value))
 
-function calculateTotalTime(getTime: (entry: TestComparisonTableEntry) => number): number {
-  return resultData.value
-    .map((entry) => {
-      const value = getTime(entry)
-      return Number.isFinite(value) ? value : 0
-    })
-    .reduce((a, b) => a + b, 0)
+function calculateTotalTime(getTime: (entry: TestComparisonTableEntry) => number | null): number {
+  return resultData.value.map((entry) => (isValidTestComparisonTableEntry(entry) ? (getTime(entry) as number) : 0)).reduce((a, b) => a + b, 0)
 }
 
 const topStats = computed(() => [

@@ -32,7 +32,7 @@
       :sortable="true"
     >
       <template #body="slotProps">
-        {{ formatMeasure(slotProps.data.baselineValue) }}
+        {{ formatMeasureOrFallback(slotProps.data.baselineValue) }}
       </template>
     </Column>
     <Column
@@ -41,7 +41,7 @@
       :sortable="true"
     >
       <template #body="slotProps">
-        {{ formatMeasure(slotProps.data.currentValue) }}
+        {{ formatMeasureOrFallback(slotProps.data.currentValue) }}
       </template>
     </Column>
     <Column
@@ -50,7 +50,7 @@
       :sortable="true"
     >
       <template #body="slotProps">
-        {{ formatDifference(slotProps.data.difference) }}
+        {{ formatDifferenceOrFallback(slotProps.data.difference) }}
       </template>
     </Column>
   </DataTable>
@@ -69,6 +69,7 @@ import { serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "./DataQueryExecutor"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "./dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "./formatter"
+import { TestComparisonTableEntry } from "./TestComparisonTableEntry"
 
 /**
  * Defines that a `baseline` test should be compared against a `current` test. This represents a single row in the comparison table.
@@ -112,13 +113,6 @@ const props = withDefaults(defineProps<TestComparisonTableProps>(), {
 
 const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTableEntry[]) => void>()
 
-export interface TestComparisonTableEntry {
-  test: string
-  baselineValue: number
-  currentValue: number
-  difference: number
-}
-
 const resultData = ref<TestComparisonTableEntry[]>([])
 
 const filters = ref({
@@ -126,6 +120,16 @@ const filters = ref({
 })
 
 const formatMeasure = getValueFormatterByMeasureName(props.measure)
+
+function formatMeasureOrFallback(value: number | null) {
+  if (value === null) return "N/A"
+  return formatMeasure(value)
+}
+
+function formatDifferenceOrFallback(value: number | null) {
+  if (value === null) return "N/A"
+  return props.formatDifference(value)
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // -- Query configuration and data evaluation
@@ -160,7 +164,7 @@ const dataQueryExecutor = new DataQueryExecutor([
 ] as DataQueryConfigurator[])
 
 function applyData(data: (string | number)[][][]) {
-  const rawMeasuresByTestName = new Map<string, number>()
+  const rawMeasuresByTestName = new Map<string, number | null>()
 
   // The `data` array consists of one result for each configured "project", i.e. one result for each test name. We can then take the last entry
   // from the value arrays of that result to get the most up-to-date measure value.
@@ -169,15 +173,19 @@ function applyData(data: (string | number)[][][]) {
     if (testNames.length === 0) continue
 
     const measureValues = resultForSingleProject[2] as number[]
-    rawMeasuresByTestName.set(testNames.at(-1) ?? "", measureValues.at(-1) ?? 0)
+    rawMeasuresByTestName.set(testNames.at(-1) ?? "", measureValues.at(-1) ?? null)
   }
 
   const tableData: TestComparisonTableEntry[] = []
 
   for (const testComparison of props.comparisons) {
-    const baselineValue = rawMeasuresByTestName.get(testComparison.baselineTestName) as number
-    const currentValue = rawMeasuresByTestName.get(testComparison.currentTestName) as number
-    const difference = Number.isFinite(baselineValue) && Number.isFinite(currentValue) ? (baselineValue - currentValue) / currentValue : 0
+    const baselineValue = (rawMeasuresByTestName.get(testComparison.baselineTestName) as number | null) ?? null // Replace `undefined` with `null`.
+    const currentValue = (rawMeasuresByTestName.get(testComparison.currentTestName) as number | null) ?? null
+
+    let difference: number | null = null
+    if (baselineValue !== null && currentValue !== null) {
+      difference = Number.isFinite(baselineValue) && Number.isFinite(currentValue) ? (baselineValue - currentValue) / currentValue : 0
+    }
 
     tableData.push({
       test: testComparison.label,

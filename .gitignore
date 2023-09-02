@@ -1,6 +1,7 @@
 .idea/workspace.xml
 .idea/httpRequests/
 .idea/dataSources/
+.idea/shelf/
 http-client.env.json
 
 /deployment/overlays/

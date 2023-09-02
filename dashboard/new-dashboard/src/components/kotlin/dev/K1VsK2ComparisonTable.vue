@@ -34,9 +34,10 @@
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
 import { FilterConfigurator } from "../../../configurators/filter"
-import TestComparisonTable, { TestComparison, TestComparisonTableEntry } from "../../common/TestComparisonTable.vue"
+import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
 import { DataQueryConfigurator } from "../../common/dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "../../common/formatter"
+import { TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
 
 interface Props {
   name: string

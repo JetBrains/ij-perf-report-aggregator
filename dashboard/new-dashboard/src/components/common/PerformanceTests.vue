@@ -83,7 +83,7 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -94,7 +94,7 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
-import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
+import { provideReportUrlProviderWithDataFetching } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
 import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
@@ -112,7 +112,7 @@ const props = withDefaults(defineProps<PerformanceTestsProps>(), {
   unit: "ms",
 })
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProviderWithDataFetching(props.withInstaller)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
@@ -124,6 +124,7 @@ provide(sidebarVmKey, sidebarVm)
 const smoothingEnabled = useStorage("smoothingEnabled", true)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
   {

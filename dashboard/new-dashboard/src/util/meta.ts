@@ -1,4 +1,3 @@
-import { useAsyncState } from "@vueuse/core"
 import { Ref } from "vue"
 import { encodeRison } from "../components/common/rison"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
@@ -131,14 +130,9 @@ export class Description {
   ) {}
 }
 
-export function getDescriptionFromMetaDb(project: string | undefined, branch: string): Ref<Description | null> {
-  const { state } = useAsyncState(
-    fetch(description_url + encodeRison({ project, branch })).then((response) => {
-      return response.ok ? response.json() : null
-    }),
-    null
-  )
-  return state as Ref<Description | null>
+export async function getDescriptionFromMetaDb(project: string | undefined, branch: string): Promise<Description | null> {
+  const response = await fetch(description_url + encodeRison({ project, branch }))
+  return response.ok ? response.json() : null
 }
 
 /**
@@ -164,13 +158,13 @@ export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | 
 export function getAccident(accidents: Map<string, Accident> | undefined, value: string[] | null): Accident | null {
   if (accidents != null) {
     //perf db
-    if (value?.length == 12 || value?.length == 11) {
-      const key = `${value[6]}_${value[8]}.${value[9]}`
+    if (value?.length == 9 || value?.length == 10) {
+      const key = `${value[5]}_${value[6]}.${value[7]}`
       return accidents.get(key) ?? null
     }
     //perf dev db
-    if (value?.length == 8 || value?.length == 7) {
-      const key = `${value[6]}_${value[5]}`
+    if (value?.length == 6 || value?.length == 7) {
+      const key = `${value[5]}_${value[4]}`
       return accidents.get(key) ?? null
     }
   }

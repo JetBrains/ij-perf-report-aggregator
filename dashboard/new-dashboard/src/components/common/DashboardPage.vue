@@ -40,7 +40,7 @@ import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import DashboardToolbar from "./DashboardToolbar.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
-import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
+import { provideReportUrlProviderWithDataFetching } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
 import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
@@ -62,7 +62,7 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
   initialMachine: null,
 })
 
-provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
+provideReportUrlProviderWithDataFetching(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()

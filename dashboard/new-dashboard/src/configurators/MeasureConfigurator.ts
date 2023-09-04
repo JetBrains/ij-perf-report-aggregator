@@ -317,11 +317,11 @@ function configureChart(
       }
     }
     //fleet
-    if (seriesName == "" && (seriesData.length == 5 || seriesData.length == 9)) {
-      seriesName = seriesData[4][0] as string
+    if (seriesName == "" && (seriesData.length == 4 || seriesData.length == 7)) {
+      seriesName = seriesData[3][0] as string
     } else if (seriesName == "" && seriesData.length > 6) {
       // we take only the one project name, there can't be more
-      seriesName = seriesData[6][0] as string
+      seriesName = seriesData[5][0] as string
     }
 
     const isSmoothing = useStorage("smoothingEnabled", false).value

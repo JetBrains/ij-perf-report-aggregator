@@ -62,7 +62,7 @@ import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
-import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { provideReportUrlProviderForStartup } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
@@ -84,7 +84,7 @@ const productCodeToName = new Map([
   ["RM", "RubyMine"],
 ])
 
-provideReportUrlProvider()
+provideReportUrlProviderForStartup()
 provide(chartStyleKey, {
   ...chartDefaultStyle,
 })

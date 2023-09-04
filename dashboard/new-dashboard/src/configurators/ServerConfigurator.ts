@@ -4,7 +4,7 @@ import { getCompressor, initZstdObservable } from "../components/common/zstd"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerConfigurator implements DataQueryConfigurator {
-  static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
+  static readonly DEFAULT_SERVER_URL = "https://ij-perf-api.labs.jb.gg" //https://ij-perf-api.labs.jb.gg
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL

@@ -78,12 +78,12 @@ import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { provideReportUrlProviderWithDataFetching } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 
-provideReportUrlProvider(false, true)
+provideReportUrlProviderWithDataFetching(false, true)
 
 const dbName = "jbr"
 const dbTable = "report"

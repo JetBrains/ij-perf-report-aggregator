@@ -11,13 +11,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { isDefined } from "@vueuse/core"
+import { computedAsync, isDefined } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
-import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Accident } from "../../util/meta"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
@@ -84,6 +84,8 @@ let chartManager: ChartManager | null
 let chartVm: LineChartVM
 let unsubscribe: (() => void) | null = null
 
+const serverConfigurator = injectOrError(serverConfiguratorKey)
+
 function initializePlot(accidents: Ref<Accident[]> | null = null) {
   if (chartElement.value) {
     chartManager?.dispose()
@@ -91,9 +93,12 @@ function initializePlot(accidents: Ref<Accident[]> | null = null) {
     chartManager = new ChartManager(chartElement.value, container.value)
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
+
     chartManager.chart.on("click", (params: CallbackDataParams) => {
-      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)
-      sidebarVm.show(infoData)
+      computedAsync(async () => {
+        const infoData = await getInfoDataFrom(serverConfigurator, sidebarVm.type, params, props.valueUnit, accidents)
+        sidebarVm.show(infoData)
+      })
     })
   } else {
     console.error("Dom was not yet initialized")

@@ -122,12 +122,12 @@ import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { provideReportUrlProviderWithDataFetching } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 
-provideReportUrlProvider()
+provideReportUrlProviderWithDataFetching(true)
 
 const dbName = "fleet"
 const dbTable = "report"

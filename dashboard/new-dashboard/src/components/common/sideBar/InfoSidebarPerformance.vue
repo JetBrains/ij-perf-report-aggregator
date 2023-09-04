@@ -14,7 +14,7 @@
       </span>
 
       <VTooltip
-        v-if="vm.data.value?.description.value?.description"
+        v-if="vm.data.value?.description?.description"
         theme="info"
       >
         <div class="flex gap-1.5 font-medium text-base items-center break-all">
@@ -26,7 +26,7 @@
         </div>
         <template #popper>
           <span class="text-sm">
-            {{ vm.data.value?.description.value?.description }}
+            {{ vm.data.value?.description?.description }}
           </span>
         </template>
       </VTooltip>
@@ -189,9 +189,8 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { useRouter } from "vue-router"
-import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
-import { getTeamcityBuildType } from "../../../util/artifacts"
+import { injectOrError } from "../../../shared/injectionKeys"
+import { sidebarVmKey } from "../../../shared/keys"
 import { calculateChanges } from "../../../util/changes"
 import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
 import SpaceIcon from "../SpaceIcon.vue"
@@ -202,7 +201,6 @@ const showDialog = ref(false)
 const reason = ref("")
 const router = useRouter()
 const accidentType = ref<string>("Regression")
-const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
 function reportRegression() {
   showDialog.value = false
@@ -243,8 +241,8 @@ function handleCloseClick() {
 
 function getTestActions() {
   const actions = []
-  if (vm.data.value?.description.value) {
-    const url = vm.data.value.description.value.url
+  if (vm.data.value?.description) {
+    const url = vm.data.value.description.url
     if (url && url != "") {
       actions.push({
         label: "Download test project",
@@ -254,7 +252,7 @@ function getTestActions() {
         },
       })
     }
-    const methodName = vm.data.value.description.value.methodName
+    const methodName = vm.data.value.description.methodName
     if (methodName && methodName != "") {
       actions.push(
         {
@@ -278,16 +276,12 @@ function getTestActions() {
 }
 
 function getArtifactsUrl() {
-  if (serverConfigurator?.table == null) {
+  if (vm.data.value?.buildType && vm.data.value.buildId && vm.data.value.projectName) {
+    window.open(
+      `${tcUrl}buildConfiguration/${vm.data.value.buildType}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`
+    )
+  } else {
     window.open(vm.data.value?.artifactsUrl)
-  } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
-    const db = serverConfigurator.db
-    const table = serverConfigurator.table
-    getTeamcityBuildType(db, table, vm.data.value.buildId, (type: string | null) => {
-      if (vm.data.value) {
-        window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)
-      }
-    })
   }
 }
 

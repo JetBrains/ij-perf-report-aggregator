@@ -18,20 +18,18 @@
     </template>
     <template #end>
       Smoothing:
-      <InputSwitch v-model="smoothingEnabled" />
+      <InputSwitch v-model="smoothingEnabledStored" />
     </template>
   </Toolbar>
 </template>
 
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
-import { watch } from "vue"
 import { BranchConfigurator } from "../../configurators/BranchConfigurator"
 import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { useSmoothingStore } from "../../shared/storage"
 import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
@@ -45,12 +43,7 @@ const props = defineProps<{
   onChangeRange: (value: TimeRange) => void
 }>()
 
-const smoothingEnabled = useStorage("smoothingEnabled", true)
-watch(smoothingEnabled, (value) => {
-  window.location.reload()
-  useSmoothingStore().isSmoothingEnabled = value
-})
-useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
+const smoothingEnabledStored = useStorage("smoothingEnabled", true)
 </script>
 
 <style>

@@ -60,18 +60,18 @@
 
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
-import { provide, ref, watch } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import { useSmoothingStore } from "../../shared/storage"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
@@ -95,11 +95,6 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbT
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 const smoothingEnabled = useStorage("smoothingEnabled", true)
-watch(smoothingEnabled, (value) => {
-  window.location.reload()
-  useSmoothingStore().isSmoothingEnabled = value
-})
-useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager(
@@ -119,7 +114,7 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, timeRangeConfigurator, triggeredByConfigurator]
+const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, timeRangeConfigurator, triggeredByConfigurator, new SmoothingConfigurator()]
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

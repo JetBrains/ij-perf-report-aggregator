@@ -1,3 +1,4 @@
+import { useStorage } from "@vueuse/core"
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import { CallbackDataParams } from "echarts/types/src/util/types"
@@ -10,7 +11,6 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
-import { useSmoothingStore } from "../shared/storage"
 import { toColor } from "../util/colors"
 import { exponentialSmoothingWithAlphaInference } from "../util/exponentialSmoothing"
 import { MAIN_METRICS } from "../util/mainMetrics"
@@ -324,7 +324,7 @@ function configureChart(
       seriesName = seriesData[6][0] as string
     }
 
-    const isSmoothing = useSmoothingStore().isSmoothingEnabled
+    const isSmoothing = useStorage("smoothingEnabled", false).value
 
     if (isSmoothing) {
       const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])

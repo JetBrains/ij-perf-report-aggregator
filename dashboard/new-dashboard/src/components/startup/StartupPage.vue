@@ -50,11 +50,11 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
-import { useSmoothingStore } from "../../shared/storage"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
@@ -117,7 +117,16 @@ const projectConfigurator = createProjectConfigurator(productConfigurator, serve
   branchConfigurator,
 ])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
-const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator, triggeredByConfigurator]
+const configurators = [
+  serverConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+  productConfigurator,
+  projectConfigurator,
+  branchConfigurator,
+  triggeredByConfigurator,
+  new SmoothingConfigurator(),
+]
 
 provide(configuratorListKey, configurators)
 
@@ -129,12 +138,7 @@ watch(sidebarEnabled, (value) => {
 })
 provide(sidebarEnabledKey, sidebarEnabled)
 
-const smoothingEnabled = useStorage("smoothingEnabledInStartup", false)
-watch(smoothingEnabled, (value) => {
-  window.location.reload()
-  useSmoothingStore().isSmoothingEnabled = value
-})
-useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
+const smoothingEnabled = useStorage("smoothingEnabled", false)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

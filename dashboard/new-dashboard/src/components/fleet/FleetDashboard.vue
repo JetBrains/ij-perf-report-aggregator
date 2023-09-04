@@ -109,14 +109,14 @@
 
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
-import { provide, ref, watch } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { useSmoothingStore } from "../../shared/storage"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
@@ -140,11 +140,6 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const smoothingEnabled = useStorage("smoothingEnabled", true)
-watch(smoothingEnabled, (value) => {
-  window.location.reload()
-  useSmoothingStore().isSmoothingEnabled = value
-})
-useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
@@ -162,7 +157,7 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 
-const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator]
+const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, new SmoothingConfigurator()]
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

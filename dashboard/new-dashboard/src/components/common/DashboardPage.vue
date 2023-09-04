@@ -30,6 +30,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { getDBType } from "../../shared/dbTypes"
@@ -121,6 +122,7 @@ const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
+dashboardConfigurators.push(new SmoothingConfigurator())
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 
 function onChangeRange(value: TimeRange) {

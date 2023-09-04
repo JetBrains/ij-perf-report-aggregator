@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computedAsync, useStorage } from "@vueuse/core"
-import { provide, ref, watch } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -80,11 +80,11 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import { useSmoothingStore } from "../../shared/storage"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -93,6 +93,7 @@ import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
+import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
@@ -121,11 +122,6 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const smoothingEnabled = useStorage("smoothingEnabled", true)
-watch(smoothingEnabled, (value) => {
-  window.location.reload()
-  useSmoothingStore().isSmoothingEnabled = value
-})
-useSmoothingStore().isSmoothingEnabled = smoothingEnabled.value
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
@@ -146,12 +142,13 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator]
+const configurators: DataQueryConfigurator[] = [serverConfigurator, scenarioConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator]
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
 }
+configurators.push(new SmoothingConfigurator())
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

@@ -115,6 +115,10 @@ const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTabl
 
 const resultData = ref<TestComparisonTableEntry[]>([])
 
+watch(resultData, () => {
+  emit("update:resultData", resultData.value)
+})
+
 const filters = ref({
   test: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
@@ -197,8 +201,6 @@ function applyData(data: (string | number)[][][]) {
   }
 
   resultData.value = tableData
-
-  emit("update:resultData", resultData.value)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -226,6 +228,11 @@ onUnmounted(() => {
 function updateProjectConfigurator(comparisons: TestComparison[]) {
   // Ensure that the API query only requests results for projects/tests which should be displayed by this comparison table.
   projectConfigurator.selected.value = comparisons.flatMap((testComparison) => [testComparison.baselineTestName, testComparison.currentTestName])
+
+  // If there are no comparisons and thus no projects, the query will not be performed, so we need to clear out the old result data manually.
+  if (comparisons.length === 0) {
+    resultData.value = []
+  }
 }
 
 function initializeTable() {

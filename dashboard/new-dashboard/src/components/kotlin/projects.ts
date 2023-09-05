@@ -1,4 +1,33 @@
 /**
+ * A project category is a project name prefix such as "intellij_commit/" and "kotlin_lang/" with an associated, human-readable label.
+ */
+interface ProjectCategory {
+  label: string
+  prefix: string
+}
+
+export const projectCategories: ProjectCategory[] = [
+  buildCategory("Hello World", "kotlin_empty/"),
+  buildCategory("IntelliJ", "intellij_commit/"),
+  buildCategory("Kotlin Compiler", "kotlin_lang/"),
+  buildCategory("Kotlin Language Server", "kotlin_language_server/"),
+  buildCategory("Toolbox Enterprise", "toolbox_enterprise/"),
+  buildCategory("Spring Framework", "spring-framework/"),
+  buildCategory("Kotlin PetClinic", "kotlin_petclinic/"),
+
+  // The `ktor_samples` category is open by design (hence no closing `/`).
+  buildCategory("Ktor Samples", "ktor_samples"),
+
+  buildCategory("LeakCanary", "leak-canary-android/"),
+  buildCategory("Arrow", "arrow/"),
+  buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
+]
+
+function buildCategory(label: string, prefix: string) {
+  return { label, prefix }
+}
+
+/**
  * Encapsulates all data which is needed to render a chart on one of the Kotlin dev dashboards. For each chart definition, a chart for K1
  * and a chart for K2 will be rendered.
  *

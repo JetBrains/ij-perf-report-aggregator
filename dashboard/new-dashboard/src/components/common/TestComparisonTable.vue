@@ -67,9 +67,9 @@ import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "./DataQueryExecutor"
+import { TestComparisonTableEntry } from "./TestComparisonTableEntry"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "./dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "./formatter"
-import { TestComparisonTableEntry } from "./TestComparisonTableEntry"
 
 /**
  * Defines that a `baseline` test should be compared against a `current` test. This represents a single row in the comparison table.
@@ -146,13 +146,14 @@ const dataQueryExecutor = new DataQueryExecutor([
   new (class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       query.addField("project")
+      query.addField("generated_time")
       query.addField({ n: "measures", subName: "name" })
       query.addField({ n: "measures", subName: "value" })
 
       configuration.measures = [props.measure]
       query.addFilter({ f: "measures.name", v: props.measure })
 
-      query.order = "project"
+      query.order = ["project", "generated_time"]
 
       return true
     }
@@ -172,7 +173,7 @@ function applyData(data: (string | number)[][][]) {
     const testNames = resultForSingleProject[0] as string[]
     if (testNames.length === 0) continue
 
-    const measureValues = resultForSingleProject[2] as number[]
+    const measureValues = resultForSingleProject[3] as number[]
     rawMeasuresByTestName.set(testNames.at(-1) ?? "", measureValues.at(-1) ?? null)
   }
 

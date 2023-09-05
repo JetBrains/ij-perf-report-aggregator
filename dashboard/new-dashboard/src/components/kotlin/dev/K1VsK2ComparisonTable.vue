@@ -19,7 +19,7 @@
 
     <TestComparisonTable
       :measure="measure"
-      :comparisons="projects.map(transformToTestComparison)"
+      :comparisons="filteredProjects.map(transformToTestComparison)"
       :configurators="configurators"
       baseline-column-label="K1"
       current-column-label="K2"
@@ -35,19 +35,35 @@
 import { computed, Ref, ref } from "vue"
 import { FilterConfigurator } from "../../../configurators/filter"
 import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
+import { isValidTestComparisonTableEntry, TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
 import { DataQueryConfigurator } from "../../common/dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "../../common/formatter"
-import { isValidTestComparisonTableEntry, TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
 
 interface Props {
   name: string
   measure: string
   projects: string[]
 
+  /**
+   * The list of project categories from which results should be displayed. This also affects the aggregate calculation. If the list is empty,
+   * projects will not be filtered.
+   *
+   * @see ProjectCategory
+   */
+  allowedProjectCategories: string[]
+
   configurators: (DataQueryConfigurator | FilterConfigurator)[]
 }
 
 const props = defineProps<Props>()
+
+const filteredProjects = computed(() => {
+  if (props.allowedProjectCategories.length === 0) {
+    return props.projects
+  }
+
+  return props.projects.filter((project) => props.allowedProjectCategories.some((prefix) => project.startsWith(prefix)))
+})
 
 const resultData = ref<TestComparisonTableEntry[]>([]) as Ref<TestComparisonTableEntry[]>
 

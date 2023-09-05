@@ -1,0 +1,50 @@
+<template>
+  <MultiSelect
+    :model-value="selectedProjectCategories"
+    :options="projectCategories"
+    title="Project"
+    option-label="label"
+    option-value="prefix"
+    placeholder="All projects"
+    @update:model-value="(newValue: string[]) => emit('update:selectedProjectCategories', newValue)"
+  >
+    <template #value="slotProps">
+      <div class="group flex items-center gap-1">
+        <CubeIcon class="w-4 h-4 text-gray-500" />
+
+        <span v-if="!slotProps.value || slotProps.value.length === 0">
+          {{ slotProps.placeholder }}
+        </span>
+
+        <span v-if="slotProps.value && slotProps.value.length === 1">
+          {{ labelByPrefix.get(slotProps.value[0]) }}
+        </span>
+
+        <span v-if="slotProps.value && slotProps.value.length > 1">{{ slotProps.value.length }} projects</span>
+
+        <ChevronDownIcon
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          aria-hidden="true"
+        />
+      </div>
+    </template>
+    <template #dropdownicon>
+      <span />
+    </template>
+  </MultiSelect>
+</template>
+
+<script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
+import { projectCategories } from "../projects"
+
+interface Props {
+  selectedProjectCategories: string[]
+}
+
+defineProps<Props>()
+
+const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategories: string[]) => void>()
+
+const labelByPrefix = new Map(projectCategories.map((c) => [c.prefix, c.label]))
+</script>

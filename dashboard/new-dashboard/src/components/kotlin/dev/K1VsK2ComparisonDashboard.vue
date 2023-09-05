@@ -12,6 +12,7 @@
         :selection-limit="1"
       />
       <MachineSelect :machine-configurator="machineConfigurator" />
+      <K1VsK2ComparisonProjectCategoryFilter v-model:selected-project-categories="selectedProjectCategories" />
       <span class="p-buttonset ml-4">
         <Button
           v-for="(table, _, index) in tables"
@@ -37,6 +38,7 @@
         :name="table.name"
         :measure="table.measure"
         :projects="table.projects"
+        :allowed-project-categories="selectedProjectCategories"
         :configurators="configurators"
       />
     </TabPanel>
@@ -44,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -57,6 +59,7 @@ import MachineSelect from "../../common/MachineSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 import { completionProjects, findUsagesProjects, highlightingProjects } from "../projects"
+import K1VsK2ComparisonProjectCategoryFilter from "./K1VsK2ComparisonProjectCategoryFilter.vue"
 import K1VsK2ComparisonTable from "./K1VsK2ComparisonTable.vue"
 
 const dbName = "perfintDev"
@@ -84,6 +87,8 @@ const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, per
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
 const configurators = [timeRangeConfigurator, branchConfigurator, triggeredByConfigurator, machineConfigurator]
+
+const selectedProjectCategories: Ref<string[]> = ref([])
 
 const activeTab = ref(0)
 

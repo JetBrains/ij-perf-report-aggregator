@@ -61,7 +61,7 @@ import { FilterMatchMode } from "primevue/api"
 import { ColumnFilterModelType } from "primevue/column"
 
 import { Observable } from "rxjs"
-import { onMounted, onUnmounted, ref } from "vue"
+import { onMounted, onUnmounted, ref, watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
@@ -202,21 +202,31 @@ function applyData(data: (string | number)[][][]) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// -- Initialization and teardown
+// -- Initialization, updating and teardown
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 let unsubscribe: (() => void) | null = null
 
 onMounted(() => {
-  // Ensure that the API query only requests results for projects/tests which should be displayed by this comparison table.
-  projectConfigurator.selected.value = props.comparisons.flatMap((testComparison) => [testComparison.baselineTestName, testComparison.currentTestName])
-
+  updateProjectConfigurator(props.comparisons)
   initializeTable()
 })
+
+watch(
+  () => props.comparisons,
+  (newValue) => {
+    updateProjectConfigurator(newValue)
+  }
+)
 
 onUnmounted(() => {
   unsubscribe?.()
 })
+
+function updateProjectConfigurator(comparisons: TestComparison[]) {
+  // Ensure that the API query only requests results for projects/tests which should be displayed by this comparison table.
+  projectConfigurator.selected.value = comparisons.flatMap((testComparison) => [testComparison.baselineTestName, testComparison.currentTestName])
+}
 
 function initializeTable() {
   unsubscribe = dataQueryExecutor.subscribe((data, _configuration, isLoading) => {

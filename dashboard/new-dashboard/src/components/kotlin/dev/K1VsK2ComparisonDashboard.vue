@@ -101,8 +101,13 @@ function setActiveTab(index: number) {
  */
 const tables = {
   completion: {
-    name: "Completion",
+    name: "Completion (all elements)",
     measure: "completion#mean_value",
+    projects: flattenProjectCategories(completionProjects),
+  },
+  completionFirstElement: {
+    name: "Completion (first element)",
+    measure: "completion#firstElementShown#mean_value",
     projects: flattenProjectCategories(completionProjects),
   },
   highlighting: {

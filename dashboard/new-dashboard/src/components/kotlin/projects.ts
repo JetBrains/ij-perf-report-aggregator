@@ -181,6 +181,13 @@ export const highlightingProjects = {
     "kotlin_language_server/highlight/removedImports/CompletionsTest_with_library_cache",
     "kotlin_lang/highlight/removedImports/DefaultArgumentStubGenerator_with_library_cache",
   ],
+  springFramework: [
+    "spring-framework/highlight/BeanDefinitionDsl_with_library_cache",
+    "spring-framework/highlight/CoRouterFunctionDsl_with_library_cache",
+    "spring-framework/highlight/reactive/RouterFunctionDsl_with_library_cache",
+    "spring-framework/highlight/servlet/RouterFunctionDsl_with_library_cache",
+    "spring-framework/highlight/StatusResultMatchersDsl_with_library_cache",
+  ],
 }
 
 const highlightingLabelsAndProjects = [
@@ -193,6 +200,7 @@ const highlightingLabelsAndProjects = [
   { label: "'Ktor samples'", projects: highlightingProjects.ktorSamples },
   { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
   { label: "'Kotlin script'", projects: highlightingProjects.kotlinScript },
+  { label: "'Spring framework'", projects: highlightingProjects.springFramework },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
 ]
 

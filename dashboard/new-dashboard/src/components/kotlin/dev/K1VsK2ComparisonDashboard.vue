@@ -77,6 +77,7 @@ const persistentStateManager = new PersistentStateManager(
   {
     machine: initialMachine,
     branch: "kt-master",
+    projectCategories: [],
   },
   router
 )
@@ -89,6 +90,10 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 const configurators = [timeRangeConfigurator, branchConfigurator, triggeredByConfigurator, machineConfigurator]
 
 const selectedProjectCategories: Ref<string[]> = ref([])
+
+persistentStateManager.add("projectCategories", selectedProjectCategories, (existingValue) => {
+  return typeof existingValue === "string" ? [existingValue] : existingValue
+})
 
 const activeTab = ref(0)
 

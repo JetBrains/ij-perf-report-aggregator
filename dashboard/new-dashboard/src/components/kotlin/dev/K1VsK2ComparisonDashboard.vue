@@ -11,7 +11,6 @@
         :triggered-by-configurator="triggeredByConfigurator"
         :selection-limit="1"
       />
-      <MachineSelect :machine-configurator="machineConfigurator" />
       <K1VsK2ComparisonProjectCategoryFilter v-model:selected-project-categories="selectedProjectCategories" />
       <span class="p-buttonset ml-4">
         <Button
@@ -55,7 +54,6 @@ import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import BranchSelect from "../../common/BranchSelect.vue"
-import MachineSelect from "../../common/MachineSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 import { completionProjects, findUsagesProjects, highlightingProjects } from "../projects"

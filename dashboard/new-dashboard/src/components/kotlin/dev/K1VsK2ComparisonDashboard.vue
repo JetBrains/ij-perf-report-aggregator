@@ -11,7 +11,10 @@
         :triggered-by-configurator="triggeredByConfigurator"
         :selection-limit="1"
       />
-      <K1VsK2ComparisonProjectCategoryFilter v-model:selected-project-categories="selectedProjectCategories" />
+      <K1VsK2ComparisonProjectCategoryFilter
+        :initial-project-categories="initialProjectCategories"
+        @update:selected-project-categories="(newValue) => (selectedProjectCategories = newValue)"
+      />
       <span class="p-buttonset ml-4">
         <Button
           v-for="(table, _, index) in tables"
@@ -45,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
+import { provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -92,6 +95,9 @@ const selectedProjectCategories: Ref<string[]> = ref([])
 persistentStateManager.add("projectCategories", selectedProjectCategories, (existingValue) => {
   return typeof existingValue === "string" ? [existingValue] : existingValue
 })
+
+// The initial selected project categories are taken from the initial state of the persistent state manager.
+const initialProjectCategories = selectedProjectCategories.value
 
 const activeTab = ref(0)
 

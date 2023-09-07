@@ -92,10 +92,8 @@ function initializePlot(accidents: Ref<Accident[]> | null = null) {
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
-      computedAsync(async () => {
-        const infoData = await getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)
-        sidebarVm.show(infoData)
-      })
+      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)
+      sidebarVm.show(infoData)
     })
   } else {
     console.error("Dom was not yet initialized")

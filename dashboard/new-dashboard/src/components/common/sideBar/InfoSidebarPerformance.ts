@@ -1,3 +1,4 @@
+import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
 import { Accident, Description, getDescriptionFromMetaDb } from "../../../util/meta"
@@ -7,10 +8,10 @@ import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
 export interface InfoDataPerformance extends DataSeries, InfoData {
   accidents: Ref<Accident[] | undefined> | undefined
-  description: Description | null
+  description: Ref<Description | null>
 }
 
-export async function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): Promise<InfoDataPerformance> {
+export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -91,7 +92,9 @@ export async function getInfoDataFrom(dbType: DBType, params: CallbackDataParams
     return accidents?.value.filter((accident: Accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
   })
 
-  const description = await getDescriptionFromMetaDb(projectName, "master")
+  const description = computedAsync(async () => {
+    return await getDescriptionFromMetaDb(projectName, "master")
+  })
 
   return {
     build: fullBuildId,

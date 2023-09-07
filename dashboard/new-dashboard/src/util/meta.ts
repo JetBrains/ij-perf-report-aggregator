@@ -1,4 +1,3 @@
-import { useAsyncState } from "@vueuse/core"
 import { Ref } from "vue"
 import { encodeRison } from "../components/common/rison"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
@@ -131,14 +130,9 @@ export class Description {
   ) {}
 }
 
-export function getDescriptionFromMetaDb(project: string | undefined, branch: string): Ref<Description | null> {
-  const { state } = useAsyncState(
-    fetch(description_url + encodeRison({ project, branch })).then((response) => {
-      return response.ok ? response.json() : null
-    }),
-    null
-  )
-  return state as Ref<Description | null>
+export async function getDescriptionFromMetaDb(project: string | undefined, branch: string): Promise<Description | null> {
+  const response = await fetch(description_url + encodeRison({ project, branch }))
+  return response.ok ? response.json() : null
 }
 
 /**

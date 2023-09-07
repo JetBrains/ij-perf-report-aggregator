@@ -7,10 +7,10 @@ import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
 export interface InfoDataPerformance extends DataSeries, InfoData {
   accidents: Ref<Accident[] | undefined> | undefined
-  description: Ref<Description | null>
+  description: Description | null
 }
 
-export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
+export async function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): Promise<InfoDataPerformance> {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -88,11 +88,10 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   }
 
   const filteredAccidents = computed(() => {
-    console.log(accidents?.value)
     return accidents?.value.filter((accident: Accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
   })
 
-  const description = getDescriptionFromMetaDb(projectName, "master")
+  const description = await getDescriptionFromMetaDb(projectName, "master")
 
   return {
     build: fullBuildId,

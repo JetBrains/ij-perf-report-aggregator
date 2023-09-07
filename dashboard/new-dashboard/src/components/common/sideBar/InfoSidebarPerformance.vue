@@ -14,7 +14,7 @@
       </span>
 
       <VTooltip
-        v-if="vm.data.value?.description.value?.description"
+        v-if="vm.data.value?.description?.description"
         theme="info"
       >
         <div class="flex gap-1.5 font-medium text-base items-center break-all">
@@ -26,7 +26,7 @@
         </div>
         <template #popper>
           <span class="text-sm">
-            {{ vm.data.value?.description.value?.description }}
+            {{ vm.data.value?.description?.description }}
           </span>
         </template>
       </VTooltip>
@@ -243,8 +243,8 @@ function handleCloseClick() {
 
 function getTestActions() {
   const actions = []
-  if (vm.data.value?.description.value) {
-    const url = vm.data.value.description.value.url
+  if (vm.data.value?.description) {
+    const url = vm.data.value.description.url
     if (url && url != "") {
       actions.push({
         label: "Download test project",
@@ -254,7 +254,7 @@ function getTestActions() {
         },
       })
     }
-    const methodName = vm.data.value.description.value.methodName
+    const methodName = vm.data.value.description.methodName
     if (methodName && methodName != "") {
       actions.push(
         {

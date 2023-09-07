@@ -19,7 +19,7 @@
 
     <TestComparisonTable
       :measure="measure"
-      :comparisons="filteredProjects.map(transformToTestComparison)"
+      :comparisons="testComparisons"
       :configurators="configurators"
       baseline-column-label="K1"
       current-column-label="K2"
@@ -64,6 +64,8 @@ const filteredProjects = computed(() => {
 
   return props.projects.filter((project) => props.allowedProjectCategories.some((prefix) => project.startsWith(prefix)))
 })
+
+const testComparisons = computed(() => filteredProjects.value.map((element) => transformToTestComparison(element)))
 
 const resultData = ref<TestComparisonTableEntry[]>([]) as Ref<TestComparisonTableEntry[]>
 

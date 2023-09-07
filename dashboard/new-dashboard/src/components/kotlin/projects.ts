@@ -139,7 +139,6 @@ export const highlightingProjects = {
   intelliJ: [
     "intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache",
     "intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache",
-    "intellij_commit/highlight/ContentManagerImpl_with_library_cache",
     "intellij_commit/highlight/JdkList_with_library_cache",
     "intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache",
     "intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache",

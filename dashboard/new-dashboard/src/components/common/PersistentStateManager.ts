@@ -39,7 +39,11 @@ export class PersistentStateManager {
       const route = this.route
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
-        this.state[name] = Array.isArray(value) ? value.map((element) => boolFromString(element)) : boolFromString(value)
+        if (value === "[]") {
+          this.state[name] = []
+        } else {
+          this.state[name] = Array.isArray(value) ? value.map((element) => boolFromString(element)) : boolFromString(value)
+        }
       }
     }
 
@@ -69,7 +73,8 @@ export class PersistentStateManager {
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
-        query[name] = value
+        // Persist empty arrays as `[]` to allow 0-value selections shared via the URL to override a user's local state.
+        query[name] = Array.isArray(value) && value.length === 0 ? "[]" : value
         isChanged = true
       }
     }

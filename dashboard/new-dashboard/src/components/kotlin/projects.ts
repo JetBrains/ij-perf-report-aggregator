@@ -13,6 +13,7 @@ export const projectCategories: ProjectCategory[] = [
   buildCategory("Kotlin Language Server", "kotlin_language_server/"),
   buildCategory("Toolbox Enterprise", "toolbox_enterprise/"),
   buildCategory("Spring Framework", "spring-framework/"),
+  buildCategory("Rust Plugin", "rust_commit/"),
   buildCategory("Kotlin PetClinic", "kotlin_petclinic/"),
 
   // The `ktor_samples` category is open by design (hence no closing `/`).
@@ -217,6 +218,19 @@ export const highlightingProjects = {
     "spring-framework/highlight/servlet/RouterFunctionDsl_with_library_cache",
     "spring-framework/highlight/StatusResultMatchersDsl_with_library_cache",
   ],
+  rustPlugin: [
+    "rust_commit/highlight/CargoBuildManagerTest_with_library_cache",
+    "rust_commit/highlight/CargoWorkspace_with_library_cache",
+    "rust_commit/highlight/ClippyLints_with_library_cache",
+    "rust_commit/highlight/MacroExpansionManager_with_library_cache",
+    "rust_commit/highlight/MemoryCategorization_with_library_cache",
+    "rust_commit/highlight/Processors_with_library_cache",
+    "rust_commit/highlight/RsErrorAnnotatorTest_with_library_cache",
+    "rust_commit/highlight/RsReferenceImporter_with_library_cache",
+    "rust_commit/highlight/StubImplementations_with_library_cache",
+    "rust_commit/highlight/TypeInferenceWalker_with_library_cache",
+    "rust_commit/highlight/TypeInference_with_library_cache",
+  ],
 }
 
 const highlightingLabelsAndProjects = [
@@ -230,6 +244,7 @@ const highlightingLabelsAndProjects = [
   { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
   { label: "'Kotlin script'", projects: highlightingProjects.kotlinScript },
   { label: "'Spring framework'", projects: highlightingProjects.springFramework },
+  { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
 ]
 

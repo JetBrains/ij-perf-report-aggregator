@@ -1,12 +1,11 @@
 <template>
   <MultiSelect
-    :model-value="selectedProjectCategories"
+    v-model="selectedProjectCategories"
     :options="projectCategories"
     title="Project"
     option-label="label"
     option-value="prefix"
     placeholder="All projects"
-    @update:model-value="(newValue: string[]) => emit('update:selectedProjectCategories', newValue)"
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
@@ -36,15 +35,22 @@
 
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
+import { ref, watch } from "vue"
 import { projectCategories } from "../projects"
 
 interface Props {
-  selectedProjectCategories: string[]
+  initialProjectCategories: string[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+
+const selectedProjectCategories = ref(props.initialProjectCategories)
 
 const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategories: string[]) => void>()
+
+watch(selectedProjectCategories, (newValue) => {
+  emit("update:selectedProjectCategories", newValue)
+})
 
 const labelByPrefix = new Map(projectCategories.map((c) => [c.prefix, c.label]))
 </script>

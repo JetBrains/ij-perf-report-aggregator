@@ -3,6 +3,7 @@ package server
 import (
   "encoding/json"
   "errors"
+  "github.com/VictoriaMetrics/fastcache"
   "github.com/jackc/pgx/v5"
   "github.com/jackc/pgx/v5/pgtype"
   "github.com/jackc/pgx/v5/pgxpool"
@@ -173,6 +174,8 @@ type Description struct {
 }
 
 func createGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+  cacheSize := 1000 * 1000 * 50
+  cache := fastcache.New(cacheSize)
   return func(writer http.ResponseWriter, request *http.Request) {
     objectStart := strings.IndexRune(request.URL.Path, '(')
     var params DescriptionRequestParams
@@ -183,6 +186,16 @@ func createGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       return
     }
 
+    cacheKey := []byte(params.Project + params.Branch)
+    cachedValue, isInCache := cache.HasGet(nil, cacheKey)
+    if isInCache {
+      _, err = writer.Write(cachedValue)
+      if err != nil {
+        logger.Error(err.Error())
+        writer.WriteHeader(http.StatusInternalServerError)
+      }
+      return
+    }
     rows, err := metaDb.Query(request.Context(), "SELECT project, branch, url, methodname, description FROM project_description WHERE project=$1 and branch=$2", params.Project, params.Branch)
     if err != nil {
       logger.Error("Unable to execute the query", zap.Error(err))
@@ -222,6 +235,7 @@ func createGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       return
     }
     _, err = writer.Write(jsonBytes)
+    cache.Set(cacheKey, jsonBytes)
     if err != nil {
       logger.Error(err.Error())
       writer.WriteHeader(http.StatusInternalServerError)

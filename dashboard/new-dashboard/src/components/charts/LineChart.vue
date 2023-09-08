@@ -110,8 +110,8 @@ function setupChartOnVisibility(accidents: Ref<Accident[]> | null = null) {
       if (isVisible) {
         createChart(accidents)
       } else {
-        // If the chart is not visible, still try to create it after a delay of 3 second
-        setTimeout(createChart, 3000)
+        // If the chart is not visible, still try to create it after a delay of 5 second
+        setTimeout(createChart, 5000)
       }
     },
     { immediate: true }

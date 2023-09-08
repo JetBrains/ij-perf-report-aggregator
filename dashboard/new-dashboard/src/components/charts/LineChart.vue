@@ -11,7 +11,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computedAsync, isDefined } from "@vueuse/core"
+import { isDefined, useElementVisibility } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -47,6 +47,9 @@ const props = withDefaults(defineProps<LineChartProps>(), {
 
 const accidents = inject(accidentsKeys, null)
 const chartElement = shallowRef<HTMLElement>()
+
+const chartIsVisible = useElementVisibility(chartElement)
+
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
 const measureConfigurator = new PredefinedMeasureConfigurator(
@@ -84,7 +87,7 @@ let chartManager: ChartManager | null
 let chartVm: LineChartVM
 let unsubscribe: (() => void) | null = null
 
-function initializePlot(accidents: Ref<Accident[]> | null = null) {
+function createChart(accidents: Ref<Accident[]> | null = null) {
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
@@ -100,17 +103,36 @@ function initializePlot(accidents: Ref<Accident[]> | null = null) {
   }
 }
 
-onMounted(() => {
+function setupChartOnVisibility(accidents: Ref<Accident[]> | null = null) {
+  watch(
+    chartIsVisible,
+    (isVisible) => {
+      if (isVisible) {
+        createChart(accidents)
+      } else {
+        // If the chart is not visible, still try to create it after a delay of 3 second
+        setTimeout(createChart, 3000)
+      }
+    },
+    { immediate: true }
+  )
+}
+
+function setupChartWithAccidentCheck() {
   //there is injection key but the value is not fetched yet
   if (accidents != null && accidents.value == undefined) {
     watch(accidents, () => {
       if (isDefined(accidents)) {
-        initializePlot(accidents)
+        setupChartOnVisibility(accidents)
       }
     })
   } else {
-    initializePlot()
+    setupChartOnVisibility()
   }
+}
+
+onMounted(() => {
+  setupChartWithAccidentCheck()
 })
 
 onUnmounted(() => {

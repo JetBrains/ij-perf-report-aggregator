@@ -68,8 +68,8 @@ enum ROUTES {
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
-  KotlinLocalInspection = `${ROUTE_PREFIX.Kotlin}/localInspection`,
-  KotlinLocalInspectionDev = `${ROUTE_PREFIX.Kotlin}/localInspectionDev`,
+  KotlinCodeAnalysis = `${ROUTE_PREFIX.Kotlin}/codeAnalysis`,
+  KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
@@ -363,8 +363,8 @@ const KOTLIN: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.KotlinLocalInspection,
-          label: "Local inspection",
+          url: ROUTES.KotlinCodeAnalysis,
+          label: "Code Analysis",
         },
         {
           url: ROUTES.KotlinTests,
@@ -379,12 +379,12 @@ const KOTLIN: Product = {
           label: "Completion (dev)",
         },
         {
-          url: ROUTES.KotlinHighlightingDev,
-          label: "Highlighting (dev)",
+          url: ROUTES.KotlinCodeAnalysisDev,
+          label: "Code analysis (dev)",
         },
         {
-          url: ROUTES.KotlinLocalInspectionDev,
-          label: "Local inspection (dev)",
+          url: ROUTES.KotlinHighlightingDev,
+          label: "Highlighting (dev)",
         },
         {
           url: ROUTES.KotlinFindUsagesDev,
@@ -1008,14 +1008,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Kotlin Performance dashboard" },
         },
         {
-          path: ROUTES.KotlinLocalInspection,
-          component: () => import("./components/kotlin/KotlinLocalInspectionDashboard.vue"),
-          meta: { pageTitle: "Local inspections" },
+          path: ROUTES.KotlinCodeAnalysis,
+          component: () => import("./components/kotlin/KotlinCodeAnalysisDashboard.vue"),
+          meta: { pageTitle: "Code analysis" },
         },
         {
-          path: ROUTES.KotlinLocalInspectionDev,
-          component: () => import("./components/kotlin/dev/KotlinLocalInspectionDashboard.vue"),
-          meta: { pageTitle: "Local inspections (dev)" },
+          path: ROUTES.KotlinCodeAnalysisDev,
+          component: () => import("./components/kotlin/dev/KotlinCodeAnalysisChartsDashboard.vue"),
+          meta: { pageTitle: "Code analysis (dev)" },
         },
         {
           path: ROUTES.KotlinCompletionDev,

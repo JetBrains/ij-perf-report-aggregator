@@ -5,12 +5,12 @@
     persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
-    <DashboardGroupCharts :definitions="localInspectionsCharts" />
+    <DashboardGroupCharts :definitions="codeAnalysisCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import DashboardPage from "../common/DashboardPage.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { localInspectionsCharts } from "./projects"
+import { codeAnalysisCharts } from "./projects"
 </script>

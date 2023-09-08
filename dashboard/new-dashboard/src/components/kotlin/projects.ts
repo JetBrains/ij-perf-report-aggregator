@@ -258,11 +258,11 @@ function generateHighlightingDefinition(labelPrefix: string, projects: string[])
   }
 }
 
-export const localInspectionsCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateLocalInspectionsDefinition(v.label, v.projects))
+export const codeAnalysisCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
 
-function generateLocalInspectionsDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
-    label: `${labelPrefix} localInspections mean value`,
+    label: `${labelPrefix} Code Analysis mean value`,
     measure: "localInspections#mean_value",
     projects,
   }

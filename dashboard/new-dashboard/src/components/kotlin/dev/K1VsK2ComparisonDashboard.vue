@@ -124,14 +124,14 @@ const tables = {
     measure: "completion#firstElementShown#mean_value",
     projects: flattenProjectCategories(completionProjects),
   },
+  localInspections: {
+    name: "Code analysis",
+    measure: "localInspections#mean_value",
+    projects: flattenProjectCategories(highlightingProjects),
+  },
   highlighting: {
     name: "Semantic highlighting",
     measure: "semanticHighlighting#mean_value",
-    projects: flattenProjectCategories(highlightingProjects),
-  },
-  localInspections: {
-    name: "Local Inspections",
-    measure: "localInspections#mean_value",
     projects: flattenProjectCategories(highlightingProjects),
   },
   findUsages: {

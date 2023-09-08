@@ -158,6 +158,7 @@ export const highlightingProjects = {
     "kotlin_lang/highlight/Flag_with_library_cache",
     "kotlin_lang/highlight/KtFirDataClassConverters_with_library_cache",
     "kotlin_lang/highlight/DefaultArgumentStubGenerator_with_library_cache",
+    "kotlin_lang/highlight/RawFirBuilder_with_library_cache",
   ],
   kotlinLanguageServer: [
     "kotlin_language_server/highlight/Compiler_with_library_cache",

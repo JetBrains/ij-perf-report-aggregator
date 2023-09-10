@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import DashboardPage from "../common/DashboardPage.vue"
+import { ChartDefinition, combineCharts } from "../../charts/DashboardCharts"
+import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
 
 const processorCounts = [1, 2, 4, 8, 16, 32, 64]
 const chartsDeclaration: ChartDefinition[] = [

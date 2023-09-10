@@ -38,9 +38,10 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
-  IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardTiny`,
-  IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJ}/incrementalCompilationDashboard`,
-  IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJ}/scalabilityDashboard`,
+  IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
+  IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
+  IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
+  IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
@@ -52,7 +53,7 @@ enum ROUTES {
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
   IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/${DASHBOARD_ROUTE}`,
-  IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJ}/performanceGC`,
+  IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
@@ -187,20 +188,8 @@ const IDEA: Product = {
           label: "Dashboard (Fast Installer)",
         },
         {
-          url: ROUTES.IntelliJTinyDashboard,
-          label: "Dashboard (Tiny)",
-        },
-        {
-          url: ROUTES.IntelliJIncrementalCompilationDashboard,
-          label: "Incremental Compilation",
-        },
-        {
-          url: ROUTES.IntelliJGCDashboard,
-          label: "Garbage Collectors",
-        },
-        {
-          url: ROUTES.IntelliJScalabilityDashboard,
-          label: "Scalability",
+          url: ROUTES.IntelliJIndexingDashboard,
+          label: "Indexing Dashboard",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -313,6 +302,22 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJExperimentsMonorepoDashboard,
           label: "IntelliJ + Dotnet dashboard",
+        },
+        {
+          url: ROUTES.IntelliJTinyDashboard,
+          label: "Dashboard (Tiny Agents)",
+        },
+        {
+          url: ROUTES.IntelliJIncrementalCompilationDashboard,
+          label: "Incremental Compilation",
+        },
+        {
+          url: ROUTES.IntelliJGCDashboard,
+          label: "Garbage Collectors",
+        },
+        {
+          url: ROUTES.IntelliJScalabilityDashboard,
+          label: "Scalability",
         },
       ],
     },
@@ -722,13 +727,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Performance dashboard" },
         },
         {
+          path: ROUTES.IntelliJIndexingDashboard,
+          component: () => import("./components/intelliJ/IndexingDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
+        },
+        {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
-          component: () => import("./components/intelliJ/IncrementalCompilationDashboard.vue"),
+          component: () => import("./components/intelliJ/experiments/IncrementalCompilationDashboard.vue"),
           meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
         },
         {
           path: ROUTES.IntelliJScalabilityDashboard,
-          component: () => import("./components/intelliJ/ScalabilityDashboard.vue"),
+          component: () => import("./components/intelliJ/experiments/ScalabilityDashboard.vue"),
           meta: { pageTitle: "IntelliJ Scalability dashboard" },
         },
         {
@@ -793,7 +803,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJTinyDashboard,
-          component: () => import("./components/intelliJ/PerformanceTinyDashboard.vue"),
+          component: () => import("./components/intelliJ/experiments/PerformanceTinyDashboard.vue"),
           meta: { pageTitle: "IntelliJ Performance dashboard (Tiny)" },
         },
         {
@@ -803,7 +813,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJGCDashboard,
-          component: () => import("./components/intelliJ/GarbageCollectorDashboard.vue"),
+          component: () => import("./components/intelliJ/experiments/GarbageCollectorDashboard.vue"),
           meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
         },
         {

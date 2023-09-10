@@ -56,11 +56,11 @@
 </template>
 
 <script setup lang="ts">
-import AggregationChart from "../charts/AggregationChart.vue"
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
-import DashboardPage from "../common/DashboardPage.vue"
-import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import AggregationChart from "../../charts/AggregationChart.vue"
+import { ChartDefinition, combineCharts } from "../../charts/DashboardCharts"
+import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../../common/dataQuery"
 
 const chartsDeclaration: ChartDefinition[] = [
   {

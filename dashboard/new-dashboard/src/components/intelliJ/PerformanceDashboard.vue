@@ -11,24 +11,6 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#JAVA'"
-          :title="'Indexing Java (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#Kotlin'"
-          :title="'Indexing Kotlin (kB/s)'"
-          :chart-color="'#9B51E0'"
-          :value-unit="'counter'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'completion\_%'"
           :is-like="true"
           :title="'Completion'"
@@ -63,42 +45,6 @@ import DashboardPage from "../common/DashboardPage.vue"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 const chartsDeclaration: ChartDefinition[] = [
-  {
-    labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Dumb mode time", "Number of indexed files (Big projects)"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
-    projects: ["community/indexing", "intellij_sources/indexing"],
-  },
-  {
-    labels: [
-      "Indexing with the new record storage (IntelliJ project)",
-      "Scanning with the new record storage (IntelliJ project)",
-      "Dumb mode time",
-      "Number of indexed files (IntelliJ project)",
-    ],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
-    projects: [
-      "vfs-record-storage/in-memory-intellij_sources/indexing",
-      "vfs-record-storage/over-lock-free-file-page-cache-intellij_sources/indexing",
-      "vfs-record-storage/over-mmapped-file-intellij_sources/indexing",
-      "vfs-record-storage/over-mmapped-file-with-fast-names-intellij_sources/indexing",
-      "vfs-record-storage/regular-intellij_sources/indexing",
-      "vfs-record-storage/with-mru-file-name-cache-intellij_sources/indexing",
-    ],
-  },
-  {
-    labels: ["Indexing", "Scanning", "Dumb mode time", "Number of indexed files"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
-    projects: [
-      "empty_project/indexing",
-      "grails/indexing",
-      "java/indexing",
-      "kotlin/indexing",
-      "kotlin_coroutines/indexing",
-      "spring_boot/indexing",
-      "spring_boot_maven/indexing",
-      "kotlin_petclinic/indexing",
-    ],
-  },
   {
     labels: ["VFS Refresh"],
     measures: ["vfs_initial_refresh"],

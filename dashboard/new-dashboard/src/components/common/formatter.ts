@@ -33,7 +33,7 @@ const durationFormatOptions: HumanizerOptions = {
 
 export const durationAxisPointerFormatter: (valueInMs: number) => string = humanizeDuration.humanizer(durationFormatOptions)
 
-export const timeFormatWithoutSeconds = new Intl.DateTimeFormat(undefined, {
+export const timeFormatWithoutSeconds = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
   day: "numeric",

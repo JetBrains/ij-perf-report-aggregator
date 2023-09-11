@@ -363,11 +363,11 @@ func splitBuildNumber(buildComponents []string) (int, int, int, error) {
   }
   buildC2, err := strconv.Atoi(buildComponents[1])
   if err != nil {
-    return buildC1, 0, 0, e.WithStack(err)
+    return buildC1, 0, 0, nil
   }
   buildC3, err := strconv.Atoi(buildComponents[2])
   if err != nil {
-    return buildC1, buildC2, 0, e.WithStack(err)
+    return buildC1, buildC2, 0, nil
   }
   return buildC1, buildC2, buildC3, nil
 }

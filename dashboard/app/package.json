@@ -3,11 +3,11 @@
   "private": true,
   "dependencies": {
     "@fontsource/inter": "5.0.8",
-    "@fontsource/jetbrains-mono": "5.0.11",
+    "@fontsource/jetbrains-mono": "5.0.12",
     "floating-vue": "2.0.0-beta.24",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.6",
-    "primevue": "3.34.0",
+    "primevue": "3.34.1",
     "rxjs": "8.0.0-alpha.10",
     "vue": "3.3.4",
     "vue-router": "4.2.4"

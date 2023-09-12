@@ -111,6 +111,7 @@ enum ROUTES {
   IntelliJBspDashboard = `${ROUTE_PREFIX.Bazel}/intellijBSPDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
+  ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
 }
 
@@ -670,6 +671,10 @@ const CLION: Product = {
       label: "",
       tabs: [
         {
+          url: ROUTES.ClionPerfDashboard,
+          label: "Performance",
+        },
+        {
           url: ROUTES.ClionDetailedPerfDashboard,
           label: "Detailed Performance",
         },
@@ -1202,6 +1207,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
           meta: { pageTitle: "CLion tests" },
+        },
+        {
+          path: ROUTES.ClionPerfDashboard,
+          component: () => import("./components/clion/PerformanceDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "clion",
+            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+          },
+          meta: { pageTitle: "CLion dashboard" },
         },
         {
           path: ROUTES.ClionDetailedPerfDashboard,

@@ -24,6 +24,7 @@ const enum ROUTE_PREFIX {
   Bazel = "/bazel",
   Qodana = "/qodana",
   Clion = "/clion",
+  Vcs = IntelliJ + "/vcs",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -119,6 +120,8 @@ enum ROUTES {
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
+  VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`
 }
 
 export interface Tab {
@@ -352,7 +355,21 @@ const IDEA: Product = {
         },
       ],
     },
-  ],
+    {
+      url: ROUTE_PREFIX.Vcs,
+      label: "Vcs",
+      tabs: [
+        {
+          url: ROUTES.VcsIdeaDashboard,
+          label: "Performance dashboard idea project"
+        },
+        {
+          url: ROUTES.VcsSpaceDashboard,
+          label: "Performance dashboard space project"
+        }
+      ]
+    }
+  ]
 }
 const PHPSTORM: Product = {
   url: ROUTE_PREFIX.PhpStorm,
@@ -1288,6 +1305,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           },
           meta: { pageTitle: "CLion Detailed Performance dashboard" },
         },
+        {
+          path: ROUTES.VcsIdeaDashboard,
+          component: () => import("./components/vcs/PerformanceDashboard.vue"),
+          meta: { pageTitle: "Vcs Idea performance dashboard" },
+        },
+        {
+          path: ROUTES.VcsSpaceDashboard,
+          component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
+          meta: { pageTitle: "Vcs Space performance dashboard" },
+        }
       ],
     },
   ]

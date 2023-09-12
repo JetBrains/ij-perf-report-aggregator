@@ -99,22 +99,22 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, mean value (std::string, hot)"
-          measure="completion#mean_value"
+          label="Completion, time to show, 90th percentile (std::string, hot)"
+          measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, mean value (std::shared_ptr<T>, hot)"
-          measure="completion#mean_value"
+          label="Completion, time to show, 90th percentile (std::shared_ptr<T>, hot)"
+          measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.shared_ptr (dep) (hot)', 'radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, mean value (fmt::join<It>, hot)"
-          measure="completion#mean_value"
+          label="Completion, time to show, 90th percentile (fmt::join<It>, hot)"
+          measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/fmt.join_view (dep) (hot)', 'radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
         />
       </div>
@@ -122,8 +122,8 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Completion, mean value"
-          measure="completion#mean_value"
+          label="[CLion] Completion, time to show, 90th percentile"
+          measure="fus_time_to_show_90p"
           :projects="[
             'clion/fmtlib/completion/std.string (cold)',
             'clion/fmtlib/completion/std.string (hot)',
@@ -134,8 +134,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Completion, mean value"
-          measure="completion#mean_value"
+          label="[Radler] Completion, time to show, 90th percentile"
+          measure="fus_time_to_show_90p"
           :projects="[
             'radler/fmtlib/completion/std.string (cold)',
             'radler/fmtlib/completion/std.string (hot)',

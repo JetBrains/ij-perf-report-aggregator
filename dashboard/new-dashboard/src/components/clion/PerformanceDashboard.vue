@@ -84,8 +84,8 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, mean value (std::string, hot)"
-          measure="completion#mean_value"
+          label="Completion, time to show, 90th percentile (std::string, hot)"
+          measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
         />
       </div>

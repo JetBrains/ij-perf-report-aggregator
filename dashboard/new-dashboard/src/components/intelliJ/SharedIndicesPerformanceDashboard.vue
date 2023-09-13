@@ -79,6 +79,19 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Indexing (Community)"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Indexing (SpringBoot)"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="[
@@ -159,6 +172,19 @@
           'intellij-with-maven-sharedIndexes',
           'intellij-with-project-sharedIndexes',
           'intellij-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (Community)"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
         ]"
       />
     </section>
@@ -249,6 +275,19 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Number of indexing files (Community)"
+        measure="numberOfIndexedFiles"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Number of indexing files (SpringBoot)"
         measure="numberOfIndexedFiles"
         :projects="[
@@ -329,6 +368,19 @@
           'intellij-with-maven-sharedIndexes',
           'intellij-with-project-sharedIndexes',
           'intellij-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Number of indexing files by shared indexes (Community)"
+        measure="numberOfFilesIndexedByExtensions"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
         ]"
       />
     </section>
@@ -419,6 +471,19 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Completion (Community)"
+        measure="completion"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Completion (SpringBoot)"
         measure="completion"
         :projects="[
@@ -504,6 +569,19 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="First Code Analysis (Community)"
+        measure="firstCodeAnalysis"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="First Code Analysis (SpringBoot)"
         measure="firstCodeAnalysis"
         :projects="[
@@ -584,6 +662,19 @@
           'intellij-with-maven-sharedIndexes',
           'intellij-with-project-sharedIndexes',
           'intellij-without-sharedIndexes',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (Community)"
+        measure="findUsages"
+        :projects="[
+          'intellij-community-downloaded-sharedIndexes',
+          'intellij-community-with-java-sharedIndexes',
+          'intellij-community-with-maven-sharedIndexes',
+          'intellij-community-with-project-sharedIndexes',
+          'intellij-community-without-sharedIndexes',
         ]"
       />
     </section>

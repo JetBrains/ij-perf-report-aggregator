@@ -22,9 +22,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'clion/%hot%'"
-          :aggregated-measure="'completion#mean\_value'"
+          :aggregated-measure="'fus_time_to_show_90p'"
           :is-like="true"
-          :title="'[CLion] Completion'"
+          :title="'[CLion] Time to show completion list'"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -54,9 +54,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'radler/%hot%'"
-          :aggregated-measure="'completion#mean\_value'"
+          :aggregated-measure="'fus_time_to_show_90p'"
           :is-like="true"
-          :title="'[Radler] Completion'"
+          :title="'[Radler] Time to show completion list'"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -73,7 +73,7 @@
 
     <section>
       <GroupProjectsChart
-        label="Global Inspections (fmtlib)"
+        label="[CLion vs Radler] Global Inspections (fmtlib)"
         measure="globalInspections"
         :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
       />
@@ -84,9 +84,17 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, time to show, 90th percentile (std::string, hot)"
+          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, hot)"
           measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] First element calculated, mean time (std::string, hot)"
+          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          :projects="['radler/fmtlib/completion/std.string (hot)']"
         />
       </div>
     </section>
@@ -96,7 +104,7 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Find Usages (macro)"
+          label="[CLion vs Radler] Find Usages (macro)"
           measure="%syncAction FindUsages"
           :projects="['clion/luau/findUsages/macro (LUAU_ASSERT)', 'radler/luau/findUsages/macro (LUAU_ASSERT)']"
         />

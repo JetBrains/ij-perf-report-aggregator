@@ -96,33 +96,111 @@
 
     <Divider title="Completion" />
 
+    <!-- Completion: std::string (cold) -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, time to show, 90th percentile (std::string, hot)"
+          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, cold)"
+          measure="fus_time_to_show_90p"
+          :projects="['clion/fmtlib/completion/std.string (cold)', 'radler/fmtlib/completion/std.string (cold)']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] First element calculated, mean time (std::string, cold)"
+          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          projects="radler/fmtlib/completion/std.string (cold)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] Total items (std::string, cold)"
+          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
+          projects="radler/fmtlib/completion/std.string (cold)"
+        />
+      </div>
+    </section>
+
+    <!-- Completion: std::string (hot) -->
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, hot)"
           measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, time to show, 90th percentile (std::shared_ptr<T>, hot)"
+          label="[Radler, clangd vs R#] First element calculated, mean time (std::string, hot)"
+          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          projects="radler/fmtlib/completion/std.string (hot)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] Total items (std::string, hot)"
+          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
+          projects="radler/fmtlib/completion/std.string (hot)"
+        />
+      </div>
+    </section>
+
+    <!-- Completion: std::shared_ptr<T> (hot) -->
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::shared_ptr<T>, hot)"
           measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/std.shared_ptr (dep) (hot)', 'radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Completion, time to show, 90th percentile (fmt::join<It>, hot)"
+          label="[Radler, clangd vs R#] First element calculated, mean time (std::shared_ptr<T>, hot)"
+          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          projects="radler/fmtlib/completion/std.shared_ptr (dep) (hot)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] Total items (std::shared_ptr<T>, hot)"
+          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
+          projects="radler/fmtlib/completion/std.shared_ptr (dep) (hot)"
+        />
+      </div>
+    </section>
+
+    <!-- Completion: fmt::join<It> -->
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show completion list, 90th percentile (fmt::join<It>, hot)"
           measure="fus_time_to_show_90p"
           :projects="['clion/fmtlib/completion/fmt.join_view (dep) (hot)', 'radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
         />
       </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] First element calculated, mean time (fmt::join<It>, hot)"
+          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          projects="radler/fmtlib/completion/fmt.join_view (dep) (hot)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler, clangd vs R#] Total items (fmt::join<It>, hot)"
+          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
+          projects="radler/fmtlib/completion/fmt.join_view (dep) (hot)"
+        />
+      </div>
     </section>
+
+    <!-- Completion: overall -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Completion, time to show, 90th percentile"
+          label="[CLion] Time to show completion list, 90th percentile"
           measure="fus_time_to_show_90p"
           :projects="[
             'clion/fmtlib/completion/std.string (cold)',
@@ -134,7 +212,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Completion, time to show, 90th percentile"
+          label="[Radler] Time to show completion list, 90th percentile"
           measure="fus_time_to_show_90p"
           :projects="[
             'radler/fmtlib/completion/std.string (cold)',
@@ -151,14 +229,14 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Find Usages (enumerable)"
+          label="[CLion vs Radler] Find Usages (enumerable)"
           measure="%syncAction FindUsages"
           :projects="['clion/luau/findUsages/enumerable (LuauOpcode)', 'radler/luau/findUsages/enumerable (LuauOpcode)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Find Usages (enumerator)"
+          label="[CLion vs Radler] Find Usages (enumerator)"
           measure="%syncAction FindUsages"
           :projects="['clion/luau/findUsages/enumerator (LOP_NOP)', 'radler/luau/findUsages/enumerator (LOP_NOP)']"
         />
@@ -167,14 +245,14 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Find Usages (class template)"
+          label="[CLion vs Radler] Find Usages (class template)"
           measure="%syncAction FindUsages"
           :projects="['clion/luau/findUsages/class template (DenseHashTable)', 'radler/luau/findUsages/class template (DenseHashTable)']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Find Usages (macro)"
+          label="[CLion vs Radler] Find Usages (macro)"
           measure="%syncAction FindUsages"
           :projects="['clion/luau/findUsages/macro (LUAU_ASSERT)', 'radler/luau/findUsages/macro (LUAU_ASSERT)']"
         />
@@ -212,14 +290,14 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Go to Declaration (ctor)"
+          label="[CLion vs Radler] Go to Declaration (ctor)"
           measure="%syncAction GotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Go to Declaration (method)"
+          label="[CLion vs Radler] Go to Declaration (method)"
           measure="%syncAction GotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/TypeChecker.getScopes', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
         />
@@ -229,21 +307,21 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Go to Declaration (std::string - alias)"
+          label="[CLion vs Radler] Go to Declaration (std::string - alias)"
           measure="%syncAction GotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/std.string', 'radler/luau/gotoDeclaration/std.string']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Go to Declaration (macro)"
+          label="[CLion vs Radler] Go to Declaration (macro)"
           measure="%syncAction GotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/LUAU_ASSERT', 'radler/luau/gotoDeclaration/LUAU_ASSERT']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="Go to Declaration (time.h - header)"
+          label="[CLion vs Radler] Go to Declaration (time.h - header)"
           measure="%syncAction GotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/time.h', 'radler/luau/gotoDeclaration/time.h']"
         />

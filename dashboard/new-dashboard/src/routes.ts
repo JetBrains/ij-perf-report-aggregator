@@ -52,7 +52,13 @@ enum ROUTES {
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
-  IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/${DASHBOARD_ROUTE}`,
+  IntelliJSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexingDashboard`,
+  IntelliJSharedIndicesScanningDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesScanningDashboard`,
+  IntelliJSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesFindUsagesDashboard`,
+  IntelliJSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesCompletionDashboard`,
+  IntelliJSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
+  IntelliJSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexedFilesDashboard`,
+  IntelliJSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
@@ -233,8 +239,32 @@ const IDEA: Product = {
       label: "Shared Indices",
       tabs: [
         {
-          url: ROUTES.IntelliJSharedIndicesDashboard,
-          label: DASHBOARD_LABEL,
+          url: ROUTES.IntelliJSharedIndicesIndexingDashboard,
+          label: "Indexing",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesScanningDashboard,
+          label: "Scanning",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesFindUsagesDashboard,
+          label: "FindUsages",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesCompletionDashboard,
+          label: "Completion",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesFirstCodeAnalysisDashboard,
+          label: "Code Analysis",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesNumberOfIndexedFilesDashboard,
+          label: "Indexed Files",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
+          label: "Indexed by Extensions",
         },
         {
           url: ROUTES.IntelliJSharedIndicesTests,
@@ -812,9 +842,39 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Performance dashboard (Tiny)" },
         },
         {
-          path: ROUTES.IntelliJSharedIndicesDashboard,
-          component: () => import("./components/intelliJ/SharedIndicesPerformanceDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Integration Performance Tests For Shared Indices Dashboard" },
+          path: ROUTES.IntelliJSharedIndicesIndexingDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/IndexingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Indexing" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesScanningDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/ScanningDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Scanning" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesFindUsagesDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/FindUsagesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Finding Usages" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesCompletionDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/CompletionDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Completion" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesFirstCodeAnalysisDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Code Analysis" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesNumberOfIndexedFilesDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Number of indexed files" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indices Dashboard: Number of indexed by shared indexes files" },
         },
         {
           path: ROUTES.IntelliJGCDashboard,

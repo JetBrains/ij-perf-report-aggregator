@@ -1,11 +1,11 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.20
+go 1.21
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.58.2
-	github.com/ClickHouse/clickhouse-go/v2 v2.13.4
+	github.com/ClickHouse/clickhouse-go/v2 v2.14.0
 	github.com/VictoriaMetrics/fastcache v1.12.1
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/andybalholm/brotli v1.0.5
@@ -19,7 +19,7 @@ require (
 	github.com/klauspost/compress v1.16.7
 	github.com/magiconair/properties v1.8.7
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/nats-io/nats.go v1.28.0
+	github.com/nats-io/nats.go v1.29.0
 	github.com/rs/cors v1.10.0
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.8.4
@@ -35,7 +35,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.110.7 // indirect
+	cloud.google.com/go v0.110.8 // indirect
 	cloud.google.com/go/compute v1.23.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.2 // indirect
@@ -146,9 +146,9 @@ require (
 	github.com/urfave/cli v1.22.14 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/otel v1.17.0 // indirect
-	go.opentelemetry.io/otel/metric v1.17.0 // indirect
-	go.opentelemetry.io/otel/trace v1.17.0 // indirect
+	go.opentelemetry.io/otel v1.18.0 // indirect
+	go.opentelemetry.io/otel/metric v1.18.0 // indirect
+	go.opentelemetry.io/otel/trace v1.18.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
@@ -158,11 +158,11 @@ require (
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.139.0 // indirect
+	google.golang.org/api v0.140.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20230822172742-b8732ec3820d // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
+	google.golang.org/genproto v0.0.0-20230911183012-2d3300fd4832 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20230911183012-2d3300fd4832 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230911183012-2d3300fd4832 // indirect
 	google.golang.org/grpc v1.58.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect

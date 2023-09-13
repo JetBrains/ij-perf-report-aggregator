@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref, watch } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"

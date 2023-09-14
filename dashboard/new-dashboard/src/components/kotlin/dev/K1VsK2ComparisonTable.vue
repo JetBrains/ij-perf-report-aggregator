@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
 import { FilterConfigurator } from "../../../configurators/filter"
-import TestComparisonTable, { TestComparison } from "../../common/TestComparisonTable.vue"
+import TestComparisonTable from "../../common/TestComparisonTable.vue"
 import { isValidTestComparisonTableEntry, TestComparisonTableEntry } from "../../common/TestComparisonTableEntry"
 import { DataQueryConfigurator } from "../../common/dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "../../common/formatter"
@@ -98,7 +98,7 @@ const topStats = computed(() => [
 
 const formatTime = getValueFormatterByMeasureName(props.measure)
 
-function transformToTestComparison(projectName: string): TestComparison {
+function transformToTestComparison(projectName: string) {
   // We want to compare K1 and K2 tests against each other, and they are respectively suffixed with "_k1" and "_k2".
   return {
     label: projectName,

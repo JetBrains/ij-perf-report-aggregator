@@ -68,6 +68,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "vfs-record-storage/with-mru-file-name-cache-intellij_sources/indexing",
       "vfs-record-storage/attributes-over-lock-free-file-page-cache-intellij_sources/indexing",
       "vfs-record-storage/content-over-lock-free-file-page-cache-intellij_sources/indexing",
+      "vfs-record-storage/attributes-over-mmapped-file",
     ],
   },
   {

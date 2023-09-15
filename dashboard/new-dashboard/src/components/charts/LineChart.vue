@@ -84,10 +84,13 @@ const container = injectOrError(containerKey)
 const sidebarVm = injectOrError(sidebarVmKey)
 
 let chartManager: ChartManager | null
-let chartVm: LineChartVM
+let chartVm: LineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
 function createChart(accidents: Ref<Accident[]> | null = null) {
+  if (chartVm != null) {
+    return
+  }
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
@@ -109,13 +112,12 @@ function setupChartOnVisibility(accidents: Ref<Accident[]> | null = null) {
     (isVisible) => {
       if (isVisible) {
         createChart(accidents)
-      } else {
-        // If the chart is not visible, still try to create it after a delay of 5 second
-        setTimeout(createChart, 5000)
       }
     },
     { immediate: true }
   )
+  // If the chart is not visible, still try to create it after a delay of 5 second
+  setTimeout(createChart, 5000)
 }
 
 function setupChartWithAccidentCheck() {

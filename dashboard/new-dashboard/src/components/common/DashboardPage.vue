@@ -29,6 +29,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
+import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
@@ -122,7 +123,7 @@ const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
-dashboardConfigurators.push(new SmoothingConfigurator())
+dashboardConfigurators.push(new SmoothingConfigurator(), new ScalingConfigurator())
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 
 function onChangeRange(value: TimeRange) {

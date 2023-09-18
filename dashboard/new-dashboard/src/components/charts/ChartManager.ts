@@ -9,10 +9,9 @@ import {
   ToolboxComponent,
   TooltipComponent,
 } from "echarts/components"
-import { EChartsType, init as initChart, registerTransform, throttle, use } from "echarts/core"
+import { EChartsType, init as initChart, throttle, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ECBasicOption } from "echarts/types/dist/shared"
-import { exponentialSmoothingTransform } from "../../util/exponentialSmoothing"
 
 use([
   DatasetComponent,
@@ -57,5 +56,3 @@ export class ChartManager {
     this.chart.dispose()
   }
 }
-
-registerTransform(exponentialSmoothingTransform)

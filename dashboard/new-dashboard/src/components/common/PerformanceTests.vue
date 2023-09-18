@@ -41,6 +41,8 @@
       <template #end>
         Smoothing:
         <InputSwitch v-model="smoothingEnabled" />
+        Scaling:
+        <InputSwitch v-model="scalingEnabled" />
       </template>
     </Toolbar>
     <main class="flex">
@@ -79,6 +81,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
+import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
@@ -122,6 +125,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const smoothingEnabled = useStorage("smoothingEnabled", true)
+const scalingEnabled = useStorage("scalingEnabled", true)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
@@ -148,7 +152,7 @@ const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator
 if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
 }
-configurators.push(new SmoothingConfigurator())
+configurators.push(new SmoothingConfigurator(), new ScalingConfigurator())
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

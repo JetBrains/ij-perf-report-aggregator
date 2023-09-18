@@ -121,7 +121,7 @@ enum ROUTES {
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
-  VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`
+  VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
 }
 
 export interface Tab {
@@ -361,15 +361,15 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.VcsIdeaDashboard,
-          label: "Performance dashboard idea project"
+          label: "Performance dashboard idea project",
         },
         {
           url: ROUTES.VcsSpaceDashboard,
-          label: "Performance dashboard space project"
-        }
-      ]
-    }
-  ]
+          label: "Performance dashboard space project",
+        },
+      ],
+    },
+  ],
 }
 const PHPSTORM: Product = {
   url: ROUTE_PREFIX.PhpStorm,
@@ -1314,7 +1314,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsSpaceDashboard,
           component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
           meta: { pageTitle: "Vcs Space performance dashboard" },
-        }
+        },
       ],
     },
   ]

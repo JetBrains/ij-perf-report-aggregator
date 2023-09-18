@@ -28,6 +28,8 @@
       <InputSwitch v-model="smoothingEnabled" />
       Sidebar:
       <InputSwitch v-model="sidebarEnabled" />
+      Scaling:
+      <InputSwitch v-model="scalingEnabled" />
     </template>
   </Toolbar>
   <main class="flex">
@@ -49,6 +51,7 @@ import { createBranchConfigurator } from "../../configurators/BranchConfigurator
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
+import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
@@ -126,6 +129,7 @@ const configurators = [
   branchConfigurator,
   triggeredByConfigurator,
   new SmoothingConfigurator(),
+  new ScalingConfigurator(),
 ]
 
 provide(configuratorListKey, configurators)
@@ -139,6 +143,7 @@ watch(sidebarEnabled, (value) => {
 provide(sidebarEnabledKey, sidebarEnabled)
 
 const smoothingEnabled = useStorage("smoothingEnabled", false)
+const scalingEnabled = useStorage("scalingEnabled", true)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

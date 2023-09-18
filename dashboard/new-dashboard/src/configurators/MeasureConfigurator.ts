@@ -12,10 +12,11 @@ import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutor
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { toColor } from "../util/colors"
-import { exponentialSmoothingWithAlphaInference } from "../util/exponentialSmoothing"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
+import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
+import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
@@ -329,6 +330,12 @@ function configureChart(
     if (isSmoothing) {
       const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])
       seriesData.push(smoothedData)
+    }
+
+    const isScaled = useStorage("scalingEnabled", false).value
+    if (isScaled) {
+      seriesData[1] = scaleToMedian(seriesData[1] as number[])
+      useDurationFormatter = false
     }
 
     let isNotEmpty = false

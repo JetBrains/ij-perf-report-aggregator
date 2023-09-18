@@ -18,7 +18,9 @@
     </template>
     <template #end>
       Smoothing:
-      <InputSwitch v-model="smoothingEnabledStored" />
+      <InputSwitch v-model="smoothingEnabled" />
+      Scaling:
+      <InputSwitch v-model="scalingEnabled" />
     </template>
   </Toolbar>
 </template>
@@ -43,7 +45,8 @@ const props = defineProps<{
   onChangeRange: (value: TimeRange) => void
 }>()
 
-const smoothingEnabledStored = useStorage("smoothingEnabled", true)
+const smoothingEnabled = useStorage("smoothingEnabled", true)
+const scalingEnabled = useStorage("scalingEnabled", true)
 </script>
 
 <style>

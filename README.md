@@ -51,3 +51,5 @@ For example, if activity `launch terminal` reported under category `prepareAppIn
    clickhouse client -h 127.0.0.1 -d $DB_NAME --multiquery < ./db-schema/common/collector_state.sql
    clickhouse client -h 127.0.0.1 -d $DB_NAME --multiquery < "./db-schema/$DB_NAME/report.sql"
    ```
+
+Addition docs in [Knowledge Base](https://youtrack.jetbrains.com/articles/IJPL-A-196/IJ-Perf-Development)

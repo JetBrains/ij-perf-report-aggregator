@@ -17,16 +17,12 @@
       />
     </template>
     <template #end>
-      Smoothing:
-      <InputSwitch v-model="smoothingEnabled" />
-      Scaling:
-      <InputSwitch v-model="scalingEnabled" />
+      <slot name="toolbar" />
     </template>
   </Toolbar>
 </template>
 
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core"
 import { BranchConfigurator } from "../../configurators/BranchConfigurator"
 import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -44,9 +40,6 @@ const props = defineProps<{
   machineConfigurator?: MachineConfigurator
   onChangeRange: (value: TimeRange) => void
 }>()
-
-const smoothingEnabled = useStorage("smoothingEnabled", true)
-const scalingEnabled = useStorage("scalingEnabled", true)
 </script>
 
 <style>

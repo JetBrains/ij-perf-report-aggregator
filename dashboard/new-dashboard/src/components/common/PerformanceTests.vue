@@ -39,10 +39,8 @@
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
-        Smoothing:
-        <InputSwitch v-model="smoothingEnabled" />
-        Scaling:
-        <InputSwitch v-model="scalingEnabled" />
+        <SmoothingSwitch @update:configurators="updateConfigurators" />
+        <ScalingSwitch @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
     <main class="flex">
@@ -72,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { computedAsync, useStorage } from "@vueuse/core"
+import { computedAsync } from "@vueuse/core"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -81,9 +79,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
-import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
@@ -94,6 +90,8 @@ import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import ScalingSwitch from "../settings/ScalingSwitch.vue"
+import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
@@ -124,9 +122,6 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(props.dbNam
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const smoothingEnabled = useStorage("smoothingEnabled", true)
-const scalingEnabled = useStorage("scalingEnabled", true)
-
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
@@ -152,10 +147,13 @@ const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator
 if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
 }
-configurators.push(new SmoothingConfigurator(), new ScalingConfigurator())
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
+}
+
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configurators.push(configurator)
 }
 
 const warnings = computedAsync(async () => getAccidentsFromMetaDb(scenarioConfigurator.selected.value, timeRangeConfigurator.value))

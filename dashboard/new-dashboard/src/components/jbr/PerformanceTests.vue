@@ -31,8 +31,8 @@
         </MeasureSelect>
       </template>
       <template #end>
-        Smoothing:
-        <InputSwitch v-model="smoothingEnabled" />
+        <SmoothingSwitch @update:configurators="updateConfigurators" />
+        <ScalingSwitch @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
 
@@ -59,7 +59,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -67,7 +66,6 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -78,10 +76,12 @@ import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
+import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 
 provideReportUrlProvider(false, true)
 
@@ -94,7 +94,6 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbT
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
-const smoothingEnabled = useStorage("smoothingEnabled", true)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager(
@@ -114,7 +113,11 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, timeRangeConfigurator, triggeredByConfigurator, new SmoothingConfigurator()]
+const configurators = [serverConfigurator, scenarioConfigurator, branchConfigurator, timeRangeConfigurator, triggeredByConfigurator] as DataQueryConfigurator[]
+
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configurators.push(configurator)
+}
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

@@ -24,12 +24,10 @@
       <slot name="toolbar" />
     </template>
     <template #end>
-      Smoothing:
-      <InputSwitch v-model="smoothingEnabled" />
+      <SmoothingSwitch @update:configurators="updateConfigurators" />
+      <ScalingSwitch @update:configurators="updateConfigurators" />
       Sidebar:
       <InputSwitch v-model="sidebarEnabled" />
-      Scaling:
-      <InputSwitch v-model="scalingEnabled" />
     </template>
   </Toolbar>
   <main class="flex">
@@ -51,9 +49,7 @@ import { createBranchConfigurator } from "../../configurators/BranchConfigurator
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
@@ -65,10 +61,13 @@ import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
+import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
+import ScalingSwitch from "../settings/ScalingSwitch.vue"
+import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const container = ref<HTMLElement>()
@@ -128,9 +127,7 @@ const configurators = [
   projectConfigurator,
   branchConfigurator,
   triggeredByConfigurator,
-  new SmoothingConfigurator(),
-  new ScalingConfigurator(),
-]
+] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)
 
@@ -142,8 +139,9 @@ watch(sidebarEnabled, (value) => {
 })
 provide(sidebarEnabledKey, sidebarEnabled)
 
-const smoothingEnabled = useStorage("smoothingEnabled", false)
-const scalingEnabled = useStorage("scalingEnabled", true)
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configurators.push(configurator)
+}
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

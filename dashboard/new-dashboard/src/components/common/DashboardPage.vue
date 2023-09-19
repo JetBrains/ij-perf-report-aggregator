@@ -7,7 +7,12 @@
       :on-change-range="onChangeRange"
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
-    />
+    >
+      <template #toolbar>
+        <SmoothingSwitch @update:configurators="updateConfigurators" />
+        <ScalingSwitch @update:configurators="updateConfigurators" />
+      </template>
+    </DashboardToolbar>
     <main class="flex">
       <div
         ref="container"
@@ -31,13 +36,14 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
+import ScalingSwitch from "../settings/ScalingSwitch.vue"
+import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
@@ -123,11 +129,14 @@ const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator
 if (releaseConfigurator != null) {
   dashboardConfigurators.push(releaseConfigurator)
 }
-dashboardConfigurators.push(new SmoothingConfigurator(), new ScalingConfigurator())
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
+}
+
+const updateConfigurators = (configurator: FilterConfigurator) => {
+  dashboardConfigurators.push(configurator)
 }
 
 const projects = props.charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[]

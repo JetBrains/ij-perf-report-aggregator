@@ -10,8 +10,8 @@
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
-        Smoothing:
-        <InputSwitch v-model="smoothingEnabled" />
+        <SmoothingSwitch @update:configurators="updateConfigurators" />
+        <ScalingSwitch @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
 
@@ -108,12 +108,10 @@
 </template>
 
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core"
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
@@ -122,10 +120,12 @@ import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
+import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 
 provideReportUrlProvider()
 
@@ -138,8 +138,6 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbT
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
-
-const smoothingEnabled = useStorage("smoothingEnabled", true)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
@@ -157,7 +155,11 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 
-const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, new SmoothingConfigurator()]
+const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
+
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  dashboardConfigurators.push(configurator)
+}
 
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value

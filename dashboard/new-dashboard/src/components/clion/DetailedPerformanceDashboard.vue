@@ -107,8 +107,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, mean time (std::string, cold)"
-          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::string, cold)"
+          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
           :projects="['radler/fmtlib/completion/std.string (cold)']"
         />
       </div>
@@ -132,8 +132,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, mean time (std::string, hot)"
-          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::string, hot)"
+          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
           :projects="['radler/fmtlib/completion/std.string (hot)']"
         />
       </div>
@@ -157,8 +157,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, mean time (std::shared_ptr<T>, hot)"
-          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::shared_ptr<T>, hot)"
+          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
           :projects="['radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
         />
       </div>
@@ -182,8 +182,8 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, mean time (fmt::join<It>, hot)"
-          :measure="['fus_clangd_time_ms_mean', 'fus_rider_time_ms_mean']"
+          label="[Radler, clangd vs R#] First element calculated, 90th percentile (fmt::join<It>, hot)"
+          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
           :projects="['radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
         />
       </div>

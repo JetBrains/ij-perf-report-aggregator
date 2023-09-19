@@ -34,7 +34,6 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
-import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"

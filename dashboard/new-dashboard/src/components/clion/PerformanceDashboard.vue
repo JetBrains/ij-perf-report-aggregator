@@ -71,11 +71,21 @@
       </div>
     </section>
 
+    <Divider title="Indexing" />
+
     <section>
       <GroupProjectsChart
         label="[CLion vs Radler] Global Inspections (fmtlib)"
         measure="globalInspections"
         :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
+      />
+    </section>
+
+    <section>
+      <GroupProjectsChart
+        label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
+        measure="%waitFirstTestGutter"
+        :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
       />
     </section>
 

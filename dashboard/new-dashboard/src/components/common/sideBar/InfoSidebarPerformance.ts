@@ -2,7 +2,6 @@ import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
 import { Accident, Description, getDescriptionFromMetaDb } from "../../../util/meta"
-import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
@@ -84,13 +83,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
 
-  let showValue = value.toString()
-  if (type != "counter") {
-    showValue = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value)
-  }
-  if (useSettingsStore().scaling) {
-    showValue = value.toFixed(0)
-  }
+  const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, type)
 
   const filteredAccidents = computed(() => {
     return accidents?.value.filter((accident: Accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)

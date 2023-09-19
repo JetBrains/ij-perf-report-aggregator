@@ -6,7 +6,6 @@ import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
-import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 
 function getWarningIcon() {
@@ -34,7 +33,6 @@ function getWarningIcon() {
 }
 
 export class LineChartVM {
-  private settings = useSettingsStore()
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams) => {
       const element = document.createElement("div")
@@ -42,11 +40,7 @@ export class LineChartVM {
       const [dateMs, durationMs, _, type] = data
 
       element.append(
-        this.settings.scaling
-          ? (durationMs as number).toFixed(0)
-          : type == "c"
-          ? durationMs.toString()
-          : durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000),
+        durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type as string),
         document.createElement("br"),
         timeFormatWithoutSeconds.format(dateMs as number)
       )

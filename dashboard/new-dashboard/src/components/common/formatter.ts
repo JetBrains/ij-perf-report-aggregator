@@ -1,4 +1,5 @@
 import humanizeDuration, { HumanizerOptions } from "humanize-duration"
+import { useSettingsStore } from "../settings/settingsStore"
 
 export function nsToMs(v: number) {
   return v / 1_000_000
@@ -31,7 +32,16 @@ const durationFormatOptions: HumanizerOptions = {
   },
 }
 
-export const durationAxisPointerFormatter: (valueInMs: number) => string = humanizeDuration.humanizer(durationFormatOptions)
+export const durationAxisPointerFormatter = (valueInMs: number, type: string = "counter"): string => {
+  if (useSettingsStore().scaling) {
+    return valueInMs.toFixed(0)
+  }
+  if (type === "counter" || type == "c") {
+    return valueInMs.toString()
+  }
+  const humanizer = humanizeDuration.humanizer(durationFormatOptions)
+  return humanizer(valueInMs)
+}
 
 export const timeFormatWithoutSeconds = new Intl.DateTimeFormat("en-US", {
   year: "numeric",

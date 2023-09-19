@@ -54,6 +54,7 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "project-reimport-gradle-cas/measureStartup",
       "project-import-from-cache-gradle-cas/measureStartup",
       "project-import-gradle-1000-modules/measureStartup",
+      "project-import-gradle-1000-modules-limited-ram/measureStartup",
       "project-import-gradle-5000-modules/measureStartup",
       "project-import-gradle-android-extra-large/measureStartup",
       "project-reimport-space/measureStartup",

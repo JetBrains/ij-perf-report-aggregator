@@ -356,6 +356,74 @@
         />
       </div>
     </section>
+
+    <Divider title="Test gutters" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show test gutter (luau, AstQuery.test.cpp)"
+          measure="%waitFirstTestGutter"
+          :projects="['clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks', 'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
+          measure="%waitFirstTestGutter"
+          :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show test gutter (luau, Repl.test.cpp)"
+          measure="%waitFirstTestGutter"
+          :projects="['clion/luau/checkLocalTestConfig/Repl.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Time to show test gutter (luau, TypeInfer.unionTypes.test.cpp)"
+          measure="%waitFirstTestGutter"
+          :projects="['clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks', 'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion] Time to show test gutter (luau)"
+          measure="%waitFirstTestGutter"
+          :projects="[
+            'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
+          ]"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler] Time to show test gutter (luau)"
+          measure="%waitFirstTestGutter"
+          :projects="[
+            'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
+          ]"
+        />
+      </div>
+    </section>
+
+    <!-- END -->
   </DashboardPage>
 </template>
 

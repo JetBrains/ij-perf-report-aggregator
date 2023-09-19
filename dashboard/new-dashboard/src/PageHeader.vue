@@ -43,7 +43,7 @@
         :popup="true"
       />
     </div>
-    <a href="https://youtrack.jetbrains.com/articles/IDEA-A-2100661420/IJ-Perf>">
+    <a href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual">
       <QuestionMarkCircleIcon class="w-7 h-7 text-blue-500" />
     </a>
   </div>

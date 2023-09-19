@@ -81,7 +81,6 @@ import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
-import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 
 provideReportUrlProvider(false, true)
 

@@ -1,11 +1,22 @@
-import { useStorage } from "@vueuse/core"
 import { Observable } from "rxjs"
+import { ref, watch } from "vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
+import { useSettingsStore } from "../components/settings/settingsStore"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
 export class SmoothingConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  readonly value = useStorage("smoothingEnabled", false)
+  private settingsStore = useSettingsStore()
+  readonly value = ref(this.settingsStore.smoothing)
+
+  constructor() {
+    watch(
+      () => this.settingsStore.smoothing,
+      (newValue) => {
+        this.value.value = newValue
+      }
+    )
+  }
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.value)

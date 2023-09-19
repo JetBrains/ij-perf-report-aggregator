@@ -3,14 +3,14 @@
     <span>Smoothing:</span>
     <template #popper><span class="text-sm">Applies exponential smoothing to the dataset.</span></template>
   </VTooltip>
-  <InputSwitch v-model="smoothingEnabled" />
+  <InputSwitch v-model="settingsStore.smoothing" />
 </template>
 
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core/index"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
+import { useSettingsStore } from "./settingsStore"
 
-const smoothingEnabled = useStorage("smoothingEnabled", true)
+const settingsStore = useSettingsStore()
 
 const emit = defineEmits(["update:configurators"])
 emit("update:configurators", new SmoothingConfigurator())

@@ -1,4 +1,3 @@
-import { useStorage } from "@vueuse/core"
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import { CallbackDataParams } from "echarts/types/src/util/types"
@@ -11,6 +10,7 @@ import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
+import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
@@ -325,15 +325,13 @@ function configureChart(
       seriesName = seriesData[6][0] as string
     }
 
-    const isSmoothing = useStorage("smoothingEnabled", false).value
-
-    if (isSmoothing) {
+    const settings = useSettingsStore()
+    if (settings.smoothing) {
       const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])
       seriesData.push(smoothedData)
     }
 
-    const isScaled = useStorage("scalingEnabled", false).value
-    if (isScaled) {
+    if (settings.scaling) {
       seriesData[1] = scaleToMedian(seriesData[1] as number[])
       useDurationFormatter = false
     }
@@ -353,7 +351,7 @@ function configureChart(
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id,
         name,
-        type: isSmoothing ? "scatter" : chartType,
+        type: settings.smoothing ? "scatter" : chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
@@ -385,7 +383,7 @@ function configureChart(
         ],
         itemStyle: getItemStyleForSeries(accidentMap?.value),
       })
-      if (isSmoothing) {
+      if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
           id: id + "smoothed",

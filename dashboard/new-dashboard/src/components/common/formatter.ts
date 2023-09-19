@@ -32,7 +32,7 @@ const durationFormatOptions: HumanizerOptions = {
   },
 }
 
-export const durationAxisPointerFormatter = (valueInMs: number, type: string = "counter"): string => {
+export const durationAxisPointerFormatter = (valueInMs: number, type: string = "duration"): string => {
   if (useSettingsStore().scaling) {
     return valueInMs.toFixed(0)
   }

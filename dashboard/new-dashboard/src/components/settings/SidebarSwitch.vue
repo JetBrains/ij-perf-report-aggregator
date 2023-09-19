@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="sidebarVm != null"
-    class="flex items-center justify-between w-full mt-2"
+    class="flex items-center justify-between w-full"
   >
     <VTooltip theme="info">
       <span>Sidebar:</span>

@@ -10,7 +10,7 @@
     append-to="body"
   >
     <SmoothingSwitch class="mb-2" />
-    <ScalingSwitch />
+    <ScalingSwitch class="mb-2" />
     <SidebarSwitch />
   </OverlayPanel>
 </template>

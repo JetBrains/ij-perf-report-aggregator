@@ -24,10 +24,7 @@
       <slot name="toolbar" />
     </template>
     <template #end>
-      <SmoothingSwitch @update:configurators="updateConfigurators" />
-      <ScalingSwitch @update:configurators="updateConfigurators" />
-      Sidebar:
-      <InputSwitch v-model="sidebarEnabled" />
+      <PlotSettings @update:configurators="updateConfigurators" />
     </template>
   </Toolbar>
   <main class="flex">
@@ -42,8 +39,7 @@
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core"
-import { provide, Ref, ref, watch } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -52,7 +48,7 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
+import { chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -66,8 +62,7 @@ import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
-import ScalingSwitch from "../settings/ScalingSwitch.vue"
-import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const container = ref<HTMLElement>()
@@ -130,14 +125,6 @@ const configurators = [
 ] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)
-
-const sidebarEnabled = useStorage("sidebarEnabled", true)
-watch(sidebarEnabled, (value) => {
-  if (!value) {
-    sidebarVm.close()
-  }
-})
-provide(sidebarEnabledKey, sidebarEnabled)
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)

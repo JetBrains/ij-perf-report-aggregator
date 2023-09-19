@@ -25,9 +25,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, ref, shallowRef, toRef, watchEffect } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, watchEffect } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
-import { chartToolTipKey, configuratorListKey, injectOrError, sidebarEnabledKey } from "../../shared/injectionKeys"
+import { chartToolTipKey, configuratorListKey, injectOrError } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
@@ -71,7 +71,6 @@ const container = injectOrError(containerKey)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = injectOrError(chartToolTipKey)
 const sidebarVm = injectOrError(sidebarStartupKey)
-const sidebarEnabled = inject(sidebarEnabledKey, ref(false))
 
 const show = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -137,7 +136,6 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     dataQueryExecutor!,
     toRef(props, "dataZoom"),
-    sidebarEnabled,
     chartToolTipManager,
     sidebarVm,
     props.trigger,

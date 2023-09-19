@@ -31,8 +31,7 @@
         </MeasureSelect>
       </template>
       <template #end>
-        <SmoothingSwitch @update:configurators="updateConfigurators" />
-        <ScalingSwitch @update:configurators="updateConfigurators" />
+        <PlotSettings @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
 
@@ -81,6 +80,7 @@ import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 
 provideReportUrlProvider(false, true)

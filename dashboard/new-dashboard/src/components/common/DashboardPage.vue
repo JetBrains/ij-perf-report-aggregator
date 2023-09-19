@@ -9,10 +9,10 @@
       :triggered-by-configurator="triggeredByConfigurator"
     >
       <template #toolbar>
-        <SmoothingSwitch @update:configurators="updateConfigurators" />
-        <ScalingSwitch @update:configurators="updateConfigurators" />
+        <PlotSettings @update:configurators="updateConfigurators" />
       </template>
     </DashboardToolbar>
+
     <main class="flex">
       <div
         ref="container"
@@ -41,8 +41,7 @@ import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { getAccidentsFromMetaDb } from "../../util/meta"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
-import ScalingSwitch from "../settings/ScalingSwitch.vue"
-import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"

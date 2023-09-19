@@ -13,8 +13,6 @@ export const aggregationOperatorConfiguratorKey: InjectionKey<AggregationOperato
 export const timeRangeKey: InjectionKey<Ref<TimeRange>> = Symbol("timeRange")
 export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("tooltipUrlProvider")
 
-export const sidebarEnabledKey: InjectionKey<Ref<boolean>> = Symbol("sidebarEnabled")
-
 export const serverUrlObservableKey: InjectionKey<Observable<string>> = Symbol("serverUrlObservable")
 
 export const chartStyleKey: InjectionKey<ChartStyle> = Symbol("chartStyle")

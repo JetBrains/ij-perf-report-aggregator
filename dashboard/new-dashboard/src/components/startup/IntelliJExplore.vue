@@ -26,8 +26,7 @@
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
-        Sidebar:
-        <InputSwitch v-model="sidebarEnabled" />
+        <PlotSettings @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
 
@@ -44,8 +43,7 @@
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core"
-import { provide, Ref, ref, watch } from "vue"
+import { provide, Ref, ref } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -54,7 +52,7 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey, sidebarEnabledKey } from "../../shared/injectionKeys"
+import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
@@ -66,10 +64,12 @@ import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { chartDefaultStyle } from "../common/chart"
+import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
 import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
 const productCodeToName = new Map([
@@ -98,13 +98,6 @@ provide(containerKey, container)
 
 const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>(getDBType(dbName, dbTable))
 provide(sidebarStartupKey, sidebarVm)
-const sidebarEnabled = useStorage("sidebarEnabled", true)
-watch(sidebarEnabled, (value) => {
-  if (!value) {
-    sidebarVm.close()
-  }
-})
-provide(sidebarEnabledKey, sidebarEnabled)
 
 const serverConfigurator = new ServerConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-explore")
@@ -117,10 +110,23 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
 
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, measureConfigurator, productConfigurator, projectConfigurator, branchConfigurator]
+const configurators = [
+  serverConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+  measureConfigurator,
+  productConfigurator,
+  projectConfigurator,
+  branchConfigurator,
+] as DataQueryConfigurator[]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)
+
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configurators.push(configurator)
+}
+
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }

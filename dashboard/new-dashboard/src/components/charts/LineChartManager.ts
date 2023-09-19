@@ -1,3 +1,4 @@
+import { useStorage } from "@vueuse/core/index"
 import { LineChart, ScatterChart } from "echarts/charts"
 import { DatasetComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from "echarts/components"
 import { registerTransform, use } from "echarts/core"
@@ -37,14 +38,13 @@ export class LineChartManager {
     container: HTMLElement,
     private _dataQueryExecutor: DataQueryExecutor,
     dataZoom: Ref<boolean>,
-    sidebarEnabled: Ref<boolean>,
     chartToolTipManager: ChartToolTipManager,
     chartSidebarManager: InfoSidebar<InfoDataFromStartup> | undefined,
     trigger: PopupTrigger = "axis",
     resizeContainer: HTMLElement | undefined
   ) {
     this.chart = new ChartManager(container, resizeContainer ?? document.body)
-
+    const sidebarEnabled = useStorage("sidebarEnabled", true)
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null
     this.chart.chart.getZr().on("click", (event) => {

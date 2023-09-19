@@ -39,8 +39,7 @@
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
-        <SmoothingSwitch @update:configurators="updateConfigurators" />
-        <ScalingSwitch @update:configurators="updateConfigurators" />
+        <PlotSettings @update:configurators="updateConfigurators" />
       </template>
     </Toolbar>
     <main class="flex">
@@ -90,6 +89,7 @@ import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 import ScalingSwitch from "../settings/ScalingSwitch.vue"
 import SmoothingSwitch from "../settings/SmoothingSwitch.vue"
 import MachineSelect from "./MachineSelect.vue"

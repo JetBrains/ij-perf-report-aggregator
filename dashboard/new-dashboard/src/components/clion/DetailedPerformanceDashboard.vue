@@ -291,14 +291,14 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Go to Declaration (ctor)"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Go to Declaration (method)"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/TypeChecker.getScopes', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
         />
       </div>
@@ -308,21 +308,21 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Go to Declaration (std::string - alias)"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/std.string', 'radler/luau/gotoDeclaration/std.string']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Go to Declaration (macro)"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/LUAU_ASSERT', 'radler/luau/gotoDeclaration/LUAU_ASSERT']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Go to Declaration (time.h - header)"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="['clion/luau/gotoDeclaration/time.h', 'radler/luau/gotoDeclaration/time.h']"
         />
       </div>
@@ -332,7 +332,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion] Go to Declaration"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="[
             'clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
             'clion/luau/gotoDeclaration/TypeChecker.getScopes',
@@ -345,7 +345,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[Radler] Go to Declaration"
-          measure="%syncAction GotoDeclaration"
+          measure="clionGotoDeclaration"
           :projects="[
             'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
             'radler/luau/gotoDeclaration/TypeChecker.getScopes',

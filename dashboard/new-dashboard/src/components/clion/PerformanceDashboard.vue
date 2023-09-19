@@ -111,16 +111,15 @@
       </div>
     </section>
 
-    <!-- TODO: get rid of %action -->
-    <!--<section class="flex gap-x-6 flex-col md:flex-row">-->
-    <!--  <div class="flex-1 min-w-0">-->
-    <!--    <GroupProjectsChart-->
-    <!--      label="Go to Declaration (ctor)"-->
-    <!--      measure="%action GotoDeclaration"-->
-    <!--      :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"-->
-    <!--    />-->
-    <!--  </div>-->
-    <!--</section>-->
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Go to Declaration (ctor)"
+          measure="clionGotoDeclaration"
+          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

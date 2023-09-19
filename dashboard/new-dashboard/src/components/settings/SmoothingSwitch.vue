@@ -1,5 +1,8 @@
 <template>
-  Smoothing:
+  <VTooltip theme="info">
+    <span>Smoothing:</span>
+    <template #popper><span class="text-sm">Applies exponential smoothing to the dataset.</span></template>
+  </VTooltip>
   <InputSwitch v-model="smoothingEnabled" />
 </template>
 

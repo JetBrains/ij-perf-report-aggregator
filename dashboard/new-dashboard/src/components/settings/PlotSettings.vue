@@ -11,15 +11,18 @@
   >
     <SmoothingSwitch class="mb-2" />
     <ScalingSwitch class="mb-2" />
-    <SidebarSwitch />
+    <SidebarSwitch class="mb-2" />
+    <DetectChangesSwitch />
   </OverlayPanel>
 </template>
 
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
 import { shallowRef } from "vue"
+import { DetectChangesConfigurator } from "../../configurators/DetectChangesConfigurator"
 import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
+import DetectChangesSwitch from "./DetectChangesSwitch.vue"
 import ScalingSwitch from "./ScalingSwitch.vue"
 import SidebarSwitch from "./SidebarSwitch.vue"
 import SmoothingSwitch from "./SmoothingSwitch.vue"
@@ -30,6 +33,7 @@ const settingsIcon = shallowRef<HTMLElement>()
 const emit = defineEmits(["update:configurators"])
 emit("update:configurators", new ScalingConfigurator())
 emit("update:configurators", new SmoothingConfigurator())
+emit("update:configurators", new DetectChangesConfigurator())
 
 const showSettings = function (event: Event) {
   settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first

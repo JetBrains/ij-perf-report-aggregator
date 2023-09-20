@@ -14,6 +14,7 @@ import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
+import { applyFilter } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -271,11 +272,14 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined, detectedChanges: (string | number)[][] = [[]]) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       const accident = getAccident(accidentMap, seriesIndex.value as string[])
       if (accident == null) {
+        if (isChangeDetected(detectedChanges, seriesIndex.value as string[])) {
+          return "purple"
+        }
         return seriesIndex.color as ZRColor
       }
       switch (accident.kind) {
@@ -290,6 +294,10 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined) {
       }
     },
   }
+}
+
+function isChangeDetected(detectedChanges: (string | number)[][], value: string[]) {
+  return detectedChanges.some((subArray) => subArray.length === value.length && subArray.every((detectedChangesValue, index) => detectedChangesValue === value[index]))
 }
 
 function configureChart(
@@ -338,6 +346,11 @@ function configureChart(
       useDurationFormatter = false
     }
 
+    let detectedChanges: (string | number)[][] = [[]]
+    if (settings.detectChanges) {
+      detectedChanges = applyFilter(seriesData)
+    }
+
     let isNotEmpty = false
     for (const data of seriesData) {
       isNotEmpty = isNotEmpty || data.length > 0
@@ -361,6 +374,9 @@ function configureChart(
           if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
             return symbolSize * 4
           }
+          if (isChangeDetected(detectedChanges, value)) {
+            return symbolSize * 4
+          }
           const accident = getAccident(accidentMap?.value, value)
           if (accident?.kind == AccidentKind.Exception) {
             return symbolSize * 1.2
@@ -369,6 +385,9 @@ function configureChart(
         },
         symbol(value: string[]) {
           if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
+            return "pin"
+          }
+          if (isChangeDetected(detectedChanges, value)) {
             return "pin"
           }
           const accident = getAccident(accidentMap?.value, value)
@@ -383,7 +402,7 @@ function configureChart(
           { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: getItemStyleForSeries(accidentMap?.value),
+        itemStyle: getItemStyleForSeries(accidentMap?.value, detectedChanges),
       })
       if (settings.smoothing) {
         series.push({

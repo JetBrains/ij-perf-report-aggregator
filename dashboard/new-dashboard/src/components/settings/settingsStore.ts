@@ -5,6 +5,7 @@ import { computed } from "vue"
 export const useSettingsStore = defineStore("settingsStore", () => {
   const storedScaling = useStorage("scalingEnabled", false)
   const storedSmoothing = useStorage("smoothingEnabled", false)
+  const storedDetectChanges = useStorage("detectChangesEnabled", false)
 
   const scaling = computed({
     get: () => storedScaling.value,
@@ -22,5 +23,12 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing }
+  const detectChanges = computed({
+    get: () => storedDetectChanges.value,
+    set(value) {
+      storedDetectChanges.value = value
+    },
+  })
+
+  return { scaling, smoothing, detectChanges }
 })

@@ -7,17 +7,17 @@
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
     <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'clion/%'"
-          :aggregated-measure="'processingSpeed#%'"
-          :is-like="true"
-          :title="'[CLion] Indexing speed (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
+      <!--<div class="flex-1 min-w-0">-->
+      <!--  <AggregationChart-->
+      <!--    :configurators="averagesConfigurators"-->
+      <!--    :aggregated-project="'clion/%'"-->
+      <!--    :aggregated-measure="'processingSpeed#%'"-->
+      <!--    :is-like="true"-->
+      <!--    :title="'[CLion] Indexing speed (kB/s)'"-->
+      <!--    :chart-color="'#219653'"-->
+      <!--    :value-unit="'counter'"-->
+      <!--  />-->
+      <!--</div>-->
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
@@ -39,17 +39,17 @@
       </div>
     </section>
     <section class="flex gap-x-6 flex-col md:flex-row">
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-project="'radler/%'"
-          :aggregated-measure="'processingSpeed#%'"
-          :is-like="true"
-          :title="'[Radler] Indexing speed (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
+      <!--<div class="flex-1 min-w-0">-->
+      <!--  <AggregationChart-->
+      <!--    :configurators="averagesConfigurators"-->
+      <!--    :aggregated-project="'radler/%'"-->
+      <!--    :aggregated-measure="'processingSpeed#%'"-->
+      <!--    :is-like="true"-->
+      <!--    :title="'[Radler] Indexing speed (kB/s)'"-->
+      <!--    :chart-color="'#219653'"-->
+      <!--    :value-unit="'counter'"-->
+      <!--  />-->
+      <!--</div>-->
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"

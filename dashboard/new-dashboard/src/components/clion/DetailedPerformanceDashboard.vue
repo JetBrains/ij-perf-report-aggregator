@@ -114,7 +114,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items (std::string, cold)"
+          label="[Radler, clangd vs R#] Total items, mean (std::string, cold)"
           :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
           :projects="['radler/fmtlib/completion/std.string (cold)']"
         />
@@ -139,7 +139,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items (std::string, hot)"
+          label="[Radler, clangd vs R#] Total items, mean (std::string, hot)"
           :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
           :projects="['radler/fmtlib/completion/std.string (hot)']"
         />
@@ -164,7 +164,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items (std::shared_ptr<T>, hot)"
+          label="[Radler, clangd vs R#] Total items, mean (std::shared_ptr<T>, hot)"
           :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
           :projects="['radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
         />
@@ -189,7 +189,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items (fmt::join<It>, hot)"
+          label="[Radler, clangd vs R#] Total items, mean (fmt::join<It>, hot)"
           :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
           :projects="['radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
         />

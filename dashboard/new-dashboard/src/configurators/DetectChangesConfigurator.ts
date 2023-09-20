@@ -35,7 +35,7 @@ const extractValuesFromMatrix = (matrix: (string | number)[][], index: number): 
   return matrix.map((row) => row[index])
 }
 
-export function applyFilter(seriesData: (string | number)[][]): (string | number)[][] {
+export function detectChanges(seriesData: (string | number)[][]): (string | number)[][] {
   const changePointIndexes = getChangePointIndexes(seriesData[1] as number[], 1).map((value) => value + 1)
   return changePointIndexes.map((value) => extractValuesFromMatrix(seriesData, value))
 }

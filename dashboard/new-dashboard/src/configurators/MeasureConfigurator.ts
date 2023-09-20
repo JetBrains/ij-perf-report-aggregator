@@ -14,7 +14,7 @@ import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
-import { applyFilter } from "./DetectChangesConfigurator"
+import { detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -348,7 +348,7 @@ function configureChart(
 
     let detectedChanges: (string | number)[][] = [[]]
     if (settings.detectChanges) {
-      detectedChanges = applyFilter(seriesData)
+      detectedChanges = detectChanges(seriesData)
     }
 
     let isNotEmpty = false

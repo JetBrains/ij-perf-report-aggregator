@@ -94,7 +94,7 @@ import { calculateChanges } from "../../util/changes"
 import { debounceSync } from "../../util/debounce"
 import SpaceIcon from "../common/SpaceIcon.vue"
 import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../common/formatter"
-import { ChartToolTipManager, TooltipData } from "./ChartToolTipManager"
+import { StartupTooltipManager, TooltipData } from "./StartupTooltipManager"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
 const panel = shallowRef<OverlayPanel | null>()
@@ -114,7 +114,7 @@ const linkText = computed(() => {
 })
 
 // do not show tooltip if cursor was not pointed again to some item
-let lastManager: ChartToolTipManager | null = null
+let lastManager: StartupTooltipManager | null = null
 
 const hide = debounceSync(() => {
   lastManager = null
@@ -179,7 +179,7 @@ function navigateToSpace() {
 }
 
 defineExpose({
-  show(manager: ChartToolTipManager) {
+  show(manager: StartupTooltipManager) {
     if (lastManager === manager) {
       hide.clear()
       panelTargetIsChanged = false

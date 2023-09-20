@@ -27,7 +27,7 @@ use([
   TitleComponent,
 ])
 
-export class ChartManager {
+export class PerformanceChartManager {
   readonly chart: EChartsType
   private readonly resizeObserver: ResizeObserver
 

@@ -20,7 +20,7 @@ interface TooltipDataItem {
   readonly color: string
 }
 
-export class ChartToolTipManager {
+export class StartupTooltipManager {
   private readonly valueUnit: ValueUnit
 
   constructor(valueUnit: ValueUnit) {

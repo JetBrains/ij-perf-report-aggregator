@@ -32,8 +32,8 @@ import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
-import { ChartToolTipManager } from "./ChartToolTipManager"
-import { LineChartManager, PopupTrigger } from "./LineChartManager"
+import { StartupLineChartManager, PopupTrigger } from "./StartupLineChartManager"
+import { StartupTooltipManager } from "./StartupTooltipManager"
 
 const props = withDefaults(
   defineProps<{
@@ -63,10 +63,10 @@ const props = withDefaults(
 )
 
 const chartElement = shallowRef<HTMLElement | null>(null)
-let chartManager: LineChartManager | null = null
+let chartManager: StartupLineChartManager | null = null
 
 const skipZeroValues = toRef(props, "skipZeroValues")
-const chartToolTipManager = new ChartToolTipManager(props.valueUnit)
+const chartToolTipManager = new StartupTooltipManager(props.valueUnit)
 const container = injectOrError(containerKey)
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = injectOrError(chartToolTipKey)
@@ -130,7 +130,7 @@ watchEffect(function () {
 })
 
 onMounted(() => {
-  chartManager = new LineChartManager(
+  chartManager = new StartupLineChartManager(
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     chartElement.value!,
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -6,7 +6,7 @@ import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
-import { ChartManager } from "./ChartManager"
+import { PerformanceChartManager } from "./PerformanceChartManager"
 
 function getWarningIcon() {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
@@ -32,7 +32,7 @@ function getWarningIcon() {
   return div
 }
 
-export class LineChartVM {
+export class PerformanceLineChartVM {
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams) => {
       const element = document.createElement("div")
@@ -64,7 +64,7 @@ export class LineChartVM {
   }
   private accidentsMap: Ref<Map<string, Accident>>
   constructor(
-    private readonly eChart: ChartManager,
+    private readonly eChart: PerformanceChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
     accidents: Ref<Accident[]> | null,

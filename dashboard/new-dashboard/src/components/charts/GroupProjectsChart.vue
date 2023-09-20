@@ -16,7 +16,7 @@ import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
 import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { ValueUnit } from "../common/chart"
-import LineChart from "./LineChart.vue"
+import LineChart from "./PerformanceLineChart.vue"
 
 interface Props {
   label: string

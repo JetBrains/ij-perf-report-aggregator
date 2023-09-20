@@ -23,8 +23,8 @@ import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
-import { ChartManager } from "./ChartManager"
-import { LineChartVM } from "./LineChartVM"
+import { PerformanceChartManager } from "./PerformanceChartManager"
+import { PerformanceLineChartVM } from "./PerformanceLineChartVM"
 
 interface LineChartProps {
   title: string
@@ -83,8 +83,8 @@ const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measure
 const container = injectOrError(containerKey)
 const sidebarVm = injectOrError(sidebarVmKey)
 
-let chartManager: ChartManager | null
-let chartVm: LineChartVM | null = null
+let chartManager: PerformanceChartManager | null
+let chartVm: PerformanceLineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
 function createChart(accidents: Ref<Accident[]> | null = null) {
@@ -94,8 +94,8 @@ function createChart(accidents: Ref<Accident[]> | null = null) {
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
-    chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
+    chartManager = new PerformanceChartManager(chartElement.value, container.value)
+    chartVm = new PerformanceLineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
       const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)

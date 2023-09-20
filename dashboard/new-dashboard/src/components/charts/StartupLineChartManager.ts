@@ -14,8 +14,8 @@ import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getInfoDataForStartup, InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
-import { ChartManager } from "./ChartManager"
-import { ChartToolTipManager } from "./ChartToolTipManager"
+import { PerformanceChartManager } from "./PerformanceChartManager"
+import { StartupTooltipManager } from "./StartupTooltipManager"
 
 const dataZoomConfig = [
   // https://echarts.apache.org/en/option.html#dataZoom-inside
@@ -31,19 +31,19 @@ use([DatasetComponent, ToolboxComponent, TooltipComponent, GridComponent, LineCh
 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
 registerTransform(ecStat.transform.regression)
 export type PopupTrigger = "item" | "axis" | "none"
-export class LineChartManager {
-  private readonly chart: ChartManager
+export class StartupLineChartManager {
+  private readonly chart: PerformanceChartManager
 
   constructor(
     container: HTMLElement,
     private _dataQueryExecutor: DataQueryExecutor,
     dataZoom: Ref<boolean>,
-    chartToolTipManager: ChartToolTipManager,
+    chartToolTipManager: StartupTooltipManager,
     chartSidebarManager: InfoSidebar<InfoDataFromStartup> | undefined,
     trigger: PopupTrigger = "axis",
     resizeContainer: HTMLElement | undefined
   ) {
-    this.chart = new ChartManager(container, resizeContainer ?? document.body)
+    this.chart = new PerformanceChartManager(container, resizeContainer ?? document.body)
     const sidebarEnabled = useStorage("sidebarEnabled", true)
     // https://github.com/apache/echarts/issues/2941
     let lastParams: CallbackDataParams[] | null = null

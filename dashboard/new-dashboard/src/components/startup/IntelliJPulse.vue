@@ -58,7 +58,7 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import LineChartCard from "../charts/LineChartCard.vue"
+import LineChartCard from "../charts/StartupLineChart.vue"
 import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"

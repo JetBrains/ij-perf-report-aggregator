@@ -1,7 +1,7 @@
 import { Observable } from "rxjs"
 import { inject, InjectionKey, Ref } from "vue"
-import { ReportInfoProvider } from "../components/charts/ChartToolTipManager"
 import ChartTooltip from "../components/charts/ChartTooltip.vue"
+import { ReportInfoProvider } from "../components/charts/StartupTooltipManager"
 import { ChartStyle } from "../components/common/chart"
 import { DataQueryConfigurator } from "../components/common/dataQuery"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"

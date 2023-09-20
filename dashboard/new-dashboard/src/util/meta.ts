@@ -9,6 +9,7 @@ export enum AccidentKind {
   Regression = "Regression",
   Exception = "Exception",
   Improvement = "Improvement",
+  Investigation = "Investigation",
 }
 
 export class Accident {

@@ -283,6 +283,8 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined) {
           return "red"
         case AccidentKind.Improvement:
           return "green"
+        case AccidentKind.Investigation:
+          return "yellow"
         case AccidentKind.Exception:
           return toColor(accident.reason)
       }

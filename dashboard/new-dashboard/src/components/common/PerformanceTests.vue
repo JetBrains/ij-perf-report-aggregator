@@ -154,7 +154,19 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
 }
 
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(scenarioConfigurator.selected.value, timeRangeConfigurator.value))
+const projectAndMetrics: string[] = []
+const projects = scenarioConfigurator.selected.value
+const measures = measureConfigurator.selected.value
+if (projects != null && measures != null) {
+  projectAndMetrics.push(...projects)
+  if (Array.isArray(projects)) {
+    projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+  } else {
+    projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+  }
+}
+
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value))
 provide(accidentsKeys, warnings)
 </script>
 

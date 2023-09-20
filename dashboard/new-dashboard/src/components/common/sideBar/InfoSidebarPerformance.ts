@@ -86,7 +86,10 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, type)
 
   const filteredAccidents = computed(() => {
-    return accidents?.value.filter((accident: Accident) => accident.affectedTest == projectName && accident.buildNumber == accidentBuild)
+    console.log(accidents?.value)
+    return accidents?.value.filter(
+      (accident: Accident) => (accident.affectedTest == projectName || accident.affectedTest == projectName + "/" + metricName) && accident.buildNumber == accidentBuild
+    )
   })
 
   const description = computedAsync(async () => {

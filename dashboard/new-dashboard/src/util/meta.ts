@@ -161,12 +161,14 @@ export function getAccident(accidents: Map<string, Accident> | undefined, value:
     //perf db
     if (value?.length == 12 || value?.length == 11) {
       const key = `${value[6]}_${value[8]}.${value[9]}`
-      return accidents.get(key) ?? null
+      const keyWithMetric = `${value[6]}/${value[2]}_${value[8]}.${value[9]}`
+      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
     }
     //perf dev db
     if (value?.length == 8 || value?.length == 7) {
       const key = `${value[6]}_${value[5]}`
-      return accidents.get(key) ?? null
+      const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
+      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
     }
   }
   return null

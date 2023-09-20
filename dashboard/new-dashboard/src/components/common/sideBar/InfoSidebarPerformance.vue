@@ -150,7 +150,7 @@
     header="Report Event"
     :style="{ width: '30vw' }"
   >
-    <div class="flex items-center space-x-4">
+    <div class="flex items-center space-x-4 mb-4">
       <Dropdown
         v-model="accidentType"
         placeholder="Event Type"
@@ -170,23 +170,39 @@
         >
       </span>
     </div>
+    <div class="flex items-center mb-4">
+      <InputSwitch
+        v-model="reportMetricOnly"
+        input-id="reportMetricOnly"
+      />
+      <label
+        for="reportMetricOnly"
+        class="text-sm ml-2"
+      >
+        Report metric only
+      </label>
+    </div>
+    <!-- Footer buttons -->
     <template #footer>
-      <Button
-        label="Cancel"
-        icon="pi pi-times"
-        text
-        @click="showDialog = false"
-      />
-      <Button
-        label="Report"
-        icon="pi pi-check"
-        autofocus
-        @click="reportRegression"
-      />
+      <div class="flex justify-end space-x-2">
+        <Button
+          label="Cancel"
+          icon="pi pi-times"
+          text
+          @click="showDialog = false"
+        />
+        <Button
+          label="Report"
+          icon="pi pi-check"
+          autofocus
+          @click="reportRegression"
+        />
+      </div>
     </template>
   </Dialog>
 </template>
 <script setup lang="ts">
+import { useStorage } from "@vueuse/core/index"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
@@ -210,9 +226,17 @@ function reportRegression() {
   if (value == null) {
     console.log("value is zero! This shouldn't happen")
   } else {
-    writeAccidentToMetaDb(value.date, value.projectName, reason.value, value.build ?? value.buildId.toString(), accidentType.value)
+    writeAccidentToMetaDb(
+      value.date,
+      value.projectName + (reportMetricOnly.value ? "/" + value.metricName : ""),
+      reason.value,
+      value.build ?? value.buildId.toString(),
+      accidentType.value
+    )
   }
 }
+
+const reportMetricOnly = useStorage("reportMetricOnly", false)
 
 function copyMethodNameToClipboard(methodName: string) {
   void navigator.clipboard.writeText(methodName)

@@ -137,7 +137,18 @@ const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
 
-const projects = props.charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[]
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(projects, timeRangeConfigurator.value))
+function getProjectAndProjectWithMetrics(charts: Chart[] | null) {
+  const projectsWithMetrics =
+    charts?.flatMap((chart) => {
+      const measures = Array.isArray(chart.definition.measure) ? chart.definition.measure : [chart.definition.measure]
+      return chart.projects.flatMap((project) => {
+        return measures.map((measure) => project + "/" + measure)
+      })
+    }) ?? []
+  const projects = new Set(charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[])
+  return [...projectsWithMetrics, ...projects]
+}
+
+const warnings = computedAsync(async () => getAccidentsFromMetaDb(getProjectAndProjectWithMetrics(props.charts), timeRangeConfigurator.value))
 provide(accidentsKeys, warnings)
 </script>

@@ -75,7 +75,7 @@
 
     <section>
       <GroupProjectsChart
-        label="[CLion vs Radler] Global Inspections (fmtlib)"
+        label="[CLion vs Radler] Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
         :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
       />

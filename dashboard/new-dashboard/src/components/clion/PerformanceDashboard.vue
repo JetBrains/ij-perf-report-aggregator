@@ -71,7 +71,7 @@
       </div>
     </section>
 
-    <Divider title="Indexing" />
+    <Divider title="General" />
 
     <section>
       <GroupProjectsChart

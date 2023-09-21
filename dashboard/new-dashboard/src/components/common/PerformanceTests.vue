@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -83,7 +83,7 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import { getAccidentsFromMetaDb } from "../../util/meta"
+import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import LineChart from "../charts/PerformanceLineChart.vue"
@@ -166,7 +166,10 @@ if (projects != null && measures != null) {
   }
 }
 
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value))
+const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
+computedAsync(async () => {
+  warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
+})
 provide(accidentsKeys, warnings)
 </script>
 

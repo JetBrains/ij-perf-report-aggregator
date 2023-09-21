@@ -74,6 +74,10 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     buildNum2 = dataSeries[10] as number
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
+  if (dbType == DBType.QODANA) {
+    machineName = dataSeries[2] as string
+    buildId = dataSeries[3] as number
+  }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
   }

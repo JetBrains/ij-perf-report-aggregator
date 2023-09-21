@@ -16,5 +16,8 @@ export function getDBType(dbName: string, table: string): DBType {
   if (dbName == "fleet" && table == "report") {
     return DBType.FLEET
   }
+  if (dbName == "qodana") {
+    return DBType.QODANA
+  }
   return DBType.UNKNOWN
 }

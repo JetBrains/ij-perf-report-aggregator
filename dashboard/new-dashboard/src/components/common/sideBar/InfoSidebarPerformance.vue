@@ -42,6 +42,7 @@
       </div>
 
       <SplitButton
+        v-if="vm.data.value?.description.value?.methodName || vm.data.value?.description.value?.url"
         label="Navigate to test"
         :model="getTestActions()"
         link

@@ -58,7 +58,6 @@
             :skip-zero-values="false"
             :value-unit="props.unit"
             :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
-            :accidents="warnings"
             :legend-formatter="(name) => name"
           />
         </template>

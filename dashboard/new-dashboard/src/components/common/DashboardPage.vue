@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import { provide, ref } from "vue"
+import { provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -39,7 +39,7 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import { FilterConfigurator } from "../../configurators/filter"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { getAccidentsFromMetaDb } from "../../util/meta"
+import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
@@ -149,6 +149,10 @@ function getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
   return [...projectsWithMetrics, ...projects]
 }
 
-const warnings = computedAsync(async () => getAccidentsFromMetaDb(getProjectAndProjectWithMetrics(props.charts), timeRangeConfigurator.value))
+const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
+
+computedAsync(async () => {
+  warnings.value = await getAccidentsFromMetaDb(getProjectAndProjectWithMetrics(props.charts), timeRangeConfigurator.value)
+})
 provide(accidentsKeys, warnings)
 </script>

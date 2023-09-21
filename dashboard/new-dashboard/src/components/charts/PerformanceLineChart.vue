@@ -52,17 +52,6 @@ const chartIsVisible = useElementVisibility(chartElement)
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
-const measureConfigurator = new PredefinedMeasureConfigurator(
-  props.measures,
-  skipZeroValues,
-  props.chartType,
-  props.valueUnit,
-  {
-    symbolSize: 7,
-    showSymbol: false,
-  },
-  accidents
-)
 
 const infoFieldsConfigurator =
   reportInfoProvider && reportInfoProvider.infoFields.length > 0
@@ -78,7 +67,6 @@ const infoFieldsConfigurator =
         },
       }
     : null
-const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null))
 
 const container = injectOrError(containerKey)
 const sidebarVm = injectOrError(sidebarVmKey)
@@ -92,6 +80,20 @@ function createChart(accidents: Ref<Map<string, Accident[]>> | null = null) {
     return
   }
   if (chartElement.value) {
+    const measureConfigurator = new PredefinedMeasureConfigurator(
+      props.measures,
+      skipZeroValues,
+      props.chartType,
+      props.valueUnit,
+      {
+        symbolSize: 7,
+        showSymbol: false,
+      },
+      accidents
+    )
+    const dataQueryExecutor = new DataQueryExecutor(
+      [...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null)
+    )
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new PerformanceChartManager(chartElement.value, container.value)

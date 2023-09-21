@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { isDefined, useElementVisibility } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
+import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -75,7 +75,7 @@ let chartManager: PerformanceChartManager | null
 let chartVm: PerformanceLineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
-function createChart(accidents: Ref<Map<string, Accident[]>> | null = null) {
+function createChart(accidents: Map<string, Accident[]> | null = null) {
   if (chartVm != null) {
     return
   }
@@ -108,7 +108,7 @@ function createChart(accidents: Ref<Map<string, Accident[]>> | null = null) {
   }
 }
 
-function setupChartOnVisibility(accidents: Ref<Map<string, Accident[]>> | null = null) {
+function setupChartOnVisibility(accidents: Map<string, Accident[]> | null = null) {
   watch(
     chartIsVisible,
     (isVisible) => {
@@ -129,7 +129,7 @@ function setupChartWithAccidentCheck() {
   } else {
     watch(accidents, () => {
       if (isDefined(accidents)) {
-        setupChartOnVisibility(accidents)
+        setupChartOnVisibility(accidents.value)
       }
     })
   }

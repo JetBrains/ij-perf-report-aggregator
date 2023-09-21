@@ -154,7 +154,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Ref<Map<string, Accident[]>> | null = null
+    readonly accidents: Map<string, Accident[]> | null = null
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -269,7 +269,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined, detectedChanges: (string | number)[][] = [[]]) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, detectedChanges: (string | number)[][] = [[]]) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
@@ -304,7 +304,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentMap: Ref<Map<string, Accident[]>> | null = null
+  accidentMap: Map<string, Accident[]> | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -369,7 +369,7 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          const accidents = getAccidents(accidentMap?.value, value)
+          const accidents = getAccidents(accidentMap, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return symbolSize * 4
           }
@@ -382,7 +382,7 @@ function configureChart(
           return symbolSize
         },
         symbol(value: string[]) {
-          const accidents = getAccidents(accidentMap?.value, value)
+          const accidents = getAccidents(accidentMap, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return "pin"
           }
@@ -400,7 +400,7 @@ function configureChart(
           { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: getItemStyleForSeries(accidentMap?.value, detectedChanges),
+        itemStyle: getItemStyleForSeries(accidentMap, detectedChanges),
       })
       if (settings.smoothing) {
         series.push({
@@ -416,7 +416,7 @@ function configureChart(
             x: xAxisName,
             y: seriesData.length - 1,
           },
-          itemStyle: getItemStyleForSeries(accidentMap?.value),
+          itemStyle: getItemStyleForSeries(accidentMap),
         })
       }
     }

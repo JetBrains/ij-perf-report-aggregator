@@ -1,5 +1,4 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { Ref } from "vue"
 import { Accident, getAccidents } from "../../util/meta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
@@ -47,7 +46,7 @@ export class PerformanceLineChartVM {
 
       element.append(document.createElement("br"))
       element.append(`${params.seriesName}`)
-      const accidents = getAccidents(this.accidentsMap?.value, data as string[])
+      const accidents = getAccidents(this.accidentsMap, data as string[])
       if (accidents != null) {
         for (const accident of accidents) {
           //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
@@ -64,12 +63,12 @@ export class PerformanceLineChartVM {
     }
   }
 
-  private accidentsMap: Ref<Map<string, Accident[]>> | null
+  private accidentsMap: Map<string, Accident[]> | null
   constructor(
     private readonly eChart: PerformanceChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
-    accidents: Ref<Map<string, Accident[]>> | null,
+    accidents: Map<string, Accident[]> | null,
     private readonly legendFormatter: (name: string) => string
   ) {
     this.legendFormatter = legendFormatter

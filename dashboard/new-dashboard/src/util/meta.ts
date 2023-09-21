@@ -159,7 +159,7 @@ export function isValueShouldBeMarkedAsException(accidents: Accident[] | null): 
   return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
 }
 
-export function getAccidents(accidents: Map<string, Accident[]> | undefined, value: string[] | null): Accident[] | null {
+export function getAccidents(accidents: Map<string, Accident[]> | null, value: string[] | null): Accident[] | null {
   if (accidents != null) {
     //perf db
     if (value?.length == 12 || value?.length == 11) {

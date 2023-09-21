@@ -137,7 +137,7 @@ const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
 
-function getProjectAndProjectWithMetrics(charts: Chart[] | null) {
+function getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
   const projectsWithMetrics =
     charts?.flatMap((chart) => {
       const measures = Array.isArray(chart.definition.measure) ? chart.definition.measure : [chart.definition.measure]

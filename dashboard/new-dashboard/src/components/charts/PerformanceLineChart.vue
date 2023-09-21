@@ -87,7 +87,7 @@ let chartManager: PerformanceChartManager | null
 let chartVm: PerformanceLineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
-function createChart(accidents: Ref<Accident[]> | null = null) {
+function createChart(accidents: Ref<Map<string, Accident[]>> | null = null) {
   if (chartVm != null) {
     return
   }
@@ -106,7 +106,7 @@ function createChart(accidents: Ref<Accident[]> | null = null) {
   }
 }
 
-function setupChartOnVisibility(accidents: Ref<Accident[]> | null = null) {
+function setupChartOnVisibility(accidents: Ref<Map<string, Accident[]>> | null = null) {
   watch(
     chartIsVisible,
     (isVisible) => {
@@ -122,14 +122,14 @@ function setupChartOnVisibility(accidents: Ref<Accident[]> | null = null) {
 
 function setupChartWithAccidentCheck() {
   //there is injection key but the value is not fetched yet
-  if (accidents != null && accidents.value == undefined) {
+  if (accidents == null) {
+    setupChartOnVisibility()
+  } else {
     watch(accidents, () => {
       if (isDefined(accidents)) {
         setupChartOnVisibility(accidents)
       }
     })
-  } else {
-    setupChartOnVisibility()
   }
 }
 

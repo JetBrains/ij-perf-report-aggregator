@@ -11,7 +11,7 @@ export interface InfoDataPerformance extends DataSeries, InfoData {
   description: Ref<Description | null>
 }
 
-export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Accident[]> | null): InfoDataPerformance {
+export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Map<string, Accident[]>> | null): InfoDataPerformance {
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -86,10 +86,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, type)
 
   const filteredAccidents = computed(() => {
-    console.log(accidents?.value)
-    return accidents?.value.filter(
-      (accident: Accident) => (accident.affectedTest == projectName || accident.affectedTest == projectName + "/" + metricName) && accident.buildNumber == accidentBuild
-    )
+    return accidents?.value.get(projectName + "_" + accidentBuild) ?? accidents?.value.get(projectName + "/" + metricName + "_" + accidentBuild)
   })
 
   const description = computedAsync(async () => {

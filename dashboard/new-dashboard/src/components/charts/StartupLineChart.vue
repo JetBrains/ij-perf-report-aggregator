@@ -94,7 +94,7 @@ watchEffect(function () {
 
   // static list of measures is provided - create sub data query executor
   if (props.measures != null) {
-    configurators = [...configurators, new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit, {}, null, null)]
+    configurators = [...configurators, new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit, {}, null)]
     const infoFields = chartToolTipManager.reportInfoProvider?.infoFields ?? []
     if (infoFields.length > 0) {
       configurators.push({

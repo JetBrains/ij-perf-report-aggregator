@@ -1,6 +1,6 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { computed, Ref } from "vue"
-import { Accident, convertAccidentsToMap, getAccident } from "../../util/meta"
+import { Ref } from "vue"
+import { Accident, getAccidents } from "../../util/meta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -27,7 +27,7 @@ function getWarningIcon() {
   svg.append(path)
 
   const div = document.createElement("div")
-  div.setAttribute("class", "w-4 h-4")
+  div.setAttribute("class", "w-1 h-1")
   div.append(svg)
   return div
 }
@@ -47,31 +47,33 @@ export class PerformanceLineChartVM {
 
       element.append(document.createElement("br"))
       element.append(`${params.seriesName}`)
-      const accident = getAccident(this.accidentsMap.value, data as string[])
-      if (accident != null) {
-        //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
-        element.append(document.createElement("br"))
-        const accidentHtml = document.createElement("span")
-        accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
-        const div = getWarningIcon()
-        accidentHtml.append(div)
-        accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
-        element.append(accidentHtml)
+      const accidents = getAccidents(this.accidentsMap?.value, data as string[])
+      if (accidents != null) {
+        for (const accident of accidents) {
+          //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
+          element.append(document.createElement("br"))
+          const accidentHtml = document.createElement("span")
+          accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
+          const div = getWarningIcon()
+          accidentHtml.append(div)
+          accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
+          element.append(accidentHtml)
+        }
       }
-
       return element
     }
   }
-  private accidentsMap: Ref<Map<string, Accident>>
+
+  private accidentsMap: Ref<Map<string, Accident[]>> | null
   constructor(
     private readonly eChart: PerformanceChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
-    accidents: Ref<Accident[]> | null,
+    accidents: Ref<Map<string, Accident[]>> | null,
     private readonly legendFormatter: (name: string) => string
   ) {
     this.legendFormatter = legendFormatter
-    this.accidentsMap = computed(() => convertAccidentsToMap(accidents?.value))
+    this.accidentsMap = accidents
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({

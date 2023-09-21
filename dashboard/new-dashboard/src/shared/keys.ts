@@ -12,5 +12,5 @@ export const sidebarStartupKey: InjectionKey<InfoSidebar<InfoDataFromStartup>> =
 export const containerKey: InjectionKey<Ref<HTMLElement | undefined>> = Symbol("chartContainerKey")
 
 export const serverConfiguratorKey: InjectionKey<ServerConfigurator> = Symbol("serverConfiguratorKey")
-export const accidentsKeys: InjectionKey<Ref<Accident[] | undefined>> = Symbol("accidentsKey")
+export const accidentsKeys: InjectionKey<Ref<Map<string, Accident[]>>> = Symbol("accidentsKey")
 export const dashboardConfiguratorsKey: InjectionKey<DataQueryConfigurator[] | FilterConfigurator[]> = Symbol("dashboardConfiguratorsKey")

@@ -81,12 +81,9 @@ export function writeAccidentToMetaDb(date: string, affected_test: string, reaso
     })
 }
 
-export function getAccidentsFromMetaDb(tests: string[] | string | null, timeRange: Ref<TimeRange>): Promise<Accident[]> {
-  if (tests != null && !Array.isArray(tests)) {
-    tests = [tests]
-  }
+export function getAccidentsFromMetaDb(tests: string[], timeRange: Ref<TimeRange>): Promise<Map<string, Accident[]>> {
   const interval = intervalToPostgresInterval(timeRange.value)
-  const params = tests == null ? { interval } : { interval, tests }
+  const params = tests.length === 0 ? { interval } : { interval, tests }
   return fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
     method: "POST",
     headers: {
@@ -96,13 +93,14 @@ export function getAccidentsFromMetaDb(tests: string[] | string | null, timeRang
   })
     .then((response) => response.json())
     .then((data: AccidentFromServer[]) => {
-      return data.map((value) => {
+      const accidents = data.map((value) => {
         return { ...value, kind: capitalizeFirstLetter(value.kind) }
       })
+      return convertAccidentsToMap(accidents)
     })
     .catch((error) => {
       console.error(error)
-      return []
+      return new Map<string, Accident[]>()
     })
 }
 
@@ -140,23 +138,28 @@ export async function getDescriptionFromMetaDb(project: string | undefined, bran
  * This is needed for optimization since we search for accidents on each point on the plot.
  * @param accidents
  */
-export function convertAccidentsToMap(accidents: Accident[] | undefined | null): Map<string, Accident> {
-  const accidentsMap = new Map<string, Accident>()
-  if (accidents) {
-    for (const accident of accidents) {
-      const key = `${accident.affectedTest}_${accident.buildNumber}` // assuming accident has a property 'value8'
-      accidentsMap.set(key, accident)
+function convertAccidentsToMap(accidents: Accident[]): Map<string, Accident[]> {
+  const accidentsMap = new Map<string, Accident[]>()
+  for (const accident of accidents) {
+    const key = `${accident.affectedTest}_${accident.buildNumber}` // assuming accident has a property 'value8'
+    if (accidentsMap.get(key) == null) {
+      accidentsMap.set(key, [accident])
+    } else {
+      accidentsMap.get(key)?.push(accident)
     }
   }
   return accidentsMap
 }
 
-export function isValueShouldBeMarkedWithPin(accidents: Map<string, Accident> | undefined, value: string[]): boolean {
-  const accident = getAccident(accidents, value)
-  return accident != null && accident.kind != AccidentKind.Exception
+export function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.some((accident) => accident.kind != AccidentKind.Exception)
 }
 
-export function getAccident(accidents: Map<string, Accident> | undefined, value: string[] | null): Accident | null {
+export function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
+}
+
+export function getAccidents(accidents: Map<string, Accident[]> | undefined, value: string[] | null): Accident[] | null {
   if (accidents != null) {
     //perf db
     if (value?.length == 12 || value?.length == 11) {

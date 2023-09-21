@@ -3,7 +3,7 @@ import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { deepEqual } from "fast-equals"
 import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
-import { computed, Ref, shallowRef } from "vue"
+import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
@@ -13,7 +13,7 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
-import { Accident, AccidentKind, convertAccidentsToMap, getAccident, isValueShouldBeMarkedWithPin } from "../util/meta"
+import { Accident, AccidentKind, getAccidents, isValueShouldBeMarkedAsException, isValueShouldBeMarkedWithPin } from "../util/meta"
 import { detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -154,11 +154,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Ref<Accident[] | undefined> | null = null,
-    readonly accidentMap: Ref<Map<string, Accident>> | null = null
-  ) {
-    this.accidentMap = computed(() => convertAccidentsToMap(accidents?.value))
-  }
+    readonly accidents: Ref<Map<string, Accident[]>> | null = null
+  ) {}
 
   createObservable(): Observable<unknown> {
     return refToObservable(this.skipZeroValues)
@@ -172,7 +169,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentMap)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidents)
   }
 }
 
@@ -272,26 +269,27 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident> | undefined, detectedChanges: (string | number)[][] = [[]]) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined, detectedChanges: (string | number)[][] = [[]]) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
-      const accident = getAccident(accidentMap, seriesIndex.value as string[])
-      if (accident == null) {
+      const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
+      if (accidents == null || accidents.length === 0) {
         if (isChangeDetected(detectedChanges, seriesIndex.value as string[])) {
           return "purple"
         }
         return seriesIndex.color as ZRColor
       }
-      switch (accident.kind) {
-        case AccidentKind.Regression:
-          return "red"
-        case AccidentKind.Improvement:
-          return "green"
-        case AccidentKind.Investigation:
-          return "orange"
-        case AccidentKind.Exception:
-          return toColor(accident.reason)
+      for (const accident of accidents) {
+        switch (accident.kind) {
+          case AccidentKind.Regression:
+            return "red"
+          case AccidentKind.Improvement:
+            return "green"
+          case AccidentKind.Investigation:
+            return "orange"
+        }
       }
+      return toColor(accidents[0].reason)
     },
   }
 }
@@ -306,7 +304,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentMap: Ref<Map<string, Accident>> | null = null
+  accidentMap: Ref<Map<string, Accident[]>> | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -371,27 +369,27 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
+          const accidents = getAccidents(accidentMap?.value, value)
+          if (isValueShouldBeMarkedWithPin(accidents)) {
             return symbolSize * 4
           }
           if (isChangeDetected(detectedChanges, value)) {
             return symbolSize * 4
           }
-          const accident = getAccident(accidentMap?.value, value)
-          if (accident?.kind == AccidentKind.Exception) {
+          if (isValueShouldBeMarkedAsException(accidents)) {
             return symbolSize * 1.2
           }
           return symbolSize
         },
         symbol(value: string[]) {
-          if (isValueShouldBeMarkedWithPin(accidentMap?.value, value)) {
+          const accidents = getAccidents(accidentMap?.value, value)
+          if (isValueShouldBeMarkedWithPin(accidents)) {
             return "pin"
           }
           if (isChangeDetected(detectedChanges, value)) {
             return "pin"
           }
-          const accident = getAccident(accidentMap?.value, value)
-          if (accident?.kind == AccidentKind.Exception) {
+          if (isValueShouldBeMarkedAsException(accidents)) {
             return "diamond"
           }
           return "circle"

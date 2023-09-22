@@ -5,11 +5,12 @@ import (
   "log"
   "net/http"
   "net/url"
+  "sync"
   "time"
 )
 
 func main() {
-  baseURL := "http://localhost:8080/"
+  baseURL := "http://localhost:8123/"
 
   // List of branches to iterate over
   branches := []string{"master", "231", "232", "223", "222"}
@@ -150,32 +151,70 @@ func main() {
     "totalHeapUsedMax",
   }
 
-  i := 0
-  e := 0
+  const numWorkers = 10
+
+  requests := make(chan string, numWorkers)
+  var wg sync.WaitGroup
+
+  worker := func() {
+    for query := range requests {
+      encodedQuery := url.QueryEscape(query)
+      resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
+      if err != nil {
+        log.Printf("Error: %v", err)
+        errorsCounterCH.Inc()
+      } else {
+        resp.Body.Close()
+      }
+      requestCounterCH.Inc()
+      wg.Done()
+    }
+  }
+  // Start the workers.
+  for i := 0; i < numWorkers; i++ {
+    go worker()
+  }
+
   start := time.Now()
+
   for _, metric := range metrics {
     for _, project := range projects {
       for _, os := range oses {
         for _, branch := range branches {
           query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea array join measures where branch = '%s' and generated_time >subtractMonths(now(),12) and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' and measures.name = '%s' order by t", branch, os, project, metric)
-
-          encodedQuery := url.QueryEscape(query)
-          resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
-          if err != nil {
-            log.Printf("Error: %v", err)
-            e++
-          } else {
-            resp.Body.Close()
-            //time.Sleep(1000 * time.Nanosecond)
-          }
-          i++
+          wg.Add(1)
+          requests <- query
         }
       }
     }
   }
-  println("Total requests: ", i)
-  println("Total errors: ", e)
+
+  wg.Wait()
+  close(requests)
+
+  fmt.Println("Total requests: ", requestCounterCH.Value())
+  fmt.Println("Total errors: ", errorsCounterCH.Value())
   elapsed := time.Since(start) // calculate the elapsed time
   fmt.Printf("The code executed in %s\n", elapsed)
 
+}
+
+var requestCounterCH CounterCH
+var errorsCounterCH CounterCH
+
+type CounterCH struct {
+  mu sync.Mutex
+  n  int
+}
+
+func (c *CounterCH) Inc() {
+  c.mu.Lock()
+  c.n++
+  c.mu.Unlock()
+}
+
+func (c *CounterCH) Value() int {
+  c.mu.Lock()
+  defer c.mu.Unlock()
+  return c.n
 }

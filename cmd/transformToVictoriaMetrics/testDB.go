@@ -5,10 +5,12 @@ import (
   "log"
   "net/http"
   "net/url"
+  "sync"
   "time"
 )
 
 func main() {
+  const numWorkers = 10
   baseURL := "http://localhost:8428/api/v1/query"
 
   // List of branches to iterate over
@@ -150,32 +152,69 @@ func main() {
     "totalHeapUsedMax",
   }
 
-  i := 0
-  e := 0
+  requests := make(chan string, numWorkers)
+  var wg sync.WaitGroup
+
+  worker := func() {
+    for query := range requests {
+      encodedQuery := url.QueryEscape(query)
+      resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
+      if err != nil {
+        log.Printf("Error: %v", err)
+        errorsCounter.Inc()
+      } else {
+        resp.Body.Close()
+      }
+      requestCounter.Inc()
+      wg.Done()
+    }
+  }
+  // Start the workers.
+  for i := 0; i < numWorkers; i++ {
+    go worker()
+  }
+
   start := time.Now()
+
   for _, metric := range metrics {
     for _, project := range projects {
       for _, os := range oses {
         for _, branch := range branches {
           query := fmt.Sprintf(`%s{branch="%s",triggeredBy="", machine=~"%s", build_c3="0", project="%s"}[1y]`, metric, branch, os, project)
-
-          encodedQuery := url.QueryEscape(query)
-          resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
-          if err != nil {
-            log.Printf("Error: %v", err)
-            e++
-          } else {
-            resp.Body.Close()
-            //time.Sleep(1000 * time.Nanosecond)
-          }
-          i++
+          wg.Add(1)
+          requests <- query
         }
       }
     }
   }
-  println("Total requests: ", i)
-  println("Total errors: ", e)
+
+  wg.Wait()
+  close(requests)
+
+  fmt.Println("Total requests: ", requestCounter.Value())
+  fmt.Println("Total errors: ", errorsCounter.Value())
   elapsed := time.Since(start) // calculate the elapsed time
   fmt.Printf("The code executed in %s\n", elapsed)
 
 }
+
+// A thread-safe counter.
+type Counter struct {
+  mu sync.Mutex
+  n  int
+}
+
+func (c *Counter) Inc() {
+  c.mu.Lock()
+  c.n++
+  c.mu.Unlock()
+}
+
+func (c *Counter) Value() int {
+  c.mu.Lock()
+  defer c.mu.Unlock()
+  return c.n
+}
+
+var requestCounter Counter
+var errorsCounter Counter

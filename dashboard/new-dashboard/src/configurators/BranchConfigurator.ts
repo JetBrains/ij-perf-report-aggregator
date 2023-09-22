@@ -24,7 +24,7 @@ export class BranchConfigurator extends DimensionConfigurator {
         return values.length
       },
       mutate(index: number) {
-        if (/\d+/.test(values[index])) {
+        if (/\d+$/.test(values[index])) {
           filter.v = values[index] + "%"
           filter.o = "like"
         } else {

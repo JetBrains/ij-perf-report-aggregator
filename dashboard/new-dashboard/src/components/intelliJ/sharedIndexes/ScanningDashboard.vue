@@ -103,6 +103,19 @@
         ]"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (JDK)"
+        :measure="['scanning', 'scanningTimeWithoutPauses']"
+        :projects="[
+          'jdk-only-downloaded-sharedIndexes',
+          'jdk-only-with-java-sharedIndexes',
+          'jdk-only-with-maven-sharedIndexes',
+          'jdk-only-with-project-sharedIndexes',
+          'jdk-only-without-sharedIndexes',
+        ]"
+      />
+    </section>
   </DashboardPage>
 </template>
 

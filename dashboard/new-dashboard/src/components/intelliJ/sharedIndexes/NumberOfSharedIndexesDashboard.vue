@@ -103,6 +103,19 @@
         ]"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Number of indexing files by shared indexes (JDK)"
+        measure="numberOfFilesIndexedByExtensions"
+        :projects="[
+          'jdk-only-downloaded-sharedIndexes',
+          'jdk-only-with-java-sharedIndexes',
+          'jdk-only-with-maven-sharedIndexes',
+          'jdk-only-with-project-sharedIndexes',
+          'jdk-only-without-sharedIndexes',
+        ]"
+      />
+    </section>
   </DashboardPage>
 </template>
 

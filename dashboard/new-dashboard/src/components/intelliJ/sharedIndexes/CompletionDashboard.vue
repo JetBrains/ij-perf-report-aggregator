@@ -103,6 +103,19 @@
         ]"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Completion (JDK)"
+        measure="completion"
+        :projects="[
+          'jdk-only-downloaded-sharedIndexes',
+          'jdk-only-with-java-sharedIndexes',
+          'jdk-only-with-maven-sharedIndexes',
+          'jdk-only-with-project-sharedIndexes',
+          'jdk-only-without-sharedIndexes',
+        ]"
+      />
+    </section>
   </DashboardPage>
 </template>
 

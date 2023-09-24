@@ -44,6 +44,7 @@ enum ROUTES {
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
   IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
+  IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
@@ -196,6 +197,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJDevDashboard,
           label: "Dashboard (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJFindUsagesDashboard,
+          label: "Dashboard Find Usages",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
@@ -842,6 +847,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJDevDashboard,
           component: () => import("./components/intelliJ/PerformanceDevDashboard.vue"),
           meta: { pageTitle: "IntelliJ Performance dashboard Fast Installer" },
+        },
+        {
+          path: ROUTES.IntelliJFindUsagesDashboard,
+          component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Performance dashboard Find Usages" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,

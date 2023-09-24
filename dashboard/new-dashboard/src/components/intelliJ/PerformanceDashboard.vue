@@ -148,7 +148,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Debug run configuration", "Debug step into"],
     measures: ["debugRunConfiguration", "debugStep_into"],
-    projects: ["debug-kotlin_petclinic/debug"],
+    projects: ["kotlin_petclinic/debug"],
   },
   {
     labels: ["Search Everywhere", "Search Everywhere (Dialog Shown)", "Search Everywhere (Items Loaded)"],

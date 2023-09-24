@@ -47,18 +47,17 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Dumb mode time", "Number of indexed files (Big projects)"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexed files (Big projects)"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
     labels: [
       "Indexing with the new record storages (IntelliJ project)",
       "Scanning with the new record storages (IntelliJ project)",
-      "Dumb mode time with the new record storages (IntelliJ project)",
       "Number of indexed files with the new record storages (IntelliJ project)",
     ],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: [
       "vfs-record-storage/in-memory-intellij_sources/indexing",
       "vfs-record-storage/over-lock-free-file-page-cache-intellij_sources/indexing",
@@ -72,8 +71,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Indexing", "Scanning", "Dumb mode time", "Number of indexed files"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
+    labels: ["Indexing", "Scanning", "Number of indexed files"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: [
       "empty_project/indexing",
       "grails/indexing",
@@ -84,6 +83,11 @@ const chartsDeclaration: ChartDefinition[] = [
       "spring_boot_maven/indexing",
       "kotlin_petclinic/indexing",
     ],
+  },
+  {
+    labels: ["Indexing", "Scanning", "Number of indexed files"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
   },
 ]
 

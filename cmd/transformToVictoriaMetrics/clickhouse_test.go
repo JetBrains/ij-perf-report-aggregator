@@ -6,10 +6,11 @@ import (
   "net/http"
   "net/url"
   "sync"
+  "testing"
   "time"
 )
 
-func main() {
+func TestClickhouse(_ *testing.T) {
   baseURL := "http://localhost:8123/"
 
   // List of branches to iterate over

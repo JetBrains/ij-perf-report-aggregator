@@ -171,3 +171,5 @@ issues:
       linters: [ revive ]
     - text: 'exitAfterDefer:'
       linters: [ gocritic ]
+    - text: "SA1019: \"github.com/golang/protobuf/proto\" is deprecated"
+      linters: [ staticcheck ]

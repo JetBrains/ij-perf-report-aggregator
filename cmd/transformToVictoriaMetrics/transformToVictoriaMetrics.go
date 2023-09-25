@@ -17,6 +17,7 @@ import (
   "log"
   "net/http"
   "strings"
+  "testing"
   "time"
 )
 
@@ -26,7 +27,7 @@ const victoriaMetricsURL = "http://localhost:8428/api/v1/write"
 1. run restore-backup RC
 2. change `migrate/report.sql` as needed and execute.
 */
-func main() {
+func TestVictoriaMetrics(_ *testing.T) {
   config := zap.NewDevelopmentConfig()
   config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
   config.DisableCaller = true
@@ -163,7 +164,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   return nil
 }
 
-func worker(tasks chan ReportRow, logger *zap.Logger) {
+func worker(tasks chan ReportRow) {
   for row := range tasks {
     // The data processing code comes here
     for i, name := range row.MeasuresName {
@@ -246,7 +247,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 
   tasks := make(chan ReportRow, numWorkers)
   for i := 0; i < numWorkers; i++ {
-    go worker(tasks, logger)
+    go worker(tasks)
   }
 
   var row ReportRow
@@ -298,7 +299,7 @@ func sendToVictoriaMetrics(metricName string, value float64, labels []prompb.Lab
   compressedData := snappy.Encode(nil, data)
 
   // Send to VictoriaMetrics
-  resp, err := http.Post(victoriaMetricsURL, "application/x-protobuf", bytes.NewReader(compressedData))
+  resp, err := http.Post(victoriaMetricsURL, "application/x-protobuf", bytes.NewReader(compressedData)) //nolint:noctx
   if err != nil {
     return err
   }

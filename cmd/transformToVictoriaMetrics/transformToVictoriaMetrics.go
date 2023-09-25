@@ -17,7 +17,6 @@ import (
   "log"
   "net/http"
   "strings"
-  "testing"
   "time"
 )
 
@@ -27,7 +26,7 @@ const victoriaMetricsURL = "http://localhost:8428/api/v1/write"
 1. run restore-backup RC
 2. change `migrate/report.sql` as needed and execute.
 */
-func TestVictoriaMetrics(_ *testing.T) {
+func main() {
   config := zap.NewDevelopmentConfig()
   config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
   config.DisableCaller = true

@@ -35,9 +35,69 @@ const extractValuesFromMatrix = (matrix: (string | number)[][], index: number): 
   return matrix.map((row) => row[index])
 }
 
-export function detectChanges(seriesData: (string | number)[][]): (string | number)[][] {
-  const changePointIndexes = getChangePointIndexes(seriesData[1] as number[], 1).map((value) => value + 1)
-  return changePointIndexes.map((value) => extractValuesFromMatrix(seriesData, value))
+function hodgesLehmannEstimator(segmentA: number[], segmentB: number[]): number {
+  const pairwiseDifferences: number[] = []
+
+  for (const valueA of segmentA) {
+    for (const valueB of segmentB) {
+      pairwiseDifferences.push(valueB - valueA)
+    }
+  }
+
+  pairwiseDifferences.sort((a, b) => a - b)
+
+  const middle = Math.floor(pairwiseDifferences.length / 2)
+  return pairwiseDifferences.length % 2 === 0 ? (pairwiseDifferences[middle - 1] + pairwiseDifferences[middle]) / 2 : pairwiseDifferences[middle]
+}
+
+export enum ChangePointClassification {
+  DEGRADATION = "Degradation",
+  OPTIMIZATION = "Optimization",
+  NO_CHANGE = "No Change",
+}
+
+function classifyChangePoint(changePointIndexes: number[], dataset: number[]) {
+  const classifications: ChangePointClassification[] = []
+
+  for (let i = 0; i < changePointIndexes.length; i++) {
+    // If it's the first change point, take data from the beginning, otherwise from the previous change point.
+    const startBefore = i === 0 ? 0 : changePointIndexes[i - 1]
+    const endBefore = changePointIndexes[i]
+
+    const startAfter = changePointIndexes[i]
+    // If it's the last change point, take data till the end, otherwise till the next change point.
+    const endAfter = i === changePointIndexes.length - 1 ? dataset.length : changePointIndexes[i + 1]
+
+    const segmentBefore = dataset.slice(startBefore, endBefore)
+    const segmentAfter = dataset.slice(startAfter, endAfter)
+
+    const hlValue = hodgesLehmannEstimator(segmentBefore, segmentAfter)
+    let classification
+
+    if (hlValue > 0) {
+      classification = ChangePointClassification.DEGRADATION
+    } else if (hlValue < 0) {
+      classification = ChangePointClassification.OPTIMIZATION
+    } else {
+      classification = ChangePointClassification.NO_CHANGE
+    }
+
+    classifications.push(classification)
+  }
+  return classifications
+}
+
+export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
+  const dataset = seriesData[1] as number[]
+  const changePointIndexes = getChangePointIndexes(dataset, 1).map((value) => value + 1)
+  const classifications = classifyChangePoint(changePointIndexes, dataset)
+  const resultMap = new Map<string, ChangePointClassification>()
+
+  for (const [index, value] of changePointIndexes.entries()) {
+    const extractedValues = extractValuesFromMatrix(seriesData, value)
+    resultMap.set(JSON.stringify(extractedValues), classifications[index])
+  }
+  return resultMap
 }
 
 export function getChangePointIndexes(data: number[], minDistance: number = 1): number[] {

@@ -14,7 +14,7 @@ import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
 import { Accident, AccidentKind, getAccidents, isValueShouldBeMarkedAsException, isValueShouldBeMarkedWithPin } from "../util/meta"
-import { detectChanges } from "./DetectChangesConfigurator"
+import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -269,22 +269,27 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, detectedChanges: (string | number)[][] = [[]]) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
-        if (isChangeDetected(detectedChanges, seriesIndex.value as string[])) {
-          return "purple"
+        const detectChange = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))
+        if (detectChange == ChangePointClassification.DEGRADATION) {
+          return "#cc0000"
+        } else if (detectChange == ChangePointClassification.OPTIMIZATION) {
+          return "#009900"
+        } else if (detectChange == ChangePointClassification.NO_CHANGE) {
+          return "blue"
         }
         return seriesIndex.color as ZRColor
       }
       for (const accident of accidents) {
         switch (accident.kind) {
           case AccidentKind.Regression:
-            return "red"
+            return "#cc0000"
           case AccidentKind.Improvement:
-            return "green"
+            return "#009900"
           case AccidentKind.Investigation:
             return "orange"
         }
@@ -294,8 +299,8 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, dete
   }
 }
 
-function isChangeDetected(detectedChanges: (string | number)[][], value: string[]) {
-  return detectedChanges.some((subArray) => subArray.length === value.length && subArray.every((detectedChangesValue, index) => detectedChangesValue === value[index]))
+function isChangeDetected(detectedChanges: Map<string, ChangePointClassification>, value: string[]) {
+  return detectedChanges.get(JSON.stringify(value)) != undefined
 }
 
 function configureChart(
@@ -344,7 +349,7 @@ function configureChart(
       useDurationFormatter = false
     }
 
-    let detectedChanges: (string | number)[][] = [[]]
+    let detectedChanges = new Map<string, ChangePointClassification>()
     if (settings.detectChanges) {
       detectedChanges = detectChanges(seriesData)
     }
@@ -374,7 +379,7 @@ function configureChart(
             return symbolSize * 4
           }
           if (isChangeDetected(detectedChanges, value)) {
-            return symbolSize * 4
+            return symbolSize * 2.5
           }
           if (isValueShouldBeMarkedAsException(accidents)) {
             return symbolSize * 1.2
@@ -387,7 +392,7 @@ function configureChart(
             return "pin"
           }
           if (isChangeDetected(detectedChanges, value)) {
-            return "pin"
+            return "arrow"
           }
           if (isValueShouldBeMarkedAsException(accidents)) {
             return "diamond"

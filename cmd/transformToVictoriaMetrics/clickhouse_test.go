@@ -183,7 +183,7 @@ func TestClickhouse(_ *testing.T) {
       for _, os := range oses {
         for _, branch := range branches {
           query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea array join measures where branch = '%s' and generated_time >subtractMonths(now(),12) and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' and measures.name = '%s' order by t", branch, os, project, metric)
-          //query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea2 where branch = '%s' and generated_time >subtractMonths(now(),12) and measures.name = '%s' and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' order by t", branch, metric, os, project)
+          // query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea2 where branch = '%s' and generated_time >subtractMonths(now(),12) and measures.name = '%s' and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' order by t", branch, metric, os, project)
           wg.Add(1)
           requests <- query
         }

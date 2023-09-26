@@ -263,7 +263,7 @@ rowLoop:
       runResult.ExtraFieldData[4] = row.ServicePlugin
     }
 
-    for i, _ := range row.MeasuresName {
+    for i := range row.MeasuresName {
       if config.DbName == "perfint" {
         runResult.Report = &model.Report{
           Project:   row.Project,

@@ -10,7 +10,7 @@ import (
   "time"
 )
 
-func TestVictoriaMetrics(t *testing.T) {
+func TestVictoriaMetrics(_ *testing.T) {
   const numWorkers = 10
   baseURL := "http://localhost:8428/api/v1/query"
 
@@ -160,6 +160,7 @@ func TestVictoriaMetrics(t *testing.T) {
     for query := range requests {
       encodedQuery := url.QueryEscape(query)
       resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
+      println(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
       if err != nil {
         log.Printf("Error: %v", err)
         errorsCounter.Inc()

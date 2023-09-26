@@ -25,7 +25,6 @@ export class BranchConfigurator extends DimensionConfigurator {
         query.addFilter({ f: this.name, v: value })
       }
     }
-    console.log(query)
     return true
   }
 

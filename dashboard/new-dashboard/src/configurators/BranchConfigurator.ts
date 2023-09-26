@@ -18,13 +18,14 @@ export class BranchConfigurator extends DimensionConfigurator {
     }
 
     const values = Array.isArray(value) ? [...value] : [value]
-    let regex = ""
-    for (const value of values) {
-      regex = /\d+$/.test(value) ? regex + `like '${value}%'` : regex + `${this.name} = '${value}'`
-      regex = regex + " or "
-    }
-    regex = regex.replace(/ or $/, "")
-    query.addFilter({ f: this.name, q: regex })
+    const OR_SEPARATOR = " or "
+
+    const sqlClauses = values.map((val) => {
+      return /\d+$/.test(val) ? `branch like '${val}%'` : `branch = '${val}'`
+    })
+
+    const sql = sqlClauses.join(OR_SEPARATOR).replace(/^branch/, "")
+    query.addFilter({ f: "branch", q: sql })
     return true
   }
 

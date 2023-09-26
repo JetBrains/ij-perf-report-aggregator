@@ -11,6 +11,23 @@ export class BranchConfigurator extends DimensionConfigurator {
     super("branch", true)
   }
 
+  configureFilter(query: DataQuery): boolean {
+    const value = this.selected.value
+    if (value == null || value.length === 0) {
+      return false
+    }
+
+    const values = Array.isArray(value) ? [...value] : [value]
+    let regex = ""
+    for (const value of values) {
+      regex = /\d+$/.test(value) ? regex + `like '${value}%'` : regex + `${this.name} = '${value}'`
+      regex = regex + " or "
+    }
+    regex = regex.replace(/ or $/, "")
+    query.addFilter({ f: this.name, q: regex })
+    return true
+  }
+
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const value = this.selected.value
     if (value == null || value.length === 0) {
@@ -64,7 +81,14 @@ export function createBranchConfigurator(
 
       data.sort((a) => (a.includes("/") ? 1 : -1))
 
-      configurator.values.value = data.filter((value, _n, _a) => !/^\d+\.\d+$/.test(value))
+      configurator.values.value = [
+        ...new Set(
+          data.map((value, _n, _a) => {
+            const match = `${value}`.match(/^(\d+)\.\d+$/)
+            return match ? match[1] : value
+          })
+        ),
+      ]
       filterSelected(configurator, data, name)
     })
   return configurator

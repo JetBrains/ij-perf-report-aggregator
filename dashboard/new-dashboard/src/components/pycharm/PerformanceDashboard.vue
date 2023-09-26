@@ -27,7 +27,7 @@
     <section>
       <GroupProjectsChart
         label="Scanning"
-        measure="['scanningTimeWithoutPauses', 'scanning']"
+        :measure="['scanningTimeWithoutPauses', 'scanning']"
         :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
       />
     </section>

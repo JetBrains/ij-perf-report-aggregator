@@ -21,21 +21,58 @@
       <GroupProjectsChart
         label="Indexing"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
-        :projects="['django/indexing', 'empty_project/indexing', 'flusk/indexing', 'matplotlib/indexing', 'pandas/indexing']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning"
+        measure="['scanningTimeWithoutPauses', 'scanning']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files"
         measure="numberOfIndexedFiles"
-        :projects="['django/indexing', 'empty_project/indexing', 'flask/indexing', 'matplotlib/indexing', 'pandas/indexing']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Inspection execution time"
+        label="Global Inspections"
         measure="globalInspections"
-        :projects="['django/inspection', 'flask/inspection', 'matplotlib/inspection', 'pandas/inspection']"
+        :projects="['django/inspection', 'flask/inspection', 'keras/inspection', 'mypy/inspection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="First Code Analysis"
+        measure="firstCodeAnalysis"
+        :projects="[
+          'django/findUsages/ForeignKey',
+          'django/findUsages/Form',
+          'django/findUsages/Model',
+          'flask/findUsages/Flask',
+          'flask/findUsages/request',
+          'keras/findUsages/Sequential',
+          'mypy/findUsages/Errors',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages"
+        measure="findUsages"
+        :projects="[
+          'django/findUsages/ForeignKey',
+          'django/findUsages/Form',
+          'django/findUsages/Model',
+          'flask/findUsages/Flask',
+          'flask/findUsages/request',
+          'keras/findUsages/Sequential',
+          'mypy/findUsages/Errors',
+        ]"
       />
     </section>
   </DashboardPage>

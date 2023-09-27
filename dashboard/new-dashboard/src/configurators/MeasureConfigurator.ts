@@ -386,6 +386,10 @@ function configureChart(
           }
           return symbolSize
         },
+        symbolRotate(value: string[]): number {
+          const detectChange = detectedChanges.get(JSON.stringify(value))
+          return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
+        },
         symbol(value: string[]) {
           const accidents = getAccidents(accidentMap, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {

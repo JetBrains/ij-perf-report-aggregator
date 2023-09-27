@@ -280,7 +280,7 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, dete
         } else if (detectChange == ChangePointClassification.OPTIMIZATION) {
           return "#009900"
         } else if (detectChange == ChangePointClassification.NO_CHANGE) {
-          return "blue"
+          // return "#b4b3b3"
         }
         return seriesIndex.color as ZRColor
       }
@@ -300,7 +300,8 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, dete
 }
 
 function isChangeDetected(detectedChanges: Map<string, ChangePointClassification>, value: string[]) {
-  return detectedChanges.get(JSON.stringify(value)) != undefined
+  const changePointClassification = detectedChanges.get(JSON.stringify(value))
+  return changePointClassification != undefined && changePointClassification != ChangePointClassification.NO_CHANGE
 }
 
 function configureChart(

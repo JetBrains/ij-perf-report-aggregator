@@ -71,13 +71,28 @@ function classifyChangePoint(changePointIndexes: number[], dataset: number[]) {
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
 
+    const sortedSegmentBefore = segmentBefore.sort((a, b) => a - b)
+    const medianBefore =
+      sortedSegmentBefore.length % 2 === 0
+        ? (sortedSegmentBefore[sortedSegmentBefore.length / 2 - 1] + sortedSegmentBefore[sortedSegmentBefore.length / 2]) / 2
+        : sortedSegmentBefore[Math.floor(sortedSegmentBefore.length / 2)]
+
+    const sortedSegmentAfter = segmentAfter.sort((a, b) => a - b)
+    const medianAfter =
+      sortedSegmentAfter.length % 2 === 0
+        ? (sortedSegmentAfter[sortedSegmentAfter.length / 2 - 1] + sortedSegmentAfter[sortedSegmentAfter.length / 2]) / 2
+        : sortedSegmentAfter[Math.floor(sortedSegmentAfter.length / 2)]
+
+    const percentageDifference = Math.abs(((medianAfter - medianBefore) / medianBefore) * 100)
+
     const hlValue = hodgesLehmannEstimator(segmentBefore, segmentAfter)
     let classification
-
-    if (hlValue > 0) {
-      classification = ChangePointClassification.DEGRADATION
-    } else if (hlValue < 0) {
-      classification = ChangePointClassification.OPTIMIZATION
+    if (
+      (medianBefore < 2000 && percentageDifference > 5) ||
+      (medianBefore >= 2000 && medianBefore < 10000 && percentageDifference > 2) ||
+      (medianBefore >= 10000 && percentageDifference > 1)
+    ) {
+      classification = hlValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
     } else {
       classification = ChangePointClassification.NO_CHANGE
     }

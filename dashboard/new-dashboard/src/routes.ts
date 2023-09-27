@@ -40,6 +40,7 @@ enum ROUTES {
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
+  IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
   IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
   IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
@@ -200,11 +201,15 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
-          label: "Dashboard Find Usages",
+          label: "Find Usages Dashboard",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
           label: "Indexing Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJJBRDashboard,
+          label: "JBR Performance tests Dashboard",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -789,6 +794,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
         },
         {
+          path: ROUTES.IntelliJJBRDashboard,
+          component: () => import("./components/intelliJ/JBRDashboard.vue"),
+          meta: { pageTitle: "JBR Performance dashboard" },
+        },
+        {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
           component: () => import("./components/intelliJ/experiments/IncrementalCompilationDashboard.vue"),
           meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
@@ -851,7 +861,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJFindUsagesDashboard,
           component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard Find Usages" },
+          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,

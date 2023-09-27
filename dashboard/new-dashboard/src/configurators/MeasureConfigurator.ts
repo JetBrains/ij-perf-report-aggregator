@@ -367,6 +367,12 @@ function configureChart(
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
       series.push({
+        selectedMode: "single",
+        select: {
+          itemStyle: {
+            color: "black",
+          },
+        },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id,
         name,

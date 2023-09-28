@@ -60,10 +60,6 @@ linters-settings:
       # List of blocked modules.
       # Default: []
       modules:
-        - github.com/golang/protobuf:
-            recommendations:
-              - google.golang.org/protobuf
-            reason: "see https://developers.google.com/protocol-buffers/docs/reference/go/faq#modules"
         - github.com/satori/go.uuid:
             recommendations:
               - github.com/google/uuid

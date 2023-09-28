@@ -101,7 +101,8 @@ enum ROUTES {
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
-  RustDashboard = `${ROUTE_PREFIX.Rust}/${DASHBOARD_ROUTE}`,
+  RustPluginDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
+  RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustRoverDashboard`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
@@ -581,8 +582,12 @@ const RUST: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.RustDashboard,
-          label: DASHBOARD_LABEL,
+          url: ROUTES.RustPluginDashboard,
+          label: "Rust Plugin Dashboard",
+        },
+        {
+          url: ROUTES.RustRoverDashboard,
+          label: "RustRover Dashboard",
         },
         {
           url: ROUTES.RustTests,
@@ -1169,9 +1174,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
-          path: ROUTES.RustDashboard,
-          component: () => import("./components/rust/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Rust Performance dashboard" },
+          path: ROUTES.RustPluginDashboard,
+          component: () => import("./components/rust/PerformanceDashboardIdeWithRustPlugin.vue"),
+          meta: { pageTitle: "Rust Plugin Performance dashboard" },
+        },
+        {
+          path: ROUTES.RustRoverDashboard,
+          component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
+          meta: { pageTitle: "RustRover Performance dashboard" },
         },
         {
           path: ROUTES.RustTests,

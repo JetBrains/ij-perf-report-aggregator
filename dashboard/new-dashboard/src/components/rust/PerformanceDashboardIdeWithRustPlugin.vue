@@ -3,7 +3,7 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="rust"
-    persistent-id="rust_dashboard"
+    persistent-id="rust_plugin_dashboard"
     initial-machine="Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
   >
     <section class="flex gap-6">

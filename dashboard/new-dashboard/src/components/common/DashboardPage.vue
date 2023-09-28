@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import { provide, Ref, ref } from "vue"
+import { provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -137,6 +137,9 @@ const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
 
+const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
+provide(accidentsKeys, warnings)
+
 function getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
   const projectsWithMetrics =
     charts?.flatMap((chart) => {
@@ -149,10 +152,16 @@ function getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
   return [...projectsWithMetrics, ...projects]
 }
 
-const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
-
-computedAsync(async () => {
-  warnings.value = await getAccidentsFromMetaDb(getProjectAndProjectWithMetrics(props.charts), timeRangeConfigurator.value)
-})
-provide(accidentsKeys, warnings)
+watch(
+  timeRangeConfigurator.value,
+  () => {
+    console.log("reset warnings")
+    warnings.value = undefined
+    const projectAndMetrics = getProjectAndProjectWithMetrics(props.charts)
+    computedAsync(async () => {
+      warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
+    })
+  },
+  { immediate: true }
+)
 </script>

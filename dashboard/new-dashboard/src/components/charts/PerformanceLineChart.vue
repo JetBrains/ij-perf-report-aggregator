@@ -127,11 +127,15 @@ function setupChartWithAccidentCheck() {
   if (accidents == null) {
     setupChartOnVisibility()
   } else {
-    watch(accidents, () => {
-      if (isDefined(accidents)) {
-        setupChartOnVisibility(accidents.value)
-      }
-    })
+    watch(
+      accidents,
+      () => {
+        if (isDefined(accidents)) {
+          setupChartOnVisibility(accidents.value)
+        }
+      },
+      { immediate: true }
+    )
   }
 }
 

@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import { provide, Ref, ref } from "vue"
+import { provide, Ref, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -154,28 +154,34 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
 }
 
-const projectAndMetrics: string[] = []
-const projects = scenarioConfigurator.selected.value
-const measures = measureConfigurator.selected.value
-if (projects != null && measures != null) {
-  if (Array.isArray(projects)) {
-    projectAndMetrics.push(...projects)
-  } else {
-    projectAndMetrics.push(projects)
-  }
-
-  if (Array.isArray(projects)) {
-    projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
-  } else {
-    projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
-  }
-}
-
 const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
-computedAsync(async () => {
-  warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
-})
 provide(accidentsKeys, warnings)
+watch(
+  [timeRangeConfigurator.value, scenarioConfigurator.selected, measureConfigurator.selected],
+  () => {
+    warnings.value = undefined
+    const projectAndMetrics: string[] = []
+    const projects = scenarioConfigurator.selected.value
+    const measures = measureConfigurator.selected.value
+    if (projects != null && measures != null) {
+      if (Array.isArray(projects)) {
+        projectAndMetrics.push(...projects)
+      } else {
+        projectAndMetrics.push(projects)
+      }
+
+      if (Array.isArray(projects)) {
+        projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+      } else {
+        projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+      }
+    }
+    computedAsync(async () => {
+      warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
+    })
+  },
+  { immediate: true }
+)
 </script>
 
 <style>

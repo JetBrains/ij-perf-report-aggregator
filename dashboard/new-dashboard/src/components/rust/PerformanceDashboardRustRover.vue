@@ -3,7 +3,7 @@
     db-name="perfint"
     table="rust"
     persistent-id="rust_rover_dashboard"
-    initial-machine="Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
     <section>
       <GroupProjectsChart

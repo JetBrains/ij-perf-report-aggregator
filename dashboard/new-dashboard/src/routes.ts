@@ -368,7 +368,7 @@ const IDEA: Product = {
     },
     {
       url: ROUTE_PREFIX.Vcs,
-      label: "Vcs",
+      label: "VCS",
       tabs: [
         {
           url: ROUTES.VcsIdeaDashboard,

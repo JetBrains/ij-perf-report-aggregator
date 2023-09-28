@@ -39,6 +39,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["LoadingDetails"]],
     projects: ["space/gitLogIndexing", "space/gitLogIndexing-sql"],
   },
+  {
+    labels: ["Commit FUS duration"],
+    measures: [["git-commit#fusCommitDuration"]],
+    projects: ["space/git-commit"]
+  }
 ]
 
 const charts = combineCharts(chartsDeclaration)

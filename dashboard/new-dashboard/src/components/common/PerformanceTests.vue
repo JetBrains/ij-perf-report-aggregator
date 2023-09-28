@@ -80,7 +80,7 @@ import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyCo
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsKeys, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -120,6 +120,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
   {

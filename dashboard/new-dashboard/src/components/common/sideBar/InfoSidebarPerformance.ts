@@ -1,9 +1,11 @@
 import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
-import { Accident, Description, getDescriptionFromMetaDb } from "../../../util/meta"
+import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { ValueUnit } from "../chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
+import { encodeRison } from "../rison"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
 export interface InfoDataPerformance extends DataSeries, InfoData {
@@ -11,7 +13,8 @@ export interface InfoDataPerformance extends DataSeries, InfoData {
   description: Ref<Description | null>
 }
 
-export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidents: Map<string, Accident[]> | null): InfoDataPerformance {
+export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null): InfoDataPerformance {
+  const accidents = accidentsConfigurator?.value
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   const value: number = dataSeries[1] as number
@@ -90,7 +93,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, type)
 
   const filteredAccidents = computed(() => {
-    return accidents?.get(projectName + "_" + accidentBuild) ?? accidents?.get(projectName + "/" + metricName + "_" + accidentBuild)
+    return accidents?.value?.get(projectName + "_" + accidentBuild) ?? accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild)
   })
 
   const description = computedAsync(async () => {
@@ -114,4 +117,20 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     description,
     metricName,
   }
+}
+
+class Description {
+  constructor(
+    readonly project: string,
+    readonly branch: string,
+    readonly url: string,
+    readonly methodName: string,
+    readonly description: string
+  ) {}
+}
+
+async function getDescriptionFromMetaDb(project: string | undefined, branch: string): Promise<Description | null> {
+  const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
+  const response = await fetch(description_url + encodeRison({ project, branch }))
+  return response.ok ? response.json() : null
 }

@@ -32,7 +32,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     persistentStateManager.add("timeRange", this.value)
   }
 
-  createObservable(): Observable<unknown> {
+  createObservable(): Observable<TimeRange> {
     return refToObservable(this.value)
   }
 

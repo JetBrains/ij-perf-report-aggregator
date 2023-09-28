@@ -137,6 +137,7 @@
       </div>
 
       <Button
+        v-if="accidentsConfigurator != null"
         class="text-sm"
         label="Report Event"
         text
@@ -206,11 +207,11 @@
 import { useStorage } from "@vueuse/core/index"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
-import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
 import SpaceIcon from "../SpaceIcon.vue"
 import { tcUrl } from "./InfoSidebar"
 
@@ -221,13 +222,15 @@ const router = useRouter()
 const accidentType = ref<string>("Regression")
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
+const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
+
 function reportRegression() {
   showDialog.value = false
   const value = vm.data.value
   if (value == null) {
     console.log("value is zero! This shouldn't happen")
   } else {
-    writeAccidentToMetaDb(
+    accidentsConfigurator?.writeAccidentToMetaDb(
       value.date,
       value.projectName + (reportMetricOnly.value ? "/" + value.metricName : ""),
       reason.value,
@@ -259,7 +262,7 @@ function handleNavigateToTest() {
 }
 
 function handleRemove(id: number) {
-  removeAccidentFromMetaDb(id)
+  accidentsConfigurator?.removeAccidentFromMetaDb(id)
 }
 
 function handleCloseClick() {
@@ -326,6 +329,10 @@ function getSpaceUrl() {
       window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
     })
   }
+}
+
+function getAccidentTypes(): string[] {
+  return Object.values(AccidentKind)
 }
 </script>
 <style>

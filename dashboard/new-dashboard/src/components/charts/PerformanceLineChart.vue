@@ -11,14 +11,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { isDefined, useElementVisibility } from "@vueuse/core"
+import { useElementVisibility } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
-import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
-import { Accident } from "../../util/meta"
+import { accidentsConfiguratorKey, containerKey, sidebarVmKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -45,7 +44,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   },
 })
 
-const accidents = inject(accidentsKeys, null)
+const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
 const chartElement = shallowRef<HTMLElement>()
 
 const chartIsVisible = useElementVisibility(chartElement)
@@ -75,7 +74,7 @@ let chartManager: PerformanceChartManager | null
 let chartVm: PerformanceLineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
-function createChart(accidents: Map<string, Accident[]> | null = null) {
+function createChart() {
   if (chartVm != null) {
     return
   }
@@ -89,7 +88,7 @@ function createChart(accidents: Map<string, Accident[]> | null = null) {
         symbolSize: 7,
         showSymbol: false,
       },
-      accidents
+      accidentsConfigurator
     )
     const dataQueryExecutor = new DataQueryExecutor(
       [...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null)
@@ -97,10 +96,10 @@ function createChart(accidents: Map<string, Accident[]> | null = null) {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new PerformanceChartManager(chartElement.value, container.value)
-    chartVm = new PerformanceLineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidents, props.legendFormatter)
+    chartVm = new PerformanceLineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: CallbackDataParams) => {
-      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidents)
+      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidentsConfigurator)
       sidebarVm.show(infoData)
     })
   } else {
@@ -108,12 +107,12 @@ function createChart(accidents: Map<string, Accident[]> | null = null) {
   }
 }
 
-function setupChartOnVisibility(accidents: Map<string, Accident[]> | null = null) {
+function setupChartOnVisibility() {
   watch(
     chartIsVisible,
     (isVisible) => {
       if (isVisible) {
-        createChart(accidents)
+        createChart()
       }
     },
     { immediate: true }
@@ -122,25 +121,8 @@ function setupChartOnVisibility(accidents: Map<string, Accident[]> | null = null
   setTimeout(createChart, 5000)
 }
 
-function setupChartWithAccidentCheck() {
-  //there is injection key but the value is not fetched yet
-  if (accidents == null) {
-    setupChartOnVisibility()
-  } else {
-    watch(
-      accidents,
-      () => {
-        if (isDefined(accidents)) {
-          setupChartOnVisibility(accidents.value)
-        }
-      },
-      { immediate: true }
-    )
-  }
-}
-
 onMounted(() => {
-  setupChartWithAccidentCheck()
+  setupChartOnVisibility()
 })
 
 onUnmounted(() => {

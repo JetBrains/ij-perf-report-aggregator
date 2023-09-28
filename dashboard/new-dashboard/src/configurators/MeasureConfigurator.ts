@@ -13,7 +13,7 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
-import { Accident, AccidentKind, getAccidents, isValueShouldBeMarkedAsException, isValueShouldBeMarkedWithPin } from "../util/meta"
+import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
 import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -154,7 +154,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Map<string, Accident[]> | null = null
+    readonly accidentsConfigurator: AccidentsConfigurator | null = null
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -169,7 +169,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidents)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator)
   }
 }
 
@@ -269,7 +269,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, detectedChanges = new Map<string, ChangePointClassification>()) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
@@ -310,7 +310,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentMap: Map<string, Accident[]> | null = null
+  accidentsConfigurator: AccidentsConfigurator | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -381,7 +381,7 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          const accidents = getAccidents(accidentMap, value)
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return symbolSize * 4
           }
@@ -398,7 +398,7 @@ function configureChart(
           return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
         },
         symbol(value: string[]) {
-          const accidents = getAccidents(accidentMap, value)
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return "pin"
           }
@@ -416,7 +416,7 @@ function configureChart(
           { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: getItemStyleForSeries(accidentMap, detectedChanges),
+        itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value, detectedChanges),
       })
       if (settings.smoothing) {
         series.push({
@@ -432,7 +432,7 @@ function configureChart(
             x: xAxisName,
             y: seriesData.length - 1,
           },
-          itemStyle: getItemStyleForSeries(accidentMap),
+          itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
         })
       }
     }
@@ -491,4 +491,12 @@ function configureChart(
     },
     series: series as LineSeriesOption,
   }
+}
+
+function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.some((accident) => accident.kind != AccidentKind.Exception)
+}
+
+function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
 }

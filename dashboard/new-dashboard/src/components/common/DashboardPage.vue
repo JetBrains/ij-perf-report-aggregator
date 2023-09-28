@@ -26,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core"
-import { provide, Ref, ref, watch } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForDashboard } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -38,8 +38,7 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { getDBType } from "../../shared/dbTypes"
-import { accidentsKeys, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
+import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
@@ -117,7 +116,10 @@ if (machineConfigurator != null) {
   averagesConfigurators.push(machineConfigurator)
 }
 
-const dashboardConfigurators = [branchConfigurator, timeRangeConfigurator, triggeredByConfigurator] as FilterConfigurator[]
+const accidentsConfigurator = new AccidentsConfiguratorForDashboard(props.charts, timeRangeConfigurator)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
+
+const dashboardConfigurators = [branchConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator] as FilterConfigurator[]
 
 if (machineConfigurator != null) {
   dashboardConfigurators.push(machineConfigurator)
@@ -136,32 +138,4 @@ function onChangeRange(value: TimeRange) {
 const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
-
-const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
-provide(accidentsKeys, warnings)
-
-function getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
-  const projectsWithMetrics =
-    charts?.flatMap((chart) => {
-      const measures = Array.isArray(chart.definition.measure) ? chart.definition.measure : [chart.definition.measure]
-      return chart.projects.flatMap((project) => {
-        return measures.map((measure) => project + "/" + measure)
-      })
-    }) ?? []
-  const projects = new Set(charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[])
-  return [...projectsWithMetrics, ...projects]
-}
-
-watch(
-  timeRangeConfigurator.value,
-  () => {
-    console.log("reset warnings")
-    warnings.value = undefined
-    const projectAndMetrics = getProjectAndProjectWithMetrics(props.charts)
-    computedAsync(async () => {
-      warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
-    })
-  },
-  { immediate: true }
-)
 </script>

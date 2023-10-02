@@ -261,6 +261,29 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
+          label="[CLion vs Radler] Find Usages (cmake, class)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/cmake/findUsages/class (cmCTestResourceAllocator)', 'radler/cmake/findUsages/class (cmCTestResourceAllocator)']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Find Usages (cmake, macro)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/cmake/findUsages/macro (SAFEDIV)', 'radler/cmake/findUsages/macro (SAFEDIV)']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion vs Radler] Find Usages (cmake, member)"
+          measure="%syncAction FindUsages"
+          :projects="['clion/cmake/findUsages/member (SlotsNeeded)', 'radler/cmake/findUsages/member (SlotsNeeded)']"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
           label="[CLion] Find Usages"
           measure="%syncAction FindUsages"
           :projects="[
@@ -268,6 +291,9 @@
             'clion/luau/findUsages/enumerator (LOP_NOP)',
             'clion/luau/findUsages/class template (DenseHashTable)',
             'clion/luau/findUsages/macro (LUAU_ASSERT)',
+            'clion/cmake/findUsages/class (cmCTestResourceAllocator)',
+            'clion/cmake/findUsages/macro (SAFEDIV)',
+            'clion/cmake/findUsages/member (SlotsNeeded)',
           ]"
         />
       </div>
@@ -280,6 +306,9 @@
             'radler/luau/findUsages/enumerator (LOP_NOP)',
             'radler/luau/findUsages/class template (DenseHashTable)',
             'radler/luau/findUsages/macro (LUAU_ASSERT)',
+            'radler/cmake/findUsages/class (cmCTestResourceAllocator)',
+            'radler/cmake/findUsages/macro (SAFEDIV)',
+            'radler/cmake/findUsages/member (SlotsNeeded)',
           ]"
         />
       </div>
@@ -363,7 +392,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Time to show test gutter (luau, AstQuery.test.cpp)"
-          measure="%waitFirstTestGutter"
+          measure="%waitFirstTestGutter tests/AstQuery.test.cpp"
           :projects="['clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks', 'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks']"
         />
       </div>
@@ -371,7 +400,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
-          measure="%waitFirstTestGutter"
+          measure="%waitFirstTestGutter tests/Linter.test.cpp"
           :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
         />
       </div>
@@ -381,7 +410,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Time to show test gutter (luau, Repl.test.cpp)"
-          measure="%waitFirstTestGutter"
+          measure="%waitFirstTestGutter tests/Repl.test.cpp"
           :projects="['clion/luau/checkLocalTestConfig/Repl.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks']"
         />
       </div>
@@ -389,7 +418,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="[CLion vs Radler] Time to show test gutter (luau, TypeInfer.unionTypes.test.cpp)"
-          measure="%waitFirstTestGutter"
+          measure="%waitFirstTestGutter tests/TypeInfer.unionTypes.test.cpp"
           :projects="['clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks', 'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks']"
         />
       </div>
@@ -398,30 +427,49 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Time to show test gutter (luau)"
-          measure="%waitFirstTestGutter"
-          :projects="[
-            'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
-          ]"
+          label="[CLion vs Radler] Time to show test gutter (openCV, test_houghlines.cpp)"
+          measure="%waitFirstTestGutter modules/imgproc/test/ocl/test_houghlines.cpp"
+          :projects="['clion/opencv/checkLocalTestConfig/test.houghlines.cpp.marks', 'radler/opencv/checkLocalTestConfig/test.houghlines.cpp.marks']"
         />
       </div>
 
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Time to show test gutter (luau)"
-          measure="%waitFirstTestGutter"
-          :projects="[
-            'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
-          ]"
+          label="[CLion vs Radler] Time to show test gutter (openCV, test_kalman.cpp)"
+          measure="%waitFirstTestGutter modules/video/test/test_kalman.cpp"
+          :projects="['clion/opencv/checkLocalTestConfig/test.kalman.cpp.marks', 'radler/opencv/checkLocalTestConfig/test.kalman.cpp.marks']"
         />
       </div>
     </section>
+
+    <!-- TODO: re-enable after dropping file name from %waitFirstTestGutter command -->
+    <!--<section class="flex gap-x-6 flex-col md:flex-row">-->
+    <!--  <div class="flex-1 min-w-0">-->
+    <!--    <GroupProjectsChart-->
+    <!--      label="[CLion] Time to show test gutter (luau)"-->
+    <!--      measure="%waitFirstTestGutter"-->
+    <!--      :projects="[-->
+    <!--        'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
+    <!--      ]"-->
+    <!--    />-->
+    <!--  </div>-->
+
+    <!--  <div class="flex-1 min-w-0">-->
+    <!--    <GroupProjectsChart-->
+    <!--      label="[Radler] Time to show test gutter (luau)"-->
+    <!--      measure="%waitFirstTestGutter"-->
+    <!--      :projects="[-->
+    <!--        'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
+    <!--      ]"-->
+    <!--    />-->
+    <!--  </div>-->
+    <!--</section>-->
 
     <!-- END -->
   </DashboardPage>

@@ -84,7 +84,7 @@
     <section>
       <GroupProjectsChart
         label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
-        measure="%waitFirstTestGutter"
+        measure="%waitFirstTestGutter tests/Linter.test.cpp"
         :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
       />
     </section>

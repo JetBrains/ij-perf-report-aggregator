@@ -45,7 +45,10 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "refers-named-entities",
       "rbs-new-on-many-content-roots",
       "adding-storage-recreating",
-      "adding-soft-linked-entities"
+      "adding-soft-linked-entities",
+      "10-000-orphan-content-roots-to-modules",
+      "10-000-orphan-source-roots-to-many-content-roots-to-modules",
+      "10-000-orphan-source-roots-to-modules"
     ],
   }
 })

@@ -41,6 +41,7 @@ enum ROUTES {
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
+  IntelliJWorkspaceModelBenchmarksDashboard = `${ROUTE_PREFIX.IntelliJ}/wsmBenchmarks`,
   IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
   IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
@@ -211,6 +212,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJJBRDashboard,
           label: "JBR Performance tests Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJWorkspaceModelBenchmarksDashboard,
+          label: "WSM Benchmarks",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -1250,6 +1255,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RenderDashboard,
           component: () => import("./components/jbr/RenderDashboard.vue"),
           meta: { pageTitle: "Render Dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJWorkspaceModelBenchmarksDashboard,
+          component: () => import("./components/intelliJ/WorkspaceModelBenchmarksDashboard.vue"),
+          meta: { pageTitle: "Workspace Model Benchmarks" },
         },
         {
           path: ROUTES.FleetTest,

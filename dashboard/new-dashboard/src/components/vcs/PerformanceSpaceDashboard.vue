@@ -42,8 +42,8 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Commit FUS duration"],
     measures: [["git-commit#fusCommitDuration"]],
-    projects: ["space/git-commit"]
-  }
+    projects: ["space/git-commit"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

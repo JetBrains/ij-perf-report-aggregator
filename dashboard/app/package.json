@@ -2,8 +2,8 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.0.8",
-    "@fontsource/jetbrains-mono": "5.0.12",
+    "@fontsource/inter": "5.0.12",
+    "@fontsource/jetbrains-mono": "5.0.14",
     "floating-vue": "2.0.0-beta.24",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.6",

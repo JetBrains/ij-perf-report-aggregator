@@ -62,11 +62,16 @@
         />
       </div>
     </section>
+    <Divider title="Completion" />
     <DashboardGroupCharts :definitions="completionCharts" />
+    <Divider title="Code analysis" />
     <DashboardGroupCharts :definitions="codeAnalysisCharts" />
     <DashboardGroupCharts :definitions="highlightingCharts" />
+    <Divider title="Find usages" />
     <DashboardGroupCharts :definitions="findUsagesCharts" />
+    <Divider title="Debugger" />
     <DashboardGroupCharts :definitions="evaluateExpressionChars" />
+    <Divider title="Refactoring" />
     <DashboardGroupCharts :definitions="refactoringCharts" />
   </DashboardPage>
 </template>
@@ -74,6 +79,7 @@
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
 import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, codeAnalysisCharts, refactoringCharts } from "./projects"
 </script>

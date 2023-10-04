@@ -52,6 +52,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
+    labels: ["Reopening Scanning (Big projects)", "Reopening Number of indexed files (Big projects)"],
+    measures: ["scanning", "numberOfIndexedFiles"],
+    projects: ["community/scanning", "intellij_sources/scanning", "space/scanning"],
+  },
+  {
     labels: [
       "Indexing with the new record storages (IntelliJ project)",
       "Scanning with the new record storages (IntelliJ project)",

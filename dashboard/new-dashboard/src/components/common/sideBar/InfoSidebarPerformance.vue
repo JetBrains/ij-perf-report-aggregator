@@ -42,12 +42,12 @@
       </div>
 
       <SplitButton
-        v-if="vm.data.value?.description.value?.methodName || vm.data.value?.description.value?.url"
-        label="Navigate to test"
-        :model="getTestActions()"
+        v-if="testActions.length > 0"
+        :label="testActions[0].label"
+        :model="testActions.slice(1)"
         link
         icon="pi pi-chart-line"
-        @click="handleNavigateToTest"
+        @click="testActions[0].command"
       />
 
       <div class="flex flex-col gap-2">
@@ -205,7 +205,7 @@
 </template>
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core/index"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
@@ -261,6 +261,13 @@ function handleNavigateToTest() {
   void router.push(testURL + "?" + queryParams)
 }
 
+function isOnTestPage(): boolean {
+  const currentRoute = router.currentRoute.value
+  const parts = currentRoute.path.split("/")
+  const pageName = parts.at(-1)?.toLowerCase()
+  return pageName == "testsDev" || pageName == "tests"
+}
+
 function handleRemove(id: number) {
   accidentsConfigurator?.removeAccidentFromMetaDb(id)
 }
@@ -269,8 +276,23 @@ function handleCloseClick() {
   vm.close()
 }
 
-function getTestActions() {
+const testActions = computed(() => getTestActions())
+
+function getTestActions(): {
+  label: string
+  icon: string
+  command: () => void
+}[] {
   const actions = []
+  if (!isOnTestPage()) {
+    actions.push({
+      label: "Navigate to test",
+      icon: "pi pi-chart-line",
+      command() {
+        handleNavigateToTest()
+      },
+    })
+  }
   if (vm.data.value?.description) {
     const url = vm.data.value.description.value?.url
     if (url && url != "") {

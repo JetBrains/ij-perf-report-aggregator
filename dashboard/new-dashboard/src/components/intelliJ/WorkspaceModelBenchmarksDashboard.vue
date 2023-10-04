@@ -5,6 +5,7 @@
     persistent-id="idea_workspace_model_benchmarks_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
+    :with-installer="false"
   >
     <section>
       <GroupProjectsChart

@@ -93,6 +93,14 @@ const metricsDeclaration = [
   "fullGCPause",
   "freedMemoryByGC",
   "totalHeapUsedMax",
+  "JVM.GC.collectionTimesMs",
+  "JVM.GC.collections",
+  "JVM.maxHeapMegabytes",
+  "JVM.threadCount",
+  "JVM.totalCpuTimeMs",
+  "JVM.totalMegabytesAllocated",
+  "JVM.usedHeapMegabytes",
+  "JVM.usedNativeMegabytes",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {

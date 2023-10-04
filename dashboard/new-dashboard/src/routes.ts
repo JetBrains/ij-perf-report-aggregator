@@ -126,6 +126,7 @@ enum ROUTES {
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
+  VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`
 }
 
 export interface Tab {
@@ -383,6 +384,10 @@ const IDEA: Product = {
           url: ROUTES.VcsSpaceDashboard,
           label: "Performance dashboard space project",
         },
+        {
+          url: ROUTES.VcsDotnetDashboard,
+          label: "Performance dashboard dotnet project",
+        }
       ],
     },
   ],
@@ -1355,6 +1360,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
           meta: { pageTitle: "Vcs Space performance dashboard" },
         },
+        {
+          path: ROUTES.VcsDotnetDashboard,
+          component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
+          meta: { pageTitle: "Vcs Dotnet performance dashboard" },
+        }
       ],
     },
   ]

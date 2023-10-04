@@ -23,21 +23,25 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
+const intellijSpecific = "intellij_clone_specific_commit/gitLogIndexing"
+const intellijSpecificSql = "intellij_clone_specific_commit/gitLogIndexing-sql"
+const intellijLatest = "intellij_latest_master/gitLogIndexing"
+
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
-    projects: ["intellij_clone_specific_commit/gitLogIndexing", "intellij_clone_specific_commit/gitLogIndexing-sql"],
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: ["intellij_clone_specific_commit/gitLogIndexing", "intellij_clone_specific_commit/gitLogIndexing-sql"],
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: ["intellij_clone_specific_commit/gitLogIndexing", "intellij_clone_specific_commit/gitLogIndexing-sql"],
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
   },
   {
     labels: ["Show file history"],
@@ -45,24 +49,24 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [
       "intellij_clone_specific_commit/showFileHistory/EditorImpl-phm",
       "intellij_clone_specific_commit/showFileHistory/EditorImpl-sql",
-      "intellij_clone_specific_commit/showFileHistory/EditorImpl-noindex",
-    ],
+      "intellij_clone_specific_commit/showFileHistory/EditorImpl-noindex"
+    ]
   },
   {
     labels: ["Checkout"],
     measures: [["git-checkout"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
+    projects: ["intellij_clone_specific_commit/git-checkout"]
   },
   {
     labels: ["Checkout FUS duration"],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
+    projects: ["intellij_clone_specific_commit/git-checkout"]
   },
   {
     labels: ["Checkout FUS VFS refresh duration "],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
-  },
+    projects: ["intellij_clone_specific_commit/git-checkout"]
+  }
 ]
 
 const charts = combineCharts(chartsDeclaration)

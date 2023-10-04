@@ -352,10 +352,16 @@ export const evaluateExpressionProjects = {
   petClinic: ["kotlin_petclinic/evaluate-expression/CacheConfig/sleep-1000_with_library_cache"],
   intellij: ["intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"],
 }
+export const completionInEvaluateExpressionProjects = {
+  intellij: ["intellij_commit/completion/evaluate-expression_with_library_cache"],
+  petClinic: ["kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache", "kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache"],
+}
 export const evaluateExpressionChars: ProjectsChartDefinition[] = [
   generateEvaluateExpressionDefinition("'Kotlin language server'", evaluateExpressionProjects.kotlinLanguageServer),
   generateEvaluateExpressionDefinition("'PetClinic'", evaluateExpressionProjects.petClinic),
   generateEvaluateExpressionDefinition("'Intellij'", evaluateExpressionProjects.intellij),
+  generateEvaluateExpressionDefinition("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
+  generateEvaluateExpressionDefinition("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
 ]
 function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {

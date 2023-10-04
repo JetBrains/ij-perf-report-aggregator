@@ -32,7 +32,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Reopening Scanning", "Reopening number of indexed files"],
-    measures: ["scanning", "numberOfIndexedFiles"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
     projects: ["intellij_commit/scanning"],
   },
   {

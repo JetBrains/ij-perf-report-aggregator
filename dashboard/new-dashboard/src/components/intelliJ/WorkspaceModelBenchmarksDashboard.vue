@@ -49,7 +49,7 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "adding-soft-linked-entities",
       "10-000-orphan-content-roots-to-modules",
       "10-000-orphan-source-roots-to-many-content-roots-to-modules",
-      "10-000-orphan-source-roots-to-modules"
+      "10-000-orphan-source-roots-to-modules",
     ],
   }
 })

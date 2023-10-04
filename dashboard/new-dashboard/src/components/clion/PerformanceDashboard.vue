@@ -74,18 +74,18 @@
     <Divider title="General" />
 
     <section>
-      <GroupProjectsChart
-        label="[CLion vs Radler] Inspect project (not only C/C++) (fmtlib)"
+      <CLionVsRadlerGroupProjectsChart
+        label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
-        :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
+        project="fmtlib/inspection"
       />
     </section>
 
     <section>
-      <GroupProjectsChart
-        label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
+      <CLionVsRadlerGroupProjectsChart
+        label="Time to show test gutter (luau, Linter.test.cpp)"
         measure="%waitFirstTestGutter tests/Linter.test.cpp"
-        :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
+        project="luau/checkLocalTestConfig/Linter.test.cpp.marks"
       />
     </section>
 
@@ -93,10 +93,10 @@
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, hot)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show completion list, 90th percentile (std::string, hot)"
           measure="fus_time_to_show_90p"
-          :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
+          project="fmtlib/completion/std.string (hot)"
         />
       </div>
 
@@ -121,20 +121,20 @@
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Find Usages (macro)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (macro)"
           measure="%syncAction FindUsages"
-          :projects="['clion/luau/findUsages/macro (LUAU_ASSERT)', 'radler/luau/findUsages/macro (LUAU_ASSERT)']"
+          project="luau/findUsages/macro (LUAU_ASSERT)"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
+        <CLionVsRadlerGroupProjectsChart
           label="Go to Declaration (ctor)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
+          project="luau/gotoDeclaration/AstStatDeclareFunction.ctor"
         />
       </div>
     </section>
@@ -146,4 +146,5 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
 </script>

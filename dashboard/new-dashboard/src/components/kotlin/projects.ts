@@ -360,8 +360,8 @@ export const evaluateExpressionChars: ProjectsChartDefinition[] = [
   generateEvaluateExpressionDefinition("'Kotlin language server'", evaluateExpressionProjects.kotlinLanguageServer),
   generateEvaluateExpressionDefinition("'PetClinic'", evaluateExpressionProjects.petClinic),
   generateEvaluateExpressionDefinition("'Intellij'", evaluateExpressionProjects.intellij),
-  generateEvaluateExpressionDefinition("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
-  generateEvaluateExpressionDefinition("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
+  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
+  ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
 ]
 function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {

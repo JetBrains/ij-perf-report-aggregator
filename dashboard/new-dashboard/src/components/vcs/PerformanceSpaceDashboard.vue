@@ -30,23 +30,23 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["Commit FUS duration"],
     measures: [["git-commit#fusCommitDuration"]],
-    projects: ["space/git-commit"]
-  }
+    projects: ["space/git-commit"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

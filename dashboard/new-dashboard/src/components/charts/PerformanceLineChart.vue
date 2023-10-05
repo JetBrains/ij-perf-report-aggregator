@@ -117,8 +117,8 @@ function setupChartOnVisibility() {
     },
     { immediate: true }
   )
-  // If the chart is not visible, still try to create it after a delay of 5 second
-  setTimeout(createChart, 5000)
+  // If the chart is not visible, still try to create it after a delay
+  setTimeout(createChart, 1000)
 }
 
 onMounted(() => {

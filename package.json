@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "//": "pnpm vue-tsc --noEmit && ",
     "lint": "NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
-    "update-deps": "pnpm update -i -r --latest"
+    "update-deps": "pnpm update -i -r --latest",
+    "test": "vitest"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.6",
@@ -53,6 +54,7 @@
   "dependencies": {
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-unicorn": "^48.0.1",
-    "prettier": "^3.0.3"
+    "prettier": "^3.0.3",
+    "vitest": "^0.34.6"
   }
 }

@@ -31,17 +31,17 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["Show file history"],
@@ -49,24 +49,24 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [
       "intellij_clone_specific_commit/showFileHistory/EditorImpl-phm",
       "intellij_clone_specific_commit/showFileHistory/EditorImpl-sql",
-      "intellij_clone_specific_commit/showFileHistory/EditorImpl-noindex"
-    ]
+      "intellij_clone_specific_commit/showFileHistory/EditorImpl-noindex",
+    ],
   },
   {
     labels: ["Checkout"],
     measures: [["git-checkout"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
+    projects: ["intellij_clone_specific_commit/git-checkout"],
   },
   {
     labels: ["Checkout FUS duration"],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
+    projects: ["intellij_clone_specific_commit/git-checkout"],
   },
   {
     labels: ["Checkout FUS VFS refresh duration "],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
-  }
+    projects: ["intellij_clone_specific_commit/git-checkout"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

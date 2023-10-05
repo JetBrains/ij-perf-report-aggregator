@@ -210,6 +210,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       Field:    string(v.GetStringBytes("f")),
       Sql:      string(v.GetStringBytes("q")),
       Operator: string(v.GetStringBytes("o")),
+      Split:    false,
     }
 
     if len(t.Sql) == 0 {
@@ -217,6 +218,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
     }
 
     value := v.Get("v")
+    t.Split = v.GetBool("s")
     if value == nil {
       value = v.Get("value")
     }

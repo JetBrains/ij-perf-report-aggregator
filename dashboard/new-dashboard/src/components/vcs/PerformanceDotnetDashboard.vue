@@ -40,7 +40,7 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
     projects: [dotnetLatest],
-  }
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

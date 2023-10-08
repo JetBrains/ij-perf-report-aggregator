@@ -107,6 +107,8 @@ const chartsDeclaration: ChartDefinition[] = [
       "intellij_sources/localInspection/kotlin_file",
       "intellij_commit/localInspection/java_file",
       "intellij_commit/localInspection/kotlin_file",
+      "intellij_commit/localInspection/kotlin_file_DexInlineTest",
+      "intellij_commit/localInspection/java_file_ContentManagerImpl",
     ],
   },
   {

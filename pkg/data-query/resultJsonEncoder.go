@@ -49,75 +49,49 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
   }
 
   for _, column := range *result {
-
     columnIndex := columnNameToIndex[column.Name]
-
     switch data := column.Data.(type) {
     case *proto.ColInt32:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendInt(buffer.B, int64(v), 10)
       }
     case *proto.ColInt64:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendInt(buffer.B, v, 10)
       }
     case *proto.ColUInt8:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
 
     case *proto.ColBool:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendBool(buffer.B, v)
       }
 
     case *proto.ColUInt16:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
     case *proto.ColUInt32:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
     case *proto.ColUInt64:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, v, 10)
       }
 
     case *proto.ColFloat32:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         n := int64(v)
         if float32(n) == v {
           // fast path - just int
@@ -129,10 +103,7 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
 
     case *proto.ColFloat64:
       for i, v := range *data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         n := int64(v)
         if float64(n) == v {
           // fast path - just int
@@ -143,65 +114,59 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
       }
 
     case *proto.ColStr:
-      templateWriters := make(map[int]*quicktemplate.Writer)
-      jsonWriters := make(map[int]*quicktemplate.QWriter)
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
-        jsonWriters[i] = templateWriters[i].N()
-      }
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, position := range data.Pos {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnNameToIndex[column.Name]]
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         jsonWriter := jsonWriters[rowToSplitIndex[i]]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
         jsonWriter.Q(string(data.Buf[position.Start:position.End]))
       }
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        quicktemplate.ReleaseWriter(templateWriters[i])
-      }
+      releaseWriters(splitParameters, templateWriters)
 
     case *proto.ColDateTime:
-      templateWriters := make(map[int]*quicktemplate.Writer)
-      jsonWriters := make(map[int]*quicktemplate.QWriter)
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
-        jsonWriters[i] = templateWriters[i].N()
-      }
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, v := range data.Data {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnNameToIndex[column.Name]]
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         jsonWriter := jsonWriters[rowToSplitIndex[i]]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
         jsonWriter.Q(v.Time().Format(query.TimeDimensionFormat))
       }
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        quicktemplate.ReleaseWriter(templateWriters[i])
-      }
+      releaseWriters(splitParameters, templateWriters)
 
     case *proto.ColLowCardinality[string]:
-      templateWriters := make(map[int]*quicktemplate.Writer)
-      jsonWriters := make(map[int]*quicktemplate.QWriter)
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
-        jsonWriters[i] = templateWriters[i].N()
-      }
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, t := range data.Values {
-        buffer := columnBuffers[rowToSplitIndex[i]][columnNameToIndex[column.Name]]
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         jsonWriter := jsonWriters[rowToSplitIndex[i]]
-        if buffer.Len() != 0 {
-          _ = buffer.WriteByte(',')
-        }
         jsonWriter.Q(t)
       }
-      for i := 0; i < splitParameters.numberOfSplits; i++ {
-        quicktemplate.ReleaseWriter(templateWriters[i])
-      }
+      releaseWriters(splitParameters, templateWriters)
     default:
       return errors.Errorf("unsupported column type %T", data)
     }
 
   }
   return nil
+}
+
+func getBufferAndWriteSplittingComma(columnBuffers [][]*bytebufferpool.ByteBuffer, rowToSplitIndex []int, i int, columnIndex int) *bytebufferpool.ByteBuffer {
+  buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
+  if buffer.Len() != 0 {
+    _ = buffer.WriteByte(',')
+  }
+  return buffer
+}
+
+func releaseWriters(splitParameters *SplitParameters, templateWriters map[int]*quicktemplate.Writer) {
+  for i := 0; i < splitParameters.numberOfSplits; i++ {
+    quicktemplate.ReleaseWriter(templateWriters[i])
+  }
+}
+
+func getWriters(splitParameters *SplitParameters, columnBuffers [][]*bytebufferpool.ByteBuffer, columnIndex int) (map[int]*quicktemplate.Writer, map[int]*quicktemplate.QWriter) {
+  templateWriters := make(map[int]*quicktemplate.Writer)
+  jsonWriters := make(map[int]*quicktemplate.QWriter)
+  for i := 0; i < splitParameters.numberOfSplits; i++ {
+    templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
+    jsonWriters[i] = templateWriters[i].N()
+  }
+  return templateWriters, jsonWriters
 }

@@ -196,7 +196,6 @@ func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier D
   }
 
   columnBuffers := make([][]*bytebufferpool.ByteBuffer, splitParameters.numberOfSplits)
-
   err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(ctx context.Context, block proto.Block, result *proto.Results) error {
     if block.Rows == 0 {
       return nil
@@ -207,7 +206,12 @@ func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier D
     return err
   }
 
-  if !query.Flat && len(columnBuffers) == 1 {
+  writeBuffers(columnBuffers, totalWriter, query.Flat)
+  return nil
+}
+
+func writeBuffers(columnBuffers [][]*bytebufferpool.ByteBuffer, totalWriter *quicktemplate.QWriter, isFlat bool) {
+  if !isFlat && len(columnBuffers) == 1 {
     totalWriter.S("[")
   }
   for splitNumber, splitColumnBuffers := range columnBuffers {
@@ -234,10 +238,9 @@ func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier D
       totalWriter.S("]")
     }
   }
-  if !query.Flat && len(columnBuffers) == 1 {
+  if !isFlat && len(columnBuffers) == 1 {
     totalWriter.S("]")
   }
-  return nil
 }
 
 //gocyclo:ignore

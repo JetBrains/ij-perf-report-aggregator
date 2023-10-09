@@ -168,31 +168,6 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
-      fields: [
-        {
-          n: "t",
-          sql: "toUnixTimestamp(generated_time)*1000",
-        },
-        {
-          n: "measures",
-          subName: "value",
-        },
-        {
-          n: "measures",
-          subName: "name",
-        },
-        {
-          n: "measures",
-          subName: "type",
-        },
-        "machine",
-        "tc_build_id",
-        "project",
-        "tc_installer_build_id",
-        "build_c1",
-        "build_c2",
-        "build_c3",
-      ],
       filters: [
         {
           f: "branch",
@@ -230,31 +205,6 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
-      fields: [
-        {
-          n: "t",
-          sql: "toUnixTimestamp(generated_time)*1000",
-        },
-        {
-          n: "measures",
-          subName: "value",
-        },
-        {
-          n: "measures",
-          subName: "name",
-        },
-        {
-          n: "measures",
-          subName: "type",
-        },
-        "machine",
-        "tc_build_id",
-        "project",
-        "tc_installer_build_id",
-        "build_c1",
-        "build_c2",
-        "build_c3",
-      ],
       filters: [
         {
           f: "branch",
@@ -292,31 +242,6 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
-      fields: [
-        {
-          n: "t",
-          sql: "toUnixTimestamp(generated_time)*1000",
-        },
-        {
-          n: "measures",
-          subName: "value",
-        },
-        {
-          n: "measures",
-          subName: "name",
-        },
-        {
-          n: "measures",
-          subName: "type",
-        },
-        "machine",
-        "tc_build_id",
-        "project",
-        "tc_installer_build_id",
-        "build_c1",
-        "build_c2",
-        "build_c3",
-      ],
       filters: [
         {
           f: "branch",
@@ -356,31 +281,6 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
-      fields: [
-        {
-          n: "t",
-          sql: "toUnixTimestamp(generated_time)*1000",
-        },
-        {
-          n: "measures",
-          subName: "value",
-        },
-        {
-          n: "measures",
-          subName: "name",
-        },
-        {
-          n: "measures",
-          subName: "type",
-        },
-        "machine",
-        "tc_build_id",
-        "project",
-        "tc_installer_build_id",
-        "build_c1",
-        "build_c2",
-        "build_c3",
-      ],
       filters: [
         {
           f: "branch",
@@ -406,7 +306,7 @@ test("merge by project", () => {
         },
         {
           f: "project",
-          v: ["intellij_sources/vfsRefresh/git-status", "intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)"],
+          v: ["intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status"],
           s: true,
         },
         {

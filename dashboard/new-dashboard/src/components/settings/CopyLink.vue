@@ -1,17 +1,29 @@
 <template>
-  <div class="card flex justify-content-center">
-    <Button label="Copy Link" @click="copylink" />
+  <div
+    v-if="props.timerangeConfigurator.customRange.value == ''"
+    class="card flex justify-content-center"
+  >
+    <Button
+      label="Copy Link"
+      @click="copylink"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+
+const props = defineProps<{
+  timerangeConfigurator: TimeRangeConfigurator
+}>()
+
 function copylink() {
   let url = window.location.href
   if (url.indexOf("customRage=") > 0) {
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(url)
   } else {
     // const sql = `BETWEEN toDate('${ago.getFullYear()}-${ago.getMonth() + 1}-${ago.getDate()}') AND toDate('${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}')`
-    const now  = new Date()
+    const now = new Date()
     const ago = getDateAgoByDuration("3M")
     const f = `${ago.getFullYear()}-${ago.getMonth() + 1}-${ago.getDate()}:${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
     url = url
@@ -21,11 +33,12 @@ function copylink() {
       .replace(new RegExp("customRange=.+&"), "")
       .replace(new RegExp("timeRange=.+$"), "")
       .replace(new RegExp("customRange=.+$"), "")
-    navigator.clipboard.writeText(url + "&timeRange=custom&customRange=" + f);
+    navigator.clipboard.writeText(url + "&timeRange=custom&customRange=" + f)
   }
-
 }
 const duration = /(-?\d*\.?\d+(?:e[+-]?\d+)?)\s*([a-zμ]*)/gi
+
+console.log(props.timerangeConfigurator)
 
 function getDateAgoByDuration(s: string): Date {
   s = s.replaceAll(/(\d),(\d)/g, "$1$2")
@@ -48,7 +61,7 @@ function getDateAgoByDuration(s: string): Date {
         days = count * 31
         break
       case "y":
-        days = count*365
+        days = count * 365
         break
       default:
         console.error("Fail to get ")

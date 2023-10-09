@@ -226,14 +226,8 @@ export function mergeQueries(queries: DataQuery[]): DataQuery[] {
       const matchingFilterField = getFilterNameForMerge(resultQueries[i], resultQueries[j])
       if ((currentFilterField == null && matchingFilterField != null) || (matchingFilterField === currentFilterField && matchingFilterField != null)) {
         currentFilterField = matchingFilterField
-        const mergedQuery = { ...resultQueries[i] } as DataQuery
-        mergedQuery.filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters)
-        resultQueries.push(mergedQuery)
-
-        // Remove the original queries
-        resultQueries.splice(j, 1) // remove j first since it's higher index
-        resultQueries.splice(i, 1)
-
+        resultQueries[i].filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters)
+        resultQueries.splice(j, 1) // remove the merged query
         // Reset indices to re-evaluate with new list
         i = -1
         break // exit the inner loop

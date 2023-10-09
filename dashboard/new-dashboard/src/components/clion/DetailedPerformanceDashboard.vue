@@ -200,7 +200,7 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Time to show completion list, 90th percentile"
+          label="[CLion] Time to show completion list, 90th percentile (all tests)"
           measure="fus_time_to_show_90p"
           :projects="[
             'clion/fmtlib/completion/std.string (cold)',
@@ -212,7 +212,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Time to show completion list, 90th percentile"
+          label="[Radler] Time to show completion list, 90th percentile (all tests)"
           measure="fus_time_to_show_90p"
           :projects="[
             'radler/fmtlib/completion/std.string (cold)',
@@ -284,7 +284,7 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Find Usages"
+          label="[CLion] Find Usages (all tests)"
           measure="%syncAction FindUsages"
           :projects="[
             'clion/luau/findUsages/enumerable (LuauOpcode)',
@@ -299,7 +299,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Find Usages"
+          label="[Radler] Find Usages (all tests)"
           measure="%syncAction FindUsages"
           :projects="[
             'radler/luau/findUsages/enumerable (LuauOpcode)',
@@ -360,7 +360,7 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[CLion] Go to Declaration"
+          label="[CLion] Go to Declaration (all tests)"
           measure="clionGotoDeclaration"
           :projects="[
             'clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
@@ -373,7 +373,7 @@
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
-          label="[Radler] Go to Declaration"
+          label="[Radler] Go to Declaration (all tests)"
           measure="clionGotoDeclaration"
           :projects="[
             'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor',
@@ -392,7 +392,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (luau, AstQuery.test.cpp)"
-          measure="%waitFirstTestGutter tests/AstQuery.test.cpp"
+          measure="waitFirstTestGutter"
           project="luau/checkLocalTestConfig/AstQuery.test.cpp.marks"
         />
       </div>
@@ -400,7 +400,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (luau, Linter.test.cpp)"
-          measure="%waitFirstTestGutter tests/Linter.test.cpp"
+          measure="waitFirstTestGutter"
           project="luau/checkLocalTestConfig/Linter.test.cpp.marks"
         />
       </div>
@@ -410,7 +410,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (luau, Repl.test.cpp)"
-          measure="%waitFirstTestGutter tests/Repl.test.cpp"
+          measure="waitFirstTestGutter"
           project="luau/checkLocalTestConfig/Repl.test.cpp.marks"
         />
       </div>
@@ -418,7 +418,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (luau, TypeInfer.unionTypes.test.cpp)"
-          measure="%waitFirstTestGutter tests/TypeInfer.unionTypes.test.cpp"
+          measure="waitFirstTestGutter"
           project="luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks"
         />
       </div>
@@ -428,7 +428,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (openCV, test_houghlines.cpp)"
-          measure="%waitFirstTestGutter modules/imgproc/test/ocl/test_houghlines.cpp"
+          measure="waitFirstTestGutter"
           project="opencv/checkLocalTestConfig/test.houghlines.cpp.marks"
         />
       </div>
@@ -436,40 +436,43 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Time to show test gutter (openCV, test_kalman.cpp)"
-          measure="%waitFirstTestGutter modules/video/test/test_kalman.cpp"
+          measure="waitFirstTestGutter"
           project="opencv/checkLocalTestConfig/test.kalman.cpp.marks"
         />
       </div>
     </section>
 
-    <!-- TODO: re-enable after dropping file name from %waitFirstTestGutter command -->
-    <!--<section class="flex gap-x-6 flex-col md:flex-row">-->
-    <!--  <div class="flex-1 min-w-0">-->
-    <!--    <GroupProjectsChart-->
-    <!--      label="[CLion] Time to show test gutter (luau)"-->
-    <!--      measure="%waitFirstTestGutter"-->
-    <!--      :projects="[-->
-    <!--        'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
-    <!--        'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
-    <!--        'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
-    <!--        'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
-    <!--      ]"-->
-    <!--    />-->
-    <!--  </div>-->
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[CLion] Time to show test gutter (all tests)"
+          measure="waitFirstTestGutter"
+          :projects="[
+            'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',
+            'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
+            'clion/opencv/checkLocalTestConfig/test.houghlines.cpp.marks',
+            'clion/opencv/checkLocalTestConfig/test.kalman.cpp.marks',
+          ]"
+        />
+      </div>
 
-    <!--  <div class="flex-1 min-w-0">-->
-    <!--    <GroupProjectsChart-->
-    <!--      label="[Radler] Time to show test gutter (luau)"-->
-    <!--      measure="%waitFirstTestGutter"-->
-    <!--      :projects="[-->
-    <!--        'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
-    <!--        'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
-    <!--        'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
-    <!--        'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
-    <!--      ]"-->
-    <!--    />-->
-    <!--  </div>-->
-    <!--</section>-->
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler] Time to show test gutter (all tests)"
+          measure="waitFirstTestGutter"
+          :projects="[
+            'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',
+            'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
+            'radler/opencv/checkLocalTestConfig/test.houghlines.cpp.marks',
+            'radler/opencv/checkLocalTestConfig/test.kalman.cpp.marks',
+          ]"
+        />
+      </div>
+    </section>
 
     <!-- END -->
   </DashboardPage>

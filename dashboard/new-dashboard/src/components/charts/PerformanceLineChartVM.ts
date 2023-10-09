@@ -1,5 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { Accident, getAccidents } from "../../util/meta"
+import { AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -46,7 +46,7 @@ export class PerformanceLineChartVM {
 
       element.append(document.createElement("br"))
       element.append(`${params.seriesName}`)
-      const accidents = getAccidents(this.accidentsMap, data as string[])
+      const accidents = getAccidents(this.accidentsConfigurator?.value.value, data as string[])
       if (accidents != null) {
         for (const accident of accidents) {
           //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
@@ -63,16 +63,16 @@ export class PerformanceLineChartVM {
     }
   }
 
-  private accidentsMap: Map<string, Accident[]> | null
+  private accidentsConfigurator: AccidentsConfigurator | null
   constructor(
     private readonly eChart: PerformanceChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
-    accidents: Map<string, Accident[]> | null,
+    accidentsConfigurator: AccidentsConfigurator | null,
     private readonly legendFormatter: (name: string) => string
   ) {
     this.legendFormatter = legendFormatter
-    this.accidentsMap = accidents
+    this.accidentsConfigurator = accidentsConfigurator
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({

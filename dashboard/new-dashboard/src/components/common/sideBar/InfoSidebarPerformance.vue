@@ -42,12 +42,12 @@
       </div>
 
       <SplitButton
-        v-if="vm.data.value?.description.value?.methodName || vm.data.value?.description.value?.url"
-        label="Navigate to test"
-        :model="getTestActions()"
+        v-if="testActions.length > 0"
+        :label="testActions[0].label"
+        :model="testActions.slice(1)"
         link
         icon="pi pi-chart-line"
-        @click="handleNavigateToTest"
+        @click="testActions[0].command"
       />
 
       <div class="flex flex-col gap-2">
@@ -137,6 +137,7 @@
       </div>
 
       <Button
+        v-if="accidentsConfigurator != null"
         class="text-sm"
         label="Report Event"
         text
@@ -204,13 +205,13 @@
 </template>
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core/index"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
-import { getAccidentTypes, removeAccidentFromMetaDb, writeAccidentToMetaDb } from "../../../util/meta"
 import SpaceIcon from "../SpaceIcon.vue"
 import { tcUrl } from "./InfoSidebar"
 
@@ -221,13 +222,15 @@ const router = useRouter()
 const accidentType = ref<string>("Regression")
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
+const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
+
 function reportRegression() {
   showDialog.value = false
   const value = vm.data.value
   if (value == null) {
     console.log("value is zero! This shouldn't happen")
   } else {
-    writeAccidentToMetaDb(
+    accidentsConfigurator?.writeAccidentToMetaDb(
       value.date,
       value.projectName + (reportMetricOnly.value ? "/" + value.metricName : ""),
       reason.value,
@@ -253,21 +256,43 @@ function handleNavigateToTest() {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
-  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "" } as Record<string, string>
+  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "", measure: vm.data.value?.metricName } as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL + "?" + queryParams)
 }
 
+function isOnTestPage(): boolean {
+  const currentRoute = router.currentRoute.value
+  const parts = currentRoute.path.split("/")
+  const pageName = parts.at(-1)?.toLowerCase()
+  return pageName == "testsDev" || pageName == "tests"
+}
+
 function handleRemove(id: number) {
-  removeAccidentFromMetaDb(id)
+  accidentsConfigurator?.removeAccidentFromMetaDb(id)
 }
 
 function handleCloseClick() {
   vm.close()
 }
 
-function getTestActions() {
+const testActions = computed(() => getTestActions())
+
+function getTestActions(): {
+  label: string
+  icon: string
+  command: () => void
+}[] {
   const actions = []
+  if (!isOnTestPage()) {
+    actions.push({
+      label: "Navigate to test",
+      icon: "pi pi-chart-line",
+      command() {
+        handleNavigateToTest()
+      },
+    })
+  }
   if (vm.data.value?.description) {
     const url = vm.data.value.description.value?.url
     if (url && url != "") {
@@ -326,6 +351,10 @@ function getSpaceUrl() {
       window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
     })
   }
+}
+
+function getAccidentTypes(): string[] {
+  return Object.values(AccidentKind)
 }
 </script>
 <style>

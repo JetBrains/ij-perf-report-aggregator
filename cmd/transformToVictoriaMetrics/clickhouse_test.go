@@ -15,7 +15,7 @@ func TestClickhouse(_ *testing.T) {
 
   // List of branches to iterate over
   branches := []string{"master", "231", "232", "223", "222"}
-  oses := []string{"intellij-linux-performance-aws-.*", "intellij-macos-hw-.*", "intellij-windows-performance-aws-i-.* "}
+  oses := []string{"intellij-linux-performance-aws-%", "intellij-macos-hw-.*", "intellij-windows-performance-aws-i-.* "}
 
   projects := []string{"project-import-maven-quarkus/measureStartup",
     "project-reimport-maven-quarkus/measureStartup",
@@ -152,7 +152,7 @@ func TestClickhouse(_ *testing.T) {
     "totalHeapUsedMax",
   }
 
-  const numWorkers = 10
+  const numWorkers = 1
 
   requests := make(chan string, numWorkers)
   var wg sync.WaitGroup
@@ -183,6 +183,7 @@ func TestClickhouse(_ *testing.T) {
       for _, os := range oses {
         for _, branch := range branches {
           query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea array join measures where branch = '%s' and generated_time >subtractMonths(now(),12) and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' and measures.name = '%s' order by t", branch, os, project, metric)
+          // query := fmt.Sprintf("select toUnixTimestamp(generated_time)*1000 as `t`, measures.value, measures.name, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3 from perfint.idea2 where branch = '%s' and generated_time >subtractMonths(now(),12) and measures.name = '%s' and triggeredBy = '' and machine like '%s' and build_c3=0 and project = '%s' order by t", branch, metric, os, project)
           wg.Add(1)
           requests <- query
         }

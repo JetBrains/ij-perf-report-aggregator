@@ -2,7 +2,7 @@ import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable,
 import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "./dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
 export declare type DataQueryConsumer = (data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
@@ -48,13 +48,16 @@ export class DataQueryExecutor {
         }
 
         const queries = generateQueries(query, configuration)
+        const mergedQueries = mergeQueries(queries)
+
         const loadingResults = of({ query, configuration, data: null, isLoading: true })
         abortController = new AbortController()
         return concat(
           loadingResults,
           forkJoin(
-            queries.map((it) => {
-              return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${it}]`), defaultBodyConsumer, abortController)
+            mergedQueries.map((it) => {
+              const stringQuery = JSON.stringify(it)
+              return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`), defaultBodyConsumer, abortController)
             })
           ).pipe(
             // pass context along with data and flatten result
@@ -90,7 +93,7 @@ function computeCartesian<T>(input: T[][]): T[][] {
   })
 }
 
-export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): string[] {
+export function generateQueries(query: DataQuery, configuration: DataQueryExecutorConfiguration): DataQuery[] {
   let producers = configuration.queryProducers
   if (producers.length === 0) {
     producers = [
@@ -120,11 +123,11 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
           })
         )
 
-  let serializedQuery = ""
+  let serializedQuery = []
 
   // https://en.wikipedia.org/wiki/Cartesian_product
 
-  const result: string[] = []
+  const result: DataQuery[] = []
   const last = Array.from({ length: producers.length - 1 }).map((_, i) => cartesian[0][i])
   for (const item of cartesian) {
     // each column it is a producer
@@ -149,10 +152,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       }
     }
 
-    if (serializedQuery.length > 0) {
-      serializedQuery += ","
-    }
-    serializedQuery += serializeQuery(query)
+    serializedQuery.push(JSON.parse(JSON.stringify(query)) as DataQuery)
 
     if (item.length > 1) {
       let equal = true
@@ -167,8 +167,8 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       }
 
       if (!equal) {
-        result.push(serializedQuery)
-        serializedQuery = ""
+        result.push(...serializedQuery)
+        serializedQuery = []
       }
     }
 
@@ -177,7 +177,83 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
   }
 
   if (serializedQuery.length > 0) {
-    result.push(serializedQuery)
+    result.push(...serializedQuery)
   }
   return result
+}
+
+/**
+ * Returns the name of the filter that can be combined between the two queries, or null if no such filter exists.
+ * If there are multiple filters that are different, returns null.
+ */
+function getFilterNameForMerge(query1: DataQuery, query2: DataQuery): string | null {
+  if (query1.filters == undefined || query2.filters == undefined) return null
+  const differingFilters = query1.filters.filter((filter1) => !query2.filters?.some((filter2) => deepEqual(filter1, filter2)))
+  if (differingFilters.length !== 1) return null
+  const targetFilter1 = differingFilters[0]
+  const targetFilter2 = query2.filters.find((filter2) => filter2.f === targetFilter1.f)
+  if (!targetFilter2 || !isFilterCanBeMerged(targetFilter1, targetFilter2)) return null
+  return targetFilter1.f
+}
+
+function deepEqual(obj1: DataQueryFilter, obj2: DataQueryFilter): boolean {
+  return JSON.stringify(obj1) === JSON.stringify(obj2)
+}
+
+function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter): boolean {
+  // Check if both filters have a field 'f' and they are equal
+  if (filter1.f !== filter2.f) return false
+
+  // Check if filter1.v and filter2.v are either strings or arrays of strings
+  if (!(typeof filter1.v === "string" ? true : Array.isArray(filter1.v)) || !(typeof filter2.v === "string" ? true : Array.isArray(filter2.v))) return false
+
+  //Check that filters are different
+  if (filter1.v == filter2.v) return false
+
+  //We only support combining filters with no operator
+  // noinspection RedundantIfStatementJS
+  if (filter1.o !== undefined || filter2.o !== undefined) return false
+  return true
+}
+
+export function mergeQueries(queries: DataQuery[]): DataQuery[] {
+  if (queries.length === 1) return queries
+  const resultQueries: DataQuery[] = [...queries]
+
+  let currentFilterField: string | null = null
+  for (let i = 0; i < resultQueries.length; i++) {
+    for (let j = i + 1; j < resultQueries.length; j++) {
+      const matchingFilterField = getFilterNameForMerge(resultQueries[i], resultQueries[j])
+      if ((currentFilterField == null && matchingFilterField != null) || (matchingFilterField === currentFilterField && matchingFilterField != null)) {
+        currentFilterField = matchingFilterField
+        const mergedQuery = { ...resultQueries[i] } as DataQuery
+        mergedQuery.filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters)
+        resultQueries.push(mergedQuery)
+
+        // Remove the original queries
+        resultQueries.splice(j, 1) // remove j first since it's higher index
+        resultQueries.splice(i, 1)
+
+        // Reset indices to re-evaluate with new list
+        i = -1
+        break // exit the inner loop
+      }
+    }
+  }
+  return resultQueries
+}
+
+function mergeFilters(filters1?: DataQueryFilter[], filters2?: DataQueryFilter[]): DataQueryFilter[] {
+  if (!filters1 || !filters2) return filters1 ?? filters2 ?? []
+  return filters1.map((filter1) => {
+    const filter2 = filters2.find((f2) => isFilterCanBeMerged(filter1, f2))
+    //@ts-expect-error - filter1 and filter2 are strings or arrays of strings this is checked in isFilterCanBeMerged
+    return filter2 ? { f: filter1.f, v: mergeValues(filter1.v, filter2.v), s: true } : filter1
+  })
+}
+
+function mergeValues(value1: string | string[], value2: string | string[]): string[] {
+  const array1 = Array.isArray(value1) ? value1 : [value1]
+  const array2 = Array.isArray(value2) ? value2 : [value2]
+  return [...new Set([...array1, ...array2])]
 }

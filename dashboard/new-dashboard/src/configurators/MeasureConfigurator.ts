@@ -13,8 +13,8 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS } from "../util/mainMetrics"
-import { Accident, AccidentKind, getAccidents, isValueShouldBeMarkedAsException, isValueShouldBeMarkedWithPin } from "../util/meta"
-import { detectChanges } from "./DetectChangesConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
+import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -154,7 +154,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidents: Map<string, Accident[]> | null = null
+    readonly accidentsConfigurator: AccidentsConfigurator | null = null
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -169,7 +169,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidents)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator)
   }
 }
 
@@ -199,6 +199,10 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   if (query.db === "perfint" || query.db === "jbr" || query.db === "perfintDev" || query.db == "bazel") {
     query.addField({ n: "measures", subName: "name" })
     query.addField({ n: "measures", subName: "type" })
+  }
+
+  if (query.db === "ij") {
+    query.addField({ n: "measure", subName: "name" })
   }
 
   const prevFilters: DataQueryFilter[] = []
@@ -269,22 +273,27 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, detectedChanges: (string | number)[][] = [[]]) {
+function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
       const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
-        if (isChangeDetected(detectedChanges, seriesIndex.value as string[])) {
-          return "purple"
+        const detectChange = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))
+        if (detectChange == ChangePointClassification.DEGRADATION) {
+          return "#cc0000"
+        } else if (detectChange == ChangePointClassification.OPTIMIZATION) {
+          return "#009900"
+        } else if (detectChange == ChangePointClassification.NO_CHANGE) {
+          // return "#b4b3b3"
         }
         return seriesIndex.color as ZRColor
       }
       for (const accident of accidents) {
         switch (accident.kind) {
           case AccidentKind.Regression:
-            return "red"
+            return "#cc0000"
           case AccidentKind.Improvement:
-            return "green"
+            return "#009900"
           case AccidentKind.Investigation:
             return "orange"
         }
@@ -294,8 +303,9 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | null, dete
   }
 }
 
-function isChangeDetected(detectedChanges: (string | number)[][], value: string[]) {
-  return detectedChanges.some((subArray) => subArray.length === value.length && subArray.every((detectedChangesValue, index) => detectedChangesValue === value[index]))
+function isChangeDetected(detectedChanges: Map<string, ChangePointClassification>, value: string[]) {
+  const changePointClassification = detectedChanges.get(JSON.stringify(value))
+  return changePointClassification != undefined && changePointClassification != ChangePointClassification.NO_CHANGE
 }
 
 function configureChart(
@@ -304,7 +314,7 @@ function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentMap: Map<string, Accident[]> | null = null
+  accidentsConfigurator: AccidentsConfigurator | null = null
 ): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
@@ -344,7 +354,7 @@ function configureChart(
       useDurationFormatter = false
     }
 
-    let detectedChanges: (string | number)[][] = [[]]
+    let detectedChanges = new Map<string, ChangePointClassification>()
     if (settings.detectChanges) {
       detectedChanges = detectChanges(seriesData)
     }
@@ -361,6 +371,12 @@ function configureChart(
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
       series.push({
+        selectedMode: "single",
+        select: {
+          itemStyle: {
+            color: "black",
+          },
+        },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id,
         name,
@@ -369,25 +385,29 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          const accidents = getAccidents(accidentMap, value)
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return symbolSize * 4
           }
           if (isChangeDetected(detectedChanges, value)) {
-            return symbolSize * 4
+            return symbolSize * 2.5
           }
           if (isValueShouldBeMarkedAsException(accidents)) {
             return symbolSize * 1.2
           }
           return symbolSize
         },
+        symbolRotate(value: string[]): number {
+          const detectChange = detectedChanges.get(JSON.stringify(value))
+          return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
+        },
         symbol(value: string[]) {
-          const accidents = getAccidents(accidentMap, value)
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return "pin"
           }
           if (isChangeDetected(detectedChanges, value)) {
-            return "pin"
+            return "arrow"
           }
           if (isValueShouldBeMarkedAsException(accidents)) {
             return "diamond"
@@ -400,7 +420,7 @@ function configureChart(
           { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: getItemStyleForSeries(accidentMap, detectedChanges),
+        itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value, detectedChanges),
       })
       if (settings.smoothing) {
         series.push({
@@ -416,7 +436,7 @@ function configureChart(
             x: xAxisName,
             y: seriesData.length - 1,
           },
-          itemStyle: getItemStyleForSeries(accidentMap),
+          itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
         })
       }
     }
@@ -475,4 +495,12 @@ function configureChart(
     },
     series: series as LineSeriesOption,
   }
+}
+
+function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.some((accident) => accident.kind != AccidentKind.Exception)
+}
+
+function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {
+  return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
 }

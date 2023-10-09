@@ -26,9 +26,14 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing", "Scanning", "Dumb mode time", "Updating time"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "dumbModeTimeWithPauses", "updatingTime"],
-    projects: ["intellij_sources/indexing", "intellij_commit/indexing"],
+    labels: ["Indexing", "Scanning", "Number of indexed files"],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], ["numberOfIndexedFiles"]],
+    projects: ["intellij_commit/indexing"],
+  },
+  {
+    labels: ["Reopening Scanning", "Reopening number of indexed files"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["intellij_commit/scanning"],
   },
   {
     labels: ["Find Usages Java Application_runReadAction (all usages)", "Find Usages Java Application_runReadAction (first usage)"],
@@ -102,6 +107,8 @@ const chartsDeclaration: ChartDefinition[] = [
       "intellij_sources/localInspection/kotlin_file",
       "intellij_commit/localInspection/java_file",
       "intellij_commit/localInspection/kotlin_file",
+      "intellij_commit/localInspection/kotlin_file_DexInlineTest",
+      "intellij_commit/localInspection/java_file_ContentManagerImpl",
     ],
   },
   {

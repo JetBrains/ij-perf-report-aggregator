@@ -52,6 +52,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
+    labels: ["Reopening Scanning (Big projects)", "Reopening Number of indexed files (Big projects)"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["community/scanning", "intellij_sources/scanning", "space/scanning"],
+  },
+  {
     labels: [
       "Indexing with the new record storages (IntelliJ project)",
       "Scanning with the new record storages (IntelliJ project)",
@@ -60,14 +65,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: [
       "vfs-record-storage/in-memory-intellij_sources/indexing",
-      "vfs-record-storage/over-lock-free-file-page-cache-intellij_sources/indexing",
       "vfs-record-storage/over-mmapped-file-intellij_sources/indexing",
-      "vfs-record-storage/over-mmapped-file-with-fast-names-intellij_sources/indexing",
-      "vfs-record-storage/regular-intellij_sources/indexing",
-      "vfs-record-storage/with-mru-file-name-cache-intellij_sources/indexing",
       "vfs-record-storage/attributes-over-lock-free-file-page-cache-intellij_sources/indexing",
-      "vfs-record-storage/content-over-lock-free-file-page-cache-intellij_sources/indexing",
-      "vfs-record-storage/attributes-over-mmapped-file",
+      "vfs-record-storage/attributes-over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/content-hashes-and-attributes-over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/content-and-attributes-over-lock-free-file-page-cache-intellij_sources/indexing",
     ],
   },
   {

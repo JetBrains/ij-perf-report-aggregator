@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfint"
     table="idea"
-    persistent-id="vcs_space_ultimate_dashboard"
+    persistent-id="vcs_idea_ultimate_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
   >
@@ -23,29 +23,23 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const spaceSpecific = "space/gitLogIndexing"
-const spaceSpecificSql = "space/gitLogIndexing-sql"
+const dotnetLatest = "dotnet_clone_latest_commit/gitLogIndexing"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing"],
+    labels: ["Indexing whole project"],
     measures: [["vcs-log-indexing"]],
-    projects: [spaceSpecific, spaceSpecificSql],
+    projects: [dotnetLatest],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [spaceSpecific, spaceSpecificSql],
+    projects: [dotnetLatest],
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: [spaceSpecific, spaceSpecificSql],
-  },
-  {
-    labels: ["Commit FUS duration"],
-    measures: [["git-commit#fusCommitDuration"]],
-    projects: ["space/git-commit"],
+    projects: [dotnetLatest],
   },
 ]
 

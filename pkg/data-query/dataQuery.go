@@ -37,6 +37,7 @@ type DataQueryFilter struct {
   Value    interface{}
   Sql      string
   Operator string
+  Split    bool
 }
 
 type DataQueryDimension struct {
@@ -99,6 +100,61 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   return list, wrappedAsArray, nil
 }
 
+func getSplitParameters(query DataQuery) (*SplitParameters, error) {
+  splitParameters := SplitParameters{
+    numberOfSplits: 1,
+  }
+
+  if len(query.Filters) == 0 {
+    // Handle case when there are no filters.
+    return &splitParameters, nil
+  }
+
+  for _, filter := range query.Filters {
+    if !filter.Split {
+      continue
+    }
+
+    valueSlice, err := assertValueSlice(filter.Value)
+    if err != nil {
+      return nil, err
+    }
+
+    values, err := convertValuesToMap(valueSlice)
+    if err != nil {
+      return nil, err
+    }
+
+    splitParameters.numberOfSplits = len(values)
+    splitParameters.splitField = filter.Field
+    splitParameters.values = values
+  }
+
+  return &splitParameters, nil
+}
+
+// Helper function to assert filter.Value to a slice of empty interfaces.
+func assertValueSlice(value interface{}) ([]interface{}, error) {
+  valueSlice, ok := value.([]interface{})
+  if !ok {
+    return nil, errors.Errorf("invalid filter.Value type %T, expected array", value)
+  }
+  return valueSlice, nil
+}
+
+// Helper function to convert values in the slice to a map with string keys.
+func convertValuesToMap(valueSlice []interface{}) (map[string]int, error) {
+  values := make(map[string]int)
+  for i, value := range valueSlice {
+    strValue, ok := value.(string)
+    if !ok {
+      return nil, errors.Errorf("invalid filter.Value type %T, expected string", value)
+    }
+    values[strValue] = i
+  }
+  return values, nil
+}
+
 func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   payload := request.URL.Path
 
@@ -134,39 +190,57 @@ func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier D
     return err
   }
 
-  columnBuffers := make([]*bytebufferpool.ByteBuffer, len(columnNameToIndex))
+  splitParameters, err := getSplitParameters(query)
+  if err != nil {
+    return nil
+  }
 
+  columnBuffers := make([][]*bytebufferpool.ByteBuffer, splitParameters.numberOfSplits)
   err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(ctx context.Context, block proto.Block, result *proto.Results) error {
     if block.Rows == 0 {
       return nil
     }
-    return writeResult(result, columnNameToIndex, columnBuffers, query)
+    return writeResult(result, columnNameToIndex, columnBuffers, query, splitParameters)
   })
   if err != nil {
     return err
   }
 
-  if !query.Flat {
+  writeBuffers(columnBuffers, totalWriter, query.Flat)
+  return nil
+}
+
+func writeBuffers(columnBuffers [][]*bytebufferpool.ByteBuffer, totalWriter *quicktemplate.QWriter, isFlat bool) {
+  if !isFlat && len(columnBuffers) == 1 {
     totalWriter.S("[")
   }
-  for columnIndex, buffer := range columnBuffers {
-    if columnIndex != 0 {
+  for splitNumber, splitColumnBuffers := range columnBuffers {
+    if splitNumber != 0 {
       totalWriter.S(",")
     }
-
-    totalWriter.S("[")
-
-    if buffer != nil {
-      _, _ = buffer.WriteTo(totalWriter)
-      byteBufferPool.Put(buffer)
+    if len(columnBuffers) > 1 {
+      totalWriter.S("[")
     }
+    for columnIndex, buffer := range splitColumnBuffers {
+      if columnIndex != 0 {
+        totalWriter.S(",")
+      }
 
+      totalWriter.S("[")
+
+      if buffer != nil {
+        _, _ = buffer.WriteTo(totalWriter)
+        byteBufferPool.Put(buffer)
+      }
+      totalWriter.S("]")
+    }
+    if len(columnBuffers) > 1 {
+      totalWriter.S("]")
+    }
+  }
+  if !isFlat && len(columnBuffers) == 1 {
     totalWriter.S("]")
   }
-  if !query.Flat {
-    totalWriter.S("]")
-  }
-  return nil
 }
 
 //gocyclo:ignore

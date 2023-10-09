@@ -72,25 +72,25 @@
     </section>
     <!--<section class="flex gap-x-6">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
+        <CLionVsRadlerGroupProjectsChart
           label="Indexing (curl)"
           :measure="['indexingTimeWithoutPauses']"
-          :projects="['clion/curl/indexing', 'radler/curl/indexing']"
+          project="curl/indexing"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
+        <CLionVsRadlerGroupProjectsChart
           label="Scanning (curl)"
           :measure="['scanningTimeWithoutPauses']"
-          :projects="['clion/curl/indexing', 'radler/curl/indexing']"
+          project="curl/indexing"
         />
       </div>
     </section>-->
     <section>
-      <GroupProjectsChart
-        label="[CLion vs Radler] Inspect project (not only C/C++) (fmtlib)"
+      <CLionVsRadlerGroupProjectsChart
+        label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
-        :projects="['clion/fmtlib/inspection', 'radler/fmtlib/inspection']"
+        project="fmtlib/inspection"
       />
     </section>
 
@@ -99,10 +99,10 @@
     <!-- Completion: std::string (cold) -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, cold)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show completion list, 90th percentile (std::string, cold)"
           measure="fus_time_to_show_90p"
-          :projects="['clion/fmtlib/completion/std.string (cold)', 'radler/fmtlib/completion/std.string (cold)']"
+          project="fmtlib/completion/std.string (cold)"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -124,10 +124,10 @@
     <!-- Completion: std::string (hot) -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::string, hot)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show completion list, 90th percentile (std::string, hot)"
           measure="fus_time_to_show_90p"
-          :projects="['clion/fmtlib/completion/std.string (hot)', 'radler/fmtlib/completion/std.string (hot)']"
+          project="fmtlib/completion/std.string (hot)"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -149,10 +149,10 @@
     <!-- Completion: std::shared_ptr<T> (hot) -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show completion list, 90th percentile (std::shared_ptr<T>, hot)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show completion list, 90th percentile (std::shared_ptr<T>, hot)"
           measure="fus_time_to_show_90p"
-          :projects="['clion/fmtlib/completion/std.shared_ptr (dep) (hot)', 'radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
+          project="fmtlib/completion/std.shared_ptr (dep) (hot)"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -174,10 +174,10 @@
     <!-- Completion: fmt::join<It> -->
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show completion list, 90th percentile (fmt::join<It>, hot)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show completion list, 90th percentile (fmt::join<It>, hot)"
           measure="fus_time_to_show_90p"
-          :projects="['clion/fmtlib/completion/fmt.join_view (dep) (hot)', 'radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
+          project="fmtlib/completion/fmt.join_view (dep) (hot)"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -228,33 +228,56 @@
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Find Usages (enumerable)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (enumerable)"
           measure="%syncAction FindUsages"
-          :projects="['clion/luau/findUsages/enumerable (LuauOpcode)', 'radler/luau/findUsages/enumerable (LuauOpcode)']"
+          project="luau/findUsages/enumerable (LuauOpcode)"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Find Usages (enumerator)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (enumerator)"
           measure="%syncAction FindUsages"
-          :projects="['clion/luau/findUsages/enumerator (LOP_NOP)', 'radler/luau/findUsages/enumerator (LOP_NOP)']"
+          project="luau/findUsages/enumerator (LOP_NOP)"
         />
       </div>
     </section>
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Find Usages (class template)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (class template)"
           measure="%syncAction FindUsages"
-          :projects="['clion/luau/findUsages/class template (DenseHashTable)', 'radler/luau/findUsages/class template (DenseHashTable)']"
+          project="luau/findUsages/class template (DenseHashTable)"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Find Usages (macro)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (macro)"
           measure="%syncAction FindUsages"
-          :projects="['clion/luau/findUsages/macro (LUAU_ASSERT)', 'radler/luau/findUsages/macro (LUAU_ASSERT)']"
+          project="luau/findUsages/macro (LUAU_ASSERT)"
+        />
+      </div>
+    </section>
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (cmake, class)"
+          measure="%syncAction FindUsages"
+          project="cmake/findUsages/class (cmCTestResourceAllocator)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (cmake, macro)"
+          measure="%syncAction FindUsages"
+          project="cmake/findUsages/macro (SAFEDIV)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Find Usages (cmake, member)"
+          measure="%syncAction FindUsages"
+          project="cmake/findUsages/member (SlotsNeeded)"
         />
       </div>
     </section>
@@ -268,6 +291,9 @@
             'clion/luau/findUsages/enumerator (LOP_NOP)',
             'clion/luau/findUsages/class template (DenseHashTable)',
             'clion/luau/findUsages/macro (LUAU_ASSERT)',
+            'clion/cmake/findUsages/class (cmCTestResourceAllocator)',
+            'clion/cmake/findUsages/macro (SAFEDIV)',
+            'clion/cmake/findUsages/member (SlotsNeeded)',
           ]"
         />
       </div>
@@ -280,6 +306,9 @@
             'radler/luau/findUsages/enumerator (LOP_NOP)',
             'radler/luau/findUsages/class template (DenseHashTable)',
             'radler/luau/findUsages/macro (LUAU_ASSERT)',
+            'radler/cmake/findUsages/class (cmCTestResourceAllocator)',
+            'radler/cmake/findUsages/macro (SAFEDIV)',
+            'radler/cmake/findUsages/member (SlotsNeeded)',
           ]"
         />
       </div>
@@ -289,41 +318,41 @@
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Go to Declaration (ctor)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Go to Declaration (ctor)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/AstStatDeclareFunction.ctor', 'radler/luau/gotoDeclaration/AstStatDeclareFunction.ctor']"
+          project="luau/gotoDeclaration/AstStatDeclareFunction.ctor"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Go to Declaration (method)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Go to Declaration (method)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/TypeChecker.getScopes', 'radler/luau/gotoDeclaration/TypeChecker.getScopes']"
+          project="luau/gotoDeclaration/TypeChecker.getScopes"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Go to Declaration (std::string - alias)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Go to Declaration (std::string - alias)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/std.string', 'radler/luau/gotoDeclaration/std.string']"
+          project="luau/gotoDeclaration/std.string"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Go to Declaration (macro)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Go to Declaration (macro)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/LUAU_ASSERT', 'radler/luau/gotoDeclaration/LUAU_ASSERT']"
+          project="luau/gotoDeclaration/LUAU_ASSERT"
         />
       </div>
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Go to Declaration (time.h - header)"
+        <CLionVsRadlerGroupProjectsChart
+          label="Go to Declaration (time.h - header)"
           measure="clionGotoDeclaration"
-          :projects="['clion/luau/gotoDeclaration/time.h', 'radler/luau/gotoDeclaration/time.h']"
+          project="luau/gotoDeclaration/time.h"
         />
       </div>
     </section>
@@ -361,67 +390,86 @@
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show test gutter (luau, AstQuery.test.cpp)"
-          measure="%waitFirstTestGutter"
-          :projects="['clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks', 'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks']"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (luau, AstQuery.test.cpp)"
+          measure="%waitFirstTestGutter tests/AstQuery.test.cpp"
+          project="luau/checkLocalTestConfig/AstQuery.test.cpp.marks"
         />
       </div>
 
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show test gutter (luau, Linter.test.cpp)"
-          measure="%waitFirstTestGutter"
-          :projects="['clion/luau/checkLocalTestConfig/Linter.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks']"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (luau, Linter.test.cpp)"
+          measure="%waitFirstTestGutter tests/Linter.test.cpp"
+          project="luau/checkLocalTestConfig/Linter.test.cpp.marks"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show test gutter (luau, Repl.test.cpp)"
-          measure="%waitFirstTestGutter"
-          :projects="['clion/luau/checkLocalTestConfig/Repl.test.cpp.marks', 'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks']"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (luau, Repl.test.cpp)"
+          measure="%waitFirstTestGutter tests/Repl.test.cpp"
+          project="luau/checkLocalTestConfig/Repl.test.cpp.marks"
         />
       </div>
 
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion vs Radler] Time to show test gutter (luau, TypeInfer.unionTypes.test.cpp)"
-          measure="%waitFirstTestGutter"
-          :projects="['clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks', 'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks']"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (luau, TypeInfer.unionTypes.test.cpp)"
+          measure="%waitFirstTestGutter tests/TypeInfer.unionTypes.test.cpp"
+          project="luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks"
         />
       </div>
     </section>
 
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[CLion] Time to show test gutter (luau)"
-          measure="%waitFirstTestGutter"
-          :projects="[
-            'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',
-            'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
-          ]"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (openCV, test_houghlines.cpp)"
+          measure="%waitFirstTestGutter modules/imgproc/test/ocl/test_houghlines.cpp"
+          project="opencv/checkLocalTestConfig/test.houghlines.cpp.marks"
         />
       </div>
 
       <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler] Time to show test gutter (luau)"
-          measure="%waitFirstTestGutter"
-          :projects="[
-            'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',
-            'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',
-          ]"
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to show test gutter (openCV, test_kalman.cpp)"
+          measure="%waitFirstTestGutter modules/video/test/test_kalman.cpp"
+          project="opencv/checkLocalTestConfig/test.kalman.cpp.marks"
         />
       </div>
     </section>
+
+    <!-- TODO: re-enable after dropping file name from %waitFirstTestGutter command -->
+    <!--<section class="flex gap-x-6 flex-col md:flex-row">-->
+    <!--  <div class="flex-1 min-w-0">-->
+    <!--    <GroupProjectsChart-->
+    <!--      label="[CLion] Time to show test gutter (luau)"-->
+    <!--      measure="%waitFirstTestGutter"-->
+    <!--      :projects="[-->
+    <!--        'clion/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
+    <!--        'clion/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
+    <!--      ]"-->
+    <!--    />-->
+    <!--  </div>-->
+
+    <!--  <div class="flex-1 min-w-0">-->
+    <!--    <GroupProjectsChart-->
+    <!--      label="[Radler] Time to show test gutter (luau)"-->
+    <!--      measure="%waitFirstTestGutter"-->
+    <!--      :projects="[-->
+    <!--        'radler/luau/checkLocalTestConfig/AstQuery.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/Linter.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/Repl.test.cpp.marks',-->
+    <!--        'radler/luau/checkLocalTestConfig/TypeInfer.unionTypes.test.cpp.marks',-->
+    <!--      ]"-->
+    <!--    />-->
+    <!--  </div>-->
+    <!--</section>-->
 
     <!-- END -->
   </DashboardPage>
@@ -432,4 +480,5 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
 </script>

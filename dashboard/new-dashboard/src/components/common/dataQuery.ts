@@ -11,8 +11,8 @@ export class DataQuery {
   table?: string
 
   // noinspection JSMismatchedCollectionQueryUpdate
-  private readonly fields: (string | DataQueryDimension)[] = []
-  private filters?: DataQueryFilter[]
+  private fields: (string | DataQueryDimension)[] = []
+  public filters?: DataQueryFilter[]
 
   order?: string[] | string
 
@@ -77,6 +77,8 @@ export interface DataQueryFilter {
   // `=` by default
   // operator
   o?: "=" | "!=" | ">" | "like"
+  // query is combined and should be split
+  s?: boolean
 }
 
 export interface DataQueryDimension {

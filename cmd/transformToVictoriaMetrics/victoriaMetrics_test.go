@@ -6,16 +6,17 @@ import (
   "net/http"
   "net/url"
   "sync"
+  "testing"
   "time"
 )
 
-func main() {
+func TestVictoriaMetrics(_ *testing.T) {
   const numWorkers = 10
   baseURL := "http://localhost:8428/api/v1/query"
 
   // List of branches to iterate over
-  branches := []string{"master", "231", "232", "223", "222"}
-  oses := []string{"intellij-linux-performance-aws-.*", "intellij-macos-hw-.*", "intellij-windows-performance-aws-i-.* "}
+  branches := []string{"master" /*, "231", "232", "223", "222"*/}
+  oses := []string{"intellij-linux-performance-aws-.*" /*, "intellij-macos-hw-.*", "intellij-windows-performance-aws-i-.* "*/}
 
   projects := []string{"project-import-maven-quarkus/measureStartup",
     "project-reimport-maven-quarkus/measureStartup",
@@ -159,6 +160,7 @@ func main() {
     for query := range requests {
       encodedQuery := url.QueryEscape(query)
       resp, err := http.Get(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
+      println(fmt.Sprintf("%s?query=%s", baseURL, encodedQuery))
       if err != nil {
         log.Printf("Error: %v", err)
         errorsCounter.Inc()

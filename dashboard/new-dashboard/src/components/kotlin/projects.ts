@@ -92,14 +92,12 @@ export const completionProjects = {
     "kotlin_empty_kts/completion/completion_kts_with_library_cache",
     "kotlin_lang/completion/completion_kts_with_library_cache",
   ],
-  petClinic: ["kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache", "kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache"],
   kotlinLanguageServerEvaluateExpression: [
     "kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache",
     "kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache",
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_typing_with_library_cache",
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache",
   ],
-  intellijEvaluateExpression: ["intellij_commit/completion/evaluate-expression_with_library_cache"],
 }
 
 export const completionCharts: ProjectsChartDefinition[] = [
@@ -111,9 +109,6 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin language server'", completionProjects.kotlinLanguageServer),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript),
-  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionProjects.petClinic),
-  ...generateCompletionDefinitions("'Kotlin language server completion in evaluate'", completionProjects.kotlinLanguageServerEvaluateExpression),
-  ...generateCompletionDefinitions("'Intellij completion in evaluate'", completionProjects.intellijEvaluateExpression),
 ]
 
 function generateCompletionDefinitions(labelPrefix: string, projects: string[]): ProjectsChartDefinition[] {
@@ -357,10 +352,16 @@ export const evaluateExpressionProjects = {
   petClinic: ["kotlin_petclinic/evaluate-expression/CacheConfig/sleep-1000_with_library_cache"],
   intellij: ["intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"],
 }
+export const completionInEvaluateExpressionProjects = {
+  intellij: ["intellij_commit/completion/evaluate-expression_with_library_cache"],
+  petClinic: ["kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache", "kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache"],
+}
 export const evaluateExpressionChars: ProjectsChartDefinition[] = [
   generateEvaluateExpressionDefinition("'Kotlin language server'", evaluateExpressionProjects.kotlinLanguageServer),
   generateEvaluateExpressionDefinition("'PetClinic'", evaluateExpressionProjects.petClinic),
   generateEvaluateExpressionDefinition("'Intellij'", evaluateExpressionProjects.intellij),
+  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
+  ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
 ]
 function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {

@@ -11,84 +11,87 @@ import (
 // separate byte buffer pool - different sizes
 var byteBufferPool bytebufferpool.Pool
 
+type SplitParameters struct {
+  numberOfSplits int
+  splitField     string
+  values         map[string]int
+}
+
 //nolint:gocyclo
-func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers []*bytebufferpool.ByteBuffer, query DataQuery) error {
+func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers [][]*bytebufferpool.ByteBuffer, query DataQuery, splitParameters *SplitParameters) error {
+  var rowToSplitIndex []int
+
+  for _, column := range *result {
+    rowToSplitIndex = make([]int, column.Data.Rows())
+  }
+
+  for _, column := range *result {
+    if column.Name == splitParameters.splitField {
+      //nolint:gocritic
+      switch data := column.Data.(type) {
+      case *proto.ColLowCardinality[string]:
+        for i, t := range data.Values {
+          rowToSplitIndex[i] = splitParameters.values[t]
+        }
+      }
+    }
+  }
+  for i := 0; i < splitParameters.numberOfSplits; i++ {
+    if columnBuffers[i] == nil {
+      columnBuffers[i] = make([]*bytebufferpool.ByteBuffer, len(*result))
+    }
+    for j := range *result {
+      columnBuffer := columnBuffers[i][j]
+      if columnBuffer == nil {
+        columnBuffers[i][j] = byteBufferPool.Get()
+      }
+    }
+  }
+
   for _, column := range *result {
     columnIndex := columnNameToIndex[column.Name]
-    var buffer *bytebufferpool.ByteBuffer
-    if columnIndex < len(columnBuffers) {
-      buffer = columnBuffers[columnIndex]
-    } else {
-      return errors.Errorf("invalid columnIndex = %d, it is > len(columnBuffers) = %d", columnIndex, len(columnBuffers))
-    }
-    if buffer == nil {
-      buffer = byteBufferPool.Get()
-      columnBuffers[columnIndex] = buffer
-    } else {
-      _ = buffer.WriteByte(',')
-    }
-
-    templateWriter := quicktemplate.AcquireWriter(buffer)
-    jsonWriter := templateWriter.N()
-
     switch data := column.Data.(type) {
     case *proto.ColInt32:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendInt(buffer.B, int64(v), 10)
       }
     case *proto.ColInt64:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendInt(buffer.B, v, 10)
       }
     case *proto.ColUInt8:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
 
     case *proto.ColBool:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendBool(buffer.B, v)
       }
 
     case *proto.ColUInt16:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
     case *proto.ColUInt32:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, uint64(v), 10)
       }
     case *proto.ColUInt64:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         buffer.B = strconv.AppendUint(buffer.B, v, 10)
       }
 
     case *proto.ColFloat32:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         n := int64(v)
         if float32(n) == v {
           // fast path - just int
@@ -100,9 +103,7 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
 
     case *proto.ColFloat64:
       for i, v := range *data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        buffer := getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
         n := int64(v)
         if float64(n) == v {
           // fast path - just int
@@ -113,34 +114,59 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
       }
 
     case *proto.ColStr:
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, position := range data.Pos {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
+        jsonWriter := jsonWriters[rowToSplitIndex[i]]
         jsonWriter.Q(string(data.Buf[position.Start:position.End]))
       }
+      releaseWriters(splitParameters, templateWriters)
 
     case *proto.ColDateTime:
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, v := range data.Data {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
+        jsonWriter := jsonWriters[rowToSplitIndex[i]]
         jsonWriter.Q(v.Time().Format(query.TimeDimensionFormat))
       }
+      releaseWriters(splitParameters, templateWriters)
 
     case *proto.ColLowCardinality[string]:
+      templateWriters, jsonWriters := getWriters(splitParameters, columnBuffers, columnIndex)
       for i, t := range data.Values {
-        if i != 0 {
-          _ = buffer.WriteByte(',')
-        }
+        getBufferAndWriteSplittingComma(columnBuffers, rowToSplitIndex, i, columnIndex)
+        jsonWriter := jsonWriters[rowToSplitIndex[i]]
         jsonWriter.Q(t)
       }
-
+      releaseWriters(splitParameters, templateWriters)
     default:
       return errors.Errorf("unsupported column type %T", data)
     }
 
-    quicktemplate.ReleaseWriter(templateWriter)
   }
   return nil
+}
+
+func getBufferAndWriteSplittingComma(columnBuffers [][]*bytebufferpool.ByteBuffer, rowToSplitIndex []int, i int, columnIndex int) *bytebufferpool.ByteBuffer {
+  buffer := columnBuffers[rowToSplitIndex[i]][columnIndex]
+  if buffer.Len() != 0 {
+    _ = buffer.WriteByte(',')
+  }
+  return buffer
+}
+
+func releaseWriters(splitParameters *SplitParameters, templateWriters map[int]*quicktemplate.Writer) {
+  for i := 0; i < splitParameters.numberOfSplits; i++ {
+    quicktemplate.ReleaseWriter(templateWriters[i])
+  }
+}
+
+func getWriters(splitParameters *SplitParameters, columnBuffers [][]*bytebufferpool.ByteBuffer, columnIndex int) (map[int]*quicktemplate.Writer, map[int]*quicktemplate.QWriter) {
+  templateWriters := make(map[int]*quicktemplate.Writer)
+  jsonWriters := make(map[int]*quicktemplate.QWriter)
+  for i := 0; i < splitParameters.numberOfSplits; i++ {
+    templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
+    jsonWriters[i] = templateWriters[i].N()
+  }
+  return templateWriters, jsonWriters
 }

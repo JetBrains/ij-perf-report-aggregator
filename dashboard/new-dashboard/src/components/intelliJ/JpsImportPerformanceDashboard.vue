@@ -63,6 +63,7 @@ const metricsDeclaration = [
   "workspaceModel.init.bridges.ms",
   "workspaceModel.initializing.ms",
   "workspaceModel.load.cache.from.file.ms",
+  "workspaceModel.load.cache.metadata.from.file.ms",
   "workspaceModel.loading.from.cache.ms",
   "workspaceModel.loading.total.ms",
   "workspaceModel.moduleBridge.before.changed.ms",
@@ -112,6 +113,14 @@ const metricsDeclaration = [
   "fullGCPause",
   "freedMemoryByGC",
   "totalHeapUsedMax",
+  "JVM.GC.collectionTimesMs",
+  "JVM.GC.collections",
+  "JVM.maxHeapMegabytes",
+  "JVM.threadCount",
+  "JVM.totalCpuTimeMs",
+  "JVM.totalMegabytesAllocated",
+  "JVM.usedHeapMegabytes",
+  "JVM.usedNativeMegabytes",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
@@ -122,8 +131,10 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       // JPS projects
       "project-import-jps-kotlin-10_000-modules/measureStartup",
       "project-import-jps-kotlin-50_000-modules/measureStartup",
+      "project-reimport-jps-kotlin-10_000-modules/measureStartup",
       "project-reimport-jps-kotlin-50_000-modules/measureStartup",
       "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
+      "project-import-from-cache-jps-kotlin-10_000-modules/measureStartup",
       "project-import-jps-java-1_000-modules/measureStartup",
       "project-reimport-jps-java-1_000-modules/measureStartup",
       "project-import-from-cache-jps-java-1_000-modules/measureStartup",

@@ -1,26 +1,20 @@
 package main
 
 import (
-  "bytes"
   "context"
   "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/golang/protobuf/proto"
-  "github.com/klauspost/compress/snappy"
-  "github.com/prometheus/prometheus/prompb"
   "go.deanishe.net/env"
   "go.uber.org/zap"
   "log"
-  "net/http"
   "strings"
   "time"
 )
-
-const victoriaMetricsURL = "http://localhost:8428/api/v1/write"
 
 /*
 1. run restore-backup RC
@@ -87,7 +81,8 @@ type ReportRow struct {
   MeasuresType  []string `ch:"measures.type"`
 }
 
-const numWorkers = 2
+// set insertWorkerCount to 1 if not enough memory
+const insertWorkerCount = 4
 
 func transform(clickHouseUrl string, idName string, tableName string, logger *zap.Logger) error {
   logger.Info("start transforming", zap.String("db", idName))
@@ -124,6 +119,16 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
 
   config := analyzer.GetAnalyzer(idName)
 
+  config.TableName = tableName + "2"
+  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, config, tableName+"2", insertWorkerCount, logger)
+  if err != nil {
+    return err
+  }
+
+  insertManager := insertReportManager.InsertManager
+  // we send batch in the end of each iteration
+  insertManager.BatchSize = 50_000
+
   // the whole select result in memory - so, limit
   var minTime time.Time
   var maxTime time.Time
@@ -147,14 +152,19 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   for current := minTime; current.Before(maxTime); {
     // 1 month
     next := current.AddDate(0, 1, 0)
-    err = process(taskContext, db, config, current, next, tableName, logger)
+    err = process(taskContext, db, config, current, next, insertReportManager, tableName, logger)
     if err != nil {
       return err
     }
 
     current = next
+
+    if insertManager.GetQueuedItemCount() > 10_000 {
+      insertManager.ScheduleSendBatch()
+    }
   }
 
+  err = insertReportManager.InsertManager.Close()
   if err != nil {
     return err
   }
@@ -163,42 +173,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   return nil
 }
 
-func worker(tasks chan ReportRow) {
-  for row := range tasks {
-    // The data processing code comes here
-    for i, name := range row.MeasuresName {
-      // Create the labels
-      labels := []prompb.Label{
-        {Name: "machine", Value: row.Machine},
-        {Name: "build_time", Value: row.BuildTime.Format(time.RFC3339)},
-        {Name: "generated_time", Value: row.GeneratedTime.Format(time.RFC3339)},
-        {Name: "project", Value: row.Project},
-        {Name: "tc_build_id", Value: fmt.Sprintf("%d", row.TcBuildId)},
-        {Name: "tc_installer_build_id", Value: fmt.Sprintf("%d", row.TcInstallerBuildId)},
-        {Name: "branch", Value: row.Branch},
-        {Name: "tc_build_type", Value: row.TcBuildType},
-        {Name: "triggeredBy", Value: row.TriggeredBy},
-        {Name: "build_c1", Value: fmt.Sprintf("%d", row.BuildC1)},
-        {Name: "build_c2", Value: fmt.Sprintf("%d", row.BuildC2)},
-        {Name: "build_c3", Value: fmt.Sprintf("%d", row.BuildC3)},
-      }
-
-      // Convert your value to float64
-      value := float64(row.MeasuresValue[i])
-
-      // Get the timestamp in milliseconds
-      timestamp := row.GeneratedTime.Unix() * 1000
-
-      // Send to VictoriaMetrics
-      err := sendToVictoriaMetrics(name, value, labels, timestamp)
-      if err != nil {
-        log.Printf("Failed to send data to VictoriaMetrics: %v", err)
-      }
-    }
-  }
-}
-
-func process(taskContext context.Context, db driver.Conn, config analyzer.DatabaseConfiguration, startTime time.Time, endTime time.Time, tableName string, logger *zap.Logger, ) error {
+func process(taskContext context.Context, db driver.Conn, config analyzer.DatabaseConfiguration, startTime time.Time, endTime time.Time, insertReportManager *analyzer.InsertReportManager, tableName string, logger *zap.Logger, ) error {
   logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
   // don't forget to update order clause if differs - better to insert data in an expected order
 
@@ -244,68 +219,88 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 
   defer util.Close(rows, logger)
 
-  tasks := make(chan ReportRow, numWorkers)
-  for i := 0; i < numWorkers; i++ {
-    go worker(tasks)
-  }
-
   var row ReportRow
+rowLoop:
   for rows.Next() {
     err = rows.ScanStruct(&row)
     if err != nil {
       return errors.WithStack(err)
     }
 
-    tasks <- row
+    runResult := &analyzer.RunResult{
+      Machine:       row.Machine,
+      GeneratedTime: row.GeneratedTime,
+      BuildTime:     row.BuildTime,
+      TcBuildId:     int(row.TcBuildId),
+    }
+
+    if config.HasRawReport {
+      runResult.RawReport = []byte(row.RawReport)
+    }
+    if config.HasInstallerField {
+      runResult.TcInstallerBuildId = int(row.TcInstallerBuildId)
+      runResult.BuildC1 = int(row.BuildC1)
+      runResult.BuildC2 = int(row.BuildC2)
+      runResult.BuildC3 = int(row.BuildC3)
+    }
+    if config.HasRawReport {
+      err = analyzer.ReadReport(runResult, config, logger)
+      if err != nil {
+        return err
+      }
+
+      if runResult.Report == nil {
+        // ignore report
+        continue rowLoop
+      }
+    }
+
+    if config.HasProductField {
+      runResult.ExtraFieldData[0] = row.ServiceName
+      runResult.ExtraFieldData[1] = row.ServiceStart
+      runResult.ExtraFieldData[2] = row.ServiceDuration
+      runResult.ExtraFieldData[3] = row.ServiceThread
+      runResult.ExtraFieldData[4] = row.ServicePlugin
+    }
+
+    for i := range row.MeasuresName {
+      if config.DbName == "perfint" {
+        runResult.Report = &model.Report{
+          Project:   row.Project,
+          BuildDate: row.BuildTime.Format("20060102T150405+0000"),
+          Generated: row.GeneratedTime.Format("20060102T150405+0000"),
+        }
+        runResult.ExtraFieldData = []interface{}{row.MeasuresName[i], row.MeasuresValue[i], row.MeasuresType[i]}
+        runResult.TriggeredBy = row.TriggeredBy
+        runResult.TcBuildType = row.TcBuildType
+      }
+
+      err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
+      if err != nil {
+        return err
+      }
+    }
+
+    // transform runResult here
+    // Example: transform project
+    // if runResult.Report.Project == "spring_boot/showIntentions/" {
+    //   runResult.Report.Project = "spring_boot/showIntentions"
+    // }
+    // Example: transform metrics name
+    // if strings.HasPrefix(runResult.Report.Project, "community/go-to-") {
+    //   metricNames := runResult.ExtraFieldData[0].([]string)
+    //   for i, name := range metricNames {
+    //     if name == "searchEverywhere_action" || name == "searchEverywhere_class" || name == "searchEverywhere_file" {
+    //       metricNames[i] = "searchEverywhere"
+    //     }
+    //   }
+    // }
+
   }
-  close(tasks)
 
   err = rows.Err()
   if err != nil {
     return errors.WithStack(err)
-  }
-
-  return nil
-}
-
-func sendToVictoriaMetrics(metricName string, value float64, labels []prompb.Label, timestamp int64) error {
-  // Create a sample for the metric
-  labels = append([]prompb.Label{{Name: "__name__", Value: metricName}}, labels...)
-
-  sample := &prompb.Sample{
-    Value:     value,
-    Timestamp: timestamp,
-  }
-
-  // Create a TimeSeries with your labels and sample
-  ts := &prompb.TimeSeries{
-    Labels:  labels,
-    Samples: []prompb.Sample{*sample},
-  }
-
-  // Create a WriteRequest with the TimeSeries
-  req := &prompb.WriteRequest{
-    Timeseries: []prompb.TimeSeries{*ts},
-  }
-
-  // Serialize WriteRequest to protobuf
-  data, err := proto.Marshal(req)
-  if err != nil {
-    return err
-  }
-
-  // Compress data using Snappy
-  compressedData := snappy.Encode(nil, data)
-
-  // Send to VictoriaMetrics
-  resp, err := http.Post(victoriaMetricsURL, "application/x-protobuf", bytes.NewReader(compressedData)) //nolint:noctx
-  if err != nil {
-    return err
-  }
-  defer resp.Body.Close()
-
-  if resp.StatusCode != http.StatusNoContent {
-    return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
   }
 
   return nil

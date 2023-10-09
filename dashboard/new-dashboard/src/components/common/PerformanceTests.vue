@@ -68,9 +68,9 @@
 </template>
 
 <script setup lang="ts">
-import { computedAsync } from "@vueuse/core"
-import { provide, Ref, ref } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -80,9 +80,8 @@ import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyCo
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { accidentsKeys, containerKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
-import { Accident, getAccidentsFromMetaDb } from "../../util/meta"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import LineChart from "../charts/PerformanceLineChart.vue"
@@ -120,6 +119,7 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
   {
@@ -138,7 +138,18 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const configurators: DataQueryConfigurator[] = [serverConfigurator, scenarioConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator]
+const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
+
+const configurators: DataQueryConfigurator[] = [
+  serverConfigurator,
+  scenarioConfigurator,
+  branchConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+  triggeredByConfigurator,
+  accidentsConfigurator,
+]
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {
@@ -152,29 +163,6 @@ function onChangeRange(value: TimeRange) {
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
 }
-
-const projectAndMetrics: string[] = []
-const projects = scenarioConfigurator.selected.value
-const measures = measureConfigurator.selected.value
-if (projects != null && measures != null) {
-  if (Array.isArray(projects)) {
-    projectAndMetrics.push(...projects)
-  } else {
-    projectAndMetrics.push(projects)
-  }
-
-  if (Array.isArray(projects)) {
-    projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
-  } else {
-    projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
-  }
-}
-
-const warnings: Ref<Map<string, Accident[]> | undefined> = ref()
-computedAsync(async () => {
-  warnings.value = await getAccidentsFromMetaDb(projectAndMetrics, timeRangeConfigurator.value)
-})
-provide(accidentsKeys, warnings)
 </script>
 
 <style>

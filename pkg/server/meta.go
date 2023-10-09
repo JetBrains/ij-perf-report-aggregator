@@ -11,6 +11,7 @@ import (
   "go.uber.org/zap"
   "io"
   "net/http"
+  "strconv"
   "strings"
 )
 
@@ -124,13 +125,21 @@ func createPostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
       kind = params.Kind
     }
 
-    _, err = metaDb.Exec(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId) VALUES ($1, $2, $3, $4, $5, $6)", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId)
+    var id int
+    idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId)
+    err = idRow.Scan(&id)
     if err != nil {
       logger.Error("Cannot execute query", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
     }
+
     defer body.Close()
     writer.WriteHeader(http.StatusOK)
+    _, err = writer.Write([]byte(strconv.Itoa(id)))
+    if err != nil {
+      logger.Error("Cannot write response", zap.Error(err))
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
   }
 }
 

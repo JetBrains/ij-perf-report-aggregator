@@ -40,6 +40,8 @@ enum ROUTES {
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
+  IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
+  IntelliJWorkspaceModelBenchmarksDashboard = `${ROUTE_PREFIX.IntelliJ}/wsmBenchmarks`,
   IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
   IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
@@ -100,7 +102,8 @@ enum ROUTES {
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
-  RustDashboard = `${ROUTE_PREFIX.Rust}/${DASHBOARD_ROUTE}`,
+  RustPluginDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
+  RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustRoverDashboard`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
@@ -123,6 +126,7 @@ enum ROUTES {
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
+  VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
 }
 
 export interface Tab {
@@ -200,11 +204,19 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
-          label: "Dashboard Find Usages",
+          label: "Find Usages Dashboard",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
           label: "Indexing Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJJBRDashboard,
+          label: "JBR Performance tests Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJWorkspaceModelBenchmarksDashboard,
+          label: "WSM Benchmarks",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -362,7 +374,7 @@ const IDEA: Product = {
     },
     {
       url: ROUTE_PREFIX.Vcs,
-      label: "Vcs",
+      label: "VCS",
       tabs: [
         {
           url: ROUTES.VcsIdeaDashboard,
@@ -371,6 +383,10 @@ const IDEA: Product = {
         {
           url: ROUTES.VcsSpaceDashboard,
           label: "Performance dashboard space project",
+        },
+        {
+          url: ROUTES.VcsDotnetDashboard,
+          label: "Performance dashboard dotnet project",
         },
       ],
     },
@@ -576,8 +592,12 @@ const RUST: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.RustDashboard,
-          label: DASHBOARD_LABEL,
+          url: ROUTES.RustPluginDashboard,
+          label: "Rust Plugin Dashboard",
+        },
+        {
+          url: ROUTES.RustRoverDashboard,
+          label: "RustRover Dashboard",
         },
         {
           url: ROUTES.RustTests,
@@ -789,6 +809,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
         },
         {
+          path: ROUTES.IntelliJJBRDashboard,
+          component: () => import("./components/intelliJ/JBRDashboard.vue"),
+          meta: { pageTitle: "JBR Performance dashboard" },
+        },
+        {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
           component: () => import("./components/intelliJ/experiments/IncrementalCompilationDashboard.vue"),
           meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
@@ -851,7 +876,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJFindUsagesDashboard,
           component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard Find Usages" },
+          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,
@@ -1159,9 +1184,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
-          path: ROUTES.RustDashboard,
-          component: () => import("./components/rust/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Rust Performance dashboard" },
+          path: ROUTES.RustPluginDashboard,
+          component: () => import("./components/rust/PerformanceDashboardIdeWithRustPlugin.vue"),
+          meta: { pageTitle: "Rust Plugin Performance dashboard" },
+        },
+        {
+          path: ROUTES.RustRoverDashboard,
+          component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
+          meta: { pageTitle: "RustRover Performance dashboard" },
         },
         {
           path: ROUTES.RustTests,
@@ -1230,6 +1260,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RenderDashboard,
           component: () => import("./components/jbr/RenderDashboard.vue"),
           meta: { pageTitle: "Render Dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJWorkspaceModelBenchmarksDashboard,
+          component: () => import("./components/intelliJ/WorkspaceModelBenchmarksDashboard.vue"),
+          meta: { pageTitle: "Workspace Model Benchmarks" },
         },
         {
           path: ROUTES.FleetTest,
@@ -1324,6 +1359,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsSpaceDashboard,
           component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
           meta: { pageTitle: "Vcs Space performance dashboard" },
+        },
+        {
+          path: ROUTES.VcsDotnetDashboard,
+          component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
+          meta: { pageTitle: "Vcs Dotnet performance dashboard" },
         },
       ],
     },

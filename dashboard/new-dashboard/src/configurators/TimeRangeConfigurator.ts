@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { provide, ref } from "vue"
+import { provide, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { timeRangeKey } from "../shared/injectionKeys"
@@ -16,7 +16,6 @@ export interface TimeRangeItem {
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   public timeRanges(): TimeRangeItem[] {
-    console.log(this.customRange)
     return [
       { label: "Last week", value: "1w", customRange: "" },
       { label: "Last month", value: "1M", customRange: "" },
@@ -27,8 +26,6 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     ]
   }
 
-  // readonly timeRangeValueToItem = new Map<string, TimeRangeItem>(this.timeRanges().map((it) => [it.value, it]))
-
   readonly value = ref<TimeRange>("1w")
   readonly customRange = ref<string>("")
 
@@ -36,6 +33,11 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     provide(timeRangeKey, this.value)
     persistentStateManager.add("timeRange", this.value)
     persistentStateManager.add("customRange", this.customRange)
+    watch([this.customRange, this.value], (values) => {
+      if (values[1] != "custom") {
+        this.customRange.value = ""
+      }
+    })
   }
 
   createObservable(): Observable<TimeRange> {
@@ -51,14 +53,12 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     if (duration === "all") {
       return true
     }
-    if (this.value.value == "custom" && this.customRange.value != "") {
-      const between = this.customRange.value.split(":")
-      // const ago = getDateAgoByDuration(this.value.value)
-      const sql = `BETWEEN toDate('${between[0]}') AND toDate('${between[1]}')`
-      // const sql = `BETWEEN toDate('${ago.getFullYear()}-${ago.getMonth() + 1}-${ago.getDate()}') AND toDate('${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}')`
+    if (this.customRange.value == "") {
+      const sql = `>${toClickhouseSql(parseDuration(duration))}`
       query.addFilter({ f: "generated_time", q: sql })
     } else {
-      const sql = `>${toClickhouseSql(parseDuration(duration))}`
+      const between = this.customRange.value.split(":")
+      const sql = `BETWEEN toDate('${between[0]}') AND toDate('${between[1]}')`
       query.addFilter({ f: "generated_time", q: sql })
     }
     return true
@@ -137,7 +137,7 @@ const unitToDescriptor = new Map<string, UnitDescriptor>([
   ["y", units[3]],
 ])
 
-function parseDuration(s: string): DurationParseResult {
+export function parseDuration(s: string): DurationParseResult {
   const result: DurationParseResult = {}
   // ignore commas
   s = s.replaceAll(/(\d),(\d)/g, "$1$2")

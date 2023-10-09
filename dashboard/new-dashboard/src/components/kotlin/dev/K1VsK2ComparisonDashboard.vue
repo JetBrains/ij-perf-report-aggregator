@@ -2,7 +2,7 @@
   <Toolbar class="customToolbar">
     <template #start>
       <TimeRangeSelect
-        :ranges="TimeRangeConfigurator.timeRanges"
+        :ranges="timeRangeConfigurator.timeRanges()"
         :value="timeRangeConfigurator.value.value"
         :on-change="onTimeRangeChange"
       />

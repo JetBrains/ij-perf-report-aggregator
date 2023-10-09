@@ -16,7 +16,7 @@
         </div>
 
         <a
-          v-if="tooltipData.firstSeriesData[6]"
+          v-if="tooltipData.firstSeriesData[5]"
           title="Changes"
           target="_blank"
           class="info cursor-pointer"
@@ -26,9 +26,9 @@
         </a>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 5"
+          v-if="tooltipData.firstSeriesData.length >= 4"
           title="Changes"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=buildChangesDiv`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=buildChangesDiv`"
           target="_blank"
           class="info"
         >
@@ -36,9 +36,9 @@
         </a>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 5"
+          v-if="tooltipData.firstSeriesData.length >= 4"
           title="Test Artifacts"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[4]}&tab=artifacts`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[3]}&tab=artifacts`"
           target="_blank"
           class="info"
         >
@@ -46,9 +46,9 @@
         </a>
 
         <a
-          v-if="tooltipData.firstSeriesData.length >= 6"
+          v-if="tooltipData.firstSeriesData.length >= 5"
           title="Installer Artifacts"
-          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[6]}&tab=artifacts`"
+          :href="`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.firstSeriesData[5]}&tab=artifacts`"
           target="_blank"
           class="info"
         >
@@ -78,11 +78,11 @@
         </div>
       </div>
       <div
-        v-if="tooltipData.firstSeriesData.length >= 4"
+        v-if="tooltipData.firstSeriesData.length >= 3"
         class="grid grid-cols-[repeat(2,max-content)] items-center gap-x-1"
       >
         <ServerIcon class="w-5 h-5" />
-        <span>{{ tooltipData.firstSeriesData[3] }}</span>
+        <span>{{ tooltipData.firstSeriesData[2] }}</span>
       </div>
     </div>
   </OverlayPanel>
@@ -107,8 +107,8 @@ const linkText = computed(() => {
 
   const generatedTime = data[0]
   let result = timeFormatWithoutSeconds.format(generatedTime)
-  if (data[7] && data[8]) {
-    result += ` (${data[7]}.${data[8]}${data[9] === 0 ? "" : `.${data[9]}`})`
+  if (data[6] && data[7]) {
+    result += ` (${data[6]}.${data[7]}${data[8] === 0 ? "" : `.${data[8]}`})`
   }
   return result
 })
@@ -168,9 +168,9 @@ function cancelHide() {
 
 function navigateToSpace() {
   if (tooltipData.value != null) {
-    calculateChanges("ij", tooltipData.value.firstSeriesData[6], (decodedChanges: string | null) => {
+    calculateChanges("ij", tooltipData.value.firstSeriesData[5], (decodedChanges: string | null) => {
       if (decodedChanges == null) {
-        window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[4]}&tab=buildChangesDiv`)
+        window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
       } else {
         window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
       }

@@ -201,6 +201,10 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
     query.addField({ n: "measures", subName: "type" })
   }
 
+  if (query.db === "ij") {
+    query.addField({ n: "measure", subName: "name" })
+  }
+
   const prevFilters: DataQueryFilter[] = []
 
   const addFilter = (filter: DataQueryFilter): void => {

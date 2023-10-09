@@ -84,7 +84,7 @@
     <section>
       <CLionVsRadlerGroupProjectsChart
         label="Time to show test gutter (luau, Linter.test.cpp)"
-        measure="%waitFirstTestGutter tests/Linter.test.cpp"
+        measure="waitFirstTestGutter"
         project="luau/checkLocalTestConfig/Linter.test.cpp.marks"
       />
     </section>

@@ -168,6 +168,7 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -205,6 +206,7 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -242,6 +244,7 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -281,6 +284,7 @@ test("merge by project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1180,6 +1184,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1217,6 +1222,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1254,6 +1260,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1292,6 +1299,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1332,6 +1340,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1370,6 +1379,7 @@ test("don't merge with but merge with project", () => {
     {
       db: "perfint",
       table: "idea",
+      fields: ["project"],
       filters: [
         {
           f: "branch",
@@ -1402,6 +1412,221 @@ test("don't merge with but merge with project", () => {
         {
           f: "measures.name",
           v: "build_compilation_duration",
+        },
+      ],
+      order: "t",
+    },
+  ])
+})
+
+test("don't merge if merging field is not in query", () => {
+  const actual = mergeQueries([
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: [
+        {
+          n: "t",
+          sql: "toUnixTimestamp(generated_time)*1000",
+        },
+        {
+          n: "measures",
+          subName: "value",
+        },
+        {
+          n: "measures",
+          subName: "name",
+        },
+        {
+          n: "measures",
+          subName: "type",
+        },
+        "machine",
+        "tc_build_id",
+        "project",
+      ],
+      filters: [
+        {
+          f: "project",
+          v: "project-import-jps-kotlin-50_000-modules/fastInstaller",
+        },
+        {
+          f: "branch",
+          v: "nikita.kudrin/jps_12_september_regression_on_suspect",
+        },
+        {
+          f: "machine",
+          v: ["intellij-linux-hw-hetzner-agent-06", "intellij-linux-hw-hetzner-agent-13", "intellij-linux-hw-hetzner-agent-17", "intellij-linux-hw-hetzner-agent-21"],
+        },
+        {
+          f: "generated_time",
+          q: ">subtractYears(now(),1)",
+        },
+        {
+          f: "triggeredBy",
+          v: "",
+        },
+        {
+          f: "measures.name",
+          v: "workspaceModel.to.snapshot.ms",
+        },
+      ],
+      order: "t",
+    },
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: [
+        {
+          n: "t",
+          sql: "toUnixTimestamp(generated_time)*1000",
+        },
+        {
+          n: "measures",
+          subName: "value",
+        },
+        {
+          n: "measures",
+          subName: "name",
+        },
+        {
+          n: "measures",
+          subName: "type",
+        },
+        "machine",
+        "tc_build_id",
+        "project",
+      ],
+      filters: [
+        {
+          f: "project",
+          v: "project-import-jps-kotlin-50_000-modules/fastInstaller",
+        },
+        {
+          f: "branch",
+          v: "nikita.kudrin/jps_12_september_regression_before",
+        },
+        {
+          f: "machine",
+          v: ["intellij-linux-hw-hetzner-agent-06", "intellij-linux-hw-hetzner-agent-13", "intellij-linux-hw-hetzner-agent-17", "intellij-linux-hw-hetzner-agent-21"],
+        },
+        {
+          f: "generated_time",
+          q: ">subtractYears(now(),1)",
+        },
+        {
+          f: "triggeredBy",
+          v: "",
+        },
+        {
+          f: "measures.name",
+          v: "workspaceModel.to.snapshot.ms",
+        },
+      ],
+      order: "t",
+    },
+  ])
+  expect(actual).toStrictEqual([
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: [
+        {
+          n: "t",
+          sql: "toUnixTimestamp(generated_time)*1000",
+        },
+        {
+          n: "measures",
+          subName: "value",
+        },
+        {
+          n: "measures",
+          subName: "name",
+        },
+        {
+          n: "measures",
+          subName: "type",
+        },
+        "machine",
+        "tc_build_id",
+        "project",
+      ],
+      filters: [
+        {
+          f: "project",
+          v: "project-import-jps-kotlin-50_000-modules/fastInstaller",
+        },
+        {
+          f: "branch",
+          v: "nikita.kudrin/jps_12_september_regression_on_suspect",
+        },
+        {
+          f: "machine",
+          v: ["intellij-linux-hw-hetzner-agent-06", "intellij-linux-hw-hetzner-agent-13", "intellij-linux-hw-hetzner-agent-17", "intellij-linux-hw-hetzner-agent-21"],
+        },
+        {
+          f: "generated_time",
+          q: ">subtractYears(now(),1)",
+        },
+        {
+          f: "triggeredBy",
+          v: "",
+        },
+        {
+          f: "measures.name",
+          v: "workspaceModel.to.snapshot.ms",
+        },
+      ],
+      order: "t",
+    },
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: [
+        {
+          n: "t",
+          sql: "toUnixTimestamp(generated_time)*1000",
+        },
+        {
+          n: "measures",
+          subName: "value",
+        },
+        {
+          n: "measures",
+          subName: "name",
+        },
+        {
+          n: "measures",
+          subName: "type",
+        },
+        "machine",
+        "tc_build_id",
+        "project",
+      ],
+      filters: [
+        {
+          f: "project",
+          v: "project-import-jps-kotlin-50_000-modules/fastInstaller",
+        },
+        {
+          f: "branch",
+          v: "nikita.kudrin/jps_12_september_regression_before",
+        },
+        {
+          f: "machine",
+          v: ["intellij-linux-hw-hetzner-agent-06", "intellij-linux-hw-hetzner-agent-13", "intellij-linux-hw-hetzner-agent-17", "intellij-linux-hw-hetzner-agent-21"],
+        },
+        {
+          f: "generated_time",
+          q: ">subtractYears(now(),1)",
+        },
+        {
+          f: "triggeredBy",
+          v: "",
+        },
+        {
+          f: "measures.name",
+          v: "workspaceModel.to.snapshot.ms",
         },
       ],
       order: "t",

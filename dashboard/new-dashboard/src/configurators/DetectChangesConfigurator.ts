@@ -56,7 +56,8 @@ export enum ChangePointClassification {
   NO_CHANGE = "No Change",
 }
 
-function classifyChangePoint(changePointIndexes: number[], dataset: number[]) {
+function classifyChangePoint(changePointIndexes: number[], dataset: number[] | undefined) {
+  if (dataset == undefined) return []
   const classifications: ChangePointClassification[] = []
 
   for (let i = 0; i < changePointIndexes.length; i++) {
@@ -103,7 +104,7 @@ function classifyChangePoint(changePointIndexes: number[], dataset: number[]) {
 }
 
 export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
-  const dataset = seriesData[1] as number[]
+  const dataset = seriesData[1] as number[] | undefined
   const changePointIndexes = getChangePointIndexes(dataset, 1).map((value) => value + 1)
   const classifications = classifyChangePoint(changePointIndexes, dataset)
   const resultMap = new Map<string, ChangePointClassification>()
@@ -115,7 +116,8 @@ export function detectChanges(seriesData: (string | number)[][]): Map<string, Ch
   return resultMap
 }
 
-export function getChangePointIndexes(data: number[], minDistance: number = 1): number[] {
+export function getChangePointIndexes(data: number[] | undefined, minDistance: number = 1): number[] {
+  if (data == undefined) return []
   const n = data.length
 
   if (n <= 2) return []

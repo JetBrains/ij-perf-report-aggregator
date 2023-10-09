@@ -11,7 +11,7 @@ export class DataQuery {
   table?: string
 
   // noinspection JSMismatchedCollectionQueryUpdate
-  private fields: (string | DataQueryDimension)[] = []
+  public fields: (string | DataQueryDimension)[] = []
   public filters?: DataQueryFilter[]
 
   order?: string[] | string

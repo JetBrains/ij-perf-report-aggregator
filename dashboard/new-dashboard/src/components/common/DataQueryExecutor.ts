@@ -2,7 +2,7 @@ import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable,
 import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter } from "./dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
 export declare type DataQueryConsumer = (data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
@@ -48,7 +48,7 @@ export class DataQueryExecutor {
         }
 
         const queries = generateQueries(query, configuration)
-        const mergedQueries = queries.length > 0 && queries[0].db != "ij" ? mergeQueries(queries) : queries
+        const mergedQueries = mergeQueries(queries)
 
         const loadingResults = of({ query, configuration, data: null, isLoading: true })
         abortController = new AbortController()
@@ -192,7 +192,7 @@ function getFilterNameForMerge(query1: DataQuery, query2: DataQuery): string | n
   if (differingFilters.length !== 1) return null
   const targetFilter1 = differingFilters[0]
   const targetFilter2 = query2.filters.find((filter2) => filter2.f === targetFilter1.f)
-  if (!targetFilter2 || !isFilterCanBeMerged(targetFilter1, targetFilter2)) return null
+  if (!targetFilter2 || !isFilterCanBeMerged(targetFilter1, targetFilter2, query1.fields)) return null
   return targetFilter1.f
 }
 
@@ -200,7 +200,7 @@ function deepEqual(obj1: DataQueryFilter, obj2: DataQueryFilter): boolean {
   return JSON.stringify(obj1) === JSON.stringify(obj2)
 }
 
-function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter): boolean {
+function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter, fields: (string | DataQueryDimension)[]): boolean {
   // Check if both filters have a field 'f' and they are equal
   if (filter1.f !== filter2.f) return false
 
@@ -210,10 +210,12 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter)
   //Check that filters are different
   if (filter1.v == filter2.v) return false
 
-  //We only support combining filters with no operator
-  // noinspection RedundantIfStatementJS
+  //We only support combining filters with no operator and without sql
   if (filter1.o !== undefined || filter2.o !== undefined) return false
-  return true
+  if (filter1.q !== undefined || filter2.q !== undefined) return false
+
+  //We need filter name to be present in fields to later split the data
+  return fields.some((field) => (typeof field === "string" ? field === filter1.f : field.n + "." + field.subName === filter1.f))
 }
 
 export function mergeQueries(queries: DataQuery[]): DataQuery[] {
@@ -226,7 +228,7 @@ export function mergeQueries(queries: DataQuery[]): DataQuery[] {
       const matchingFilterField = getFilterNameForMerge(resultQueries[i], resultQueries[j])
       if ((currentFilterField == null && matchingFilterField != null) || (matchingFilterField === currentFilterField && matchingFilterField != null)) {
         currentFilterField = matchingFilterField
-        resultQueries[i].filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters)
+        resultQueries[i].filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters, resultQueries[i].fields)
         resultQueries.splice(j, 1) // remove the merged query
         // Reset indices to re-evaluate with new list
         i = -1
@@ -237,10 +239,10 @@ export function mergeQueries(queries: DataQuery[]): DataQuery[] {
   return resultQueries
 }
 
-function mergeFilters(filters1?: DataQueryFilter[], filters2?: DataQueryFilter[]): DataQueryFilter[] {
+function mergeFilters(filters1: DataQueryFilter[] | undefined, filters2: DataQueryFilter[] | undefined, fields: (string | DataQueryDimension)[]): DataQueryFilter[] {
   if (!filters1 || !filters2) return filters1 ?? filters2 ?? []
   return filters1.map((filter1) => {
-    const filter2 = filters2.find((f2) => isFilterCanBeMerged(filter1, f2))
+    const filter2 = filters2.find((f2) => isFilterCanBeMerged(filter1, f2, fields))
     //@ts-expect-error - filter1 and filter2 are strings or arrays of strings this is checked in isFilterCanBeMerged
     return filter2 ? { f: filter1.f, v: mergeValues(filter1.v, filter2.v), s: true } : filter1
   })

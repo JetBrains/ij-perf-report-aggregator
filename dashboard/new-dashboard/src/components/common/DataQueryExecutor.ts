@@ -48,7 +48,7 @@ export class DataQueryExecutor {
         }
 
         const queries = generateQueries(query, configuration)
-        const mergedQueries = mergeQueries(queries)
+        const mergedQueries = queries.length > 0 && queries[0].db != "ij" ? mergeQueries(queries) : queries
 
         const loadingResults = of({ query, configuration, data: null, isLoading: true })
         abortController = new AbortController()

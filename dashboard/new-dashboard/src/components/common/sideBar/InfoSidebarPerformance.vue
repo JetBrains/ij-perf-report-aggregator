@@ -294,6 +294,26 @@ function getTestActions(): {
     })
   }
   if (vm.data.value?.description) {
+    const methodName = vm.data.value.description.value?.methodName
+    if (methodName && methodName != "") {
+      actions.push(
+        {
+          label: "Open test method",
+          icon: "pi pi-folder-open",
+          command() {
+            openTestInIDE(methodName)
+          },
+        },
+        {
+          label: "Copy test method name",
+          icon: "pi pi-copy",
+          command() {
+            copyMethodNameToClipboard(methodName)
+          },
+        }
+      )
+    }
+
     const url = vm.data.value.description.value?.url
     if (url && url != "") {
       actions.push({
@@ -303,25 +323,6 @@ function getTestActions(): {
           window.open(url)
         },
       })
-    }
-    const methodName = vm.data.value.description.value?.methodName
-    if (methodName && methodName != "") {
-      actions.push(
-        {
-          label: "Copy test method name",
-          icon: "pi pi-copy",
-          command() {
-            copyMethodNameToClipboard(methodName)
-          },
-        },
-        {
-          label: "Open test method",
-          icon: "pi pi-folder-open",
-          command() {
-            openTestInIDE(methodName)
-          },
-        }
-      )
     }
   }
   return actions

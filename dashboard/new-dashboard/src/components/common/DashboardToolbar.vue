@@ -15,6 +15,7 @@
         v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"
       />
+      <CopyLink />
     </template>
     <template #end>
       <slot name="toolbar" />
@@ -28,6 +29,7 @@ import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import CopyLink from "../settings/CopyLink.vue"
 import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"

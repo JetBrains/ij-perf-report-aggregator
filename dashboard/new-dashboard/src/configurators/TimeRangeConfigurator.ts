@@ -6,30 +6,33 @@ import { timeRangeKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all"
+export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all" | "custom"
 
 export interface TimeRangeItem {
   label: string
   value: TimeRange
+  customRange: string
 }
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   static readonly timeRanges: TimeRangeItem[] = [
-    { label: "Last week", value: "1w" },
-    { label: "Last month", value: "1M" },
-    { label: "Last 3 months", value: "3M" },
-    { label: "Last year", value: "1y" },
-    { label: "All", value: "all" },
+    { label: "Last week", value: "1w" , customRange : ""},
+    { label: "Last month", value: "1M" , customRange : ""},
+    { label: "Last 3 months", value: "3M" , customRange : ""},
+    { label: "Last year", value: "1y" , customRange : ""},
+    { label: "All", value: "all" , customRange : ""},
+    { label: "", value: "custom" , customRange : ""},
   ]
 
   static readonly timeRangeValueToItem = new Map<string, TimeRangeItem>(TimeRangeConfigurator.timeRanges.map((it) => [it.value, it]))
 
   readonly value = ref<TimeRange>(TimeRangeConfigurator.timeRanges[0].value)
+  readonly customRange = ref<string>(TimeRangeConfigurator.timeRanges[0].customRange)
 
   constructor(persistentStateManager: PersistentStateManager) {
     provide(timeRangeKey, this.value)
-
     persistentStateManager.add("timeRange", this.value)
+    persistentStateManager.add("customRange", this.customRange)
   }
 
   createObservable(): Observable<TimeRange> {
@@ -45,9 +48,17 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     if (duration === "all") {
       return true
     }
+    if (this.value.value == "custom" && this.customRange.value != "") {
+      const between = this.customRange.value.split(":")
+      // const ago = getDateAgoByDuration(this.value.value)
+      const sql = `BETWEEN toDate('${between[0]}') AND toDate('${between[1]}')`
+      // const sql = `BETWEEN toDate('${ago.getFullYear()}-${ago.getMonth() + 1}-${ago.getDate()}') AND toDate('${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}')`
+      query.addFilter({ f: "generated_time", q: sql })
 
-    const sql = `>${toClickhouseSql(parseDuration(duration))}`
-    query.addFilter({ f: "generated_time", q: sql })
+    } else {
+      const sql = `>${toClickhouseSql(parseDuration(duration))}`
+      query.addFilter({ f: "generated_time", q: sql })
+    }
     return true
   }
 }

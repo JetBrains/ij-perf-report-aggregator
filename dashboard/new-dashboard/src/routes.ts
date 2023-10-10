@@ -63,6 +63,7 @@ enum ROUTES {
   IntelliJSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
   IntelliJSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   IntelliJSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
+  IntelliJSharedIndicesTypingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesTypingDashboard`,
   IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
@@ -285,6 +286,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
           label: "Indexed by Extensions",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesTypingDashboard,
+          label: "Typing",
         },
         {
           url: ROUTES.IntelliJSharedIndicesTests,
@@ -927,6 +932,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
           component: () => import("./components/intelliJ/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
+        },
+        {
+          path: ROUTES.IntelliJSharedIndicesTypingDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/TypingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
         },
         {
           path: ROUTES.IntelliJGCDashboard,

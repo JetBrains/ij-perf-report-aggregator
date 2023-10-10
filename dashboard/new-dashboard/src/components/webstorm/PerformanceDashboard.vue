@@ -25,35 +25,58 @@
           :value-unit="'counter'"
         />
       </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#SCSS'"
-          :title="'Indexing SCSS (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
     </section>
     <section>
       <GroupProjectsChart
-        label="Indexing"
-        :measure="['indexing', 'indexingTimeWithoutPauses']"
-        :projects="['aws_cdk/indexing', 'vkui/indexing']"
+        label="Local Inspections"
+        measure="localInspections"
+        :projects="[
+          'aws_cdk/localInspection/logging',
+          'WEB_5976/localInspection/react_mui',
+          'toh-pt6/localInspection/hero.service.ts',
+          'toh-pt6/localInspection/heroes.component.html',
+          'vue3-admin-vite/localInspection/index.vue',
+          'eslint-plugin-jest/localInspection/misc.ts',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Number Of Indexed Files"
-        measure="numberOfIndexedFiles"
-        :projects="['aws_cdk/indexing', 'vkui/indexing']"
+        label="Indexing"
+        measure="indexingTimeWithoutPauses"
+        :projects="[
+          'aws_cdk/indexing',
+          'vkui/indexing',
+          'ring-ui/indexing',
+          'angular-toh-pt6/indexing',
+          'angular/indexing',
+          'vue3-admin-vite/indexing',
+          'eslint-plugin-jest/indexing',
+          'dxos/indexing',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning"
+        measure="scanningTimeWithoutPauses"
+        :projects="[
+          'aws_cdk/indexing',
+          'vkui/indexing',
+          'ring-ui/indexing',
+          'angular-toh-pt6/indexing',
+          'angular/indexing',
+          'vue3-admin-vite/indexing',
+          'eslint-plugin-jest/indexing',
+          'dxos/indexing',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion"
         measure="completion"
-        :projects="['vkui_completion/completion']"
+        :projects="['vkui/completion']"
       />
     </section>
   </DashboardPage>

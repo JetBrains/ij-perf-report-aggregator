@@ -22,9 +22,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'clion/%hot%'"
-          :aggregated-measure="'completion#mean\_value'"
+          :aggregated-measure="'fus_time_to_show_90p'"
           :is-like="true"
-          :title="'[CLion] Completion'"
+          :title="'[CLion] Time to show completion list'"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -54,9 +54,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'radler/%hot%'"
-          :aggregated-measure="'completion#mean\_value'"
+          :aggregated-measure="'fus_time_to_show_90p'"
           :is-like="true"
-          :title="'[Radler] Completion'"
+          :title="'[Radler] Time to show completion list'"
         />
       </div>
       <div class="flex-1 min-w-0">

@@ -99,7 +99,13 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "linux-blade-hetzner"
         } else if (value.startsWith("intellij-windows-hw-hetzner")) {
           groupName = "windows-blade-hetzner"
-        } else if (value.startsWith("intellij-macos-munit-741-large")) {
+        } else if (
+          value.startsWith("intellij-macos-munit-741-large") ||
+          value.startsWith("intellij-macos-de-unit-1219") ||
+          value.startsWith("intellij-macos-munit-739-large") ||
+          value.startsWith("intellij-macos-munit-738-large") ||
+          value.startsWith("intellij-macos-munit-676-large")
+        ) {
           //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
           groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
         } else if (value.startsWith("intellij-linux-performance-huge-aws-i")) {

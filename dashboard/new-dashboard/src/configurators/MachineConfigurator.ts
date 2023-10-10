@@ -170,7 +170,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         } else {
           // it's group
           if (groupItem.children != null) {
-            if (groupItem.children.length > 50) {
+            if (groupItem.children.length > 1) {
               filter.v = prefix(groupItem.children.map((it) => it.value)) + "%"
               filter.o = "like"
               return

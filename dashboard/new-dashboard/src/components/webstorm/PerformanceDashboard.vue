@@ -76,7 +76,20 @@
       <GroupProjectsChart
         label="Completion"
         measure="completion"
-        :projects="['vkui/completion']"
+        :projects="['vkui/completion', 'ring-ui/completion', 'vue3-admin-vite/completion', 'toh-pt6/completion']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Code Vision (JSReferencesCodeVisionProvider)"
+        measure="JSReferencesCodeVisionProvider"
+        :projects="[
+          'aws_cdk/localInspection/logging',
+          'WEB_5976/localInspection/react_mui',
+          'toh-pt6/localInspection/hero.service.ts',
+          'vue3-admin-vite/localInspection/index.vue',
+          'eslint-plugin-jest/localInspection/misc.ts',
+        ]"
       />
     </section>
   </DashboardPage>

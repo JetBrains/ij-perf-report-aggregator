@@ -44,6 +44,10 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return refToObservable(this.value)
   }
 
+  createCustomRangeObservable(): Observable<string> {
+    return refToObservable(this.customRange)
+  }
+
   configureFilter(query: DataQuery): boolean {
     return this.configureQuery(query, null)
   }

@@ -2,6 +2,7 @@
   <div class="flex flex-col gap-5">
     <Toolbar class="customToolbar">
       <template #start>
+        <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
           :ranges="timeRangeConfigurator.timeRanges()"
           :value="timeRangeConfigurator.value.value"
@@ -87,6 +88,7 @@ import MeasureSelect from "../charts/MeasureSelect.vue"
 import LineChart from "../charts/PerformanceLineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"

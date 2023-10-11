@@ -7,4 +7,5 @@ tailwind.config.js
 cmd/frontend/resources/**
 /dashboard/new-dashboard/src/components/common/BranchIcon.vue
 /dashboard/new-dashboard/src/components/common/SpaceIcon.vue
+/dashboard/new-dashboard/src/components/common/CopyIcon.vue
 /dashboard/app/tests/**

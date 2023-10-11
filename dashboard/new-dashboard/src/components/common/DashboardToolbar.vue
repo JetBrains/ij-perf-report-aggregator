@@ -3,7 +3,7 @@
     <template #start>
       <CopyLink :timerange-configurator="props.timeRangeConfigurator" />
       <TimeRangeSelect
-        :ranges="props.timeRangeConfigurator.timeRanges()"
+        :ranges="props.timeRangeConfigurator.timeRanges"
         :value="props.timeRangeConfigurator.value.value"
         :on-change="onChangeRange"
       />

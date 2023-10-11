@@ -11,30 +11,25 @@ export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all" | "custom"
 export interface TimeRangeItem {
   label: string
   value: TimeRange
-  customRange: string
 }
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  public timeRanges(): TimeRangeItem[] {
-    return [
-      { label: "Last week", value: "1w", customRange: "" },
-      { label: "Last month", value: "1M", customRange: "" },
-      { label: "Last 3 months", value: "3M", customRange: "" },
-      { label: "Last year", value: "1y", customRange: "" },
-      { label: "All", value: "all", customRange: "" },
-      { label: this.customRange.value, value: "custom", customRange: "" },
-    ]
-  }
-
   readonly value = ref<TimeRange>("1w")
   readonly customRange = ref<string>("")
-
+  public timeRanges = ref([
+    { label: "Last week", value: "1w" },
+    { label: "Last month", value: "1M" },
+    { label: "Last 3 months", value: "3M" },
+    { label: "Last year", value: "1y" },
+    { label: "All", value: "all" },
+    { label: this.customRange, value: "custom" },
+  ])
   constructor(persistentStateManager: PersistentStateManager) {
     provide(timeRangeKey, this.value)
     persistentStateManager.add("timeRange", this.value)
     persistentStateManager.add("customRange", this.customRange)
-    watch([this.customRange, this.value], (values) => {
-      if (values[1] != "custom") {
+    watch(this.value, (customRangeValue) => {
+      if (customRangeValue != "custom") {
         this.customRange.value = ""
       }
     })

@@ -4,7 +4,7 @@
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges()"
+          :ranges="timeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
         />

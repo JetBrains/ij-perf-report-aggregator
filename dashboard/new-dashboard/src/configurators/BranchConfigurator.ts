@@ -64,15 +64,15 @@ export class BranchConfigurator extends DimensionConfigurator {
 export function createBranchConfigurator(
   serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
-  filters: FilterConfigurator[] = []
+  filters: FilterConfigurator[] = [],
+  name: string = "branch"
 ): DimensionConfigurator {
   const configurator = new BranchConfigurator()
-  const name = "branch"
   persistentStateManager?.add(name, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
     .pipe(
-      switchMap(() => loadDimension(name, serverConfigurator, filters, configurator.state)),
+      switchMap(() => loadDimension("branch", serverConfigurator, filters, configurator.state)),
       updateComponentState(configurator.state)
     )
     .subscribe((data) => {
@@ -90,7 +90,7 @@ export function createBranchConfigurator(
           })
         ),
       ]
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, data, "branch")
     })
   return configurator
 }

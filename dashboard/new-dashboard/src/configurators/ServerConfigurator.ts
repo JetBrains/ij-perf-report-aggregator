@@ -30,6 +30,10 @@ export class ServerConfigurator implements DataQueryConfigurator {
     return this._serverUrl
   }
 
+  compressParameters(params: string): string {
+    return `${getCompressor().compress(params)}`
+  }
+
   computeQueryUrl(query: DataQuery): string {
     return `${this._serverUrl}/api/q/${getCompressor().compress(serializeQuery(query))}`
   }

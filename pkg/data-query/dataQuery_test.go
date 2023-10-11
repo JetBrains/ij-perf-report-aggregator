@@ -1,6 +1,7 @@
 package data_query
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/stretchr/testify/assert"
   "testing"
 )
@@ -84,7 +85,7 @@ func TestAverageAggregate(t *testing.T) {
 }
 
 func TestDecode(t *testing.T) {
-  query, err := decodeQuery("KLUv_SAMYQAASGVsbG8genN0ZCEh")
+  query, err := util.DecodeQuery("KLUv_SAMYQAASGVsbG8genN0ZCEh")
 
   a := assert.New(t)
   a.NoError(err)

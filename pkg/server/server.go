@@ -5,7 +5,6 @@ import (
   "crypto/tls"
   "github.com/ClickHouse/ch-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-  dataquery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/andybalholm/brotli"
   "github.com/develar/errors"
@@ -109,7 +108,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Handle("/api/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
   r.Handle("/api/zstd-dictionary/*", &CachingHandler{
     handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-      return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil
+      return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
     },
     manager: cacheManager,
   })

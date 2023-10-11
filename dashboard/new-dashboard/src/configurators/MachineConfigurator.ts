@@ -210,6 +210,24 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     return true
   }
 
+  getMergedValue(): string {
+    const values: string[] = []
+    for (const value of this.selected.value) {
+      const groupItem = this.groupNameToItem.get(value)
+      if (groupItem == null) {
+        values.push(value)
+      } else {
+        // it's group
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        for (const child of groupItem.children!) {
+          values.push(child.value)
+        }
+      }
+    }
+
+    return prefix(values) + "%"
+  }
+
   private configureQueryAsFilter(selected: string[], query: DataQuery) {
     const values: string[] = []
     for (const value of selected) {

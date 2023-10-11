@@ -4,7 +4,7 @@ import (
   "encoding/json"
   "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
-  "github.com/sakura-internet/go-rison/v4"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "net/http"
@@ -17,11 +17,15 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
     Table        string   `json:"table"`
     MeasureNames []string `json:"measure_names"`
     Branch       string   `json:"branch"`
+    Machine      string   `json:"machine"`
   }
 
   var params requestParams
-  objectStart := strings.IndexRune(request.URL.Path, '(')
-  err := rison.Unmarshal([]byte(request.URL.Path[objectStart:]), &params, rison.Rison)
+  data, err := util.DecodeQuery(request.URL.Path[len("/api/compareBranches/"):])
+  if err != nil {
+    return nil, false, err
+  }
+  err = json.Unmarshal(data, &params)
   if err != nil {
     return nil, false, err
   }
@@ -34,8 +38,9 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
     quotedMeasureNames[i] = "'" + name + "'"
   }
   measureNamesString := strings.Join(quotedMeasureNames, ",")
+  machine := params.Machine
 
-  sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) ORDER BY generated_time DESC)GROUP BY project, measure_name;", table, branch, measureNamesString)
+  sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", table, branch, measureNamesString, machine)
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{t.dbUrl},
     Auth: clickhouse.Auth{

@@ -30,6 +30,7 @@ const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const COMPARE_ROUTE = "compare"
+const COMPARE_BRANCHES_ROUTE = "compareBranches"
 
 enum ROUTES {
   StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
@@ -50,6 +51,7 @@ enum ROUTES {
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
+  IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
@@ -149,6 +151,7 @@ interface Product {
 
 const TESTS_LABEL = "Tests"
 const COMPARE_BUILDS_LABEL = "Compare Builds"
+const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const DASHBOARD_LABEL = "Dashboard"
 
 const IJ_STARTUP: Product = {
@@ -230,6 +233,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJCompare,
           label: COMPARE_BUILDS_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -981,6 +988,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "idea",
           },
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
+        },
+        {
+          path: ROUTES.IntelliJCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
           path: ROUTES.PhpStormDashboard,

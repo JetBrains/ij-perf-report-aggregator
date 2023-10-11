@@ -1,5 +1,5 @@
 import { forkJoin, map, shareReplay } from "rxjs"
-import zstdDictionaryUrl from "../../../../../pkg/data-query/zstd.dictionary?url"
+import zstdDictionaryUrl from "../../../../../pkg/util/zstd.dictionary?url"
 import { fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
 import {
   free,

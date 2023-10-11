@@ -13,7 +13,7 @@
       <jdbc-driver>com.clickhouse.jdbc.ClickHouseDriver</jdbc-driver>
       <jdbc-url>jdbc:clickhouse://127.0.0.1:2000/ij</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="PostgreSQL" uuid="a4002082-26a5-4832-8a26-e6fcd1028081">
+    <data-source source="LOCAL" name="ij-perf-staging-ij-meta-3KqlQK@10.21.36.3" uuid="a4002082-26a5-4832-8a26-e6fcd1028081">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

@@ -2,12 +2,10 @@ package data_query
 
 import (
   "context"
-  _ "embed"
-  "encoding/base64"
   "github.com/ClickHouse/ch-go/proto"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
-  "github.com/klauspost/compress/zstd"
   "github.com/sakura-internet/go-rison/v4"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
@@ -53,30 +51,8 @@ type DataQueryDimension struct {
   arrayJoin string
 }
 
-//go:embed zstd.dictionary
-var ZstdDictionary []byte
-
-func decodeQuery(encoded string) ([]byte, error) {
-  compressed, err := base64.RawURLEncoding.DecodeString(encoded)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-
-  reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0), zstd.WithDecoderDicts(ZstdDictionary))
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  defer reader.Close()
-
-  decompressed, err := reader.DecodeAll(compressed, nil)
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
-  return decompressed, nil
-}
-
 func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
-  decompressed, err := decodeQuery(request.URL.Path[len("/api/q/"):])
+  decompressed, err := util.DecodeQuery(request.URL.Path[len("/api/q/"):])
   if err != nil {
     return nil, false, errors.WithStack(err)
   }

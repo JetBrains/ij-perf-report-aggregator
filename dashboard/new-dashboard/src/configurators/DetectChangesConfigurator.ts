@@ -105,7 +105,7 @@ function classifyChangePoint(changePointIndexes: number[], dataset: number[] | u
 
 export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
   const dataset = seriesData[1] as number[] | undefined
-  const changePointIndexes = getChangePointIndexes(dataset, 1).map((value) => value + 1)
+  const changePointIndexes = getChangePointIndexes(dataset, 1)
   const classifications = classifyChangePoint(changePointIndexes, dataset)
   const resultMap = new Map<string, ChangePointClassification>()
 
@@ -159,7 +159,7 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
     changePointIndexes.push(currentIndex - 1)
     currentIndex = previousChangePointIndex[currentIndex]
   }
-  return changePointIndexes.reverse()
+  return changePointIndexes.reverse().map((value) => value + 1)
 }
 
 function getPartialSums(data: number[], k: number): number[][] {

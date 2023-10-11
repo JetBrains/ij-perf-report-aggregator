@@ -24,6 +24,8 @@
       :value="metricData"
       show-gridlines
       class="p-datatable-sm"
+      sort-field="difference"
+      :sort-order="-1"
     >
       <Column
         field="test"
@@ -144,7 +146,7 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
             (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
             !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
           ) {
-            const difference = (((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1)
+            const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
             table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
           }
         }

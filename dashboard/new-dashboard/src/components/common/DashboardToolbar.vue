@@ -1,8 +1,9 @@
 <template>
   <Toolbar class="customToolbar">
     <template #start>
+      <CopyLink :timerange-configurator="props.timeRangeConfigurator" />
       <TimeRangeSelect
-        :ranges="TimeRangeConfigurator.timeRanges"
+        :ranges="props.timeRangeConfigurator.timeRanges"
         :value="props.timeRangeConfigurator.value.value"
         :on-change="onChangeRange"
       />
@@ -28,6 +29,7 @@ import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import CopyLink from "../settings/CopyLink.vue"
 import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"

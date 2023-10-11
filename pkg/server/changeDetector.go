@@ -6,6 +6,30 @@ import (
   "sort"
 )
 
+func CalculateMedian(nums []int) float64 {
+  if len(nums) == 0 {
+    // Handle the case of an empty slice
+    // You might want to return an error or a special value
+    return 0
+  }
+
+  // Create a copy of the input slice to avoid modifying the original data
+  sortedNums := make([]int, len(nums))
+  copy(sortedNums, nums)
+
+  // Sort the copied slice
+  sort.Ints(sortedNums)
+
+  middle := len(sortedNums) / 2
+  if len(sortedNums)%2 == 0 {
+    // If the length of the sorted slice is even, return the average of the two middle numbers
+    return float64(sortedNums[middle-1]+sortedNums[middle]) / 2
+  }
+
+  // If the length of the sorted slice is odd, return the middle number
+  return float64(sortedNums[middle])
+}
+
 func GetChangePointIndexes(data []int, minDistance int) ([]int, error) {
   n := len(data)
   if n <= 2 {

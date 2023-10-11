@@ -106,6 +106,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
   r.Handle("/api/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
+  r.Handle("/api/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
   r.Handle("/api/zstd-dictionary/*", &CachingHandler{
     handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
       return &bytebufferpool.ByteBuffer{B: dataquery.ZstdDictionary}, false, nil

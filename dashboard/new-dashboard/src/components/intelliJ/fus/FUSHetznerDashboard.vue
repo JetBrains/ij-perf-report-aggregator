@@ -28,7 +28,7 @@ import DashboardPage from "../../common/DashboardPage.vue"
 const chartsImportDeclaration: ChartDefinition[] = [
   {
     labels: ["Maven Sync"],
-    measures: ["maven.import.stats.importing.task"],
+    measures: ["maven.sync.duration"],
     projects: ["project-import-maven-flink/measureStartup"],
   },
   {

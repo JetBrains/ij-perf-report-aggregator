@@ -81,6 +81,7 @@ enum ROUTES {
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
+  PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
   KotlinCodeAnalysis = `${ROUTE_PREFIX.Kotlin}/codeAnalysis`,
   KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
@@ -93,24 +94,31 @@ enum ROUTES {
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
+  KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   GoLandDashboard = `${ROUTE_PREFIX.GoLand}/${DASHBOARD_ROUTE}`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
+  GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
+  PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
+  WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
+  RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
   RustPluginDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
   RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustRoverDashboard`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
+  RustCompareBranches = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
   ScalaCompare = `${ROUTE_PREFIX.Scala}/${COMPARE_ROUTE}`,
+  ScalaCompareBranches = `${ROUTE_PREFIX.Scala}/${COMPARE_BRANCHES_ROUTE}`,
   JBRTests = `${ROUTE_PREFIX.JBR}/${TEST_ROUTE}`,
   MapBenchDashboard = `${ROUTE_PREFIX.JBR}/mapbenchDashboard`,
   DaCapoDashboard = `${ROUTE_PREFIX.JBR}/dacapoDashboard`,
@@ -127,6 +135,7 @@ enum ROUTES {
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
@@ -229,10 +238,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJDevTests,
           label: "Tests (Fast Installer)",
-        },
-        {
-          url: ROUTES.IntelliJCompare,
-          label: COMPARE_BUILDS_LABEL,
         },
         {
           url: ROUTES.IntelliJCompareBranches,
@@ -421,8 +426,8 @@ const PHPSTORM: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.PhpStormCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.PhpStormCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
         {
           url: ROUTES.PhpStormWithPluginsDashboard,
@@ -489,8 +494,8 @@ const KOTLIN: Product = {
           label: "K1 vs. K2 (dev)",
         },
         {
-          url: ROUTES.KotlinCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.KotlinCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -513,8 +518,8 @@ const GOLAND: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.GoLandCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.GoLandCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -537,8 +542,8 @@ const RUBYMINE: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.RubyMineCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.RubyMineCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -562,8 +567,8 @@ const PYCHARM: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.PyCharmCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.PyCharmCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -587,8 +592,8 @@ const WEBSTORM: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.WebStormCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.WebStormCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -616,8 +621,8 @@ const RUST: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.RustCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.RustCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -636,8 +641,8 @@ const SCALA: Product = {
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.ScalaCompare,
-          label: COMPARE_BUILDS_LABEL,
+          url: ROUTES.ScalaCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -765,6 +770,10 @@ const CLION: Product = {
         {
           url: ROUTES.ClionTest,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.ClionCompareBranches,
+          label: COMPARE_BRANCHES_LABEL,
         },
       ],
     },
@@ -1038,6 +1047,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.PhpStormCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.GoLandDashboard,
           component: () => import("./components/goland/PerformanceDashboard.vue"),
           meta: { pageTitle: "GoLand Performance dashboard" },
@@ -1060,6 +1078,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "goland",
           },
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
+        },
+        {
+          path: ROUTES.GoLandCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "goland",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
           path: ROUTES.PyCharmDashboard,
@@ -1086,6 +1113,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.PyCharmCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "pycharm",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.WebStormDashboard,
           component: () => import("./components/webstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "WebStorm Performance dashboard" },
@@ -1110,6 +1146,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.WebStormCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "webstorm",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.RubyMineDashboard,
           component: () => import("./components/rubymine/PerformanceDashboard.vue"),
           meta: { pageTitle: "RubyMine Performance dashboard" },
@@ -1132,6 +1177,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "ruby",
           },
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
+        },
+        {
+          path: ROUTES.RustCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
 
         {
@@ -1210,6 +1264,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.KotlinCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "kotlin",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.RustPluginDashboard,
           component: () => import("./components/rust/PerformanceDashboardIdeWithRustPlugin.vue"),
           meta: { pageTitle: "Rust Plugin Performance dashboard" },
@@ -1239,6 +1302,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.RustCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "rust",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.ScalaTests,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
@@ -1256,6 +1328,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "scala",
           },
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
+        },
+        {
+          path: ROUTES.ScalaCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "scala",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
           path: ROUTES.JBRTests,
@@ -1375,6 +1456,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
           meta: { pageTitle: "CLion Detailed Performance dashboard" },
+        },
+        {
+          path: ROUTES.ClionCompareBranches,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "clion",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
           path: ROUTES.VcsIdeaDashboard,

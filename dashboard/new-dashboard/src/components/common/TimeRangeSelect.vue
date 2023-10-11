@@ -2,7 +2,7 @@
   <Dropdown
     v-model="model"
     title="Time Range"
-    :options="props.ranges.value"
+    :options="props.ranges.value.filter((element) => element.label != '')"
     option-label="label"
     option-value="value"
   >

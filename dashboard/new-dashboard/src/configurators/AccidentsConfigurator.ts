@@ -113,37 +113,39 @@ export class AccidentsConfigurator implements DataQueryConfigurator, FilterConfi
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
   constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator) {
     super()
-    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, timeRange]) => {
-      const projectAndMetrics: string[] = []
-      if (projects != null && measures != null) {
-        if (Array.isArray(projects)) {
-          projectAndMetrics.push(...projects)
-        } else {
-          projectAndMetrics.push(projects)
-        }
+    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), timeRangeConfigurator.createCustomRangeObservable()]).subscribe(
+      ([projects, measures, timeRange, customRange]) => {
+        const projectAndMetrics: string[] = []
+        if (projects != null && measures != null) {
+          if (Array.isArray(projects)) {
+            projectAndMetrics.push(...projects)
+          } else {
+            projectAndMetrics.push(projects)
+          }
 
-        if (Array.isArray(projects)) {
-          if (Array.isArray(measures)) {
-            projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+          if (Array.isArray(projects)) {
+            if (Array.isArray(measures)) {
+              projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+            } else {
+              projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
+            }
           } else {
-            projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
-          }
-        } else {
-          if (Array.isArray(measures)) {
-            projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
-          } else {
-            projectAndMetrics.push(`${projects}/${measures}`)
+            if (Array.isArray(measures)) {
+              projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+            } else {
+              projectAndMetrics.push(`${projects}/${measures}`)
+            }
           }
         }
+        getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
+          .then((value) => {
+            this.value.value = value
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       }
-      getAccidentsFromMetaDb(projectAndMetrics, timeRange)
-        .then((value) => {
-          this.value.value = value
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    })
+    )
   }
 }
 
@@ -151,9 +153,9 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   constructor(charts: Chart[] | null, timeRangeConfigurator: TimeRangeConfigurator) {
     super()
     const tests = this.getProjectAndProjectWithMetrics(charts)
-    timeRangeConfigurator.createObservable().subscribe((timeRange) => {
+    combineLatest([timeRangeConfigurator.createObservable(), timeRangeConfigurator.createCustomRangeObservable()]).subscribe(([timeRange, customRange]) => {
       console.log(timeRange)
-      getAccidentsFromMetaDb(tests, timeRange)
+      getAccidentsFromMetaDb(tests, timeRange, customRange)
         .then((value) => {
           this.value.value = value
         })
@@ -176,7 +178,7 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   }
 }
 
-function intervalToPostgresInterval(interval: TimeRange): string {
+function intervalToPostgresInterval(interval: TimeRange, customRange: string): string {
   const intervalMapping = {
     "1w": "7 DAYS",
     "1M": "1 MONTH",
@@ -184,7 +186,28 @@ function intervalToPostgresInterval(interval: TimeRange): string {
     "1y": "1 YEAR",
     all: "100 YEAR",
   }
+  if (customRange != "") {
+    const delimiter = customRange.indexOf(":")
+    let days = 365
+    if (delimiter > 0) {
+      days = getDaysDifference(customRange.slice(0, delimiter))
+    }
+    return days + " DAYS"
+  }
   return intervalMapping[interval]
+}
+
+function getDaysDifference(dateString: string) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const givenDate = new Date(dateString)
+  givenDate.setHours(0, 0, 0, 0)
+
+  const differenceInTime = today.getTime() - givenDate.getTime()
+  const differenceInDays = differenceInTime / (1000 * 3600 * 24)
+
+  return Math.abs(differenceInDays)
 }
 
 /**
@@ -204,8 +227,8 @@ function convertAccidentsToMap(accidents: Accident[]): Map<string, Accident[]> {
   return accidentsMap
 }
 
-async function getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange): Promise<Map<string, Accident[]>> {
-  const interval = intervalToPostgresInterval(timeRange)
+async function getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, customRange: string): Promise<Map<string, Accident[]>> {
+  const interval = intervalToPostgresInterval(timeRange, customRange)
   const params = tests.length === 0 ? { interval } : { interval, tests }
   try {
     const response = await fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {

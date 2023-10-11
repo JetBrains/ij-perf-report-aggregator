@@ -1,12 +1,12 @@
 import { Observable } from "rxjs"
-import { provide, ref } from "vue"
+import { provide, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { timeRangeKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all"
+export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all" | "custom"
 
 export interface TimeRangeItem {
   label: string
@@ -14,26 +14,34 @@ export interface TimeRangeItem {
 }
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  static readonly timeRanges: TimeRangeItem[] = [
+  readonly value = ref<TimeRange>("1w")
+  readonly customRange = ref<string>("")
+  public timeRanges = ref([
     { label: "Last week", value: "1w" },
     { label: "Last month", value: "1M" },
     { label: "Last 3 months", value: "3M" },
     { label: "Last year", value: "1y" },
     { label: "All", value: "all" },
-  ]
-
-  static readonly timeRangeValueToItem = new Map<string, TimeRangeItem>(TimeRangeConfigurator.timeRanges.map((it) => [it.value, it]))
-
-  readonly value = ref<TimeRange>(TimeRangeConfigurator.timeRanges[0].value)
+    { label: this.customRange, value: "custom" },
+  ])
 
   constructor(persistentStateManager: PersistentStateManager) {
     provide(timeRangeKey, this.value)
-
     persistentStateManager.add("timeRange", this.value)
+    persistentStateManager.add("customRange", this.customRange)
+    watch(this.value, (customRangeValue) => {
+      if (customRangeValue != "custom") {
+        this.customRange.value = ""
+      }
+    })
   }
 
   createObservable(): Observable<TimeRange> {
     return refToObservable(this.value)
+  }
+
+  createCustomRangeObservable(): Observable<string> {
+    return refToObservable(this.customRange)
   }
 
   configureFilter(query: DataQuery): boolean {
@@ -45,9 +53,14 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     if (duration === "all") {
       return true
     }
-
-    const sql = `>${toClickhouseSql(parseDuration(duration))}`
-    query.addFilter({ f: "generated_time", q: sql })
+    if (this.customRange.value == "") {
+      const sql = `>${toClickhouseSql(parseDuration(duration))}`
+      query.addFilter({ f: "generated_time", q: sql })
+    } else {
+      const between = this.customRange.value.split(":")
+      const sql = `BETWEEN toDate('${between[0]}') AND toDate('${between[1]}')`
+      query.addFilter({ f: "generated_time", q: sql })
+    }
     return true
   }
 }
@@ -124,7 +137,7 @@ const unitToDescriptor = new Map<string, UnitDescriptor>([
   ["y", units[3]],
 ])
 
-function parseDuration(s: string): DurationParseResult {
+export function parseDuration(s: string): DurationParseResult {
   const result: DurationParseResult = {}
   // ignore commas
   s = s.replaceAll(/(\d),(\d)/g, "$1$2")

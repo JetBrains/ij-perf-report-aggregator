@@ -234,7 +234,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="PHP SearchEverywhere Class"
-          measure="searchEverywhere_class"
+          measure="searchEverywhere"
           :projects="['bitrix/go-to-class/BCCo', 'magento2/go-to-class/MaAdMUser']"
         />
       </div>

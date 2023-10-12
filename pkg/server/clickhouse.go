@@ -59,17 +59,13 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
     return nil, false, err
   }
 
-  table := params.Table
-  measureNames := params.MeasureNames
-  branch := params.Branch
-  quotedMeasureNames := make([]string, len(measureNames))
-  for i, name := range measureNames {
+  quotedMeasureNames := make([]string, len(params.MeasureNames))
+  for i, name := range params.MeasureNames {
     quotedMeasureNames[i] = "'" + name + "'"
   }
   measureNamesString := strings.Join(quotedMeasureNames, ",")
-  machine := params.Machine
 
-  sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", table, branch, measureNamesString, machine)
+  sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Branch, measureNamesString, params.Machine)
   db, err := t.openDatabaseConnection()
   defer func(db driver.Conn) {
     _ = db.Close()
@@ -96,7 +92,6 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
   }
 
   response := make([]responseItem, len(queryResults))
-
   for i, result := range queryResults {
     indexes, err := GetChangePointIndexes(result.MeasureValues, 1)
     if err != nil {

@@ -4,6 +4,7 @@ import (
   "encoding/json"
   "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
+  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
@@ -52,6 +53,9 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
       "max_memory_usage": 3221225472,
     },
   })
+  defer func(db driver.Conn) {
+    _ = db.Close()
+  }(db)
   if err != nil {
     return nil, false, err
   }
@@ -123,27 +127,33 @@ func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*byt
       "max_memory_usage": 3221225472,
     },
   })
-  var result []struct {
-    PassName string
-  }
   if err != nil {
     return nil, false, err
   }
+  defer func(db driver.Conn) {
+    _ = db.Close()
+  }(db)
+
+  var result []struct {
+    PassName string
+  }
   err = db.Select(request.Context(), &result, sql)
+  if err != nil {
+    return nil, false, err
+  }
 
   buffer := byteBufferPool.Get()
-  if err == nil {
-    templateWriter := quicktemplate.AcquireWriter(buffer)
-    defer quicktemplate.ReleaseWriter(templateWriter)
-    jsonWriter := templateWriter.N()
-    jsonWriter.S("[")
-    for i, v := range result {
-      if i != 0 {
-        jsonWriter.S(",")
-      }
-      jsonWriter.Q(v.PassName)
+  templateWriter := quicktemplate.AcquireWriter(buffer)
+  defer quicktemplate.ReleaseWriter(templateWriter)
+  jsonWriter := templateWriter.N()
+  jsonWriter.S("[")
+  for i, v := range result {
+    if i != 0 {
+      jsonWriter.S(",")
     }
-    jsonWriter.S("]")
+    jsonWriter.Q(v.PassName)
   }
+  jsonWriter.S("]")
+
   return buffer, true, err
 }

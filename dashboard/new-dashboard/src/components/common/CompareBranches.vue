@@ -179,7 +179,7 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
     measure_names: metricNames,
     machine: machineConfigurator.getMergedValue(),
   }
-  const compressedParams = serverConfigurator.compressParameters(JSON.stringify(params))
+  const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
 }
 </script>

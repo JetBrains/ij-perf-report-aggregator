@@ -30,16 +30,16 @@ export class ServerConfigurator implements DataQueryConfigurator {
     return this._serverUrl
   }
 
-  compressParameters(params: string): string {
+  compressString(params: string): string {
     return `${getCompressor().compress(params)}`
   }
 
   computeQueryUrl(query: DataQuery): string {
-    return `${this._serverUrl}/api/q/${getCompressor().compress(serializeQuery(query))}`
+    return `${this._serverUrl}/api/q/${this.compressString(serializeQuery(query))}`
   }
 
   computeSerializedQueryUrl(url: string): string {
-    return `${this._serverUrl}/api/q/${getCompressor().compress(url)}`
+    return `${this._serverUrl}/api/q/${this.compressString(url)}`
   }
 
   createObservable(): Observable<unknown> {

@@ -65,10 +65,10 @@ export function createBranchConfigurator(
   serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
   filters: FilterConfigurator[] = [],
-  name: string = "branch"
+  persistentName: string = "branch"
 ): DimensionConfigurator {
   const configurator = new BranchConfigurator()
-  persistentStateManager?.add(name, configurator.selected)
+  persistentStateManager?.add(persistentName, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
     .pipe(

@@ -211,24 +211,25 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   }
 
   getMergedValue(): string {
-    const values: string[] = []
-    for (const value of this.selected.value) {
-      const groupItem = this.groupNameToItem.get(value)
-      if (groupItem == null) {
-        values.push(value)
-      } else {
-        // it's group
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        for (const child of groupItem.children!) {
-          values.push(child.value)
-        }
-      }
-    }
-
+    const values: string[] = this.getSelectedValues(this.selected.value)
     return prefix(values) + "%"
   }
 
   private configureQueryAsFilter(selected: string[], query: DataQuery) {
+    const values = this.getSelectedValues(selected)
+
+    if (values.length > 0) {
+      // stable order of fields in query (caching)
+      values.sort()
+      if (values.length > 50) {
+        query.addFilter({ f: "machine", v: prefix(values) + "%", o: "like" })
+      } else {
+        query.addFilter({ f: "machine", v: values })
+      }
+    }
+  }
+
+  private getSelectedValues(selected: string[]) {
     const values: string[] = []
     for (const value of selected) {
       const groupItem = this.groupNameToItem.get(value)
@@ -242,16 +243,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         }
       }
     }
-
-    if (values.length > 0) {
-      // stable order of fields in query (caching)
-      values.sort()
-      if (values.length > 50) {
-        query.addFilter({ f: "machine", v: prefix(values) + "%", o: "like" })
-      } else {
-        query.addFilter({ f: "machine", v: values })
-      }
-    }
+    return values
   }
 }
 

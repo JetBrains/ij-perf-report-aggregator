@@ -179,12 +179,13 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
 }
 
 function intervalToPostgresInterval(interval: TimeRange, customRange: string): string {
-  const intervalMapping = {
+  const intervalMapping: Record<TimeRange, string> = {
     "1w": "7 DAYS",
     "1M": "1 MONTH",
     "3M": "3 MONTHS",
     "1y": "1 YEAR",
     all: "100 YEAR",
+    custom: "",
   }
   if (customRange != "") {
     const delimiter = customRange.indexOf(":")

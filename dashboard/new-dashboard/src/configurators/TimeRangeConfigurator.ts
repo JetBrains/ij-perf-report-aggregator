@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { provide, ref, watch } from "vue"
+import { provide, Ref, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { timeRangeKey } from "../shared/injectionKeys"
@@ -16,7 +16,7 @@ export interface TimeRangeItem {
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly value = ref<TimeRange>("1w")
   readonly customRange = ref<string>("")
-  public timeRanges = ref([
+  public timeRanges: Ref<TimeRangeItem[]> = ref([
     { label: "Last week", value: "1w" },
     { label: "Last month", value: "1M" },
     { label: "Last 3 months", value: "3M" },

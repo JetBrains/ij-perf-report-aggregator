@@ -7,10 +7,38 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
-  "github.com/valyala/quicktemplate"
   "net/http"
   "strings"
 )
+
+func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
+  return clickhouse.Open(&clickhouse.Options{
+    Addr: []string{t.dbUrl},
+    Auth: clickhouse.Auth{
+      Database: "ij",
+    },
+    Settings: map[string]interface{}{
+      "readonly":         1,
+      "max_query_size":   1000000,
+      "max_memory_usage": 3221225472,
+    },
+  })
+}
+
+func toJSONBuffer(data interface{}) (*bytebufferpool.ByteBuffer, error) {
+  jsonData, err := json.Marshal(data)
+  if err != nil {
+    return nil, err
+  }
+
+  buffer := bytebufferpool.Get()
+  _, err = buffer.Write(jsonData)
+  if err != nil {
+    return nil, err
+  }
+
+  return buffer, nil
+}
 
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 
@@ -42,17 +70,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
   machine := params.Machine
 
   sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", table, branch, measureNamesString, machine)
-  db, err := clickhouse.Open(&clickhouse.Options{
-    Addr: []string{t.dbUrl},
-    Auth: clickhouse.Auth{
-      Database: "ij",
-    },
-    Settings: map[string]interface{}{
-      "readonly":         1,
-      "max_query_size":   1000000,
-      "max_memory_usage": 3221225472,
-    },
-  })
+  db, err := t.openDatabaseConnection()
   defer func(db driver.Conn) {
     _ = db.Close()
   }(db)
@@ -100,33 +118,12 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
     }
   }
 
-  jsonData, err := json.Marshal(response)
-  if err != nil {
-    return nil, false, err
-  }
-
-  buffer := byteBufferPool.Get()
-  _, err = buffer.Write(jsonData)
-  if err != nil {
-    return nil, false, err
-  }
-
+  buffer, err := toJSONBuffer(response)
   return buffer, true, err
 }
 
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-  sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from report where generated_time >subtractMonths(now(),12)"
-  db, err := clickhouse.Open(&clickhouse.Options{
-    Addr: []string{t.dbUrl},
-    Auth: clickhouse.Auth{
-      Database: "ij",
-    },
-    Settings: map[string]interface{}{
-      "readonly":         1,
-      "max_query_size":   1000000,
-      "max_memory_usage": 3221225472,
-    },
-  })
+  db, err := t.openDatabaseConnection()
   if err != nil {
     return nil, false, err
   }
@@ -134,26 +131,21 @@ func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*byt
     _ = db.Close()
   }(db)
 
-  var result []struct {
+  var queryResult []struct {
     PassName string
   }
-  err = db.Select(request.Context(), &result, sql)
+
+  sql := "SELECT DISTINCT arrayJoin((arrayFilter(x-> x LIKE 'highlighting/%', `metrics.name`))) as PassName from report where generated_time >subtractMonths(now(),12)"
+  err = db.Select(request.Context(), &queryResult, sql)
   if err != nil {
     return nil, false, err
   }
 
-  buffer := byteBufferPool.Get()
-  templateWriter := quicktemplate.AcquireWriter(buffer)
-  defer quicktemplate.ReleaseWriter(templateWriter)
-  jsonWriter := templateWriter.N()
-  jsonWriter.S("[")
-  for i, v := range result {
-    if i != 0 {
-      jsonWriter.S(",")
-    }
-    jsonWriter.Q(v.PassName)
+  passes := make([]string, len(queryResult))
+  for i, v := range queryResult {
+    passes[i] = v.PassName
   }
-  jsonWriter.S("]")
 
+  buffer, err := toJSONBuffer(passes)
   return buffer, true, err
 }

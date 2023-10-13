@@ -80,7 +80,28 @@ export function createBranchConfigurator(
         return
       }
 
-      data.sort((a) => (a.includes("/") ? 1 : -1))
+      data.sort((a, b) => {
+        // Master should always be first
+        if (a === "master") return -1
+        if (b === "master") return 1
+
+        // Then numbers
+        const isANumber = !Number.isNaN(Number(a))
+        const isBNumber = !Number.isNaN(Number(b))
+
+        if (isANumber && !isBNumber) return -1
+        if (!isANumber && isBNumber) return 1
+
+        // Then strings that contain "/"
+        const hasASlash = a.includes("/")
+        const hasBSlash = b.includes("/")
+
+        if (hasASlash && !hasBSlash) return -1
+        if (!hasASlash && hasBSlash) return 1
+
+        // Then everything else
+        return a.localeCompare(b)
+      })
 
       configurator.values.value = [
         ...new Set(

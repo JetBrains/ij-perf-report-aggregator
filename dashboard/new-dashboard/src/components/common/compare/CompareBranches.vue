@@ -89,7 +89,7 @@ interface CompareBranchesProps {
 }
 
 const props = withDefaults(defineProps<CompareBranchesProps>(), {
-  metricsNames: MAIN_METRICS,
+  metricsNames: () => MAIN_METRICS,
 })
 
 const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"

@@ -132,6 +132,20 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
+  case id == "perfUnitTests":
+    return DatabaseConfiguration{
+      DbName:                      "perfUnitTests",
+      TableName:                   "report",
+      ReportReader:                analyzePerfReport,
+      HasRawReport:                false,
+      HasBuildTypeField:           true,
+      HasMetaDB:                   false,
+      HasNoInstallerButHasChanges: true,
+      extraFieldCount:             3,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", measures.name, measures.value, measures.type")
+      },
+    }
   default:
     panic("unknown project: " + id)
   }

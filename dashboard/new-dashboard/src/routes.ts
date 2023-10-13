@@ -1185,6 +1185,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
         },
         {
+          path: ROUTES.RubyMineCompareBranches,
+          component: () => import("./components/common/compare/CompareBranches.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby",
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
           path: ROUTES.RustCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {

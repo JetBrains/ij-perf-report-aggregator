@@ -61,6 +61,9 @@ const items = computed(() => {
   const configurator = props.configurator
   let result = configurator.data.value
 
+  if (result == null) {
+    return []
+  }
   if (result.length < 20) {
     return result
   }
@@ -87,6 +90,7 @@ const value = computed({
     const configurator = props.configurator
     const selectedValue = configurator.selected.value
     const allValues = configurator.data.value
+    if (allValues == null) return null
     if (selectedValue != null && selectedValue.length > 0 && !allValues.some((it) => selectedValue.includes(it))) {
       return null
     }

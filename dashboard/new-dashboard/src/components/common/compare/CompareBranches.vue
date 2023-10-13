@@ -17,12 +17,24 @@
           :triggered-by-configurator="triggeredByConfigurator2"
           :selection-limit="1"
         />
-        <MeasureSelect :configurator="measureConfigurator" />
+        <MeasureSelect
+          :configurator="testConfigurator"
+          title="Test"
+        >
+          <template #icon>
+            <ChartBarIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </MeasureSelect>
+        <MeasureSelect :configurator="measureConfigurator">
+          <template #icon>
+            <BeakerIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </MeasureSelect>
       </template>
     </Toolbar>
 
     <DataTable
-      :value="metricData"
+      :value="tableData"
       show-gridlines
       class="p-datatable-sm"
       sort-field="difference"
@@ -121,7 +133,8 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
-const measureConfigurator = new MeasureConfiguratorForComparing(props.metricsNames, persistentStateManager)
+const measureConfigurator = new MeasureConfiguratorForComparing(props.metricsNames, "metrics", persistentStateManager)
+const testConfigurator = new MeasureConfiguratorForComparing(null, "tests", persistentStateManager)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
 
@@ -134,7 +147,7 @@ const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, pe
 const releaseConfigurator1 = new ReleaseNightlyConfigurator(persistentStateManager)
 const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManager)
 
-const metricData = ref<TableRow[]>()
+const tableData = ref<TableRow[]>()
 const fetchedData = ref<TableRow[]>()
 combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable()])
   .pipe(
@@ -155,6 +168,7 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
       (data: Result[][]) => {
         const firstBranchResults = data[0]
         const secondBranchResults = data[1]
+        const tests = new Set<string>()
         const table: TableRow[] = []
         for (const r1 of firstBranchResults) {
           const r2 = secondBranchResults.find((value) => {
@@ -166,21 +180,28 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
             !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
           ) {
             const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
+            tests.add(r1.Project)
             table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
           }
         }
+        testConfigurator.initData([...tests])
         fetchedData.value = table
-        metricData.value = table
+        tableData.value = table
       }
     )
   })
 
 watch(
-  measureConfigurator.selected,
-  (data) => {
-    metricData.value = fetchedData.value?.filter((value) => {
-      return data?.includes(value.metric)
+  [measureConfigurator.selected, testConfigurator.selected],
+  ([metrics, tests]) => {
+    tableData.value = fetchedData.value?.filter((value) => {
+      return metrics?.includes(value.metric)
     })
+    if (tests != null) {
+      tableData.value = tableData.value?.filter((value) => {
+        return tests.includes(value.test)
+      })
+    }
   },
   { immediate: true }
 )

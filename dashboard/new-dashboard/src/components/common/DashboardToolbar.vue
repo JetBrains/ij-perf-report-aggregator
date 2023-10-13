@@ -1,7 +1,6 @@
 <template>
   <Toolbar class="customToolbar">
     <template #start>
-      <CopyLink :timerange-configurator="props.timeRangeConfigurator" />
       <TimeRangeSelect
         :ranges="props.timeRangeConfigurator.timeRanges"
         :value="props.timeRangeConfigurator.value.value"
@@ -16,6 +15,7 @@
         v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"
       />
+      <CopyLink :timerange-configurator="props.timeRangeConfigurator" />
     </template>
     <template #end>
       <slot name="toolbar" />

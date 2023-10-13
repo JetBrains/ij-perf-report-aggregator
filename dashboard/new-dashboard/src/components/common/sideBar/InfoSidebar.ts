@@ -29,6 +29,7 @@ export enum DBType {
   INTELLIJ = "intellij",
   INTELLIJ_DEV = "intellij_dev",
   QODANA = "qodana",
+  PERF_UNIT_TESTS = "perfUnitTests",
   UNKNOWN = "unknown",
 }
 

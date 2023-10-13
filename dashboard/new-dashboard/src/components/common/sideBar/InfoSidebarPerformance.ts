@@ -36,7 +36,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     projectName = dataSeries[4] as string
     branch = dataSeries[5] as string
   }
-  if (dbType == DBType.INTELLIJ_DEV) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"

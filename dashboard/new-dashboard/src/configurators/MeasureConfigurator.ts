@@ -332,7 +332,7 @@ function configureChart(
       }
     }
     //fleet
-    if (seriesName == "" && (seriesData.length == 5 || seriesData.length == 9)) {
+    if (seriesName == "" && (seriesData.length == 6 || seriesData.length == 10)) {
       seriesName = seriesData[4][0] as string
     } else if (seriesName == "" && seriesData.length > 6) {
       // we take only the one project name, there can't be more

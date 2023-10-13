@@ -29,10 +29,12 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   let type: ValueUnit | undefined = valueUnit
   let buildNumber: string | undefined
   let accidentBuild: string | undefined
+  let branch: string | undefined
   if (dbType == DBType.DEV_FLEET) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
+    branch = dataSeries[5] as string
   }
   if (dbType == DBType.INTELLIJ_DEV) {
     metricName = dataSeries[2] as string
@@ -42,6 +44,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     machineName = dataSeries[4] as string
     buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
+    branch = dataSeries[7] as string
     accidentBuild = buildId.toString()
   }
   if (dbType == DBType.FLEET) {
@@ -52,6 +55,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     buildVersion = dataSeries[6] as number
     buildNum1 = dataSeries[7] as number
     buildNum2 = dataSeries[8] as number
+    branch = dataSeries[9] as string
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
@@ -61,7 +65,8 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     machineName = dataSeries[4] as string
     buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
-    buildNumber = dataSeries[7] as string
+    buildNumber = dataSeries[8] as string
+    branch = dataSeries[9] as string
   }
   if (dbType == DBType.INTELLIJ) {
     metricName = dataSeries[2] as string
@@ -75,6 +80,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     buildVersion = dataSeries[8] as number
     buildNum1 = dataSeries[9] as number
     buildNum2 = dataSeries[10] as number
+    branch = dataSeries[11] as string
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
   if (dbType == DBType.QODANA) {
@@ -116,6 +122,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     buildId: buildId as number,
     description,
     metricName,
+    branch,
   }
 }
 

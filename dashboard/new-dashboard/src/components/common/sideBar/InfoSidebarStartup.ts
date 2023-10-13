@@ -27,6 +27,7 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
     const buildVersion: number = dataSeries[6] as number
     const buildNum1: number = dataSeries[7] as number
     const buildNum2: number = dataSeries[8] as number
+    const branch: string = dataSeries[9] as string
 
     const series: DataSeries[] = []
     const prefixes = params.map((param) => getPrefix(param.seriesName as string))
@@ -55,6 +56,7 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
       title: "Details",
       installerId,
       buildId,
+      branch,
     }
   }
   return null

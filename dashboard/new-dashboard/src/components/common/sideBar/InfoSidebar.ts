@@ -13,6 +13,7 @@ export interface InfoData {
   title: string
   installerId: number | undefined
   date: string
+  branch: string | undefined
 }
 
 export interface DataSeries {

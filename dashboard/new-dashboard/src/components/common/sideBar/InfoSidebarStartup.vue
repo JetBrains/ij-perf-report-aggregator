@@ -43,6 +43,10 @@
           <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
         </span>
         <span class="flex gap-1.5 text-sm items-center">
+          <BranchIcon class="w-4 h-4" />
+          {{ vm.data.value?.branch }}
+        </span>
+        <span class="flex gap-1.5 text-sm items-center">
           <ComputerDesktopIcon class="w-4 h-4" />
           {{ vm.data.value?.machineName }}
         </span>
@@ -92,6 +96,7 @@
 import { injectOrError } from "../../../shared/injectionKeys"
 import { sidebarStartupKey } from "../../../shared/keys"
 import { calculateChanges } from "../../../util/changes"
+import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 
 const vm = injectOrError(sidebarStartupKey)

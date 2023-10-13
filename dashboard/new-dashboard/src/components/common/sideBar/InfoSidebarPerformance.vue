@@ -57,6 +57,13 @@
           <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
         </span>
         <span
+          v-if="vm.data.value?.branch"
+          class="flex gap-1.5 text-sm items-center"
+        >
+          <BranchIcon class="w-4 h-4" />
+          <span>{{ vm.data.value?.branch }}</span>
+        </span>
+        <span
           v-if="vm.data.value?.metricName"
           class="flex gap-1.5 text-sm items-center"
         >
@@ -212,6 +219,7 @@ import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
+import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { tcUrl } from "./InfoSidebar"
 
@@ -256,7 +264,12 @@ function handleNavigateToTest() {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const testURL = parts.join("/")
-  const query: Record<string, string> = { ...currentRoute.query, project: vm.data.value?.projectName ?? "", measure: vm.data.value?.metricName } as Record<string, string>
+  const query: Record<string, string> = {
+    ...currentRoute.query,
+    project: vm.data.value?.projectName ?? "",
+    measure: vm.data.value?.metricName,
+    branch: vm.data.value?.branch ?? "",
+  } as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL + "?" + queryParams)
 }

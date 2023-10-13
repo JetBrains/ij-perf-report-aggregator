@@ -96,6 +96,7 @@ enum ROUTES {
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
+  KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandDashboard = `${ROUTE_PREFIX.GoLand}/${DASHBOARD_ROUTE}`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
@@ -497,6 +498,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.KotlinCompareBranches,
+          label: COMPARE_BRANCHES_LABEL + "(dev)",
         },
       ],
     },
@@ -1273,6 +1278,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             metricsNames: KOTLIN_MAIN_METRICS,
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.KotlinCompareBranchesDev,
+          component: () => import("./components/common/CompareBranches.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlin",
+            metricsNames: KOTLIN_MAIN_METRICS,
+          },
+          meta: { pageTitle: COMPARE_BRANCHES_LABEL + "(dev/fast)" },
         },
         {
           path: ROUTES.RustPluginDashboard,

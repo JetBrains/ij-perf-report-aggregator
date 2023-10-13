@@ -26,6 +26,7 @@ const enum ROUTE_PREFIX {
   Qodana = "/qodana",
   Clion = "/clion",
   Vcs = IntelliJ + "/vcs",
+  PerfUnit = "/perfUnit",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -141,6 +142,7 @@ enum ROUTES {
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
+  PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -786,7 +788,24 @@ const CLION: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA, CLION]
+const PERF_UNIT: Product = {
+  url: ROUTE_PREFIX.PerfUnit,
+  label: "Perf Unit Tests",
+  children: [
+    {
+      url: ROUTE_PREFIX.PerfUnit,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.PerfUnitTests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA, CLION, PERF_UNIT]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1506,6 +1525,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsDotnetDashboard,
           component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
           meta: { pageTitle: "Vcs Dotnet performance dashboard" },
+        },
+        {
+          path: ROUTES.PerfUnitTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfUnitTests",
+            table: "report",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "Perf Unit Tests" },
         },
       ],
     },

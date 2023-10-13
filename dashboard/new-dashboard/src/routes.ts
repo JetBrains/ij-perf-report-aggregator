@@ -500,7 +500,7 @@ const KOTLIN: Product = {
           label: COMPARE_BRANCHES_LABEL,
         },
         {
-          url: ROUTES.KotlinCompareBranches,
+          url: ROUTES.KotlinCompareBranchesDev,
           label: COMPARE_BRANCHES_LABEL + "(dev)",
         },
       ],

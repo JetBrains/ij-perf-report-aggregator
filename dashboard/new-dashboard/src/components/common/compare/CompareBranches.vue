@@ -133,8 +133,9 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
-const measureConfigurator = new MeasureConfiguratorForComparing(props.metricsNames, "metrics", persistentStateManager)
-const testConfigurator = new MeasureConfiguratorForComparing(null, "tests", persistentStateManager)
+const measureConfigurator = new MeasureConfiguratorForComparing("metrics", persistentStateManager)
+measureConfigurator.initData(props.metricsNames)
+const testConfigurator = new MeasureConfiguratorForComparing("tests", persistentStateManager)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
 

@@ -997,7 +997,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "idea",
@@ -1006,7 +1006,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "idea",
@@ -1045,7 +1045,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PhpStormCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "phpstorm",
@@ -1054,7 +1054,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PhpStormCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "phpstorm",
@@ -1078,7 +1078,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "goland",
@@ -1087,7 +1087,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "goland",
@@ -1111,7 +1111,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PyCharmCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "pycharm",
@@ -1120,7 +1120,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PyCharmCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "pycharm",
@@ -1144,7 +1144,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.WebStormCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "webstorm",
@@ -1153,7 +1153,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.WebStormCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "webstorm",
@@ -1177,7 +1177,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RubyMineCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "ruby",
@@ -1186,7 +1186,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RustCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "ruby",
@@ -1262,7 +1262,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.KotlinCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "kotlin",
@@ -1271,7 +1271,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.KotlinCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "kotlin",
@@ -1281,7 +1281,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.KotlinCompareBranchesDev,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfintDev",
             table: "kotlin",
@@ -1311,7 +1311,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RustCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "rust",
@@ -1320,7 +1320,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RustCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "rust",
@@ -1339,7 +1339,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.ScalaCompare,
-          component: () => import("./components/common/CompareBuilds.vue"),
+          component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
             dbName: "perfint",
             table: "scala",
@@ -1348,7 +1348,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.ScalaCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "scala",
@@ -1476,7 +1476,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.ClionCompareBranches,
-          component: () => import("./components/common/CompareBranches.vue"),
+          component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
             dbName: "perfint",
             table: "clion",

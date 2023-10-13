@@ -17,6 +17,7 @@
           :triggered-by-configurator="triggeredByConfigurator2"
           :selection-limit="1"
         />
+        <MeasureSelect :configurator="measureConfigurator" />
       </template>
     </Toolbar>
 
@@ -68,7 +69,7 @@
 
 <script setup lang="ts">
 import { combineLatest, filter, Observable } from "rxjs"
-import { provide, ref } from "vue"
+import { provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -78,14 +79,24 @@ import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS } from "../../../util/mainMetrics"
+import MeasureSelect from "../../charts/MeasureSelect.vue"
 import BranchSelect from "../BranchSelect.vue"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
+import { MeasureConfiguratorForComparing } from "./MeasureConfiguratorForComparing"
 
 interface CompareBranchesProps {
   dbName: string
   table: string
   metricsNames?: string[]
+}
+
+interface TableRow {
+  test: string
+  metric: string
+  build1: number
+  build2: number
+  difference: number
 }
 
 const props = withDefaults(defineProps<CompareBranchesProps>(), {
@@ -110,6 +121,8 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
+const measureConfigurator = new MeasureConfiguratorForComparing(props.metricsNames, persistentStateManager)
+
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
 
 const branchConfigurator1 = createBranchConfigurator(serverConfigurator, persistentStateManager, [], "branch1")
@@ -121,7 +134,8 @@ const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, pe
 const releaseConfigurator1 = new ReleaseNightlyConfigurator(persistentStateManager)
 const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManager)
 
-const metricData = ref()
+const metricData = ref<TableRow[]>()
+const fetchedData = ref<TableRow[]>()
 combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable()])
   .pipe(
     filter(() => {
@@ -141,7 +155,7 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
       (data: Result[][]) => {
         const firstBranchResults = data[0]
         const secondBranchResults = data[1]
-        const table = []
+        const table: TableRow[] = []
         for (const r1 of firstBranchResults) {
           const r2 = secondBranchResults.find((value) => {
             return value.Project == r1.Project && value.MeasureName == r1.MeasureName
@@ -155,10 +169,21 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
             table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
           }
         }
+        fetchedData.value = table
         metricData.value = table
       }
     )
   })
+
+watch(
+  measureConfigurator.selected,
+  (data) => {
+    metricData.value = fetchedData.value?.filter((value) => {
+      return data?.includes(value.metric)
+    })
+  },
+  { immediate: true }
+)
 
 class Result {
   public constructor(

@@ -42,9 +42,10 @@
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed } from "vue"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { MeasureConfiguratorForComparing } from "../common/compare/MeasureConfiguratorForComparing"
 
 interface Props {
-  configurator: MeasureConfigurator
+  configurator: MeasureConfigurator | MeasureConfiguratorForComparing
   selectedLabel?: (items: string[]) => string
   title?: string
 }

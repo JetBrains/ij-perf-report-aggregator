@@ -19,7 +19,6 @@ export const MAIN_METRICS: string[] = [
   "FileStructurePopup",
   "createKotlinFile",
   "highlighting",
-  "FileStructurePopup",
   "vcs-log-indexing",
   "startInlineRename",
   "debugRunConfiguration",

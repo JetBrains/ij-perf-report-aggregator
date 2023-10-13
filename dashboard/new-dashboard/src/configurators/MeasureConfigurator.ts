@@ -12,7 +12,7 @@ import { LineChartOptions, ScatterChartOptions } from "../components/common/echa
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { toColor } from "../util/colors"
-import { MAIN_METRICS } from "../util/mainMetrics"
+import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
 import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
@@ -100,7 +100,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             selectedRef.value = filtered
           }
         }
-        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...data.filter((value) => MAIN_METRICS.has(value))])]
+        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...data.filter((value) => MAIN_METRICS_SET.has(value))])]
       })
   }
 

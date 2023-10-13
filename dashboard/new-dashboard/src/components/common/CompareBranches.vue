@@ -82,10 +82,15 @@ import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 
-const props = defineProps<{
+interface CompareBranchesProps {
   dbName: string
   table: string
-}>()
+  metricsNames?: string[]
+}
+
+const props = withDefaults(defineProps<CompareBranchesProps>(), {
+  metricsNames: MAIN_METRICS,
+})
 
 const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
 const container = ref<HTMLElement>()
@@ -132,7 +137,7 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
     const branch1 = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
     const branch2 = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
 
-    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1, [...MAIN_METRICS]), getAllMetricsFromBranch(machineConfigurator, branch2, [...MAIN_METRICS])]).subscribe(
+    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1, props.metricsNames), getAllMetricsFromBranch(machineConfigurator, branch2, props.metricsNames)]).subscribe(
       (data: Result[][]) => {
         const firstBranchResults = data[0]
         const secondBranchResults = data[1]

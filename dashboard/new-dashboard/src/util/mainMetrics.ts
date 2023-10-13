@@ -1,13 +1,13 @@
-export const MAIN_METRICS = new Set([
+export const MAIN_METRICS_SET = new Set()
+
+export const MAIN_METRICS: string[] = [
   "indexingTimeWithoutPauses",
   "scanningTimeWithoutPauses",
   "dumbModeWithPauses",
-  "numberOfIndexedFiles",
   "vfs_initial_refresh",
   "build_compilation_duration",
   "globalInspections",
   "findUsages",
-  "findUsages#number",
   "localInspections",
   "firstCodeAnalysis",
   "completion",
@@ -20,11 +20,11 @@ export const MAIN_METRICS = new Set([
   "createKotlinFile",
   "highlighting",
   "FileStructurePopup",
-  "typing",
   "vcs-log-indexing",
-  "vcs-log-indexing#numberOfCommits",
-  "showFileHistory",
-  "searchEverywhere",
   "startInlineRename",
   "debugRunConfiguration",
-])
+  "debugStep_into",
+  "searchEverywhere_dialog_shown",
+  "showQuickFixes",
+  "createJavaFile",
+]

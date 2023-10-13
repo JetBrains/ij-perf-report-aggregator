@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 
 import { ParentRouteRecord } from "./components/common/route"
+import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 
 const enum ROUTE_PREFIX {
   Startup = "/ij",
@@ -1269,6 +1270,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "kotlin",
+            metricsNames: KOTLIN_MAIN_METRICS,
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },

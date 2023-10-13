@@ -370,3 +370,11 @@ function generateEvaluateExpressionDefinition(labelPrefix: string, projects: str
     projects,
   }
 }
+
+export const KOTLIN_MAIN_METRICS = [
+  "completion#mean_value",
+  "completion#firstElementShown#mean_value",
+  "localInspections#mean_value",
+  "semanticHighlighting#mean_value",
+  "findUsages#mean_value",
+]

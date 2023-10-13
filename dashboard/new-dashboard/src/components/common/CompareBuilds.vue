@@ -125,7 +125,7 @@ import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyCo
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { refToObservable } from "../../configurators/rxjs"
 import { containerKey } from "../../shared/keys"
-import { MAIN_METRICS } from "../../util/mainMetrics"
+import { MAIN_METRICS_SET } from "../../util/mainMetrics"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import BranchSelect from "./BranchSelect.vue"
 import { DataQueryExecutor } from "./DataQueryExecutor"
@@ -194,7 +194,7 @@ combineLatest([refToObservable(firstBuildConfigurator.selected), refToObservable
 })
 
 FilterService.register("metricsFilter", (value: string) => {
-  return MAIN_METRICS.has(value)
+  return MAIN_METRICS_SET.has(value)
 })
 const indexingMetrics = new Set(["indexing", "indexingTimeWithoutPauses", "scanning", "scanningTimeWithoutPauses", "numberOfIndexingRuns"])
 FilterService.register("indexingFilter", (value: string) => {

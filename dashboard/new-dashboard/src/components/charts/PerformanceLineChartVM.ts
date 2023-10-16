@@ -129,6 +129,7 @@ export class PerformanceLineChartVM {
       },
       xAxis: {
         type: "time",
+        max: new Date(),
         axisPointer: {
           snap: false,
           label: {

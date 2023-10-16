@@ -47,6 +47,7 @@ export class BranchConfigurator extends DimensionConfigurator {
           filter.o = "like"
         } else {
           filter.v = values[index]
+          filter.o = undefined
         }
       },
       getSeriesName(index: number): string {

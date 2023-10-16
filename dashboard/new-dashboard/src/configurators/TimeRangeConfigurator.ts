@@ -1,4 +1,4 @@
-import { Observable } from "rxjs"
+import { combineLatest, Observable } from "rxjs"
 import { provide, Ref, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
@@ -36,8 +36,8 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     })
   }
 
-  createObservable(): Observable<TimeRange> {
-    return refToObservable(this.value)
+  createObservable(): Observable<[TimeRange, string]> {
+    return combineLatest([refToObservable(this.value), refToObservable(this.customRange)]).pipe()
   }
 
   createCustomRangeObservable(): Observable<string> {

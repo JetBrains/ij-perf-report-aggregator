@@ -52,7 +52,7 @@
       />
       <Column
         field="branch1"
-        header="Branch 1"
+        :header="branch1 ?? ''"
       >
         <template #body="slotProps">
           <div :class="getColorForBuild(slotProps.data.build1, slotProps.data.build2)">
@@ -62,7 +62,7 @@
       </Column>
       <Column
         field="branch2"
-        header="Branch 2"
+        :header="branch2 ?? ''"
       >
         <template #body="slotProps">
           <div :class="getColorForBuild(slotProps.data.build2, slotProps.data.build1)">
@@ -142,6 +142,9 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 const branchConfigurator1 = createBranchConfigurator(serverConfigurator, persistentStateManager, [], "branch1")
 const branchConfigurator2 = createBranchConfigurator(serverConfigurator, persistentStateManager, [], "branch2")
 
+const branch1 = ref<string | null>(null)
+const branch2 = ref<string | null>(null)
+
 const triggeredByConfigurator1 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
 const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
 
@@ -162,34 +165,35 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
     const branch1SelectedValue = branchConfigurator1.selected.value
     const branch2SelectedValue = branchConfigurator2.selected.value
 
-    const branch1 = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
-    const branch2 = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
+    branch1.value = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
+    branch2.value = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
 
-    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1, props.metricsNames), getAllMetricsFromBranch(machineConfigurator, branch2, props.metricsNames)]).subscribe(
-      (data: Result[][]) => {
-        const firstBranchResults = data[0]
-        const secondBranchResults = data[1]
-        const tests = new Set<string>()
-        const table: TableRow[] = []
-        for (const r1 of firstBranchResults) {
-          const r2 = secondBranchResults.find((value) => {
-            return value.Project == r1.Project && value.MeasureName == r1.MeasureName
-          })
-          if (
-            r2 != undefined &&
-            (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
-            !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
-          ) {
-            const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
-            tests.add(r1.Project)
-            table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
-          }
+    combineLatest([
+      getAllMetricsFromBranch(machineConfigurator, branch1.value, props.metricsNames),
+      getAllMetricsFromBranch(machineConfigurator, branch2.value, props.metricsNames),
+    ]).subscribe((data: Result[][]) => {
+      const firstBranchResults = data[0]
+      const secondBranchResults = data[1]
+      const tests = new Set<string>()
+      const table: TableRow[] = []
+      for (const r1 of firstBranchResults) {
+        const r2 = secondBranchResults.find((value) => {
+          return value.Project == r1.Project && value.MeasureName == r1.MeasureName
+        })
+        if (
+          r2 != undefined &&
+          (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
+          !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
+        ) {
+          const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
+          tests.add(r1.Project)
+          table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
         }
-        testConfigurator.initData([...tests])
-        fetchedData.value = table
-        tableData.value = table
       }
-    )
+      testConfigurator.initData([...tests])
+      fetchedData.value = table
+      tableData.value = table
+    })
   })
 
 watch(

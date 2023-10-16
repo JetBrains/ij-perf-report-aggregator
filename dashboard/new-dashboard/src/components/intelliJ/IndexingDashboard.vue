@@ -47,14 +47,19 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing (Big projects)", "Scanning (Big projects)", "Number of indexed files (Big projects)"],
+    labels: ["Indexing (Big projects)", "Initial Scanning (Big projects)", "Initial Number of indexed files (Big projects)"],
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
-    labels: ["Reopening Scanning (Big projects)", "Reopening Number of indexed files (Big projects)"],
+    labels: ["Second Scanning (Big projects)", "Second Number of indexed files (Big projects)"],
     measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
-    projects: ["community/scanning", "intellij_sources/scanning", "space/scanning"],
+    projects: ["community/second-scanning", "intellij_sources/second-scanning", "space/second-scanning"],
+  },
+  {
+    labels: ["Third Scanning (Big projects)", "Third Number of indexed files (Big projects)"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["community/third-scanning", "intellij_sources/third-scanning", "space/third-scanning"],
   },
   {
     labels: [
@@ -90,6 +95,16 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Indexing", "Scanning", "Number of indexed files"],
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
     projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
+  },
+  {
+    labels: ["Second Scanning", "Second Number of indexed files"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["keycloak_release_20/second-scanning", "toolbox_enterprise/second-scanning", "train-ticket/second-scanning"],
+  },
+  {
+    labels: ["Third Scanning", "Third Number of indexed files"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["keycloak_release_20/third-scanning", "toolbox_enterprise/third-scanning", "train-ticket/third-scanning"],
   },
 ]
 

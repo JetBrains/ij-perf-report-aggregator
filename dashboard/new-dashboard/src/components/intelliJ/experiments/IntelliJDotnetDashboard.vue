@@ -27,6 +27,11 @@ import DashboardPage from "../../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["Git Status"],
+    measures: ["vfs_initial_refresh"],
+    projects: ["intellij_sources/vfsRefresh/git-status", "monorepo/vfsRefresh/git-status"],
+  },
+  {
     labels: ["Indexing time", "Scanning time", "Dumb mode with pauses", "Number of indexed files"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "dumbModeTimeWithPauses", "numberOfIndexedFiles"],
     projects: ["intellij_sources/indexing", "monorepo/indexing"],

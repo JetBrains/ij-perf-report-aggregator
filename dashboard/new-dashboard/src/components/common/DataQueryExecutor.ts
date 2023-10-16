@@ -48,7 +48,7 @@ export class DataQueryExecutor {
         }
 
         const queries = generateQueries(query, configuration)
-        const mergedQueries = mergeQueries(queries)
+        const mergedQueries = mergeQueries(queries, configuration)
 
         const loadingResults = of({ query, configuration, data: null, isLoading: true })
         abortController = new AbortController()
@@ -218,9 +218,10 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter,
   return fields.some((field) => (typeof field === "string" ? field === filter1.f : field.n + "." + field.subName === filter1.f))
 }
 
-export function mergeQueries(queries: DataQuery[]): DataQuery[] {
+export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecutorConfiguration | null): DataQuery[] {
   if (queries.length === 1) return queries
   const resultQueries: DataQuery[] = [...queries]
+  const mergedNames = configuration?.seriesNames.map((name) => [name])
 
   let currentFilterField: string | null = null
   for (let i = 0; i < resultQueries.length; i++) {
@@ -230,11 +231,20 @@ export function mergeQueries(queries: DataQuery[]): DataQuery[] {
         currentFilterField = matchingFilterField
         resultQueries[i].filters = mergeFilters(resultQueries[i].filters, resultQueries[j].filters, resultQueries[i].fields)
         resultQueries.splice(j, 1) // remove the merged query
+        //we need to merge the names of the queries as well to provide correct series names
+        if (mergedNames) {
+          mergedNames[i] = [...mergedNames[i], ...mergedNames[j]]
+          mergedNames.splice(j, 1)
+        }
         // Reset indices to re-evaluate with new list
         i = -1
         break // exit the inner loop
       }
     }
+  }
+
+  if (configuration != null && mergedNames != null) {
+    configuration.seriesNames = mergedNames.flat(2)
   }
   return resultQueries
 }

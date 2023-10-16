@@ -134,7 +134,7 @@ export class SimpleQueryProducer implements QueryProducer {
 }
 
 export class DataQueryExecutorConfiguration {
-  readonly seriesNames: string[] = []
+  public seriesNames: string[] = []
   readonly measureNames: string[] = []
 
   readonly queryProducers: QueryProducer[] = []

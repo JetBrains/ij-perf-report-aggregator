@@ -21,6 +21,7 @@ const enum ROUTE_PREFIX {
   JBR = "/jbr",
   Fleet = "/fleet",
   PyCharm = "/pycharm",
+  PyCharmSharedIndices = "/pycharm/sharedIndexes",
   WebStorm = "/webstorm",
   Bazel = "/bazel",
   Qodana = "/qodana",
@@ -106,6 +107,13 @@ enum ROUTES {
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
+  PyCharmSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesIndexingDashboard`,
+  PyCharmSharedIndicesScanningDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesScanningDashboard`,
+  PyCharmSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesFindUsagesDashboard`,
+  PyCharmSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesCompletionDashboard`,
+  PyCharmSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesFirstCodeAnalysisDashboard`,
+  PyCharmSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesIndexedFilesDashboard`,
+  PyCharmSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.PyCharm}/sharedIndexesNumberOfExtensionsDashboard`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
@@ -564,7 +572,7 @@ const PYCHARM: Product = {
   children: [
     {
       url: ROUTE_PREFIX.PyCharm,
-      label: "",
+      label: "Primary Functionality",
       tabs: [
         {
           url: ROUTES.PyCharmDashboard,
@@ -577,6 +585,44 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.PyCharmSharedIndices,
+      label: "Shared Indexes",
+      tabs: [
+        {
+          url: ROUTES.PyCharmSharedIndicesIndexingDashboard,
+          label: "Indexing",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesScanningDashboard,
+          label: "Scanning",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesFindUsagesDashboard,
+          label: "FindUsages",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesCompletionDashboard,
+          label: "Completion",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesFirstCodeAnalysisDashboard,
+          label: "Code Analysis",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
+          label: "Indexed Files",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
+          label: "Indexed by Extensions",
+        },
+        {
+          url: ROUTES.PyCharmTests,
+          label: TESTS_LABEL,
         },
       ],
     },
@@ -1145,6 +1191,41 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "pycharm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesIndexingDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/IndexingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesScanningDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/ScanningDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Scanning" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesFindUsagesDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/FindUsagesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Finding Usages" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesCompletionDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/CompletionDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Completion" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesFirstCodeAnalysisDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Code Analysis" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
         },
         {
           path: ROUTES.WebStormDashboard,

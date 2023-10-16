@@ -1,0 +1,35 @@
+<template>
+  <DashboardPage
+    db-name="perfint"
+    table="pycharm"
+    persistent-id="py_number_of_files_dashboard"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+  >
+    <section>
+      <GroupProjectsChart
+        label="Number of indexing files (Django)"
+        measure="numberOfIndexedFiles"
+        :projects="['django-with-project-sharedIndexes', 'django-with-bundled-sharedIndexes', 'django-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Number of indexing files (Empty Project)"
+        measure="numberOfIndexedFiles"
+        :projects="['empty project-with-project-sharedIndexes', 'empty project-with-bundled-sharedIndexes', 'empty project-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Number of indexing files (Keras)"
+        measure="numberOfIndexedFiles"
+        :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"
+      />
+    </section>
+  </DashboardPage>
+</template>
+
+<script setup lang="ts">
+import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
+</script>

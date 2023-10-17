@@ -26,14 +26,20 @@ import DashboardPage from "../common/DashboardPage.vue"
 const dotnetLatest = "dotnet_clone_latest_commit/gitLogIndexing"
 
 const chartsDeclaration: ChartDefinition[] = [
+  //Indexing
   {
-    labels: ["Indexing whole project"],
+    labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
     projects: [dotnetLatest],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
+    projects: [dotnetLatest],
+  },
+  {
+    labels: ["Real number of commits through git rev-list --count --all"],
+    measures: [["realNumberOfCommits"]],
     projects: [dotnetLatest],
   },
   {

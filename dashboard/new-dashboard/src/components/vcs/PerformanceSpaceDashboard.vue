@@ -32,44 +32,44 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["Real number of commits through git rev-list --count --all"],
     measures: [["realNumberOfCommits"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: [spaceSpecific, spaceSpecificSql]
+    projects: [spaceSpecific, spaceSpecificSql],
   },
   //Commit
   {
     labels: ["Commit FUS duration"],
     measures: [["git-commit#fusCommitDuration"]],
-    projects: [spaceCommit]
+    projects: [spaceCommit],
   },
   {
     labels: ["refresh - time spent on reading latest commits from git and adding them to existing"],
     measures: [["refresh"]],
-    projects: [spaceCommit]
+    projects: [spaceCommit],
   },
   {
     labels: ["building graph - time spent on building commit graph(PermanentGraph)"],
     measures: [["building graph"]],
-    projects: [spaceCommit]
+    projects: [spaceCommit],
   },
   {
     labels: ["full log reload - time spent on building commit graph(PermanentGraph) + reading whole repository from git"],
     measures: [["full log reload"]],
-    projects: [spaceCommit]
-  }
+    projects: [spaceCommit],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

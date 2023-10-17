@@ -36,70 +36,73 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["vcs-log-indexing"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["Number of collected commits"],
     measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["Real number of collected commits through git rev-list --count --all"],
     measures: [["realNumberOfCommits"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   {
     labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
     measures: [["LoadingDetails"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest]
+    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
   //Show file history
   {
     labels: ["Show file history (test metric)"],
     measures: [["showFileHistory"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
     labels: ["Show file history - showing first pack of data (test metric)"],
     measures: [["showFirstPack"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
-    labels: ["Computing - time spent on computing a peace of history. If index - time of computing before the first rename. If git - time of computing before timeout of operation occurred"],
+    labels: [
+      "Computing - time spent on computing a peace of history. If index - time of computing before the first rename. " +
+        "If git - time of computing before timeout of operation occurred",
+    ],
     measures: [["Computing"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
     labels: ["refresh - time spent on reading latest commits from git and add them to existing"],
     measures: [["refresh"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
     labels: ["building graph - time spent on building commit graph(PermanentGraph)"],
     measures: [["building graph"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
     labels: ["full log reload - time spent on building commit graph(PermanentGraph) + reading whole repository from git"],
     measures: [["full log reload"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex]
+    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   //Checkout
   {
     labels: ["Checkout"],
     measures: [["git-checkout"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
+    projects: ["intellij_clone_specific_commit/git-checkout"],
   },
   {
     labels: ["Checkout FUS duration"],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
+    projects: ["intellij_clone_specific_commit/git-checkout"],
   },
   {
     labels: ["Checkout FUS VFS refresh duration "],
     measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"]
-  }
+    projects: ["intellij_clone_specific_commit/git-checkout"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -113,39 +113,37 @@ export class AccidentsConfigurator implements DataQueryConfigurator, FilterConfi
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
   constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator) {
     super()
-    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), timeRangeConfigurator.createCustomRangeObservable()]).subscribe(
-      ([projects, measures, timeRange, customRange]) => {
-        const projectAndMetrics: string[] = []
-        if (projects != null && measures != null) {
-          if (Array.isArray(projects)) {
-            projectAndMetrics.push(...projects)
-          } else {
-            projectAndMetrics.push(projects)
-          }
+    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
+      const projectAndMetrics: string[] = []
+      if (projects != null && measures != null) {
+        if (Array.isArray(projects)) {
+          projectAndMetrics.push(...projects)
+        } else {
+          projectAndMetrics.push(projects)
+        }
 
-          if (Array.isArray(projects)) {
-            if (Array.isArray(measures)) {
-              projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
-            } else {
-              projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
-            }
+        if (Array.isArray(projects)) {
+          if (Array.isArray(measures)) {
+            projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
           } else {
-            if (Array.isArray(measures)) {
-              projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
-            } else {
-              projectAndMetrics.push(`${projects}/${measures}`)
-            }
+            projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
+          }
+        } else {
+          if (Array.isArray(measures)) {
+            projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+          } else {
+            projectAndMetrics.push(`${projects}/${measures}`)
           }
         }
-        getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
-          .then((value) => {
-            this.value.value = value
-          })
-          .catch((error) => {
-            console.error(error)
-          })
       }
-    )
+      getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
+        .then((value) => {
+          this.value.value = value
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    })
   }
 }
 
@@ -153,8 +151,7 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   constructor(charts: Chart[] | null, timeRangeConfigurator: TimeRangeConfigurator) {
     super()
     const tests = this.getProjectAndProjectWithMetrics(charts)
-    combineLatest([timeRangeConfigurator.createObservable(), timeRangeConfigurator.createCustomRangeObservable()]).subscribe(([timeRange, customRange]) => {
-      console.log(timeRange)
+    combineLatest([timeRangeConfigurator.createObservable()]).subscribe(([[timeRange, customRange]]) => {
       getAccidentsFromMetaDb(tests, timeRange, customRange)
         .then((value) => {
           this.value.value = value

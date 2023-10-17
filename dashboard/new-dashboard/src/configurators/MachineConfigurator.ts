@@ -99,7 +99,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         } else if (value.startsWith("intellij-linux-hw-EXC")) {
           // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
           groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-        } else if (value.startsWith("intellij-linux-hw-hetzner")) {
+        } else if (value.startsWith("intellij-linux-hw-hetzner") || value.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
           groupName = "linux-blade-hetzner"
         } else if (value.startsWith("intellij-windows-hw-hetzner")) {
           groupName = "windows-blade-hetzner"

@@ -1609,11 +1609,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PerfUnitTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
+          component: () => import("./components/common/PerformanceUnitTests.vue"),
           props: {
             dbName: "perfUnitTests",
             table: "report",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+            initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
             withInstaller: false,
           },
           meta: { pageTitle: "Perf Unit Tests" },

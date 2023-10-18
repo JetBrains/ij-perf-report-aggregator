@@ -92,6 +92,51 @@
         ]"
       />
     </section>
+
+    <Divider title="Angular" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['toh-pt6/completion']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Local inspections"
+          measure="localInspections"
+          :projects="['toh-pt6/localInspection/hero.service.ts', 'toh-pt6/localInspection/heroes.component.html']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing"
+          measure="localInspections"
+          :projects="['toh-pt6/typing']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexing"
+          measure="indexingTimeWithoutPauses"
+          :projects="['angular-toh-pt6/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Scanning"
+          measure="scanningTimeWithoutPauses"
+          :projects="['angular-toh-pt6/indexing']"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 
@@ -99,4 +144,5 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 </script>

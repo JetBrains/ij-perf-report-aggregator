@@ -1223,7 +1223,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
         },
         {
-          path: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
+          path: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
           component: () => import("./components/pycharm/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
         },

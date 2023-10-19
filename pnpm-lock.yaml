@@ -19,7 +19,7 @@ importers:
         version: 3.0.3
       vitest:
         specifier: ^0.34.6
-        version: 0.34.6(lightningcss@1.22.0)(sass@1.69.3)
+        version: 0.34.6(lightningcss@1.22.0)(sass@1.69.4)
     devDependencies:
       '@tailwindcss/forms':
         specifier: ^0.5.6
@@ -35,7 +35,7 @@ importers:
         version: 6.8.0(eslint@8.51.0)(typescript@5.2.2)
       '@vitejs/plugin-vue':
         specifier: ^4.4.0
-        version: 4.4.0(vite@4.4.11)(vue@3.3.4)
+        version: 4.4.0(vite@4.5.0)(vue@3.3.4)
       '@vue/compiler-sfc':
         specifier: ^3.3.4
         version: 3.3.4
@@ -73,8 +73,8 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2(rollup@3.29.4)
       sass:
-        specifier: ^1.69.3
-        version: 1.69.3
+        specifier: ^1.69.4
+        version: 1.69.4
       tailwindcss:
         specifier: ^3.3.3
         version: 3.3.3
@@ -85,8 +85,8 @@ importers:
         specifier: ^0.25.2
         version: 0.25.2(rollup@3.29.4)(vue@3.3.4)
       vite:
-        specifier: 4.4.11
-        version: 4.4.11(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3)
+        specifier: 4.5.0
+        version: 4.5.0(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4)
       vue:
         specifier: ^3.3.4
         version: 3.3.4
@@ -112,8 +112,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.2.2)(vue@3.3.4)
       primevue:
-        specifier: 3.36.0
-        version: 3.36.0(vue@3.3.4)
+        specifier: 3.37.0
+        version: 3.37.0(vue@3.3.4)
       rxjs:
         specifier: 8.0.0-alpha.10
         version: 8.0.0-alpha.10
@@ -160,8 +160,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.2.2)(vue@3.3.4)
       primevue:
-        specifier: 3.36.0
-        version: 3.36.0(vue@3.3.4)
+        specifier: 3.37.0
+        version: 3.37.0(vue@3.3.4)
       rxjs:
         specifier: 8.0.0-alpha.10
         version: 8.0.0-alpha.10
@@ -173,8 +173,8 @@ importers:
         version: 4.2.5(vue@3.3.4)
     devDependencies:
       '@types/humanize-duration':
-        specifier: ^3.27.1
-        version: 3.27.1
+        specifier: ^3.27.2
+        version: 3.27.2
 
 packages:
 
@@ -634,8 +634,8 @@ packages:
     resolution: {integrity: sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==}
     dev: true
 
-  /@types/humanize-duration@3.27.1:
-    resolution: {integrity: sha512-K3e+NZlpCKd6Bd/EIdqjFJRFHbrq5TzPPLwREk5Iv/YoIjQrs6ljdAUCo+Lb2xFlGNOjGSE0dqsVD19cZL137w==}
+  /@types/humanize-duration@3.27.2:
+    resolution: {integrity: sha512-KOGjfVAD8CHMgXL6z96f7eCNRFUENKa2BG87l7JsSg9ZA6lRFsipZ0faF4kKFqnzxirVgXmOnWqTLAKUog1h/g==}
     dev: true
 
   /@types/json-schema@7.0.13:
@@ -792,14 +792,14 @@ packages:
       eslint-visitor-keys: 3.4.3
     dev: true
 
-  /@vitejs/plugin-vue@4.4.0(vite@4.4.11)(vue@3.3.4):
+  /@vitejs/plugin-vue@4.4.0(vite@4.5.0)(vue@3.3.4):
     resolution: {integrity: sha512-xdguqb+VUwiRpSg+nsc2HtbAUSGak25DXYvpQQi4RVU1Xq1uworyoH/md9Rfd8zMmPR/pSghr309QNcftUVseg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.0.0 || 4
       vue: ^3.2.25
     dependencies:
-      vite: 4.4.11(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3)
+      vite: 4.5.0(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4)
       vue: 3.3.4
     dev: true
 
@@ -3103,8 +3103,8 @@ packages:
       react-is: 18.2.0
     dev: false
 
-  /primevue@3.36.0(vue@3.3.4):
-    resolution: {integrity: sha512-si+pcbh+Y2by8cn4UrPFkC+ncS5fcv3ShKbTGINOsloKParRbSiqgBsqI8QmVkmutSLyABe6v5Kutjdenw2JFw==}
+  /primevue@3.37.0(vue@3.3.4):
+    resolution: {integrity: sha512-azwnnQS4+HHJHrh07P0cz+8Nvqo6C08znwvPDyiILwVPkwIrTtgNVmYQtQ9HjLgwax+lC7scMetJpdKcNQU//g==}
     peerDependencies:
       vue: ^3.0.0
     dependencies:
@@ -3268,8 +3268,8 @@ packages:
       is-regex: 1.1.4
     dev: true
 
-  /sass@1.69.3:
-    resolution: {integrity: sha512-X99+a2iGdXkdWn1akFPs0ZmelUzyAQfvqYc2P/MPTrJRuIRoTffGzT9W9nFqG00S+c8hXzVmgxhUuHFdrwxkhQ==}
+  /sass@1.69.4:
+    resolution: {integrity: sha512-+qEreVhqAy8o++aQfCJwp0sklr2xyEzkm9Pp/Igu9wNPoe7EZEQ8X/MBvvXggI2ql607cxKg/RKOwDj6pp2XDA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -3732,7 +3732,7 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: false
 
-  /vite-node@0.34.6(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3):
+  /vite-node@0.34.6(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4):
     resolution: {integrity: sha512-nlBMJ9x6n7/Amaz6F3zJ97EBwR2FkzhBRxF5e+jE6LA3yi6Wtc2lyTij1OnDMIr34v5g/tVQtsVAzhT0jc5ygA==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -3742,7 +3742,7 @@ packages:
       mlly: 1.4.2
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 4.4.11(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3)
+      vite: 4.5.0(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -3754,8 +3754,8 @@ packages:
       - terser
     dev: false
 
-  /vite@4.4.11(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3):
-    resolution: {integrity: sha512-ksNZJlkcU9b0lBwAGZGGaZHCMqHsc8OpgtoYhsQ4/I2v5cnpmmmqe5pM4nv/4Hn6G/2GhTdj0DhZh2e+Er1q5A==}
+  /vite@4.5.0(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4):
+    resolution: {integrity: sha512-ulr8rNLA6rkyFAlVWw2q5YJ91v098AFQ2R0PRFwPzREXOUJQPtFUG0t+/ZikhaOCDqFoDhN6/v8Sq0o4araFAw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
     peerDependencies:
@@ -3787,11 +3787,11 @@ packages:
       lightningcss: 1.22.0
       postcss: 8.4.31
       rollup: 3.29.4
-      sass: 1.69.3
+      sass: 1.69.4
     optionalDependencies:
       fsevents: 2.3.3
 
-  /vitest@0.34.6(lightningcss@1.22.0)(sass@1.69.3):
+  /vitest@0.34.6(lightningcss@1.22.0)(sass@1.69.4):
     resolution: {integrity: sha512-+5CALsOvbNKnS+ZHMXtuUC7nL8/7F1F2DnHGjSsszX8zCjWSSviphCb/NuS9Nzf4Q03KyyDRBAXhF/8lffME4Q==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -3843,8 +3843,8 @@ packages:
       strip-literal: 1.3.0
       tinybench: 2.5.1
       tinypool: 0.7.0
-      vite: 4.4.11(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3)
-      vite-node: 0.34.6(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.3)
+      vite: 4.5.0(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4)
+      vite-node: 0.34.6(@types/node@20.8.2)(lightningcss@1.22.0)(sass@1.69.4)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less

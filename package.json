@@ -30,11 +30,11 @@
     "postcss": "^8.4.31",
     "rollup": "^3.29.4",
     "rollup-plugin-visualizer": "^5.9.2",
-    "sass": "^1.69.3",
+    "sass": "^1.69.4",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.2.2",
     "unplugin-vue-components": "^0.25.2",
-    "vite": "4.4.11",
+    "vite": "4.5.0",
     "vue": "^3.3.4",
     "vue-tsc": "^1.8.19"
   },

@@ -13,12 +13,12 @@
     "humanize-duration": "3.30.0",
     "p-limit": "^4.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.36.0",
+    "primevue": "3.37.0",
     "rxjs": "8.0.0-alpha.10",
     "vue": "3.3.4",
     "vue-router": "4.2.5"
   },
   "devDependencies": {
-    "@types/humanize-duration": "^3.27.1"
+    "@types/humanize-duration": "^3.27.2"
   }
 }

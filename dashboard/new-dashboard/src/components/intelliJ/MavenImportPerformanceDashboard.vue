@@ -23,7 +23,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const metricsName = ["after_apply_duration_ms", "before_apply_duration_ms", "collect_folders_duration_ms", "config_modules_duration_ms", "total_duration_ms"]
+const metricsName = ["after_apply_duration_ms", "before_apply_duration_ms", "collect_folders_duration_ms", "config_modules_duration_ms", "total_duration_ms", "number_of_modules"]
 const metricsDeclaration = [
   "maven.sync.duration",
   "reapply.model.activity",
@@ -55,6 +55,7 @@ const metricsDeclaration = [
   "workspace_commit.duration_in_write_action_ms",
   "workspace_commit.duration_of_workspace_update_call_ms",
   "workspace_import.commit.duration_ms",
+  ...metricsName.map((metric) => "workspace_import.configurator_run.org.jetbrains.kotlin.idea.maven.KotlinMavenImporterEx." + metric),
   ...metricsName.map((metric) => "workspace_import.configurator_run.com.intellij.spring.facet.importer.maven.SpringFacetImporter." + metric),
   ...metricsName.map((metric) => "workspace_import.configurator_run.com.intellij.spring.mvc.importer.boot.SpringBootWebFacetImporter." + metric),
   ...metricsName.map((metric) => "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenAnnotationProcessorConfigurator." + metric),

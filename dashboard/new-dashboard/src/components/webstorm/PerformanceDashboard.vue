@@ -37,14 +37,14 @@
       <GroupProjectsChart
         label="Indexing"
         measure="indexingTimeWithoutPauses"
-        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'vue3-admin-vite/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning"
         measure="scanningTimeWithoutPauses"
-        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'vue3-admin-vite/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
       />
     </section>
     <section>
@@ -191,14 +191,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['vue-template/indexing']"
+          :projects="['vue-template/indexing', 'vue3-admin-vite/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['vue-template/indexing']"
+          :projects="['vue-template/indexing', 'vue3-admin-vite/indexing']"
         />
       </div>
     </section>

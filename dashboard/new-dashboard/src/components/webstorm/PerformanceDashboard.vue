@@ -100,7 +100,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['toh-pt6/completion']"
+          :projects="['toh-pt6/completion/attribute', 'toh-pt6/completion/component']"
         />
       </div>
 
@@ -115,7 +115,7 @@
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Typing"
-          measure="localInspections"
+          measure="typing"
           :projects="['toh-pt6/typing']"
         />
       </div>
@@ -134,6 +134,96 @@
           label="Scanning"
           measure="scanningTimeWithoutPauses"
           :projects="['angular-toh-pt6/indexing']"
+        />
+      </div>
+    </section>
+
+    <Divider title="React" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Local inspections"
+          measure="localInspections"
+          :projects="['react-todo-js/localInspection/App.js']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing"
+          measure="typing"
+          :projects="['react-todo-js/typing']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexing"
+          measure="indexingTimeWithoutPauses"
+          :projects="['react-todo-js/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Scanning"
+          measure="scanningTimeWithoutPauses"
+          :projects="['react-todo-js/indexing']"
+        />
+      </div>
+    </section>
+
+    <Divider title="Vue" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['vue-template/completion/attribute', 'vue-template/completion/component']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Local inspections"
+          measure="localInspections"
+          :projects="['vue-template/localInspection/HelloWorld.vue']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing"
+          measure="typing"
+          :projects="['vue-template/typing']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexing"
+          measure="indexingTimeWithoutPauses"
+          :projects="['vue-template/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Scanning"
+          measure="scanningTimeWithoutPauses"
+          :projects="['vue-template/indexing']"
         />
       </div>
     </section>

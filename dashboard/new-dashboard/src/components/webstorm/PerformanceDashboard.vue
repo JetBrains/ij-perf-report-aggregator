@@ -30,53 +30,28 @@
       <GroupProjectsChart
         label="Local Inspections"
         measure="localInspections"
-        :projects="[
-          'aws_cdk/localInspection/logging',
-          'WEB_5976/localInspection/react_mui',
-          'toh-pt6/localInspection/hero.service.ts',
-          'toh-pt6/localInspection/heroes.component.html',
-          'vue3-admin-vite/localInspection/index.vue',
-          'eslint-plugin-jest/localInspection/misc.ts',
-        ]"
+        :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Indexing"
         measure="indexingTimeWithoutPauses"
-        :projects="[
-          'aws_cdk/indexing',
-          'vkui/indexing',
-          'ring-ui/indexing',
-          'angular-toh-pt6/indexing',
-          'angular/indexing',
-          'vue3-admin-vite/indexing',
-          'eslint-plugin-jest/indexing',
-          'dxos/indexing',
-        ]"
+        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'vue3-admin-vite/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning"
         measure="scanningTimeWithoutPauses"
-        :projects="[
-          'aws_cdk/indexing',
-          'vkui/indexing',
-          'ring-ui/indexing',
-          'angular-toh-pt6/indexing',
-          'angular/indexing',
-          'vue3-admin-vite/indexing',
-          'eslint-plugin-jest/indexing',
-          'dxos/indexing',
-        ]"
+        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'vue3-admin-vite/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion"
         measure="completion"
-        :projects="['vkui/completion', 'ring-ui/completion', 'vue3-admin-vite/completion', 'toh-pt6/completion']"
+        :projects="['vkui/completion', 'ring-ui/completion', 'vue3-admin-vite/completion']"
       />
     </section>
     <section>
@@ -153,7 +128,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['react-todo-js/localInspection/App.js']"
+          :projects="['react-todo-js/localInspection/App.js', 'WEB_5976/localInspection/react_mui']"
         />
       </div>
 
@@ -171,14 +146,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['react-todo-js/indexing']"
+          :projects="['react-todo-js/indexing', 'ring-ui/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['react-todo-js/indexing']"
+          :projects="['react-todo-js/indexing', 'ring-ui/indexing']"
         />
       </div>
     </section>
@@ -198,7 +173,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['vue-template/localInspection/HelloWorld.vue']"
+          :projects="['vue-template/localInspection/HelloWorld.vue', 'vue3-admin-vite/localInspection/index.vue']"
         />
       </div>
 

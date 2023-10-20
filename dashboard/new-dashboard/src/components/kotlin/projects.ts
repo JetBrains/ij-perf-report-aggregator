@@ -87,6 +87,13 @@ export const completionProjects = {
     "toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_typing_with_library_cache",
     "toolbox_enterprise/completion/ProfileServiceTest_emptyPlace_FileEnd_with_library_cache",
   ],
+  tbeCaseWithAssert: [
+    "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_0_with_library_cache",
+    "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_2_typing_with_library_cache",
+    "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_4_typing_with_library_cache",
+    "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_7_typing_with_library_cache",
+    "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_10_typing_with_library_cache",
+  ],
   kotlinScript: [
     "arrow/completion/completion_kts_with_library_cache",
     "kotlin_empty_kts/completion/completion_kts_with_library_cache",
@@ -108,6 +115,7 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin lang'", completionProjects.kotlinLang),
   ...generateCompletionDefinitions("'Kotlin language server'", completionProjects.kotlinLanguageServer),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
+  ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
   ...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript),
 ]
 

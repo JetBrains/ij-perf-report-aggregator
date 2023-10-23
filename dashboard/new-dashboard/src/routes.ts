@@ -51,6 +51,7 @@ enum ROUTES {
   IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
+  IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
@@ -230,6 +231,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
           label: "Find Usages Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJSEDashboard,
+          label: "Search Everywhere Dashboard",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
@@ -969,6 +974,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJFindUsagesDashboard,
           component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
           meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJSEDashboard,
+          component: () => import("./components/intelliJ/PerformanceSEDashboard.vue"),
+          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,

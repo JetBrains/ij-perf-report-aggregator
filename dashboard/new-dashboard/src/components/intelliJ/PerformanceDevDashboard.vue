@@ -105,8 +105,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/findUsages/Persistent_absolutePath"],
   },
   {
-    labels: ["Local Inspection"],
-    measures: ["localInspections"],
+    labels: ["Local Inspection", "First Code Analysis"],
+    measures: ["localInspections", "firstCodeAnalysis"],
     projects: [
       "intellij_sources/localInspection/java_file",
       "intellij_sources/localInspection/kotlin_file",

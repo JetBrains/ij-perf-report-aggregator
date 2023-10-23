@@ -24,6 +24,7 @@ declare module 'vue' {
     SplitButton: typeof import('primevue/splitbutton/SplitButton.vue')['default']
     TabPanel: typeof import('primevue/tabpanel/TabPanel.vue')['default']
     TabView: typeof import('primevue/tabview/TabView.vue')['default']
+    Textarea: typeof import('primevue/textarea/Textarea.vue')['default']
     Toolbar: typeof import('primevue/toolbar/Toolbar.vue')['default']
     TreeSelect: typeof import('primevue/treeselect/TreeSelect.vue')['default']
   }

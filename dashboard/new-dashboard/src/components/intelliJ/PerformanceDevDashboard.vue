@@ -31,9 +31,14 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/indexing"],
   },
   {
-    labels: ["Reopening Scanning", "Reopening number of indexed files"],
+    labels: ["Second Scanning", "Second Number of indexed files"],
     measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
-    projects: ["intellij_commit/scanning"],
+    projects: ["intellij_commit/second-scanning"],
+  },
+  {
+    labels: ["Third Scanning", "Third Number of indexed files"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["intellij_commit/third-scanning"],
   },
   {
     labels: ["Find Usages Java Application_runReadAction (all usages)", "Find Usages Java Application_runReadAction (first usage)"],

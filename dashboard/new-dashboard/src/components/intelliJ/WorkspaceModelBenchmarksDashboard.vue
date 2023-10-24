@@ -33,6 +33,7 @@ const metricsDeclaration = [
   "Named entities adding (2000000)",
   "Soft linked entities adding (2000000)",
   "duration",
+  "duration_replace",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
@@ -50,6 +51,7 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "10-000-orphan-content-roots-to-modules",
       "10-000-orphan-source-roots-to-many-content-roots-to-modules",
       "10-000-orphan-source-roots-to-modules",
+      "update-storage-via-replace-project-model",
     ],
   }
 })

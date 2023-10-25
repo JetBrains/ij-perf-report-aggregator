@@ -55,7 +55,7 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
     labels: [metric],
     measures: [metric],
     projects: [
-      "grazie-platform-project-import-gradle",
+      "grazie-platform-project-import-gradle/measureStartup",
       "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
       "project-import-gradle-micronaut/measureStartup",
       "project-import-gradle-hibernate-orm/measureStartup",

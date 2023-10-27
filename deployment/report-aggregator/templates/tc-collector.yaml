@@ -24,10 +24,10 @@ spec:
               image: {{ .Values.images.collector }}
               resources:
                 requests:
-                  cpu: "0.5"
+                  cpu: "1"
                   memory: 1Gi
                 limits:
-                  cpu: "1.5"
+                  cpu: "2"
                   memory: 2Gi
               env:
                 - name: TC_TOKEN

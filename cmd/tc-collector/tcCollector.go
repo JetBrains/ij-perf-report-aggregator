@@ -13,6 +13,7 @@ import (
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "go.uber.org/zap"
+  "golang.org/x/sync/errgroup"
   "io"
   "net/http"
   "net/url"
@@ -82,29 +83,31 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
   }
 
   defer util.Close(db, logger)
-
+  errGroup, loadContext := errgroup.WithContext(taskContext)
+  errGroup.SetLimit(2)
   for _, buildTypeId := range buildConfigurationIds {
     if taskContext.Err() != nil {
       return e.WithStack(taskContext.Err())
     }
-
-    err = collectBuildConfiguration(
-      taskContext,
-      httpClient,
-      db,
-      config,
-      buildTypeId,
-      serverUrl,
-      serverBuildUrl,
-      tcUrl,
-      userSpecifiedSince,
-      initialSince,
-      logger.With(zap.String("buildTypeId", buildTypeId), zap.String("projectId", projectId)),
-    )
-    if err != nil {
-      return err
-    }
+    errGroup.Go(func(buildTypeId string) func() error {
+      return func() error {
+        return collectBuildConfiguration(
+          loadContext,
+          httpClient,
+          db,
+          config,
+          buildTypeId,
+          serverUrl,
+          serverBuildUrl,
+          tcUrl,
+          userSpecifiedSince,
+          initialSince,
+          logger.With(zap.String("buildTypeId", buildTypeId), zap.String("projectId", projectId)),
+        )
+      }
+    }(buildTypeId))
   }
+  err = errGroup.Wait()
   return err
 }
 

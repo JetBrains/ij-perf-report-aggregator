@@ -3,7 +3,9 @@ package main
 import (
   "compress/gzip"
   "context"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
+  "github.com/cenkalti/backoff/v4"
   "github.com/develar/errors"
   "go.uber.org/zap"
   "io"
@@ -12,7 +14,6 @@ import (
   "path"
   "strconv"
   "strings"
-  "time"
 )
 
 type ArtifactItem struct {
@@ -97,23 +98,21 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 }
 
 func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
-  var maxRetries = 3
-  var retryDelay = time.Second * 1
-
-  for attempt := 0; attempt < maxRetries; attempt++ {
-    if attempt > 0 {
-      t.logger.Warn("Retrying download", zap.Int("attempt", attempt), zap.String("url", artifactUrlString))
-      time.Sleep(retryDelay)
-    }
-
+  bo := backoff.NewExponentialBackOff()
+  var result []byte
+  err := backoff.Retry(func() error {
     data, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
     if err != nil || data == nil {
-      continue
+      return fmt.Errorf("download failed: %w", err)
     }
-    return data, nil
-  }
+    result = data
+    return nil
+  }, bo)
 
-  return nil, errors.New("Maximum retries reached, download failed")
+  if err != nil {
+    return nil, errors.New("Maximum retries reached, download failed")
+  }
+  return result, nil
 }
 
 func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([]byte, error) {

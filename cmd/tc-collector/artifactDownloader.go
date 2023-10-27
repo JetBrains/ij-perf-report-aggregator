@@ -12,6 +12,7 @@ import (
   "path"
   "strconv"
   "strings"
+  "time"
 )
 
 type ArtifactItem struct {
@@ -38,7 +39,7 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
       t.config.DbName == "bazel" && name == "metrics.txt" ||
       t.config.DbName == "qodana" && name == "open-telemetry.json" {
       artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
-      report, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
+      report, err := t.downloadStartUpReportWithRetries(ctx, build, artifactUrlString)
       if err != nil {
         return err
       }
@@ -68,6 +69,7 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 
   response, err := t.get(ctx, artifactUrl.String())
   if err != nil {
+    t.logger.Error("Download failed", zap.Error(err))
     return nil, err
   }
 
@@ -76,10 +78,11 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
   if response.StatusCode > 300 {
     if response.StatusCode == http.StatusNotFound && build.Status == "FAILURE" {
       t.logger.Warn("no report", zap.Int("id", build.Id), zap.String("status", build.Status))
-      return nil, err
+      return nil, nil
     }
     responseBody, _ := io.ReadAll(response.Body)
-    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    t.logger.Error("Invalid response", zap.String("status", response.Status), zap.ByteString("body", responseBody))
+    return nil, err
   }
 
   t.storeSessionIdCookie(response)
@@ -87,9 +90,30 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
   // ReadAll is used because report not only required to be decoded, but also stored as is (after minification)
   data, err := io.ReadAll(response.Body)
   if err != nil {
+    t.logger.Error("Failed to read response body", zap.Error(err))
     return nil, err
   }
   return data, nil
+}
+
+func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
+  var maxRetries = 3
+  var retryDelay = time.Second * 1
+
+  for attempt := 0; attempt < maxRetries; attempt++ {
+    if attempt > 0 {
+      t.logger.Warn("Retrying download", zap.Int("attempt", attempt), zap.String("url", artifactUrlString))
+      time.Sleep(retryDelay)
+    }
+
+    data, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
+    if err != nil || data == nil {
+      continue
+    }
+    return data, nil
+  }
+
+  return nil, errors.New("Maximum retries reached, download failed")
 }
 
 func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([]byte, error) {

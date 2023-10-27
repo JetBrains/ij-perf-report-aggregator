@@ -23,9 +23,7 @@ import (
 var networkRequestCount = runtime.NumCPU() + 1
 
 func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
-  if networkRequestCount > 8 {
-    networkRequestCount = 8
-  }
+  networkRequestCount = 20
   t.logger.Info("Network request count", zap.Int("count", networkRequestCount))
 
   for index, build := range builds {

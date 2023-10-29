@@ -14,6 +14,7 @@ const enum ROUTE_PREFIX {
   IntelliJExperiments = "/intellij/experiments",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
+  GoLandSharedIndices = "/goland/sharedIndexes",
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
   Rust = "/rust",
@@ -104,6 +105,13 @@ enum ROUTES {
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
+  GoLandSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexingDashboard`,
+  GoLandSharedIndicesScanningDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesScanningDashboard`,
+  GoLandSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesFindUsagesDashboard`,
+  GoLandSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesCompletionDashboard`,
+  GoLandSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
+  GoLandSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexedFilesDashboard`,
+  GoLandSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
@@ -528,7 +536,7 @@ const GOLAND: Product = {
   children: [
     {
       url: ROUTE_PREFIX.GoLand,
-      label: "",
+      label: "Primary Functionality",
       tabs: [
         {
           url: ROUTES.GoLandDashboard,
@@ -541,6 +549,44 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.GoLandSharedIndices,
+      label: "Shared Indexes",
+      tabs: [
+        {
+          url: ROUTES.GoLandSharedIndicesIndexingDashboard,
+          label: "Indexing",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesScanningDashboard,
+          label: "Scanning",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesFindUsagesDashboard,
+          label: "FindUsages",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesCompletionDashboard,
+          label: "Completion",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesFirstCodeAnalysisDashboard,
+          label: "Code Analysis",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesNumberOfIndexedFilesDashboard,
+          label: "Indexed Files",
+        },
+        {
+          url: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
+          label: "Indexed by Extensions",
+        },
+        {
+          url: ROUTES.GoLandTests,
+          label: TESTS_LABEL,
         },
       ],
     },

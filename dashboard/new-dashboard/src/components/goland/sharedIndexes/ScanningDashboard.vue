@@ -9,21 +9,21 @@
       <GroupProjectsChart
         label="Scanning (Empty Project)"
         :measure="['scanningTimeWithoutPauses']"
-        :projects="['go-empty-project-with-project-sharedIndexes', 'go-empty-project-with-bundled-sharedIndexes', 'go-empty-project-without-sharedIndexes']"
+        :projects="['go-empty-project-bundled-sharedIndexes', 'go-empty-project-with-generated-sharedIndexes', 'go-empty-project-without-sharedIndexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning (Terraform)"
         :measure="['scanningTimeWithoutPauses']"
-        :projects="['go-terraform-with-project-sharedIndexes', 'go-terraform-with-bundled-sharedIndexes', 'go-terraform-without-sharedIndexes']"
+        :projects="['go-terraform-without-sharedIndexes', 'go-terraform-bundled-sharedIndexes', 'go-terraform-with-generated-sharedIndexes']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning (Kratos)"
         :measure="['scanningTimeWithoutPauses']"
-        :projects="['go-kratos-with-project-sharedIndexes', 'go-kratos-with-bundled-sharedIndexes', 'go-kratos-without-sharedIndexes']"
+        :projects="['go-kratos-without-sharedIndexes', 'go-kratos-bundled-sharedIndexes', 'go-kratos-with-generated-sharedIndexes']"
       />
     </section>
   </DashboardPage>

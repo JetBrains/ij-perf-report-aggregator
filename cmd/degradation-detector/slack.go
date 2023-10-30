@@ -12,8 +12,7 @@ import (
 )
 
 func sendSlackMessage(ctx context.Context, degradation Degradation, analysisSettings AnalysisSettings) error {
-  channel := "ij-perf-report-aggregator"
-  slackMessage := createSlackMessage(channel, degradation, analysisSettings)
+  slackMessage := createSlackMessage(degradation, analysisSettings)
   slackMessageJson, err := json.Marshal(slackMessage)
   if err != nil {
     return fmt.Errorf("failed to marshal slack message: %w", err)
@@ -34,7 +33,7 @@ func sendSlackMessage(ctx context.Context, degradation Degradation, analysisSett
   }
   defer resp.Body.Close()
 
-  log.Printf("Slack message was sent to " + channel)
+  log.Printf("Slack message was sent to " + analysisSettings.channel)
   return nil
 }
 
@@ -43,7 +42,7 @@ type SlackMessage struct {
   Channel string `json:"channel"`
 }
 
-func createSlackMessage(channel string, degradation Degradation, settings AnalysisSettings) SlackMessage {
+func createSlackMessage(degradation Degradation, settings AnalysisSettings) SlackMessage {
   reason := getMessageBasedOnMedianChange(degradation.medianValues)
   date := time.UnixMilli(degradation.timestamp).UTC().Format("02-01-2006 15:04:05")
   text := fmt.Sprintf("DB: %s\n"+
@@ -54,6 +53,6 @@ func createSlackMessage(channel string, degradation Degradation, settings Analys
     "Reason: %s", settings.db, settings.table, degradation.build, date, settings.test, settings.metric, reason)
   return SlackMessage{
     Text:    text,
-    Channel: channel,
+    Channel: settings.channel,
   }
 }

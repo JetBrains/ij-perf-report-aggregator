@@ -28,8 +28,9 @@ func inferDegradations(values []int, builds []string, timestamps []int64) []Degr
 
   segments, segmentChangePoints := getSegmentsBetweenChangePoints(latestChangePoints, values)
   degradations := make([]Degradation, 0)
-  if len(segments) == 1 {
+  if len(segments) < 1 {
     fmt.Println("No significant change points were detected.")
+    return degradations
   }
   previousMedian := server.CalculateMedian(segments[0])
   for i := 1; i < len(segments); i++ {

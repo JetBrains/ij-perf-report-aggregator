@@ -96,6 +96,12 @@ func extractDataFromRequest(response []byte) ([]int64, []int, []string, error) {
   if err != nil {
     return nil, nil, nil, fmt.Errorf("failed to decode JSON: %w", err)
   }
+  if len(data) == 0 {
+    return nil, nil, nil, fmt.Errorf("no data")
+  }
+  if len(data[0]) < 3 {
+    return nil, nil, nil, fmt.Errorf("not enough data")
+  }
   timestamps, err := sliceToSliceInt64(data[0][0])
   if err != nil {
     return nil, nil, nil, fmt.Errorf("failed to convert values: %w", err)

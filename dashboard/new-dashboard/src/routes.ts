@@ -1216,6 +1216,41 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
+          path: ROUTES.GoLandSharedIndicesIndexingDashboard,
+          component: () => import("./components/goland/sharedIndexes/IndexingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesScanningDashboard,
+          component: () => import("./components/goland/sharedIndexes/ScanningDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Scanning" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesFindUsagesDashboard,
+          component: () => import("./components/goland/sharedIndexes/FindUsagesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Finding Usages" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesCompletionDashboard,
+          component: () => import("./components/goland/sharedIndexes/CompletionDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Completion" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesFirstCodeAnalysisDashboard,
+          component: () => import("./components/goland/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Code Analysis" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesNumberOfIndexedFilesDashboard,
+          component: () => import("./components/goland/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
+          component: () => import("./components/goland/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
+        },
+        {
           path: ROUTES.PyCharmDashboard,
           component: () => import("./components/pycharm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PyCharm Performance dashboard" },

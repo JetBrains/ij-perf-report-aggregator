@@ -154,6 +154,7 @@ export const highlightingProjects = {
     "intellij_commit/highlight/OraIntrospector_with_library_cache",
     "intellij_commit/highlight/SolutionModel.Generated_with_library_cache",
     "intellij_commit/highlight/UIAutomationInteractionModel.Generated_with_library_cache",
+    "kotlin_lang/highlight/LazyJVM_with_library_cache",
   ],
   kotlinLang: [
     "kotlin_lang/highlight/CommonParser_with_library_cache",

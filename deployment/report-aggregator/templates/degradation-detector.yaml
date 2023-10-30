@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: degradation-detector
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  schedule: "* * */1 * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "common.selectorLabels" . | nindent 12 }}
+        spec:
+          securityContext:
+            runAsNonRoot: true
+          restartPolicy: Never
+          # 12 hours
+          activeDeadlineSeconds: 43200
+          containers:
+            - name: degradation-detector
+              image: {{ .Values.images.degradationDetector }}
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: 1Gi
+                limits:
+                  cpu: "2"
+                  memory: 2Gi
+              env:
+                - name: SLACK_WEBHOOK_URL
+                  value: {{ .Values.slack.webhookUrl | quote }}
+          imagePullSecrets:
+            - name: ghcr

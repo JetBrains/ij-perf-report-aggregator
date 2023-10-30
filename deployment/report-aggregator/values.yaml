@@ -15,3 +15,4 @@ images:
   clickhouse: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse
   clickhouseBackup: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/clickhouse-backup
   collector: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/tc-collector
+  degradationDetector: ko://github.com/JetBrains/ij-perf-report-aggregator/cmd/degradation-detector

@@ -33,6 +33,6 @@ spec:
                 - name: SLACK_WEBHOOK_URL
                   value: {{ .Values.slack.webhookUrl | quote }}
                 - name: BACKEND_URL
-                  value: "backend:8080"
+                  value: "backend:80"
           imagePullSecrets:
             - name: ghcr

@@ -101,7 +101,10 @@ enum ROUTES {
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
-  GoLandDashboard = `${ROUTE_PREFIX.GoLand}/${DASHBOARD_ROUTE}`,
+  GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
+  GoLandScanningDashboard = `${ROUTE_PREFIX.GoLand}/scanningDashboard`,
+  GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
+  GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
@@ -539,8 +542,20 @@ const GOLAND: Product = {
       label: "Primary Functionality",
       tabs: [
         {
-          url: ROUTES.GoLandDashboard,
-          label: DASHBOARD_LABEL,
+          url: ROUTES.GoLandIndexingDashboard,
+          label: "Indexing",
+        },
+        {
+          url: ROUTES.GoLandScanningDashboard,
+          label: "Scanning",
+        },
+        {
+          url: ROUTES.GoLandCompletionDashboard,
+          label: "Completion",
+        },
+        {
+          url: ROUTES.GoLandInspectionDashboard,
+          label: "Inspections & Analyzes",
         },
         {
           url: ROUTES.GoLandTests,
@@ -1183,9 +1198,24 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
-          path: ROUTES.GoLandDashboard,
-          component: () => import("./components/goland/PerformanceDashboard.vue"),
-          meta: { pageTitle: "GoLand Performance dashboard" },
+          path: ROUTES.GoLandInspectionDashboard,
+          component: () => import("./components/goland/InspectionCodeAnalyzesDashboard.vue"),
+          meta: { pageTitle: "GoLand Inspections dashboard" },
+        },
+        {
+          path: ROUTES.GoLandIndexingDashboard,
+          component: () => import("./components/goland/IndexingDashboard.vue"),
+          meta: { pageTitle: "GoLand Indexing dashboard" },
+        },
+        {
+          path: ROUTES.GoLandScanningDashboard,
+          component: () => import("./components/goland/ScanningDashboard.vue"),
+          meta: { pageTitle: "GoLand Scanning dashboard" },
+        },
+        {
+          path: ROUTES.GoLandCompletionDashboard,
+          component: () => import("./components/goland/CompletionDashboard.vue"),
+          meta: { pageTitle: "GoLand Completion dashboard" },
         },
         {
           path: ROUTES.GoLandTests,

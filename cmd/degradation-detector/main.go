@@ -6,6 +6,7 @@ import (
   "log"
   "math"
   "os"
+  "sync"
 )
 
 type AnalysisSettings struct {
@@ -23,6 +24,7 @@ func main() {
     backendUrl = "http://localhost:9044"
   }
 
+  var wg sync.WaitGroup
   analysisSettings := generateIdeaAnalysisSettings()
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
@@ -44,12 +46,17 @@ func main() {
       if !result.wasInserted {
         continue
       }
-      err = sendSlackMessage(ctx, result.degradation, analysisSetting)
-      if err != nil {
-        log.Printf("%v", err)
-      }
+      wg.Add(1)
+      go func(result InsertionResults, setting AnalysisSettings) {
+        defer wg.Done()
+        err := sendSlackMessage(ctx, result.degradation, setting)
+        if err != nil {
+          log.Printf("%v", err)
+        }
+      }(result, analysisSetting)
     }
   }
+  wg.Wait()
 }
 
 func getMessageBasedOnMedianChange(medianValues MedianValues) string {

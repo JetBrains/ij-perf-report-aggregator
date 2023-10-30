@@ -5,6 +5,7 @@ import (
   "context"
   "encoding/json"
   "fmt"
+  "github.com/cenkalti/backoff/v4"
   "log"
   "net/http"
   "os"
@@ -21,20 +22,23 @@ func sendSlackMessage(ctx context.Context, degradation Degradation, analysisSett
   if len(webhookUrl) == 0 {
     return fmt.Errorf("SLACK_WEBHOOK_URL is not set")
   }
-  req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookUrl, bytes.NewBuffer(slackMessageJson))
-  if err != nil {
-    return fmt.Errorf("failed to create request: %w", err)
-  }
-  req.Header.Set("Content-Type", "application/json")
-  client := &http.Client{}
-  resp, err := client.Do(req)
-  if err != nil {
-    return fmt.Errorf("sending slack message failed: %w", err)
-  }
-  defer resp.Body.Close()
+  err = backoff.Retry(func() error {
+    req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookUrl, bytes.NewBuffer(slackMessageJson))
+    if err != nil {
+      return fmt.Errorf("failed to create request: %w", err)
+    }
+    req.Header.Set("Content-Type", "application/json")
+    client := &http.Client{}
+    resp, err := client.Do(req)
+    if err != nil {
+      return fmt.Errorf("sending slack message failed: %w", err)
+    }
+    defer resp.Body.Close()
 
-  log.Printf("Slack message was sent to " + analysisSettings.channel)
-  return nil
+    log.Printf("Slack message was sent to " + analysisSettings.channel)
+    return nil
+  }, backoff.NewExponentialBackOff())
+  return err
 }
 
 type SlackMessage struct {

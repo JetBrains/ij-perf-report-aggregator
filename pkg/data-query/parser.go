@@ -138,8 +138,8 @@ func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error 
     if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
       return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Sql))
     }
-    if len(t.ResultPropertyName) != 0 && !isValidFieldName(t.ResultPropertyName) {
-      return http_error.NewHttpError(400, fmt.Sprintf("ResultPropertyName %s is not a valid field name", t.Name))
+    if len(t.resultPropertyName) != 0 && !isValidFieldName(t.resultPropertyName) {
+      return http_error.NewHttpError(400, fmt.Sprintf("resultPropertyName %s is not a valid field name", t.Name))
     }
     *result = append(*result, *t)
   }
@@ -165,7 +165,7 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
         Name:               arrayJoin + "." + string(subNameValue.GetStringBytes()),
         arrayJoin:          arrayJoin,
         Sql:                string(v.GetStringBytes("sql")),
-        ResultPropertyName: string(v.GetStringBytes("resultKey")),
+        resultPropertyName: string(v.GetStringBytes("resultKey")),
       }
 
       if !reNestedFieldName.MatchString(t.Name) {
@@ -179,7 +179,7 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
     }
   }
 
-  t.ResultPropertyName = string(v.GetStringBytes("resultKey"))
+  t.resultPropertyName = string(v.GetStringBytes("resultKey"))
 
   qualifierDotIndex := strings.IndexRune(t.Name, '.')
   if qualifierDotIndex != -1 {
@@ -193,8 +193,8 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
       t.metricName = t.metricName[:metricNameLength-2]
     }
 
-    if len(t.ResultPropertyName) == 0 {
-      t.ResultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
+    if len(t.resultPropertyName) == 0 {
+      t.resultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
     }
 
     if !isValidFieldName(t.metricPath) || !reMetricName.MatchString(t.metricName) {

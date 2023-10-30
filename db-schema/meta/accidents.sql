@@ -5,7 +5,7 @@ CREATE TABLE accidents
   id            SERIAL PRIMARY KEY,
   date          DATE NOT NULL,
   affected_test VARCHAR(255) NOT NULL,
-  build_number  VARCHAR(20) NOT NULL,
+  build_number  VARCHAR(20) NOT NULL CONSTRAINT build_number_not_empty CHECK (build_number <> ''),
   reason        TEXT NOT NULL,
   kind          VARCHAR(50) NOT NULL default 'regression',
   externalId    VARCHAR(20) NOT NULL default ''
@@ -13,6 +13,7 @@ CREATE TABLE accidents
 
 CREATE INDEX idx_accidents_date ON accidents(date);
 CREATE INDEX idx_accidents_affected_test ON accidents(affected_test);
+CREATE UNIQUE INDEX unique_accidents_inferred ON accidents (date, affected_test, build_number, kind) WHERE kind <> 'EXCEPTION';
 
 INSERT INTO accidents (date, affected_test, reason, build_number) VALUES ('2023-01-13 20:00:00', 'community/go-to-class/EditorImpl', 'IDEA-310587: 1ba879cb4472',  '231.5967');
 INSERT INTO accidents (date, affected_test, reason, build_number) VALUES ('2023-01-17 00:00:00', 'community/go-to-class/EditorImpl', 'IDEA-311498: 1e4a7cd1c77d',  '231.5362');

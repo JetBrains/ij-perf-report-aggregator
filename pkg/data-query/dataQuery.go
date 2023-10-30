@@ -16,37 +16,36 @@ import (
 )
 
 type DataQuery struct {
-  Database string
-  Table    string
-  Flat     bool
+  Database string               `json:"db"`
+  Table    string               `json:"table"`
+  Flat     bool                 `json:"flat"`
+  Fields   []DataQueryDimension `json:"fields,omitempty"`
+  Filters  []DataQueryFilter    `json:"filters,omitempty"`
+  Order    []string             `json:"order,omitempty"`
 
-  Fields  []DataQueryDimension
-  Filters []DataQueryFilter
-  Order   []string
-
-  // used only for grouped query
-  Aggregator          string
-  Dimensions          []DataQueryDimension
-  TimeDimensionFormat string
+  Aggregator          string               `json:"-"`
+  Dimensions          []DataQueryDimension `json:"-"`
+  TimeDimensionFormat string               `json:"-"`
 }
 
 type DataQueryFilter struct {
-  Field    string
-  Value    interface{}
-  Sql      string
-  Operator string
-  Split    bool
+  Field    string      `json:"f"`
+  Value    interface{} `json:"v,omitempty"`
+  Sql      string      `json:"q,omitempty"`
+  Operator string      `json:"o,omitempty"`
+  Split    bool        `json:"s"`
 }
 
 type DataQueryDimension struct {
-  Name string
-  Sql  string
+  Name    string `json:"n"`
+  Sql     string `json:"sql"`
+  SubName string `json:"subName,omitempty"`
 
   metricPath      string
   metricName      string
   metricValueName rune
 
-  ResultPropertyName string
+  resultPropertyName string
 
   arrayJoin string
 }
@@ -309,10 +308,10 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
       sb.WriteRune(')')
     }
 
-    if len(field.ResultPropertyName) != 0 {
+    if len(field.resultPropertyName) != 0 {
       sb.WriteString(" as ")
-      sb.WriteString(field.ResultPropertyName)
-      effectiveColumnName = field.ResultPropertyName
+      sb.WriteString(field.resultPropertyName)
+      effectiveColumnName = field.resultPropertyName
     } else if len(query.Aggregator) != 0 {
       sb.WriteString(" as ")
       if len(field.arrayJoin) == 0 {

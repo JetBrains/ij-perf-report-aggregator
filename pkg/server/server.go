@@ -5,6 +5,7 @@ import (
   "crypto/tls"
   "github.com/ClickHouse/ch-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/andybalholm/brotli"
   "github.com/develar/errors"
@@ -97,10 +98,10 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   })
   r.Use(compressor.Handler)
 
-  r.Post("/api/meta/accidents*", createPostAccidentRequestHandler(logger, dbpool))
-  r.Post("/api/meta/getAccidents*", createGetManyAccidentsRequestHandler(logger, dbpool))
-  r.Delete("/api/meta/accidents*", createDeleteAccidentRequestHandler(logger, dbpool))
-  r.Get("/api/meta/description*", createGetDescriptionRequestHandler(logger, dbpool))
+  r.Post("/api/meta/accidents*", meta.CreatePostAccidentRequestHandler(logger, dbpool))
+  r.Post("/api/meta/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(logger, dbpool))
+  r.Delete("/api/meta/accidents*", meta.CreateDeleteAccidentRequestHandler(logger, dbpool))
+  r.Get("/api/meta/description*", meta.CreateGetDescriptionRequestHandler(logger, dbpool))
   r.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))

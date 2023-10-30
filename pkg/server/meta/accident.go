@@ -1,13 +1,10 @@
-package server
+package meta
 
 import (
   "encoding/json"
-  "errors"
-  "github.com/VictoriaMetrics/fastcache"
   "github.com/jackc/pgx/v5"
   "github.com/jackc/pgx/v5/pgtype"
   "github.com/jackc/pgx/v5/pgxpool"
-  "github.com/sakura-internet/go-rison/v4"
   "go.uber.org/zap"
   "io"
   "net/http"
@@ -15,7 +12,7 @@ import (
   "strings"
 )
 
-type Accident struct {
+type accident struct {
   ID           int64  `json:"id"`
   Date         string `json:"date"`
   AffectedTest string `json:"affectedTest"`
@@ -25,7 +22,7 @@ type Accident struct {
   ExternalId   string `json:"externalId"`
 }
 
-type AccidentRequestParams struct {
+type accidentRequestParams struct {
   Tests    []string `json:"tests"`
   Interval string   `json:"interval"`
 }
@@ -39,11 +36,11 @@ type AccidentInsertParams struct {
   ExternalId  string `json:"externalId,omitempty"`
 }
 
-type AccidentDeleteParams struct {
+type accidentDeleteParams struct {
   Id int64 `json:"id"`
 }
 
-func createGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
@@ -53,7 +50,7 @@ func createGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     }
     defer body.Close()
 
-    var params AccidentRequestParams
+    var params accidentRequestParams
     err = json.Unmarshal(all, &params)
     if err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
@@ -71,12 +68,12 @@ func createGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     }
     defer rows.Close()
 
-    accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (Accident, error) {
+    accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (accident, error) {
       var id int64
       var date pgtype.Date
       var affected_test, reason, build_number, kind, externalId string
       err := row.Scan(&id, &date, &affected_test, &reason, &build_number, &kind, &externalId)
-      return Accident{
+      return accident{
         ID:           id,
         Date:         date.Time.String(),
         AffectedTest: affected_test,
@@ -103,7 +100,7 @@ func createGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
   }
 }
 
-func createPostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
@@ -129,8 +126,12 @@ func createPostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
     idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId)
     err = idRow.Scan(&id)
     if err != nil {
-      logger.Error("Cannot execute query", zap.Error(err))
-      writer.WriteHeader(http.StatusInternalServerError)
+      if strings.Contains(err.Error(), "unique constraint") {
+        http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
+      } else {
+        logger.Error("Cannot execute query", zap.Error(err))
+        writer.WriteHeader(http.StatusInternalServerError)
+      }
     }
 
     defer body.Close()
@@ -143,7 +144,7 @@ func createPostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
   }
 }
 
-func createDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreateDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
@@ -152,7 +153,7 @@ func createDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       writer.WriteHeader(http.StatusInternalServerError)
     }
 
-    var params AccidentDeleteParams
+    var params accidentDeleteParams
     err = json.Unmarshal(all, &params)
     if err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
@@ -166,89 +167,6 @@ func createDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
     }
     defer body.Close()
     writer.WriteHeader(http.StatusOK)
-  }
-}
-
-type DescriptionRequestParams struct {
-  Project string `json:"project"`
-  Branch  string `json:"branch"`
-}
-
-type Description struct {
-  Project     string `json:"project"`
-  Branch      string `json:"branch"`
-  URL         string `json:"url"`
-  MethodName  string `json:"methodName"`
-  Description string `json:"description"`
-}
-
-func createGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
-  cacheSize := 1000 * 1000 * 50
-  cache := fastcache.New(cacheSize)
-  return func(writer http.ResponseWriter, request *http.Request) {
-    objectStart := strings.IndexRune(request.URL.Path, '(')
-    var params DescriptionRequestParams
-    err := rison.Unmarshal([]byte(request.URL.Path[objectStart:]), &params, rison.Rison)
-    if err != nil {
-      logger.Error("Cannot unmarshal parameters", zap.Error(err))
-      writer.WriteHeader(http.StatusInternalServerError)
-      return
-    }
-
-    cacheKey := []byte(params.Project + params.Branch)
-    cachedValue, isInCache := cache.HasGet(nil, cacheKey)
-    if isInCache {
-      _, err = writer.Write(cachedValue)
-      if err != nil {
-        logger.Error(err.Error())
-        writer.WriteHeader(http.StatusInternalServerError)
-      }
-      return
-    }
-    rows, err := metaDb.Query(request.Context(), "SELECT project, branch, url, methodname, description FROM project_description WHERE project=$1 and branch=$2", params.Project, params.Branch)
-    if err != nil {
-      logger.Error("Unable to execute the query", zap.Error(err))
-      writer.WriteHeader(http.StatusInternalServerError)
-      return
-    }
-    defer rows.Close()
-    description, err := pgx.CollectOneRow(rows, func(row pgx.CollectableRow) (Description, error) {
-      var project, branch, url, method_name, description string
-      err := row.Scan(&project, &branch, &url, &method_name, &description)
-      return Description{
-        Project:     project,
-        Branch:      branch,
-        URL:         url,
-        MethodName:  method_name,
-        Description: description,
-      }, err
-    })
-    if err != nil {
-      if errors.Is(err, pgx.ErrNoRows) {
-        _, err = writer.Write([]byte("{}"))
-        if err != nil {
-          logger.Error(err.Error())
-          writer.WriteHeader(http.StatusInternalServerError)
-        }
-      } else {
-        logger.Error(err.Error())
-        writer.WriteHeader(http.StatusInternalServerError)
-      }
-      return
-    }
-
-    jsonBytes, err := json.Marshal(description)
-    if err != nil {
-      logger.Error(err.Error())
-      writer.WriteHeader(http.StatusInternalServerError)
-      return
-    }
-    _, err = writer.Write(jsonBytes)
-    cache.Set(cacheKey, jsonBytes)
-    if err != nil {
-      logger.Error(err.Error())
-      writer.WriteHeader(http.StatusInternalServerError)
-    }
   }
 }
 

@@ -28,3 +28,18 @@ func DecodeQuery(encoded string) ([]byte, error) {
   }
   return decompressed, nil
 }
+
+func EncodeQuery(data []byte) (string, error) {
+  // Create a new ZSTD encoder with the dictionary
+  writer, err := zstd.NewWriter(nil, zstd.WithEncoderDict(ZstdDictionary))
+  if err != nil {
+    return "", errors.WithStack(err)
+  }
+
+  // Compress the data
+  compressed := writer.EncodeAll(data, nil)
+
+  // Base64 URL encode the compressed data
+  encoded := base64.RawURLEncoding.EncodeToString(compressed)
+  return encoded, nil
+}

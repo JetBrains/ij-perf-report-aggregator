@@ -11,8 +11,8 @@ import (
   "net/http"
 )
 
-func getDataFromClickhouse(ctx context.Context, analysisSettings AnalysisSettings) ([]int64, []int, []string, error) {
-  response, err := getValuesFromServer(ctx, analysisSettings)
+func getDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings AnalysisSettings) ([]int64, []int, []string, error) {
+  response, err := getValuesFromServer(ctx, backendURL, analysisSettings)
   if err != nil {
     log.Printf("%v", err)
   }
@@ -23,8 +23,8 @@ func getDataFromClickhouse(ctx context.Context, analysisSettings AnalysisSetting
   return timestamps, values, builds, err
 }
 
-func getValuesFromServer(ctx context.Context, analysisSettings AnalysisSettings) ([]byte, error) {
-  url := URL + "/api/q/"
+func getValuesFromServer(ctx context.Context, backendURL string, analysisSettings AnalysisSettings) ([]byte, error) {
+  url := backendURL + "/api/q/"
   query := getDataQuery(analysisSettings)
   jsonQuery, err := json.Marshal(query)
   if err != nil {

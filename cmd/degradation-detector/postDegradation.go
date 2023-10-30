@@ -16,8 +16,8 @@ type InsertionResults struct {
   error       error
 }
 
-func postDegradation(ctx context.Context, analysisSettings AnalysisSettings, degradations []Degradation) []InsertionResults {
-  url := URL + "/api/meta/accidents"
+func postDegradation(ctx context.Context, backendURL string, analysisSettings AnalysisSettings, degradations []Degradation) []InsertionResults {
+  url := backendURL + "/api/meta/accidents"
   insertionResults := make([]InsertionResults, len(degradations))
   for i, degradation := range degradations {
     date := time.UnixMilli(degradation.timestamp).UTC().Format("2006-01-02")

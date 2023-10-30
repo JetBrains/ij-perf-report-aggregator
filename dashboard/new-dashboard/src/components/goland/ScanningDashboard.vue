@@ -16,14 +16,14 @@
       <GroupProjectsChart
         label="Scanning time without pauses"
         measure="scanningTimeWithoutPauses"
-        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing',  'mattermost-server/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing', 'mattermost-server/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Numbers of runs of scanning"
         measure="numberOfRunsOfScannning"
-        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing',  'mattermost-server/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing', 'mattermost-server/indexing']"
       />
     </section>
   </DashboardPage>

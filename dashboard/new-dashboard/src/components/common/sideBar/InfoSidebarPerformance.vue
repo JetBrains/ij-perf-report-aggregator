@@ -368,7 +368,11 @@ function getSpaceUrl() {
 }
 
 function getAccidentTypes(): string[] {
-  return Object.values(AccidentKind)
+  const values = Object.values(AccidentKind)
+  //don't report Inferred type manually
+  const index = values.indexOf(AccidentKind.Inferred)
+  values.splice(index, 1)
+  return values
 }
 </script>
 <style>

@@ -25,6 +25,7 @@ export enum AccidentKind {
   Exception = "Exception",
   Improvement = "Improvement",
   Investigation = "Investigation",
+  Inferred = "Inferred",
 }
 
 export class Accident {
@@ -252,7 +253,7 @@ function capitalizeFirstLetter(str: string): AccidentKind {
   if (isAccidentKind(result)) {
     return result
   } else {
-    throw new Error("Unsupported AccidentKind")
+    throw new Error("Unsupported AccidentKind " + str)
   }
 }
 

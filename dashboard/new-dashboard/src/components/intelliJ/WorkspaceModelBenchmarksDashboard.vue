@@ -52,6 +52,10 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "10-000-orphan-source-roots-to-many-content-roots-to-modules",
       "10-000-orphan-source-roots-to-modules",
       "update-storage-via-replace-project-model",
+      "collect-changes",
+      "add-diff-operation",
+      "operations-of-references",
+      "",
     ],
   }
 })

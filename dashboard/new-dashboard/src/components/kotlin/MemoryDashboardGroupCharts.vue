@@ -7,7 +7,7 @@
   >
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
-        :label="`${definition.label} K1`"
+        :label="`${definition.label} JVM.totalMegabytesAllocated K1`"
         :measure="`JVM.totalMegabytesAllocated`"
         :projects="definition.projects.map((s) => `${s}_k1`)"
         :legend-formatter="replaceKotlinName"
@@ -15,7 +15,7 @@
     </div>
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
-        :label="`${definition.label} K2`"
+        :label="`${definition.label} JVM.totalMegabytesAllocated K2`"
         :measure="`JVM.totalMegabytesAllocated`"
         :projects="definition.projects.map((s) => `${s}_k2`)"
         :legend-formatter="replaceKotlinName"

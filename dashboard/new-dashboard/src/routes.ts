@@ -99,6 +99,7 @@ enum ROUTES {
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
+  KotlinMemoryDashboard = `${ROUTE_PREFIX.Kotlin}/memoryDashboard`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
@@ -520,6 +521,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinK1VsK2ComparisonDev,
           label: "K1 vs. K2 (dev)",
+        },
+        {
+          url: ROUTES.KotlinMemoryDashboard,
+          label: "Memory",
         },
         {
           url: ROUTES.KotlinCompareBranches,
@@ -1518,6 +1523,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             metricsNames: KOTLIN_MAIN_METRICS,
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL + "(dev/fast)" },
+        },
+        {
+          path: ROUTES.KotlinMemoryDashboard,
+          component: () => import("./components/kotlin/MemoryPerformanceDashboard.vue"),
+          meta: { pageTitle: "Memory" },
         },
         {
           path: ROUTES.RustPluginDashboard,

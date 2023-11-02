@@ -11,9 +11,9 @@
     "fast-equals": "5.0.1",
     "floating-vue": "2.0.0-beta.24",
     "humanize-duration": "3.30.0",
-    "p-limit": "^4.0.0",
+    "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.38.1",
+    "primevue": "3.39.0",
     "rxjs": "8.0.0-alpha.10",
     "vue": "3.3.7",
     "vue-router": "4.2.5"

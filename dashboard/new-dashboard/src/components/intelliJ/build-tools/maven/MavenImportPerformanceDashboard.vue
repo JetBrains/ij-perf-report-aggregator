@@ -6,6 +6,16 @@
     initial-machine="linux-blade-hetzner"
     :charts="charts"
   >
+    <template #configurator>
+      <MeasureSelect
+        :configurator="testConfigurator"
+        title="Test"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        </template>
+      </MeasureSelect>
+    </template>
     <section>
       <GroupProjectsChart
         v-for="chart in charts"
@@ -19,8 +29,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
+import { SimpleMeasureConfigurator } from "../../../../configurators/SimpleMeasureConfigurator"
 import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
+import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
 import { MAVEN_PROJECTS } from "./maven-projects"
 
@@ -76,13 +89,17 @@ const metricsDeclaration = [
   "JVM.usedHeapMegabytes",
   "JVM.usedNativeMegabytes",
 ]
+const testConfigurator = new SimpleMeasureConfigurator("project", null)
+testConfigurator.initData(MAVEN_PROJECTS)
 
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
-  return {
-    labels: [metric],
-    measures: [metric],
-    projects: MAVEN_PROJECTS,
-  }
+const charts = computed(() => {
+  const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
+    return {
+      labels: [metric],
+      measures: [metric],
+      projects: testConfigurator.selected.value ?? [],
+    }
+  })
+  return combineCharts(chartsDeclaration)
 })
-const charts = combineCharts(chartsDeclaration)
 </script>

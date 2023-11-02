@@ -8,6 +8,9 @@
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
     >
+      <template #configurator>
+        <slot name="configurator" />
+      </template>
       <template #toolbar>
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>

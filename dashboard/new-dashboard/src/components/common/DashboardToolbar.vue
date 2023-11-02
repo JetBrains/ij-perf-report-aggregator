@@ -15,6 +15,7 @@
         v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"
       />
+      <slot name="configurator" />
       <CopyLink :timerange-configurator="props.timeRangeConfigurator" />
     </template>
     <template #end>

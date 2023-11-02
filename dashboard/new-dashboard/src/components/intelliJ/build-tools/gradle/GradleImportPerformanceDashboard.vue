@@ -6,6 +6,16 @@
     initial-machine="linux-blade-hetzner"
     :charts="charts"
   >
+    <template #configurator>
+      <MeasureSelect
+        :configurator="testConfigurator"
+        title="Test"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        </template>
+      </MeasureSelect>
+    </template>
     <section>
       <GroupProjectsChart
         v-for="chart in charts"
@@ -19,8 +29,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
+import { SimpleMeasureConfigurator } from "../../../../configurators/SimpleMeasureConfigurator"
 import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
+import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
 
 const metricsDeclaration = [
@@ -50,27 +63,34 @@ const metricsDeclaration = [
   "JVM.usedNativeMegabytes",
 ]
 
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
-  return {
-    labels: [metric],
-    measures: [metric],
-    projects: [
-      "grazie-platform-project-import-gradle/measureStartup",
-      "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
-      "project-import-gradle-micronaut/measureStartup",
-      "project-import-gradle-hibernate-orm/measureStartup",
-      "project-import-gradle-cas/measureStartup",
-      "project-reimport-gradle-cas/measureStartup",
-      "project-import-from-cache-gradle-cas/measureStartup",
-      "project-import-gradle-1000-modules/measureStartup",
-      "project-import-gradle-1000-modules-limited-ram/measureStartup",
-      "project-import-gradle-5000-modules/measureStartup",
-      "project-import-gradle-android-extra-large/measureStartup",
-      "project-reimport-space/measureStartup",
-      "project-import-space/measureStartup",
-      "project-import-open-telemetry/measureStartup",
-    ],
-  }
+const projects = [
+  "grazie-platform-project-import-gradle/measureStartup",
+  "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
+  "project-import-gradle-micronaut/measureStartup",
+  "project-import-gradle-hibernate-orm/measureStartup",
+  "project-import-gradle-cas/measureStartup",
+  "project-reimport-gradle-cas/measureStartup",
+  "project-import-from-cache-gradle-cas/measureStartup",
+  "project-import-gradle-1000-modules/measureStartup",
+  "project-import-gradle-1000-modules-limited-ram/measureStartup",
+  "project-import-gradle-5000-modules/measureStartup",
+  "project-import-gradle-android-extra-large/measureStartup",
+  "project-reimport-space/measureStartup",
+  "project-import-space/measureStartup",
+  "project-import-open-telemetry/measureStartup",
+]
+
+const testConfigurator = new SimpleMeasureConfigurator("project", null)
+testConfigurator.initData(projects)
+
+const charts = computed(() => {
+  const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
+    return {
+      labels: [metric],
+      measures: [metric],
+      projects: testConfigurator.selected.value ?? [],
+    }
+  })
+  return combineCharts(chartsDeclaration)
 })
-const charts = combineCharts(chartsDeclaration)
 </script>

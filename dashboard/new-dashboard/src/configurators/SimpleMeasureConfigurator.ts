@@ -1,9 +1,9 @@
 import { Observable } from "rxjs"
 import { Ref, shallowRef } from "vue"
-import { refToObservable } from "../../../configurators/rxjs"
-import { PersistentStateManager } from "../PersistentStateManager"
+import { PersistentStateManager } from "../components/common/PersistentStateManager"
+import { refToObservable } from "./rxjs"
 
-export class MeasureConfiguratorForComparing {
+export class SimpleMeasureConfigurator {
   readonly data = shallowRef<string[] | null>(null)
   private readonly _selected = shallowRef<string[] | string | null>(null)
   readonly state = {
@@ -34,7 +34,7 @@ export class MeasureConfiguratorForComparing {
     return ref as Ref<string[] | null>
   }
 
-  constructor(measureName: string, persistentStateManager: PersistentStateManager) {
-    persistentStateManager.add(measureName, this._selected)
+  constructor(measureName: string, persistentStateManager: PersistentStateManager | null) {
+    persistentStateManager?.add(measureName, this._selected)
   }
 }

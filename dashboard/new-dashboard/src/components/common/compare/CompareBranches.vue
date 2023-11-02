@@ -88,6 +88,7 @@ import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
+import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS } from "../../../util/mainMetrics"
@@ -95,7 +96,6 @@ import MeasureSelect from "../../charts/MeasureSelect.vue"
 import BranchSelect from "../BranchSelect.vue"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
-import { MeasureConfiguratorForComparing } from "./MeasureConfiguratorForComparing"
 
 interface CompareBranchesProps {
   dbName: string
@@ -133,9 +133,9 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
-const measureConfigurator = new MeasureConfiguratorForComparing("metrics", persistentStateManager)
+const measureConfigurator = new SimpleMeasureConfigurator("metrics", persistentStateManager)
 measureConfigurator.initData(props.metricsNames)
-const testConfigurator = new MeasureConfiguratorForComparing("tests", persistentStateManager)
+const testConfigurator = new SimpleMeasureConfigurator("tests", persistentStateManager)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
 

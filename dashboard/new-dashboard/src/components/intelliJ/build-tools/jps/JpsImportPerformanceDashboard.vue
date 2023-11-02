@@ -6,6 +6,16 @@
     initial-machine="linux-blade-hetzner"
     :charts="charts"
   >
+    <template #configurator>
+      <MeasureSelect
+        :configurator="testConfigurator"
+        title="Test"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        </template>
+      </MeasureSelect>
+    </template>
     <section>
       <GroupProjectsChart
         v-for="chart in charts"
@@ -19,8 +29,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
+import { SimpleMeasureConfigurator } from "../../../../configurators/SimpleMeasureConfigurator"
 import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
+import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
 
 const metricsDeclaration = [
@@ -123,27 +136,34 @@ const metricsDeclaration = [
   "JVM.usedNativeMegabytes",
 ]
 
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
-  return {
-    labels: [metric],
-    measures: [metric],
-    projects: [
-      // JPS projects
-      "project-import-jps-kotlin-10_000-modules/measureStartup",
-      "project-import-jps-kotlin-50_000-modules/measureStartup",
-      "project-reimport-jps-kotlin-10_000-modules/measureStartup",
-      "project-reimport-jps-kotlin-50_000-modules/measureStartup",
-      "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
-      "project-import-from-cache-jps-kotlin-10_000-modules/measureStartup",
-      "project-import-jps-java-1_000-modules/measureStartup",
-      "project-reimport-jps-java-1_000-modules/measureStartup",
-      "project-import-from-cache-jps-java-1_000-modules/measureStartup",
-      "project-import-idea-community-jps/measureStartup",
-      "jps_10K-modules-checkout-branch-with-changes/measureStartup",
-      "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
-      "jps-cyclic-branches-checkout/measureStartup",
-    ],
-  }
+const projects = [
+  // JPS projects
+  "project-import-jps-kotlin-10_000-modules/measureStartup",
+  "project-import-jps-kotlin-50_000-modules/measureStartup",
+  "project-reimport-jps-kotlin-10_000-modules/measureStartup",
+  "project-reimport-jps-kotlin-50_000-modules/measureStartup",
+  "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
+  "project-import-from-cache-jps-kotlin-10_000-modules/measureStartup",
+  "project-import-jps-java-1_000-modules/measureStartup",
+  "project-reimport-jps-java-1_000-modules/measureStartup",
+  "project-import-from-cache-jps-java-1_000-modules/measureStartup",
+  "project-import-idea-community-jps/measureStartup",
+  "jps_10K-modules-checkout-branch-with-changes/measureStartup",
+  "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
+  "jps-cyclic-branches-checkout/measureStartup",
+]
+
+const testConfigurator = new SimpleMeasureConfigurator("project", null)
+testConfigurator.initData(projects)
+
+const charts = computed(() => {
+  const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
+    return {
+      labels: [metric],
+      measures: [metric],
+      projects: testConfigurator.selected.value ?? [],
+    }
+  })
+  return combineCharts(chartsDeclaration)
 })
-const charts = combineCharts(chartsDeclaration)
 </script>

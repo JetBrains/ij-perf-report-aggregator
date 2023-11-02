@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "vue"
+import { watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
@@ -36,7 +36,11 @@ const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])])
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
-onMounted(() => {
-  scenarioConfigurator.selected.value = props.projects
-})
+watch(
+  () => props.projects,
+  (projects) => {
+    scenarioConfigurator.selected.value = projects
+  },
+  { immediate: true }
+)
 </script>

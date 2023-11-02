@@ -20,8 +20,8 @@ type AnalysisSettings struct {
 func main() {
   backendUrl := os.Getenv("BACKEND_URL")
   if len(backendUrl) == 0 {
+    backendUrl = "https://ij-perf-api.labs.jb.gg"
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
-    backendUrl = "http://localhost:9044"
   }
 
   var wg sync.WaitGroup

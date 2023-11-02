@@ -19,14 +19,14 @@ type MedianValues struct {
 }
 
 func inferDegradations(values []int, builds []string, timestamps []int64) []Degradation {
+  numberOfLastValuesToTake := 40
 
   changePoints, err := server.GetChangePointIndexes(values, 1)
   if err != nil {
     log.Fatalf("%v", err)
   }
-  latestChangePoints := getChangePointsInLatestValues(changePoints, values, 20)
 
-  segments, segmentChangePoints := getSegmentsBetweenChangePoints(latestChangePoints, values)
+  segments := getSegmentsBetweenChangePoints(changePoints, values)
   degradations := make([]Degradation, 0)
   if len(segments) < 1 {
     fmt.Println("No significant change points were detected.")
@@ -36,8 +36,9 @@ func inferDegradations(values []int, builds []string, timestamps []int64) []Degr
   for i := 1; i < len(segments); i++ {
     currentMedian := server.CalculateMedian(segments[i])
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
-    if math.Abs(percentageChange) > 10 {
-      index := segmentChangePoints[i-1]
+    index := changePoints[i-1]
+    isLatestChangePoint := index >= len(values)-numberOfLastValuesToTake
+    if percentageChange > 10 && isLatestChangePoint {
       build := builds[index]
       degradation := Degradation{
         build:        build,
@@ -45,38 +46,23 @@ func inferDegradations(values []int, builds []string, timestamps []int64) []Degr
         medianValues: MedianValues{previousValue: previousMedian, newValue: currentMedian},
       }
       degradations = append(degradations, degradation)
-    } else {
-      fmt.Println("No significant change points detected.")
     }
     previousMedian = currentMedian
   }
   return degradations
 }
 
-func getChangePointsInLatestValues(changePoints []int, values []int, numberOfLastValuesToTake int) []int {
-  filteredChanges := make([]int, 0)
-  for _, change := range changePoints {
-    if change >= len(values)-numberOfLastValuesToTake {
-      filteredChanges = append(filteredChanges, change)
-    }
-  }
-  return filteredChanges
-}
-
-func getSegmentsBetweenChangePoints(changePoints []int, values []int) ([][]int, []int) {
+func getSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
   var segments [][]int
-  var segmentChangePoints []int
   prevChangePoint := 0
   for _, changePoint := range changePoints {
     segment := values[prevChangePoint:changePoint]
     segments = append(segments, segment)
-    segmentChangePoints = append(segmentChangePoints, changePoint)
     prevChangePoint = changePoint
   }
   if prevChangePoint < len(values) {
     segment := values[prevChangePoint:]
     segments = append(segments, segment)
-    segmentChangePoints = append(segmentChangePoints, len(values))
   }
-  return segments, segmentChangePoints
+  return segments
 }

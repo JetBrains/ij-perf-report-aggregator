@@ -31,6 +31,7 @@ func main() {
   analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
+  analysisSettings = append(analysisSettings, generateGradleAnalysisSettings()...)
 
   var wg sync.WaitGroup
   for _, analysisSetting := range analysisSettings {

@@ -18,7 +18,6 @@ func generateMavenAnalysisSettings() []AnalysisSettings {
     "project-import-maven-quarkus-to-legacy-model/measureStartup",
     "project-import-maven-1000-modules-to-legacy-model/measureStartup",
   }
-  settings := make([]AnalysisSettings, 0, 50)
   metrics := []string{"maven.sync.duration",
     "maven.projects.processor.resolving.task",
     "maven.projects.processor.reading.task",
@@ -49,6 +48,8 @@ func generateMavenAnalysisSettings() []AnalysisSettings {
     "legacy_import.delete_obsolete.duration_ms",
     "legacy_import.duration_ms",
     "legacy_import.importers.duration_ms"}
+
+  settings := make([]AnalysisSettings, 0, 200)
   for _, test := range tests {
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{

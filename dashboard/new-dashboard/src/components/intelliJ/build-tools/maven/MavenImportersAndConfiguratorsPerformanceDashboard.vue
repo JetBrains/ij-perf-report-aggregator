@@ -64,9 +64,9 @@ const workspaceConfiguratorsMetrics = [
 
 const metricsDeclaration = [
   // Importer run metrics
-  ...importerRunMetrics.flatMap((metric) => importerRunMetricTypes.map((type) => metric + type)),
+  ...importerRunMetrics.flatMap((metric) => importerRunMetricTypes.map((type) => `${metric}.${type}`)),
   // Workspace configuration metrics
-  ...workspaceConfiguratorsMetrics.flatMap((metric) => workspaceConfiguratorsMetricTypes.map((type) => metric + type)),
+  ...workspaceConfiguratorsMetrics.flatMap((metric) => workspaceConfiguratorsMetricTypes.map((type) => `${metric}.${type}`)),
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {

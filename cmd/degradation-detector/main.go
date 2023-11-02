@@ -36,7 +36,7 @@ func main() {
   var wg sync.WaitGroup
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
-
+    log.Printf("Processing %v", analysisSetting)
     timestamps, values, builds, err := getDataFromClickhouse(ctx, backendUrl, analysisSetting)
     if err != nil {
       log.Printf("%v", err)

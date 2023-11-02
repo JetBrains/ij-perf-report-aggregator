@@ -78,8 +78,5 @@ func getMetricFromTestName(test string) []string {
   if strings.Contains(test, "/createKotlinClass") {
     return []string{"createKotlinFile"}
   }
-  if strings.Contains(test, "/typing") {
-    return []string{"test#average_awt_delay"}
-  }
   return []string{}
 }

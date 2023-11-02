@@ -31,7 +31,7 @@ func generateKotlinAnalysisSettings() []AnalysisSettings {
           settings = append(settings, AnalysisSettings{
             db:      db,
             table:   "kotlin",
-            channel: "kotlin-plugin-perf-testNames",
+            channel: "kotlin-plugin-perf-tests",
             machine: "intellij-linux-hw-hetzner%",
             test:    test,
             metric:  metric,

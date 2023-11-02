@@ -30,6 +30,7 @@ func main() {
   analysisSettings := generateIdeaAnalysisSettings()
   analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
+  analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
 

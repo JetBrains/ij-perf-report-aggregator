@@ -12,7 +12,7 @@ func generateWorkspaceAnalysisSettings() []AnalysisSettings {
         branch:  "master",
         channel: "ij-workspace-model-degradations",
         test:    test,
-        machine: "intellij-linux-performance-aws-%",
+        machine: "intellij-linux-hw-hetzner%",
         metric:  metric,
       })
     }

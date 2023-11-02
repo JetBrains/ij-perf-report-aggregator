@@ -22,12 +22,12 @@ func generateKotlinAnalysisSettings() []AnalysisSettings {
   tests := generateKotlinTests(testNames)
   settings := make([]AnalysisSettings, 0, 50)
   metrics := []string{"completion#mean_value"}
-  DBs := []string{"perfint", "perfintDev"}
+  dbs := []string{"perfint", "perfintDev"}
   branches := []string{"master", "kt-master"}
   for _, test := range tests {
     for _, metric := range metrics {
       for _, branch := range branches {
-        for _, db := range DBs {
+        for _, db := range dbs {
           settings = append(settings, AnalysisSettings{
             db:      db,
             table:   "kotlin",

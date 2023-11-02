@@ -13,5 +13,5 @@ export const MAVEN_PROJECTS = [
   "project-import-maven-azure-sdk-java/measureStartup",
   "project-import-maven-hive/measureStartup",
   "project-import-maven-quarkus-to-legacy-model/measureStartup",
-  "project-import-maven-1000-modules-to-legacy-model/measureStartup"
+  "project-import-maven-1000-modules-to-legacy-model/measureStartup",
 ]

@@ -26,6 +26,7 @@ func main() {
 
   var wg sync.WaitGroup
   analysisSettings := generateIdeaAnalysisSettings()
+  analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
 

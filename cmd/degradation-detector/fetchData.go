@@ -75,11 +75,11 @@ func getDataQuery(settings AnalysisSettings) []dataQuery.DataQuery {
       Table:    settings.table,
       Fields:   fields,
       Filters: []dataQuery.DataQueryFilter{
-        {Field: "branch", Value: "master"},
+        {Field: "branch", Value: settings.branch},
         {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
         {Field: "project", Value: settings.test},
         {Field: "measures.name", Value: settings.metric},
-        {Field: "machine", Value: "intellij-linux-performance-aws-%", Operator: "like"},
+        {Field: "machine", Value: settings.machine, Operator: "like"},
         {Field: "triggeredBy", Value: ""},
         {Field: "build_c3", Value: 0, Operator: "="},
       },

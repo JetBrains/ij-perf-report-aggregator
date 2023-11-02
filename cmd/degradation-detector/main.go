@@ -14,6 +14,8 @@ type AnalysisSettings struct {
   metric  string
   db      string
   table   string
+  branch  string
+  machine string
   channel string
 }
 
@@ -27,6 +29,7 @@ func main() {
   var wg sync.WaitGroup
   analysisSettings := generateIdeaAnalysisSettings()
   analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
+  analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
 

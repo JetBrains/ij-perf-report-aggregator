@@ -15,21 +15,23 @@ func generateIdeaAnalysisSettings() []AnalysisSettings {
     "intellij_sources/createJavaClass", "intellij_sources/createKotlinClass", "typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing", "typingInKotlinFile_16Threads/typing",
     "typingInKotlinFile_4Threads/typing",
   }
-  ideaSettings := make([]AnalysisSettings, 0, 100)
+  settings := make([]AnalysisSettings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      ideaSettings = append(ideaSettings, AnalysisSettings{
+      settings = append(settings, AnalysisSettings{
         db:      "perfint",
         table:   "idea",
         channel: "ij-perf-report-aggregator",
+        branch:  "master",
+        machine: "intellij-linux-performance-aws-%",
         test:    test,
         metric:  metric,
       })
     }
 
   }
-  return ideaSettings
+  return settings
 }
 
 func getMetricFromTestName(test string) []string {

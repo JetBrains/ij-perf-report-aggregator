@@ -59,6 +59,7 @@ enum ROUTES {
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
+  IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
@@ -285,6 +286,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJMavenDashboard,
           label: "Maven Import",
+        },
+        {
+          url: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,
+          label: "Maven Importers and Configurators",
         },
         {
           url: ROUTES.IntelliJJpsDashboard,
@@ -988,17 +993,22 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJGradleDashboard,
-          component: () => import("./components/intelliJ/GradleImportPerformanceDashboard.vue"),
+          component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboard.vue"),
           meta: { pageTitle: "Gradle Import dashboard" },
         },
         {
           path: ROUTES.IntelliJMavenDashboard,
-          component: () => import("./components/intelliJ/MavenImportPerformanceDashboard.vue"),
+          component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboard.vue"),
           meta: { pageTitle: "Maven Import dashboard" },
         },
         {
+          path: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,
+          component: () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboard.vue"),
+          meta: { pageTitle: "Maven Importers And Configurators dashboard" },
+        },
+        {
           path: ROUTES.IntelliJJpsDashboard,
-          component: () => import("./components/intelliJ/JpsImportPerformanceDashboard.vue"),
+          component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboard.vue"),
           meta: { pageTitle: "JPS Import dashboard" },
         },
         {

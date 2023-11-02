@@ -79,5 +79,11 @@ func getMetricFromTestName(test string) []string {
   if strings.Contains(test, "/createKotlinClass") {
     return []string{"createKotlinFile"}
   }
+  if strings.Contains(test, "/indexing") {
+    return []string{"scanningTimeWithoutPauses", "indexingTimeWithoutPauses"}
+  }
+  if strings.Contains(test, "/inlineRename") {
+    return []string{"startInlineRename"}
+  }
   return []string{}
 }

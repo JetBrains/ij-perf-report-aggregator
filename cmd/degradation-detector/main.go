@@ -32,6 +32,7 @@ func main() {
   analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateGradleAnalysisSettings()...)
+  analysisSettings = append(analysisSettings, generatePhpStormAnalysisSettings()...)
 
   var wg sync.WaitGroup
   for _, analysisSetting := range analysisSettings {

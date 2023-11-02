@@ -26,11 +26,13 @@ func main() {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  var wg sync.WaitGroup
-  analysisSettings := generateIdeaAnalysisSettings()
+  analysisSettings := make([]AnalysisSettings, 0, 1000)
+  analysisSettings = append(analysisSettings, generateIdeaAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
+
+  var wg sync.WaitGroup
   for _, analysisSetting := range analysisSettings {
     ctx := context.Background()
 

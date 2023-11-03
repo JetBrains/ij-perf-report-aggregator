@@ -18,7 +18,7 @@ var reNestedFieldName = regexp.MustCompile(`^[a-zA-Z_][.\da-zA-Z_]*$`)
 var reMetricName = regexp.MustCompile(`^[a-zA-Z\d _]+$`)
 
 // add ().space,'*
-var reAggregator = regexp.MustCompile(`^[a-zA-Z_(][\da-zA-Z_(). ,'*<>\-/+]*$`)
+var reAggregator = regexp.MustCompile(`^[a-zA-Z_(][\da-zA-Z_(). ,'*@<>\-/+]*$`)
 
 // for db name the same validation rules as for field name
 var reDbName = reFieldName

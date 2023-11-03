@@ -3,6 +3,13 @@ package main
 import "strings"
 
 func generateIdeaAnalysisSettings() []AnalysisSettings {
+  settings := make([]AnalysisSettings, 0, 1000)
+  settings = append(settings, generateIdeaOnInstallerAnalysisSettings()...)
+  settings = append(settings, generateIdeaDevAnalysisSettings()...)
+  return settings
+}
+
+func generateIdeaOnInstallerAnalysisSettings() []AnalysisSettings {
   tests := []string{"intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status",
     "community/rebuild", "intellij_sources/rebuild", "grails/rebuild", "java/rebuild", "spring_boot/rebuild", "java/inspection", "grails/inspection",
     "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection",
@@ -20,6 +27,41 @@ func generateIdeaAnalysisSettings() []AnalysisSettings {
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{
         db:          "perfint",
+        table:       "idea",
+        channel:     "ij-perf-report-aggregator",
+        branch:      "master",
+        machine:     "intellij-linux-performance-aws-%",
+        test:        test,
+        metric:      metric,
+        productLink: "intellij",
+      })
+    }
+
+  }
+  return settings
+}
+
+func generateIdeaDevAnalysisSettings() []AnalysisSettings {
+  tests := []string{"intellij_commit/indexing", "intellij_commit/second-scanning", "intellij_commit/third-scanning", "intellij_commit/findUsages/Application_runReadAction",
+    "intellij_commit/findUsages/Library_getName", "intellij_commit/findUsages/PsiManager_getInstance", "intellij_commit/findUsages/PropertyMapping_value",
+    "intellij_commit/findUsages/ActionsKt_runReadAction", "intellij_commit/findUsages/DynamicPluginListener_TOPIC", "intellij_commit/findUsages/Path_div",
+    "intellij_commit/findUsages/Persistent_absolutePath", "intellij_sources/localInspection/java_file",
+    "intellij_sources/localInspection/kotlin_file",
+    "intellij_commit/localInspection/java_file",
+    "intellij_commit/localInspection/kotlin_file",
+    "intellij_commit/localInspection/kotlin_file_DexInlineTest",
+    "intellij_commit/localInspection/java_file_ContentManagerImpl",
+    "intellij_sources/completion/java_file",
+    "intellij_sources/completion/kotlin_file",
+    "intellij_commit/completion/java_file",
+    "intellij_commit/completion/kotlin_file"}
+
+  settings := make([]AnalysisSettings, 0, 100)
+  for _, test := range tests {
+    metrics := getMetricFromTestName(test)
+    for _, metric := range metrics {
+      settings = append(settings, AnalysisSettings{
+        db:          "perfintDev",
         table:       "idea",
         channel:     "ij-perf-report-aggregator",
         branch:      "master",
@@ -85,6 +127,12 @@ func getMetricFromTestName(test string) []string {
   }
   if strings.Contains(test, "/inlineRename") {
     return []string{"startInlineRename"}
+  }
+  if strings.Contains(test, "/-scanning") {
+    return []string{"scanningTimeWithoutPauses"}
+  }
+  if strings.Contains(test, "/findUsages") {
+    return []string{"findUsages", "fus_find_usages_all", "fus_find_usages_first"}
   }
   return []string{}
 }

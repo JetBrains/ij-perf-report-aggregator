@@ -57,8 +57,14 @@ func sliceToSliceOfString(slice []interface{}) ([]string, error) {
     switch v := elem.(type) {
     case string:
       strings = append(strings, v)
-    case int, int64, float64, bool:
-      strings = append(strings, fmt.Sprintf("%v", v))
+    case int:
+      strings = append(strings, strconv.Itoa(v))
+    case int64:
+      strings = append(strings, strconv.FormatInt(v, 10))
+    case float64:
+      strings = append(strings, strconv.FormatFloat(v, 'f', -1, 64))
+    case bool:
+      strings = append(strings, strconv.FormatBool(v))
     case nil:
       strings = append(strings, "")
     // Add other types as needed

@@ -81,7 +81,6 @@ func getDataQuery(settings AnalysisSettings) []dataQuery.DataQuery {
         {Field: "measures.name", Value: settings.metric},
         {Field: "machine", Value: settings.machine, Operator: "like"},
         {Field: "triggeredBy", Value: ""},
-        {Field: "build_c3", Value: 0, Operator: "="},
       },
       Order: []string{"t"},
     },

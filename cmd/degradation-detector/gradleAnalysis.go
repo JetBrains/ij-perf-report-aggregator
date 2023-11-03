@@ -27,13 +27,14 @@ func generateGradleAnalysisSettings() []AnalysisSettings {
   for _, test := range tests {
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{
-        db:      "perfint",
-        table:   "idea",
-        channel: "build-tools-perf-tests-notifications",
-        machine: "intellij-linux-hw-hetzner%",
-        test:    test,
-        metric:  metric,
-        branch:  "master",
+        db:          "perfint",
+        table:       "idea",
+        channel:     "build-tools-perf-tests-notifications",
+        machine:     "intellij-linux-hw-hetzner%",
+        test:        test,
+        metric:      metric,
+        branch:      "master",
+        productLink: "intellij",
       })
     }
 

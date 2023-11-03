@@ -10,13 +10,14 @@ import (
 )
 
 type AnalysisSettings struct {
-  test    string
-  metric  string
-  db      string
-  table   string
-  branch  string
-  machine string
-  channel string
+  test        string
+  metric      string
+  db          string
+  table       string
+  branch      string
+  machine     string
+  channel     string
+  productLink string
 }
 
 func main() {

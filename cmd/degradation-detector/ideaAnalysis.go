@@ -19,13 +19,14 @@ func generateIdeaAnalysisSettings() []AnalysisSettings {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{
-        db:      "perfint",
-        table:   "idea",
-        channel: "ij-perf-report-aggregator",
-        branch:  "master",
-        machine: "intellij-linux-performance-aws-%",
-        test:    test,
-        metric:  metric,
+        db:          "perfint",
+        table:       "idea",
+        channel:     "ij-perf-report-aggregator",
+        branch:      "master",
+        machine:     "intellij-linux-performance-aws-%",
+        test:        test,
+        metric:      metric,
+        productLink: "intellij",
       })
     }
 

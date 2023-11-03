@@ -8,7 +8,9 @@ import (
   "github.com/cenkalti/backoff/v4"
   "log"
   "net/http"
+  "net/url"
   "os"
+  "strings"
   "time"
 )
 
@@ -50,14 +52,41 @@ type SlackMessage struct {
 func createSlackMessage(degradation Degradation, settings AnalysisSettings) SlackMessage {
   reason := getMessageBasedOnMedianChange(degradation.medianValues)
   date := time.UnixMilli(degradation.timestamp).UTC().Format("02-01-2006 15:04:05")
-  text := fmt.Sprintf("DB: %s\n"+
-    "Table: %s\n"+
-    "Build: %s\n"+
-    "Date: %s\n"+
-    "Test/metric: %s/%s\n"+
-    "Reason: %s", settings.db, settings.table, degradation.build, date, settings.test, settings.metric, reason)
+  testPage := "tests"
+  if strings.HasSuffix(degradation.analysisSettings.db, "Dev") {
+    testPage = "testsDev"
+  }
+  machineGroup := getMachineGroup(settings.machine)
+  link := url.QueryEscape(fmt.Sprintf("https:/ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M",
+    settings.productLink, testPage, machineGroup, settings.branch, settings.test, settings.metric))
+
+  icon := ""
+  if degradation.medianValues.newValue > degradation.medianValues.previousValue {
+    icon = ":chart_with_upwards_trend:"
+  } else {
+    icon = ":chart_with_downwards_trend:"
+  }
+
+  text := fmt.Sprintf(
+    "%sTest: %s\n"+
+      "Metric: %s\n"+
+      "Build: %s\n"+
+      "Branch: %s\n"+
+      "Date: %s\n"+
+      "Reason: %s\n"+
+      "Link: %s", icon, settings.test, settings.metric, degradation.build, degradation.analysisSettings.branch, date, reason, link)
   return SlackMessage{
     Text:    text,
     Channel: settings.channel,
   }
+}
+
+func getMachineGroup(pattern string) string {
+  switch pattern {
+  case "intellij-linux-performance-aws-%":
+    return "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+  case "intellij-linux-hw-hetzner-%":
+    return "linux-blade-hetzner"
+  }
+  return ""
 }

@@ -29,13 +29,14 @@ func generateKotlinAnalysisSettings() []AnalysisSettings {
       for _, branch := range branches {
         for _, db := range dbs {
           settings = append(settings, AnalysisSettings{
-            db:      db,
-            table:   "kotlin",
-            channel: "kotlin-plugin-perf-tests",
-            machine: "intellij-linux-hw-hetzner%",
-            test:    test,
-            metric:  metric,
-            branch:  branch,
+            db:          db,
+            table:       "kotlin",
+            channel:     "kotlin-plugin-perf-tests",
+            machine:     "intellij-linux-hw-hetzner%",
+            test:        test,
+            metric:      metric,
+            branch:      branch,
+            productLink: "kotlin",
           })
         }
       }

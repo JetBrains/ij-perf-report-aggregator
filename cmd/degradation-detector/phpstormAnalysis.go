@@ -46,13 +46,14 @@ func generatePhpStormAnalysisSettings() []AnalysisSettings {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{
-        db:      "perfint",
-        table:   "phpstorm",
-        channel: "phpstorm-performance-degradations",
-        branch:  "master",
-        machine: "intellij-linux-hw-hetzner%",
-        test:    test,
-        metric:  metric,
+        db:          "perfint",
+        table:       "phpstorm",
+        channel:     "phpstorm-performance-degradations",
+        branch:      "master",
+        machine:     "intellij-linux-hw-hetzner%",
+        test:        test,
+        metric:      metric,
+        productLink: "phpstorm",
       })
     }
 

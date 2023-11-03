@@ -7,13 +7,14 @@ func generateWorkspaceAnalysisSettings() []AnalysisSettings {
   for _, test := range tests {
     for _, metric := range metrics {
       settings = append(settings, AnalysisSettings{
-        db:      "perfint",
-        table:   "idea",
-        branch:  "master",
-        channel: "ij-workspace-model-degradations",
-        test:    test,
-        machine: "intellij-linux-hw-hetzner%",
-        metric:  metric,
+        db:          "perfint",
+        table:       "idea",
+        branch:      "master",
+        channel:     "ij-workspace-model-degradations",
+        test:        test,
+        machine:     "intellij-linux-hw-hetzner%",
+        metric:      metric,
+        productLink: "intellij",
       })
     }
 

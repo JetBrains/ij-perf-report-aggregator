@@ -117,6 +117,7 @@ enum ROUTES {
   GoLandSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
   GoLandSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   GoLandSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
+  GoLandSharedIndicesTypingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesTypingDashboard`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
@@ -128,6 +129,7 @@ enum ROUTES {
   PyCharmSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
   PyCharmSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   PyCharmSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
+  PyCharmSharedIndicesTypingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesTypingDashboard`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
@@ -610,6 +612,10 @@ const GOLAND: Product = {
           label: "Indexed by Extensions",
         },
         {
+          url: ROUTES.GoLandSharedIndicesTypingDashboard,
+          label: "Typing",
+        },
+        {
           url: ROUTES.GoLandTests,
           label: TESTS_LABEL,
         },
@@ -695,6 +701,10 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
           label: "Indexed by Extensions",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesTypingDashboard,
+          label: "Typing",
         },
         {
           url: ROUTES.PyCharmTests,
@@ -1294,6 +1304,10 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
           component: () => import("./components/goland/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
+        },{
+          path: ROUTES.GoLandSharedIndicesTypingDashboard,
+          component: () => import("./components/goland/sharedIndexes/TypingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
         },
         {
           path: ROUTES.PyCharmDashboard,
@@ -1362,6 +1376,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
           component: () => import("./components/pycharm/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesTypingDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/TypingDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
         },
         {
           path: ROUTES.WebStormDashboard,

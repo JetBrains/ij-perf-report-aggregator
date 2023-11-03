@@ -105,11 +105,21 @@ const persistentStateManager = new PersistentStateManager("ij-explore")
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator, machineConfigurator])
+const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [
+  timeRangeConfigurator,
+  branchConfigurator,
+  productConfigurator,
+  machineConfigurator,
+])
 
-const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-
-const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
-const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [
+  timeRangeConfigurator,
+  branchConfigurator,
+  productConfigurator,
+  projectConfigurator,
+  machineConfigurator,
+])
 const configurators = [
   serverConfigurator,
   machineConfigurator,

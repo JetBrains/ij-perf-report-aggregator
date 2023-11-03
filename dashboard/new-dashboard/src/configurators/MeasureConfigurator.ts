@@ -85,6 +85,9 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }
 
         if (isIj) {
+          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it))
+          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.$/.test(it))
+          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it))
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
 

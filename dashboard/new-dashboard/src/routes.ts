@@ -311,6 +311,10 @@ const IDEA: Product = {
       label: "Shared Indexes",
       tabs: [
         {
+          url: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
+        },
+        {
           url: ROUTES.IntelliJSharedIndicesIndexingDashboard,
           label: "Indexing",
         },
@@ -331,20 +335,16 @@ const IDEA: Product = {
           label: "Code Analysis",
         },
         {
+          url: ROUTES.IntelliJSharedIndicesTypingDashboard,
+          label: "Typing",
+        },
+        {
           url: ROUTES.IntelliJSharedIndicesNumberOfIndexedFilesDashboard,
           label: "Indexed Files",
         },
         {
           url: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
           label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
         },
         {
           url: ROUTES.IntelliJSharedIndicesTests,
@@ -591,6 +591,10 @@ const GOLAND: Product = {
       label: "Shared Indexes",
       tabs: [
         {
+          url: ROUTES.GoLandSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
+        },
+        {
           url: ROUTES.GoLandSharedIndicesIndexingDashboard,
           label: "Indexing",
         },
@@ -611,20 +615,16 @@ const GOLAND: Product = {
           label: "Code Analysis",
         },
         {
+          url: ROUTES.GoLandSharedIndicesTypingDashboard,
+          label: "Typing",
+        },
+        {
           url: ROUTES.GoLandSharedIndicesNumberOfIndexedFilesDashboard,
           label: "Indexed Files",
         },
         {
           url: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
           label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
         },
         {
           url: ROUTES.GoLandTests,
@@ -686,6 +686,10 @@ const PYCHARM: Product = {
       label: "Shared Indexes",
       tabs: [
         {
+          url: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
+        },
+        {
           url: ROUTES.PyCharmSharedIndicesIndexingDashboard,
           label: "Indexing",
         },
@@ -706,20 +710,16 @@ const PYCHARM: Product = {
           label: "Code Analysis",
         },
         {
+          url: ROUTES.PyCharmSharedIndicesTypingDashboard,
+          label: "Typing",
+        },
+        {
           url: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
           label: "Indexed Files",
         },
         {
           url: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
           label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
         },
         {
           url: ROUTES.PyCharmTests,

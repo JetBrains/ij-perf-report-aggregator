@@ -62,7 +62,7 @@ const metricsDeclaration = [
   "select.targets.memory.mb",
   "select.targets.time.ms",
   "targets.as.libraries.memory.mb",
-  "targets.as.libraries.time.ms"
+  "targets.as.libraries.time.ms",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {

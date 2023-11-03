@@ -23,9 +23,9 @@ func postDegradation(ctx context.Context, backendURL string, degradations []Degr
     analysisSettings := degradation.analysisSettings
     date := time.UnixMilli(degradation.timestamp).UTC().Format("2006-01-02")
     medianMessage := getMessageBasedOnMedianChange(degradation.medianValues)
-    kind := "Inferred_Regression"
+    kind := "InferredRegression"
     if !degradation.isDegradation {
-      kind = "Inferred_Improvement"
+      kind = "InferredImprovement"
     }
     insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.test + "/" + analysisSettings.metric, Kind: kind, Reason: medianMessage, BuildNumber: degradation.build}
     params, err := json.Marshal(insertParams)

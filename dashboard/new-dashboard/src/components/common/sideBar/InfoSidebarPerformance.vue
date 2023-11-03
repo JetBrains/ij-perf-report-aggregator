@@ -370,8 +370,8 @@ function getSpaceUrl() {
 function getAccidentTypes(): string[] {
   const values = Object.values(AccidentKind)
   //don't report Inferred type manually
-  const index = values.indexOf(AccidentKind.Inferred)
-  values.splice(index, 1)
+  values.splice(values.indexOf(AccidentKind.InferredRegression), 1)
+  values.splice(values.indexOf(AccidentKind.InferredImprovement), 1)
   return values
 }
 </script>

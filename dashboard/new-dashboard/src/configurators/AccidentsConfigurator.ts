@@ -25,7 +25,8 @@ export enum AccidentKind {
   Exception = "Exception",
   Improvement = "Improvement",
   Investigation = "Investigation",
-  Inferred = "Inferred",
+  InferredImprovement = "InferredImprovement",
+  InferredRegression = "InferredRegression",
 }
 
 export class Accident {
@@ -248,8 +249,23 @@ async function getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, cus
   }
 }
 
+function capitalizeString(str: string): string {
+  // Check if the string is all uppercase
+  if (str === str.toUpperCase()) {
+    // If all uppercase, capitalize the first letter, and make the rest lowercase
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  }
+
+  // If not all uppercase, handle as camel case
+  return str
+    .replaceAll(/([a-z])([A-Z])/g, "$1 $2") // Add space before each capital in a camel case word
+    .split(" ") // Split the string into words
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize the first letter of each word
+    .join("") // Rejoin the words without spaces
+}
+
 function capitalizeFirstLetter(str: string): AccidentKind {
-  const result = str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+  const result = capitalizeString(str)
   if (isAccidentKind(result)) {
     return result
   } else {

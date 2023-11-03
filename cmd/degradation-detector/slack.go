@@ -57,8 +57,8 @@ func createSlackMessage(degradation Degradation, settings AnalysisSettings) Slac
     testPage = "testsDev"
   }
   machineGroup := getMachineGroup(settings.machine)
-  link := url.QueryEscape(fmt.Sprintf("https:/ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M",
-    settings.productLink, testPage, machineGroup, settings.branch, settings.test, settings.metric))
+  link := fmt.Sprintf("https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M",
+    settings.productLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(settings.branch), url.QueryEscape(settings.test), url.QueryEscape(settings.metric))
 
   icon := ""
   if degradation.medianValues.newValue > degradation.medianValues.previousValue {

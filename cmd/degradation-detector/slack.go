@@ -12,7 +12,8 @@ import (
   "time"
 )
 
-func sendSlackMessage(ctx context.Context, degradation Degradation, analysisSettings AnalysisSettings) error {
+func sendSlackMessage(ctx context.Context, degradation Degradation) error {
+  analysisSettings := degradation.analysisSettings
   slackMessage := createSlackMessage(degradation, analysisSettings)
   slackMessageJson, err := json.Marshal(slackMessage)
   if err != nil {

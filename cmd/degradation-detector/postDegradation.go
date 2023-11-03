@@ -16,10 +16,11 @@ type InsertionResults struct {
   error       error
 }
 
-func postDegradation(ctx context.Context, backendURL string, analysisSettings AnalysisSettings, degradations []Degradation) []InsertionResults {
+func postDegradation(ctx context.Context, backendURL string, degradations []Degradation) []InsertionResults {
   url := backendURL + "/api/meta/accidents"
   insertionResults := make([]InsertionResults, len(degradations))
   for i, degradation := range degradations {
+    analysisSettings := degradation.analysisSettings
     date := time.UnixMilli(degradation.timestamp).UTC().Format("2006-01-02")
     medianMessage := getMessageBasedOnMedianChange(degradation.medianValues)
     insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.test + "/" + analysisSettings.metric, Kind: "Inferred", Reason: medianMessage, BuildNumber: degradation.build}

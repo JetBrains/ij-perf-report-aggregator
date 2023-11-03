@@ -34,36 +34,37 @@ func main() {
   analysisSettings = append(analysisSettings, generateGradleAnalysisSettings()...)
   analysisSettings = append(analysisSettings, generatePhpStormAnalysisSettings()...)
 
-  var wg sync.WaitGroup
+  ctx := context.Background()
+  degradations := make([]Degradation, 0, 1000)
   for _, analysisSetting := range analysisSettings {
-    ctx := context.Background()
     log.Printf("Processing %v", analysisSetting)
     timestamps, values, builds, err := getDataFromClickhouse(ctx, backendUrl, analysisSetting)
     if err != nil {
       log.Printf("%v", err)
     }
 
-    degradations := inferDegradations(values, builds, timestamps)
+    degradations = append(degradations, inferDegradations(values, builds, timestamps, analysisSetting)...)
+  }
 
-    insertionResults := postDegradation(ctx, backendUrl, analysisSetting, degradations)
+  insertionResults := postDegradation(ctx, backendUrl, degradations)
 
-    for _, result := range insertionResults {
-      if result.error != nil {
-        log.Printf("%v", result.error)
-        continue
-      }
-      if !result.wasInserted {
-        continue
-      }
-      wg.Add(1)
-      go func(result InsertionResults, setting AnalysisSettings) {
-        defer wg.Done()
-        err := sendSlackMessage(ctx, result.degradation, setting)
-        if err != nil {
-          log.Printf("%v", err)
-        }
-      }(result, analysisSetting)
+  var wg sync.WaitGroup
+  for _, result := range insertionResults {
+    if result.error != nil {
+      log.Printf("%v", result.error)
+      continue
     }
+    if !result.wasInserted {
+      continue
+    }
+    wg.Add(1)
+    go func(result InsertionResults) {
+      defer wg.Done()
+      err := sendSlackMessage(ctx, result.degradation)
+      if err != nil {
+        log.Printf("%v", err)
+      }
+    }(result)
   }
   wg.Wait()
 }

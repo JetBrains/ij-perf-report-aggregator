@@ -8,9 +8,10 @@ import (
 )
 
 type Degradation struct {
-  build        string
-  timestamp    int64
-  medianValues MedianValues
+  build            string
+  timestamp        int64
+  medianValues     MedianValues
+  analysisSettings AnalysisSettings
 }
 
 type MedianValues struct {
@@ -18,7 +19,7 @@ type MedianValues struct {
   newValue      float64
 }
 
-func inferDegradations(values []int, builds []string, timestamps []int64) []Degradation {
+func inferDegradations(values []int, builds []string, timestamps []int64, analysisSettings AnalysisSettings) []Degradation {
   numberOfLastValuesToTake := 40
 
   changePoints, err := server.GetChangePointIndexes(values, 1)
@@ -41,9 +42,10 @@ func inferDegradations(values []int, builds []string, timestamps []int64) []Degr
     if percentageChange > 10 && isLatestChangePoint {
       build := builds[index]
       degradation := Degradation{
-        build:        build,
-        timestamp:    timestamps[index],
-        medianValues: MedianValues{previousValue: previousMedian, newValue: currentMedian},
+        build:            build,
+        timestamp:        timestamps[index],
+        medianValues:     MedianValues{previousValue: previousMedian, newValue: currentMedian},
+        analysisSettings: analysisSettings,
       }
       degradations = append(degradations, degradation)
     }

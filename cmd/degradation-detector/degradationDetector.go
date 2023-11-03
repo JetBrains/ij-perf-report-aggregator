@@ -12,6 +12,7 @@ type Degradation struct {
   timestamp        int64
   medianValues     MedianValues
   analysisSettings AnalysisSettings
+  isDegradation    bool
 }
 
 type MedianValues struct {
@@ -41,11 +42,16 @@ func inferDegradations(values []int, builds []string, timestamps []int64, analys
     isLatestChangePoint := index >= len(values)-numberOfLastValuesToTake
     if percentageChange > 10 && isLatestChangePoint {
       build := builds[index]
+      isDegradation := false
+      if currentMedian > previousMedian {
+        isDegradation = true
+      }
       degradation := Degradation{
         build:            build,
         timestamp:        timestamps[index],
         medianValues:     MedianValues{previousValue: previousMedian, newValue: currentMedian},
         analysisSettings: analysisSettings,
+        isDegradation:    isDegradation,
       }
       degradations = append(degradations, degradation)
     }

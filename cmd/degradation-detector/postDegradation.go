@@ -23,7 +23,11 @@ func postDegradation(ctx context.Context, backendURL string, degradations []Degr
     analysisSettings := degradation.analysisSettings
     date := time.UnixMilli(degradation.timestamp).UTC().Format("2006-01-02")
     medianMessage := getMessageBasedOnMedianChange(degradation.medianValues)
-    insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.test + "/" + analysisSettings.metric, Kind: "Inferred", Reason: medianMessage, BuildNumber: degradation.build}
+    kind := "Inferred_Regression"
+    if !degradation.isDegradation {
+      kind = "Inferred_Improvement"
+    }
+    insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.test + "/" + analysisSettings.metric, Kind: kind, Reason: medianMessage, BuildNumber: degradation.build}
     params, err := json.Marshal(insertParams)
     if err != nil {
       insertionResults[i] = InsertionResults{error: fmt.Errorf("failed to marshal query: %w", err)}

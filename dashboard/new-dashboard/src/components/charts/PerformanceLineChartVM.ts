@@ -1,5 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -55,12 +55,18 @@ export class PerformanceLineChartVM {
           accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
           const div = getWarningIcon()
           accidentHtml.append(div)
-          accidentHtml.append("Known " + accident.kind.toLowerCase() + ": " + accident.reason)
+          accidentHtml.append(this.getAccidentMessage(accident))
           element.append(accidentHtml)
         }
       }
       return element
     }
+  }
+
+  private getAccidentMessage(accident: Accident): string {
+    return accident.kind == AccidentKind.InferredRegression || accident.kind == AccidentKind.InferredImprovement
+      ? accident.reason
+      : "Known " + accident.kind.toLowerCase() + ": " + accident.reason
   }
 
   private accidentsConfigurator: AccidentsConfigurator | null

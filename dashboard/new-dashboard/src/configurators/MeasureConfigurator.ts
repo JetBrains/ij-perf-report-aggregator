@@ -291,8 +291,12 @@ function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined,
         switch (accident.kind) {
           case AccidentKind.Regression:
             return "#cc0000"
+          case AccidentKind.InferredRegression:
+            return "#efa9a9"
           case AccidentKind.Improvement:
             return "#009900"
+          case AccidentKind.InferredImprovement:
+            return "#acffac"
           case AccidentKind.Investigation:
             return "orange"
         }

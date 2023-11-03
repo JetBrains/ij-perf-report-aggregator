@@ -72,6 +72,7 @@ enum ROUTES {
   IntelliJSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   IntelliJSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   IntelliJSharedIndicesTypingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesTypingDashboard`,
+  IntelliJSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesDumbModeDashboard`,
   IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
@@ -118,6 +119,7 @@ enum ROUTES {
   GoLandSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   GoLandSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   GoLandSharedIndicesTypingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesTypingDashboard`,
+  GoLandSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesDumbModeDashboard`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
@@ -130,6 +132,7 @@ enum ROUTES {
   PyCharmSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesIndexedFilesDashboard`,
   PyCharmSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   PyCharmSharedIndicesTypingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesTypingDashboard`,
+  PyCharmSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesDumbModeDashboard`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
@@ -338,6 +341,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJSharedIndicesTypingDashboard,
           label: "Typing",
+        },
+        {
+          url: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
         },
         {
           url: ROUTES.IntelliJSharedIndicesTests,
@@ -616,6 +623,10 @@ const GOLAND: Product = {
           label: "Typing",
         },
         {
+          url: ROUTES.GoLandSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
+        },
+        {
           url: ROUTES.GoLandTests,
           label: TESTS_LABEL,
         },
@@ -705,6 +716,10 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmSharedIndicesTypingDashboard,
           label: "Typing",
+        },
+        {
+          url: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
+          label: "Dumb Mode Time",
         },
         {
           url: ROUTES.PyCharmTests,
@@ -1122,6 +1137,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
         },
         {
+          path: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
+          component: () => import("./components/intelliJ/sharedIndexes/DumbModeDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
+        },
+        {
           path: ROUTES.IntelliJGCDashboard,
           component: () => import("./components/intelliJ/experiments/GarbageCollectorDashboard.vue"),
           meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
@@ -1304,10 +1324,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
           component: () => import("./components/goland/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
-        },{
+        },
+        {
           path: ROUTES.GoLandSharedIndicesTypingDashboard,
           component: () => import("./components/goland/sharedIndexes/TypingDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
+        },
+        {
+          path: ROUTES.GoLandSharedIndicesDumbModeDashboard,
+          component: () => import("./components/goland/sharedIndexes/DumbModeDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
         },
         {
           path: ROUTES.PyCharmDashboard,
@@ -1381,6 +1407,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PyCharmSharedIndicesTypingDashboard,
           component: () => import("./components/pycharm/sharedIndexes/TypingDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
+        },
+        {
+          path: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
+          component: () => import("./components/pycharm/sharedIndexes/DumbModeDashboard.vue"),
+          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
         },
         {
           path: ROUTES.WebStormDashboard,

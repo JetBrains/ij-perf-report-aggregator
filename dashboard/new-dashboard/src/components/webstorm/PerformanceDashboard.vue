@@ -28,34 +28,6 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Local Inspections"
-        measure="localInspections"
-        :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing"
-        measure="indexingTimeWithoutPauses"
-        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning"
-        measure="scanningTimeWithoutPauses"
-        :projects="['aws_cdk/indexing', 'vkui/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Completion"
-        measure="completion"
-        :projects="['vkui/completion', 'ring-ui/completion', 'vue3-admin-vite/completion']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
         label="Code Vision (JSReferencesCodeVisionProvider)"
         measure="JSReferencesCodeVisionProvider"
         :projects="[
@@ -66,6 +38,96 @@
           'eslint-plugin-jest/localInspection/misc.ts',
         ]"
       />
+    </section>
+
+    <Divider title="TypeScript" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['eslint-plugin-jest/completion/types']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Local inspections"
+          measure="localInspections"
+          :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing"
+          measure="typing"
+          :projects="['eslint-plugin-jest/typing']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexing"
+          measure="indexingTimeWithoutPauses"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Scanning"
+          measure="scanningTimeWithoutPauses"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+        />
+      </div>
+    </section>
+
+    <Divider title="JavaScript" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['axios/completion/functions']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Local inspections"
+          measure="localInspections"
+          :projects="['axios/localInspection/utils.js']"
+        />
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing"
+          measure="typing"
+          :projects="['axios/typing']"
+        />
+      </div>
+    </section>
+
+    <section class="flex gap-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexing"
+          measure="indexingTimeWithoutPauses"
+          :projects="['axios/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Scanning"
+          measure="scanningTimeWithoutPauses"
+          :projects="['axios/indexing']"
+        />
+      </div>
     </section>
 
     <Divider title="Angular" />
@@ -120,7 +182,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component']"
+          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component', 'vkui/completion/component', 'ring-ui/completion']"
         />
       </div>
 
@@ -146,14 +208,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['react-todo-js/indexing', 'ring-ui/indexing']"
+          :projects="['react-todo-js/indexing', 'ring-ui/indexing', 'vkui/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['react-todo-js/indexing', 'ring-ui/indexing']"
+          :projects="['react-todo-js/indexing', 'ring-ui/indexing', 'vkui/indexing']"
         />
       </div>
     </section>
@@ -165,7 +227,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['vue-template/completion/attribute', 'vue-template/completion/component']"
+          :projects="['vue-template/completion/attribute', 'vue-template/completion/component', 'vue3-admin-vite/completion/component', 'vue3-admin-vite/completion/attribute']"
         />
       </div>
 

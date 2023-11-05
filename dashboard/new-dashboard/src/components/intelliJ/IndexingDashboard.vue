@@ -53,7 +53,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Processing Time Java", "Processing Time Kotlin"],
-    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
+    measures: ["processingTime#JAVA", "processingTime#Kotlin"],
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
@@ -98,7 +98,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Processing Time Java", "Processing Time Kotlin"],
-    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
+    measures: ["processingTime#JAVA", "processingTime#Kotlin"],
     projects: [
       "empty_project/indexing",
       "grails/indexing",
@@ -117,7 +117,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Processing Time Java", "Processing Time Kotlin"],
-    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
+    measures: ["processingTime#JAVA", "processingTime#Kotlin"],
     projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
   },
   {

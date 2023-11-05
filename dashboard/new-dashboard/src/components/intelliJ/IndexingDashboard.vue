@@ -12,7 +12,7 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'processingSpeed#JAVA'"
-          :title="'Indexing Java (kB/s)'"
+          :title="'Indexing Speed Java (kB/s)'"
           :chart-color="'#219653'"
           :value-unit="'counter'"
         />
@@ -21,7 +21,7 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-measure="'processingSpeed#Kotlin'"
-          :title="'Indexing Kotlin (kB/s)'"
+          :title="'Indexing Speed Kotlin (kB/s)'"
           :chart-color="'#9B51E0'"
           :value-unit="'counter'"
         />
@@ -49,6 +49,11 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Big projects)", "Initial Scanning (Big projects)", "Initial Number of indexed files (Big projects)"],
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
+  },
+  {
+    labels: ["Processing Time Java", "Processing Time Kotlin"],
+    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
     projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
@@ -92,8 +97,27 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["Processing Time Java", "Processing Time Kotlin"],
+    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
+    projects: [
+      "empty_project/indexing",
+      "grails/indexing",
+      "java/indexing",
+      "kotlin/indexing",
+      "kotlin_coroutines/indexing",
+      "spring_boot/indexing",
+      "spring_boot_maven/indexing",
+      "kotlin_petclinic/indexing",
+    ],
+  },
+  {
     labels: ["Indexing", "Scanning", "Number of indexed files"],
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
+  },
+  {
+    labels: ["Processing Time Java", "Processing Time Kotlin"],
+    measures: ["processingSpeed#JAVA", "processingSpeed#KOTLIN"],
     projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
   },
   {

@@ -83,6 +83,17 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     branch = dataSeries[11] as string
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
+  if (dbType == DBType.BAZEL) {
+    metricName = dataSeries[2] as string
+    if (dataSeries[3] == "c") {
+      type = "counter"
+    }
+    machineName = dataSeries[4] as string
+    buildId = dataSeries[5] as number
+    projectName = dataSeries[6] as string
+    branch = dataSeries[7] as string
+    console.log(dataSeries)
+  }
   if (dbType == DBType.QODANA) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number

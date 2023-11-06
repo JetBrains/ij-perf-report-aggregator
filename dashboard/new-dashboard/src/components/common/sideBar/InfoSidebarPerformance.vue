@@ -346,12 +346,15 @@ function getArtifactsUrl() {
     window.open(vm.data.value?.artifactsUrl)
   } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
     const db = serverConfigurator.db
-    const table = serverConfigurator.table
-    getTeamcityBuildType(db, table, vm.data.value.buildId, (type: string | null) => {
-      if (vm.data.value) {
-        window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)
-      }
-    })
+    if (db == "perfint" || db == "perfintDev") {
+      getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId, (type: string | null) => {
+        if (vm.data.value) {
+          window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)
+        }
+      })
+    } else {
+      window.open(vm.data.value.artifactsUrl)
+    }
   }
 }
 

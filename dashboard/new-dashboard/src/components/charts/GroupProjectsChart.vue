@@ -24,16 +24,18 @@ interface Props {
   projects: string[]
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
+  aliases?: string[] | null
 }
 
 const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms",
   legendFormatter: (name: string) => name,
+  aliases: null,
 })
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
-const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])])
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null, props.aliases)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
 watch(

@@ -17,7 +17,8 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
 
   constructor(
     readonly name: string,
-    readonly multiple: boolean
+    readonly multiple: boolean,
+    readonly aliases: string[] | null = null
   ) {
     this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
   }
@@ -36,7 +37,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
     if (this.multiple && Array.isArray(value)) {
       filter.v = value[0]
       if (value.length > 1) {
-        configureQueryProducer(configuration, filter, value)
+        configureQueryProducer(configuration, filter, value, this.aliases)
       }
     }
     query.addFilter(filter)
@@ -75,9 +76,10 @@ export function dimensionConfigurator(
   persistentStateManager: PersistentStateManager | null,
   multiple: boolean = false,
   filters: FilterConfigurator[] = [],
-  customValueSort: ((a: string, b: string) => number) | null = null
+  customValueSort: ((a: string, b: string) => number) | null = null,
+  aliases: string[] | null = null
 ): DimensionConfigurator {
-  const configurator = new DimensionConfigurator(name, multiple)
+  const configurator = new DimensionConfigurator(name, multiple, aliases)
   persistentStateManager?.add(name, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
@@ -118,7 +120,7 @@ export function filterSelected(configurator: DimensionConfigurator, data: string
   }
 }
 
-export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[]): void {
+export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[], aliases: string[] | null = null): void {
   configuration.queryProducers.push({
     size(): number {
       return values.length
@@ -127,6 +129,9 @@ export function configureQueryProducer(configuration: DataQueryExecutorConfigura
       filter.v = values[index]
     },
     getSeriesName(index: number): string {
+      if (aliases != null && aliases.length > index) {
+        return aliases[index]
+      }
       return values[index]
     },
     getMeasureName(_index: number): string {

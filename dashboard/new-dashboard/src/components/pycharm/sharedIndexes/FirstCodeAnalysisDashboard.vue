@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="First Code Analysis (Pandas)"
+        measure="firstCodeAnalysis"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="First Code Analysis (Keras)"
         measure="firstCodeAnalysis"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

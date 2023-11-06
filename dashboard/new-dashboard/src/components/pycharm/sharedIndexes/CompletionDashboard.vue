@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Completion (Pandas)"
+        measure="completion"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Completion (Keras)"
         measure="completion"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

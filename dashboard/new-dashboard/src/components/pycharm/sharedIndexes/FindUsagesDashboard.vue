@@ -21,7 +21,14 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Find Usages (Empty Project)"
+        label="Find Usages (Pandas)"
+        measure="findUsages"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (Keras)"
         measure="findUsages"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"
       />

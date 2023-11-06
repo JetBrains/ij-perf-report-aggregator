@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Typing (Pandas)"
+        measure="test#max_awt_delay"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Typing (Keras)"
         measure="test#max_awt_delay"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

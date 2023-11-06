@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Indexing (Pandas)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Indexing (Keras)"
         :measure="['indexingTimeWithoutPauses']"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

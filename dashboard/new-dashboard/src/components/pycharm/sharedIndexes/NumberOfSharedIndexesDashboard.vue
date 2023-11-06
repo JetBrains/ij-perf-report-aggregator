@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Number of indexing files by shared indexes (Pandas)"
+        measure="numberOfFilesIndexedByExtensions"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Number of indexing files by shared indexes (Keras)"
         measure="numberOfFilesIndexedByExtensions"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

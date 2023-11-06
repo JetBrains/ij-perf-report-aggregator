@@ -21,6 +21,13 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Dumb Mode Time (Pandas)"
+        measure="dumbModeTimeWithPauses"
+        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Dumb Mode Time (Keras)"
         measure="dumbModeTimeWithPauses"
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"

@@ -67,9 +67,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       } else {
         if (value.startsWith("intellij-macos-unit-2200-large-")) {
           groupName = macLarge
-        } else if (value.startsWith("intellij-linux-aws-m-i") || value.startsWith("intellij-linux-aws-3-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge"
         } else if (value.startsWith("intellij-linux-performance-aws-i-") || value.startsWith("intellij-linux-performance-aws-lt")) {
           // https://aws.amazon.com/ec2/instance-types/c6i/
           // noinspection SpellCheckingInspection
@@ -86,7 +83,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // https://aws.amazon.com/ec2/instance-types/c6id/
           // noinspection SpellCheckingInspection
           groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-        } else if (value.startsWith("intellij-linux-2004-aws-i")) {
+        } else if (value.startsWith("intellij-linux-2004-aws-i") || value.startsWith("intellij-linux-2004-aws-c5d") || value.startsWith("intellij-linux-aws-lt")) {
           // https://aws.amazon.com/ec2/instance-types/c5/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
@@ -94,6 +91,14 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           // https://aws.amazon.com/ec2/instance-types/c5/
           // noinspection SpellCheckingInspection
           groupName = "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
+        } else if (value.startsWith("intellij-linux-2004-aws-m5ad-lt") || value.startsWith("intellij-linux-aws-amd-2-lt")) {
+          // https://aws.amazon.com/ec2/instance-types/c5/
+          // noinspection SpellCheckingInspection
+          groupName = "Linux EC2 M5ad.xlarge (4 vCPU AMD EPYC, 8 GB)"
+        } else if (value.startsWith("intellij-linux-2004-aws-m5d-lt") || value.startsWith("intellij-linux-aws-3-lt")) {
+          // https://aws.amazon.com/ec2/instance-types/c5/
+          // noinspection SpellCheckingInspection
+          groupName = "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)"
         } else if (value.startsWith("intellij-linux-hw-munit-")) {
           groupName = "Linux Munich i7-3770, 32 Gb"
         } else if (value.startsWith("intellij-linux-hw-EXC")) {

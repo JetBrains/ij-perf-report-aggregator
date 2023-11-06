@@ -9,13 +9,7 @@
       <GroupProjectsChart
         label="Dumb Mode Time (ToolboxEnterprise)"
         measure="dumbModeTimeWithPauses"
-        :projects="[
-          'tbe-downloaded-sharedIndexes',
-          'tbe-with-java-sharedIndexes',
-          'tbe-with-maven-sharedIndexes',
-          'tbe-with-project-sharedIndexes',
-          'tbe-without-sharedIndexes'
-        ]"
+        :projects="['tbe-downloaded-sharedIndexes', 'tbe-with-java-sharedIndexes', 'tbe-with-maven-sharedIndexes', 'tbe-with-project-sharedIndexes', 'tbe-without-sharedIndexes']"
       />
     </section>
     <section>
@@ -113,12 +107,12 @@
           label="Dumb Mode Time (JDK)"
           measure="dumbModeTimeWithPauses"
           :projects="[
-          'jdk-only-downloaded-sharedIndexes',
-          'jdk-only-with-java-sharedIndexes',
-          'jdk-only-with-maven-sharedIndexes',
-          'jdk-only-with-project-sharedIndexes',
-          'jdk-only-without-sharedIndexes',
-        ]"
+            'jdk-only-downloaded-sharedIndexes',
+            'jdk-only-with-java-sharedIndexes',
+            'jdk-only-with-maven-sharedIndexes',
+            'jdk-only-with-project-sharedIndexes',
+            'jdk-only-without-sharedIndexes',
+          ]"
         />
       </section>
     </section>

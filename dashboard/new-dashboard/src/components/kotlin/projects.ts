@@ -49,11 +49,11 @@ export interface ProjectsChartDefinition {
 }
 
 export const completionProjects = {
-  kotlinEmpty: ["kotlin_empty/completion/empty_place_with_library_cache", "kotlin_empty/completion/empty_place_typing_with_library_cache"],
+  kotlinEmpty: ["kotlin_empty/completion/Main_empty_place_with_library_cache", "kotlin_empty/completion/Main_empty_place_typing_with_library_cache"],
   intelliJ: [
-    "intellij_commit/completion/empty_place_with_library_cache",
-    "intellij_commit/completion/after_parameter_with_library_cache",
-    "intellij_commit/completion/empty_place_typing_with_library_cache",
+    "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_with_library_cache",
+    "intellij_commit/completion/DexInlineCallStackComparisonTest_after_parameter_with_library_cache",
+    "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_typing_with_library_cache_",
   ],
   intelliJ2: [
     "intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache",

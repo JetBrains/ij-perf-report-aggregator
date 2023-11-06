@@ -32,6 +32,7 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
+        :aliases="chart.aliases"
       />
     </section>
   </DashboardPage>
@@ -49,6 +50,7 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["VFS Refresh"],
     measures: ["vfs_initial_refresh"],
     projects: ["intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status"],
+    aliases: ["default", "1 thread", "git status"],
   },
   {
     labels: ["Rebuild (Big projects)"],

@@ -43,7 +43,7 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <template
-          v-for="scenario in scenarioConfigurator.selected.value"
+          v-for="scenario in scenarios"
           :key="scenario"
         >
           <GroupProjectsChart
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { computed, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -132,7 +132,7 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
 const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const configurators: DataQueryConfigurator[] = [serverConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
+const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
 
 provide(dashboardConfiguratorsKey, configurators)
 
@@ -143,6 +143,14 @@ function onChangeRange(value: TimeRange) {
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
 }
+
+const scenarios = computed(() => {
+  if (scenarioConfigurator.selected.value == null) return []
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    return scenarioConfigurator.selected.value
+  }
+  return [scenarioConfigurator.selected.value]
+})
 </script>
 
 <style>

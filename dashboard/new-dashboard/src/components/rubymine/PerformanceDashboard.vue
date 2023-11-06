@@ -114,18 +114,45 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Typing: average delay"
+        label="Typing: average AWT delay"
         measure="test#average_awt_delay"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
+        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
+        :aliases="['Ruby assoc with map', 'RBS method']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Typing: total time"
         measure="typing"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
+        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
+        :aliases="['Ruby assoc with map', 'RBS method']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Enter handling: average AWT delay"
+        measure="test#average_awt_delay"
+        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
+        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Enter handling: total time"
+        measure="typing"
+        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
+        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="File analysis on opening"
+        measure="firstCodeAnalysis"
+        :projects="['GitLab/typing/lambda_body_in_class', 'RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
+        :aliases="['project.rb (GitLab)', 'swagger_helper.rb', 'activerecord-generated.rbs', 'user_model_spec.rb']"
+      />
+    </section>
+
     <section>
       <GroupProjectsChart
         label="Get Symbol Members: execution time"

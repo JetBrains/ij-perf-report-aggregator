@@ -163,14 +163,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['angular-toh-pt6/indexing']"
+          :projects="['toh-pt6/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['angular-toh-pt6/indexing']"
+          :projects="['toh-pt6/indexing']"
         />
       </div>
     </section>
@@ -182,7 +182,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component', 'vkui/completion/component', 'ring-ui/completion']"
+          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component', 'vkui/completion/component', 'ring-ui/completion/component']"
         />
       </div>
 

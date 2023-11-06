@@ -6,12 +6,14 @@ export interface Definition {
 export interface Chart {
   definition: Definition
   projects: string[]
+  aliases?: string[]
 }
 
 export interface ChartDefinition {
   labels: string[]
   measures: string[] | string[][] | (string | string[])[]
   projects: string[]
+  aliases?: string[]
 }
 
 export function combineCharts(charts: ChartDefinition[]): Chart[] {
@@ -28,6 +30,7 @@ export function combineCharts(charts: ChartDefinition[]): Chart[] {
       resultingCharts.push({
         definition: labelAndMeasure,
         projects: chart.projects,
+        aliases: chart.aliases,
       })
     }
   }

@@ -70,11 +70,6 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
 func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, initialSince time.Time, userSpecifiedSince time.Time, httpClient *http.Client, logger *zap.Logger, ) error {
   serverUrl := tcUrl + "/app/rest"
 
-  serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
-  if err != nil {
-    return err
-  }
-
   config := analyzer.GetAnalyzer(projectId)
 
   db, err := analyzer.OpenDb(clickHouseUrl, config)
@@ -98,7 +93,6 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
           config,
           buildTypeId,
           serverUrl,
-          serverBuildUrl,
           tcUrl,
           userSpecifiedSince,
           initialSince,
@@ -118,12 +112,15 @@ func collectBuildConfiguration(
   config analyzer.DatabaseConfiguration,
   buildTypeId string,
   serverUrl string,
-  serverBuildUrl *url.URL,
   serverHost string,
   userSpecifiedSince time.Time,
   initialSince time.Time,
   logger *zap.Logger,
 ) error {
+  serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
+  if err != nil {
+    return err
+  }
   q := serverBuildUrl.Query()
   locator := "buildType:(id:" + buildTypeId + "),defaultFilter:false,failedToStart:false,state:finished,canceled:false,count:50"
 
@@ -152,7 +149,7 @@ func collectBuildConfiguration(
 
   reportExistenceChecker := &ReportExistenceChecker{}
 
-  err := reportExistenceChecker.reset(taskContext, config.DbName, config.TableName, db, since)
+  err = reportExistenceChecker.reset(taskContext, config.DbName, config.TableName, db, since)
   if err != nil {
     return err
   }

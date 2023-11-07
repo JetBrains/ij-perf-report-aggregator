@@ -116,40 +116,220 @@
       <GroupProjectsChart
         label="Typing: average AWT delay"
         measure="test#average_awt_delay"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
-        :aliases="['Ruby assoc with map', 'RBS method']"
+        :projects="[
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'GitLab/typing/user/method',
+          'GitLab/typing/user/class',
+          'GitLab/typing/user/lambda',
+          'GitLab/typing/parser/method',
+          'GitLab/typing/parser/class',
+          'GitLab/typing/parser/class_array',
+          'GitLab/typing/parser/class_assoc',
+        ]"
+        :aliases="[
+          'Ruby assoc with map',
+          'RBS method',
+          'User Model Method (GL)',
+          'User Model Class (GL)',
+          'User Model Lambda (GL)',
+          'Parser Method',
+          'Parser Class',
+          'Parser Array',
+          'Parser Assoc',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Typing: total time"
         measure="typing"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
-        :aliases="['Ruby assoc with map', 'RBS method']"
+        :projects="[
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'GitLab/typing/user/method',
+          'GitLab/typing/user/class',
+          'GitLab/typing/user/lambda',
+          'GitLab/typing/parser/method',
+          'GitLab/typing/parser/class',
+          'GitLab/typing/parser/class_array',
+          'GitLab/typing/parser/class_assoc',
+        ]"
+        :aliases="[
+          'Ruby assoc with map',
+          'RBS method',
+          'User Model Method (GL)',
+          'User Model Class (GL)',
+          'User Model Lambda (GL)',
+          'Parser Method',
+          'Parser Class',
+          'Parser Array',
+          'Parser Assoc',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Enter handling: average AWT delay"
         measure="test#average_awt_delay"
-        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
-        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+        :projects="[
+          'RUBY-29542/typing',
+          'GitLab/typing/do_in_method',
+          'GitLab/typing/method',
+          'GitLab/typing/class',
+          'GitLab/typing/lambda_body_in_class',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/parser/class',
+          'GitLab/enter/parser/class_array',
+          'GitLab/enter/parser/class_assoc',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/structure/after_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+        ]"
+        :aliases="[
+          'Do block in spec',
+          'Do block in method',
+          'Method body',
+          'Class body',
+          'Lambda body in class',
+          'Ruby Parser Method',
+          'Ruby Parser Class',
+          'Ruby Parser Array',
+          'Ruby Parser Assoc',
+          'structure.sql, inside query (GL)',
+          'structure.sql, after query (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Enter handling: total time"
         measure="typing"
-        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
-        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+        :projects="[
+          'RUBY-29542/typing',
+          'GitLab/typing/do_in_method',
+          'GitLab/typing/method',
+          'GitLab/typing/class',
+          'GitLab/typing/lambda_body_in_class',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/parser/class',
+          'GitLab/enter/parser/class_array',
+          'GitLab/enter/parser/class_assoc',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/structure/after_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+        ]"
+        :aliases="[
+          'Do block in spec',
+          'Do block in method',
+          'Method body',
+          'Class body',
+          'Lambda body in class',
+          'Ruby Parser Method',
+          'Ruby Parser Class',
+          'Ruby Parser Array',
+          'Ruby Parser Assoc',
+          'structure.sql, inside query (GL)',
+          'structure.sql, after query (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="File analysis on opening"
         measure="firstCodeAnalysis"
-        :projects="['GitLab/typing/lambda_body_in_class', 'RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
-        :aliases="['project.rb (GitLab)', 'swagger_helper.rb', 'activerecord-generated.rbs', 'user_model_spec.rb']"
+        :projects="[
+          'GitLab/typing/lambda_body_in_class',
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'RUBY-29542/typing',
+          'GitLab/typing/user/method',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+          'diaspora-project-test/completion/constant',
+          'gitlab-project-test/completion/constant',
+          'redmine-project-test/completion/constant',
+          'diaspora-project-test/completion/exceptions',
+          'gitlab-project-test/completion/exceptions',
+          'redmine-project-test/completion/exceptions',
+          'diaspora-project-test/completion/exceptions-prefix',
+          'gitlab-project-test/completion/exceptions-prefix',
+          'redmine-project-test/completion/exceptions-prefix',
+          'diaspora-project-test/completion/localization',
+          'gitlab-project-test/completion/localization',
+          'redmine-project-test/completion/localization',
+          'diaspora-project-test/completion/method',
+          'gitlab-project-test/completion/method',
+          'redmine-project-test/completion/method',
+          'diaspora-project-test/completion/qualified',
+          'gitlab-project-test/completion/qualified',
+          'redmine-project-test/completion/qualified',
+          'RUBY-23764-Case1/ruby-23764-findusages-case1',
+          'RUBY-23764-Case2/ruby-23764-findusages-case2',
+        ]"
+        :aliases="[
+          'Project Model (GL)',
+          'swagger_helper.rb',
+          'activerecord-generated.rbs',
+          'User Model Spec (GL)',
+          'User Model (GL)',
+          'Ruby Parser',
+          'structure.sql (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+          'Message Model (DI)',
+          'Clusters Controller (GL)',
+          'Time Entry Activity Model (RM)',
+          'Admins Controller (DI)',
+          'Admin App Controller (GL)',
+          'Account Controller (RM)',
+          'Process Photo Worker (DI)',
+          'Build Trace Chunk Model (GL)',
+          'App Controller (RM)',
+          'Admin Pods View Haml (DI)',
+          'Admin Locale View Haml (GL)',
+          'Time Entries Import View (RM)',
+          'Conversation Visibility Model (DI)',
+          'Epic Move List (GL)',
+          'Auto Completes Controller (RM)',
+          'Contacts Controller Spec (DI)',
+          'Environment Entity Serializer (GL)',
+          'Admin Info View Erb (RM)',
+          'Users Spec Factory (GL)',
+          'File Collection Spec (GL)',
+        ]"
       />
     </section>
 

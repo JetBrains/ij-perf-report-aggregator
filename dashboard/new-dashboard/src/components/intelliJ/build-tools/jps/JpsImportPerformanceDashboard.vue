@@ -66,6 +66,7 @@ const metricsDeclaration = [
   "jps.save.changed.project.entities.ms",
   "jps.save.global.entities.ms",
   "jps.storage.jps.conf.reader.load.component.ms",
+
   "workspaceModel.check.recursive.update.ms",
   "workspaceModel.collect.changes.ms",
   "workspaceModel.delayed.project.synchronizer.sync.ms",
@@ -79,10 +80,12 @@ const metricsDeclaration = [
   "workspaceModel.load.cache.metadata.from.file.ms",
   "workspaceModel.loading.from.cache.ms",
   "workspaceModel.loading.total.ms",
+
   "workspaceModel.moduleBridge.before.changed.ms",
   "workspaceModel.moduleBridge.facet.initialization.ms",
   "workspaceModel.moduleBridge.update.option.ms",
   "workspaceModel.moduleBridgeLoader.loading.modules.ms",
+
   "workspaceModel.moduleManagerBridge.build.module.graph.ms",
   "workspaceModel.moduleManagerBridge.create.module.instance.ms",
   "workspaceModel.moduleManagerBridge.get.modules.ms",
@@ -91,6 +94,7 @@ const metricsDeclaration = [
   "workspaceModel.moduleManagerBridge.new.nonPersistent.module.ms",
   "workspaceModel.moduleManagerBridge.newModule.ms",
   "workspaceModel.moduleManagerBridge.set.unloadedModules.ms",
+
   "workspaceModel.mutableEntityStorage.add.diff.ms",
   "workspaceModel.mutableEntityStorage.add.entity.ms",
   "workspaceModel.mutableEntityStorage.collect.changes.ms",
@@ -106,16 +110,27 @@ const metricsDeclaration = [
   "workspaceModel.mutableEntityStorage.replace.by.source.ms",
   "workspaceModel.mutableEntityStorage.resolve.ms",
   "workspaceModel.mutableEntityStorage.to.snapshot.ms",
+
   "workspaceModel.orphan.listener.update.ms",
   "workspaceModel.pre.handlers.ms",
   "workspaceModel.replace.project.model.ms",
   "workspaceModel.save.cache.to.file.ms",
   "workspaceModel.sync.entities.ms",
   "workspaceModel.to.snapshot.ms",
+
   "workspaceModel.update.unloaded.entities.ms",
   "workspaceModel.updates.count",
   "workspaceModel.updates.ms",
   "workspaceModel.updates.precise.ms",
+
+  "workspaceModel.cachedValue.from.cache.ms",
+  "workspaceModel.cachedValue.calculated.ms",
+  "workspaceModel.cachedValue.total.get.ms",
+  "workspaceModel.cachedValue.clear.ms",
+  "workspaceModel.cachedValueWithParameters.from.cache.ms",
+  "workspaceModel.cachedValueWithParameters.calculated.ms",
+  "workspaceModel.cachedValueWithParameters.total.get.ms",
+  "workspaceModel.cachedValueWithParameters.clear.ms",
 
   "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",

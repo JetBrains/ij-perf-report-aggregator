@@ -3,7 +3,6 @@ package degradation_detector
 import (
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
   "math"
 )
 
@@ -23,7 +22,7 @@ type MedianValues struct {
 func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysis.Settings) []Degradation {
   numberOfLastValuesToTake := 40
 
-  changePoints := server.GetChangePointIndexes(values, 1)
+  changePoints := GetChangePointIndexes(values, 1)
 
   segments := getSegmentsBetweenChangePoints(changePoints, values)
   degradations := make([]Degradation, 0)
@@ -31,9 +30,9 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
     fmt.Println("No significant change points were detected.")
     return degradations
   }
-  previousMedian := server.CalculateMedian(segments[0])
+  previousMedian := CalculateMedian(segments[0])
   for i := 1; i < len(segments); i++ {
-    currentMedian := server.CalculateMedian(segments[i])
+    currentMedian := CalculateMedian(segments[i])
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
     index := changePoints[i-1]
     isLatestChangePoint := index >= len(values)-numberOfLastValuesToTake

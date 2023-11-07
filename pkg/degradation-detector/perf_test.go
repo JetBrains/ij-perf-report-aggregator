@@ -10,7 +10,7 @@ import (
   "testing"
 )
 
-func TestChangeDetector(_ *testing.T) {
+func TestDegradationDetector(_ *testing.T) {
   backendUrl := os.Getenv("BACKEND_URL")
   if len(backendUrl) == 0 {
     backendUrl = "https://ij-perf-api.labs.jb.gg"

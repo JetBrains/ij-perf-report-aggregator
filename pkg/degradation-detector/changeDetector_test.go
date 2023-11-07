@@ -1,4 +1,4 @@
-package server
+package degradation_detector
 
 import (
   "github.com/stretchr/testify/assert"

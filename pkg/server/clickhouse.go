@@ -5,6 +5,7 @@ import (
   "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
   "net/http"
@@ -93,7 +94,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 
   response := make([]responseItem, len(queryResults))
   for i, result := range queryResults {
-    indexes := GetChangePointIndexes(result.MeasureValues, 1)
+    indexes := degradation_detector.GetChangePointIndexes(result.MeasureValues, 1)
     var valuesAfterLastChangePoint []int
     if len(indexes) == 0 {
       valuesAfterLastChangePoint = result.MeasureValues
@@ -101,7 +102,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
       lastIndex := indexes[len(indexes)-1]
       valuesAfterLastChangePoint = result.MeasureValues[lastIndex:]
     }
-    median := CalculateMedian(valuesAfterLastChangePoint)
+    median := degradation_detector.CalculateMedian(valuesAfterLastChangePoint)
     response[i] = responseItem{
       Project:     result.Project,
       MeasureName: result.MeasureName,

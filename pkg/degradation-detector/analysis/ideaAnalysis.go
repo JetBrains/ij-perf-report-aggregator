@@ -99,7 +99,7 @@ func getMetricFromTestName(test string) []string {
     return []string{"debugRunConfiguration", "debugStep_into"}
   }
   if strings.Contains(test, "/showIntentions") {
-    return []string{"Test#average_awt_delay", "showQuickFixes", "AWTEventQueue.dispatchTimeTotal"}
+    return []string{"Test#average_awt_delay", "showQuickFixes"}
   }
   if strings.Contains(test, "/showFileHistory") {
     return []string{"showFileHistory"}

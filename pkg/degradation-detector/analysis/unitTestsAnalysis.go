@@ -23,14 +23,15 @@ func GenerateUnitTestsSettings(backendUrl string) []detector.Settings {
   settings := make([]detector.Settings, 0, 1000)
   for _, test := range tests {
     settings = append(settings, detector.Settings{
-      Test:        test,
-      Db:          mainSettings.Db,
-      Table:       mainSettings.Table,
-      Channel:     mainSettings.Channel,
-      Branch:      mainSettings.Branch,
-      Machine:     mainSettings.Machine,
-      Metric:      mainSettings.Metric,
-      ProductLink: mainSettings.ProductLink,
+      Test:                   test,
+      Db:                     mainSettings.Db,
+      Table:                  mainSettings.Table,
+      Channel:                mainSettings.Channel,
+      Branch:                 mainSettings.Branch,
+      Machine:                mainSettings.Machine,
+      Metric:                 mainSettings.Metric,
+      ProductLink:            mainSettings.ProductLink,
+      DoNotReportImprovement: true,
     })
   }
   return settings

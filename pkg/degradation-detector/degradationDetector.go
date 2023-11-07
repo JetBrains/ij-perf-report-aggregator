@@ -42,6 +42,9 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
       if currentMedian > previousMedian {
         isDegradation = true
       }
+      if !isDegradation && analysisSettings.DoNotReportImprovement {
+        continue
+      }
       degradation := Degradation{
         build:            build,
         timestamp:        timestamps[index],

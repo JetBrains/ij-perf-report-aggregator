@@ -132,16 +132,88 @@
       <GroupProjectsChart
         label="Enter handling: average AWT delay"
         measure="test#average_awt_delay"
-        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
-        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+        :projects="[
+          'RUBY-29542/typing',
+          'GitLab/typing/do_in_method',
+          'GitLab/typing/method',
+          'GitLab/typing/class',
+          'GitLab/typing/lambda_body_in_class',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/parser/class',
+          'GitLab/enter/parser/class_array',
+          'GitLab/enter/parser/class_assoc',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/structure/after_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+        ]"
+        :aliases="[
+          'Do block in spec',
+          'Do block in method',
+          'Method body',
+          'Class body',
+          'Lambda body in class',
+          'Ruby Parser Method',
+          'Ruby Parser Class',
+          'Ruby Parser Array',
+          'Ruby Parser Assoc',
+          'structure.sql, inside query (GL)',
+          'structure.sql, after query (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Enter handling: total time"
         measure="typing"
-        :projects="['RUBY-29542/typing', 'GitLab/typing/do_in_method', 'GitLab/typing/method', 'GitLab/typing/class', 'GitLab/typing/lambda_body_in_class']"
-        :aliases="['Do block in spec', 'Do block in method', 'Method body', 'Class body', 'Lambda body in class']"
+        :projects="[
+          'RUBY-29542/typing',
+          'GitLab/typing/do_in_method',
+          'GitLab/typing/method',
+          'GitLab/typing/class',
+          'GitLab/typing/lambda_body_in_class',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/parser/class',
+          'GitLab/enter/parser/class_array',
+          'GitLab/enter/parser/class_assoc',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/structure/after_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+        ]"
+        :aliases="[
+          'Do block in spec',
+          'Do block in method',
+          'Method body',
+          'Class body',
+          'Lambda body in class',
+          'Ruby Parser Method',
+          'Ruby Parser Class',
+          'Ruby Parser Array',
+          'Ruby Parser Assoc',
+          'structure.sql, inside query (GL)',
+          'structure.sql, after query (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+        ]"
       />
     </section>
     <section>

@@ -19,8 +19,12 @@ type MedianValues struct {
 }
 
 func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings Settings) []Degradation {
-  segmentSizeThreshold := 3
   degradations := make([]Degradation, 0)
+
+  minimumSegmentLength := analysisSettings.MinimumSegmentLength
+  if minimumSegmentLength == 0 {
+    minimumSegmentLength = 3
+  }
 
   changePoints := GetChangePointIndexes(values, 1)
   segments := getSegmentsBetweenChangePoints(changePoints, values)
@@ -29,15 +33,11 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
     return degradations
   }
   lastSegment := segments[len(segments)-1]
-  if len(lastSegment) < segmentSizeThreshold {
+  if len(lastSegment) < minimumSegmentLength {
     fmt.Println("Last segment is too short.")
     return degradations
   }
 
-  minimumSegmentLength := analysisSettings.MinimumSegmentLength
-  if minimumSegmentLength == 0 {
-    minimumSegmentLength = 3
-  }
   skippedSegments := 0
   for i := len(segments) - 2; i >= 0 && skippedSegments < 4; i-- {
     if len(segments[i]) < minimumSegmentLength {

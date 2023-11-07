@@ -1,4 +1,4 @@
-package main
+package degradation_detector
 
 import (
   "bytes"
@@ -11,12 +11,12 @@ import (
 )
 
 type InsertionResults struct {
-  degradation Degradation
-  wasInserted bool
-  error       error
+  Degradation Degradation
+  WasInserted bool
+  Error       error
 }
 
-func postDegradation(ctx context.Context, backendURL string, degradations []Degradation) []InsertionResults {
+func PostDegradation(ctx context.Context, backendURL string, degradations []Degradation) []InsertionResults {
   url := backendURL + "/api/meta/accidents"
   insertionResults := make([]InsertionResults, len(degradations))
   for i, degradation := range degradations {
@@ -27,16 +27,16 @@ func postDegradation(ctx context.Context, backendURL string, degradations []Degr
     if !degradation.isDegradation {
       kind = "InferredImprovement"
     }
-    insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.test + "/" + analysisSettings.metric, Kind: kind, Reason: medianMessage, BuildNumber: degradation.build}
+    insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.Test + "/" + analysisSettings.Metric, Kind: kind, Reason: medianMessage, BuildNumber: degradation.build}
     params, err := json.Marshal(insertParams)
     if err != nil {
-      insertionResults[i] = InsertionResults{error: fmt.Errorf("failed to marshal query: %w", err)}
+      insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to marshal query: %w", err)}
       continue
     }
 
     req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(params))
     if err != nil {
-      insertionResults[i] = InsertionResults{error: fmt.Errorf("failed to create request: %w", err)}
+      insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to create request: %w", err)}
       continue
     }
     req.Header.Set("Content-Type", "application/json")
@@ -44,12 +44,12 @@ func postDegradation(ctx context.Context, backendURL string, degradations []Degr
     client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
-      insertionResults[i] = InsertionResults{error: fmt.Errorf("failed to send POST request: %w", err)}
+      insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to send POST request: %w", err)}
       continue
     }
 
     if resp.StatusCode != http.StatusOK {
-      insertionResults[i] = InsertionResults{error: fmt.Errorf("failed to post Degradation: %v", resp.Status)}
+      insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to post Degradation: %v", resp.Status)}
       continue
     }
 

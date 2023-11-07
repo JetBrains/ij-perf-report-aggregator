@@ -1,12 +1,14 @@
-package main
+package degradation_detector
 
 import (
   "bytes"
   "context"
   "encoding/json"
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "github.com/cenkalti/backoff/v4"
   "log"
+  "math"
   "net/http"
   "net/url"
   "os"
@@ -14,7 +16,7 @@ import (
   "time"
 )
 
-func sendSlackMessage(ctx context.Context, degradation Degradation) error {
+func SendSlackMessage(ctx context.Context, degradation Degradation) error {
   analysisSettings := degradation.analysisSettings
   slackMessage := createSlackMessage(degradation, analysisSettings)
   slackMessageJson, err := json.Marshal(slackMessage)
@@ -38,7 +40,7 @@ func sendSlackMessage(ctx context.Context, degradation Degradation) error {
     }
     defer resp.Body.Close()
 
-    log.Printf("Slack message was sent to " + analysisSettings.channel)
+    log.Printf("Slack message was sent to " + analysisSettings.Channel)
     return nil
   }, backoff.NewExponentialBackOff())
   return err
@@ -49,16 +51,16 @@ type SlackMessage struct {
   Channel string `json:"channel"`
 }
 
-func createSlackMessage(degradation Degradation, settings AnalysisSettings) SlackMessage {
+func createSlackMessage(degradation Degradation, settings analysis.Settings) SlackMessage {
   reason := getMessageBasedOnMedianChange(degradation.medianValues)
   date := time.UnixMilli(degradation.timestamp).UTC().Format("02-01-2006 15:04:05")
   testPage := "tests"
-  if strings.HasSuffix(degradation.analysisSettings.db, "Dev") {
+  if strings.HasSuffix(degradation.analysisSettings.Db, "Dev") {
     testPage = "testsDev"
   }
-  machineGroup := getMachineGroup(settings.machine)
+  machineGroup := getMachineGroup(settings.Machine)
   link := fmt.Sprintf("https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M",
-    settings.productLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(settings.branch), url.QueryEscape(settings.test), url.QueryEscape(settings.metric))
+    settings.ProductLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(settings.Branch), url.QueryEscape(settings.Test), url.QueryEscape(settings.Metric))
 
   icon := ""
   if degradation.medianValues.newValue > degradation.medianValues.previousValue {
@@ -74,10 +76,10 @@ func createSlackMessage(degradation Degradation, settings AnalysisSettings) Slac
       "Branch: %s\n"+
       "Date: %s\n"+
       "Reason: %s\n"+
-      "Link: %s", icon, settings.test, settings.metric, degradation.build, degradation.analysisSettings.branch, date, reason, link)
+      "Link: %s", icon, settings.Test, settings.Metric, degradation.build, degradation.analysisSettings.Branch, date, reason, link)
   return SlackMessage{
     Text:    text,
-    Channel: settings.channel,
+    Channel: settings.Channel,
   }
 }
 
@@ -89,4 +91,13 @@ func getMachineGroup(pattern string) string {
     return "linux-blade-hetzner"
   }
   return ""
+}
+
+func getMessageBasedOnMedianChange(medianValues MedianValues) string {
+  percentageChange := math.Abs((medianValues.newValue - medianValues.previousValue) / medianValues.previousValue * 100)
+  medianMessage := fmt.Sprintf("Median changed by: %.2f%%. Median was %.2f and now it is %.2f.", percentageChange, medianValues.previousValue, medianValues.newValue)
+  if medianValues.newValue > medianValues.previousValue {
+    return "Degradation detected. " + medianMessage
+  }
+  return "Improvement detected. " + medianMessage
 }

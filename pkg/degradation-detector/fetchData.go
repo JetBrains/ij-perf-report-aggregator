@@ -1,17 +1,18 @@
-package main
+package degradation_detector
 
 import (
   "context"
   "encoding/json"
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "io"
   "log"
   "net/http"
 )
 
-func getDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings AnalysisSettings) ([]int64, []int, []string, error) {
+func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings analysis.Settings) ([]int64, []int, []string, error) {
   response, err := getValuesFromServer(ctx, backendURL, analysisSettings)
   if err != nil {
     log.Printf("%v", err)
@@ -23,7 +24,7 @@ func getDataFromClickhouse(ctx context.Context, backendURL string, analysisSetti
   return timestamps, values, builds, err
 }
 
-func getValuesFromServer(ctx context.Context, backendURL string, analysisSettings AnalysisSettings) ([]byte, error) {
+func getValuesFromServer(ctx context.Context, backendURL string, analysisSettings analysis.Settings) ([]byte, error) {
   url := backendURL + "/api/q/"
   query := getDataQuery(analysisSettings)
   jsonQuery, err := json.Marshal(query)
@@ -58,28 +59,28 @@ func getValuesFromServer(ctx context.Context, backendURL string, analysisSetting
   return body, err
 }
 
-func getDataQuery(settings AnalysisSettings) []dataQuery.DataQuery {
+func getDataQuery(settings analysis.Settings) []dataQuery.DataQuery {
   fields := []dataQuery.DataQueryDimension{
     {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
     {Name: "measures", SubName: "value"},
   }
-  if settings.db == "perfint" {
+  if settings.Db == "perfint" {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
-  } else if settings.db == "perfintDev" {
+  } else if settings.Db == "perfintDev" {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "tc_build_id"})
   }
 
   queries := []dataQuery.DataQuery{
     {
-      Database: settings.db,
-      Table:    settings.table,
+      Database: settings.Db,
+      Table:    settings.Table,
       Fields:   fields,
       Filters: []dataQuery.DataQueryFilter{
-        {Field: "branch", Value: settings.branch},
+        {Field: "branch", Value: settings.Branch},
         {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-        {Field: "project", Value: settings.test},
-        {Field: "measures.name", Value: settings.metric},
-        {Field: "machine", Value: settings.machine, Operator: "like"},
+        {Field: "project", Value: settings.Test},
+        {Field: "measures.name", Value: settings.Metric},
+        {Field: "machine", Value: settings.Machine, Operator: "like"},
         {Field: "triggeredBy", Value: ""},
       },
       Order: []string{"t"},

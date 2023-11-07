@@ -1,4 +1,4 @@
-package main
+package degradation_detector
 
 import (
   "fmt"

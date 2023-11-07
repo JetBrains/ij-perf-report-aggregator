@@ -1,8 +1,9 @@
-package main
+package degradation_detector
 
 import (
   "context"
   "fmt"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "log"
   "os"
   "sync"
@@ -16,13 +17,13 @@ func TestChangeDetector(_ *testing.T) {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  analysisSettings := make([]AnalysisSettings, 0, 1000)
-  analysisSettings = append(analysisSettings, generateIdeaAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateGradleAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generatePhpStormAnalysisSettings()...)
+  analysisSettings := make([]analysis.Settings, 0, 1000)
+  analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
 
   ctx := context.Background()
   degradationsChan := make(chan []Degradation)
@@ -33,17 +34,17 @@ func TestChangeDetector(_ *testing.T) {
 
   for _, analysisSetting := range analysisSettings {
     wg.Add(1)
-    go func(as AnalysisSettings) {
+    go func(as analysis.Settings) {
       defer wg.Done()
       // Acquire a slot in the semaphore before proceeding.
       semaphore <- struct{}{}
       log.Printf("Processing %v", as)
-      timestamps, values, builds, err := getDataFromClickhouse(ctx, backendUrl, as)
+      timestamps, values, builds, err := GetDataFromClickhouse(ctx, backendUrl, as)
       if err != nil {
         log.Printf("%v", err)
-        degradationsChan <- nil // or handle the error differently
+        degradationsChan <- nil // or handle the Error differently
       } else {
-        degradationsChan <- inferDegradations(values, builds, timestamps, as)
+        degradationsChan <- InferDegradations(values, builds, timestamps, as)
       }
       // Release the slot when finished.
       <-semaphore

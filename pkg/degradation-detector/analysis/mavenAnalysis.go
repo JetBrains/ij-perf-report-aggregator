@@ -1,6 +1,6 @@
-package main
+package analysis
 
-func generateMavenAnalysisSettings() []AnalysisSettings {
+func GenerateMavenSettings() []Settings {
   tests := []string{
     "project-import-maven-quarkus/measureStartup",
     "project-reimport-maven-quarkus/measureStartup",
@@ -49,18 +49,18 @@ func generateMavenAnalysisSettings() []AnalysisSettings {
     "legacy_import.duration_ms",
     "legacy_import.importers.duration_ms"}
 
-  settings := make([]AnalysisSettings, 0, 200)
+  settings := make([]Settings, 0, 200)
   for _, test := range tests {
     for _, metric := range metrics {
-      settings = append(settings, AnalysisSettings{
-        db:          "perfint",
-        table:       "idea",
-        channel:     "build-tools-perf-tests-notifications",
-        machine:     "intellij-linux-hw-hetzner%",
-        test:        test,
-        metric:      metric,
-        branch:      "master",
-        productLink: "intellij",
+      settings = append(settings, Settings{
+        Db:          "perfint",
+        Table:       "idea",
+        Channel:     "build-tools-perf-tests-notifications",
+        Machine:     "intellij-linux-hw-hetzner%",
+        Test:        test,
+        Metric:      metric,
+        Branch:      "master",
+        ProductLink: "intellij",
       })
     }
 

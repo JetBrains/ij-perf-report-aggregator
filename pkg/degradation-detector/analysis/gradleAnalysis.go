@@ -1,6 +1,6 @@
-package main
+package analysis
 
-func generateGradleAnalysisSettings() []AnalysisSettings {
+func GenerateGradleSettings() []Settings {
   tests := []string{
     "grazie-platform-project-import-gradle/measureStartup",
     "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
@@ -17,7 +17,7 @@ func generateGradleAnalysisSettings() []AnalysisSettings {
     "project-import-space/measureStartup",
     "project-import-open-telemetry/measureStartup",
   }
-  settings := make([]AnalysisSettings, 0, 100)
+  settings := make([]Settings, 0, 100)
   metrics := []string{"gradle.sync.duration",
     "GRADLE_CALL",
     "PROJECT_RESOLVERS",
@@ -26,15 +26,15 @@ func generateGradleAnalysisSettings() []AnalysisSettings {
     "fus_gradle.sync"}
   for _, test := range tests {
     for _, metric := range metrics {
-      settings = append(settings, AnalysisSettings{
-        db:          "perfint",
-        table:       "idea",
-        channel:     "build-tools-perf-tests-notifications",
-        machine:     "intellij-linux-hw-hetzner%",
-        test:        test,
-        metric:      metric,
-        branch:      "master",
-        productLink: "intellij",
+      settings = append(settings, Settings{
+        Db:          "perfint",
+        Table:       "idea",
+        Channel:     "build-tools-perf-tests-notifications",
+        Machine:     "intellij-linux-hw-hetzner%",
+        Test:        test,
+        Metric:      metric,
+        Branch:      "master",
+        ProductLink: "intellij",
       })
     }
 

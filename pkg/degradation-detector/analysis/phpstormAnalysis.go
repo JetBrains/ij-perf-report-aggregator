@@ -1,6 +1,6 @@
-package main
+package analysis
 
-func generatePhpStormAnalysisSettings() []AnalysisSettings {
+func GeneratePhpStormSettings() []Settings {
   tests := []string{"drupal8-master-with-plugin/inspection",
     "shopware/inspection",
     "b2c-demo-shop/inspection",
@@ -41,19 +41,19 @@ func generatePhpStormAnalysisSettings() []AnalysisSettings {
     "WI_58306/completion",
     "mpdf/inlineRename",
   }
-  settings := make([]AnalysisSettings, 0, 100)
+  settings := make([]Settings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      settings = append(settings, AnalysisSettings{
-        db:          "perfint",
-        table:       "phpstorm",
-        channel:     "phpstorm-performance-degradations",
-        branch:      "master",
-        machine:     "intellij-linux-hw-hetzner%",
-        test:        test,
-        metric:      metric,
-        productLink: "phpstorm",
+      settings = append(settings, Settings{
+        Db:          "perfint",
+        Table:       "phpstorm",
+        Channel:     "phpstorm-performance-degradations",
+        Branch:      "master",
+        Machine:     "intellij-linux-hw-hetzner%",
+        Test:        test,
+        Metric:      metric,
+        ProductLink: "phpstorm",
       })
     }
 

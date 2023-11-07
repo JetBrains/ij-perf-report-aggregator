@@ -1,6 +1,6 @@
-package main
+package analysis
 
-func generateKotlinAnalysisSettings() []AnalysisSettings {
+func GenerateKotlinSettings() []Settings {
   testNames := []string{"intellij_commit/completion/empty_place_with_library_cache",
     "intellij_commit/completion/after_parameter_with_library_cache",
     "intellij_commit/completion/empty_place_typing_with_library_cache",
@@ -20,7 +20,7 @@ func generateKotlinAnalysisSettings() []AnalysisSettings {
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache",
   }
   tests := generateKotlinTests(testNames)
-  settings := make([]AnalysisSettings, 0, 50)
+  settings := make([]Settings, 0, 50)
   metrics := []string{"completion#mean_value"}
   dbs := []string{"perfint", "perfintDev"}
   branches := []string{"master", "kt-master"}
@@ -28,15 +28,15 @@ func generateKotlinAnalysisSettings() []AnalysisSettings {
     for _, metric := range metrics {
       for _, branch := range branches {
         for _, db := range dbs {
-          settings = append(settings, AnalysisSettings{
-            db:          db,
-            table:       "kotlin",
-            channel:     "kotlin-plugin-perf-tests",
-            machine:     "intellij-linux-hw-hetzner%",
-            test:        test,
-            metric:      metric,
-            branch:      branch,
-            productLink: "kotlin",
+          settings = append(settings, Settings{
+            Db:          db,
+            Table:       "kotlin",
+            Channel:     "kotlin-plugin-perf-tests",
+            Machine:     "intellij-linux-hw-hetzner%",
+            Test:        test,
+            Metric:      metric,
+            Branch:      branch,
+            ProductLink: "kotlin",
           })
         }
       }

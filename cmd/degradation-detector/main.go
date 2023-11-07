@@ -2,23 +2,12 @@ package main
 
 import (
   "context"
-  "fmt"
+  detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "log"
-  "math"
   "os"
   "sync"
 )
-
-type AnalysisSettings struct {
-  test        string
-  metric      string
-  db          string
-  table       string
-  branch      string
-  machine     string
-  channel     string
-  productLink string
-}
 
 func main() {
   backendUrl := os.Getenv("BACKEND_URL")
@@ -27,54 +16,45 @@ func main() {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  analysisSettings := make([]AnalysisSettings, 0, 1000)
-  analysisSettings = append(analysisSettings, generateIdeaAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateWorkspaceAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateKotlinAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateMavenAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generateGradleAnalysisSettings()...)
-  analysisSettings = append(analysisSettings, generatePhpStormAnalysisSettings()...)
+  analysisSettings := make([]analysis.Settings, 0, 1000)
+  analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
 
   ctx := context.Background()
-  degradations := make([]Degradation, 0, 1000)
+  degradations := make([]detector.Degradation, 0, 1000)
   for _, analysisSetting := range analysisSettings {
     log.Printf("Processing %v", analysisSetting)
-    timestamps, values, builds, err := getDataFromClickhouse(ctx, backendUrl, analysisSetting)
+    timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, backendUrl, analysisSetting)
     if err != nil {
       log.Printf("%v", err)
     }
 
-    degradations = append(degradations, inferDegradations(values, builds, timestamps, analysisSetting)...)
+    degradations = append(degradations, detector.InferDegradations(values, builds, timestamps, analysisSetting)...)
   }
 
-  insertionResults := postDegradation(ctx, backendUrl, degradations)
+  insertionResults := detector.PostDegradation(ctx, backendUrl, degradations)
 
   var wg sync.WaitGroup
   for _, result := range insertionResults {
-    if result.error != nil {
-      log.Printf("%v", result.error)
+    if result.Error != nil {
+      log.Printf("%v", result.Error)
       continue
     }
-    if !result.wasInserted {
+    if !result.WasInserted {
       continue
     }
     wg.Add(1)
-    go func(result InsertionResults) {
+    go func(result detector.InsertionResults) {
       defer wg.Done()
-      err := sendSlackMessage(ctx, result.degradation)
+      err := detector.SendSlackMessage(ctx, result.Degradation)
       if err != nil {
         log.Printf("%v", err)
       }
     }(result)
   }
   wg.Wait()
-}
-
-func getMessageBasedOnMedianChange(medianValues MedianValues) string {
-  percentageChange := math.Abs((medianValues.newValue - medianValues.previousValue) / medianValues.previousValue * 100)
-  medianMessage := fmt.Sprintf("Median changed by: %.2f%%. Median was %.2f and now it is %.2f.", percentageChange, medianValues.previousValue, medianValues.newValue)
-  if medianValues.newValue > medianValues.previousValue {
-    return "Degradation detected. " + medianMessage
-  }
-  return "Improvement detected. " + medianMessage
 }

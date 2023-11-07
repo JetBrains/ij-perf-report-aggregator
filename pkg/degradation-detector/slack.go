@@ -5,7 +5,6 @@ import (
   "context"
   "encoding/json"
   "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "github.com/cenkalti/backoff/v4"
   "log"
   "math"
@@ -51,7 +50,7 @@ type SlackMessage struct {
   Channel string `json:"channel"`
 }
 
-func createSlackMessage(degradation Degradation, settings analysis.Settings) SlackMessage {
+func createSlackMessage(degradation Degradation, settings Settings) SlackMessage {
   reason := getMessageBasedOnMedianChange(degradation.medianValues)
   date := time.UnixMilli(degradation.timestamp).UTC().Format("02-01-2006 15:04:05")
   testPage := "tests"

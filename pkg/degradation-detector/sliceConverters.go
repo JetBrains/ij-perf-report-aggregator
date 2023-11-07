@@ -5,7 +5,7 @@ import (
   "strconv"
 )
 
-func sliceToSliceInt64(strings []interface{}) ([]int64, error) {
+func SliceToSliceInt64(strings []interface{}) ([]int64, error) {
   var result []int64
   for _, s := range strings {
     switch v := s.(type) {
@@ -28,7 +28,7 @@ func sliceToSliceInt64(strings []interface{}) ([]int64, error) {
   return result, nil
 }
 
-func sliceToSliceOfInt(strings []interface{}) ([]int, error) {
+func SliceToSliceOfInt(strings []interface{}) ([]int, error) {
   var result []int
   for _, s := range strings {
     switch v := s.(type) {
@@ -51,7 +51,7 @@ func sliceToSliceOfInt(strings []interface{}) ([]int, error) {
   return result, nil
 }
 
-func sliceToSliceOfString(slice []interface{}) ([]string, error) {
+func SliceToSliceOfString(slice []interface{}) ([]string, error) {
   var strings []string
   for _, elem := range slice {
     switch v := elem.(type) {

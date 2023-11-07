@@ -1,4 +1,4 @@
-package analysis
+package degradation_detector
 
 type Settings struct {
   Test        string

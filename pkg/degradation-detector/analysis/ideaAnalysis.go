@@ -1,15 +1,18 @@
 package analysis
 
-import "strings"
+import (
+  detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "strings"
+)
 
-func GenerateIdeaSettings() []Settings {
-  settings := make([]Settings, 0, 1000)
+func GenerateIdeaSettings() []detector.Settings {
+  settings := make([]detector.Settings, 0, 1000)
   settings = append(settings, generateIdeaOnInstallerAnalysisSettings()...)
   settings = append(settings, generateIdeaDevAnalysisSettings()...)
   return settings
 }
 
-func generateIdeaOnInstallerAnalysisSettings() []Settings {
+func generateIdeaOnInstallerAnalysisSettings() []detector.Settings {
   tests := []string{"intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status",
     "community/rebuild", "intellij_sources/rebuild", "grails/rebuild", "java/rebuild", "spring_boot/rebuild", "java/inspection", "grails/inspection",
     "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection",
@@ -21,11 +24,11 @@ func generateIdeaOnInstallerAnalysisSettings() []Settings {
     "kotlin/highlight", "kotlin_coroutines/highlight", "intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file",
     "intellij_sources/createJavaClass", "intellij_sources/createKotlinClass",
   }
-  settings := make([]Settings, 0, 100)
+  settings := make([]detector.Settings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      settings = append(settings, Settings{
+      settings = append(settings, detector.Settings{
         Db:          "perfint",
         Table:       "idea",
         Channel:     "ij-perf-report-aggregator",
@@ -41,7 +44,7 @@ func generateIdeaOnInstallerAnalysisSettings() []Settings {
   return settings
 }
 
-func generateIdeaDevAnalysisSettings() []Settings {
+func generateIdeaDevAnalysisSettings() []detector.Settings {
   tests := []string{"intellij_commit/indexing", "intellij_commit/second-scanning", "intellij_commit/third-scanning", "intellij_commit/findUsages/Application_runReadAction",
     "intellij_commit/findUsages/Library_getName", "intellij_commit/findUsages/PsiManager_getInstance", "intellij_commit/findUsages/PropertyMapping_value",
     "intellij_commit/findUsages/ActionsKt_runReadAction", "intellij_commit/findUsages/DynamicPluginListener_TOPIC", "intellij_commit/findUsages/Path_div",
@@ -56,11 +59,11 @@ func generateIdeaDevAnalysisSettings() []Settings {
     "intellij_commit/completion/java_file",
     "intellij_commit/completion/kotlin_file"}
 
-  settings := make([]Settings, 0, 100)
+  settings := make([]detector.Settings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      settings = append(settings, Settings{
+      settings = append(settings, detector.Settings{
         Db:          "perfintDev",
         Table:       "idea",
         Channel:     "ij-perf-report-aggregator",

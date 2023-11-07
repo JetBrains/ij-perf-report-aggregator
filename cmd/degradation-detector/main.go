@@ -12,17 +12,18 @@ import (
 func main() {
   backendUrl := os.Getenv("BACKEND_URL")
   if len(backendUrl) == 0 {
-    backendUrl = "https://ij-perf-api.labs.jb.gg"
+    backendUrl = "https://ij-perf-api.labs.jb.gg" //http://localhost:9044
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  analysisSettings := make([]analysis.Settings, 0, 1000)
+  analysisSettings := make([]detector.Settings, 0, 1000)
   analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
   analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateUnitTestsSettings(backendUrl)...)
 
   ctx := context.Background()
   degradations := make([]detector.Degradation, 0, 1000)

@@ -1,6 +1,8 @@
 package analysis
 
-func GenerateGradleSettings() []Settings {
+import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+
+func GenerateGradleSettings() []detector.Settings {
   tests := []string{
     "grazie-platform-project-import-gradle/measureStartup",
     "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
@@ -17,7 +19,7 @@ func GenerateGradleSettings() []Settings {
     "project-import-space/measureStartup",
     "project-import-open-telemetry/measureStartup",
   }
-  settings := make([]Settings, 0, 100)
+  settings := make([]detector.Settings, 0, 100)
   metrics := []string{"gradle.sync.duration",
     "GRADLE_CALL",
     "PROJECT_RESOLVERS",
@@ -26,7 +28,7 @@ func GenerateGradleSettings() []Settings {
     "fus_gradle.sync"}
   for _, test := range tests {
     for _, metric := range metrics {
-      settings = append(settings, Settings{
+      settings = append(settings, detector.Settings{
         Db:          "perfint",
         Table:       "idea",
         Channel:     "build-tools-perf-tests-notifications",

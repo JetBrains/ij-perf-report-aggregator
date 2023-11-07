@@ -1,9 +1,9 @@
-package degradation_detector
+package analysis
 
 import (
   "context"
   "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "log"
   "os"
   "sync"
@@ -17,16 +17,16 @@ func TestDegradationDetector(_ *testing.T) {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  analysisSettings := make([]analysis.Settings, 0, 1000)
-  analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
+  analysisSettings := make([]degradation_detector.Settings, 0, 1000)
+  analysisSettings = append(analysisSettings, GenerateIdeaSettings()...)
+  analysisSettings = append(analysisSettings, GenerateWorkspaceSettings()...)
+  analysisSettings = append(analysisSettings, GenerateKotlinSettings()...)
+  analysisSettings = append(analysisSettings, GenerateMavenSettings()...)
+  analysisSettings = append(analysisSettings, GenerateGradleSettings()...)
+  analysisSettings = append(analysisSettings, GeneratePhpStormSettings()...)
 
   ctx := context.Background()
-  degradationsChan := make(chan []Degradation)
+  degradationsChan := make(chan []degradation_detector.Degradation)
   var wg sync.WaitGroup
 
   // Create a semaphore with a capacity of 8.
@@ -34,17 +34,17 @@ func TestDegradationDetector(_ *testing.T) {
 
   for _, analysisSetting := range analysisSettings {
     wg.Add(1)
-    go func(as analysis.Settings) {
+    go func(as degradation_detector.Settings) {
       defer wg.Done()
       // Acquire a slot in the semaphore before proceeding.
       semaphore <- struct{}{}
       log.Printf("Processing %v", as)
-      timestamps, values, builds, err := GetDataFromClickhouse(ctx, backendUrl, as)
+      timestamps, values, builds, err := degradation_detector.GetDataFromClickhouse(ctx, backendUrl, as)
       if err != nil {
         log.Printf("%v", err)
         degradationsChan <- nil // or handle the Error differently
       } else {
-        degradationsChan <- InferDegradations(values, builds, timestamps, as)
+        degradationsChan <- degradation_detector.InferDegradations(values, builds, timestamps, as)
       }
       // Release the slot when finished.
       <-semaphore
@@ -58,7 +58,7 @@ func TestDegradationDetector(_ *testing.T) {
   }()
 
   // Collect results from the channel.
-  degradations := make([]Degradation, 0, 1000)
+  degradations := make([]degradation_detector.Degradation, 0, 1000)
   for ds := range degradationsChan {
     if ds != nil {
       degradations = append(degradations, ds...)

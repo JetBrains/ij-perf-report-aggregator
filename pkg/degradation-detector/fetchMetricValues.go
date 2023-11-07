@@ -5,15 +5,14 @@ import (
   "encoding/json"
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "io"
   "log"
   "net/http"
 )
 
-func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings analysis.Settings) ([]int64, []int, []string, error) {
-  response, err := getValuesFromServer(ctx, backendURL, analysisSettings)
+func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings Settings) ([]int64, []int, []string, error) {
+  response, err := GetValuesFromServer(ctx, backendURL, getDataQuery(analysisSettings))
   if err != nil {
     log.Printf("%v", err)
   }
@@ -24,9 +23,8 @@ func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSetti
   return timestamps, values, builds, err
 }
 
-func getValuesFromServer(ctx context.Context, backendURL string, analysisSettings analysis.Settings) ([]byte, error) {
+func GetValuesFromServer(ctx context.Context, backendURL string, query []dataQuery.DataQuery) ([]byte, error) {
   url := backendURL + "/api/q/"
-  query := getDataQuery(analysisSettings)
   jsonQuery, err := json.Marshal(query)
   if err != nil {
     return nil, fmt.Errorf("failed to marshal query: %w", err)
@@ -59,14 +57,14 @@ func getValuesFromServer(ctx context.Context, backendURL string, analysisSetting
   return body, err
 }
 
-func getDataQuery(settings analysis.Settings) []dataQuery.DataQuery {
+func getDataQuery(settings Settings) []dataQuery.DataQuery {
   fields := []dataQuery.DataQueryDimension{
     {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
     {Name: "measures", SubName: "value"},
   }
   if settings.Db == "perfint" {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
-  } else if settings.Db == "perfintDev" {
+  } else {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "tc_build_id"})
   }
 
@@ -102,15 +100,15 @@ func extractDataFromRequest(response []byte) ([]int64, []int, []string, error) {
   if len(data[0]) < 3 {
     return nil, nil, nil, fmt.Errorf("not enough data")
   }
-  timestamps, err := sliceToSliceInt64(data[0][0])
+  timestamps, err := SliceToSliceInt64(data[0][0])
   if err != nil {
     return nil, nil, nil, fmt.Errorf("failed to convert values: %w", err)
   }
-  values, err := sliceToSliceOfInt(data[0][1])
+  values, err := SliceToSliceOfInt(data[0][1])
   if err != nil {
     return nil, nil, nil, fmt.Errorf("failed to convert values: %w", err)
   }
-  builds, err := sliceToSliceOfString(data[0][2])
+  builds, err := SliceToSliceOfString(data[0][2])
   if err != nil {
     return nil, nil, nil, fmt.Errorf("failed to convert values: %w", err)
   }

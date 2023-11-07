@@ -1,6 +1,8 @@
 package analysis
 
-func GenerateMavenSettings() []Settings {
+import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+
+func GenerateMavenSettings() []detector.Settings {
   tests := []string{
     "project-import-maven-quarkus/measureStartup",
     "project-reimport-maven-quarkus/measureStartup",
@@ -49,10 +51,10 @@ func GenerateMavenSettings() []Settings {
     "legacy_import.duration_ms",
     "legacy_import.importers.duration_ms"}
 
-  settings := make([]Settings, 0, 200)
+  settings := make([]detector.Settings, 0, 200)
   for _, test := range tests {
     for _, metric := range metrics {
-      settings = append(settings, Settings{
+      settings = append(settings, detector.Settings{
         Db:          "perfint",
         Table:       "idea",
         Channel:     "build-tools-perf-tests-notifications",

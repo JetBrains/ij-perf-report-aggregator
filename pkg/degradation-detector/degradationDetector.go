@@ -2,7 +2,6 @@ package degradation_detector
 
 import (
   "fmt"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "math"
 )
 
@@ -10,7 +9,7 @@ type Degradation struct {
   build            string
   timestamp        int64
   medianValues     MedianValues
-  analysisSettings analysis.Settings
+  analysisSettings Settings
   isDegradation    bool
 }
 
@@ -19,7 +18,7 @@ type MedianValues struct {
   newValue      float64
 }
 
-func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysis.Settings) []Degradation {
+func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings Settings) []Degradation {
   numberOfLastValuesToTake := 40
 
   changePoints := GetChangePointIndexes(values, 1)

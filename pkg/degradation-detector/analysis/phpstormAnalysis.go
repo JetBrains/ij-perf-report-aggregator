@@ -1,6 +1,8 @@
 package analysis
 
-func GeneratePhpStormSettings() []Settings {
+import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+
+func GeneratePhpStormSettings() []detector.Settings {
   tests := []string{"drupal8-master-with-plugin/inspection",
     "shopware/inspection",
     "b2c-demo-shop/inspection",
@@ -41,11 +43,11 @@ func GeneratePhpStormSettings() []Settings {
     "WI_58306/completion",
     "mpdf/inlineRename",
   }
-  settings := make([]Settings, 0, 100)
+  settings := make([]detector.Settings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      settings = append(settings, Settings{
+      settings = append(settings, detector.Settings{
         Db:          "perfint",
         Table:       "phpstorm",
         Channel:     "phpstorm-performance-degradations",

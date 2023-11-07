@@ -19,43 +19,57 @@ type MedianValues struct {
 }
 
 func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings Settings) []Degradation {
-  numberOfLastValuesToTake := 40
+  segmentSizeThreshold := 3
+  degradations := make([]Degradation, 0)
 
   changePoints := GetChangePointIndexes(values, 1)
-
   segments := getSegmentsBetweenChangePoints(changePoints, values)
-  degradations := make([]Degradation, 0)
-  if len(segments) < 1 {
+  if len(segments) < 2 {
     fmt.Println("No significant change points were detected.")
     return degradations
   }
-  previousMedian := CalculateMedian(segments[0])
-  for i := 1; i < len(segments); i++ {
-    currentMedian := CalculateMedian(segments[i])
+  lastSegment := segments[len(segments)-1]
+  if len(lastSegment) < segmentSizeThreshold {
+    fmt.Println("Last segment is too short.")
+    return degradations
+  }
+
+  minimumSegmentLength := analysisSettings.MinimumSegmentLength
+  if minimumSegmentLength == 0 {
+    minimumSegmentLength = 3
+  }
+  skippedSegments := 0
+  for i := len(segments) - 2; i >= 0 && skippedSegments < 4; i-- {
+    if len(segments[i]) < minimumSegmentLength {
+      skippedSegments++
+      continue
+    }
+    currentMedian := CalculateMedian(lastSegment)
+    previousMedian := CalculateMedian(segments[i])
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
     absoluteChange := math.Abs(currentMedian - previousMedian)
-    index := changePoints[i-1]
-    isLatestChangePoint := index >= len(values)-numberOfLastValuesToTake
-    if percentageChange > 10 && isLatestChangePoint && absoluteChange > 10 {
-      build := builds[index]
-      isDegradation := false
-      if currentMedian > previousMedian {
-        isDegradation = true
-      }
-      if !isDegradation && analysisSettings.DoNotReportImprovement {
-        continue
-      }
-      degradation := Degradation{
-        build:            build,
-        timestamp:        timestamps[index],
-        medianValues:     MedianValues{previousValue: previousMedian, newValue: currentMedian},
-        analysisSettings: analysisSettings,
-        isDegradation:    isDegradation,
-      }
-      degradations = append(degradations, degradation)
+
+    if absoluteChange < 10 || percentageChange < 10 {
+      break
     }
-    previousMedian = currentMedian
+    isDegradation := false
+    if currentMedian > previousMedian {
+      isDegradation = true
+    }
+    if !isDegradation && analysisSettings.DoNotReportImprovement {
+      break
+    }
+    index := changePoints[len(segments)-2]
+    degradations = append(degradations, Degradation{
+      build:            builds[index],
+      timestamp:        timestamps[index],
+      medianValues:     MedianValues{previousValue: previousMedian, newValue: currentMedian},
+      analysisSettings: analysisSettings,
+      isDegradation:    isDegradation,
+    })
+    break
   }
+
   return degradations
 }
 

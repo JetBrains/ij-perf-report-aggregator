@@ -32,6 +32,7 @@ func GenerateUnitTestsSettings(backendUrl string) []detector.Settings {
       Metric:                 mainSettings.Metric,
       ProductLink:            mainSettings.ProductLink,
       DoNotReportImprovement: true,
+      MinimumSegmentLength:   20,
     })
   }
   return settings

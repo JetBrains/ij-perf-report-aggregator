@@ -10,4 +10,5 @@ type Settings struct {
   Channel                string
   ProductLink            string
   DoNotReportImprovement bool
+  MinimumSegmentLength   int
 }

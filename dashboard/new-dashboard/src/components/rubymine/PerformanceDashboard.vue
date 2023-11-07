@@ -116,16 +116,56 @@
       <GroupProjectsChart
         label="Typing: average AWT delay"
         measure="test#average_awt_delay"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
-        :aliases="['Ruby assoc with map', 'RBS method']"
+        :projects="[
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'GitLab/typing/user/method',
+          'GitLab/typing/user/class',
+          'GitLab/typing/user/lambda',
+          'GitLab/typing/parser/method',
+          'GitLab/typing/parser/class',
+          'GitLab/typing/parser/class_array',
+          'GitLab/typing/parser/class_assoc',
+        ]"
+        :aliases="[
+          'Ruby assoc with map',
+          'RBS method',
+          'User Model Method (GL)',
+          'User Model Class (GL)',
+          'User Model Lambda (GL)',
+          'Parser Method',
+          'Parser Class',
+          'Parser Array',
+          'Parser Assoc',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Typing: total time"
         measure="typing"
-        :projects="['RUBY-26170/typing', 'RUBY-29334/typing']"
-        :aliases="['Ruby assoc with map', 'RBS method']"
+        :projects="[
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'GitLab/typing/user/method',
+          'GitLab/typing/user/class',
+          'GitLab/typing/user/lambda',
+          'GitLab/typing/parser/method',
+          'GitLab/typing/parser/class',
+          'GitLab/typing/parser/class_array',
+          'GitLab/typing/parser/class_assoc',
+        ]"
+        :aliases="[
+          'Ruby assoc with map',
+          'RBS method',
+          'User Model Method (GL)',
+          'User Model Class (GL)',
+          'User Model Lambda (GL)',
+          'Parser Method',
+          'Parser Class',
+          'Parser Array',
+          'Parser Assoc',
+        ]"
       />
     </section>
     <section>

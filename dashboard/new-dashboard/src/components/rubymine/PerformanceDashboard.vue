@@ -220,8 +220,36 @@
       <GroupProjectsChart
         label="File analysis on opening"
         measure="firstCodeAnalysis"
-        :projects="['GitLab/typing/lambda_body_in_class', 'RUBY-26170/typing', 'RUBY-29334/typing', 'RUBY-29542/typing']"
-        :aliases="['project.rb (GitLab)', 'swagger_helper.rb', 'activerecord-generated.rbs', 'user_model_spec.rb']"
+        :projects="[
+          'GitLab/typing/lambda_body_in_class',
+          'RUBY-26170/typing',
+          'RUBY-29334/typing',
+          'RUBY-29542/typing',
+          'GitLab/typing/user/method',
+          'GitLab/enter/parser/method',
+          'GitLab/enter/structure/inside_query',
+          'GitLab/enter/project_spec/describe',
+          'GitLab/enter/project_controller/class',
+          'GitLab/enter/mr_mail/class',
+          'GitLab/enter/user_show_view/before_div',
+          'GitLab/enter/routes_project/top',
+          'GitLab/enter/emojis_json/map',
+        ]"
+        :aliases="[
+          'Project Model (GL)',
+          'swagger_helper.rb',
+          'activerecord-generated.rbs',
+          'User Model Spec (GL)',
+          'User Model (GL)',
+          'Ruby Parser',
+          'structure.sql (GL)',
+          'Project Model Spec (GL)',
+          'Project Controller (GL)',
+          'MR Mail (GL)',
+          'Users View Haml (GL)',
+          'Project Routes (GL)',
+          'Emojis.json (GL)',
+        ]"
       />
     </section>
 

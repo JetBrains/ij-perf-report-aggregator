@@ -33,9 +33,10 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
   for i := 1; i < len(segments); i++ {
     currentMedian := CalculateMedian(segments[i])
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
+    absoluteChange := math.Abs(currentMedian - previousMedian)
     index := changePoints[i-1]
     isLatestChangePoint := index >= len(values)-numberOfLastValuesToTake
-    if percentageChange > 10 && isLatestChangePoint {
+    if percentageChange > 10 && isLatestChangePoint && absoluteChange > 10 {
       build := builds[index]
       isDegradation := false
       if currentMedian > previousMedian {

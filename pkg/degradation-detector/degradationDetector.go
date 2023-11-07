@@ -4,7 +4,6 @@ import (
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
-  "log"
   "math"
 )
 
@@ -24,10 +23,7 @@ type MedianValues struct {
 func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysis.Settings) []Degradation {
   numberOfLastValuesToTake := 40
 
-  changePoints, err := server.GetChangePointIndexes(values, 1)
-  if err != nil {
-    log.Fatalf("%v", err)
-  }
+  changePoints := server.GetChangePointIndexes(values, 1)
 
   segments := getSegmentsBetweenChangePoints(changePoints, values)
   degradations := make([]Degradation, 0)

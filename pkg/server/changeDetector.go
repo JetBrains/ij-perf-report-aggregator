@@ -1,7 +1,6 @@
 package server
 
 import (
-  "errors"
   "math"
   "sort"
 )
@@ -30,13 +29,13 @@ func CalculateMedian(nums []int) float64 {
   return float64(sortedNums[middle])
 }
 
-func GetChangePointIndexes(data []int, minDistance int) ([]int, error) {
+func GetChangePointIndexes(data []int, minDistance int) []int {
   n := len(data)
   if n <= 2 {
-    return []int{}, nil
+    return []int{}
   }
   if minDistance < 1 || minDistance > n {
-    return nil, errors.New("minDistance should be in range from 1 to len(data)")
+    panic("minDistance should be in range from 1 to len(data)")
   }
 
   penalty := 3 * math.Log(float64(n))
@@ -62,10 +61,7 @@ func GetChangePointIndexes(data []int, minDistance int) ([]int, error) {
     for _, previousTau := range previousTaus {
       costForPreviousTau = append(costForPreviousTau, bestCost[previousTau]+cost(previousTau, currentTau)+penalty)
     }
-    bestPreviousTauIndex, err := whichMin(costForPreviousTau)
-    if err != nil {
-      return nil, err
-    }
+    bestPreviousTauIndex := whichMin(costForPreviousTau)
     bestCost[currentTau] = costForPreviousTau[bestPreviousTauIndex]
     previousChangePointIndex[currentTau] = previousTaus[bestPreviousTauIndex]
     var newPreviousTaus []int
@@ -88,7 +84,7 @@ func GetChangePointIndexes(data []int, minDistance int) ([]int, error) {
   for i := range changePointIndexes {
     changePointIndexes[i]++
   }
-  return changePointIndexes, nil
+  return changePointIndexes
 }
 
 func getPartialSums(data []int, k int) [][]int {
@@ -137,9 +133,9 @@ func getSegmentCost(partialSums [][]int, tau1, tau2, k, n int) float64 {
   return 2.0 * c / float64(k) * sum // See Section 3.1 "Discrete approximation" in [Haynes2017]
 }
 
-func whichMin(values []float64) (int, error) {
+func whichMin(values []float64) int {
   if len(values) == 0 {
-    return 0, errors.New("slice should contain elements")
+    panic("slice should contain elements")
   }
 
   minValue := values[0]
@@ -151,7 +147,7 @@ func whichMin(values []float64) (int, error) {
     }
   }
 
-  return minIndex, nil
+  return minIndex
 }
 
 func reverse(slice []int) []int {

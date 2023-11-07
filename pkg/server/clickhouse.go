@@ -93,11 +93,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 
   response := make([]responseItem, len(queryResults))
   for i, result := range queryResults {
-    indexes, err := GetChangePointIndexes(result.MeasureValues, 1)
-    if err != nil {
-      return nil, false, err
-    }
-
+    indexes := GetChangePointIndexes(result.MeasureValues, 1)
     var valuesAfterLastChangePoint []int
     if len(indexes) == 0 {
       valuesAfterLastChangePoint = result.MeasureValues

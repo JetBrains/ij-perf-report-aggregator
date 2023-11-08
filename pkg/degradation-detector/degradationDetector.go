@@ -23,7 +23,7 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
 
   minimumSegmentLength := analysisSettings.MinimumSegmentLength
   if minimumSegmentLength == 0 {
-    minimumSegmentLength = 3
+    minimumSegmentLength = 5
   }
 
   changePoints := GetChangePointIndexes(values, 1)

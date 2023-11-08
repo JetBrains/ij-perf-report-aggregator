@@ -44,6 +44,14 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Index Size"
+        measure="indexSize"
+        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Scanning"
         :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"

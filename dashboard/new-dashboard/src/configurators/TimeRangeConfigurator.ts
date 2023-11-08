@@ -1,6 +1,8 @@
+import { ECBasicOption } from "echarts/types/dist/shared"
 import { combineLatest, Observable } from "rxjs"
 import { provide, Ref, ref, watch } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
+import { ChartConfigurator } from "../components/common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { timeRangeKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
@@ -13,7 +15,7 @@ export interface TimeRangeItem {
   value: TimeRange
 }
 
-export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator {
+export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator, ChartConfigurator {
   readonly value = ref<TimeRange>("1w")
   readonly customRange = ref<string>("")
   public timeRanges: Ref<TimeRangeItem[]> = ref([
@@ -44,8 +46,14 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return this.configureQuery(query, null)
   }
 
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration | null): boolean {
+  configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): ECBasicOption {
+    const startTime = getStartTime(this.value.value)
+    return startTime == null ? {} : { xAxis: { min: startTime } }
+  }
+
+  configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration | null): boolean {
     const duration = this.value.value
+    configuration?.addChartConfigurator(this)
     if (duration === "all") {
       return true
     }
@@ -148,4 +156,29 @@ export function parseDuration(s: string): DurationParseResult {
     return ""
   })
   return result
+}
+
+function getStartTime(range: TimeRange): Date | null {
+  const currentDate = new Date()
+
+  switch (range) {
+    case "1w": // Subtract 1 week
+      currentDate.setDate(currentDate.getDate() - 7)
+      break
+    case "1M": // Subtract 1 month
+      currentDate.setMonth(currentDate.getMonth() - 1)
+      break
+    case "3M": // Subtract 3 months
+      currentDate.setMonth(currentDate.getMonth() - 3)
+      break
+    case "1y": // Subtract 1 year
+      currentDate.setFullYear(currentDate.getFullYear() - 1)
+      break
+    case "all": // Subtract 10 years
+      return null
+    case "custom":
+      return null
+  }
+
+  return currentDate
 }

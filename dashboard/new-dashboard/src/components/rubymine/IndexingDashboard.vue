@@ -28,8 +28,8 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Indexing"
-        :measure="['indexing', 'indexingTimeWithoutPauses']"
+        label="Indexing Time"
+        :measure="['indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
         :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
       />
@@ -46,6 +46,14 @@
       <GroupProjectsChart
         label="Scanning"
         :measure="['scanning', 'scanningTimeWithoutPauses']"
+        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Indexing Time (With Data Before 11/07/2023)"
+        :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
         :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
       />

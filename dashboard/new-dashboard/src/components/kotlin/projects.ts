@@ -67,9 +67,9 @@ export const completionProjects = {
     "intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache",
   ],
   kotlinLang: [
-    "kotlin_lang/completion/after_parameter_with_library_cache",
-    "kotlin_lang/completion/empty_place_with_library_cache",
-    "kotlin_lang/completion/empty_place_typing_with_library_cache",
+    "kotlin_lang/completion/CommonParser_after_parameter_with_library_cache",
+    "kotlin_lang/completion/CommonParser_empty_place_with_library_cache",
+    "kotlin_lang/completion/CommonParser_empty_place_typing_with_library_cache",
   ],
   kotlinLanguageServer: [
     "kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache",

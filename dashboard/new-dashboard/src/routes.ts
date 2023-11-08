@@ -138,6 +138,7 @@ enum ROUTES {
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
+  RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
@@ -645,6 +646,10 @@ const RUBYMINE: Product = {
         {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.RubyMineIndexingDashBoard,
+          label: "Indexing",
         },
         {
           url: ROUTES.RubyMineTests,
@@ -1449,7 +1454,12 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.RubyMineDashboard,
           component: () => import("./components/rubymine/PerformanceDashboard.vue"),
-          meta: { pageTitle: "RubyMine Performance dashboard" },
+          meta: { pageTitle: "RubyMine Performance Dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineIndexingDashBoard,
+          component: () => import("./components/rubymine/IndexingDashboard.vue"),
+          meta: { pageTitle: "RubyMine Indexing Dashboard" },
         },
         {
           path: ROUTES.RubyMineTests,

@@ -4,28 +4,8 @@
     db-name="perfint"
     table="ruby"
     persistent-id="rubymine_dashboard"
-    initial-machine="Linux Munich i7-3770, 32 Gb"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
-    <section class="flex gap-6">
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#Ruby'"
-          :title="'Indexing Ruby (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#JavaScript'"
-          :title="'Indexing JavaScript (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
-        />
-      </div>
-    </section>
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
         <AggregationChart
@@ -43,27 +23,6 @@
           :chart-color="'#F2994A'"
         />
       </div>
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing"
-        :measure="['indexing', 'indexingTimeWithoutPauses']"
-        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files"
-        measure="numberOfIndexedFiles"
-        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning"
-        :measure="['scanning', 'scanningTimeWithoutPauses']"
-        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-      />
     </section>
     <section>
       <GroupProjectsChart
@@ -119,13 +78,13 @@
         :projects="[
           'RUBY-26170/typing',
           'RUBY-29334/typing',
-          'GitLab/typing/user/method',
-          'GitLab/typing/user/class',
-          'GitLab/typing/user/lambda',
-          'GitLab/typing/parser/method',
-          'GitLab/typing/parser/class',
-          'GitLab/typing/parser/class_array',
-          'GitLab/typing/parser/class_assoc',
+          'GitLab/typing/typing/user/method',
+          'GitLab/typing/typing/user/class',
+          'GitLab/typing/typing/user/lambda',
+          'GitLab/typing/typing/parser/method',
+          'GitLab/typing/typing/parser/class',
+          'GitLab/typing/typing/parser/class_array',
+          'GitLab/typing/typing/parser/class_assoc',
         ]"
         :aliases="[
           'Ruby assoc with map',
@@ -147,13 +106,13 @@
         :projects="[
           'RUBY-26170/typing',
           'RUBY-29334/typing',
-          'GitLab/typing/user/method',
-          'GitLab/typing/user/class',
-          'GitLab/typing/user/lambda',
-          'GitLab/typing/parser/method',
-          'GitLab/typing/parser/class',
-          'GitLab/typing/parser/class_array',
-          'GitLab/typing/parser/class_assoc',
+          'GitLab/typing/typing/user/method',
+          'GitLab/typing/typing/user/class',
+          'GitLab/typing/typing/user/lambda',
+          'GitLab/typing/typing/parser/method',
+          'GitLab/typing/typing/parser/class',
+          'GitLab/typing/typing/parser/class_array',
+          'GitLab/typing/typing/parser/class_assoc',
         ]"
         :aliases="[
           'Ruby assoc with map',
@@ -178,18 +137,18 @@
           'GitLab/typing/method',
           'GitLab/typing/class',
           'GitLab/typing/lambda_body_in_class',
-          'GitLab/enter/parser/method',
-          'GitLab/enter/parser/class',
-          'GitLab/enter/parser/class_array',
-          'GitLab/enter/parser/class_assoc',
-          'GitLab/enter/structure/inside_query',
-          'GitLab/enter/structure/after_query',
-          'GitLab/enter/project_spec/describe',
-          'GitLab/enter/project_controller/class',
-          'GitLab/enter/mr_mail/class',
-          'GitLab/enter/user_show_view/before_div',
-          'GitLab/enter/routes_project/top',
-          'GitLab/enter/emojis_json/map',
+          'GitLab/typing/enter/parser/method',
+          'GitLab/typing/enter/parser/class',
+          'GitLab/typing/enter/parser/class_array',
+          'GitLab/typing/enter/parser/class_assoc',
+          'GitLab/typing/enter/structure/inside_query',
+          'GitLab/typing/enter/structure/after_query',
+          'GitLab/typing/enter/project_spec/describe',
+          'GitLab/typing/enter/project_controller/class',
+          'GitLab/typing/enter/mr_mail/class',
+          'GitLab/typing/enter/user_show_view/before_div',
+          'GitLab/typing/enter/routes_project/top',
+          'GitLab/typing/enter/emojis_json/map',
         ]"
         :aliases="[
           'Do block in spec',
@@ -222,18 +181,18 @@
           'GitLab/typing/method',
           'GitLab/typing/class',
           'GitLab/typing/lambda_body_in_class',
-          'GitLab/enter/parser/method',
-          'GitLab/enter/parser/class',
-          'GitLab/enter/parser/class_array',
-          'GitLab/enter/parser/class_assoc',
-          'GitLab/enter/structure/inside_query',
-          'GitLab/enter/structure/after_query',
-          'GitLab/enter/project_spec/describe',
-          'GitLab/enter/project_controller/class',
-          'GitLab/enter/mr_mail/class',
-          'GitLab/enter/user_show_view/before_div',
-          'GitLab/enter/routes_project/top',
-          'GitLab/enter/emojis_json/map',
+          'GitLab/typing/enter/parser/method',
+          'GitLab/typing/enter/parser/class',
+          'GitLab/typing/enter/parser/class_array',
+          'GitLab/typing/enter/parser/class_assoc',
+          'GitLab/typing/enter/structure/inside_query',
+          'GitLab/typing/enter/structure/after_query',
+          'GitLab/typing/enter/project_spec/describe',
+          'GitLab/typing/enter/project_controller/class',
+          'GitLab/typing/enter/mr_mail/class',
+          'GitLab/typing/enter/user_show_view/before_div',
+          'GitLab/typing/enter/routes_project/top',
+          'GitLab/typing/enter/emojis_json/map',
         ]"
         :aliases="[
           'Do block in spec',
@@ -265,15 +224,15 @@
           'RUBY-26170/typing',
           'RUBY-29334/typing',
           'RUBY-29542/typing',
-          'GitLab/typing/user/method',
-          'GitLab/enter/parser/method',
-          'GitLab/enter/structure/inside_query',
-          'GitLab/enter/project_spec/describe',
-          'GitLab/enter/project_controller/class',
-          'GitLab/enter/mr_mail/class',
-          'GitLab/enter/user_show_view/before_div',
-          'GitLab/enter/routes_project/top',
-          'GitLab/enter/emojis_json/map',
+          'GitLab/typing/typing/user/method',
+          'GitLab/typing/enter/parser/method',
+          'GitLab/typing/enter/structure/inside_query',
+          'GitLab/typing/enter/project_spec/describe',
+          'GitLab/typing/enter/project_controller/class',
+          'GitLab/typing/enter/mr_mail/class',
+          'GitLab/typing/enter/user_show_view/before_div',
+          'GitLab/typing/enter/routes_project/top',
+          'GitLab/typing/enter/emojis_json/map',
           'diaspora-project-test/completion/constant',
           'gitlab-project-test/completion/constant',
           'redmine-project-test/completion/constant',

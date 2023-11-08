@@ -95,9 +95,9 @@ export const completionProjects = {
     "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_10_typing_with_library_cache",
   ],
   kotlinScript: [
-    "arrow/completion/completion_kts_with_library_cache",
-    "kotlin_empty_kts/completion/completion_kts_with_library_cache",
-    "kotlin_lang/completion/completion_kts_with_library_cache",
+    "arrow/completion/build.gradle_completion_kts_with_library_cache",
+    "kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache",
+    "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
   ],
   kotlinLanguageServerEvaluateExpression: [
     "kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache",

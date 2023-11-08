@@ -16,7 +16,7 @@ func TestWithoutDegradations(t *testing.T) {
   builds := make([]string, len(data))
 
   times := make([]int64, len(data))
-  for i, _ := range times {
+  for i := range times {
     times[i] = int64(i)
   }
   degradations := InferDegradations(data, builds, times, Settings{})
@@ -27,7 +27,7 @@ func TestWithoutDegradations2(t *testing.T) {
   builds := make([]string, len(data))
 
   times := make([]int64, len(data))
-  for i, _ := range times {
+  for i := range times {
     times[i] = int64(i)
   }
   degradations := InferDegradations(data, builds, times, Settings{})
@@ -39,7 +39,7 @@ func TestWithDegradations(t *testing.T) {
   builds := make([]string, len(data))
 
   times := make([]int64, len(data))
-  for i, _ := range times {
+  for i := range times {
     times[i] = int64(i)
   }
   degradations := InferDegradations(data, builds, times, Settings{MinimumSegmentLength: 3})
@@ -52,7 +52,7 @@ func TestWithoutDegradations3(t *testing.T) {
   builds := make([]string, len(data))
 
   times := make([]int64, len(data))
-  for i, _ := range times {
+  for i := range times {
     times[i] = int64(i)
   }
   degradations := InferDegradations(data, builds, times, Settings{MinimumSegmentLength: 3})
@@ -64,7 +64,7 @@ func TestWithDegradations2(t *testing.T) {
   builds := make([]string, len(data))
 
   times := make([]int64, len(data))
-  for i, _ := range times {
+  for i := range times {
     times[i] = int64(i)
   }
   degradations := InferDegradations(data, builds, times, Settings{MinimumSegmentLength: 3})

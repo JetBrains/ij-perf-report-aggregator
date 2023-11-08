@@ -10,7 +10,7 @@
         label="Indexing Time"
         :measure="['indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
     <section>
@@ -18,7 +18,7 @@
         label="Number Of Indexed Files"
         measure="numberOfIndexedFiles"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
     <section>
@@ -26,7 +26,7 @@
         label="Index Size"
         measure="indexSize"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
     <section>
@@ -50,7 +50,7 @@
           'processingTime#SCSS',
         ]"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
     <section>
@@ -58,7 +58,7 @@
         label="Scanning"
         :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
     <section>
@@ -66,7 +66,7 @@
         label="Indexing Time (With Data Before 11/07/2023)"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
       />
     </section>
   </DashboardPage>

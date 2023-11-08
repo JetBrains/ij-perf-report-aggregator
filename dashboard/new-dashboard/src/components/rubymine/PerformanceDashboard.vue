@@ -26,7 +26,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Inspection"
+        label="Inspections"
         measure="globalInspections"
         :projects="[
           'diaspora-project-inspections-test/inspection-RubyResolve-app',
@@ -34,46 +34,57 @@
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'gitlab-project-inspections-test/inspection-app',
         ]"
+        :aliases="[
+          'Unresolved References Inspection (DI)',
+          'All Inspections (DI)',
+          'Unresolved References Inspection (GL)',
+          'All Inspections (GL)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Find Usages: execution time"
+        label="Find Usages: Execution Time"
         measure="findUsages"
         :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
+        :aliases="['Factory (GL)', 'Let Variable (GL)']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Find Usages: number of found usages"
+        label="Find Usages: Quantity"
         measure="findUsages#number"
         :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
+        :aliases="['Factory (GL)', 'Let Variable (GL)']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Completion Diaspora"
+        label="Completion (Diaspora)"
         measure="completion"
         :projects="['diaspora-project-test/completion/routes', 'diaspora-project-test/completion/exceptions', 'diaspora-project-test/completion/localization']"
+        :aliases="['Routes', 'Exceptions', 'I18n#t']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Completion Gitlab"
+        label="Completion (GitLab)"
         measure="completion"
         :projects="['gitlab-project-test/completion/routes', 'gitlab-project-test/completion/exceptions', 'gitlab-project-test/completion/localization']"
+        :aliases="['Routes', 'Exceptions', 'I18n#t']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Completion Redmine"
+        label="Completion (Redmine)"
         measure="completion"
         :projects="['redmine-project-test/completion/routes', 'redmine-project-test/completion/exceptions', 'redmine-project-test/completion/localization']"
+        :aliases="['Routes', 'Exceptions', 'I18n#t']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Typing: average AWT delay"
+        label="Typing: Average AWT Delay"
         measure="test#average_awt_delay"
         :projects="[
           'RUBY-26170/typing',
@@ -101,7 +112,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Typing: total time"
+        label="Typing: Total Time"
         measure="typing"
         :projects="[
           'RUBY-26170/typing',
@@ -129,7 +140,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Enter handling: average AWT delay"
+        label="Enter Handling: Average AWT Delay"
         measure="test#average_awt_delay"
         :projects="[
           'RUBY-29542/typing',
@@ -173,7 +184,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Enter handling: total time"
+        label="Enter Handling: Total Time"
         measure="typing"
         :projects="[
           'RUBY-29542/typing',
@@ -217,7 +228,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="File analysis on opening"
+        label="File Analysis on Open"
         measure="firstCodeAnalysis"
         :projects="[
           'GitLab/typing/lambda_body_in_class',
@@ -294,7 +305,7 @@
 
     <section>
       <GroupProjectsChart
-        label="Get Symbol Members: execution time"
+        label="Symbol Members: Execution Time"
         measure="getSymbolMembers"
         :projects="[
           'diaspora-project-test/getSymbolMembers-ApplicationController-false',
@@ -304,11 +315,19 @@
           'redmine-project-test/getSymbolMembers-ApplicationController-false',
           'redmine-project-test/getSymbolMembers-ApplicationController-true',
         ]"
+        :aliases="[
+          'ApplicationController (DI)',
+          'ApplicationController (DI, no caches)',
+          'ApplicationController (GL)',
+          'ApplicationController (GL, no caches)',
+          'ApplicationController (RM)',
+          'ApplicationController (RM, no caches)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Get Symbol Members: number"
+        label="Symbol Members: Quantity"
         measure="getSymbolMembers#number"
         :projects="[
           'diaspora-project-test/getSymbolMembers-ApplicationController-false',
@@ -317,6 +336,14 @@
           'gitlab-project-test/getSymbolMembers-ApplicationController-true',
           'redmine-project-test/getSymbolMembers-ApplicationController-false',
           'redmine-project-test/getSymbolMembers-ApplicationController-true',
+        ]"
+        :aliases="[
+          'ApplicationController (DI)',
+          'ApplicationController (DI, no caches)',
+          'ApplicationController (GL)',
+          'ApplicationController (GL, no caches)',
+          'ApplicationController (RM)',
+          'ApplicationController (RM, no caches)',
         ]"
       />
     </section>

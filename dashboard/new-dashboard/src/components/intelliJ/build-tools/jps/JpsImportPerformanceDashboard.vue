@@ -166,6 +166,7 @@ const projects = [
   "jps_10K-modules-checkout-branch-with-changes/measureStartup",
   "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
   "jps-cyclic-branches-checkout/measureStartup",
+  "jps-modules-reload/measureStartup",
 ]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)

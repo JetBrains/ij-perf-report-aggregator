@@ -15,12 +15,6 @@ interface Result {
 }
 
 export class DataQueryExecutor {
-  private _lastQuery: DataQuery | null = null
-
-  get lastQuery(): DataQuery | null {
-    return this._lastQuery
-  }
-
   private readonly observable: Observable<Result>
 
   /**
@@ -71,10 +65,7 @@ export class DataQueryExecutor {
   }
 
   subscribe(listener: DataQueryConsumer): () => void {
-    const subscription = this.observable.subscribe(({ configuration, query, data, isLoading }) => {
-      this._lastQuery = query
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      // console.debug(`[queryExecutor] loaded (listenerAdded=${this.listener != null}, query=${JSON.stringify(risonDecode(serializedQuery))})`)
+    const subscription = this.observable.subscribe(({ configuration, data, isLoading }) => {
       listener(data, configuration, isLoading)
     })
     return () => {

@@ -1633,3 +1633,59 @@ test("don't merge if merging field is not in query", () => {
     },
   ])
 })
+
+test("merging is correct", () => {
+  const actual = mergeQueries([
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: ["project", "machine"],
+      filters: [
+        {
+          f: "project",
+          v: "gitlab-project-inspections-test/inspection-app",
+        },
+        {
+          f: "machine",
+          v: ["intellij-macos-hw-munit-692"],
+        },
+      ],
+      order: "t",
+    },
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: ["project", "machine"],
+      filters: [
+        {
+          f: "project",
+          v: "gitlab-project-inspections-test/inspection-RubyResolve-app",
+        },
+        {
+          f: "machine",
+          v: ["intellij-macos-hw-munit-692"],
+        },
+      ],
+      order: "t",
+    },
+  ])
+  expect(actual).toStrictEqual([
+    {
+      db: "perfintDev",
+      table: "idea",
+      fields: ["project", "machine"],
+      filters: [
+        {
+          f: "project",
+          v: ["gitlab-project-inspections-test/inspection-app", "gitlab-project-inspections-test/inspection-RubyResolve-app"],
+          s: true,
+        },
+        {
+          f: "machine",
+          v: ["intellij-macos-hw-munit-692"],
+        },
+      ],
+      order: "t",
+    },
+  ])
+})

@@ -204,10 +204,16 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter,
   // Check if both filters have a field 'f' and they are equal
   if (filter1.f !== filter2.f) return false
 
+  const filter1Value = filter1.v
+  const filter2Value = filter2.v
+
   // Check if filter1.v and filter2.v are either strings or arrays of strings
-  if (!(typeof filter1.v === "string" ? true : Array.isArray(filter1.v)) || !(typeof filter2.v === "string" ? true : Array.isArray(filter2.v))) return false
+  if (!(typeof filter1Value === "string" ? true : Array.isArray(filter1Value)) || !(typeof filter2Value === "string" ? true : Array.isArray(filter2Value))) return false
 
   //Check that filters are different
+  if (Array.isArray(filter1Value) && Array.isArray(filter2Value) && filter1Value.length === filter2Value.length && filter1Value.every((v, i) => v === filter2Value[i])) {
+    return false
+  }
   if (filter1.v == filter2.v) return false
 
   //We only support combining filters with no operator and without sql

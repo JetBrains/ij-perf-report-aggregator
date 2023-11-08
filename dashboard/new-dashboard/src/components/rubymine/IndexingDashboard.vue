@@ -31,6 +31,7 @@
         label="Indexing"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
       />
     </section>
     <section>
@@ -38,6 +39,7 @@
         label="Number Of Indexed Files"
         measure="numberOfIndexedFiles"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
       />
     </section>
     <section>
@@ -45,6 +47,7 @@
         label="Scanning"
         :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
       />
     </section>
   </DashboardPage>

@@ -92,9 +92,9 @@ export class AggregationChartVM {
         return
       }
       this.chartManager?.chart.hideLoading()
-      const options = configuration.chartConfigurator.configureChart(data, configuration)
-
-      this.updateChartData(options)
+      for (const it of configuration.getChartConfigurators()) {
+        this.updateChartData(it.configureChart(data, configuration))
+      }
     })
   }
 
@@ -118,11 +118,12 @@ export class AggregationChartVM {
       }))
     }
 
+    if (options["dataset"]) {
+      const dataset = options["dataset"] as DatasetOption[]
+      const [_, values] = dataset[0].source as OptionSourceData[]
+
+      this.average.value = this.calculateAverage(values as number[])
+    }
     this.chartManager?.chart.setOption(options, { replaceMerge: ["dataset", "series"] })
-
-    const dataset = options["dataset"] as DatasetOption[]
-    const [_, values] = dataset[0].source as OptionSourceData[]
-
-    this.average.value = this.calculateAverage(values as number[])
   }
 }

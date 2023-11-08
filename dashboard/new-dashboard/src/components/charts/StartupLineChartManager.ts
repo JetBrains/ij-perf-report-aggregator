@@ -139,7 +139,9 @@ export class StartupLineChartManager {
         return
       }
       this.chart.chart.hideLoading()
-      this.chart.updateChart(configuration.chartConfigurator.configureChart(data, configuration))
+      for (const it of configuration.getChartConfigurators()) {
+        this.chart.updateChart(it.configureChart(data, configuration))
+      }
     })
   }
 

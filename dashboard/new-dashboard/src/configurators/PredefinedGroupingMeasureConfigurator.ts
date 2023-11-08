@@ -63,7 +63,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     query.order = "t"
 
     configuration.measures = measureNames
-    configuration.chartConfigurator = this
+    configuration.addChartConfigurator(this)
     return true
   }
 

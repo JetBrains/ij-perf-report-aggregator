@@ -16,7 +16,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
     query.aggregator = "avg"
     query.order = "t"
 
-    configuration.chartConfigurator = this
+    configuration.addChartConfigurator(this)
 
     return true
   }

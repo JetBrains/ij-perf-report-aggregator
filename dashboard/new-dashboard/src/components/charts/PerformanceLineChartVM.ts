@@ -204,7 +204,9 @@ export class PerformanceLineChartVM {
           replaceMerge: ["legend"],
         }
       )
-      this.eChart.updateChart(configuration.chartConfigurator.configureChart(data, configuration))
+      for (const it of configuration.getChartConfigurators()) {
+        this.eChart.updateChart(it.configureChart(data, configuration))
+      }
     })
   }
 

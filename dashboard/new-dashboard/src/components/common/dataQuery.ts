@@ -139,20 +139,14 @@ export class DataQueryExecutorConfiguration {
 
   readonly queryProducers: QueryProducer[] = []
 
-  private _chartConfigurator: ChartConfigurator | null = null
-  get chartConfigurator(): ChartConfigurator {
-    const result = this._chartConfigurator
-    if (result == null) {
-      throw new Error("measure list is not yet set")
-    }
-    return result
+  private chartConfigurator: ChartConfigurator[] = []
+
+  public getChartConfigurators(): ChartConfigurator[] {
+    return this.chartConfigurator
   }
 
-  set chartConfigurator(value: ChartConfigurator) {
-    if (this._chartConfigurator != null) {
-      throw new Error("measure list is already set")
-    }
-    this._chartConfigurator = value
+  public addChartConfigurator(configurator: ChartConfigurator): void {
+    this.chartConfigurator.push(configurator)
   }
 
   private _measures: string[] | null = null

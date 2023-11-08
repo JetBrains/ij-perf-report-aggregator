@@ -46,7 +46,10 @@ export class BarChartManager {
         return
       }
       this.chart.chart.hideLoading()
-      this.chart.replaceDataSetAndSeries(configuration.chartConfigurator.configureChart(data, configuration))
+
+      for (const it of configuration.getChartConfigurators()) {
+        this.chart.replaceDataSetAndSeries(it.configureChart(data, configuration))
+      }
     })
   }
 

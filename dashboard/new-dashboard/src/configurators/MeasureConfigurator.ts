@@ -115,7 +115,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     configureQuery(measureNames, query, configuration, this.skipZeroValues)
     configuration.measures = measureNames
-    configuration.chartConfigurator = this
+    configuration.addChartConfigurator(this)
     return true
   }
 
@@ -166,7 +166,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     configureQuery(this.measures, query, configuration, this.skipZeroValues.value)
-    configuration.chartConfigurator = this
+    configuration.addChartConfigurator(this)
     configuration.measures = this.measures
     return true
   }

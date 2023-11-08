@@ -26,7 +26,7 @@ export class SmoothingConfigurator implements DataQueryConfigurator, FilterConfi
     return true
   }
 
-  configureQuery(_: DataQuery, _configuration: DataQueryExecutorConfiguration | null): boolean {
+  configureQuery(_: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
     return true
   }
 }

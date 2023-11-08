@@ -26,7 +26,7 @@ export class DetectChangesConfigurator implements DataQueryConfigurator, FilterC
     return true
   }
 
-  configureQuery(_: DataQuery, _configuration: DataQueryExecutorConfiguration | null): boolean {
+  configureQuery(_: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
     return true
   }
 }

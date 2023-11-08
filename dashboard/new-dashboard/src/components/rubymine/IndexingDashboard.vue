@@ -52,6 +52,30 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Processing Time"
+        :measure="[
+          'processingTime#Ruby',
+          'processingTime#JavaScript',
+          'processingTime#Markdown',
+          'processingTime#TypeScript',
+          'processingTime#Vue.js',
+          'processingTime#YAML',
+          'processingTime#Slim',
+          'processingTime#SQL',
+          'processingTime#RHTML',
+          'processingTime#RBS',
+          'processingTime#JSON',
+          'processingTime#Haml',
+          'processingTime#Cucumber',
+          'processingTime#CSS',
+          'processingTime#SCSS',
+        ]"
+        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
+        :aliases="['Diaspora', 'Rbs Collection', 'Gitlab', 'RedMine']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Scanning"
         :measure="['scanning', 'scanningTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"

@@ -280,13 +280,13 @@ function isAccidentKind(str: string): str is AccidentKind {
 export function getAccidents(accidents: Map<string, Accident[]> | undefined, value: string[] | null): Accident[] | null {
   if (accidents != undefined) {
     //perf db
-    if (value?.length == 12 || value?.length == 11) {
+    if (value?.length == 13 || value?.length == 14) {
       const key = `${value[6]}_${value[8]}.${value[9]}`
       const keyWithMetric = `${value[6]}/${value[2]}_${value[8]}.${value[9]}`
       return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
     }
     //perf dev db
-    if (value?.length == 8 || value?.length == 7) {
+    if (value?.length == 9 || value?.length == 10) {
       const key = `${value[6]}_${value[5]}`
       const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
       return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null

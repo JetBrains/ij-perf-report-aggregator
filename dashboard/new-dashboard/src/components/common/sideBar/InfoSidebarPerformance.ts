@@ -3,6 +3,8 @@ import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/type
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
+import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
+import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
 import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
 import { encodeRison } from "../rison"
@@ -11,13 +13,15 @@ import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 export interface InfoDataPerformance extends DataSeries, InfoData {
   accidents: Ref<Accident[] | undefined> | undefined
   description: Ref<Description | null>
+  deltaPrevious: string | undefined
+  deltaNext: string | undefined
 }
 
 export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null): InfoDataPerformance {
   const accidents = accidentsConfigurator?.value
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
-  const value: number = dataSeries[1] as number
+  const value: number = useSettingsStore().scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
   let projectName: string = params.seriesName as string
   let machineName: string | undefined
   let metricName: string | undefined
@@ -117,6 +121,18 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     return await getDescriptionFromMetaDb(projectName, "master")
   })
 
+  const delta = findDeltaInData(dataSeries)
+  let deltaPrevious: string | undefined
+  let deltaNext: string | undefined
+  if (delta != undefined) {
+    if (delta.prev != null) {
+      deltaPrevious = getDifferenceString(value, delta.prev, "", valueUnit == "ms", type as string)
+    }
+    if (delta.next != null) {
+      deltaNext = getDifferenceString(value, delta.next, "", valueUnit == "ms", type as string)
+    }
+  }
+
   return {
     build: fullBuildId,
     artifactsUrl,
@@ -134,6 +150,8 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     description,
     metricName,
     branch,
+    deltaPrevious,
+    deltaNext,
   }
 }
 

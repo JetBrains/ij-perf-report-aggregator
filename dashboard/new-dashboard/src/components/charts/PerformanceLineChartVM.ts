@@ -1,5 +1,6 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
+import { appendPopupElement, Delta, findDeltaInData } from "../../util/Delta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -37,7 +38,7 @@ export class PerformanceLineChartVM {
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams) => {
       const element = document.createElement("div")
-      const data = params.value as OptionDataValue[]
+      const data = params.value as (OptionDataValue | Delta)[]
       const [dateMs, _1, _2, type] = data
       const durationMs = this.settings.scaling ? data.at(-1) : data[1]
       element.append(
@@ -61,10 +62,14 @@ export class PerformanceLineChartVM {
           element.append(accidentHtml)
         }
       }
+
+      const delta = findDeltaInData(data)
+      if (delta != undefined) {
+        appendPopupElement(element, durationMs as number, delta, isMs, type as string)
+      }
       return element
     }
   }
-
   private getAccidentMessage(accident: Accident): string {
     return accident.kind == AccidentKind.InferredRegression || accident.kind == AccidentKind.InferredImprovement
       ? accident.reason

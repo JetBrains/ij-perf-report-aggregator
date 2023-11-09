@@ -74,6 +74,21 @@
           <ClockIcon class="w-4 h-4" />
           {{ vm.data.value?.value }}
         </span>
+        <span
+          v-if="vm.data.value?.deltaPrevious"
+          class="flex gap-1.5 text-sm items-center"
+        >
+          <ArrowLeftIcon class="w-4 h-4" />
+          {{ vm.data.value?.deltaPrevious }}
+        </span>
+        <span
+          v-if="vm.data.value?.deltaNext"
+          class="flex gap-1.5 text-sm items-center"
+        >
+          <ArrowRightIcon class="w-4 h-4" />
+          {{ vm.data.value?.deltaNext }}
+        </span>
+
         <span class="flex gap-1.5 text-sm items-center">
           <ComputerDesktopIcon class="w-4 h-4" />
           {{ vm.data.value?.machineName }}

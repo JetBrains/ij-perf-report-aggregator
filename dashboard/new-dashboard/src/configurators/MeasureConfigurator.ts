@@ -12,6 +12,7 @@ import { LineChartOptions, ScatterChartOptions } from "../components/common/echa
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { METRICS_MAPPING } from "../shared/metricsMapping"
+import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
@@ -362,10 +363,13 @@ function configureChart(
       seriesData.push(smoothedData)
     }
 
+    const deltaValues = Delta.calculateDeltas(seriesData[1] as number[])
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-expect-error
+    seriesData.push(deltaValues)
     if (settings.scaling) {
       seriesData.push(seriesData[1])
       seriesData[1] = scaleToMedian(seriesData[1] as number[])
-      useDurationFormatter = false
     }
 
     let detectedChanges = new Map<string, ChangePointClassification>()

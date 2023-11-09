@@ -34,12 +34,7 @@
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'gitlab-project-inspections-test/inspection-app',
         ]"
-        :aliases="[
-          'Unresolved References Inspection (DI)',
-          'All Inspections (DI)',
-          'Unresolved References Inspection (GL)',
-          'All Inspections (GL)',
-        ]"
+        :aliases="['Unresolved References Inspection (DI)', 'All Inspections (DI)', 'Unresolved References Inspection (GL)', 'All Inspections (GL)']"
       />
     </section>
     <section>

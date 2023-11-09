@@ -11,6 +11,7 @@ import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutor
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { useSettingsStore } from "../components/settings/settingsStore"
+import { METRICS_MAPPING } from "../shared/metricsMapping"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
@@ -176,7 +177,16 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 }
 
+function replaceKeys(originalKey: string): string {
+  let modifiedKey = originalKey
+  for (const [searchValue, replaceValue] of Object.entries(METRICS_MAPPING)) {
+    modifiedKey = modifiedKey.replaceAll(searchValue, replaceValue)
+  }
+  return modifiedKey
+}
+
 export function measureNameToLabel(key: string): string {
+  key = replaceKeys(key)
   return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/g, "")
 }
 

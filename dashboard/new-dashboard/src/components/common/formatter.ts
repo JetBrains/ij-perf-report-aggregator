@@ -1,5 +1,4 @@
 import humanizeDuration, { HumanizerOptions } from "humanize-duration"
-import { useSettingsStore } from "../settings/settingsStore"
 
 export function nsToMs(v: number) {
   return v / 1_000_000
@@ -33,9 +32,6 @@ const durationFormatOptions: HumanizerOptions = {
 }
 
 export const durationAxisPointerFormatter = (valueInMs: number, type: string = "duration"): string => {
-  if (useSettingsStore().scaling) {
-    return valueInMs.toFixed(0)
-  }
   if (type === "counter" || type == "c") {
     return valueInMs.toString()
   }

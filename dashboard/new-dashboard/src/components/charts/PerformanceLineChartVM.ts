@@ -5,6 +5,7 @@ import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
+import { useSettingsStore } from "../settings/settingsStore"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 
 function getWarningIcon() {
@@ -32,12 +33,13 @@ function getWarningIcon() {
 }
 
 export class PerformanceLineChartVM {
+  private settings = useSettingsStore()
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams) => {
       const element = document.createElement("div")
       const data = params.value as OptionDataValue[]
-      const [dateMs, durationMs, _, type] = data
-
+      const [dateMs, _1, _2, type] = data
+      const durationMs = this.settings.scaling ? data.at(-1) : data[1]
       element.append(
         durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type as string),
         document.createElement("br"),

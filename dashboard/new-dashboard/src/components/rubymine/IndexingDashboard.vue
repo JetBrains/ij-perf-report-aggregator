@@ -31,7 +31,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Processing Time"
+        label="Processing Time: Gitlab"
         :measure="[
           'processingTime#Ruby',
           'processingTime#JavaScript',
@@ -49,8 +49,80 @@
           'processingTime#CSS',
           'processingTime#SCSS',
         ]"
-        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine']"
+        :projects="['gitlab-project-test/indexing']"
+        :aliases="['Gitlab']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Time: Diaspora"
+        :measure="[
+          'processingTime#Ruby',
+          'processingTime#JavaScript',
+          'processingTime#Markdown',
+          'processingTime#TypeScript',
+          'processingTime#Vue.js',
+          'processingTime#YAML',
+          'processingTime#Slim',
+          'processingTime#SQL',
+          'processingTime#RHTML',
+          'processingTime#RBS',
+          'processingTime#JSON',
+          'processingTime#Haml',
+          'processingTime#Cucumber',
+          'processingTime#CSS',
+          'processingTime#SCSS',
+        ]"
+        :projects="['diaspora-project-test/indexing']"
+        :aliases="['Diaspora']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Time: RBS Collection"
+        :measure="[
+          'processingTime#Ruby',
+          'processingTime#JavaScript',
+          'processingTime#Markdown',
+          'processingTime#TypeScript',
+          'processingTime#Vue.js',
+          'processingTime#YAML',
+          'processingTime#Slim',
+          'processingTime#SQL',
+          'processingTime#RHTML',
+          'processingTime#RBS',
+          'processingTime#JSON',
+          'processingTime#Haml',
+          'processingTime#Cucumber',
+          'processingTime#CSS',
+          'processingTime#SCSS',
+        ]"
+        :projects="['gem-rbs-collection-indexing-test/indexing']"
+        :aliases="['RBS Collection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Time: Redmine"
+        :measure="[
+          'processingTime#Ruby',
+          'processingTime#JavaScript',
+          'processingTime#Markdown',
+          'processingTime#TypeScript',
+          'processingTime#Vue.js',
+          'processingTime#YAML',
+          'processingTime#Slim',
+          'processingTime#SQL',
+          'processingTime#RHTML',
+          'processingTime#RBS',
+          'processingTime#JSON',
+          'processingTime#Haml',
+          'processingTime#Cucumber',
+          'processingTime#CSS',
+          'processingTime#SCSS',
+        ]"
+        :projects="['redmine-project-test/indexing']"
+        :aliases="['Redmine']"
       />
     </section>
     <section>

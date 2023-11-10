@@ -36,16 +36,18 @@ if (import.meta.hot) {
 }
 
 // zstdDictionaryUrl - if zstd dictionary will be changed on a server side, then server must introduce a new endpoint for query (currently, `/api/q`)
-export const initZstdObservable = forkJoin([fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, (it) => it.arrayBuffer()), zstdReady]).pipe(
-  map(([dictionaryData, _]) => {
-    if (compressor !== null) {
-      compressor.dispose()
-    }
-    compressor = new CompressorUsingDictionary(dictionaryData)
-    return null
-  }),
-  shareReplay(1)
-)
+export function getZstdObservable() {
+  return forkJoin([fromFetchWithRetryAndErrorHandling<ArrayBuffer>(zstdDictionaryUrl, (it) => it.arrayBuffer()), zstdReady()]).pipe(
+    map(([dictionaryData, _]) => {
+      if (compressor !== null) {
+        compressor.dispose()
+      }
+      compressor = new CompressorUsingDictionary(dictionaryData)
+      return null
+    }),
+    shareReplay(1)
+  )
+}
 
 function isError(code: number): boolean {
   return ZSTD_isError(code)

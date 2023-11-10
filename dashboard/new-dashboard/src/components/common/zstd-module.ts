@@ -65,28 +65,29 @@ export let ZSTD_compress_usingCDict: (cCtx: number, dst: number, dstCapacity: nu
 // let stackSave
 // let stackRestore
 // let stackAlloc
-
-export const zstdReady = from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
-  map((output) => {
-    const asm = output.instance.exports as Record<string, never>
-    malloc = asm["f"]
-    free = asm["g"]
-    ZSTD_isError = asm["h"]
-    ZSTD_compressBound = asm["i"]
-    ZSTD_createCCtx = asm["j"]
-    ZSTD_freeCCtx = asm["k"]
-    ZSTD_freeCDict = asm["l"]
-    ZSTD_createCDict = asm["m"]
-    ZSTD_compress_usingCDict = asm["n"]
-    // stackSave = asm["o"];
-    // stackRestore = asm["p"];
-    // stackAlloc = asm["q"];
-    // wasmTable = asm["n"];
-    const wasmMemory = asm["d"] as { buffer: ArrayBuffer }
-    buffer = wasmMemory.buffer
-    HEAPU8 = new Uint8Array(buffer)
-    initRuntime(asm)
-    return null
-  }),
-  shareReplay(1)
-)
+export function zstdReady() {
+  return from(WebAssembly.instantiateStreaming(fetch(zstdWasmUrl), imports)).pipe(
+    map((output) => {
+      const asm = output.instance.exports as Record<string, never>
+      malloc = asm["f"]
+      free = asm["g"]
+      ZSTD_isError = asm["h"]
+      ZSTD_compressBound = asm["i"]
+      ZSTD_createCCtx = asm["j"]
+      ZSTD_freeCCtx = asm["k"]
+      ZSTD_freeCDict = asm["l"]
+      ZSTD_createCDict = asm["m"]
+      ZSTD_compress_usingCDict = asm["n"]
+      // stackSave = asm["o"];
+      // stackRestore = asm["p"];
+      // stackAlloc = asm["q"];
+      // wasmTable = asm["n"];
+      const wasmMemory = asm["d"] as { buffer: ArrayBuffer }
+      buffer = wasmMemory.buffer
+      HEAPU8 = new Uint8Array(buffer)
+      initRuntime(asm)
+      return null
+    }),
+    shareReplay(1)
+  )
+}

@@ -1,6 +1,6 @@
 import { combineLatest, map, Observable, shareReplay } from "rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "../components/common/dataQuery"
-import { getCompressor, initZstdObservable } from "../components/common/zstd"
+import { getCompressor, getZstdObservable } from "../components/common/zstd"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerConfigurator implements DataQueryConfigurator {
@@ -17,7 +17,7 @@ export class ServerConfigurator implements DataQueryConfigurator {
     if (serverUrlObservable == null) {
       serverUrlObservable = injectOrError(serverUrlObservableKey)
     }
-    this.observable = combineLatest([serverUrlObservable, initZstdObservable]).pipe(
+    this.observable = combineLatest([serverUrlObservable, getZstdObservable()]).pipe(
       map(([url, _]) => {
         this._serverUrl = url
         return null

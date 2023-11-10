@@ -11,6 +11,7 @@ assets:
 
 lint:
 	go test ./pkg/...
+	pnpm test
 	golangci-lint run cmd/... pkg/...
 #To fix run: pnpm prettier --write . --loglevel
 	pnpm prettier --check . --log-level warn

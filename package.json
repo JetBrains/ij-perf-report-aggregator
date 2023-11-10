@@ -10,7 +10,7 @@
     "//": "pnpm vue-tsc --noEmit && ",
     "lint": "NODE_ENV=production eslint 'dashboard/*/src/**/*.{ts,vue}'",
     "update-deps": "pnpm update -i -r --latest",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.6",

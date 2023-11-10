@@ -34,6 +34,8 @@ jobs:
           version: 8
           run_install: |
             - recursive: true
+      - name: Test build
+        run: pnpm build
       - name: Run ESLint
         run: pnpm eslint . --ext .js,.vue,.ts
       - name: Run VueTSC

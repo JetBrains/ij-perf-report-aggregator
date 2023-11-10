@@ -10,6 +10,7 @@ assets:
 	qtc -dir pkg/tc-properties
 
 lint:
+	pnpm build
 	go test ./pkg/...
 	pnpm test
 	golangci-lint run cmd/... pkg/...

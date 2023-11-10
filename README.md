@@ -4,12 +4,12 @@
 ## IJ Perf
 
 Tool to collect performance reports in various formats from TeamCity, insert into ClickHouse, send notifications about degradations and visualize the results.
+
 - `clickhouse-backup` - backup clickhouse data.
 - `clickhouse-restore` - restore clickhouse data.
 - `backend` - server, provide access to ClickHouse and Postgres via HTTP API
 - `tc-collector` - collect performance reports from [TeamCity artifacts](https://www.jetbrains.com/help/teamcity/build-artifact.html) and insert to ClickHouse.
 - `degradation-detector` service that checks for performance degradations and sends notifications.
-
 
 ### Dashboard Editing
 

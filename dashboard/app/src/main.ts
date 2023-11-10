@@ -12,8 +12,7 @@ import { createAndConfigureRouter } from "./route"
 // get rid of color.png
 // avoid tiff/svg/other deprecated stuff in a final build
 import "./primeicons.css"
-// import "../../../jb/prime-theme/themes/saga/saga-blue/theme.scss"
-import "../../../jb/prime-theme/themes/lara/lara-light/blue/theme.scss"
+import "../prime-theme/themes/lara/lara-light/blue/theme.scss"
 
 import "new-dashboard/src/primevue-theme/select.css"
 import "new-dashboard/src/primevue-theme/select-panel.css"

@@ -1,0 +1,17 @@
+:root {
+  --input-bg-color: #{$inputBg};
+  --highlight-bg: #{$highlightBg};
+  --input-list-item-hover-bg: #{$inputListItemHoverBg};
+  --input-overlay-bg: #{$inputOverlayBg};
+
+  //--input-border-color: #{$shade400};
+  --input-placeholder-text-color: #{$inputPlaceholderTextColor};
+  //--input-padding: #{$inputPadding};
+
+  //--input-text-color: #{$inputTextColor};
+  --input-text-color: rgb(0 0 0);
+  --input-error-border-color: #{$inputErrorBorderColor};
+
+  //--panel-header-bg: #{$panelHeaderBg};
+  //--panel-header-border-color: #{$shade300};
+}

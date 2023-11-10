@@ -24,14 +24,7 @@ export class Delta {
   }
 }
 
-function appendValueAndPercent(element: HTMLElement, value: number, otherValue: number | null, text: string, isMs: boolean, type: string) {
-  if (otherValue != null) {
-    element.append(document.createElement("br"))
-    element.append(getDifferenceString(value, otherValue, text, isMs, type))
-  }
-}
-
-export function getDifferenceString(value: number, otherValue: number, text: string, isMs: boolean, type: string): string {
+export function getDifferenceString(value: number, otherValue: number, isMs: boolean, type: string): string {
   const deltaAbs = value - otherValue
   const deltaAbsFormatted = durationAxisPointerFormatter(isMs ? Math.abs(deltaAbs) : Math.abs(deltaAbs) / 1000 / 1000, type)
   let deltaPercentFormatted = ""
@@ -40,12 +33,7 @@ export function getDifferenceString(value: number, otherValue: number, text: str
     const deltaPercent = Math.abs((deltaAbs / value) * 100)
     deltaPercentFormatted = ` (${plus}${deltaPercent.toFixed(1)}%)`
   }
-  return `${text}${plus}${deltaAbsFormatted}${deltaPercentFormatted}`
-}
-
-export function appendPopupElement(element: HTMLElement, value: number, delta: Delta, isMs: boolean, type: string): void {
-  appendValueAndPercent(element, value, delta.next, "Next: ", isMs, type)
-  appendValueAndPercent(element, value, delta.prev, "Previous: ", isMs, type)
+  return `${plus}${deltaAbsFormatted}${deltaPercentFormatted}`
 }
 
 export function findDeltaInData(data: (OptionDataValue | Delta)[]): Delta | undefined {

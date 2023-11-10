@@ -126,10 +126,10 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   let deltaNext: string | undefined
   if (delta != undefined) {
     if (delta.prev != null) {
-      deltaPrevious = getDifferenceString(value, delta.prev, "", valueUnit == "ms", type as string)
+      deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", type as string)
     }
     if (delta.next != null) {
-      deltaNext = getDifferenceString(value, delta.next, "", valueUnit == "ms", type as string)
+      deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", type as string)
     }
   }
 

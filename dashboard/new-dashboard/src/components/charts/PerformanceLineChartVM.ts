@@ -1,6 +1,7 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
-import { appendPopupElement, Delta, findDeltaInData } from "../../util/Delta"
+import { appendLineWithIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
+import { Delta, findDeltaInData, getDifferenceString } from "../../util/Delta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -8,30 +9,6 @@ import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
 import { useSettingsStore } from "../settings/settingsStore"
 import { PerformanceChartManager } from "./PerformanceChartManager"
-
-function getWarningIcon() {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
-  svg.setAttribute("fill", "none")
-  svg.setAttribute("viewBox", "0 0 24 24")
-  svg.setAttribute("stroke-width", "1.5")
-  svg.setAttribute("stroke", "currentColor")
-  svg.setAttribute("class", "w-6 h-6")
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path")
-  path.setAttribute("stroke-linecap", "round")
-  path.setAttribute("stroke-linejoin", "round")
-  path.setAttribute(
-    "d",
-    "M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 " +
-      "0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-  )
-  svg.append(path)
-
-  const div = document.createElement("div")
-  div.setAttribute("class", "w-1 h-1")
-  div.append(svg)
-  return div
-}
 
 export class PerformanceLineChartVM {
   private settings = useSettingsStore()
@@ -52,20 +29,18 @@ export class PerformanceLineChartVM {
       const accidents = getAccidents(this.accidentsConfigurator?.value.value, data as string[])
       if (accidents != null) {
         for (const accident of accidents) {
-          //<ExclamationTriangleIcon class="w-4 h-4 text-red-500" /> Known degradation:
-          element.append(document.createElement("br"))
-          const accidentHtml = document.createElement("span")
-          accidentHtml.setAttribute("class", "flex gap-1.5 items-center")
-          const div = getWarningIcon()
-          accidentHtml.append(div)
-          accidentHtml.append(this.getAccidentMessage(accident))
-          element.append(accidentHtml)
+          appendLineWithIcon(element, getWarningIcon(), this.getAccidentMessage(accident))
         }
       }
 
       const delta = findDeltaInData(data)
       if (delta != undefined) {
-        appendPopupElement(element, durationMs as number, delta, isMs, type as string)
+        if (delta.prev != null) {
+          appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs as number, delta.prev, isMs, type as string))
+        }
+        if (delta.next != null) {
+          appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs as number, delta.next, isMs, type as string))
+        }
       }
       return element
     }

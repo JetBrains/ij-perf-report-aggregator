@@ -151,8 +151,8 @@ importers:
         specifier: 2.0.0-beta.24
         version: 2.0.0-beta.24(vue@3.3.8)
       humanize-duration:
-        specifier: 3.30.0
-        version: 3.30.0
+        specifier: 3.31.0
+        version: 3.31.0
       p-limit:
         specifier: ^5.0.0
         version: 5.0.0
@@ -2290,8 +2290,8 @@ packages:
     engines: {node: '>=14.18.0'}
     dev: false
 
-  /humanize-duration@3.30.0:
-    resolution: {integrity: sha512-NxpT0fhQTFuMTLnuu1Xp+ozNpYirQnbV3NlOjEKBYlE3uvMRu3LDuq8EPc3gVXxVYnchQfqVM4/+T9iwHPLLeA==}
+  /humanize-duration@3.31.0:
+    resolution: {integrity: sha512-fRrehgBG26NNZysRlTq1S+HPtDpp3u+Jzdc/d5A4cEzOD86YLAkDaJyJg8krSdCi7CJ+s7ht3fwRj8Dl+Btd0w==}
     dev: false
 
   /ignore@5.2.4:

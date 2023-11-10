@@ -41,7 +41,7 @@ require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/iam v1.1.5 // indirect
-	cloud.google.com/go/storage v1.34.1 // indirect
+	cloud.google.com/go/storage v1.35.1 // indirect
 	github.com/Azure/azure-pipeline-go v0.2.3 // indirect
 	github.com/Azure/azure-storage-blob-go v0.15.0 // indirect
 	github.com/Azure/go-autorest v14.2.0+incompatible // indirect
@@ -54,13 +54,13 @@ require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.22.2 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.5.0 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.22.3 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.23.0 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.15.2 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.3 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.13.4 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.13.5 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.2 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.2 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.5.2 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.6.0 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.2.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.2.2 // indirect

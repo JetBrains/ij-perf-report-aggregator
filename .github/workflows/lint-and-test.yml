@@ -1,0 +1,38 @@
+name: lint-and-test
+on:
+  - push
+  - pull_request
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  LintAndTest:
+    name: lint golang
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.4
+      - uses: actions/checkout@v3
+      - run: mkdir cmd/frontend/resources && touch cmd/frontend/resources/make-typecheck-happy.txt
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: |
+            - recursive: true
+      - name: Run ESLint
+        run: pnpm eslint . --ext .js,.vue,.ts
+      - name: Run VueTSC
+        run: pnpm vue-tsc --noEmit
+      - name: Run Go tests
+        run: go test ./pkg/...
+      - name: Run Prettier
+        run: pnpm prettier --check . --log-level warn
+      - name: Run frontend tests
+        run: pnpm test
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          only-new-issues: true
+          args: --timeout 5m0s

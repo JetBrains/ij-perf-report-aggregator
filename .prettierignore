@@ -6,3 +6,4 @@ cmd/frontend/resources/
 *.yaml
 *.yml
 components.d.ts
+.pnpm-store/

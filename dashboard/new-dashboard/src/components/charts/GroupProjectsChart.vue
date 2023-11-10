@@ -15,6 +15,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
 import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
 import LineChart from "./PerformanceLineChart.vue"
 
@@ -35,7 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
-const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null, props.aliases)
+const aliases = props.aliases ?? removeCommonSegments(props.projects)
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null, aliases)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
 watch(

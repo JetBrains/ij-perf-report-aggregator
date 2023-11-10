@@ -44,11 +44,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["realNumberOfCommits"]],
     projects: [spaceSpecific, spaceSpecificSql],
   },
-  {
-    labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
-    measures: [["LoadingDetails"]],
-    projects: [spaceSpecific, spaceSpecificSql],
-  },
   //Commit
   {
     labels: ["Commit FUS duration"],
@@ -56,18 +51,18 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [spaceCommit],
   },
   {
-    labels: ["refresh - time spent on reading latest commits from git and adding them to existing"],
-    measures: [["refresh"]],
+    labels: ["Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"],
+    measures: [["vcs-log-refreshing"]],
     projects: [spaceCommit],
   },
   {
-    labels: ["building graph - time spent on building commit graph(PermanentGraph)"],
-    measures: [["building graph"]],
+    labels: ["Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"],
+    measures: [["vcs-log-building-graph"]],
     projects: [spaceCommit],
   },
   {
-    labels: ["full log reload - time spent on building commit graph(PermanentGraph) + reading whole repository from git"],
-    measures: [["full log reload"]],
+    labels: ["Loading full VCS Log (all commits and references)"],
+    measures: [["vcs-log-loading-full-log"]],
     projects: [spaceCommit],
   },
 ]

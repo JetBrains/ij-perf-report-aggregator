@@ -41,12 +41,7 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Real number of commits through git rev-list --count --all"],
     measures: [["realNumberOfCommits"]],
     projects: [dotnetLatest],
-  },
-  {
-    labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
-    measures: [["LoadingDetails"]],
-    projects: [dotnetLatest],
-  },
+  }
 ]
 
 const charts = combineCharts(chartsDeclaration)

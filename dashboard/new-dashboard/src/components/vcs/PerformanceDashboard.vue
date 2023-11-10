@@ -48,11 +48,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["realNumberOfCommits"]],
     projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
   },
-  {
-    labels: ["LoadingDetails - the time spent reading  batch of commits from git  (git log command)"],
-    measures: [["LoadingDetails"]],
-    projects: [intellijSpecific, intellijSpecificSql, intellijLatest],
-  },
   //Show file history
   {
     labels: ["Show file history (test metric)"],
@@ -69,22 +64,22 @@ const chartsDeclaration: ChartDefinition[] = [
       "Computing - time spent on computing a peace of history. If index - time of computing before the first rename. " +
         "If git - time of computing before timeout of operation occurred",
     ],
-    measures: [["Computing"]],
+    measures: [["file-history-computing"]],
     projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
-    labels: ["refresh - time spent on reading latest commits from git and add them to existing"],
-    measures: [["refresh"]],
+    labels: ["Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"],
+    measures: [["vcs-log-refreshing"]],
     projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
-    labels: ["building graph - time spent on building commit graph(PermanentGraph)"],
-    measures: [["building graph"]],
+    labels: ["Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"],
+    measures: [["vcs-log-building-graph"]],
     projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   {
-    labels: ["full log reload - time spent on building commit graph(PermanentGraph) + reading whole repository from git"],
-    measures: [["full log reload"]],
+    labels: ["Loading full VCS Log (all commits and references)"],
+    measures: [["vcs-log-loading-full-log"]],
     projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
   },
   //Checkout
@@ -100,7 +95,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Checkout FUS VFS refresh duration "],
-    measures: [["git-checkout#fusCheckoutDuration"]],
+    measures: [["git-checkout#fusVfsRefreshDuration"]],
     projects: ["intellij_clone_specific_commit/git-checkout"],
   },
 ]

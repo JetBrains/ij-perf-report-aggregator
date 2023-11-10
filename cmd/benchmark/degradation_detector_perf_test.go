@@ -1,9 +1,10 @@
-package analysis
+package benchmark
 
 import (
   "context"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "log"
   "os"
   "sync"
@@ -18,12 +19,12 @@ func TestDegradationDetector(_ *testing.T) {
   }
 
   analysisSettings := make([]degradation_detector.Settings, 0, 1000)
-  analysisSettings = append(analysisSettings, GenerateIdeaSettings()...)
-  analysisSettings = append(analysisSettings, GenerateWorkspaceSettings()...)
-  analysisSettings = append(analysisSettings, GenerateKotlinSettings()...)
-  analysisSettings = append(analysisSettings, GenerateMavenSettings()...)
-  analysisSettings = append(analysisSettings, GenerateGradleSettings()...)
-  analysisSettings = append(analysisSettings, GeneratePhpStormSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
+  analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
 
   ctx := context.Background()
   degradationsChan := make(chan []degradation_detector.Degradation)

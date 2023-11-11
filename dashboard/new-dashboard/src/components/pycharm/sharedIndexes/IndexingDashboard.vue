@@ -33,6 +33,41 @@
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (Nova)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['nova-with-project-sharedIndexes', 'nova-with-bundled-sharedIndexes', 'nova-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (PyTorch)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['pytorch-with-project-sharedIndexes', 'pytorch-with-bundled-sharedIndexes', 'pytorch-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (BoTo3)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['boto-with-project-sharedIndexes', 'boto-with-bundled-sharedIndexes', 'boto-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (Matplotlib)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (Matplotlib)"
+        :measure="['indexingTimeWithoutPauses']"
+        :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

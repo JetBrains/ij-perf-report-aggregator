@@ -26,6 +26,13 @@
         :projects="['go-kratos-without-sharedIndexes', 'go-kratos-bundled-sharedIndexes', 'go-kratos-with-generated-sharedIndexes']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Dumb Mode Time (Kubernetes)"
+        measure="dumbModeTimeWithPauses"
+        :projects="['kubernetes-without-sharedIndexes', 'kubernetes-bundled-sharedIndexes', 'kubernetes-with-generated-sharedIndexes']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

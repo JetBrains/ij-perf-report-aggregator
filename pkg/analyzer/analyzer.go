@@ -59,7 +59,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       DbName:                      dbName,
       TableName:                   tableName,
       ReportReader:                analyzePerfReport,
-      HasRawReport:                true,
+      HasRawReport:                false,
       HasBuildTypeField:           true,
       HasMetaDB:                   true,
       HasNoInstallerButHasChanges: true,

@@ -55,7 +55,6 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "collect-changes",
       "add-diff-operation",
       "operations-of-references",
-      "",
     ],
   }
 })

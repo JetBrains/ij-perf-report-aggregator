@@ -132,6 +132,17 @@ const metricsDeclaration = [
   "workspaceModel.cachedValueWithParameters.total.get.ms",
   "workspaceModel.cachedValueWithParameters.clear.ms",
 
+  "compiler.ArtifactBridge.beforeChanged.ms",
+  "compiler.ArtifactManagerBridge.addArtifact.ms",
+  "compiler.ArtifactManagerBridge.commit.ms",
+  "compiler.ArtifactManagerBridge.dropMappings.ms",
+  "compiler.ArtifactManagerBridge.findArtifact.ms",
+  "compiler.ArtifactManagerBridge.getArtifacts.ms",
+  "compiler.ArtifactManagerBridge.getArtifactsByType.ms",
+  "compiler.ArtifactManagerBridge.initBridges.ms",
+  "compiler.ArtifactVirtualFileListener.propertyChanged.ms",
+  "compiler.ArtifactVirtualFileListener.filePathChanged.ms",
+
   "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",
   "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",

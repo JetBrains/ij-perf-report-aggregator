@@ -17,6 +17,9 @@ const enum ROUTE_PREFIX {
   GoLandSharedIndices = "/goland/sharedIndexes",
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
+  KotlinK1VsK2 = "/kotlinK1VsK2",
+  KotlinMemory = "/kotlinMemory",
+  KotlinMPP = "/kotlinMPP",
   Rust = "/rust",
   Scala = "/scala",
   JBR = "/jbr",
@@ -101,7 +104,8 @@ enum ROUTES {
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
-  KotlinMemoryDashboard = `${ROUTE_PREFIX.Kotlin}/memoryDashboard`,
+  KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/memoryDashboard`,
+  KotlinMPPDashboard = `${ROUTE_PREFIX.KotlinMPP}/dashboard`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
@@ -490,8 +494,8 @@ const KOTLIN: Product = {
   label: "Kotlin",
   children: [
     {
-      url: ROUTE_PREFIX.Kotlin,
-      label: "",
+      url: ROUTE_PREFIX.KotlinK1VsK2,
+      label: "K1 vs K2",
       tabs: [
         {
           url: ROUTES.KotlinDashboard,
@@ -538,16 +542,32 @@ const KOTLIN: Product = {
           label: "K1 vs. K2 (dev)",
         },
         {
-          url: ROUTES.KotlinMemoryDashboard,
-          label: "Memory",
-        },
-        {
           url: ROUTES.KotlinCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
         },
         {
           url: ROUTES.KotlinCompareBranchesDev,
           label: COMPARE_BRANCHES_LABEL + "(dev)",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.KotlinMPP,
+      label: "MPP projects",
+      tabs: [
+        {
+          url: ROUTES.KotlinMPPDashboard,
+          label: "k1 vs k2",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.KotlinMemory,
+      label: "Memory dashboards",
+      tabs: [
+        {
+          url: ROUTES.KotlinMemoryDashboard,
+          label: "Memory k1 vs k2",
         },
       ],
     },
@@ -1598,6 +1618,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinMemoryDashboard,
           component: () => import("./components/kotlin/MemoryPerformanceDashboard.vue"),
           meta: { pageTitle: "Memory" },
+        },
+        {
+          path: ROUTES.KotlinMPPDashboard,
+          component: () => import("./components/kotlin/mpp/Dashboard.vue"),
+          meta: { pageTitle: "Mpp projects" },
         },
         {
           path: ROUTES.RustPluginDashboard,

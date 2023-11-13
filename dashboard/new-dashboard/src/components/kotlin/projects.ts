@@ -105,6 +105,28 @@ export const completionProjects = {
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_typing_with_library_cache",
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache",
   ],
+  kotlinCoroutines: [
+    "kotlin_coroutines_commit/completion/CoroutineScheduler_in_constructor_typing_with_library_cache",
+    "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_typing_with_library_cache",
+    "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_with_library_cache",
+  ],
+  mppNativeAcceptance: [
+    "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.macOS_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.mingw_with_library_cache",
+  ],
+  ktor: [
+    "ktor_commit/completion/ContentNegotiationTest_fun_typing_with_library_cache",
+    "ktor_commit/completion/DarwinClientEngineConfig_fun_with_library_cache",
+    "ktor_commit/completion/HighLoadHttpGenerator_end_constructor_typing_with_library_cache",
+    "ktor_commit/completion/HighLoadHttpGenerator_mid_constructor_typing_with_library_cache",
+    "ktor_commit/completion/LockFreeLinkedList_getter_typing_with_library_cache",
+    "ktor_commit/completion/LockFreeLinkedList_typealias_typing_with_library_cache",
+    "ktor_commit/completion/RequestResponseBuilderJs_fun_typing_with_library_cache",
+    "ktor_commit/completion/RequestResponseBuilderNative_fun_typing_with_library_cache",
+  ],
+  space: ["space_specific/completion/Dimensions_typealias_with_library_cache"],
 }
 
 export const completionCharts: ProjectsChartDefinition[] = [
@@ -117,6 +139,13 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
   ...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript),
+]
+
+export const mppCompletionCharts: ProjectsChartDefinition[] = [
+  ...generateCompletionDefinitions("'Space'", completionProjects.space),
+  ...generateCompletionDefinitions("'Ktor'", completionProjects.ktor),
+  ...generateCompletionDefinitions("'Kotlin Coroutines'", completionProjects.kotlinCoroutines),
+  ...generateCompletionDefinitions("'Native-acceptance'", completionProjects.mppNativeAcceptance),
 ]
 
 function generateCompletionDefinitions(labelPrefix: string, projects: string[]): ProjectsChartDefinition[] {
@@ -235,6 +264,36 @@ export const highlightingProjects = {
     "rust_commit/highlight/TypeInferenceWalker_with_library_cache",
     "rust_commit/highlight/TypeInference_with_library_cache",
   ],
+  kotlinCoroutines: [
+    "kotlin_coroutines_commit/highlight/BufferedChannel_with_library_cache",
+    "kotlin_coroutines_commit/highlight/CoroutineScheduler_with_library_cache",
+    "kotlin_coroutines_commit/highlight/JobSupport_with_library_cache",
+  ],
+  ktor: [
+    "ktor_commit/highlight/AuthBuildersTest_with_library_cache",
+    "ktor_commit/highlight/BufferPrimitives_with_library_cache",
+    "ktor_commit/highlight/CacheControlMergeTest_with_library_cache",
+    "ktor_commit/highlight/ChunkBufferNativeTest_with_library_cache",
+    "ktor_commit/highlight/ConcurrentMapJs_with_library_cache",
+    "ktor_commit/highlight/ContentTestSuite_with_library_cache",
+    "ktor_commit/highlight/CryptoMingw_with_library_cache",
+    "ktor_commit/highlight/HighLoadHttpGenerator_with_library_cache",
+    "ktor_commit/highlight/LockFreeLinkedList_with_library_cache",
+    "ktor_commit/highlight/OAuth2_with_library_cache",
+    "ktor_commit/highlight/ThreadInfo_with_library_cache",
+  ],
+  space: [
+    "space_specific/highlight/DocumentsStatsTest_with_library_cache",
+    "space_specific/highlight/EventCounters_with_library_cache",
+    "space_specific/highlight/HttpApiClientTest_with_library_cache",
+    "space_specific/highlight/M2ChannelMessageListVmV2_with_library_cache",
+    "space_specific/highlight/M2ChannelVm_with_library_cache",
+    "space_specific/highlight/MagicBarComponent_with_library_cache",
+    "space_specific/highlight/ProfilesImpl_with_library_cache",
+    "space_specific/highlight/SchemaMigration_with_library_cache",
+    "space_specific/highlight/SecretsTests_with_library_cache",
+    "space_specific/highlight/XScrollable_with_library_cache",
+  ],
 }
 
 const highlightingLabelsAndProjects = [
@@ -252,7 +311,14 @@ const highlightingLabelsAndProjects = [
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
 ]
 
+const mppHighlightingLabelsAndProjects = [
+  { label: "'Space'", projects: highlightingProjects.space },
+  { label: "'Ktor'", projects: highlightingProjects.ktor },
+  { label: "'Kotlin Coroutines'", projects: highlightingProjects.kotlinCoroutines },
+]
+
 export const highlightingCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))
+export const mppHighlightingCharts: ProjectsChartDefinition[] = mppHighlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))
 
 function generateHighlightingDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
@@ -263,7 +329,7 @@ function generateHighlightingDefinition(labelPrefix: string, projects: string[])
 }
 
 export const codeAnalysisCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
-
+export const mppCodeAnalysisCharts: ProjectsChartDefinition[] = mppHighlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
 function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} Code Analysis mean value`,
@@ -293,6 +359,7 @@ export const refactoringCharts: ProjectsChartDefinition[] = [
   generateRefactoringDefinition("PrepareForRename", "prepareForRename#mean_value", refactoringProjects),
   generateRefactoringDefinition("Optimize imports", "execute_editor_optimizeimports", optimizeImportsProjects),
 ]
+export const mppRefactoringCharts: ProjectsChartDefinition[] = []
 
 function generateRefactoringDefinition(labelPrefix: string, measure: string, projectsData: string[]): ProjectsChartDefinition {
   return {
@@ -335,6 +402,25 @@ export const findUsagesProjects = {
     "leak-canary-android/findUsages/INT_with_library_cache",
     "leak-canary-android/findUsages/PrimitiveType_with_library_cache",
   ],
+  kotlinCoroutines: [
+    "kotlin_coroutines_commit/findUsages/assert_with_library_cache",
+    "kotlin_coroutines_commit/findUsages/emit_with_library_cache",
+    "kotlin_coroutines_commit/findUsages/Flow_with_library_cache",
+    "kotlin_coroutines_commit/findUsages/FlowCollector_with_library_cache",
+    "kotlin_coroutines_commit/findUsages/runBlocking_with_library_cache",
+  ],
+  ktor: [
+    "ktor_commit/findUsages/ByteReadChannel_with_library_cache",
+    "ktor_commit/findUsages/HttpClient_jvm_with_library_cache",
+    "ktor_commit/findUsages/HttpClient_with_library_cache",
+    "ktor_commit/findUsages/toHttpDateString_with_library_cache",
+  ],
+  space: [
+    "space_specific/findUsages/ApiFlag_with_library_cache",
+    "space_specific/findUsages/Http_with_library_cache",
+    "space_specific/findUsages/IntSizePx_with_library_cache",
+    "space_specific/findUsages/UniqueConstraint_with_library_cache",
+  ],
 }
 
 export const findUsagesCharts: ProjectsChartDefinition[] = [
@@ -342,6 +428,11 @@ export const findUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Kotlin lang'", findUsagesProjects.kotlinLang),
   generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
   generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
+]
+export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
+  generateFindUsagesDefinition("'Space'", findUsagesProjects.space),
+  generateFindUsagesDefinition("'Kotlin Coroutines'", findUsagesProjects.kotlinCoroutines),
+  generateFindUsagesDefinition("'Ktor'", findUsagesProjects.ktor),
 ]
 
 function generateFindUsagesDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
@@ -372,6 +463,7 @@ export const evaluateExpressionChars: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
   ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
 ]
+export const mppEvaluateExpressionChars: ProjectsChartDefinition[] = []
 function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} evaluate expression mean value`,

@@ -342,6 +342,36 @@
         ]"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="GC Pause, ms"
+        measure="gcPause"
+        :projects="[
+          'diaspora-project-test/indexing',
+          'gem-rbs-collection-indexing-test/indexing',
+          'gitlab-project-test/indexing',
+          'redmine-project-test/indexing',
+          'RUBY-23764-Case1/ruby-23764-findusages-case1',
+          'RUBY-23764-Case2/ruby-23764-findusages-case2',
+        ]"
+        :aliases="['Indexing (DI)', 'Indexing (RBS)', 'Indexing (GL)', 'Indexing (RM)', 'Factory Find Usage (GL)', 'Let Variable Find Usage (GL)']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="GC Memory Collected, Mb"
+        measure="freedMemoryByGC"
+        :projects="[
+          'diaspora-project-test/indexing',
+          'gem-rbs-collection-indexing-test/indexing',
+          'gitlab-project-test/indexing',
+          'redmine-project-test/indexing',
+          'RUBY-23764-Case1/ruby-23764-findusages-case1',
+          'RUBY-23764-Case2/ruby-23764-findusages-case2',
+        ]"
+        :aliases="['Indexing (DI)', 'Indexing (RBS)', 'Indexing (GL)', 'Indexing (RM)', 'Factory Find Usage (GL)', 'Let Variable Find Usage (GL)']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

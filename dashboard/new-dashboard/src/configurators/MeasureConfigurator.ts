@@ -345,8 +345,6 @@ function configureChart(
       isNotEmpty = isNotEmpty || data.length > 0
     }
 
-    if (!isNotEmpty) continue
-
     if (seriesData.length > 3) {
       // we take only the last type of the metric since it's not clear how to show different types and last type helps to change the type if necessary
       const type = seriesData[3].at(-1)
@@ -384,79 +382,81 @@ function configureChart(
       detectedChanges = detectChanges(seriesData)
     }
 
-    const name = seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName
-    const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
-    const seriesLayoutBy = "row"
-    const datasetIndex = dataIndex
-    const xAxisName = useDurationFormatter ? "time" : "count"
-    series.push({
-      selectedMode: "single",
-      select: {
-        itemStyle: {
-          color: "black",
-        },
-      },
-      // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-      id,
-      name,
-      type: settings.smoothing ? "scatter" : chartType,
-      // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
-      // 10 is a default value for scatter (  undefined doesn't work to unset)
-      symbolSize(value: string[]): number {
-        const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-        const accidents = getAccidents(accidentsConfigurator?.value.value, value)
-        if (isValueShouldBeMarkedWithPin(accidents)) {
-          return symbolSize * 4
-        }
-        if (isChangeDetected(detectedChanges, value)) {
-          return symbolSize * 2.5
-        }
-        if (isValueShouldBeMarkedAsException(accidents)) {
-          return symbolSize * 1.2
-        }
-        return symbolSize
-      },
-      symbolRotate(value: string[]): number {
-        const detectChange = detectedChanges.get(JSON.stringify(value))
-        return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
-      },
-      symbol(value: string[]) {
-        const accidents = getAccidents(accidentsConfigurator?.value.value, value)
-        if (isValueShouldBeMarkedWithPin(accidents)) {
-          return "pin"
-        }
-        if (isChangeDetected(detectedChanges, value)) {
-          return "arrow"
-        }
-        if (isValueShouldBeMarkedAsException(accidents)) {
-          return "diamond"
-        }
-        return "circle"
-      },
-      seriesLayoutBy,
-      datasetIndex,
-      dimensions: [
-        { name: xAxisName, type: "time" },
-        { name: seriesName, type: "int" },
-      ],
-      itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value, detectedChanges),
-    })
-    if (settings.smoothing) {
+    if (isNotEmpty) {
+      const name = seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName
+      const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+      const seriesLayoutBy = "row"
+      const datasetIndex = dataIndex
+      const xAxisName = useDurationFormatter ? "time" : "count"
       series.push({
+        selectedMode: "single",
+        select: {
+          itemStyle: {
+            color: "black",
+          },
+        },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-        id: id + "smoothed",
+        id,
         name,
-        type: "line",
-        symbol: "none",
-        silent: true,
+        type: settings.smoothing ? "scatter" : chartType,
+        // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
+        // 10 is a default value for scatter (  undefined doesn't work to unset)
+        symbolSize(value: string[]): number {
+          const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
+          if (isValueShouldBeMarkedWithPin(accidents)) {
+            return symbolSize * 4
+          }
+          if (isChangeDetected(detectedChanges, value)) {
+            return symbolSize * 2.5
+          }
+          if (isValueShouldBeMarkedAsException(accidents)) {
+            return symbolSize * 1.2
+          }
+          return symbolSize
+        },
+        symbolRotate(value: string[]): number {
+          const detectChange = detectedChanges.get(JSON.stringify(value))
+          return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
+        },
+        symbol(value: string[]) {
+          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
+          if (isValueShouldBeMarkedWithPin(accidents)) {
+            return "pin"
+          }
+          if (isChangeDetected(detectedChanges, value)) {
+            return "arrow"
+          }
+          if (isValueShouldBeMarkedAsException(accidents)) {
+            return "diamond"
+          }
+          return "circle"
+        },
         seriesLayoutBy,
         datasetIndex,
-        encode: {
-          x: xAxisName,
-          y: seriesData.length - 1,
-        },
-        itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
+        dimensions: [
+          { name: xAxisName, type: "time" },
+          { name: seriesName, type: "int" },
+        ],
+        itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value, detectedChanges),
       })
+      if (settings.smoothing) {
+        series.push({
+          // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
+          id: id + "smoothed",
+          name,
+          type: "line",
+          symbol: "none",
+          silent: true,
+          seriesLayoutBy,
+          datasetIndex,
+          encode: {
+            x: xAxisName,
+            y: seriesData.length - 1,
+          },
+          itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
+        })
+      }
     }
     if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
       useDurationFormatter = false

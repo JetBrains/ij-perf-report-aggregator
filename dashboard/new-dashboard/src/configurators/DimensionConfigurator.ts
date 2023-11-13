@@ -18,7 +18,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   constructor(
     readonly name: string,
     readonly multiple: boolean,
-    readonly aliases: string[] | null = null
+    public aliases: string[] | null = null
   ) {
     this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
   }

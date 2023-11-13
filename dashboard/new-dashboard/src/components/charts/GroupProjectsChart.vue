@@ -36,13 +36,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
-const aliases = props.aliases ?? removeCommonSegments(props.projects)
-const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null, aliases)
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
 watch(
-  () => props.projects,
-  (projects) => {
+  () => [props.projects, props.aliases],
+  ([projects, aliases]) => {
+    if (projects != null) {
+      scenarioConfigurator.aliases = aliases ?? removeCommonSegments(projects)
+    }
     scenarioConfigurator.selected.value = projects
   },
   { immediate: true }

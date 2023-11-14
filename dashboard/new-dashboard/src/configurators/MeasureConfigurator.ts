@@ -340,6 +340,9 @@ function configureChart(
     let seriesName = configuration.seriesNames[dataIndex]
     const seriesData = dataList[dataIndex]
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (seriesData[1] == undefined) continue
+
     let isNotEmpty = false
     for (const data of seriesData) {
       isNotEmpty = isNotEmpty || data.length > 0

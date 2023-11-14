@@ -71,7 +71,13 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
     return e.WithMessage(err, "cannot parse json: "+rawJson)
   }
 
-  var httpClient = &http.Client{}
+  var httpClient = &http.Client{
+    Timeout: 60 * time.Second,
+    Transport: &http.Transport{
+      MaxIdleConns:        10,
+      MaxIdleConnsPerHost: 10,
+    },
+  }
   httpClient.CheckRedirect = checkRedirectFunc
 
   taskContext, cancel := util.CreateCommandContext()

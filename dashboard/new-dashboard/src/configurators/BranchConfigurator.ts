@@ -93,3 +93,26 @@ export function createBranchConfigurator(
     })
   return configurator
 }
+
+export function sortBranches(a: string, b: string): number {
+  if (a === "master") return -1
+  if (b === "master") return 1
+
+  // Then numbers
+  const isANumber = !Number.isNaN(Number(a))
+  const isBNumber = !Number.isNaN(Number(b))
+
+  if (isANumber && !isBNumber) return -1
+  if (!isANumber && isBNumber) return 1
+  if (isANumber && isBNumber) return Number(b) - Number(a)
+
+  // Then strings that contain "/"
+  const hasASlash = a.includes("/")
+  const hasBSlash = b.includes("/")
+
+  if (hasASlash && !hasBSlash) return -1
+  if (!hasASlash && hasBSlash) return 1
+
+  // Then everything else
+  return a.localeCompare(b)
+}

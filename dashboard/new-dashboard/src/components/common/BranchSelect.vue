@@ -142,6 +142,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed, ref } from "vue"
+import { sortBranches } from "../../configurators/BranchConfigurator"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { branchesSelectLabelFormat } from "../../shared/labels"
 import { usePlaceholder } from "../charts/placeholder"
@@ -181,29 +182,12 @@ function createItems(configurator?: DimensionConfigurator) {
     if (configurator == undefined) {
       return []
     }
+    console.log(configurator.values.value)
     const values = (configurator.values.value as string[]).sort((a, b) => {
       if (configurator.selected.value?.includes(b)) return 1
       if (configurator.selected.value?.includes(a)) return -1
 
-      if (a === "master") return -1
-      if (b === "master") return 1
-
-      // Then numbers
-      const isANumber = !Number.isNaN(Number(a))
-      const isBNumber = !Number.isNaN(Number(b))
-
-      if (isANumber && !isBNumber) return -1
-      if (!isANumber && isBNumber) return 1
-
-      // Then strings that contain "/"
-      const hasASlash = a.includes("/")
-      const hasBSlash = b.includes("/")
-
-      if (hasASlash && !hasBSlash) return -1
-      if (!hasASlash && hasBSlash) return 1
-
-      // Then everything else
-      return a.localeCompare(b)
+      return sortBranches(a, b)
     })
 
     return values.map((it) => {

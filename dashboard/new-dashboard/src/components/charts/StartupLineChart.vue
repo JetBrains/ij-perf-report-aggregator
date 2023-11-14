@@ -1,25 +1,17 @@
 <template>
-  <div
-    v-if="label == null"
-    ref="chartElement"
-    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
-    :style="{ height: `${chartHeight}px` }"
-    @mouseenter="show"
-    @mouseleave="hide"
-  />
-  <div
-    v-else
-    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
-    @mouseenter="show"
-    @mouseleave="hide"
-  >
-    <h3 class="m-0 text-sm">
+  <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
+    <h3
+      v-if="label != null"
+      class="m-0 text-sm"
+    >
       {{ label }}
     </h3>
     <div
       ref="chartElement"
       class="bg-white"
       :style="{ height: `${chartHeight}px` }"
+      @mouseenter="show"
+      @mouseleave="hide"
     />
   </div>
 </template>
@@ -67,7 +59,6 @@ let chartManager: StartupLineChartManager | null = null
 const skipZeroValues = toRef(props, "skipZeroValues")
 const chartToolTipManager = new StartupTooltipManager(props.valueUnit)
 const container = injectOrError(containerKey)
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const tooltip = injectOrError(chartToolTipKey)
 const sidebarVm = injectOrError(sidebarStartupKey)
 

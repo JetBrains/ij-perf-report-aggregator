@@ -35,7 +35,7 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <LineChartCard />
+        <StartupLineChart />
       </div>
       <InfoSidebarStartup />
     </main>
@@ -58,7 +58,7 @@ import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
-import LineChartCard from "../charts/StartupLineChart.vue"
+import StartupLineChart from "../charts/StartupLineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"

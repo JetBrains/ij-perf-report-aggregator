@@ -8,7 +8,6 @@ create table ij.report2
   `tc_build_id`                UInt32 CODEC(Gorilla, ZSTD(20)),
   `tc_installer_build_id`      UInt32 CODEC(Gorilla, ZSTD(20)),
   `branch`                     LowCardinality(String) CODEC(ZSTD(20)),
-  `raw_report`                 String CODEC(ZSTD(22)),
 
   `build_c1`                   UInt8 CODEC(Gorilla, ZSTD(20)),
   `build_c2`                   UInt16 CODEC(Gorilla, ZSTD(20)),
@@ -52,12 +51,6 @@ create table ij.report2
 
   `resourceLoadingTime`       Int32 CODEC (Gorilla, ZSTD(20)),
   `resourceLoadingCount`      Int32 CODEC (Gorilla, ZSTD(20)),
-
-  `service.name` Array(LowCardinality(String)) CODEC (ZSTD(20)),
-  `service.start` Array(UInt32) CODEC (Gorilla, ZSTD(20)),
-  `service.duration` Array(UInt32) CODEC (ZSTD(20)),
-  `service.thread` Array(LowCardinality(String)) CODEC (ZSTD(20)),
-  `service.plugin` Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
   `measure.name` Array(LowCardinality(String)) CODEC(ZSTD(20)),
   `measure.start` Array(UInt32) CODEC(Gorilla, ZSTD(20)),

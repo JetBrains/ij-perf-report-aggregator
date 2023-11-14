@@ -70,12 +70,6 @@ type ReportRow struct {
   BuildC2 uint16 `ch:"build_c2"`
   BuildC3 uint16 `ch:"build_c3"`
 
-  ServiceName     []string `ch:"service.name"`
-  ServiceStart    []uint32 `ch:"service.start"`
-  ServiceDuration []uint32 `ch:"service.duration"`
-  ServiceThread   []string `ch:"service.thread"`
-  ServicePlugin   []string `ch:"service.plugin"`
-
   MeasuresName  []string `ch:"measures.name"`
   MeasuresValue []int32  `ch:"measures.value"`
   MeasuresType  []string `ch:"measures.type"`
@@ -184,8 +178,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
       select product, machine, branch,
              generated_time, build_time, raw_report,
              tc_build_id, tc_installer_build_id,
-             build_c1, build_c2, build_c3, project,
-             service.name, service.start, service.duration, service.thread, service.plugin
+             build_c1, build_c2, build_c3, project
       from report
       where generated_time >= $1 and generated_time < $2
       order by product, machine, branch, project, build_c1, build_c2, build_c3, build_time, generated_time
@@ -247,13 +240,6 @@ rowLoop:
       }
     }
 
-    if config.HasProductField {
-      runResult.ExtraFieldData[0] = row.ServiceName
-      runResult.ExtraFieldData[1] = row.ServiceStart
-      runResult.ExtraFieldData[2] = row.ServiceDuration
-      runResult.ExtraFieldData[3] = row.ServiceThread
-      runResult.ExtraFieldData[4] = row.ServicePlugin
-    }
     if config.DbName == "perfint" {
       runResult.Report = &model.Report{
         Project:   row.Project,
@@ -264,21 +250,6 @@ rowLoop:
       runResult.TriggeredBy = row.TriggeredBy
       runResult.TcBuildType = row.TcBuildType
     }
-
-    // transform runResult here
-    // Example: transform project
-    // if runResult.Report.Project == "spring_boot/showIntentions/" {
-    //   runResult.Report.Project = "spring_boot/showIntentions"
-    // }
-    // Example: transform metrics name
-    // if strings.HasPrefix(runResult.Report.Project, "community/go-to-") {
-    //   metricNames := runResult.ExtraFieldData[0].([]string)
-    //   for i, name := range metricNames {
-    //     if name == "searchEverywhere_action" || name == "searchEverywhere_class" || name == "searchEverywhere_file" {
-    //       metricNames[i] = "searchEverywhere"
-    //     }
-    //   }
-    // }
 
     err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
     if err != nil {

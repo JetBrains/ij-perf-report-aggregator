@@ -30,7 +30,6 @@ func GetAnalyzer(id string) DatabaseConfiguration {
   switch {
   case id == "ij":
     fieldNames := []string{
-      "service.name", "service.start", "service.duration", "service.thread", "service.plugin",
       "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
       "resourceLoadingTime", "resourceLoadingCount",
       "measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",

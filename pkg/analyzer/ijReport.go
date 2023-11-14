@@ -15,14 +15,6 @@ type measureItem struct {
   thread   string
 }
 
-type serviceItem struct {
-  name     string
-  start    uint32
-  duration uint32
-  thread   string
-  plugin   string
-}
-
 func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
   report := runResult.Report
 
@@ -58,7 +50,6 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   var rlTime int32
   var rlCount int32
 
-  services := make([]serviceItem, 0)
   measures := make([]measureItem, 0)
 
   if version.Compare(report.Version, "20", ">=") {
@@ -96,11 +87,6 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
         rlCount = int32(resourceLoading.GetInt("count"))
       }
     }
-
-    readServices(data, "appComponents", &services)
-    readServices(data, "appServices", &services)
-    readServices(data, "projectComponents", &services)
-    readServices(data, "projectServices", &services)
   } else {
     report.Activities = readActivitiesInOldFormat("items", data)
     report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
@@ -132,20 +118,6 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     measureThread[i] = info.thread
   }
 
-  serviceCount := len(services)
-  serviceName := make([]string, serviceCount)
-  serviceStart := make([]uint32, serviceCount)
-  serviceDuration := make([]uint32, serviceCount)
-  serviceThread := make([]string, serviceCount)
-  servicePlugin := make([]string, serviceCount)
-  for i, info := range services {
-    serviceName[i] = info.name
-    serviceStart[i] = info.start
-    serviceDuration[i] = info.duration
-    serviceThread[i] = info.thread
-    servicePlugin[i] = info.plugin
-  }
-
   metricNames := make([]string, 0)
   metricValues := make([]uint32, 0)
   additionalMetrics := data.GetObject("additionalMetrics")
@@ -164,30 +136,10 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   }
 
   runResult.ExtraFieldData = []interface{}{
-    serviceName, serviceStart, serviceDuration, serviceThread, servicePlugin,
     clTotal, clSearch, clDefine, clCount, clPreparedCount, clLoadedCount, rlTime, rlCount,
     measureName, measureStart, measureDuration, measureThread, metricNames, metricValues,
   }
   return nil
-}
-
-func readServices(
-  data *fastjson.Value,
-  category string,
-  services *[]serviceItem,
-) {
-  for _, measure := range data.GetArray(category) {
-    *services = append(*services, serviceItem{
-      name:     string(measure.GetStringBytes("n")),
-      start:    uint32(measure.GetInt("s")),
-      duration: uint32(measure.GetInt("d")),
-      thread:   string(measure.GetStringBytes("t")),
-      plugin:   string(measure.GetStringBytes("p")),
-    })
-  }
-
-  // remove to reduce size of raw report
-  data.Del(category)
 }
 
 func readActivitiesInOldFormat(key string, data *fastjson.Value) []model.Activity {

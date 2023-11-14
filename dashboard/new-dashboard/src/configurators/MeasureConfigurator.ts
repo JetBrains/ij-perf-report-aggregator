@@ -386,7 +386,8 @@ function configureChart(
     }
 
     if (isNotEmpty) {
-      const name = seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName
+      // noinspection SuspiciousTypeOfGuard
+      const name = typeof seriesName === "string" ? (seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName) : seriesName
       const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex

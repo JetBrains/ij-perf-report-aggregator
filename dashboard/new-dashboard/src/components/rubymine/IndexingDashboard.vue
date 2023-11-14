@@ -259,7 +259,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Diaspora, kb/sec"
+        label="Parsing Speed, Diaspora, kb/sec"
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
@@ -284,7 +284,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, RBS Collection, kb/sec"
+        label="Parsing Speed, RBS Collection, kb/sec"
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
@@ -309,7 +309,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Gitlab, kb/sec"
+        label="Parsing Speed, Gitlab, kb/sec"
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
@@ -334,7 +334,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Redmine, kb/sec"
+        label="Parsing Speed, Redmine, kb/sec"
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',

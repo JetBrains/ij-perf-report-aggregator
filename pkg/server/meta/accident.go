@@ -47,14 +47,15 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     if err != nil {
       logger.Error(err.Error())
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
     defer body.Close()
 
     var params accidentRequestParams
-    err = json.Unmarshal(all, &params)
-    if err != nil {
+    if err = json.Unmarshal(all, &params); err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
 
     sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
@@ -65,6 +66,7 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     if err != nil {
       logger.Error("Unable to execute the query", zap.String("query", sql))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
     defer rows.Close()
 
@@ -86,11 +88,13 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     if err != nil {
       logger.Error(err.Error())
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
     jsonBytes, err := json.Marshal(accidents)
     if err != nil {
       logger.Error(err.Error())
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
     _, err = writer.Write(jsonBytes)
     if err != nil {
@@ -107,13 +111,16 @@ func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
     if err != nil {
       logger.Error("Cannot read body", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
 
+    defer body.Close()
+
     var params AccidentInsertParams
-    err = json.Unmarshal(all, &params)
-    if err != nil {
+    if err = json.Unmarshal(all, &params); err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
     var kind string
     if params.Kind == "" {
@@ -124,17 +131,16 @@ func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
 
     var id int
     idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId)
-    err = idRow.Scan(&id)
-    if err != nil {
+    if err = idRow.Scan(&id); err != nil {
       if strings.Contains(err.Error(), "unique constraint") {
         http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
       } else {
         logger.Error("Cannot execute query", zap.Error(err))
         writer.WriteHeader(http.StatusInternalServerError)
       }
+      return
     }
 
-    defer body.Close()
     writer.WriteHeader(http.StatusOK)
     _, err = writer.Write([]byte(strconv.Itoa(id)))
     if err != nil {
@@ -152,20 +158,21 @@ func CreateDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       logger.Error("Cannot read body", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
     }
+    defer body.Close()
 
     var params accidentDeleteParams
-    err = json.Unmarshal(all, &params)
-    if err != nil {
+    if err = json.Unmarshal(all, &params); err != nil {
       logger.Error("Cannot unmarshal parameters", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
 
     _, err = metaDb.Exec(request.Context(), "DELETE FROM accidents WHERE id=$1", params.Id)
     if err != nil {
       logger.Error("Cannot execute query", zap.Error(err))
       writer.WriteHeader(http.StatusInternalServerError)
+      return
     }
-    defer body.Close()
     writer.WriteHeader(http.StatusOK)
   }
 }

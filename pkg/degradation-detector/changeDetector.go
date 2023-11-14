@@ -2,30 +2,28 @@ package degradation_detector
 
 import (
   "math"
-  "sort"
+  "slices"
 )
 
 func CalculateMedian(nums []int) float64 {
   if len(nums) == 0 {
-    // Handle the case of an empty slice
-    // You might want to return an error or a special value
     return 0
   }
 
-  // Create a copy of the input slice to avoid modifying the original data
-  sortedNums := make([]int, len(nums))
-  copy(sortedNums, nums)
-
-  // Sort the copied slice
-  sort.Ints(sortedNums)
+  var sortedNums []int
+  if slices.IsSorted(nums) {
+    sortedNums = nums
+  } else {
+    sortedNums = make([]int, len(nums))
+    copy(sortedNums, nums)
+    slices.Sort(sortedNums)
+  }
 
   middle := len(sortedNums) / 2
   if len(sortedNums)%2 == 0 {
-    // If the length of the sorted slice is even, return the average of the two middle numbers
     return float64(sortedNums[middle-1]+sortedNums[middle]) / 2
   }
 
-  // If the length of the sorted slice is odd, return the middle number
   return float64(sortedNums[middle])
 }
 
@@ -64,7 +62,7 @@ func GetChangePointIndexes(data []int, minDistance int) []int {
     bestPreviousTauIndex := whichMin(costForPreviousTau)
     bestCost[currentTau] = costForPreviousTau[bestPreviousTauIndex]
     previousChangePointIndex[currentTau] = previousTaus[bestPreviousTauIndex]
-    var newPreviousTaus []int
+    var newPreviousTaus = make([]int, 0, len(previousTaus))
     for i, cost2 := range costForPreviousTau {
       if cost2 < bestCost[currentTau]+penalty {
         newPreviousTaus = append(newPreviousTaus, previousTaus[i])
@@ -80,7 +78,7 @@ func GetChangePointIndexes(data []int, minDistance int) []int {
     changePointIndexes = append(changePointIndexes, currentIndex-1)
     currentIndex = previousChangePointIndex[currentIndex]
   }
-  changePointIndexes = reverse(changePointIndexes)
+  slices.Reverse(changePointIndexes)
   for i := range changePointIndexes {
     changePointIndexes[i]++
   }
@@ -96,7 +94,7 @@ func getPartialSums(data []int, k int) [][]int {
 
   sortedData := make([]int, n)
   copy(sortedData, data)
-  sort.Ints(sortedData)
+  slices.Sort(sortedData)
 
   for i := 0; i < k; i++ {
     z := -1 + (2*float64(i)+1.0)/float64(k)
@@ -124,8 +122,8 @@ func getSegmentCost(partialSums [][]int, tau1, tau2, k, n int) float64 {
     actualSum := partialSums[i][tau2] - partialSums[i][tau1]
 
     if actualSum != 0 && actualSum != (tau2-tau1)*2 {
-      fit := float64(actualSum) * 0.5 / float64(tau2-tau1)
-      lnp := float64(tau2-tau1) * (fit*math.Log(fit) + (1-fit)*math.Log(1-fit))
+      fit := float64(actualSum) / float64((tau2-tau1)*2)
+      lnp := float64(tau2-tau1) * (fit*math.Log(fit) + (1-fit)*math.Log1p(-fit))
       sum += lnp
     }
   }
@@ -148,13 +146,4 @@ func whichMin(values []float64) int {
   }
 
   return minIndex
-}
-
-func reverse(slice []int) []int {
-  length := len(slice)
-  reversed := make([]int, length)
-  for i := 0; i < length; i++ {
-    reversed[i] = slice[length-i-1]
-  }
-  return reversed
 }

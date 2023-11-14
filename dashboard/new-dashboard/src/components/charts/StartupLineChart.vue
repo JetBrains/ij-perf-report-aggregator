@@ -22,33 +22,25 @@ import { chartToolTipKey, configuratorListKey, injectOrError } from "../../share
 import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
-import { StartupLineChartManager, PopupTrigger } from "./StartupLineChartManager"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import { StartupLineChartManager } from "./StartupLineChartManager"
 import { StartupTooltipManager } from "./StartupTooltipManager"
 
 const props = withDefaults(
   defineProps<{
     skipZeroValues?: boolean
-    compoundTooltip?: boolean
     dataZoom?: boolean
     measures?: string[] | null
     chartType?: ChartType
     valueUnit?: ValueUnit
-    configurators?: DataQueryConfigurator[] | null
-    trigger?: PopupTrigger
     label?: string
-    aggregatedMeasure?: string | null
   }>(),
   {
     skipZeroValues: true,
-    compoundTooltip: true,
     dataZoom: false,
     measures: null,
     chartType: "line",
     valueUnit: "ms",
-    configurators: null,
-    trigger: "axis",
-    aggregatedMeasure: null,
     label: undefined,
   }
 )
@@ -77,7 +69,7 @@ const providedConfigurators = inject(configuratorListKey)
 let unsubscribe: (() => void) | null = null
 
 watchEffect(function () {
-  let configurators = props.configurators ?? providedConfigurators
+  let configurators = providedConfigurators
   if (configurators == null) {
     throw new Error(`${configurators} is not provided`)
   }
@@ -100,21 +92,6 @@ watchEffect(function () {
       })
     }
   }
-
-  if (props.aggregatedMeasure != null) {
-    configurators = [...configurators]
-    configurators.push({
-      configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-        if (props.aggregatedMeasure != null) {
-          query.addFilter({ f: "measures.name", v: props.aggregatedMeasure })
-        }
-        return true
-      },
-      createObservable() {
-        return null
-      },
-    })
-  }
   dataQueryExecutor = new DataQueryExecutor(configurators)
   chartToolTipManager.dataQueryExecutor = dataQueryExecutor
 })
@@ -128,7 +105,6 @@ onMounted(() => {
     toRef(props, "dataZoom"),
     chartToolTipManager,
     sidebarVm,
-    props.trigger,
     container.value
   )
   unsubscribe = chartManager.subscribe()

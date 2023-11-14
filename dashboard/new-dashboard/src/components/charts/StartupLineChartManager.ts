@@ -40,7 +40,6 @@ export class StartupLineChartManager {
     dataZoom: Ref<boolean>,
     chartToolTipManager: StartupTooltipManager,
     chartSidebarManager: InfoSidebar<InfoDataFromStartup> | undefined,
-    trigger: PopupTrigger = "axis",
     resizeContainer: HTMLElement | undefined
   ) {
     this.chart = new PerformanceChartManager(container, resizeContainer ?? document.body)
@@ -80,7 +79,7 @@ export class StartupLineChartManager {
         },
         tooltip: {
           show: true,
-          trigger,
+          trigger: "axis",
           enterable: true,
           // select text in tooltip
           extraCssText: "user-select: text",

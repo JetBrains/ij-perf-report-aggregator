@@ -452,7 +452,7 @@ function configureChart(
           datasetIndex,
           encode: {
             x: xAxisName,
-            y: seriesData.length - 1,
+            y: seriesData.length - 2,
           },
           itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
         })

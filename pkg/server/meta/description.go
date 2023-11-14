@@ -8,6 +8,7 @@ import (
   "github.com/pkg/errors"
   "github.com/sakura-internet/go-rison/v4"
   "go.uber.org/zap"
+  "io"
   "net/http"
   "strings"
 )
@@ -37,6 +38,8 @@ func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
+    defer request.Body.Close()
+    _, _ = io.Copy(io.Discard, request.Body)
 
     cacheKey := []byte(params.Project + params.Branch)
     cachedValue, isInCache := cache.HasGet(nil, cacheKey)

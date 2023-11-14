@@ -27,7 +27,7 @@
       />
       <StartupLineChart
         :skip-zero-values="false"
-        label="Number of pauses"
+        title="Number of pauses"
         :measures="['metrics.gc/gcPauseCount']"
       />
       <StartupLineChart

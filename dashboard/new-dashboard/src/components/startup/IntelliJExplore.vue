@@ -35,7 +35,17 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <StartupLineChart />
+        <template
+          v-for="measure in measureConfigurator.selected.value"
+          :key="measure"
+        >
+          <StartupLineChart
+            :title="measure"
+            :measures="[measure]"
+            :configurators="configurators"
+            :skip-zero-values="false"
+          />
+        </template>
       </div>
       <InfoSidebarStartup />
     </main>
@@ -120,15 +130,7 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
   projectConfigurator,
   machineConfigurator,
 ])
-const configurators = [
-  serverConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  measureConfigurator,
-  productConfigurator,
-  projectConfigurator,
-  branchConfigurator,
-] as DataQueryConfigurator[]
+const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator] as DataQueryConfigurator[]
 
 provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)

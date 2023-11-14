@@ -124,8 +124,6 @@ const hide = debounceSync(() => {
 
 let panelTargetIsChanged = false
 const consumer: (data: TooltipData | null, event: Event | null) => void = (data, event) => {
-  console.log("new data", data == null, event == null, panelTargetIsChanged)
-  // console.log(event)
   hide.clear()
 
   tooltipData.value = data

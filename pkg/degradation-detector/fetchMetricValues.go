@@ -11,8 +11,8 @@ import (
   "net/http"
 )
 
-func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSettings Settings) ([]int64, []int, []string, error) {
-  response, err := GetValuesFromServer(ctx, backendURL, getDataQuery(analysisSettings))
+func GetDataFromClickhouse(ctx context.Context, client *http.Client, backendURL string, analysisSettings Settings) ([]int64, []int, []string, error) {
+  response, err := GetValuesFromServer(ctx, client, backendURL, getDataQuery(analysisSettings))
   if err != nil {
     log.Printf("%v", err)
   }
@@ -23,7 +23,7 @@ func GetDataFromClickhouse(ctx context.Context, backendURL string, analysisSetti
   return timestamps, values, builds, err
 }
 
-func GetValuesFromServer(ctx context.Context, backendURL string, query []dataQuery.DataQuery) ([]byte, error) {
+func GetValuesFromServer(ctx context.Context, client *http.Client, backendURL string, query []dataQuery.DataQuery) ([]byte, error) {
   url := backendURL + "/api/q/"
   jsonQuery, err := json.Marshal(query)
   if err != nil {
@@ -40,7 +40,6 @@ func GetValuesFromServer(ctx context.Context, backendURL string, query []dataQue
     return nil, fmt.Errorf("failed to create request: %w", err)
   }
 
-  client := &http.Client{}
   resp, err := client.Do(req)
   if err != nil {
     return nil, fmt.Errorf("failed to send GET request: %w", err)

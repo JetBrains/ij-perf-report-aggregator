@@ -5,8 +5,10 @@ import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "log"
+  "net/http"
   "os"
   "sync"
+  "time"
 )
 
 func main() {
@@ -16,6 +18,14 @@ func main() {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
+  client := &http.Client{
+    Timeout: 60 * time.Second,
+    Transport: &http.Transport{
+      MaxIdleConns:        20,
+      MaxIdleConnsPerHost: 10,
+    },
+  }
+
   analysisSettings := make([]detector.Settings, 0, 1000)
   analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
@@ -23,13 +33,13 @@ func main() {
   analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
   analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateUnitTestsSettings(backendUrl)...)
+  analysisSettings = append(analysisSettings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
 
   ctx := context.Background()
   degradations := make([]detector.Degradation, 0, 1000)
   for _, analysisSetting := range analysisSettings {
     log.Printf("Processing %v", analysisSetting)
-    timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, backendUrl, analysisSetting)
+    timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
     if err != nil {
       log.Printf("%v", err)
     }
@@ -37,7 +47,7 @@ func main() {
     degradations = append(degradations, detector.InferDegradations(values, builds, timestamps, analysisSetting)...)
   }
 
-  insertionResults := detector.PostDegradation(ctx, backendUrl, degradations)
+  insertionResults := detector.PostDegradations(ctx, client, backendUrl, degradations)
 
   var wg sync.WaitGroup
   for _, result := range insertionResults {
@@ -51,7 +61,7 @@ func main() {
     wg.Add(1)
     go func(result detector.InsertionResults) {
       defer wg.Done()
-      err := detector.SendSlackMessage(ctx, result.Degradation)
+      err := detector.SendSlackMessage(ctx, client, result.Degradation)
       if err != nil {
         log.Printf("%v", err)
       }

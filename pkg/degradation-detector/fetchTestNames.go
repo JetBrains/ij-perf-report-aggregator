@@ -5,9 +5,10 @@ import (
   "encoding/json"
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
+  "net/http"
 )
 
-func GetAllTests(backendUrl string, settings Settings) ([]string, error) {
+func GetAllTests(backendUrl string, client *http.Client, settings Settings) ([]string, error) {
   ctx := context.Background()
   query := []dataQuery.DataQuery{
     {
@@ -24,7 +25,7 @@ func GetAllTests(backendUrl string, settings Settings) ([]string, error) {
       Order: []string{"project"},
     },
   }
-  response, err := GetValuesFromServer(ctx, backendUrl, query)
+  response, err := GetValuesFromServer(ctx, client, backendUrl, query)
   if err != nil {
     return nil, err
   }

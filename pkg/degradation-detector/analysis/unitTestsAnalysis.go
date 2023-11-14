@@ -3,9 +3,10 @@ package analysis
 import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "log"
+  "net/http"
 )
 
-func GenerateUnitTestsSettings(backendUrl string) []detector.Settings {
+func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detector.Settings {
   mainSettings := detector.Settings{
     Db:          "perfUnitTests",
     Table:       "report",
@@ -15,7 +16,7 @@ func GenerateUnitTestsSettings(backendUrl string) []detector.Settings {
     Metric:      "attempt.average.ms",
     ProductLink: "perfUnit",
   }
-  tests, err := detector.GetAllTests(backendUrl, mainSettings)
+  tests, err := detector.GetAllTests(backendUrl, client, mainSettings)
   if err != nil {
     log.Printf("Can't get tests: %v", err)
     return nil

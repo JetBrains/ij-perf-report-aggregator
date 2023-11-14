@@ -15,7 +15,7 @@ import (
   "time"
 )
 
-func SendSlackMessage(ctx context.Context, degradation Degradation) error {
+func SendSlackMessage(ctx context.Context, client *http.Client, degradation Degradation) error {
   analysisSettings := degradation.analysisSettings
   slackMessage := createSlackMessage(degradation, analysisSettings)
   slackMessageJson, err := json.Marshal(slackMessage)
@@ -32,7 +32,6 @@ func SendSlackMessage(ctx context.Context, degradation Degradation) error {
       return fmt.Errorf("failed to create request: %w", err)
     }
     req.Header.Set("Content-Type", "application/json")
-    client := &http.Client{}
     resp, err := client.Do(req)
     if err != nil {
       return fmt.Errorf("sending slack message failed: %w", err)

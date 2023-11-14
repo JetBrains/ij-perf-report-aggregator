@@ -6,9 +6,11 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
   "log"
+  "net/http"
   "os"
   "sync"
   "testing"
+  "time"
 )
 
 func TestDegradationDetector(_ *testing.T) {
@@ -33,6 +35,14 @@ func TestDegradationDetector(_ *testing.T) {
   // Create a semaphore with a capacity of 8.
   semaphore := make(chan struct{}, 8)
 
+  client := &http.Client{
+    Timeout: 60 * time.Second,
+    Transport: &http.Transport{
+      MaxIdleConns:        20,
+      MaxIdleConnsPerHost: 10,
+    },
+  }
+
   for _, analysisSetting := range analysisSettings {
     wg.Add(1)
     go func(as degradation_detector.Settings) {
@@ -40,7 +50,7 @@ func TestDegradationDetector(_ *testing.T) {
       // Acquire a slot in the semaphore before proceeding.
       semaphore <- struct{}{}
       log.Printf("Processing %v", as)
-      timestamps, values, builds, err := degradation_detector.GetDataFromClickhouse(ctx, backendUrl, as)
+      timestamps, values, builds, err := degradation_detector.GetDataFromClickhouse(ctx, client, backendUrl, as)
       if err != nil {
         log.Printf("%v", err)
         degradationsChan <- nil // or handle the Error differently

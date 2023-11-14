@@ -159,6 +159,106 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Lexing Speed, Diaspora, kb/sec"
+        :measure="[
+          'lexingSpeed#CSS',
+          'lexingSpeed#CoffeeScript',
+          'lexingSpeed#ECMAScript',
+          'lexingSpeed#Flow',
+          'lexingSpeed#GenericSQL',
+          'lexingSpeed#HTML',
+          'lexingSpeed#Haml',
+          'lexingSpeed#JSON',
+          'lexingSpeed#Markdown',
+          'lexingSpeed#PostCSS',
+          'lexingSpeed#RHTML',
+          'lexingSpeed#SCSS',
+          'lexingSpeed#TypeScript',
+          'lexingSpeed#Vue',
+          'lexingSpeed#ruby',
+          'lexingSpeed#yaml',
+        ]"
+        :projects="['diaspora-project-test/indexing']"
+        :aliases="['Disaspora']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Lexing Speed, RBS Collection, kb/sec"
+        :measure="[
+          'lexingSpeed#CSS',
+          'lexingSpeed#CoffeeScript',
+          'lexingSpeed#ECMAScript',
+          'lexingSpeed#Flow',
+          'lexingSpeed#GenericSQL',
+          'lexingSpeed#HTML',
+          'lexingSpeed#Haml',
+          'lexingSpeed#JSON',
+          'lexingSpeed#Markdown',
+          'lexingSpeed#PostCSS',
+          'lexingSpeed#RHTML',
+          'lexingSpeed#SCSS',
+          'lexingSpeed#TypeScript',
+          'lexingSpeed#Vue',
+          'lexingSpeed#ruby',
+          'lexingSpeed#yaml',
+        ]"
+        :projects="['gem-rbs-collection-indexing-test/indexing']"
+        :aliases="['RBS Collection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Lexing Speed, Gitlab, kb/sec"
+        :measure="[
+          'lexingSpeed#CSS',
+          'lexingSpeed#CoffeeScript',
+          'lexingSpeed#ECMAScript',
+          'lexingSpeed#Flow',
+          'lexingSpeed#GenericSQL',
+          'lexingSpeed#HTML',
+          'lexingSpeed#Haml',
+          'lexingSpeed#JSON',
+          'lexingSpeed#Markdown',
+          'lexingSpeed#PostCSS',
+          'lexingSpeed#RHTML',
+          'lexingSpeed#SCSS',
+          'lexingSpeed#TypeScript',
+          'lexingSpeed#Vue',
+          'lexingSpeed#ruby',
+          'lexingSpeed#yaml',
+        ]"
+        :projects="['gitlab-project-test/indexing']"
+        :aliases="['GitLab']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Lexing Speed, Redmine, kb/sec"
+        :measure="[
+          'lexingSpeed#CSS',
+          'lexingSpeed#CoffeeScript',
+          'lexingSpeed#ECMAScript',
+          'lexingSpeed#Flow',
+          'lexingSpeed#GenericSQL',
+          'lexingSpeed#HTML',
+          'lexingSpeed#Haml',
+          'lexingSpeed#JSON',
+          'lexingSpeed#Markdown',
+          'lexingSpeed#PostCSS',
+          'lexingSpeed#RHTML',
+          'lexingSpeed#SCSS',
+          'lexingSpeed#TypeScript',
+          'lexingSpeed#Vue',
+          'lexingSpeed#ruby',
+          'lexingSpeed#yaml',
+        ]"
+        :projects="['redmine-project-test/indexing']"
+        :aliases="['Redmine']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Indexing Time (With Data Before 11/07/2023)"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"

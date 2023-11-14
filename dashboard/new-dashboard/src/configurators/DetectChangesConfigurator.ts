@@ -188,12 +188,11 @@ function getSegmentCost(partialSums: number[][], tau1: number, tau2: number, k: 
 
     if (actualSum !== 0 && actualSum !== (tau2 - tau1) * 2) {
       const fit = (actualSum * 0.5) / (tau2 - tau1)
-      const lnp = (tau2 - tau1) * (fit * Math.log(fit) + (1 - fit) * Math.log(1 - fit))
+      const lnp = (tau2 - tau1) * (fit * Math.log(fit) + (1 - fit) * Math.log1p(-fit))
       sum += lnp
     }
   }
-  const c = -Math.log(2 * n - 1)
-  return ((2 * c) / k) * sum
+  return ((2 * -Math.log(2 * n - 1)) / k) * sum
 }
 
 function whichMin(values: number[]): number {

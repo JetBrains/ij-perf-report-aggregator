@@ -2,24 +2,23 @@
   <div
     v-if="label == null"
     ref="chartElement"
-    class="bg-white shadow rounded-lg"
+    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
     :style="{ height: `${chartHeight}px` }"
     @mouseenter="show"
     @mouseleave="hide"
   />
   <div
     v-else
-    class="bg-white shadow rounded-lg"
+    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
     @mouseenter="show"
     @mouseleave="hide"
   >
-    <div class="flex justify-center mt-3 mb-2">
-      <h3 class="px-2 bg-white text-sm text-gray-900 capitalize">
-        {{ label }}
-      </h3>
-    </div>
+    <h3 class="m-0 text-sm">
+      {{ label }}
+    </h3>
     <div
       ref="chartElement"
+      class="bg-white"
       :style="{ height: `${chartHeight}px` }"
     />
   </div>

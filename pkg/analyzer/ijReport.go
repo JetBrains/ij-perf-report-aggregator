@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+  "bytes"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
@@ -128,6 +129,8 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
 func readActivities(key string, value *fastjson.Value) []model.Activity {
   array := value.GetArray(key)
   result := make([]model.Activity, 0, len(array))
+  scheduledSuffix := []byte(": scheduled")
+  completingSuffix := []byte(": completing")
   for _, v := range array {
     start := v.GetInt("s")
     duration := v.GetInt("d")
@@ -135,6 +138,11 @@ func readActivities(key string, value *fastjson.Value) []model.Activity {
     ownDuration := v.GetInt("od")
     if ownDuration == 0 {
       ownDuration = duration
+    }
+
+    name := v.GetStringBytes("n")
+    if bytes.HasSuffix(name, scheduledSuffix) || bytes.HasSuffix(name, completingSuffix) {
+      continue
     }
 
     result = append(result, model.Activity{

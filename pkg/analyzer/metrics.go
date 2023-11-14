@@ -39,12 +39,6 @@ func init() {
     return result
   }
 
-  // createVersionedMetric := func(name string, sinceVersion string) *Metric {
-  //  result := createMetric(name)
-  //  result.sinceVersion = sinceVersion
-  //  return result
-  //}
-
   createVersionedUint16Metric := func(name string, sinceVersion string) *Metric {
     result := createMetric(name)
     result.sinceVersion = sinceVersion
@@ -179,39 +173,23 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
     }
   }
 
-  switch {
-  case version.Compare(report.Version, "32", ">="):
-  // part of report.Activities
-  case version.Compare(report.Version, "18", ">="):
-    for _, activity := range report.PrepareAppInitActivities {
+  for _, activity := range report.PrepareAppInitActivities {
+    switch activity.Name {
+    case "plugin descriptors loading":
+      (*result)[nonMetricFieldCount+metricNameToDescriptor["plugin descriptor loading"].index] = uint16(activity.Duration)
+    default:
       err := setMetric(nonMetricFieldCount, activity, report, result)
       if err != nil {
         return err
       }
     }
-  default:
-    for _, activity := range report.PrepareAppInitActivities {
-      switch activity.Name {
-      case "plugin descriptors loading":
-        (*result)[nonMetricFieldCount+metricNameToDescriptor["plugin descriptor loading"].index] = uint16(activity.Duration)
-      default:
-        err := setMetric(nonMetricFieldCount, activity, report, result)
-        if err != nil {
-          return err
-        }
-      }
-    }
   }
 
-  if version.Compare(report.Version, "11", ">=") {
-    for _, activity := range report.TraceEvents {
-      if activity.Phase == "i" && (activity.Name == "splash" || activity.Name == "splash shown") {
-        (*result)[nonMetricFieldCount+metricNameToDescriptor["splash initialization"].index] = int32(activity.Timestamp / 1000)
-      }
+  for _, activity := range report.TraceEvents {
+    if activity.Phase == "i" && (activity.Name == "splash" || activity.Name == "splash shown") {
+      (*result)[nonMetricFieldCount+metricNameToDescriptor["splash initialization"].index] = int32(activity.Timestamp / 1000)
     }
   }
-
-  is14orGreater := version.Compare(report.Version, "14", ">=")
 
   var notFoundMetrics []string
   for _, metric := range IjMetricDescriptors {
@@ -228,10 +206,8 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
 
     // undefined
     (*result)[nonMetricFieldCount+metric.index] = 0
-    if is14orGreater || (metric.Name != "editorRestoringTillPaint" && metric.Name != "projectProfileLoading_d") {
-      if len(metric.sinceVersion) != 0 && version.Compare(report.Version, metric.sinceVersion, ">=") {
-        notFoundMetrics = append(notFoundMetrics, metric.Name)
-      }
+    if len(metric.sinceVersion) != 0 && version.Compare(report.Version, metric.sinceVersion, ">=") {
+      notFoundMetrics = append(notFoundMetrics, metric.Name)
     }
   }
 

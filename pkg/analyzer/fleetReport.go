@@ -1,7 +1,6 @@
 package analyzer
 
 import (
-  "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
   "math"
@@ -46,28 +45,11 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logge
     threads = append(threads, string(measure.GetStringBytes("t")))
   }
 
-  mapNameV22 := version.Compare(runResult.Report.Version, "22", "<=")
-  isLessThan36 := version.Compare(runResult.Report.Version, "36", "<")
-
   for _, groupField := range []string{"items", "prepareAppInitActivities"} {
     for _, measure := range data.GetArray(groupField) {
       name := string(measure.GetStringBytes("n"))
       if len(name) == 0 {
         continue
-      }
-
-      if mapNameV22 {
-        if name == "create window" {
-          name = "editor appeared"
-        } else if name == "render" {
-          name = "window appeared"
-        }
-      } else if isLessThan36 {
-        if name == "render editor" {
-          name = "editor appeared"
-        } else if name == "render real panels" {
-          name = "window appeared"
-        }
       }
 
       // in milliseconds

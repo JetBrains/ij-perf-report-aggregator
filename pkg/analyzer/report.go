@@ -3,7 +3,6 @@ package analyzer
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
-  "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
   "time"
@@ -54,17 +53,13 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
   return nil
 }
 
-func getBuildTimeFromReport(report *model.Report, dbName string) (time.Time, error) {
+func getBuildTimeFromReport(report *model.Report) (time.Time, error) {
   var buildTimeUnix time.Time
-  if dbName != "ij" || version.Compare(report.Version, "13", ">=") {
-    buildTime, err := ParseTime(report.BuildDate)
-    if err != nil {
-      return time.Time{}, err
-    }
-    buildTimeUnix = buildTime
-  } else {
-    buildTimeUnix = time.Time{}
+  buildTime, err := ParseTime(report.BuildDate)
+  if err != nil {
+    return time.Time{}, err
   }
+  buildTimeUnix = buildTime
   return buildTimeUnix, nil
 }
 

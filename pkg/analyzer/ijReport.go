@@ -2,7 +2,6 @@ package analyzer
 
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/mcuadros/go-version"
   "github.com/valyala/fastjson"
   "go.uber.org/zap"
   "sort"
@@ -25,7 +24,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
 
   traceEvents := data.GetArray("traceEvents")
 
-  if version.Compare(report.Version, "12", ">=") && len(traceEvents) == 0 {
+  if len(traceEvents) == 0 {
     logger.Warn("invalid report (due to opening second project?), report will be skipped", zap.Int("id", runResult.TcBuildId), zap.String("generated", report.Generated))
     runResult.Report = nil
     return nil
@@ -52,54 +51,38 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
 
   measures := make([]measureItem, 0)
 
-  if version.Compare(report.Version, "20", ">=") {
-    if version.Compare(report.Version, "32", ">=") {
-      report.Activities = readActivities("items", data)
+  report.Activities = readActivities("items", data)
 
-      for _, activity := range report.Activities {
-        measures = append(measures, measureItem{
-          name:     activity.Name,
-          start:    uint32(activity.Start),
-          duration: uint32(activity.Duration),
-          thread:   activity.Thread,
-        })
-      }
-    } else {
-      report.Activities = readActivitiesInOldFormat("items", data)
-      report.PrepareAppInitActivities = readActivities("prepareAppInitActivities", data)
-    }
-
-    if version.Compare(report.Version, "27", ">=") {
-      classLoading := data.Get("classLoading")
-      resourceLoading := data.Get("resourceLoading")
-      if classLoading != nil && resourceLoading != nil {
-        clTotal = int32(classLoading.GetInt("time"))
-        clSearch = int32(classLoading.GetInt("searchTime"))
-        clDefine = int32(classLoading.GetInt("defineTime"))
-        clCount = int32(classLoading.GetInt("count"))
-
-        if version.Compare(report.Version, "38", ">=") {
-          clPreparedCount = int32(classLoading.GetInt("preparedCount"))
-          clLoadedCount = int32(classLoading.GetInt("loadedCount"))
-        }
-
-        rlTime = int32(resourceLoading.GetInt("time"))
-        rlCount = int32(resourceLoading.GetInt("count"))
-      }
-    }
-  } else {
-    report.Activities = readActivitiesInOldFormat("items", data)
-    report.PrepareAppInitActivities = readActivitiesInOldFormat("prepareAppInitActivities", data)
-  }
-
-  if version.Compare(report.Version, "37", ">=") {
+  for _, activity := range report.Activities {
     measures = append(measures, measureItem{
-      name:     "elementTypeCount",
-      start:    0,
-      duration: uint32(data.GetInt("langLoading", "elementTypeCount")),
-      thread:   "",
+      name:     activity.Name,
+      start:    uint32(activity.Start),
+      duration: uint32(activity.Duration),
+      thread:   activity.Thread,
     })
   }
+
+  classLoading := data.Get("classLoading")
+  resourceLoading := data.Get("resourceLoading")
+  if classLoading != nil && resourceLoading != nil {
+    clTotal = int32(classLoading.GetInt("time"))
+    clSearch = int32(classLoading.GetInt("searchTime"))
+    clDefine = int32(classLoading.GetInt("defineTime"))
+    clCount = int32(classLoading.GetInt("count"))
+
+    clPreparedCount = int32(classLoading.GetInt("preparedCount"))
+    clLoadedCount = int32(classLoading.GetInt("loadedCount"))
+
+    rlTime = int32(resourceLoading.GetInt("time"))
+    rlCount = int32(resourceLoading.GetInt("count"))
+  }
+
+  measures = append(measures, measureItem{
+    name:     "elementTypeCount",
+    start:    0,
+    duration: uint32(data.GetInt("langLoading", "elementTypeCount")),
+    thread:   "",
+  })
 
   // Sort for better compression (same data pattern across column values). It is confirmed by experiment.
   sort.Slice(measures, func(i, j int) bool {
@@ -140,21 +123,6 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
     measureName, measureStart, measureDuration, measureThread, metricNames, metricValues,
   }
   return nil
-}
-
-func readActivitiesInOldFormat(key string, data *fastjson.Value) []model.Activity {
-  array := data.GetArray(key)
-  result := make([]model.Activity, 0, len(array))
-  for _, v := range array {
-    result = append(result, model.Activity{
-      Name:     string(v.GetStringBytes("name")),
-      Thread:   string(v.GetStringBytes("thread")),
-      Start:    v.GetInt("start"),
-      End:      v.GetInt("end"),
-      Duration: v.GetInt("duration"),
-    })
-  }
-  return result
 }
 
 func readActivities(key string, value *fastjson.Value) []model.Activity {

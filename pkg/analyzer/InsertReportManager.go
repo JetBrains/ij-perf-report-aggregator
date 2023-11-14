@@ -247,7 +247,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
     args = append(args, product)
   }
   if t.config.HasInstallerField {
-    buildTimeUnix, err := getBuildTimeFromReport(row.Report, t.config.DbName)
+    buildTimeUnix, err := getBuildTimeFromReport(row.Report)
     if err != nil {
       return err
     }

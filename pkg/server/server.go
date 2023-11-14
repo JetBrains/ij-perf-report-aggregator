@@ -4,7 +4,6 @@ import (
   "context"
   "crypto/tls"
   "github.com/ClickHouse/ch-go"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/andybalholm/brotli"
@@ -32,8 +31,6 @@ type StatsServer struct {
   dbUrl        string
   nameToDbPool sync.Map
 
-  machineInfo analyzer.MachineInfo
-
   poolMutex sync.Mutex
 
   logger *zap.Logger
@@ -50,11 +47,8 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   }
 
   statsServer := &StatsServer{
-    dbUrl: dbUrl,
-
+    dbUrl:  dbUrl,
     logger: logger,
-
-    machineInfo: analyzer.GetMachineInfo(),
   }
 
   defer func() {

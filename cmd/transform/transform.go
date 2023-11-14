@@ -199,14 +199,9 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
     if config.HasInstallerField {
       installerFields = "tc_installer_build_id, " + buildFields
     }
-    rawReportField := ""
-    if config.HasRawReport {
-      rawReportField = "raw_report,"
-    }
     rows, err = db.Query(taskContext, `
       select machine, branch,
-             generated_time, build_time, `+rawReportField+`
-             tc_build_id,`+installerFields+` project, measures.name, measures.value, measures.type, triggeredBy
+             generated_time, build_time, tc_build_id,`+installerFields+` project, measures.name, measures.value, measures.type, triggeredBy
       from `+tableName+`
       where generated_time >= $1 and generated_time < $2
       order by machine, branch, project, `+buildFields+` build_time, generated_time
@@ -234,9 +229,6 @@ rowLoop:
       TcBuildId:     int(row.TcBuildId),
     }
 
-    if config.HasRawReport {
-      runResult.RawReport = []byte(row.RawReport)
-    }
     if config.HasInstallerField {
       runResult.TcInstallerBuildId = int(row.TcInstallerBuildId)
       runResult.BuildC1 = int(row.BuildC1)

@@ -80,9 +80,6 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
   if config.HasInstallerField {
     metaFields = append(metaFields, "build_time", "tc_installer_build_id", "build_c1", "build_c2", "build_c3")
   }
-  if config.HasRawReport {
-    metaFields = append(metaFields, "raw_report")
-  }
   if config.HasBuildNumber {
     metaFields = append(metaFields, "build_number")
   }
@@ -263,9 +260,6 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
       return nil
     }
     args = append(args, buildTimeUnix, uint32(row.TcInstallerBuildId), uint8(row.BuildC1), uint16(row.BuildC2), uint16(row.BuildC3))
-  }
-  if t.config.HasRawReport {
-    args = append(args, string(row.RawReport))
   }
   if t.config.HasBuildNumber {
     args = append(args, row.BuildNumber)

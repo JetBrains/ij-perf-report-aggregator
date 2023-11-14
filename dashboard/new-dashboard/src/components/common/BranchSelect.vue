@@ -182,7 +182,6 @@ function createItems(configurator?: DimensionConfigurator) {
     if (configurator == undefined) {
       return []
     }
-    console.log(configurator.values.value)
     const values = (configurator.values.value as string[]).sort((a, b) => {
       if (configurator.selected.value?.includes(b)) return 1
       if (configurator.selected.value?.includes(a)) return -1

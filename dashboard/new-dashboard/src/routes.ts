@@ -36,6 +36,7 @@ const enum ROUTE_PREFIX {
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
+const STARTUP_ROUTE = "startup"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
 
@@ -46,6 +47,7 @@ enum ROUTES {
   StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
+  IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
@@ -87,6 +89,7 @@ enum ROUTES {
   IntelliJExperimentsGradleSyncDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardGradleSync`,
   IntelliJExperimentsMonorepoDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardMonorepo`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
+  PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
@@ -108,6 +111,7 @@ enum ROUTES {
   KotlinMPPDashboard = `${ROUTE_PREFIX.KotlinMPP}/dashboard`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
+  GoLandStartupDashboard = `${ROUTE_PREFIX.GoLand}/${STARTUP_ROUTE}`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
   GoLandScanningDashboard = `${ROUTE_PREFIX.GoLand}/scanningDashboard`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
@@ -124,6 +128,7 @@ enum ROUTES {
   GoLandSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   GoLandSharedIndicesTypingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesTypingDashboard`,
   GoLandSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesDumbModeDashboard`,
+  PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
@@ -137,10 +142,12 @@ enum ROUTES {
   PyCharmSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   PyCharmSharedIndicesTypingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesTypingDashboard`,
   PyCharmSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesDumbModeDashboard`,
+  WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
+  RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
@@ -167,6 +174,7 @@ enum ROUTES {
   BazelBspDashboard = `${ROUTE_PREFIX.Bazel}/bazelBSPDashboard`,
   IntelliJBspDashboard = `${ROUTE_PREFIX.Bazel}/intellijBSPDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
+  ClionStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
@@ -198,6 +206,7 @@ const TESTS_LABEL = "Tests"
 const COMPARE_BUILDS_LABEL = "Compare Builds"
 const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const DASHBOARD_LABEL = "Dashboard"
+const STARTUP_LABEL = "Startup"
 
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
@@ -243,6 +252,10 @@ const IDEA: Product = {
       url: ROUTE_PREFIX.IntelliJ,
       label: "Primary Functionality",
       tabs: [
+        {
+          url: ROUTES.IntelliJStartupDashboard,
+          label: STARTUP_LABEL,
+        },
         {
           url: ROUTES.IntelliJDashboard,
           label: DASHBOARD_LABEL,
@@ -466,6 +479,10 @@ const PHPSTORM: Product = {
       label: "",
       tabs: [
         {
+          url: ROUTES.PhpStormStartupDashboard,
+          label: STARTUP_LABEL,
+        },
+        {
           url: ROUTES.PhpStormDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -582,6 +599,10 @@ const GOLAND: Product = {
       label: "Primary Functionality",
       tabs: [
         {
+          url: ROUTES.GoLandStartupDashboard,
+          label: STARTUP_LABEL,
+        },
+        {
           url: ROUTES.GoLandIndexingDashboard,
           label: "Indexing",
         },
@@ -664,6 +685,10 @@ const RUBYMINE: Product = {
       label: "",
       tabs: [
         {
+          url: ROUTES.RubyStartupDashboard,
+          label: STARTUP_LABEL,
+        },
+        {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -692,6 +717,10 @@ const PYCHARM: Product = {
       url: ROUTE_PREFIX.PyCharm,
       label: "Primary Functionality",
       tabs: [
+        {
+          url: ROUTES.PyCharmStartupDashboard,
+          label: STARTUP_LABEL,
+        },
         {
           url: ROUTES.PyCharmDashboard,
           label: DASHBOARD_LABEL,
@@ -763,6 +792,10 @@ const WEBSTORM: Product = {
       url: ROUTE_PREFIX.WebStorm,
       label: "",
       tabs: [
+        {
+          url: ROUTES.WebStormStartupDashboard,
+          label: STARTUP_LABEL,
+        },
         {
           url: ROUTES.WebStormDashboard,
           label: DASHBOARD_LABEL,
@@ -940,6 +973,10 @@ const CLION: Product = {
       label: "",
       tabs: [
         {
+          url: ROUTES.ClionStartupDashboard,
+          label: STARTUP_LABEL,
+        },
+        {
           url: ROUTES.ClionPerfDashboard,
           label: "Performance",
         },
@@ -977,7 +1014,7 @@ const PERF_UNIT: Product = {
   ],
 }
 
-export const PRODUCTS = [IJ_STARTUP, IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, RUST, SCALA, JBR, FLEET, BAZEL, QODANA, CLION, PERF_UNIT]
+export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1015,6 +1052,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.StartupReport,
           component: () => import("./report-visualizer/Report.vue"),
           meta: { pageTitle: "Startup Report" },
+        },
+        {
+          path: ROUTES.IntelliJStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "IU",
+            defaultProject: "idea",
+          },
+          meta: { pageTitle: "IDEA Startup dashboard" },
         },
         {
           path: ROUTES.IntelliJDashboard,
@@ -1220,6 +1266,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
+          path: ROUTES.PhpStormStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "PS",
+            defaultProject: "stitcher with composer",
+          },
+          meta: { pageTitle: "PhpStorm Startup dashboard" },
+        },
+        {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PhpStorm Performance dashboard" },
@@ -1271,6 +1326,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandInspectionDashboard,
           component: () => import("./components/goland/InspectionCodeAnalyzesDashboard.vue"),
           meta: { pageTitle: "GoLand Inspections dashboard" },
+        },
+        {
+          path: ROUTES.GoLandStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "GO",
+            defaultProject: "kratos",
+          },
+          meta: { pageTitle: "GoLand Startup dashboard" },
         },
         {
           path: ROUTES.GoLandIndexingDashboard,
@@ -1361,6 +1425,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
         },
         {
+          path: ROUTES.PyCharmStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "PY",
+            defaultProject: "tensorflow",
+          },
+          meta: { pageTitle: "PyCharm Startup dashboard" },
+        },
+        {
           path: ROUTES.PyCharmDashboard,
           component: () => import("./components/pycharm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PyCharm Performance dashboard" },
@@ -1439,6 +1512,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
         },
         {
+          path: ROUTES.WebStormStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "WS",
+            defaultProject: "angular",
+          },
+          meta: { pageTitle: "WebStorm Startup dashboard" },
+        },
+        {
           path: ROUTES.WebStormDashboard,
           component: () => import("./components/webstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "WebStorm Performance dashboard" },
@@ -1470,6 +1552,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "webstorm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.RubyStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "RM",
+            defaultProject: "diaspora",
+          },
+          meta: { pageTitle: "Ruby Startup dashboard" },
         },
         {
           path: ROUTES.RubyMineDashboard,
@@ -1788,6 +1879,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
           meta: { pageTitle: "CLion tests" },
+        },
+        {
+          path: ROUTES.ClionStartupDashboard,
+          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          props: {
+            product: "CL",
+            defaultProject: "cmake",
+          },
+          meta: { pageTitle: "Clion Startup dashboard" },
         },
         {
           path: ROUTES.ClionPerfDashboard,

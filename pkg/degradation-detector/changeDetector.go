@@ -117,13 +117,15 @@ func getPartialSums(data []int, k int) [][]int {
 
 func getSegmentCost(partialSums [][]int, tau1, tau2, k, n int) float64 {
   var sum float64
+  tauDiff := float64(tau2 - tau1)
+  tauDiffDoubled := (tau2 - tau1) * 2
   for i := 0; i < k; i++ {
     // actualSum is (count(data[j] < t) * 2 + count(data[j] == t) * 1) for j=tau1..tau2-1
     actualSum := partialSums[i][tau2] - partialSums[i][tau1]
 
-    if actualSum != 0 && actualSum != (tau2-tau1)*2 {
-      fit := float64(actualSum) / float64((tau2-tau1)*2)
-      lnp := float64(tau2-tau1) * (fit*math.Log(fit) + (1-fit)*math.Log1p(-fit))
+    if actualSum != 0 && actualSum != tauDiffDoubled {
+      fit := float64(actualSum) / float64(tauDiffDoubled)
+      lnp := tauDiff * (fit*math.Log(fit) + (1-fit)*math.Log1p(-fit))
       sum += lnp
     }
   }

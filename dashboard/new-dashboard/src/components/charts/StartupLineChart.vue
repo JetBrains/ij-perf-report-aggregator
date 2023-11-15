@@ -23,6 +23,7 @@ import { containerKey, sidebarStartupKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { StartupLineChartManager } from "./StartupLineChartManager"
 import { StartupTooltipManager } from "./StartupTooltipManager"
 
@@ -82,7 +83,11 @@ watchEffect(function () {
       },
     })
   }
+  if (props.measures.length == 1) {
+    configurators.push(new SeriesNameConfigurator(props.measures[0]))
+  }
   dataQueryExecutor = new DataQueryExecutor(configurators)
+
   chartToolTipManager.dataQueryExecutor = dataQueryExecutor
 })
 

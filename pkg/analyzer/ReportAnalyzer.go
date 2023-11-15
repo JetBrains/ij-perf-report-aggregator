@@ -265,6 +265,10 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   if len(branch) != 0 && branch != "<default>" {
     return branch, nil
   }
+  branchInt := props.GetInt("teamcity.build.branch")
+  if branchInt != 0 {
+    return strconv.Itoa(branchInt), nil
+  }
   var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
   if len(isMaster) == 0 {
     // we check that the property doesn't exist so it is not a master

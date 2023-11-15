@@ -16,7 +16,7 @@ export interface TimeRangeItem {
 }
 
 export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfigurator, ChartConfigurator {
-  readonly value = ref<TimeRange>("1w")
+  readonly value = ref<TimeRange>("1M")
   readonly customRange = ref<string>("")
   public timeRanges: Ref<TimeRangeItem[]> = ref([
     { label: "Last week", value: "1w" },

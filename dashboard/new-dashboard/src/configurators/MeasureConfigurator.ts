@@ -341,7 +341,14 @@ function configureChart(
     const seriesData = dataList[dataIndex]
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (seriesData[1] == undefined) continue
+    if (seriesData[1] == undefined) {
+      //we need to push even empty dataset otherwise it will be out of sync with series and plot will be empty
+      dataset.push({
+        source: seriesData,
+        sourceHeader: false,
+      })
+      continue
+    }
 
     let isNotEmpty = false
     for (const data of seriesData) {
@@ -471,33 +478,7 @@ function configureChart(
       sourceHeader: false,
     })
   }
-
-  // if (chartType == "scatter") {
-  //   dataset.push({
-  //     fromDatasetIndex: 0,
-  //     transform: {
-  //       type: "ecStat:regression",
-  //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //       // @ts-ignore
-  //       config: {
-  //         method: "polynomial",
-  //         dimensions: [1],
-  //       },
-  //     },
-  //   })
-  //   series.push({
-  //     silent: true,
-  //     type: "line",
-  //     smooth: true,
-  //     datasetIndex: dataset.length - 1,
-  //     // symbolSize: 0.1,
-  //     // symbol: "circle",
-  //     // label: {show: false, fontSize: 16},
-  //     // labelLayout: {dx: -20},
-  //     // encode: {label: 2, tooltip: 1},
-  //   })
-  // }
-
+  console.log(dataset)
   const isNs = valueUnit == "ns"
   const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
   const formatter: (valueInMs: number) => string = isNs ? (v) => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter

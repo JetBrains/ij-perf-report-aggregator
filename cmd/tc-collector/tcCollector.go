@@ -96,7 +96,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
           tcUrl,
           userSpecifiedSince,
           initialSince,
-          logger.With(zap.String("buildTypeId", buildTypeId), zap.String("projectId", projectId)),
+          logger.With(zap.String("buildTypeId", buildTypeId)),
         )
       }
     }(buildTypeId))

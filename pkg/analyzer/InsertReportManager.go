@@ -160,7 +160,7 @@ func (t *InsertReportManager) Insert(runResult *RunResult) error {
   logger = logger.With(
     zap.String("db", t.config.DbName),
     zap.String("table", t.config.TableName),
-    zap.String("generatedTime", runResult.GeneratedTime.Format(time.RFC1123)),
+    zap.String("file", runResult.ReportFileName),
   )
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default

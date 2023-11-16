@@ -6,7 +6,6 @@ import (
   "testing"
 )
 
-// test that config grabs env
 func TestAdvancedFilter(t *testing.T) {
   queries, err := readQuery([]byte(`
 {
@@ -28,7 +27,32 @@ func TestAdvancedFilter(t *testing.T) {
   if err != nil {
     t.Error(err)
   }
-  assert.Equal("select from test where generated_time > subtractMonths(now(), 1) order by generated_time", sql)
+  assert.Equal("select from test where (generated_time > subtractMonths(now(), 1)) order by generated_time", sql)
+}
+
+func TestOrInFilterQuery(t *testing.T) {
+  queries, err := readQuery([]byte(`
+{
+  "filters": [
+    {"f": "branch", "sql": "master or branch = 223"},
+    {"f": "project", "v": "foo"}
+  ],
+  "order": "generated_time"
+}
+`))
+  if err != nil {
+    t.Error(err)
+  }
+
+  //noinspection GoImportUsedAsName
+  assert := assert.New(t)
+  assert.NotEmpty(queries)
+
+  sql, _, err := buildSql(queries[0], "test")
+  if err != nil {
+    t.Error(err)
+  }
+  assert.Equal("select from test where (branch master or branch = 223) and (project = 'foo') order by generated_time", sql)
 }
 
 func TestAverageAggregate(t *testing.T) {
@@ -81,7 +105,7 @@ func TestAverageAggregate(t *testing.T) {
   if err != nil {
     t.Error(err)
   }
-  assert.Equal("select toYYYYMMDD(generated_time) as `t`, avg(measures.value) as measure_value from test array join measures where measures.name in ('responsiveness_time') and branch = 'master' group by t order by t", sql)
+  assert.Equal("select toYYYYMMDD(generated_time) as `t`, avg(measures.value) as measure_value from test array join measures where (measures.name in ('responsiveness_time')) and (branch = 'master') group by t order by t", sql)
 }
 
 func TestDecode(t *testing.T) {

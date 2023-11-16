@@ -404,7 +404,7 @@ loop:
     if i != 0 {
       sb.WriteString(" and")
     }
-    sb.WriteRune(' ')
+    sb.WriteString(" (")
     sb.WriteString(filter.Field)
 
     if len(filter.Sql) != 0 {
@@ -417,6 +417,7 @@ loop:
 
       sb.WriteRune(' ')
       sb.WriteString(filter.Sql)
+      sb.WriteRune(')')
       continue loop
     }
 
@@ -467,6 +468,7 @@ loop:
     default:
       return errors.Errorf("Filter value type %T is not supported", v)
     }
+    sb.WriteRune(')')
   }
   return nil
 }

@@ -4,6 +4,7 @@ import (
   "context"
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
+  _ "go.uber.org/automaxprocs"
   "log/slog"
   "net/http"
   "os"
@@ -12,46 +13,77 @@ import (
 )
 
 func main() {
+  backendUrl := getBackendUrl()
+  client := createHttpClient()
+  analysisSettings := generateAnalysisSettings(backendUrl, client)
+  degradations := getDegradations(analysisSettings, client, backendUrl)
+  insertionResults := writeDegradations(client, backendUrl, degradations)
+  postDegradations(insertionResults, client)
+}
+
+func getBackendUrl() string {
   backendUrl := os.Getenv("BACKEND_URL")
-  if len(backendUrl) == 0 {
-    backendUrl = "https://ij-perf-api.labs.jb.gg" //http://localhost:9044
+  if backendUrl == "" {
+    backendUrl = "https://ij-perf-api.labs.jb.gg" // Default URL
     slog.Info("BACKEND_URL is not set, using default value: %s", "url", backendUrl)
   }
+  return backendUrl
+}
 
-  client := &http.Client{
+func createHttpClient() *http.Client {
+  return &http.Client{
     Timeout: 60 * time.Second,
     Transport: &http.Transport{
       MaxIdleConns:        20,
       MaxIdleConnsPerHost: 10,
     },
   }
+}
 
-  analysisSettings := make([]detector.Settings, 0, 1000)
-  analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateMavenSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateGradleSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
-  analysisSettings = append(analysisSettings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
+func generateAnalysisSettings(backendUrl string, client *http.Client) []detector.Settings {
+  settings := make([]detector.Settings, 0, 1000)
+  settings = append(settings, analysis.GenerateIdeaSettings()...)
+  settings = append(settings, analysis.GenerateWorkspaceSettings()...)
+  settings = append(settings, analysis.GenerateKotlinSettings()...)
+  settings = append(settings, analysis.GenerateMavenSettings()...)
+  settings = append(settings, analysis.GenerateGradleSettings()...)
+  settings = append(settings, analysis.GeneratePhpStormSettings()...)
+  settings = append(settings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
+  return settings
+}
 
-  degradations := make([]detector.Degradation, 0, 1000)
+func getDegradations(analysisSettings []detector.Settings, client *http.Client, backendUrl string) []detector.Degradation {
+  degradationChan := make(chan []detector.Degradation)
+  var wgAnalysis sync.WaitGroup
   for _, analysisSetting := range analysisSettings {
-    slog.Info("processing", "settings", analysisSetting)
-    ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-    timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
-    if err != nil {
-      slog.Error("error while getting data from clickhouse", "error", err)
-    }
-
-    degradations = append(degradations, detector.InferDegradations(values, builds, timestamps, analysisSetting)...)
-    cancel()
+    wgAnalysis.Add(1)
+    go func(analysisSetting detector.Settings) {
+      defer wgAnalysis.Done()
+      slog.Info("processing", "settings", analysisSetting)
+      ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+      defer cancel()
+      timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
+      if err != nil {
+        slog.Error("error while getting data from clickhouse", "error", err, "settings", analysisSetting)
+        return
+      }
+      degradationChan <- detector.InferDegradations(values, builds, timestamps, analysisSetting)
+    }(analysisSetting)
   }
 
-  insertionCtx, cancelInsertion := context.WithTimeout(context.Background(), 5*time.Minute)
-  defer cancelInsertion()
-  insertionResults := detector.PostDegradations(insertionCtx, client, backendUrl, degradations)
+  go func() {
+    wgAnalysis.Wait()
+    close(degradationChan)
+  }()
 
+  degradations := make([]detector.Degradation, 0, 1000)
+  for d := range degradationChan {
+    degradations = append(degradations, d...)
+  }
+  return degradations
+}
+
+func postDegradations(insertionResults []detector.InsertionResults, client *http.Client) {
   var wg sync.WaitGroup
   for _, result := range insertionResults {
     if result.Error != nil {
@@ -62,9 +94,9 @@ func main() {
       continue
     }
     wg.Add(1)
-    ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
     go func(result detector.InsertionResults) {
       defer wg.Done()
+      ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
       err := detector.SendSlackMessage(ctx, client, result.Degradation)
       if err != nil {
         slog.Error("error while sending slack message", "error", err)
@@ -73,4 +105,10 @@ func main() {
     }(result)
   }
   wg.Wait()
+}
+
+func writeDegradations(client *http.Client, backendUrl string, degradations []detector.Degradation) []detector.InsertionResults {
+  ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+  defer cancel()
+  return detector.PostDegradations(ctx, client, backendUrl, degradations)
 }

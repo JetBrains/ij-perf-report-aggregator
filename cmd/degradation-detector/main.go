@@ -15,7 +15,7 @@ func main() {
   backendUrl := os.Getenv("BACKEND_URL")
   if len(backendUrl) == 0 {
     backendUrl = "https://ij-perf-api.labs.jb.gg" //http://localhost:9044
-    slog.Info("BACKEND_URL is not set, using default value: %s", backendUrl)
+    slog.Info("BACKEND_URL is not set, using default value: %s", "url", backendUrl)
   }
 
   client := &http.Client{

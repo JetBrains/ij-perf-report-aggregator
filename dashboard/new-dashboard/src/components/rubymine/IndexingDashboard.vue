@@ -163,8 +163,8 @@
         :measure="[
           'lexingSpeed#CSS',
           'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript',
-          'lexingSpeed#Flow',
+          'lexingSpeed#ECMAScript.6',
+          'lexingSpeed#Flow.JS',
           'lexingSpeed#GenericSQL',
           'lexingSpeed#HTML',
           'lexingSpeed#Haml',
@@ -176,6 +176,7 @@
           'lexingSpeed#TypeScript',
           'lexingSpeed#Vue',
           'lexingSpeed#ruby',
+          'lexingSpeed#ruby.rbs',
           'lexingSpeed#yaml',
         ]"
         :projects="['diaspora-project-test/indexing']"
@@ -188,8 +189,8 @@
         :measure="[
           'lexingSpeed#CSS',
           'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript',
-          'lexingSpeed#Flow',
+          'lexingSpeed#ECMAScript.6',
+          'lexingSpeed#Flow.JS',
           'lexingSpeed#GenericSQL',
           'lexingSpeed#HTML',
           'lexingSpeed#Haml',
@@ -201,6 +202,7 @@
           'lexingSpeed#TypeScript',
           'lexingSpeed#Vue',
           'lexingSpeed#ruby',
+          'lexingSpeed#ruby.rbs',
           'lexingSpeed#yaml',
         ]"
         :projects="['gem-rbs-collection-indexing-test/indexing']"
@@ -213,8 +215,8 @@
         :measure="[
           'lexingSpeed#CSS',
           'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript',
-          'lexingSpeed#Flow',
+          'lexingSpeed#ECMAScript.6',
+          'lexingSpeed#Flow.JS',
           'lexingSpeed#GenericSQL',
           'lexingSpeed#HTML',
           'lexingSpeed#Haml',
@@ -226,6 +228,7 @@
           'lexingSpeed#TypeScript',
           'lexingSpeed#Vue',
           'lexingSpeed#ruby',
+          'lexingSpeed#ruby.rbs',
           'lexingSpeed#yaml',
         ]"
         :projects="['gitlab-project-test/indexing']"
@@ -238,8 +241,8 @@
         :measure="[
           'lexingSpeed#CSS',
           'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript',
-          'lexingSpeed#Flow',
+          'lexingSpeed#ECMAScript.6',
+          'lexingSpeed#Flow.JS',
           'lexingSpeed#GenericSQL',
           'lexingSpeed#HTML',
           'lexingSpeed#Haml',
@@ -251,6 +254,7 @@
           'lexingSpeed#TypeScript',
           'lexingSpeed#Vue',
           'lexingSpeed#ruby',
+          'lexingSpeed#ruby.rbs',
           'lexingSpeed#yaml',
         ]"
         :projects="['redmine-project-test/indexing']"
@@ -263,8 +267,8 @@
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript',
-          'parsingSpeed#Flow',
+          'parsingSpeed#ECMAScript.6',
+          'parsingSpeed#Flow.JS',
           'parsingSpeed#GenericSQL',
           'parsingSpeed#HTML',
           'parsingSpeed#Haml',
@@ -276,6 +280,7 @@
           'parsingSpeed#TypeScript',
           'parsingSpeed#Vue',
           'parsingSpeed#ruby',
+          'parsingSpeed#ruby.rbs',
           'parsingSpeed#yaml',
         ]"
         :projects="['diaspora-project-test/indexing']"
@@ -288,8 +293,8 @@
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript',
-          'parsingSpeed#Flow',
+          'parsingSpeed#ECMAScript.6',
+          'parsingSpeed#Flow.JS',
           'parsingSpeed#GenericSQL',
           'parsingSpeed#HTML',
           'parsingSpeed#Haml',
@@ -301,6 +306,7 @@
           'parsingSpeed#TypeScript',
           'parsingSpeed#Vue',
           'parsingSpeed#ruby',
+          'parsingSpeed#ruby.rbs',
           'parsingSpeed#yaml',
         ]"
         :projects="['gem-rbs-collection-indexing-test/indexing']"
@@ -313,8 +319,8 @@
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript',
-          'parsingSpeed#Flow',
+          'parsingSpeed#ECMAScript.6',
+          'parsingSpeed#Flow.JS',
           'parsingSpeed#GenericSQL',
           'parsingSpeed#HTML',
           'parsingSpeed#Haml',
@@ -326,6 +332,7 @@
           'parsingSpeed#TypeScript',
           'parsingSpeed#Vue',
           'parsingSpeed#ruby',
+          'parsingSpeed#ruby.rbs',
           'parsingSpeed#yaml',
         ]"
         :projects="['gitlab-project-test/indexing']"
@@ -338,8 +345,8 @@
         :measure="[
           'parsingSpeed#CSS',
           'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript',
-          'parsingSpeed#Flow',
+          'parsingSpeed#ECMAScript.6',
+          'parsingSpeed#Flow.JS',
           'parsingSpeed#GenericSQL',
           'parsingSpeed#HTML',
           'parsingSpeed#Haml',
@@ -351,6 +358,7 @@
           'parsingSpeed#TypeScript',
           'parsingSpeed#Vue',
           'parsingSpeed#ruby',
+          'parsingSpeed#ruby.rbs',
           'parsingSpeed#yaml',
         ]"
         :projects="['redmine-project-test/indexing']"

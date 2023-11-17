@@ -71,7 +71,7 @@ export class DataQuery {
 }
 
 export interface DataQueryFilter {
-  f: string
+  f?: string
   v?: number | string | string[] | boolean
   q?: string
   // `=` by default

@@ -39,6 +39,8 @@ const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
+const METRICS_ROUTE = "metrics"
+const METRICS_DEV_ROUTE = "metricsDev"
 
 enum ROUTES {
   StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
@@ -48,6 +50,8 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
+  IntelliJMetrics = `${ROUTE_PREFIX.IntelliJ}/${METRICS_ROUTE}`,
+  IntelliJMetricsDev = `${ROUTE_PREFIX.IntelliJ}/${METRICS_DEV_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
@@ -207,6 +211,7 @@ const COMPARE_BUILDS_LABEL = "Compare Builds"
 const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
+const METRICS_LABEL = "Metrics"
 
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
@@ -289,8 +294,16 @@ const IDEA: Product = {
           label: TESTS_LABEL,
         },
         {
+          url: ROUTES.IntelliJMetrics,
+          label: METRICS_LABEL,
+        },
+        {
           url: ROUTES.IntelliJDevTests,
           label: "Tests (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJMetricsDev,
+          label: METRICS_LABEL + "(Fast Installer)",
         },
         {
           url: ROUTES.IntelliJCompareBranches,
@@ -1218,7 +1231,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
         },
         {
-          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/tests`,
+          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfint",
@@ -1237,6 +1250,27 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "IntelliJ Integration Performance Tests On Fast Installer" },
+        },
+        {
+          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${METRICS_ROUTE}`,
+          component: () => import("./components/common/PerformanceMetric.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "IntelliJ Metrics" },
+        },
+        {
+          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${METRICS_DEV_ROUTE}`,
+          component: () => import("./components/common/PerformanceMetric.vue"),
+          props: {
+            dbName: "perfint",
+            table: "idea",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "IntelliJ Metrics (Dev)" },
         },
         {
           path: ROUTES.IntelliJSharedIndicesTests,

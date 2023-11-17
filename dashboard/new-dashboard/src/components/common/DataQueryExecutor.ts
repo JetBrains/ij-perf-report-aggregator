@@ -184,6 +184,7 @@ function getFilterNameForMerge(query1: DataQuery, query2: DataQuery): string | n
   const targetFilter1 = differingFilters[0]
   const targetFilter2 = query2.filters.find((filter2) => filter2.f === targetFilter1.f)
   if (!targetFilter2 || !isFilterCanBeMerged(targetFilter1, targetFilter2, query1.fields)) return null
+  if (targetFilter1.f == undefined) return null
   return targetFilter1.f
 }
 

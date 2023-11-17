@@ -24,7 +24,7 @@ import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
-export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
+export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator, FilterConfigurator {
   readonly data = shallowRef<string[]>([])
   private readonly _selected = shallowRef<string[] | string | null>(null)
   readonly state = createComponentState()
@@ -90,8 +90,14 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it))
           data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.$/.test(it))
           data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it))
+
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
+
+        //filter for editor menu
+        data = data.filter((it) => !/.*#[Uu]pdate@.*/.test(it))
+        data = data.filter((it) => !/.*#GetChildren@.*/.test(it))
+        data = data.filter((it) => !/.*#getSelection@.*/.test(it))
 
         const selectedRef = this.selected
         //filter out _23 metrics, we need them in DB but not in UI
@@ -123,6 +129,25 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
     return configureChart(configuration, data, this.chartType, "ms", this.symbolOptions)
+  }
+
+  configureFilter(query: DataQuery): boolean {
+    const currentValue = this._selected.value
+    const mergedFilter: string[] = []
+    if (Array.isArray(currentValue)) {
+      for (const metric of currentValue) {
+        mergedFilter.push("has(`measures.name`, '" + metric + "')")
+      }
+    } else {
+      mergedFilter.push("has(`measures.name`, '" + currentValue + "')")
+    }
+    const filterQuery = mergedFilter.join(" and ")
+    if (currentValue != undefined && currentValue.length > 0) {
+      query.addFilter({ q: filterQuery })
+      return true
+    } else {
+      return false
+    }
   }
 }
 

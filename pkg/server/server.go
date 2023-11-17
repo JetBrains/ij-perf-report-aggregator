@@ -15,7 +15,7 @@ import (
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
-  _ "go.uber.org/automaxprocs"
+  _ "go.uber.org/automaxprocs" // automatically set GOMAXPROCS
   "go.uber.org/zap"
   "io"
   "net/http"

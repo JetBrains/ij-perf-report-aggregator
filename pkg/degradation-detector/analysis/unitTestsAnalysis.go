@@ -13,7 +13,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
     Channel:     "ij-perf-unit-tests",
     Branch:      "master",
     Machine:     "%",
-    Metric:      "attempt.average.ms",
+    Metric:      "attempt.mean.ms",
     ProductLink: "perfUnit",
   }
   tests, err := detector.GetAllTests(backendUrl, client, mainSettings)

@@ -6,10 +6,12 @@ import (
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "net/http"
+  "time"
 )
 
 func GetAllTests(backendUrl string, client *http.Client, settings Settings) ([]string, error) {
-  ctx := context.Background()
+  ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+  defer cancel()
   query := []dataQuery.DataQuery{
     {
       Database: settings.Db,

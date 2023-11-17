@@ -35,19 +35,22 @@ func main() {
   analysisSettings = append(analysisSettings, analysis.GeneratePhpStormSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
 
-  ctx := context.Background()
   degradations := make([]detector.Degradation, 0, 1000)
   for _, analysisSetting := range analysisSettings {
     slog.Info("processing", "settings", analysisSetting)
+    ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
     timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
     if err != nil {
       slog.Error("error while getting data from clickhouse", "error", err)
     }
 
     degradations = append(degradations, detector.InferDegradations(values, builds, timestamps, analysisSetting)...)
+    cancel()
   }
 
-  insertionResults := detector.PostDegradations(ctx, client, backendUrl, degradations)
+  insertionCtx, cancelInsertion := context.WithTimeout(context.Background(), 5*time.Minute)
+  defer cancelInsertion()
+  insertionResults := detector.PostDegradations(insertionCtx, client, backendUrl, degradations)
 
   var wg sync.WaitGroup
   for _, result := range insertionResults {
@@ -59,12 +62,14 @@ func main() {
       continue
     }
     wg.Add(1)
+    ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
     go func(result detector.InsertionResults) {
       defer wg.Done()
       err := detector.SendSlackMessage(ctx, client, result.Degradation)
       if err != nil {
         slog.Error("error while sending slack message", "error", err)
       }
+      cancel()
     }(result)
   }
   wg.Wait()

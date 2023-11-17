@@ -28,17 +28,32 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Elastic Rebuild/Build time"],
     measures: ["build_compilation_duration"],
-    projects: ["incremental-build-java/build_incremental", "incremental-build-java/rebuild_initial"],
+    projects: [
+      "incremental-build-java/build_incremental",
+      "incremental-build-java/rebuild_initial",
+      "incremental-build-java-with-dep-graph/build_incremental",
+      "incremental-build-java-with-dep-graph/rebuild_initial",
+    ],
   },
   {
     labels: ["IntelliJ Rebuild/Build time"],
     measures: ["build_compilation_duration"],
-    projects: ["incremental-build-intellij/build_incremental", "incremental-build-intellij/rebuild_initial"],
+    projects: [
+      "incremental-build-intellij/build_incremental",
+      "incremental-build-intellij/rebuild_initial",
+      "incremental-build-intellij-with-dep-graph/build_incremental",
+      "incremental-build-intellij-with-dep-graph/rebuild_initial",
+    ],
   },
   {
     labels: ["Coroutines Rebuild/Build time"],
     measures: ["build_compilation_duration"],
-    projects: ["incremental-build-kotlin/build_incremental", "incremental-build-kotlin/rebuild_initial"],
+    projects: [
+      "incremental-build-kotlin/build_incremental",
+      "incremental-build-kotlin/rebuild_initial",
+      "incremental-build-kotlin-with-dep-graph/build_incremental",
+      "incremental-build-kotlin-with-dep-graph/rebuild_initial",
+    ],
   },
   {
     labels: ["Youtrack JPS and Gradle Rebuild/Build time"],
@@ -46,6 +61,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [
       "incremental-build-youtrack-jps/build_incremental",
       "incremental-build-youtrack-jps/rebuild_initial",
+      "incremental-build-youtrack-jps-with-dep-graph/build_incremental",
+      "incremental-build-youtrack-jps-with-dep-graph/rebuild_initial",
       "incremental-build-youtrack-gradle/build_incremental",
       "incremental-build-youtrack-gradle/rebuild_initial",
     ],
@@ -56,6 +73,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [
       "incremental-build-hub-jps/build_incremental",
       "incremental-build-hub-jps/rebuild_initial",
+      "incremental-build-hub-jps-with-dep-graph/build_incremental",
+      "incremental-build-hub-jps-with-dep-graph/rebuild_initial",
       "incremental-build-hub-gradle/build_incremental",
       "incremental-build-hub-gradle/rebuild_initial",
     ],

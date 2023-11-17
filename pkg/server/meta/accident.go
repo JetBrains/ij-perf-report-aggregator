@@ -5,8 +5,8 @@ import (
   "github.com/jackc/pgx/v5"
   "github.com/jackc/pgx/v5/pgtype"
   "github.com/jackc/pgx/v5/pgxpool"
-  "go.uber.org/zap"
   "io"
+  "log/slog"
   "net/http"
   "strconv"
   "strings"
@@ -40,12 +40,12 @@ type accidentDeleteParams struct {
   Id int64 `json:"id"`
 }
 
-func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("Cannot read body", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -53,7 +53,7 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
 
     var params accidentRequestParams
     if err = json.Unmarshal(all, &params); err != nil {
-      logger.Error("Cannot unmarshal parameters", zap.Error(err))
+      slog.Error("Cannot unmarshal parameters", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -64,7 +64,7 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
     }
     rows, err := metaDb.Query(request.Context(), sql)
     if err != nil {
-      logger.Error("Unable to execute the query", zap.String("query", sql))
+      slog.Error("unable to execute the query", "query", sql, "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -86,30 +86,30 @@ func CreateGetManyAccidentsRequestHandler(logger *zap.Logger, metaDb *pgxpool.Po
       }, err
     })
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("unable to collect rows", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
     jsonBytes, err := json.Marshal(accidents)
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("unable to marshal accidents", "accidents", accidents, "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
     _, err = writer.Write(jsonBytes)
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("unable to write response", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
     }
   }
 }
 
-func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreatePostAccidentRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
     if err != nil {
-      logger.Error("Cannot read body", zap.Error(err))
+      slog.Error("cannot read body", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -118,7 +118,7 @@ func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
 
     var params AccidentInsertParams
     if err = json.Unmarshal(all, &params); err != nil {
-      logger.Error("Cannot unmarshal parameters", zap.Error(err))
+      slog.Error("cannot unmarshal parameters", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -135,7 +135,7 @@ func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
       if strings.Contains(err.Error(), "unique constraint") {
         http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
       } else {
-        logger.Error("Cannot execute query", zap.Error(err))
+        slog.Error("cannot execute query", "error", err)
         writer.WriteHeader(http.StatusInternalServerError)
       }
       return
@@ -144,32 +144,32 @@ func CreatePostAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) 
     writer.WriteHeader(http.StatusOK)
     _, err = writer.Write([]byte(strconv.Itoa(id)))
     if err != nil {
-      logger.Error("Cannot write response", zap.Error(err))
+      slog.Error("cannot write response", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
     }
   }
 }
 
-func CreateDeleteAccidentRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreateDeleteAccidentRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
   return func(writer http.ResponseWriter, request *http.Request) {
     body := request.Body
     all, err := io.ReadAll(body)
     if err != nil {
-      logger.Error("Cannot read body", zap.Error(err))
+      slog.Error("cannot read body", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
     }
     defer body.Close()
 
     var params accidentDeleteParams
     if err = json.Unmarshal(all, &params); err != nil {
-      logger.Error("Cannot unmarshal parameters", zap.Error(err))
+      slog.Error("cannot unmarshal parameters", "body", all, "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
 
     _, err = metaDb.Exec(request.Context(), "DELETE FROM accidents WHERE id=$1", params.Id)
     if err != nil {
-      logger.Error("Cannot execute query", zap.Error(err))
+      slog.Error("cannot execute query", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }

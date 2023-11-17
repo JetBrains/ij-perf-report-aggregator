@@ -4,7 +4,7 @@ import (
   "context"
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
-  "log"
+  "log/slog"
   "net/http"
   "os"
   "sync"
@@ -15,7 +15,7 @@ func main() {
   backendUrl := os.Getenv("BACKEND_URL")
   if len(backendUrl) == 0 {
     backendUrl = "https://ij-perf-api.labs.jb.gg" //http://localhost:9044
-    log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
+    slog.Info("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
   client := &http.Client{
@@ -38,10 +38,10 @@ func main() {
   ctx := context.Background()
   degradations := make([]detector.Degradation, 0, 1000)
   for _, analysisSetting := range analysisSettings {
-    log.Printf("Processing %v", analysisSetting)
+    slog.Info("processing", "settings", analysisSetting)
     timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
     if err != nil {
-      log.Printf("%v", err)
+      slog.Error("error while getting data from clickhouse", "error", err)
     }
 
     degradations = append(degradations, detector.InferDegradations(values, builds, timestamps, analysisSetting)...)
@@ -52,7 +52,7 @@ func main() {
   var wg sync.WaitGroup
   for _, result := range insertionResults {
     if result.Error != nil {
-      log.Printf("%v", result.Error)
+      slog.Error("error while inserting degradation", "error", result.Error, "degradation", result.Degradation)
       continue
     }
     if !result.WasInserted {
@@ -63,7 +63,7 @@ func main() {
       defer wg.Done()
       err := detector.SendSlackMessage(ctx, client, result.Degradation)
       if err != nil {
-        log.Printf("%v", err)
+        slog.Error("error while sending slack message", "error", err)
       }
     }(result)
   }

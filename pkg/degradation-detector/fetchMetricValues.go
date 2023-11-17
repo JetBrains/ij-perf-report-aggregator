@@ -7,18 +7,18 @@ import (
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "io"
-  "log"
+  "log/slog"
   "net/http"
 )
 
 func GetDataFromClickhouse(ctx context.Context, client *http.Client, backendURL string, analysisSettings Settings) ([]int64, []int, []string, error) {
   response, err := GetValuesFromServer(ctx, client, backendURL, getDataQuery(analysisSettings))
   if err != nil {
-    log.Printf("%v", err)
+    slog.Error("error while getting data from server", "error", err)
   }
   timestamps, values, builds, err := extractDataFromRequest(response)
   if err != nil {
-    log.Printf("%v", err)
+    slog.Error("error while extracting data from request", "error", err)
   }
   return timestamps, values, builds, err
 }

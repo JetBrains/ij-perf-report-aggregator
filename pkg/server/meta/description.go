@@ -2,13 +2,13 @@ package meta
 
 import (
   "encoding/json"
+  "errors"
   "github.com/VictoriaMetrics/fastcache"
   "github.com/jackc/pgx/v5"
   "github.com/jackc/pgx/v5/pgxpool"
-  "github.com/pkg/errors"
   "github.com/sakura-internet/go-rison/v4"
-  "go.uber.org/zap"
   "io"
+  "log/slog"
   "net/http"
   "strings"
 )
@@ -26,7 +26,7 @@ type description struct {
   Description string `json:"description"`
 }
 
-func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool) http.HandlerFunc {
+func CreateGetDescriptionRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
   cacheSize := 1000 * 1000 * 50
   cache := fastcache.New(cacheSize)
   return func(writer http.ResponseWriter, request *http.Request) {
@@ -34,7 +34,7 @@ func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
     var params descriptionRequestParams
     err := rison.Unmarshal([]byte(request.URL.Path[objectStart:]), &params, rison.Rison)
     if err != nil {
-      logger.Error("Cannot unmarshal parameters", zap.Error(err))
+      slog.Error("cannot unmarshal parameters", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -46,14 +46,14 @@ func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
     if isInCache {
       _, err = writer.Write(cachedValue)
       if err != nil {
-        logger.Error(err.Error())
+        slog.Error("cannot write cached value", "error", err)
         writer.WriteHeader(http.StatusInternalServerError)
       }
       return
     }
     rows, err := metaDb.Query(request.Context(), "SELECT project, branch, url, methodname, description FROM project_description WHERE project=$1 and branch=$2", params.Project, params.Branch)
     if err != nil {
-      logger.Error("Unable to execute the query", zap.Error(err))
+      slog.Error("unable to execute the query", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
@@ -73,11 +73,11 @@ func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
       if errors.Is(err, pgx.ErrNoRows) {
         _, err = writer.Write([]byte("{}"))
         if err != nil {
-          logger.Error(err.Error())
+          slog.Error("unable to write response", "error", err)
           writer.WriteHeader(http.StatusInternalServerError)
         }
       } else {
-        logger.Error(err.Error())
+        slog.Error("unable to collect rows", "error", err)
         writer.WriteHeader(http.StatusInternalServerError)
       }
       return
@@ -85,14 +85,14 @@ func CreateGetDescriptionRequestHandler(logger *zap.Logger, metaDb *pgxpool.Pool
 
     jsonBytes, err := json.Marshal(desc)
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("unable to marshal description", "description", desc, "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
       return
     }
     _, err = writer.Write(jsonBytes)
     cache.Set(cacheKey, jsonBytes)
     if err != nil {
-      logger.Error(err.Error())
+      slog.Error("unable to write response", "error", err)
       writer.WriteHeader(http.StatusInternalServerError)
     }
   }

@@ -2,7 +2,7 @@ package analysis
 
 import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
-  "log"
+  "log/slog"
   "net/http"
 )
 
@@ -18,7 +18,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
   }
   tests, err := detector.GetAllTests(backendUrl, client, mainSettings)
   if err != nil {
-    log.Printf("Can't get tests: %v", err)
+    slog.Error("error while getting tests", "error", err)
     return nil
   }
   settings := make([]detector.Settings, 0, 1000)

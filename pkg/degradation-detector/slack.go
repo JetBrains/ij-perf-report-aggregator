@@ -6,7 +6,7 @@ import (
   "encoding/json"
   "fmt"
   "github.com/cenkalti/backoff/v4"
-  "log"
+  "log/slog"
   "math"
   "net/http"
   "net/url"
@@ -38,7 +38,7 @@ func SendSlackMessage(ctx context.Context, client *http.Client, degradation Degr
     }
     defer resp.Body.Close()
 
-    log.Printf("Slack message was sent to " + analysisSettings.Channel)
+    slog.Info("slack message was sent", "channel", analysisSettings.Channel)
     return nil
   }, backoff.NewExponentialBackOff())
   return err

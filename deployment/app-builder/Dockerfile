@@ -1,6 +1,6 @@
 FROM buildpack-deps:curl
 
-ENV NODE_VERSION 20.6.1
+ENV NODE_VERSION 20.9.0
 ENV GOLANG_VERSION 1.21.4
 
 RUN cd /usr/local/bin && \
@@ -9,7 +9,7 @@ RUN cd /usr/local/bin && \
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
-  corepack enable && corepack prepare pnpm@8.7.5 --activate
+  corepack enable && corepack prepare pnpm@8.10.5 --activate
 
 ENV GOPATH /go
 

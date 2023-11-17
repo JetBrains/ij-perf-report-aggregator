@@ -26,9 +26,9 @@ import DashboardPage from "../common/DashboardPage.vue"
 const intellijSpecific = "intellij_clone_specific_commit/gitLogIndexing"
 const intellijSpecificSql = "intellij_clone_specific_commit/gitLogIndexing-sql"
 
-const showFileHistoryEditorPhm = "intellij_clone_specific_commit/showFileHistory/EditorImpl-phm"
-const showFileHistoryEditorSql = "intellij_clone_specific_commit/showFileHistory/EditorImpl-sql"
-const showFileHistoryEditorNoIndex = "intellij_clone_specific_commit/showFileHistory/EditorImpl-noindex"
+const showFileHistoryEditorPhm = "intellij_clone_specific_commit/EditorImpl-phm"
+const showFileHistoryEditorSql = "intellij_clone_specific_commit/EditorImpl-sql"
+const showFileHistoryEditorNoIndex = "intellij_clone_specific_commit/EditorImpl-noindex"
 
 const vcsLogFilterPhm = "intellij_clone_specific_commit/filterVcsLogTab-phm"
 const vcsLogFilterSql = "intellij_clone_specific_commit/filterVcsLogTab-sql"

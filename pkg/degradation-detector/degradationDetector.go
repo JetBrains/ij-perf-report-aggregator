@@ -1,7 +1,7 @@
 package degradation_detector
 
 import (
-  "fmt"
+  "log/slog"
   "math"
 )
 
@@ -29,12 +29,12 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
   changePoints := GetChangePointIndexes(values, 1)
   segments := getSegmentsBetweenChangePoints(changePoints, values)
   if len(segments) < 2 {
-    fmt.Println("No significant change points were detected.")
+    slog.Info("no significant change points were detected")
     return degradations
   }
   lastSegment := segments[len(segments)-1]
   if len(lastSegment) < minimumSegmentLength {
-    fmt.Println("Last segment is too short.")
+    slog.Info("last segment is too short")
     return degradations
   }
 

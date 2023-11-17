@@ -49,16 +49,17 @@ func PostDegradations(ctx context.Context, client *http.Client, backendURL strin
       }
       defer resp.Body.Close()
 
-      if resp.StatusCode != http.StatusOK {
-        insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to post Degradation: %v", resp.Status)}
-        return
-      }
-
       // the accident already exists
       if resp.StatusCode == http.StatusConflict {
         insertionResults[i] = InsertionResults{}
         return
       }
+
+      if resp.StatusCode != http.StatusOK {
+        insertionResults[i] = InsertionResults{Error: fmt.Errorf("failed to post Degradation: %v", resp.Status)}
+        return
+      }
+
       insertionResults[i] = InsertionResults{degradation, true, nil}
     }(degradation, i)
   }

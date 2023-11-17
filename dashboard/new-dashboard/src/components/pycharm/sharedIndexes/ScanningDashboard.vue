@@ -33,6 +33,34 @@
         :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (Nova)"
+        :measure="['scanningTimeWithoutPauses']"
+        :projects="['nova-with-project-sharedIndexes', 'nova-with-bundled-sharedIndexes', 'nova-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (PyTorch)"
+        :measure="['scanningTimeWithoutPauses']"
+        :projects="['pytorch-with-project-sharedIndexes', 'pytorch-with-bundled-sharedIndexes', 'pytorch-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (BoTo3)"
+        :measure="['scanningTimeWithoutPauses']"
+        :projects="['boto-with-project-sharedIndexes', 'boto-with-bundled-sharedIndexes', 'boto-without-sharedIndexes']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning (Matplotlib)"
+        :measure="['scanningTimeWithoutPauses']"
+        :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

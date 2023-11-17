@@ -61,13 +61,6 @@
         :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Dumb Mode Time (Matplotlib)"
-        :measure="['indexingTimeWithoutPauses']"
-        :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
-      />
-    </section>
   </DashboardPage>
 </template>
 

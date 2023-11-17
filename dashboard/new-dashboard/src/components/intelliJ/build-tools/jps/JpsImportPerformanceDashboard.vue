@@ -95,6 +95,9 @@ const metricsDeclaration = [
   "workspaceModel.moduleManagerBridge.newModule.ms",
   "workspaceModel.moduleManagerBridge.set.unloadedModules.ms",
 
+  "workspaceModel.entityStorageSnapshotImpl.instances.count",
+
+  "workspaceModel.mutableEntityStorage.instances.count",
   "workspaceModel.mutableEntityStorage.add.diff.ms",
   "workspaceModel.mutableEntityStorage.add.entity.ms",
   "workspaceModel.mutableEntityStorage.collect.changes.ms",
@@ -110,6 +113,19 @@ const metricsDeclaration = [
   "workspaceModel.mutableEntityStorage.replace.by.source.ms",
   "workspaceModel.mutableEntityStorage.resolve.ms",
   "workspaceModel.mutableEntityStorage.to.snapshot.ms",
+
+  "workspaceModel.workspaceFileIndexData.instances.count",
+  "workspaceModel.workspaceFileIndexData.init.ms",
+  "workspaceModel.workspaceFileIndexData.getFileInfo.ms",
+  "workspaceModel.workspaceFileIndexData.visitFileSets.ms",
+  "workspaceModel.workspaceFileIndexData.processFileSets.ms",
+  "workspaceModel.workspaceFileIndexData.markDirty.ms",
+  "workspaceModel.workspaceFileIndexData.updateDirtyEntities.ms",
+  "workspaceModel.workspaceFileIndexData.onEntitiesChanged.ms",
+  "workspaceModel.workspaceFileIndexData.getPackageName.ms",
+  "workspaceModel.workspaceFileIndexData.getDirectoriesByPackageName.ms",
+
+  "workspaceModel.workspaceFileIndexContributor.registerFileSets.ms",
 
   "workspaceModel.orphan.listener.update.ms",
   "workspaceModel.pre.handlers.ms",

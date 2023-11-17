@@ -154,7 +154,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
 
 export class PredefinedMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
   constructor(
-    private readonly measures: string[],
+    private readonly measures: Ref<string[]> = shallowRef([]),
     readonly skipZeroValues: Ref<boolean> = shallowRef(true),
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
@@ -167,9 +167,12 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-    configureQuery(this.measures, query, configuration, this.skipZeroValues.value)
+    if (this.measures.value.length === 0) {
+      return false
+    }
+    configureQuery(this.measures.value, query, configuration, this.skipZeroValues.value)
     configuration.addChartConfigurator(this)
-    configuration.measures = this.measures
+    configuration.measures = this.measures.value
     return true
   }
 

@@ -2,7 +2,7 @@
   <LineChart
     :title="props.label"
     :value-unit="props.valueUnit"
-    :measures="Array.isArray(measure) ? measure : [measure]"
+    :measures="measureArray"
     :configurators="configurators"
     :skip-zero-values="false"
     :legend-formatter="props.legendFormatter"
@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue"
+import { computed, Ref, watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
@@ -38,6 +38,10 @@ const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
+
+const measureArray: Ref<string[]> = computed(() => {
+  return Array.isArray(props.measure) ? props.measure : [props.measure]
+})
 
 watch(
   () => [props.projects, props.aliases],

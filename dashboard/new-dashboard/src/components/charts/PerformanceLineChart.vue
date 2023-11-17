@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
 import { CallbackDataParams } from "echarts/types/src/util/types"
-import { inject, onMounted, onUnmounted, shallowRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -74,25 +74,29 @@ let chartManager: PerformanceChartManager | null
 let chartVm: PerformanceLineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
+const measures: Ref<string[]> = computed(() => {
+  return props.measures
+})
+
+const measureConfigurator = new PredefinedMeasureConfigurator(
+  measures,
+  skipZeroValues,
+  props.chartType,
+  props.valueUnit,
+  {
+    symbolSize: 7,
+    showSymbol: false,
+  },
+  accidentsConfigurator
+)
+
+const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null))
+
 function createChart() {
   if (chartVm != null) {
     return
   }
   if (chartElement.value) {
-    const measureConfigurator = new PredefinedMeasureConfigurator(
-      props.measures,
-      skipZeroValues,
-      props.chartType,
-      props.valueUnit,
-      {
-        symbolSize: 7,
-        showSymbol: false,
-      },
-      accidentsConfigurator
-    )
-    const dataQueryExecutor = new DataQueryExecutor(
-      [...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null)
-    )
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new PerformanceChartManager(chartElement.value, container.value)

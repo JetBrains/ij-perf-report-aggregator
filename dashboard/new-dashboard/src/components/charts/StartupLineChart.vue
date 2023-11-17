@@ -68,7 +68,7 @@ const providedConfigurators = injectOrError(configuratorListKey)
 let unsubscribe: (() => void) | null = null
 
 watchEffect(function () {
-  const configurators = [...providedConfigurators, new PredefinedMeasureConfigurator(props.measures, skipZeroValues, props.chartType, props.valueUnit, {}, null)]
+  const configurators = [...providedConfigurators, new PredefinedMeasureConfigurator(toRef(props.measures), skipZeroValues, props.chartType, props.valueUnit, {}, null)]
   const infoFields = chartToolTipManager.reportInfoProvider?.infoFields ?? []
   if (infoFields.length > 0) {
     configurators.push({

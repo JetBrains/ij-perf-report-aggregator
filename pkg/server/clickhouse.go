@@ -10,6 +10,7 @@ import (
   "github.com/valyala/bytebufferpool"
   "net/http"
   "strings"
+  "sync"
 )
 
 func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
@@ -39,6 +40,12 @@ func toJSONBuffer(data interface{}) (*bytebufferpool.ByteBuffer, error) {
   }
 
   return buffer, nil
+}
+
+type responseItem struct {
+  Project     string
+  MeasureName string
+  Median      float64
 }
 
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
@@ -86,32 +93,55 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
     return nil, false, err
   }
 
-  type responseItem struct {
-    Project     string
-    MeasureName string
-    Median      float64
-  }
-
-  response := make([]responseItem, len(queryResults))
-  for i, result := range queryResults {
-    indexes := degradation_detector.GetChangePointIndexes(result.MeasureValues, 1)
-    var valuesAfterLastChangePoint []int
-    if len(indexes) == 0 {
-      valuesAfterLastChangePoint = result.MeasureValues
-    } else {
-      lastIndex := indexes[len(indexes)-1]
-      valuesAfterLastChangePoint = result.MeasureValues[lastIndex:]
-    }
-    median := degradation_detector.CalculateMedian(valuesAfterLastChangePoint)
-    response[i] = responseItem{
-      Project:     result.Project,
-      MeasureName: result.MeasureName,
-      Median:      median,
-    }
-  }
-
+  response := getMedianValues(queryResults)
   buffer, err := toJSONBuffer(response)
   return buffer, true, err
+}
+
+func getMedianValues(queryResults []struct {
+  Project       string
+  MeasureName   string
+  MeasureValues []int
+}) []responseItem {
+
+  responseChan := make(chan responseItem, len(queryResults))
+  var wg sync.WaitGroup
+  for _, result := range queryResults {
+    wg.Add(1)
+    go func(result struct {
+      Project       string
+      MeasureName   string
+      MeasureValues []int
+    }) {
+      defer wg.Done()
+      indexes := degradation_detector.GetChangePointIndexes(result.MeasureValues, 1)
+      var valuesAfterLastChangePoint []int
+      if len(indexes) == 0 {
+        valuesAfterLastChangePoint = result.MeasureValues
+      } else {
+        lastIndex := indexes[len(indexes)-1]
+        valuesAfterLastChangePoint = result.MeasureValues[lastIndex:]
+      }
+      median := degradation_detector.CalculateMedian(valuesAfterLastChangePoint)
+
+      responseChan <- responseItem{
+        Project:     result.Project,
+        MeasureName: result.MeasureName,
+        Median:      median,
+      }
+    }(result)
+  }
+
+  go func() {
+    wg.Wait()
+    close(responseChan)
+  }()
+
+  response := make([]responseItem, 0, len(queryResults))
+  for item := range responseChan {
+    response = append(response, item)
+  }
+  return response
 }
 
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {

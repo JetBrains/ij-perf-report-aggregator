@@ -223,7 +223,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       value = v.Get("value")
     }
 
-    if !isValidFilterFieldName(t.Field) {
+    if !isValidFilterFieldName(t.Field) && len(t.Sql) == 0 {
       return http_error.NewHttpError(400, fmt.Sprintf("%s is not a valid filter field name", t.Field))
     }
 

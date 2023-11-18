@@ -9,11 +9,13 @@
     <section>
       <div>
         <GroupProjectsChart
-          v-for="project in projects"
-          :key="'Completion (' + project.pretty_name + ')'"
-          :label="'Completion (' + project.pretty_name + ')'"
+          v-for="test_project in projects"
+          :key="'Completion (' + test_project.pretty_name + ')'"
+          :label="'Completion (' + test_project.pretty_name + ')'"
           measure="completion"
-          :projects="['go-'+ project.real_name +'-bundled-sharedIndexes', 'go-'+ project.real_name +'-with-generated-sharedIndexes', 'go-'+ project.real_name +'-without-sharedIndexes']"
+          :projects="['go-'+ test_project.real_name +'-bundled-sharedIndexes',
+          'go-'+ test_project.real_name +'-with-generated-sharedIndexes',
+          'go-'+ test_project.real_name +'-without-sharedIndexes']"
         />
       </div>
     </section>
@@ -23,11 +25,12 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-interface project {
+
+interface test_project {
   pretty_name: string
   real_name: string
 }
-const projects: project[] = [
+const projects: test_project[] = [
   {
     pretty_name: "Empty Project",
     real_name: "empty-project"

@@ -14,9 +14,9 @@
           :label="'Dumb Mode Time (' + test_project.pretty_name + ')'"
           measure="dumbModeTimeWithPauses"
           :projects="[
-            'go-' + test_project.real_name + '-bundled-sharedIndexes',
-            'go-' + test_project.real_name + '-with-generated-sharedIndexes',
-            'go-' + test_project.real_name + '-without-sharedIndexes',
+            test_project.real_name + '-bundled-sharedIndexes',
+            test_project.real_name + '-with-generated-sharedIndexes',
+            test_project.real_name + '-without-sharedIndexes',
           ]"
         />
       </div>
@@ -36,15 +36,15 @@ interface test_project {
 const projects: test_project[] = [
   {
     pretty_name: "Empty Project",
-    real_name: "empty-project",
+    real_name: "go-empty-project",
   },
   {
     pretty_name: "Terraform",
-    real_name: "terraform",
+    real_name: "go-terraform",
   },
   {
     pretty_name: "Kratos",
-    real_name: "kratos",
+    real_name: "go-kratos",
   },
   {
     pretty_name: "Kubernetes",

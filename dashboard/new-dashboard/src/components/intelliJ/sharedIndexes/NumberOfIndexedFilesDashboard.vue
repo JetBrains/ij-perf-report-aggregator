@@ -12,7 +12,7 @@
           v-for="test_project in projects"
           :key="'Number of indexed files (' + test_project.pretty_name + ')'"
           :label="'Number of indexed files (' + test_project.pretty_name + ')'"
-          measure="numberOfIndexedFiles"
+          measure="numberOfIndexedFilesWritingIndexValue"
           :projects="[
             test_project.real_name + '-downloaded-sharedIndexes',
             test_project.real_name + '-with-java-sharedIndexes',

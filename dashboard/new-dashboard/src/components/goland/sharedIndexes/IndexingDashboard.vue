@@ -4,34 +4,22 @@
     table="goland"
     persistent-id="go_indexing_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :project="projects"
   >
     <section>
-      <GroupProjectsChart
-        label="Indexing (Empty Project)"
-        :measure="['indexingTimeWithoutPauses']"
-        :projects="['go-empty-project-bundled-sharedIndexes', 'go-empty-project-with-generated-sharedIndexes', 'go-empty-project-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing (Terraform)"
-        :measure="['indexingTimeWithoutPauses']"
-        :projects="['go-terraform-without-sharedIndexes', 'go-terraform-bundled-sharedIndexes', 'go-terraform-with-generated-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Indexing (Kratos)"
-        :measure="['indexingTimeWithoutPauses']"
-        :projects="['go-kratos-without-sharedIndexes', 'go-kratos-bundled-sharedIndexes', 'go-kratos-with-generated-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Dumb Mode Time (Kubernetes)"
-        :measure="['indexingTimeWithoutPauses']"
-        :projects="['kubernetes-without-sharedIndexes', 'kubernetes-bundled-sharedIndexes', 'kubernetes-with-generated-sharedIndexes']"
-      />
+      <div>
+        <GroupProjectsChart
+          v-for="test_project in projects"
+          :key="'Indexing time (' + test_project.pretty_name + ')'"
+          :label="'Indexing time (' + test_project.pretty_name + ')'"
+          :measure="['indexingTimeWithoutPauses']"
+          :projects="[
+            'go-' + test_project.real_name + '-bundled-sharedIndexes',
+            'go-' + test_project.real_name + '-with-generated-sharedIndexes',
+            'go-' + test_project.real_name + '-without-sharedIndexes',
+          ]"
+        />
+      </div>
     </section>
   </DashboardPage>
 </template>
@@ -39,4 +27,28 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
+
+interface test_project {
+  pretty_name: string
+  real_name: string
+}
+
+const projects: test_project[] = [
+  {
+    pretty_name: "Empty Project",
+    real_name: "empty-project",
+  },
+  {
+    pretty_name: "Terraform",
+    real_name: "terraform",
+  },
+  {
+    pretty_name: "Kratos",
+    real_name: "kratos",
+  },
+  {
+    pretty_name: "Kubernetes",
+    real_name: "kubernetes",
+  },
+]
 </script>

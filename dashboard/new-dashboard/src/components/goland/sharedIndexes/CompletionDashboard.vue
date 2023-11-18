@@ -13,9 +13,11 @@
           :key="'Completion (' + test_project.pretty_name + ')'"
           :label="'Completion (' + test_project.pretty_name + ')'"
           measure="completion"
-          :projects="['go-'+ test_project.real_name +'-bundled-sharedIndexes',
-          'go-'+ test_project.real_name +'-with-generated-sharedIndexes',
-          'go-'+ test_project.real_name +'-without-sharedIndexes']"
+          :projects="[
+            'go-' + test_project.real_name + '-bundled-sharedIndexes',
+            'go-' + test_project.real_name + '-with-generated-sharedIndexes',
+            'go-' + test_project.real_name + '-without-sharedIndexes',
+          ]"
         />
       </div>
     </section>
@@ -30,19 +32,19 @@ interface test_project {
   pretty_name: string
   real_name: string
 }
+
 const projects: test_project[] = [
   {
     pretty_name: "Empty Project",
-    real_name: "empty-project"
+    real_name: "empty-project",
   },
   {
     pretty_name: "Terraform",
-    real_name: "terraform"
+    real_name: "terraform",
   },
   {
     pretty_name: "Kratos",
-    real_name: "kratos"
-  }
+    real_name: "kratos",
+  },
 ]
-
 </script>

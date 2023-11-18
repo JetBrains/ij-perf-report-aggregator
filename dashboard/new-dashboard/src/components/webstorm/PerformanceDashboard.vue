@@ -47,7 +47,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['eslint-plugin-jest/completion/types']"
+          :projects="['eslint-plugin-jest/completion/types', 'novu/completion/everything']"
         />
       </div>
 
@@ -55,7 +55,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts']"
+          :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts', 'novu/localInspection/init.ts']"
         />
       </div>
 
@@ -63,7 +63,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typing']"
+          :projects="['eslint-plugin-jest/typing', 'novu/typing']"
         />
       </div>
     </section>
@@ -73,14 +73,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing']"
         />
       </div>
     </section>
@@ -261,6 +261,18 @@
           label="Scanning"
           measure="scanningTimeWithoutPauses"
           :projects="['vue-template/indexing', 'vue3-admin-vite/indexing']"
+        />
+      </div>
+    </section>
+
+    <Divider title="CSS" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Completion"
+          measure="completion"
+          :projects="['WEB_62578_CSS/completion']"
         />
       </div>
     </section>

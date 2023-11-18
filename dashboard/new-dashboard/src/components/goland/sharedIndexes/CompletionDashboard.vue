@@ -24,8 +24,8 @@
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
 interface project {
-  pretty_name: String
-  real_name: String
+  pretty_name: string
+  real_name: string
 }
 const projects: project[] = [
   {

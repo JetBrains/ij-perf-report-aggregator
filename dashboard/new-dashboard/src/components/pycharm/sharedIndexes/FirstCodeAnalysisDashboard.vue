@@ -4,62 +4,22 @@
     table="pycharm"
     persistent-id="py_code_analysis_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :project="projects"
   >
     <section>
-      <GroupProjectsChart
-        label="First Code Analysis (Django)"
-        measure="firstCodeAnalysis"
-        :projects="['django-with-project-sharedIndexes', 'django-with-bundled-sharedIndexes', 'django-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="First Code Analysis (Empty Project)"
-        measure="firstCodeAnalysis"
-        :projects="['empty project-with-project-sharedIndexes', 'empty project-with-bundled-sharedIndexes', 'empty project-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="First Code Analysis (Pandas)"
-        measure="firstCodeAnalysis"
-        :projects="['pandas-with-project-sharedIndexes', 'pandas-with-bundled-sharedIndexes', 'pandas-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="First Code Analysis (Keras)"
-        measure="firstCodeAnalysis"
-        :projects="['keras-with-project-sharedIndexes', 'keras-with-bundled-sharedIndexes', 'keras-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning (Nova)"
-        measure="firstCodeAnalysis"
-        :projects="['nova-with-project-sharedIndexes', 'nova-with-bundled-sharedIndexes', 'nova-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning (PyTorch)"
-        measure="firstCodeAnalysis"
-        :projects="['pytorch-with-project-sharedIndexes', 'pytorch-with-bundled-sharedIndexes', 'pytorch-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning (BoTo3)"
-        measure="firstCodeAnalysis"
-        :projects="['boto-with-project-sharedIndexes', 'boto-with-bundled-sharedIndexes', 'boto-without-sharedIndexes']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Scanning (Matplotlib)"
-        measure="firstCodeAnalysis"
-        :projects="['matplotlib-with-project-sharedIndexes', 'matplotlib-with-bundled-sharedIndexes', 'matplotlib-without-sharedIndexes']"
-      />
+      <div>
+        <GroupProjectsChart
+          v-for="test_project in projects"
+          :key="'First Code Analysis (' + test_project.pretty_name + ')'"
+          :label="'First Code Analysis (' + test_project.pretty_name + ')'"
+          measure="firstCodeAnalysis"
+          :projects="[
+            test_project.real_name + '-with-bundled-sharedIndexes',
+            test_project.real_name + '-with-project-sharedIndexes',
+            test_project.real_name + '-without-sharedIndexes',
+          ]"
+        />
+      </div>
     </section>
   </DashboardPage>
 </template>
@@ -67,4 +27,44 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
+
+interface test_project {
+  pretty_name: string
+  real_name: string
+}
+
+const projects: test_project[] = [
+  {
+    pretty_name: "Empty Project",
+    real_name: "empty project",
+  },
+  {
+    pretty_name: "Django",
+    real_name: "django",
+  },
+  {
+    pretty_name: "Pandas",
+    real_name: "pandas",
+  },
+  {
+    pretty_name: "Keras",
+    real_name: "keras",
+  },
+  {
+    pretty_name: "Nova",
+    real_name: "nova",
+  },
+  {
+    pretty_name: "PyTorch",
+    real_name: "pytorch",
+  },
+  {
+    pretty_name: "BoTo3",
+    real_name: "boto",
+  },
+  {
+    pretty_name: "Matplotlib",
+    real_name: "matplotlib",
+  },
+]
 </script>

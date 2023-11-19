@@ -33,10 +33,10 @@ func (rcm *ResponseCacheManager) compressData(value []byte) ([]byte, error) {
 
   _, err = writer.Write(value)
   if err != nil {
-    util.Close(writer, rcm.logger)
+    util.Close(writer)
     return nil, err
   }
 
-  util.Close(writer, rcm.logger)
+  util.Close(writer)
   return CopyBuffer(buffer), nil
 }

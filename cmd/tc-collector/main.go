@@ -6,7 +6,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
   e "github.com/develar/errors"
-  "go.uber.org/zap"
+  "log/slog"
   "net/http"
   "os"
   "strings"
@@ -18,14 +18,9 @@ import (
 // 2. You also need to provide TC_TOKEN env variable which can be generated at: https://buildserver.labs.intellij.net/profile.html?item=accessTokens#
 // 3. Clickhouse DB should be up and running (see readme.md "Adding a New Database" section)
 func main() {
-  logger := util.CreateLogger()
-  defer func() {
-    _ = logger.Sync()
-  }()
-
-  err := configureCollectFromTeamCity(logger)
+  err := configureCollectFromTeamCity()
   if err != nil {
-    logger.Fatal("cannot collect", zap.Error(err))
+    slog.Error("cannot collect", "err", err)
     os.Exit(78)
   }
 }
@@ -41,7 +36,7 @@ func hasOSSuffix(osList []string, configuration string) bool {
 
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
-func configureCollectFromTeamCity(logger *zap.Logger) error {
+func configureCollectFromTeamCity() error {
   clickHouseUrl := util.GetEnv("CLICKHOUSE", "127.0.0.1:9000")
   sinceDate := flag.String("since", "", "The date to force collecting since")
   flag.Parse()
@@ -116,12 +111,11 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
         collector := &Collector{
           serverUrl:  config.TeamcityUrl + "/app/rest",
           httpClient: httpClient,
-          logger:     logger,
         }
         configurations, err := collector.getSnapshots(taskContext, configuration)
-        logger.Info("get snapshots", zap.Strings("configurations", configurations))
+        slog.Info("get snapshots", "configurations", configurations)
         if err != nil {
-          logger.Warn("cannot get snapshots", zap.Error(err))
+          slog.Warn("cannot get snapshots", "err", err)
         }
         buildConfigurationIds = append(buildConfigurationIds, configurations...)
       }
@@ -134,7 +128,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
       }
     }
 
-    err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient, logger)
+    err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient)
     if err != nil {
       return err
     }
@@ -142,7 +136,7 @@ func configureCollectFromTeamCity(logger *zap.Logger) error {
 
   natsUrl := os.Getenv("NATS")
   if len(natsUrl) > 0 {
-    err = doNotifyServer(natsUrl, logger)
+    err = doNotifyServer(natsUrl)
     if err != nil {
       return err
     }

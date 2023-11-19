@@ -2,10 +2,10 @@ package analyzer
 
 import (
   "github.com/valyala/fastjson"
-  "go.uber.org/zap"
+  "log/slog"
 )
 
-func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
+func analyzePerfReport(runResult *RunResult, data *fastjson.Value) error {
   measureNames := make([]string, 0)
   measureTypes := make([]string, 0)
   measureValues := make([]int32, 0)
@@ -26,9 +26,7 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
     floatValue := value.GetFloat64()
     intValue := int32(floatValue)
     if floatValue != float64(intValue) {
-      logger.Warn("int expected, but got float, setting metric value to zero",
-        zap.String("measureName", measureName), zap.Int32("intValue", intValue), zap.Float64("floatValue", floatValue),
-        zap.String("reportURL", runResult.ReportFileName))
+      slog.Warn("int expected, but got float, setting metric value to zero", "measureName", measureName, "intValue", intValue, "floatValue", floatValue, "reportURL", runResult.ReportFileName)
       intValue = 0
     }
 
@@ -38,7 +36,7 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value, logger *zap.L
   }
 
   if len(measureNames) == 0 {
-    logger.Warn("invalid report - no measures, report will be skipped", zap.Int("id", runResult.TcBuildId))
+    slog.Warn("invalid report - no measures, report will be skipped", "id", runResult.TcBuildId)
     runResult.Report = nil
     return nil
   }

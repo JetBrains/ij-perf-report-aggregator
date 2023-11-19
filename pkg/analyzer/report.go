@@ -4,15 +4,15 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/valyala/fastjson"
-  "go.uber.org/zap"
+  "log/slog"
   "time"
 )
 
-var structParsers fastjson.ParserPool
+var parserPool fastjson.ParserPool
 
-func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.Logger) error {
-  parser := structParsers.Get()
-  defer structParsers.Put(parser)
+func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
+  parser := parserPool.Get()
+  defer parserPool.Put(parser)
 
   report, err := parser.ParseBytes(runResult.RawReport)
   if err != nil {
@@ -20,7 +20,7 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
     if endIndex > 10000 {
       endIndex = 10000
     }
-    logger.Warn("invalid report - corrupted JSON, report will be skipped", zap.Error(err), zap.String("file", runResult.ReportFileName), zap.ByteString("rawReport", runResult.RawReport[:endIndex]))
+    slog.Warn("invalid report. corrupted JSON, report will be skipped", "error", err, "file", runResult.ReportFileName, "rawReport", runResult.RawReport[:endIndex])
     runResult.Report = nil
     return nil
   }
@@ -44,7 +44,7 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration, logger *zap.
     runResult.Report.BuildDate = string(report.GetStringBytes("buildDate"))
   }
 
-  err = config.ReportReader(runResult, report, logger)
+  err = config.ReportReader(runResult, report)
   if err != nil {
     return nil
   }

@@ -2,11 +2,10 @@ package analyzer
 
 import (
   "github.com/valyala/fastjson"
-  "go.uber.org/zap"
   "strings"
 )
 
-type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error
+type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value) error
 type InsertStatementWriter func(sb *strings.Builder)
 
 type DatabaseConfiguration struct {

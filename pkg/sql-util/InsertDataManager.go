@@ -5,12 +5,10 @@ import (
   "errors"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   e "github.com/develar/errors"
-  "go.uber.org/zap"
 )
 
 type InsertDataManager struct {
   InsertManager *BatchInsertManager
-  Logger        *zap.Logger
 }
 
 func (t *InsertDataManager) CheckExists(row driver.Row) (bool, error) {

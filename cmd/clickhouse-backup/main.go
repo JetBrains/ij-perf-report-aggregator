@@ -2,7 +2,6 @@ package main
 
 import (
   "context"
-  "fmt"
   "github.com/Altinity/clickhouse-backup/pkg/backup"
   "github.com/Altinity/clickhouse-backup/pkg/status"
   clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
@@ -10,24 +9,20 @@ import (
   "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
-  "go.uber.org/zap"
+  "log/slog"
   "os"
   "time"
 )
 
 func main() {
-  logger := util.CreateLogger()
-  defer func() {
-    _ = logger.Sync()
-  }()
-
-  err := start("nats://"+env.Get("NATS", "nats:4222"), logger)
+  err := start("nats://" + env.Get("NATS", "nats:4222"))
   if err != nil {
-    logger.Fatal(fmt.Sprintf("%+v", err))
+    slog.Error("cannot start backup", "err", err)
+    os.Exit(1)
   }
 }
 
-func start(natsUrl string, logger *zap.Logger) error {
+func start(natsUrl string) error {
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
 
@@ -38,11 +33,11 @@ func start(natsUrl string, logger *zap.Logger) error {
   backuper := clickhousebackup.CreateBackuper()
 
   if env.GetBool("DO_BACKUP") {
-    err := executeBackup(taskContext, backuper, logger)
+    err := executeBackup(taskContext, backuper)
     return err
   }
 
-  logger.Info("started", zap.String("nats", natsUrl))
+  slog.Info("started", "nats", natsUrl)
   nc, err := nats.Connect(natsUrl)
   if err != nil {
     return errors.WithStack(err)
@@ -59,7 +54,7 @@ func start(natsUrl string, logger *zap.Logger) error {
     if err != nil {
       contextError := taskContext.Err()
       if contextError != nil {
-        logger.Info("cancelled", zap.NamedError("reason", contextError))
+        slog.Info("cancelled", "reason", contextError)
         return nil
       }
       return errors.WithStack(contextError)
@@ -71,14 +66,14 @@ func start(natsUrl string, logger *zap.Logger) error {
 
     if time.Since(lastBackupTime) < 24*time.Hour {
       // do not create backups too often
-      logger.Info("backup request skipped", zap.String("reason", "time threshold"), zap.Time("lastBackupTime", lastBackupTime))
+      slog.Info("backup request skipped", "reason", "time threshold", "lastBackupTime", lastBackupTime)
       continue
     }
 
-    logger.Info("backup requested")
-    err = executeBackup(taskContext, backuper, logger)
+    slog.Info("backup requested")
+    err = executeBackup(taskContext, backuper)
     if err != nil {
-      logger.Error("cannot backup", zap.Error(err))
+      slog.Error("cannot backup", "error", err)
     } else {
       lastBackupTime = time.Now()
     }
@@ -87,9 +82,9 @@ func start(natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func executeBackup(taskContext context.Context, backuper *backup.Backuper, logger *zap.Logger) error {
+func executeBackup(taskContext context.Context, backuper *backup.Backuper) error {
   backupName := backup.NewBackupName()
-  logger = logger.With(zap.String("backup", backupName))
+  logger := slog.With("backup", backupName)
 
   err := backuper.CreateBackup(backupName, "", nil, false, false, false, false, "unknown", status.NotFromAPI)
   if err != nil {

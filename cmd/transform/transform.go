@@ -2,7 +2,6 @@ package main
 
 import (
   "context"
-  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
@@ -10,8 +9,8 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/develar/errors"
   "go.deanishe.net/env"
-  "go.uber.org/zap"
-  "log"
+  "log/slog"
+  "os"
   "strings"
   "time"
 )
@@ -21,19 +20,6 @@ import (
 2. change `migrate/report.sql` as needed and execute.
 */
 func main() {
-  config := zap.NewDevelopmentConfig()
-  config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-  config.DisableCaller = true
-  config.DisableStacktrace = true
-  logger, err := config.Build()
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  defer func() {
-    _ = logger.Sync()
-  }()
-
   db := env.Get("DB")
   table := env.Get("TABLE")
   split := strings.Split(env.Get("DB"), "_")
@@ -41,11 +27,12 @@ func main() {
     table = split[1]
   }
   if db == "" || table == "" {
-    logger.Fatal("Missing db or table, don't forget to set env variables DB and/or TABLE")
+    slog.Error("Missing db or table, don't forget to set env variables DB and/or TABLE")
+    os.Exit(1)
   }
-  err = transform("localhost:9000", db, table, logger)
+  err := transform("localhost:9000", db, table)
   if err != nil {
-    logger.Fatal(fmt.Sprintf("%+v", err))
+    slog.Error("trasnform failed", "error", err)
   }
 }
 
@@ -78,8 +65,8 @@ type ReportRow struct {
 // set insertWorkerCount to 1 if not enough memory
 const insertWorkerCount = 4
 
-func transform(clickHouseUrl string, idName string, tableName string, logger *zap.Logger) error {
-  logger.Info("start transforming", zap.String("db", idName))
+func transform(clickHouseUrl string, idName string, tableName string) error {
+  slog.Info("start transforming", "db", idName)
 
   split := strings.Split(idName, "_")
   dbName := idName
@@ -106,7 +93,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
     return errors.WithStack(err)
   }
 
-  defer util.Close(db, logger)
+  defer util.Close(db)
 
   taskContext, cancel := util.CreateCommandContext()
   defer cancel()
@@ -114,7 +101,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   config := analyzer.GetAnalyzer(idName)
 
   config.TableName = tableName + "2"
-  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, config, tableName+"2", insertWorkerCount, logger)
+  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, config, tableName+"2", insertWorkerCount)
   if err != nil {
     return err
   }
@@ -132,7 +119,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
     return errors.WithStack(err)
   }
 
-  logger.Info("time range", zap.Time("start", minTime), zap.Time("end", maxTime))
+  slog.Info("time range", "start", minTime, "end", maxTime)
 
   // round to the start of the month
   minTime = time.Date(minTime.Year(), minTime.Month(), 1, 0, 0, 0, 0, minTime.Location())
@@ -146,7 +133,7 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
   for current := minTime; current.Before(maxTime); {
     // 1 month
     next := current.AddDate(0, 1, 0)
-    err = process(taskContext, db, config, current, next, insertReportManager, tableName, logger)
+    err = process(taskContext, db, config, current, next, insertReportManager, tableName)
     if err != nil {
       return err
     }
@@ -163,12 +150,12 @@ func transform(clickHouseUrl string, idName string, tableName string, logger *za
     return err
   }
 
-  logger.Info("transforming finished")
+  slog.Info("transforming finished")
   return nil
 }
 
-func process(taskContext context.Context, db driver.Conn, config analyzer.DatabaseConfiguration, startTime time.Time, endTime time.Time, insertReportManager *analyzer.InsertReportManager, tableName string, logger *zap.Logger, ) error {
-  logger.Info("process", zap.Time("start", startTime), zap.Time("end", endTime))
+func process(taskContext context.Context, db driver.Conn, config analyzer.DatabaseConfiguration, startTime time.Time, endTime time.Time, insertReportManager *analyzer.InsertReportManager, tableName string) error {
+  slog.Info("process", "start", startTime, "end", endTime)
   // don't forget to update order clause if differs - better to insert data in an expected order
 
   var err error
@@ -205,7 +192,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
     return errors.WithStack(err)
   }
 
-  defer util.Close(rows, logger)
+  defer util.Close(rows)
 
   var row ReportRow
 rowLoop:
@@ -229,7 +216,7 @@ rowLoop:
       runResult.BuildC3 = int(row.BuildC3)
     }
     if config.HasRawReport {
-      err = analyzer.ReadReport(runResult, config, logger)
+      err = analyzer.ReadReport(runResult, config)
       if err != nil {
         return err
       }
@@ -251,7 +238,7 @@ rowLoop:
       runResult.TcBuildType = row.TcBuildType
     }
 
-    err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, logger)
+    err = insertReportManager.WriteMetrics(row.Product, runResult, row.Branch, row.Project, slog.Default())
     if err != nil {
       return err
     }

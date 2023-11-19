@@ -3,22 +3,21 @@ package util
 import (
   "context"
   "errors"
-  "go.uber.org/zap"
   "io"
-  "log"
+  "log/slog"
   "os"
   "os/signal"
   "syscall"
 )
 
-func Close(c io.Closer, log *zap.Logger) {
+func Close(c io.Closer) {
   err := c.Close()
   if err != nil && !errors.Is(err, os.ErrClosed) && errors.Is(err, io.ErrClosedPipe) {
     var pathError *os.PathError
     if errors.As(err, &pathError) && errors.Is(pathError, os.ErrClosed) {
       return
     }
-    log.Error("cannot close", zap.Error(err))
+    slog.Error("cannot close", "error", err)
   }
 }
 
@@ -32,20 +31,6 @@ func CreateCommandContext() (context.Context, context.CancelFunc) {
     cancel()
   }()
   return taskContext, cancel
-}
-
-func CreateLogger() *zap.Logger {
-  config := zap.NewProductionConfig()
-  config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-  config.DisableCaller = true
-  config.DisableStacktrace = true
-  // https://www.outcoldsolutions.com/blog/2018-08-10-timestamps-in-container-logs/
-  config.EncoderConfig.TimeKey = ""
-  logger, err := config.Build()
-  if err != nil {
-    log.Fatal(err)
-  }
-  return logger
 }
 
 func GetEnv(name string, defaultValue string) string {

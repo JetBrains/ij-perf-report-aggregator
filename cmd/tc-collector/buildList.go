@@ -3,7 +3,6 @@ package main
 import (
   "github.com/develar/errors"
   "github.com/json-iterator/go"
-  "go.uber.org/zap"
   "io"
   "time"
 )
@@ -76,7 +75,7 @@ type Agent struct {
 }
 
 func (t *Collector) loadBuilds(url string) (*BuildList, error) {
-  t.logger.Info("request", zap.String("url", url))
+  t.logger.Info("request", "url", url)
 
   request, err := t.createRequest(t.taskContext, url)
   if err != nil {

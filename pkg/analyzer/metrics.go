@@ -4,7 +4,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/mcuadros/go-version"
-  "go.uber.org/zap"
+  "log/slog"
 )
 
 type Metric struct {
@@ -150,7 +150,7 @@ func init() {
   }
 }
 
-func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *zap.Logger) error {
+func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *slog.Logger) error {
   for _, info := range IjMetricDescriptors {
     switch info.maxValue {
     case 65535:
@@ -199,7 +199,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
 
     if metric.isRequired {
       if metric.Name != "bootstrap_d" || version.Compare(report.Version, "6", ">=") {
-        logRequiredMetricNotFound(logger, metric.Name)
+        logger.Error("metric is required, but not found, report will be skipped", "metric", metric.Name)
         return nil
       }
     }
@@ -212,7 +212,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
   }
 
   if len(notFoundMetrics) > 0 {
-    logger.Debug("metrics not found", zap.Strings("name", notFoundMetrics))
+    logger.Info("metrics not found", "name", notFoundMetrics)
   }
 
   return nil
@@ -254,8 +254,4 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
   }
 
   return nil
-}
-
-func logRequiredMetricNotFound(logger *zap.Logger, metricName string) {
-  logger.Error("metric is required, but not found, report will be skipped", zap.String("metric", metricName))
 }

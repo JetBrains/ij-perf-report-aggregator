@@ -2,18 +2,18 @@ package analyzer
 
 import (
   "github.com/valyala/fastjson"
-  "go.uber.org/zap"
+  "log/slog"
   "math"
   "path/filepath"
   "strings"
   "time"
 )
 
-func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
+func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value) error {
   values := data.GetArray("data")
 
   if len(values) == 0 {
-    logger.Warn("invalid report - no measures, report will be skipped", zap.Int("id", runResult.TcBuildId))
+    slog.Warn("invalid report - no measures, report will be skipped", "id", runResult.TcBuildId)
     runResult.Report = nil
     return nil
   }
@@ -30,7 +30,7 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value, logger *
   return nil
 }
 
-func analyzeFleetReport(runResult *RunResult, data *fastjson.Value, _ *zap.Logger) error {
+func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
   names := make([]string, 0)
   values := make([]int32, 0)
   starts := make([]int32, 0)

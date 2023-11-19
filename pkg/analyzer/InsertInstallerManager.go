@@ -5,8 +5,8 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/develar/errors"
-  "go.uber.org/zap"
   "golang.org/x/tools/container/intsets"
+  "log/slog"
   "strconv"
 )
 
@@ -17,9 +17,9 @@ type InsertInstallerManager struct {
   insertedIds intsets.Sparse
 }
 
-func NewInstallerInsertManager(insertContext context.Context, db driver.Conn, logger *zap.Logger) (*InsertInstallerManager, error) {
+func NewInstallerInsertManager(insertContext context.Context, db driver.Conn) (*InsertInstallerManager, error) {
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBulkInsertManager(insertContext, db, "insert into installer", 1, logger.Named("installer"))
+  insertManager, err := sql_util.NewBatchInsertManager(insertContext, db, "insert into installer", 1, slog.With("type", "installer"))
   if err != nil {
     return nil, errors.WithStack(err)
   }
@@ -27,8 +27,6 @@ func NewInstallerInsertManager(insertContext context.Context, db driver.Conn, lo
   manager := &InsertInstallerManager{
     InsertDataManager: sql_util.InsertDataManager{
       InsertManager: insertManager,
-
-      Logger: logger,
     },
 
     insertedIds: intsets.Sparse{},

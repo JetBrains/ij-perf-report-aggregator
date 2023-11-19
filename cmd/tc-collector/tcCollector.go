@@ -12,9 +12,9 @@ import (
   e "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
-  "go.uber.org/zap"
   "golang.org/x/sync/errgroup"
   "io"
+  "log/slog"
   "net/http"
   "net/url"
   "os"
@@ -33,7 +33,7 @@ type Collector struct {
 
   config analyzer.DatabaseConfiguration
 
-  logger *zap.Logger
+  logger *slog.Logger
 
   tcSessionId atomic.String
 
@@ -41,8 +41,8 @@ type Collector struct {
   buildIdToInfo          map[int]*BuildInfo
 }
 
-func doNotifyServer(natsUrl string, logger *zap.Logger) error {
-  logger.Info("ask report aggregator server to clear cache")
+func doNotifyServer(natsUrl string) error {
+  slog.Info("ask report aggregator server to clear cache")
   nc, err := nats.Connect("nats://" + natsUrl)
   if err != nil {
     return e.WithStack(err)
@@ -53,7 +53,7 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
     return e.WithStack(err)
   }
 
-  logger.Info("ask to backup db")
+  slog.Info("ask to backup db")
   err = nc.Publish("db.backup", []byte("tcCollector"))
   if err != nil {
     return e.WithStack(err)
@@ -67,7 +67,7 @@ func doNotifyServer(natsUrl string, logger *zap.Logger) error {
   return nil
 }
 
-func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, initialSince time.Time, userSpecifiedSince time.Time, httpClient *http.Client, logger *zap.Logger, ) error {
+func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, initialSince time.Time, userSpecifiedSince time.Time, httpClient *http.Client) error {
   serverUrl := tcUrl + "/app/rest"
 
   config := analyzer.GetAnalyzer(projectId)
@@ -77,7 +77,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
     return e.WithStack(err)
   }
 
-  defer util.Close(db, logger)
+  defer util.Close(db)
   errGroup, loadContext := errgroup.WithContext(taskContext)
   errGroup.SetLimit(2)
   for _, buildTypeId := range buildConfigurationIds {
@@ -96,7 +96,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
           tcUrl,
           userSpecifiedSince,
           initialSince,
-          logger.With(zap.String("buildTypeId", buildTypeId)),
+          slog.With("buildTypeId", buildTypeId),
         )
       }
     }(buildTypeId))
@@ -115,7 +115,7 @@ func collectBuildConfiguration(
   serverHost string,
   userSpecifiedSince time.Time,
   initialSince time.Time,
-  logger *zap.Logger,
+  logger *slog.Logger,
 ) error {
   serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
   if err != nil {
@@ -145,7 +145,7 @@ func collectBuildConfiguration(
   q.Set("fields", buildTeamCityQuery())
   serverBuildUrl.RawQuery = q.Encode()
 
-  logger.Info("collect", zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+  logger.Info("collect", "since", since)
 
   reportExistenceChecker := &ReportExistenceChecker{}
 
@@ -197,7 +197,7 @@ func collectBuildConfiguration(
     totalCount += len(buildList.Builds)
   }
 
-  logger.Info("load reports", zap.Int("buildCount", totalCount), zap.String("buildTypeId", buildTypeId), zap.Time("since", since))
+  logger.Info("load reports", "buildCount", totalCount, "buildTypeId", buildTypeId, "since", since)
 
   for i := len(buildsToLoad) - 1; i >= 0; i-- {
     builds := buildsToLoad[i]
@@ -209,7 +209,7 @@ func collectBuildConfiguration(
       return builds[i].Id < builds[j].Id
     })
 
-    logger.Debug("load reports", zap.Int("chunk", i))
+    logger.Debug("load reports", "chunk", i)
 
     lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
     if err != nil {
@@ -226,7 +226,7 @@ func collectBuildConfiguration(
       return err
     }
 
-    logger.Debug("wait for analyze and insert", zap.Int("chunk", i))
+    logger.Debug("wait for analyze and insert", "chunk", i)
     err = reportAnalyzer.WaitAnalyzeAndInsert()
     if err != nil {
       return err

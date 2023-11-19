@@ -8,7 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   e "github.com/develar/errors"
   "go.deanishe.net/env"
-  "go.uber.org/zap"
+  "log/slog"
   "strconv"
   "strings"
   "time"
@@ -62,7 +62,7 @@ type InsertReportManager struct {
   TableName                        string
 }
 
-func NewInsertReportManager(context context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int, logger *zap.Logger, ) (*InsertReportManager, error) {
+func NewInsertReportManager(context context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int) (*InsertReportManager, error) {
   var err error
 
   if len(config.TableName) != 0 {
@@ -106,7 +106,8 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
   sb.WriteRune(')')
 
   effectiveSql := sb.String()
-  insertManager, err := sql_util.NewBulkInsertManager(context, db, effectiveSql, insertWorkerCount, logger.Named("report"))
+
+  insertManager, err := sql_util.NewBatchInsertManager(context, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
   if err != nil {
     return nil, e.WithStack(err)
   }
@@ -116,7 +117,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
   var installerManager *InsertInstallerManager
   if config.HasInstallerField || config.HasNoInstallerButHasChanges {
-    installerManager, err = NewInstallerInsertManager(context, db, logger)
+    installerManager, err = NewInstallerInsertManager(context, db)
     if err != nil {
       return nil, err
     }
@@ -136,8 +137,6 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
     TableName:           tableName,
     InsertDataManager: sql_util.InsertDataManager{
       InsertManager: insertManager,
-
-      Logger: logger,
     },
 
     context:                context,
@@ -153,14 +152,14 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
 // checks that not duplicated, warn if metrics cannot be computed
 func (t *InsertReportManager) Insert(runResult *RunResult) error {
-  logger := t.Logger
+  logger := slog.Default()
   if t.config.HasProductField {
-    logger = logger.With(zap.String("product", runResult.Product))
+    logger = logger.With("product", runResult.Product)
   }
   logger = logger.With(
-    zap.String("db", t.config.DbName),
-    zap.String("table", t.config.TableName),
-    zap.String("file", runResult.ReportFileName),
+    "db", t.config.DbName,
+    "table", t.config.TableName,
+    "file", runResult.ReportFileName,
   )
 
   // tc collector uses tc build id to avoid duplicates, so, IsCheckThatNotAlreadyAddedNeeded is set to false by default
@@ -221,7 +220,7 @@ var projectIdToName = map[string]string{
   "/q9N7EHxr8F1NHjbNQnpqb0Q0fs": "restoring editors",
 }
 
-func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *zap.Logger) error {
+func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branch string, providedProject string, logger *slog.Logger) error {
   batch, err := t.InsertManager.PrepareForAppend()
   if err != nil {
     return err

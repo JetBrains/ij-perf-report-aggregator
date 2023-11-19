@@ -21,7 +21,6 @@ require (
 	github.com/magiconair/properties v1.8.7
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/nats-io/nats.go v1.31.0
-	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.10.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/stretchr/testify v1.8.4
@@ -31,7 +30,7 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
-	go.uber.org/zap v1.26.0
+	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/sync v0.5.0
 	golang.org/x/tools v0.15.0
 )
@@ -129,6 +128,7 @@ require (
 	github.com/pascaldekloe/name v1.0.1 // indirect
 	github.com/paulmach/orb v0.10.0 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/sftp v1.13.6 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.17.0 // indirect
@@ -149,8 +149,8 @@ require (
 	go.opentelemetry.io/otel v1.21.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
-	go.uber.org/automaxprocs v1.5.3 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.26.0 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
 	golang.org/x/crypto v0.15.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect

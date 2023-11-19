@@ -8,7 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   e "github.com/develar/errors"
   "go.deanishe.net/env"
-  "go.uber.org/zap"
+  "log/slog"
   "strconv"
   "strings"
   "sync"
@@ -29,11 +29,11 @@ type ReportAnalyzer struct {
 
   InsertReportManager *InsertReportManager
 
-  logger *zap.Logger
+  logger *slog.Logger
 }
 
-func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, config DatabaseConfiguration, logger *zap.Logger, ) (*ReportAnalyzer, error) {
-  insertReportManager, err := NewInsertReportManager(parentContext, db, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1), logger)
+func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, config DatabaseConfiguration, logger *slog.Logger, ) (*ReportAnalyzer, error) {
+  insertReportManager, err := NewInsertReportManager(parentContext, db, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1))
   if err != nil {
     return nil, err
   }
@@ -54,7 +54,7 @@ func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, config 
     for {
       report, ok := <-analyzer.insertQueue
       if !ok {
-        logger.Debug("analyze stopped", zap.String("reason", "insert queue is closed"))
+        logger.Debug("analyze stopped; insert queue is closed")
         return
       }
 
@@ -135,7 +135,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
       return nil
     }
   default:
-    err = ReadReport(runResult, t.config, t.logger)
+    err = ReadReport(runResult, t.config)
 
   }
   projectId := t.config.DbName
@@ -217,21 +217,21 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   return nil
 }
 
-func isBisectRun(extraData model.ExtraData, logger *zap.Logger) bool {
-  parser := structParsers.Get()
-  defer structParsers.Put(parser)
+func isBisectRun(extraData model.ExtraData, logger *slog.Logger) bool {
+  parser := parserPool.Get()
+  defer parserPool.Put(parser)
 
   props, err := parser.ParseBytes(extraData.TcBuildProperties)
   if err != nil {
-    logger.Warn("failed to parse build properties", zap.Error(err))
+    logger.Warn("failed to parse build properties", "error", err)
     return false
   }
   return props.GetBool("env.IS_BISECT_RUN")
 }
 
-func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string, logger *zap.Logger) (string, error) {
-  parser := structParsers.Get()
-  defer structParsers.Put(parser)
+func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string, logger *slog.Logger) (string, error) {
+  parser := parserPool.Get()
+  defer parserPool.Put(parser)
 
   props, err := parser.ParseBytes(extraData.TcBuildProperties)
   if err != nil {
@@ -247,7 +247,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
         return jbrBranch, nil
       }
     }
-    logger.Error("format of JBR project is unexpected", zap.String("teamcity.project.id", extraData.TcBuildType))
+    logger.Error("format of JBR project is unexpected", "teamcity.project.id", extraData.TcBuildType)
     return "", e.New("cannot infer branch from JBR project id")
   }
   if projectId == "qodana" {
@@ -339,7 +339,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     r := report.runResult.Report
     err := t.InsertReportManager.insertMetaManager.InsertProjectDescription(r.Project, runResult.branch, r.ProjectURL, r.MethodName, r.ProjectDescription)
     if err != nil {
-      t.logger.Warn("cannot insert project description", zap.Error(err))
+      t.logger.Warn("cannot insert project description", "error", err)
     }
   }
 

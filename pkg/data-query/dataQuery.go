@@ -478,18 +478,3 @@ func writeString(sb *strings.Builder, s string) {
   _, _ = sqlutil.StringEscaper.WriteString(sb, s)
   sb.WriteByte('\'')
 }
-
-// var fileLogger *zap.Logger
-//
-// func init() {
-//   var cfg = zap.NewDevelopmentConfig()
-//   cfg.EncoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-//   }
-//   cfg.EncoderConfig.EncodeLevel = func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
-//   }
-//   cfg.DisableCaller = true
-//   cfg.OutputPaths = []string{
-//     "",
-//   }
-//   fileLogger, _ = cfg.Build()
-// }

@@ -4,7 +4,7 @@ import (
   "bytes"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/valyala/fastjson"
-  "go.uber.org/zap"
+  "log/slog"
   "sort"
 )
 
@@ -15,7 +15,7 @@ type measureItem struct {
   thread   string
 }
 
-func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Logger) error {
+func analyzeIjReport(runResult *RunResult, data *fastjson.Value) error {
   report := runResult.Report
 
   report.TotalDuration = data.GetInt("totalDuration")
@@ -26,7 +26,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
   traceEvents := data.GetArray("traceEvents")
 
   if len(traceEvents) == 0 {
-    logger.Warn("invalid report (due to opening second project?), report will be skipped", zap.Int("id", runResult.TcBuildId), zap.String("generated", report.Generated))
+    slog.Warn("invalid report (due to opening second project?), report will be skipped", "id", runResult.TcBuildId, "generated", report.Generated)
     runResult.Report = nil
     return nil
   }
@@ -110,7 +110,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value, logger *zap.Log
       v.GetObject().Visit(func(metricName []byte, v *fastjson.Value) {
         value, err := v.Int()
         if err != nil {
-          logger.Warn("Invalid value", zap.Int("id", runResult.TcBuildId), zap.String("generated", report.Generated), zap.String("metricName", string(metricName)))
+          slog.Warn("invalid value", "id", runResult.TcBuildId, "generated", report.Generated, "metricName", string(metricName))
           return
         }
         metricNames = append(metricNames, string(groupName)+"/"+string(metricName))

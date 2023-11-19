@@ -3,11 +3,12 @@ package server
 import (
   "context"
   "crypto/tls"
+  "errors"
+  "fmt"
   "github.com/ClickHouse/ch-go"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/andybalholm/brotli"
-  "github.com/develar/errors"
   "github.com/go-chi/chi/v5"
   "github.com/go-chi/chi/v5/middleware"
   "github.com/jackc/pgx/v5/pgxpool"
@@ -16,8 +17,8 @@ import (
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
   _ "go.uber.org/automaxprocs" // automatically set GOMAXPROCS
-  "go.uber.org/zap"
   "io"
+  "log/slog"
   "net/http"
   "os"
   "os/signal"
@@ -33,11 +34,9 @@ type StatsServer struct {
   nameToDbPool sync.Map
 
   poolMutex sync.Mutex
-
-  logger *zap.Logger
 }
 
-func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
+func Serve(dbUrl string, natsUrl string) error {
   if len(dbUrl) == 0 {
     dbUrl = DefaultDbUrl
   }
@@ -48,8 +47,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   }
 
   statsServer := &StatsServer{
-    dbUrl:  dbUrl,
-    logger: logger,
+    dbUrl: dbUrl,
   }
 
   defer func() {
@@ -62,7 +60,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     })
   }()
 
-  cacheManager, err := NewResponseCacheManager(logger)
+  cacheManager, err := NewResponseCacheManager()
   if err != nil {
     return err
   }
@@ -72,7 +70,7 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
   disposer := util.NewDisposer()
   defer disposer.Dispose()
   if len(natsUrl) > 0 {
-    err = listenNats(cacheManager, natsUrl, disposer, logger)
+    err = listenNats(cacheManager, natsUrl, disposer)
     if err != nil {
       return err
     }
@@ -109,11 +107,10 @@ func Serve(dbUrl string, natsUrl string, logger *zap.Logger) error {
     manager: cacheManager,
   })
 
-  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), r, logger)
+  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), r)
+  slog.Info("started", "server", server.Addr, "clickhouse", dbUrl, "nats", natsUrl)
 
-  logger.Info("started", zap.String("address", server.Addr), zap.String("clickhouse", dbUrl), zap.String("nats", natsUrl))
-
-  waitUntilTerminated(server, 1*time.Minute, logger)
+  waitUntilTerminated(server, 1*time.Minute)
   return nil
 }
 
@@ -128,15 +125,15 @@ func (t *StatsServer) AcquireDatabase(ctx context.Context, name string) (*puddle
     pool, err = createStoreForDatabaseUnderLock(name, t)
   }
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot create pool: %w", err)
   }
   if !isCorrectPool {
-    return nil, errors.New("Pool can't be casted to (*puddle.Pool[*ch.Client])")
+    return nil, errors.New("pool can't be casted to (*puddle.Pool[*ch.Client])")
   }
 
   resource, err := pool.Acquire(ctx)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot acquire from pool: %w", err)
   }
   return resource, nil
 }
@@ -168,32 +165,31 @@ func createStoreForDatabaseUnderLock(name string, t *StatsServer) (*puddle.Pool[
   return pool, err
 }
 
-func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer, logger *zap.Logger) error {
+func listenNats(cacheManager *ResponseCacheManager, natsUrl string, disposer *util.Disposer) error {
   // wait when nats service will be deployed
   nc, err := nats.Connect(natsUrl, nats.Timeout(30*time.Second))
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("can't connect to nats: %w", err)
   }
 
   ncSubscription, err := nc.Subscribe("server.clearCache", func(m *nats.Msg) {
     cacheManager.Clear()
-    logger.Info("cache cleared", zap.ByteString("sender", m.Data))
+    slog.Info("cache cleared", "sender", m.Data)
   })
-
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("can't subscribe to nats: %w", err)
   }
 
   disposer.Add(func() {
     err := ncSubscription.Unsubscribe()
     if err != nil {
-      logger.Error("cannot unsubscribe", zap.Error(err))
+      slog.Error("cannot unsubscribe", "error", err)
     }
   })
   return nil
 }
 
-func listenAndServe(port string, mux http.Handler, logger *zap.Logger) *http.Server {
+func listenAndServe(port string, mux http.Handler) *http.Server {
   // buffer size is 4096 https://github.com/golang/go/issues/13870
   server := &http.Server{
     Addr:    ":" + port,
@@ -209,38 +205,39 @@ func listenAndServe(port string, mux http.Handler, logger *zap.Logger) *http.Ser
 
   go func() {
     err := server.ListenAndServe()
-    if err == http.ErrServerClosed {
-      logger.Debug("server closed")
+    if errors.Is(err, http.ErrServerClosed) {
+      slog.Debug("server closed")
     } else {
-      logger.Fatal("cannot serve", zap.Error(err), zap.String("port", port))
+      slog.Error("cannot serve", "error", err, "port", port)
+      os.Exit(1)
     }
   }()
 
   return server
 }
 
-func waitUntilTerminated(server *http.Server, shutdownTimeout time.Duration, logger *zap.Logger) {
+func waitUntilTerminated(server *http.Server, shutdownTimeout time.Duration) {
   signals := make(chan os.Signal, 1)
   signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
   <-signals
 
-  shutdownHttpServer(server, shutdownTimeout, logger)
+  shutdownHttpServer(server, shutdownTimeout)
 }
 
-func shutdownHttpServer(server *http.Server, shutdownTimeout time.Duration, logger *zap.Logger) {
+func shutdownHttpServer(server *http.Server, shutdownTimeout time.Duration) {
   if server == nil {
     return
   }
 
   ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
   defer cancel()
-  logger.Info("shutdown server", zap.Duration("timeout", shutdownTimeout))
+  slog.Info("shutdown server", "timeout", shutdownTimeout)
   start := time.Now()
   err := server.Shutdown(ctx)
   if err != nil {
-    logger.Error("cannot shutdown server", zap.Error(err))
+    slog.Error("cannot shutdown server", "error", err)
     return
   }
 
-  logger.Info("server is shutdown", zap.Duration("duration", time.Since(start)))
+  slog.Info("server is shutdown", "duration", time.Since(start))
 }

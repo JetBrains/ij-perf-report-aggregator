@@ -4,8 +4,8 @@ import (
   "context"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/develar/errors"
-  "go.uber.org/zap"
   "golang.org/x/sync/errgroup"
+  "log/slog"
   "runtime"
   "sync"
 )
@@ -21,7 +21,7 @@ type BatchInsertManager struct {
   BatchSize   int
   queuedItems int
 
-  logger *zap.Logger
+  logger *slog.Logger
 
   group *errgroup.Group
 
@@ -30,7 +30,7 @@ type BatchInsertManager struct {
   dependencies []*BatchInsertManager
 }
 
-func NewBulkInsertManager(insertContext context.Context, db driver.Conn, insertSql string, insertWorkerCount int, logger *zap.Logger, ) (*BatchInsertManager, error) {
+func NewBatchInsertManager(insertContext context.Context, db driver.Conn, insertSql string, insertWorkerCount int, logger *slog.Logger) (*BatchInsertManager, error) {
   poolCapacity := insertWorkerCount
   if insertWorkerCount == -1 {
     // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
@@ -42,7 +42,7 @@ func NewBulkInsertManager(insertContext context.Context, db driver.Conn, insertS
     poolCapacity = 99
   }
 
-  logger.Debug("insert pool capacity", zap.Int("count", poolCapacity))
+  logger.Info("insert pool capacity", "count", poolCapacity)
 
   errorGroup, ctx := errgroup.WithContext(insertContext)
   errorGroup.SetLimit(poolCapacity)
@@ -90,7 +90,7 @@ func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
   for _, dependency := range t.dependencies {
     err := dependency.SendBatchNow()
     if err != nil {
-      t.logger.Error("cannot commit dependency", zap.Error(err))
+      t.logger.Error("cannot commit dependency", "error", err)
       return err
     }
   }
@@ -98,7 +98,7 @@ func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
   t.logger.Info("send batch")
   err := batch.Send()
   if err != nil {
-    t.logger.Error("cannot send batch", zap.Error(err))
+    t.logger.Error("cannot send batch", "error", err)
     return err
   }
   return nil
@@ -116,7 +116,7 @@ func (t *BatchInsertManager) prepareForFlush() driver.Batch {
   t.batch = nil
   queuedItems := t.queuedItems
   t.queuedItems = 0
-  t.logger.Info("items scheduled to be sent", zap.Int("count", queuedItems))
+  t.logger.Info("items scheduled to be sent", "count", queuedItems)
   return batch
 }
 
@@ -148,7 +148,7 @@ func (t *BatchInsertManager) Close() error {
   err := t.group.Wait()
 
   if t.batch != nil {
-    t.logger.Error("abort batch", zap.String("reason", "was not sent, but close is called"))
+    t.logger.Error("abort batch; was not sent, but close is called")
     abortErr := t.batch.Abort()
     t.batch = nil
     if err == nil {

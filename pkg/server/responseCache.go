@@ -8,8 +8,8 @@ import (
   e "github.com/develar/errors"
   "github.com/valyala/bytebufferpool"
   "github.com/zeebo/xxh3"
-  "go.uber.org/zap"
   "io"
+  "log/slog"
   "net/http"
   "strconv"
 )
@@ -26,16 +26,14 @@ func (ch *CachingHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 type ResponseCacheManager struct {
-  cache  *fastcache.Cache
-  logger *zap.Logger
+  cache *fastcache.Cache
 }
 
-func NewResponseCacheManager(logger *zap.Logger) (*ResponseCacheManager, error) {
+func NewResponseCacheManager() (*ResponseCacheManager, error) {
   cacheSize := 1000 * 1000 * 1000
   cache := fastcache.New(cacheSize)
   return &ResponseCacheManager{
-    cache:  cache,
-    logger: logger,
+    cache: cache,
   }, nil
 }
 
@@ -73,7 +71,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
     }
     result, err = rcm.compressData(buffer.B)
     if err != nil {
-      rcm.logger.Error("cannot compress result", zap.Error(err))
+      slog.Error("cannot compress result", "error", err)
       http.Error(w, err.Error(), http.StatusServiceUnavailable)
       return
     }
@@ -90,7 +88,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
   w.WriteHeader(http.StatusOK)
   _, err := w.Write(result)
   if err != nil {
-    rcm.logger.Error("cannot write cached result", zap.Error(err))
+    slog.Error("cannot write cached result", "error", err)
     http.Error(w, err.Error(), http.StatusServiceUnavailable)
   }
 }
@@ -121,7 +119,7 @@ func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
     if errors.Is(cause, context.Canceled) {
       http.Error(w, err.Error(), 499)
     } else {
-      rcm.logger.Error("cannot handle http request", zap.Error(err))
+      slog.Error("cannot handle http request", "error", err)
       http.Error(w, err.Error(), http.StatusServiceUnavailable)
     }
   }

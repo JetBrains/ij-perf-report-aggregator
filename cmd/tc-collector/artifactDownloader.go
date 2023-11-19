@@ -7,7 +7,6 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/cenkalti/backoff/v4"
   "github.com/develar/errors"
-  "go.uber.org/zap"
   "io"
   "net/http"
   "net/url"
@@ -70,7 +69,7 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 
   response, err := t.get(ctx, artifactUrl.String())
   if err != nil {
-    t.logger.Error("Download failed", zap.Error(err))
+    t.logger.Error("Download failed", "error", err)
     return nil, err
   }
 
@@ -78,11 +77,11 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 
   if response.StatusCode > 300 {
     if response.StatusCode == http.StatusNotFound && build.Status == "FAILURE" {
-      t.logger.Warn("no report", zap.Int("id", build.Id), zap.String("status", build.Status))
+      t.logger.Warn("no report", "id", build.Id, "status", build.Status)
       return nil, nil
     }
     responseBody, _ := io.ReadAll(response.Body)
-    t.logger.Error("Invalid response", zap.String("status", response.Status), zap.ByteString("body", responseBody))
+    t.logger.Error("Invalid response", "status", response.Status, "body", responseBody)
     return nil, err
   }
 
@@ -91,7 +90,7 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
   // ReadAll is used because report not only required to be decoded, but also stored as is (after minification)
   data, err := io.ReadAll(response.Body)
   if err != nil {
-    t.logger.Error("Failed to read response body", zap.Error(err))
+    t.logger.Error("Failed to read response body", "error", err)
     return nil, err
   }
   return data, nil
@@ -130,7 +129,7 @@ func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([
 
   if response.StatusCode > 300 {
     if response.StatusCode == http.StatusNotFound {
-      t.logger.Warn("build.start.properties not found", zap.String("url", artifactUrl.String()))
+      t.logger.Warn("build.start.properties not found", "url", artifactUrl.String())
       return nil, nil
     }
 

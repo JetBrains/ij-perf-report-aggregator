@@ -9,8 +9,6 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/develar/errors"
   "github.com/json-iterator/go"
-  "go.uber.org/zap"
-  "go.uber.org/zap/zapcore"
   "golang.org/x/sync/errgroup"
   "io"
   "net/url"
@@ -24,11 +22,11 @@ var networkRequestCount = runtime.NumCPU() + 1
 
 func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
   networkRequestCount = 20
-  t.logger.Info("Network request count", zap.Int("count", networkRequestCount))
+  t.logger.Info("Network request count", "count", networkRequestCount)
 
   for index, build := range builds {
     if reportExistenceChecker.has(build.Id) {
-      t.logger.Info("build already processed", zap.Int("id", build.Id), zap.String("startDate", build.StartDate))
+      t.logger.Info("build already processed", "id", build.Id, "startDate", build.StartDate)
       builds[index] = nil
     }
   }
@@ -47,7 +45,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
   }
 
   duration := time.Duration(len(builds)*300) * time.Second
-  t.logger.Debug("load", zap.Int("timeout", int(duration.Seconds())))
+  t.logger.Debug("load", "timeout", duration.Seconds())
   taskContextWithTimeout, cancel := context.WithTimeout(t.taskContext, duration)
   defer cancel()
   errGroup, loadContext := errgroup.WithContext(taskContextWithTimeout)
@@ -59,7 +57,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
     }
     errGroup.Go((func(build *Build) func() error {
       return func() error {
-        t.logger.Info("processing build", zap.Int("id", build.Id))
+        t.logger.Info("processing build", "id", build.Id)
         if t.config.HasInstallerField && build.installerInfo == nil {
           // or already processed or cannot compute installer info
           return nil
@@ -71,7 +69,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
         }
 
         if len(artifacts) == 0 {
-          t.logger.Error("cannot find any performance report", zap.Int("id", build.Id), zap.String("status", build.Status))
+          t.logger.Error("cannot find any performance report", "id", build.Id, "status", build.Status)
           return nil
         }
 
@@ -122,7 +120,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
           err = reportAnalyzer.Analyze(artifact.data, data)
           if err != nil {
             if build.Status == "FAILURE" {
-              t.logger.Warn("cannot parse performance report in the failed build", zap.Int("buildId", build.Id), zap.Error(err))
+              t.logger.Warn("cannot parse performance report in the failed build", "buildId", build.Id, "error", err)
             } else {
               return err
             }
@@ -157,13 +155,11 @@ func (t *Collector) loadChanges(builds []*Build, networkRequestCount int) error 
   if len(notLoadedBuildIds) == 0 {
     return nil
   }
-
-  t.logger.Debug("load build info", zap.Int("count", len(notLoadedBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
-    for _, buildInfo := range notLoadedBuildIds {
-      encoder.AppendInt(buildInfo.id)
-    }
-    return nil
-  })))
+  var notLoadedIds = make([]int, 0, len(notLoadedBuildIds))
+  for _, installerInfo := range notLoadedBuildIds {
+    notLoadedIds = append(notLoadedIds, installerInfo.id)
+  }
+  t.logger.Debug("load build info", "count", len(notLoadedBuildIds), "ids", notLoadedIds)
 
   errGroup, loadContext := errgroup.WithContext(t.taskContext)
   errGroup.SetLimit(networkRequestCount)
@@ -197,7 +193,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
 
     if id == -1 {
       if t.config.HasInstallerField {
-        t.logger.Error("cannot find installer build", zap.Int("buildId", build.Id))
+        t.logger.Error("cannot find installer build", "buildId", build.Id)
       }
       continue
     }
@@ -218,12 +214,11 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
     return nil
   }
 
-  t.logger.Debug("load installer info", zap.Int("count", len(notLoadedInstallerBuildIds)), zap.Array("ids", zapcore.ArrayMarshalerFunc(func(encoder zapcore.ArrayEncoder) error {
-    for _, installerInfo := range notLoadedInstallerBuildIds {
-      encoder.AppendInt(installerInfo.id)
-    }
-    return nil
-  })))
+  var notLoadedIds = make([]int, 0, len(notLoadedInstallerBuildIds))
+  for _, installerInfo := range notLoadedInstallerBuildIds {
+    notLoadedIds = append(notLoadedIds, installerInfo.id)
+  }
+  t.logger.Debug("load installer info", "count", len(notLoadedInstallerBuildIds), "ids", notLoadedIds)
 
   errGroup, loadContext := errgroup.WithContext(t.taskContext)
   errGroup.SetLimit(networkRequestCount)

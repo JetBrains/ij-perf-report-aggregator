@@ -3,8 +3,8 @@ package sql_util
 import (
   "database/sql"
   "errors"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  e "github.com/develar/errors"
 )
 
 type InsertDataManager struct {
@@ -19,7 +19,7 @@ func (t *InsertDataManager) CheckExists(row driver.Row) (bool, error) {
   case err == nil:
     return true, nil
   case !errors.Is(err, sql.ErrNoRows):
-    return false, e.WithStack(err)
+    return false, fmt.Errorf("cannot check exists: %w", err)
   default:
     return false, nil
   }

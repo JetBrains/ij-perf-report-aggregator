@@ -3,7 +3,7 @@ package util
 import (
   _ "embed"
   "encoding/base64"
-  "github.com/develar/errors"
+  "fmt"
   "github.com/klauspost/compress/zstd"
 )
 
@@ -13,18 +13,18 @@ var ZstdDictionary []byte
 func DecodeQuery(encoded string) ([]byte, error) {
   compressed, err := base64.RawURLEncoding.DecodeString(encoded)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot decode query: %w", err)
   }
 
   reader, err := zstd.NewReader(nil, zstd.WithDecoderConcurrency(0), zstd.WithDecoderDicts(ZstdDictionary))
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot create zstd reader: %w", err)
   }
   defer reader.Close()
 
   decompressed, err := reader.DecodeAll(compressed, nil)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot decompress query: %w", err)
   }
   return decompressed, nil
 }
@@ -33,7 +33,7 @@ func EncodeQuery(data []byte) (string, error) {
   // Create a new ZSTD encoder with the dictionary
   writer, err := zstd.NewWriter(nil, zstd.WithEncoderDict(ZstdDictionary))
   if err != nil {
-    return "", errors.WithStack(err)
+    return "", fmt.Errorf("cannot create zstd writer: %w", err)
   }
 
   // Compress the data

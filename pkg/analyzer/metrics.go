@@ -1,8 +1,8 @@
 package analyzer
 
 import (
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/develar/errors"
   "github.com/mcuadros/go-version"
   "log/slog"
 )
@@ -234,12 +234,12 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
   } else {
     v = activity.Duration
     if v > info.maxValue {
-      return errors.Errorf("value outside of 0-%d range (generatedTime=%s, value=%v, activity=%s)", info.maxValue, report.Generated, v, activity.Name)
+      return fmt.Errorf("value outside of 0-%d range (generatedTime=%s, value=%v, activity=%s)", info.maxValue, report.Generated, v, activity.Name)
     }
   }
 
   if v < 0 {
-    return errors.Errorf("value must be positive (generatedTime: %s, value: %v)", report.Generated, v)
+    return fmt.Errorf("value must be positive (generatedTime: %s, value: %v)", report.Generated, v)
   }
 
   switch info.maxValue {

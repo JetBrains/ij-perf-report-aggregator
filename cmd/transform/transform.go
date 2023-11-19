@@ -2,12 +2,12 @@ package main
 
 import (
   "context"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/develar/errors"
   "go.deanishe.net/env"
   "log/slog"
   "os"
@@ -90,7 +90,7 @@ func transform(clickHouseUrl string, idName string, tableName string) error {
     },
   })
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot connect to clickhouse: %w", err)
   }
 
   defer util.Close(db)
@@ -116,7 +116,7 @@ func transform(clickHouseUrl string, idName string, tableName string) error {
   // use something like (now() - toIntervalMonth(1)) to test the transformer on a fresh data
   err = db.QueryRow(taskContext, "select min(generated_time) as min, max(generated_time) as max from "+tableName).Scan(&minTime, &maxTime)
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot query min/max: %w", err)
   }
 
   slog.Info("time range", "start", minTime, "end", maxTime)
@@ -189,7 +189,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 
   }
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot query: %w", err)
   }
 
   defer util.Close(rows)
@@ -199,7 +199,7 @@ rowLoop:
   for rows.Next() {
     err = rows.ScanStruct(&row)
     if err != nil {
-      return errors.WithStack(err)
+      return fmt.Errorf("cannot scan: %w", err)
     }
 
     runResult := &analyzer.RunResult{
@@ -246,7 +246,7 @@ rowLoop:
 
   err = rows.Err()
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot scan: %w", err)
   }
 
   return nil

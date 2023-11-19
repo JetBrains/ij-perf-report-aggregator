@@ -1,7 +1,7 @@
 package main
 
 import (
-  "github.com/develar/errors"
+  "fmt"
   "github.com/json-iterator/go"
   "io"
   "time"
@@ -84,14 +84,14 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
 
   response, err := t.httpClient.Do(request)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("failed to load builds: %w", err)
   }
 
   defer response.Body.Close()
 
   if response.StatusCode > 300 {
     responseBody, _ := io.ReadAll(response.Body)
-    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return nil, fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)
@@ -99,7 +99,7 @@ func (t *Collector) loadBuilds(url string) (*BuildList, error) {
   var result BuildList
   err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&result)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("failed to parse builds: %w", err)
   }
   return &result, nil
 }

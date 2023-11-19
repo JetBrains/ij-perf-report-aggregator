@@ -2,7 +2,7 @@ package main
 
 import (
   "embed"
-  "github.com/develar/errors"
+  "errors"
   "github.com/zeebo/xxh3"
   "io/fs"
   "log"

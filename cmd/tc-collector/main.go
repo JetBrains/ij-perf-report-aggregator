@@ -2,10 +2,11 @@ package main
 
 import (
   "encoding/json"
+  "errors"
   "flag"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
-  e "github.com/develar/errors"
   "log/slog"
   "net/http"
   "os"
@@ -46,7 +47,7 @@ func configureCollectFromTeamCity() error {
     var err error
     since, err = dateparse.ParseStrict(*sinceDate)
     if err != nil {
-      return e.WithStack(err)
+      return fmt.Errorf("cannot parse since date: %w", err)
     }
   }
 
@@ -58,12 +59,12 @@ func configureCollectFromTeamCity() error {
 
   rawJson = strings.TrimSpace(rawJson)
   if len(rawJson) == 0 {
-    return e.New("File /etc/config/config.json is empty or env CONFIG is not set")
+    return errors.New("file /etc/config/config.json is empty or env CONFIG is not set")
   }
 
   err = json.Unmarshal([]byte(rawJson), &config)
   if err != nil {
-    return e.WithMessage(err, "cannot parse json: "+rawJson)
+    return fmt.Errorf("cannot parse json: " + rawJson)
   }
 
   var httpClient = &http.Client{
@@ -124,7 +125,7 @@ func configureCollectFromTeamCity() error {
     if len(chunk.InitialSince) != 0 {
       initialSince, err = dateparse.ParseStrict(chunk.InitialSince)
       if err != nil {
-        return e.WithStack(err)
+        return fmt.Errorf("cannot parse initial since date: %w", err)
       }
     }
 

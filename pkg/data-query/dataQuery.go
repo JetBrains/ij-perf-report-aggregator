@@ -2,10 +2,11 @@ package data_query
 
 import (
   "context"
+  "errors"
+  "fmt"
   "github.com/ClickHouse/ch-go/proto"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/develar/errors"
   "github.com/sakura-internet/go-rison/v4"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
@@ -53,7 +54,7 @@ type DataQueryDimension struct {
 func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   decompressed, err := util.DecodeQuery(request.URL.Path[len("/api/q/"):])
   if err != nil {
-    return nil, false, errors.WithStack(err)
+    return nil, false, fmt.Errorf("cannot decode query: %w", err)
   }
 
   if len(decompressed) == 0 {
@@ -112,7 +113,7 @@ func getSplitParameters(query DataQuery) (*SplitParameters, error) {
 func assertValueSlice(value interface{}) ([]interface{}, error) {
   valueSlice, ok := value.([]interface{})
   if !ok {
-    return nil, errors.Errorf("invalid filter.Value type %T, expected array", value)
+    return nil, fmt.Errorf("invalid filter.Value type %T, expected array", value)
   }
   return valueSlice, nil
 }
@@ -123,7 +124,7 @@ func convertValuesToMap(valueSlice []interface{}) (map[string]int, error) {
   for i, value := range valueSlice {
     strValue, ok := value.(string)
     if !ok {
-      return nil, errors.Errorf("invalid filter.Value type %T, expected string", value)
+      return nil, fmt.Errorf("invalid filter.Value type %T, expected string", value)
     }
     values[strValue] = i
   }
@@ -149,7 +150,7 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
 
   jsonData, err := rison.ToJSON([]byte(payload[index:]), rison.Rison)
   if err != nil {
-    return nil, false, errors.WithStack(err)
+    return nil, false, fmt.Errorf("cannot decode query: %w", err)
   }
 
   list, err := readQuery(jsonData)
@@ -409,10 +410,10 @@ loop:
 
     if len(filter.Sql) != 0 {
       if len(filter.Operator) != 0 {
-        return errors.Errorf("sql and operator are mutually exclusive")
+        return fmt.Errorf("sql and operator are mutually exclusive")
       }
       if filter.Value != nil {
-        return errors.Errorf("sql and value are mutually exclusive")
+        return fmt.Errorf("sql and value are mutually exclusive")
       }
 
       sb.WriteRune(' ')
@@ -461,12 +462,12 @@ loop:
         case bool:
           sb.WriteString(strconv.FormatBool(e))
         default:
-          return errors.Errorf("Filter value type [%T] is not supported", v[j])
+          return fmt.Errorf("filter value type [%T] is not supported", v[j])
         }
       }
       sb.WriteRune(')')
     default:
-      return errors.Errorf("Filter value type %T is not supported", v)
+      return fmt.Errorf("filter value type %T is not supported", v)
     }
     sb.WriteRune(')')
   }

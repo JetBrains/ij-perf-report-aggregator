@@ -5,11 +5,11 @@ import (
   "database/sql"
   "encoding/json"
   "errors"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  e "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "golang.org/x/sync/errgroup"
@@ -45,24 +45,24 @@ func doNotifyServer(natsUrl string) error {
   slog.Info("ask report aggregator server to clear cache")
   nc, err := nats.Connect("nats://" + natsUrl)
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot connect to nats: %w", err)
   }
 
   err = nc.Publish("server.clearCache", []byte("tcCollector"))
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot publish to server.clearCache: %w", err)
   }
 
   slog.Info("ask to backup db")
   err = nc.Publish("db.backup", []byte("tcCollector"))
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot publish to db.backup: %w", err)
   }
 
   // ensure that message is delivered, because app will be exited very soon
   err = nc.Flush()
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot flush: %w", err)
   }
   return nil
 }
@@ -74,7 +74,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
 
   db, err := analyzer.OpenDb(clickHouseUrl, config)
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot open db: %w", err)
   }
 
   defer util.Close(db)
@@ -82,7 +82,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
   errGroup.SetLimit(2)
   for _, buildTypeId := range buildConfigurationIds {
     if taskContext.Err() != nil {
-      return e.WithStack(taskContext.Err())
+      return fmt.Errorf("error in context: %w", taskContext.Err())
     }
     errGroup.Go(func(buildTypeId string) func() error {
       return func() error {
@@ -132,7 +132,7 @@ func collectBuildConfiguration(
       query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
       err := db.QueryRow(taskContext, query).Scan(&since)
       if err != nil && !errors.Is(err, sql.ErrNoRows) {
-        return e.WithStack(err)
+        return fmt.Errorf("cannot query last collect time: %w", err)
       }
     }
   }
@@ -184,7 +184,7 @@ func collectBuildConfiguration(
   nextHref := buildList.NextHref
   for len(buildList.NextHref) != 0 {
     if taskContext.Err() != nil {
-      return e.WithStack(taskContext.Err())
+      return fmt.Errorf("error in context: %w", taskContext.Err())
     }
 
     buildList, err = collector.loadBuilds(serverHost + nextHref)
@@ -213,7 +213,7 @@ func collectBuildConfiguration(
 
     lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
     if err != nil {
-      return e.WithStack(err)
+      return fmt.Errorf("cannot parse last build start date: %w", err)
     }
 
     reportAnalyzer, err := analyzer.CreateReportAnalyzer(taskContext, db, config, logger)
@@ -250,17 +250,17 @@ func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectT
   //goland:noinspection SqlResolve
   batch, err := db.PrepareBatch(ctx, "insert into collector_state values")
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot prepare batch: %w", err)
   }
 
   err = batch.Append(buildTypeId, lastCollectTimeToSet)
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot append to batch: %w", err)
   }
 
   err = batch.Send()
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot send batch: %w", err)
   }
   return nil
 }
@@ -293,7 +293,7 @@ func (t *Collector) get(ctx context.Context, url string) (*http.Response, error)
     if errors.Is(err, context.Canceled) {
       return nil, err
     }
-    return nil, e.WithStack(err)
+    return nil, fmt.Errorf("cannot get %s: %w", url, err)
   }
   return response, nil
 }
@@ -339,7 +339,7 @@ func (t *Collector) getBuildTypesFromProject(ctx context.Context, configuration 
   defer response.Body.Close()
   responseBody, _ := io.ReadAll(response.Body)
   if response.StatusCode > 300 {
-    return configurations, e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return configurations, fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
   type BuildType struct {
     Id string
@@ -375,7 +375,7 @@ func (t *Collector) getSnapshotsRecursive(ctx context.Context, configuration str
   defer response.Body.Close()
   responseBody, _ := io.ReadAll(response.Body)
   if response.StatusCode > 300 {
-    return e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
 
   type Dependency struct {
@@ -408,7 +408,7 @@ func (t *Collector) isComposite(ctx context.Context, configuration string) (bool
   defer response.Body.Close()
   responseBody, _ := io.ReadAll(response.Body)
   if response.StatusCode > 300 {
-    return false, e.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return false, fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
   type BuildType struct {
     Name  string
@@ -422,7 +422,7 @@ func (t *Collector) isComposite(ctx context.Context, configuration string) (bool
 func (t *Collector) createRequest(ctx context.Context, url string) (*http.Request, error) {
   request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
   if err != nil {
-    return nil, e.WithStack(err)
+    return nil, fmt.Errorf("cannot create request: %w", err)
   }
 
   sessionId := t.tcSessionId.Load()

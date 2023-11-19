@@ -2,11 +2,11 @@ package main
 
 import (
   "context"
+  "fmt"
   "github.com/Altinity/clickhouse-backup/pkg/backup"
   "github.com/Altinity/clickhouse-backup/pkg/status"
   clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/develar/errors"
   "github.com/nats-io/nats.go"
   "go.deanishe.net/env"
   "log/slog"
@@ -40,12 +40,12 @@ func start(natsUrl string) error {
   slog.Info("started", "nats", natsUrl)
   nc, err := nats.Connect(natsUrl)
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot connect to nats: %w", err)
   }
 
   sub, err := nc.SubscribeSync("db.backup")
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot subscribe to db.backup: %w", err)
   }
 
   lastBackupTime := time.Time{}
@@ -57,7 +57,7 @@ func start(natsUrl string) error {
         slog.Info("cancelled", "reason", contextError)
         return nil
       }
-      return errors.WithStack(contextError)
+      return fmt.Errorf("cannot receive message: %w", err)
     }
 
     if taskContext.Err() != nil {
@@ -88,7 +88,7 @@ func executeBackup(taskContext context.Context, backuper *backup.Backuper) error
 
   err := backuper.CreateBackup(backupName, "", nil, false, false, false, false, "unknown", status.NotFromAPI)
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot create backup: %w", err)
   }
 
   if taskContext.Err() != nil {

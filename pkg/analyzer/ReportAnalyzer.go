@@ -3,10 +3,10 @@ package analyzer
 import (
   "context"
   "errors"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  e "github.com/develar/errors"
   "go.deanishe.net/env"
   "log/slog"
   "strconv"
@@ -156,7 +156,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   }
 
   if len(extraData.Machine) == 0 {
-    return e.New("machine is not specified")
+    return errors.New("machine is not specified")
   }
 
   runResult.Product = extraData.ProductCode
@@ -235,7 +235,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 
   props, err := parser.ParseBytes(extraData.TcBuildProperties)
   if err != nil {
-    return "", e.WithStack(err)
+    return "", fmt.Errorf("failed to parse build properties: %w", err)
   }
 
   if projectId == "jbr" {
@@ -248,7 +248,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
       }
     }
     logger.Error("format of JBR project is unexpected", "teamcity.project.id", extraData.TcBuildType)
-    return "", e.New("cannot infer branch from JBR project id")
+    return "", errors.New("cannot infer branch from JBR project id")
   }
   if projectId == "qodana" {
     qodanaImage := string(props.GetStringBytes("image"))
@@ -290,7 +290,7 @@ type ReportInfo struct {
 func computeGeneratedTime(report *model.Report, extraData model.ExtraData) (time.Time, error) {
   if report.Generated == "" {
     if extraData.LastGeneratedTime.IsZero() {
-      return time.Time{}, e.New("generated time not in report and not provided explicitly")
+      return time.Time{}, errors.New("generated time not in report and not provided explicitly")
     }
     return extraData.LastGeneratedTime, nil
   }
@@ -348,7 +348,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     if errors.Is(err, context.Canceled) {
       return err
     }
-    return e.WithMessagef(err, "cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
+    return fmt.Errorf("cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
   }
   return nil
 }
@@ -363,7 +363,7 @@ func getNullIfEmpty(v int) int {
 func splitBuildNumber(buildComponents []string) (int, int, int, error) {
   buildC1, err := strconv.Atoi(buildComponents[0])
   if err != nil {
-    return 0, 0, 0, e.WithStack(err)
+    return 0, 0, 0, fmt.Errorf("cannot parse build number: %w", err)
   }
   buildC2, err := strconv.Atoi(buildComponents[1])
   if err != nil {

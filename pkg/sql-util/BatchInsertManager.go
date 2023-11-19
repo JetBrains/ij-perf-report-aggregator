@@ -2,8 +2,8 @@ package sql_util
 
 import (
   "context"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "github.com/develar/errors"
   "golang.org/x/sync/errgroup"
   "log/slog"
   "runtime"
@@ -30,7 +30,7 @@ type BatchInsertManager struct {
   dependencies []*BatchInsertManager
 }
 
-func NewBatchInsertManager(insertContext context.Context, db driver.Conn, insertSql string, insertWorkerCount int, logger *slog.Logger) (*BatchInsertManager, error) {
+func NewBatchInsertManager(insertContext context.Context, db driver.Conn, insertSql string, insertWorkerCount int, logger *slog.Logger) *BatchInsertManager {
   poolCapacity := insertWorkerCount
   if insertWorkerCount == -1 {
     // not enough RAM (if docker has access to 4 GB on a machine where there is only 16 GB)
@@ -58,7 +58,7 @@ func NewBatchInsertManager(insertContext context.Context, db driver.Conn, insert
     // large inserts leads to large memory usage, so, insert by 2000 items
     BatchSize: 2000,
   }
-  return manager, nil
+  return manager
 }
 
 func (t *BatchInsertManager) AddDependency(dependency *BatchInsertManager) {
@@ -136,7 +136,7 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
     var err error
     t.batch, err = t.Db.PrepareBatch(t.InsertContext, t.insertSql)
     if err != nil {
-      return nil, errors.WithStack(err)
+      return nil, fmt.Errorf("cannot prepare batch: %w", err)
     }
   }
   return t.batch, nil

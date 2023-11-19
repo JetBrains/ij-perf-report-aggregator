@@ -1,9 +1,9 @@
 package data_query
 
 import (
+  "errors"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
-  "github.com/develar/errors"
   "github.com/valyala/fastjson"
   "math"
   "regexp"
@@ -39,7 +39,7 @@ func readQuery(s []byte) ([]DataQuery, error) {
 
   value, err := parser.ParseBytes(s)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot parse query: %w", err)
   }
 
   var queries []DataQuery
@@ -228,7 +228,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
     }
 
     if len(t.Sql) == 0 && value == nil {
-      return errors.New("Filter value is not specified")
+      return errors.New("filter value is not specified")
     }
     if len(t.Sql) == 0 {
       switch value.Type() {
@@ -237,7 +237,7 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       case fastjson.TypeNumber:
         number, err := value.Float64()
         if err != nil {
-          return errors.WithStack(err)
+          return fmt.Errorf("cannot parse filter value %s: %w", value, err)
         }
         if number == math.Trunc(number) {
           // convert to int (to be able to use time unix timestamps from client side)
@@ -252,13 +252,13 @@ func readFilters(list []*fastjson.Value, query *DataQuery) error {
       case fastjson.TypeTrue:
         t.Value = value.GetBool()
       default:
-        return errors.Errorf("Filter value %v is not supported", value)
+        return fmt.Errorf("filter value %v is not supported", value)
       }
 
       if len(t.Operator) == 0 {
         t.Operator = "="
       } else if t.Operator != ">" && t.Operator != "<" && t.Operator != "=" && t.Operator != "!=" && t.Operator != "like" {
-        return errors.Errorf("Operator %s is not supported", t.Operator)
+        return fmt.Errorf("operator %s is not supported", t.Operator)
       }
     } else {
       // by intention sql string is not validated

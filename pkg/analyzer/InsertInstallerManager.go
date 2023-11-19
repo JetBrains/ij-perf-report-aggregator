@@ -2,9 +2,9 @@ package analyzer
 
 import (
   "context"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
-  "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
   "log/slog"
   "strconv"
@@ -19,10 +19,7 @@ type InsertInstallerManager struct {
 
 func NewInstallerInsertManager(insertContext context.Context, db driver.Conn) (*InsertInstallerManager, error) {
   //noinspection GrazieInspection
-  insertManager, err := sql_util.NewBatchInsertManager(insertContext, db, "insert into installer", 1, slog.With("type", "installer"))
-  if err != nil {
-    return nil, errors.WithStack(err)
-  }
+  insertManager := sql_util.NewBatchInsertManager(insertContext, db, "insert into installer", 1, slog.With("type", "installer"))
 
   manager := &InsertInstallerManager{
     InsertDataManager: sql_util.InsertDataManager{
@@ -33,9 +30,9 @@ func NewInstallerInsertManager(insertContext context.Context, db driver.Conn) (*
   }
 
   //noinspection SqlResolve
-  err = db.QueryRow(insertContext, "select max(id) from installer").Scan(&manager.maxId)
+  err := db.QueryRow(insertContext, "select max(id) from installer").Scan(&manager.maxId)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot query max id: %w", err)
   }
 
   return manager, nil
@@ -64,7 +61,7 @@ func (t *InsertInstallerManager) Insert(id int, changes []string) error {
 
   err = batch.Append(uint32(id), changes)
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot append: %w", err)
   }
 
   t.insertedIds.Insert(id)

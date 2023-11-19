@@ -2,8 +2,8 @@ package main
 
 import (
   "context"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "github.com/develar/errors"
   "golang.org/x/tools/container/intsets"
   "strconv"
   "time"
@@ -32,7 +32,7 @@ func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName strin
   }
 
   if err != nil {
-    return errors.WithStack(err)
+    return fmt.Errorf("cannot query %s: %w", tableName, err)
   }
 
   for rows.Next() {
@@ -40,14 +40,14 @@ func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName strin
     var id uint32
     err = rows.Scan(&id)
     if err != nil {
-      return errors.WithStack(err)
+      return fmt.Errorf("cannot scan %s: %w", tableName, err)
     }
 
     t.ids.Insert(int(id))
   }
 
   if rows.Err() != nil {
-    return errors.WithStack(rows.Err())
+    return fmt.Errorf("cannot scan %s: %w", tableName, err)
   }
   return nil
 }

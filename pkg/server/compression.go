@@ -2,8 +2,8 @@ package server
 
 import (
   "bytes"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-  "github.com/develar/errors"
   "github.com/klauspost/compress/zstd"
   "github.com/valyala/bytebufferpool"
 )
@@ -13,7 +13,7 @@ func decompressData(input []byte) ([]byte, error) {
   defer bytebufferpool.Put(buf)
   reader, err := zstd.NewReader(bytes.NewReader(input), zstd.WithDecoderDicts(util.ZstdDictionary))
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot create zstd reader: %w", err)
   }
 
   _, err = buf.ReadFrom(reader)
@@ -28,7 +28,7 @@ func (rcm *ResponseCacheManager) compressData(value []byte) ([]byte, error) {
   defer bytebufferpool.Put(buffer)
   writer, err := zstd.NewWriter(buffer, zstd.WithEncoderLevel(zstd.SpeedFastest), zstd.WithEncoderDict(util.ZstdDictionary))
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot create zstd writer: %w", err)
   }
 
   _, err = writer.Write(value)

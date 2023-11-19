@@ -3,10 +3,10 @@ package main
 import (
   "compress/gzip"
   "context"
+  "errors"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
   "github.com/cenkalti/backoff/v4"
-  "github.com/develar/errors"
   "io"
   "net/http"
   "net/url"
@@ -64,7 +64,7 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
 func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
   artifactUrl, err := url.Parse(artifactUrlString)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("failed to parse artifact url: %w", err)
   }
 
   response, err := t.get(ctx, artifactUrl.String())
@@ -109,7 +109,7 @@ func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build 
   }, bo)
 
   if err != nil {
-    return nil, errors.New("Maximum retries reached, download failed")
+    return nil, errors.New("maximum retries reached, download failed")
   }
   return result, nil
 }
@@ -134,7 +134,7 @@ func (t *Collector) downloadBuildProperties(ctx context.Context, build Build) ([
     }
 
     responseBody, _ := io.ReadAll(response.Body)
-    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return nil, fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)

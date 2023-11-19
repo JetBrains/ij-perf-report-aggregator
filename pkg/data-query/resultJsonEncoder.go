@@ -1,8 +1,8 @@
 package data_query
 
 import (
+  "fmt"
   "github.com/ClickHouse/ch-go/proto"
-  "github.com/develar/errors"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
   "strconv"
@@ -140,7 +140,7 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
       }
       releaseWriters(splitParameters, templateWriters)
     default:
-      return errors.Errorf("unsupported column type %T", data)
+      return fmt.Errorf("unsupported column type %T", data)
     }
 
   }

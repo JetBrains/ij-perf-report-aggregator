@@ -3,10 +3,10 @@ package analyzer
 import (
   "context"
   "errors"
+  "fmt"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
-  e "github.com/develar/errors"
   "go.deanishe.net/env"
   "log/slog"
   "strconv"
@@ -17,7 +17,7 @@ import (
 // use `select distinct cast(machine, 'Uint16') as id, machine as name FROM report order by id` to get current enum values
 // for now machine enum should be updated manually if a new machine will be added
 
-var ErrMetricsCannotBeComputed = e.New("metrics cannot be computed")
+var ErrMetricsCannotBeComputed = errors.New("metrics cannot be computed")
 
 type RunResult struct {
   Product string
@@ -107,10 +107,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
   effectiveSql := sb.String()
 
-  insertManager, err := sql_util.NewBatchInsertManager(context, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
-  if err != nil {
-    return nil, e.WithStack(err)
-  }
+  insertManager := sql_util.NewBatchInsertManager(context, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
   insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
@@ -276,7 +273,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 
   err = batch.Append(args...)
   if err != nil {
-    return e.WithStack(err)
+    return fmt.Errorf("cannot append: %w", err)
   }
   return nil
 }

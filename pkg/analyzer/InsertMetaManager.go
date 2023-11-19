@@ -2,7 +2,7 @@ package analyzer
 
 import (
   "context"
-  "github.com/develar/errors"
+  "fmt"
   "github.com/jackc/pgx/v5/pgxpool"
   "os"
 )
@@ -15,7 +15,7 @@ type InsertMetaManager struct {
 func NewInsertMetaManager(insertContext context.Context) (*InsertMetaManager, error) {
   dbpool, err := pgxpool.New(insertContext, os.Getenv("DATABASE_URL"))
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("cannot create pool: %w", err)
   }
 
   manager := &InsertMetaManager{

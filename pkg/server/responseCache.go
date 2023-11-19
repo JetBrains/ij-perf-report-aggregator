@@ -5,7 +5,6 @@ import (
   "errors"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
   "github.com/VictoriaMetrics/fastcache"
-  e "github.com/develar/errors"
   "github.com/valyala/bytebufferpool"
   "github.com/zeebo/xxh3"
   "io"
@@ -110,13 +109,12 @@ func generateCacheKey(request *http.Request) []byte {
 }
 
 func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
-  cause := e.Cause(err)
   var httpError *http_error.HttpError
-  if errors.As(cause, &httpError) {
+  if errors.As(err, &httpError) {
     w.WriteHeader(httpError.Code)
     writehttpError(w, httpError)
   } else {
-    if errors.Is(cause, context.Canceled) {
+    if errors.Is(err, context.Canceled) {
       http.Error(w, err.Error(), 499)
     } else {
       slog.Error("cannot handle http request", "error", err)

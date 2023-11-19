@@ -1,8 +1,8 @@
 package analyzer
 
 import (
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/develar/errors"
   "github.com/valyala/fastjson"
   "log/slog"
   "time"
@@ -86,7 +86,7 @@ func ParseTime(s string) (time.Time, error) {
   }
 
   if err != nil {
-    return time.Time{}, errors.WithStack(err)
+    return time.Time{}, fmt.Errorf("cannot parse time %s: %w", s, err)
   }
   return parsedTime, nil
 }

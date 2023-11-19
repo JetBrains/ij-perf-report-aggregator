@@ -5,9 +5,9 @@ import (
   "context"
   "encoding/base64"
   "encoding/hex"
+  "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-  "github.com/develar/errors"
   "github.com/json-iterator/go"
   "golang.org/x/sync/errgroup"
   "io"
@@ -172,7 +172,10 @@ func (t *Collector) loadChanges(builds []*Build, networkRequestCount int) error 
       return func() error {
         var err error
         buildInfo.changes, err = t.loadBuildChanges(loadContext, buildInfo.id)
-        return errors.WithStack(err)
+        if err != nil {
+          return fmt.Errorf("failed to load changes: %w", err)
+        }
+        return nil
       }
     })(buildInfo))
   }
@@ -231,7 +234,10 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
       return func() error {
         var err error
         installerInfo.changes, err = t.loadBuildChanges(loadContext, installerInfo.id)
-        return errors.WithStack(err)
+        if err != nil {
+          return fmt.Errorf("failed to load changes: %w", err)
+        }
+        return nil
       }
     })(installerInfo))
   }
@@ -267,7 +273,7 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
 
   if response.StatusCode > 300 {
     responseBody, _ := io.ReadAll(response.Body)
-    return nil, errors.Errorf("Invalid response (%s): %s", response.Status, responseBody)
+    return nil, fmt.Errorf("invalid response (%s): %s", response.Status, responseBody)
   }
 
   t.storeSessionIdCookie(response)
@@ -275,7 +281,7 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
   var changeList ChangeList
   err = jsoniter.ConfigFastest.NewDecoder(response.Body).Decode(&changeList)
   if err != nil {
-    return nil, errors.WithStack(err)
+    return nil, fmt.Errorf("failed to parse response: %w", err)
   }
 
   encoding := base64.RawStdEncoding
@@ -289,7 +295,7 @@ func (t *Collector) loadBuildChanges(ctx context.Context, buildId int) ([]string
     }
     data, err := hex.DecodeString(change.Version)
     if err != nil {
-      return nil, errors.WithStack(err)
+      return nil, fmt.Errorf("failed to decode change version: %w", err)
     }
 
     b.Reset()

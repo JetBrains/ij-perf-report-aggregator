@@ -53,7 +53,8 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
     var err error
     result, err = decompressData(value)
     if err != nil {
-      rcm.handleError(err, w)
+      slog.Error("cannot decompress cached result", "error", err)
+      http.Error(w, err.Error(), http.StatusInternalServerError)
       return
     }
     prevEtag := request.Header.Get("If-None-Match")

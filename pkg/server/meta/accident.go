@@ -135,7 +135,7 @@ func CreatePostAccidentRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
       if strings.Contains(err.Error(), "unique constraint") {
         http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
       } else {
-        slog.Error("cannot execute query", "error", err)
+        slog.Error("cannot execute insert accidents query", "error", err, "date", params.Date, "affected_test", params.Test, "reason", params.Reason, "build_number", params.BuildNumber, "kind", kind, "externalId", params.ExternalId)
         writer.WriteHeader(http.StatusInternalServerError)
       }
       return

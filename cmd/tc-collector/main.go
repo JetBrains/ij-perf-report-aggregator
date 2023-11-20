@@ -7,6 +7,7 @@ import (
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
+  "go.deanishe.net/env"
   "log/slog"
   "net/http"
   "os"
@@ -38,7 +39,7 @@ func hasOSSuffix(osList []string, configuration string) bool {
 // TC REST API: By default only builds from the default branch are returned (https://www.jetbrains.com/help/teamcity/rest-api.html#Build-Locator),
 // so, no need to explicitly specify filter
 func configureCollectFromTeamCity() error {
-  clickHouseUrl := util.GetEnv("CLICKHOUSE", "127.0.0.1:9000")
+  clickHouseUrl := env.Get("CLICKHOUSE", "127.0.0.1:9000")
   sinceDate := flag.String("since", "", "The date to force collecting since")
   flag.Parse()
 

@@ -16,6 +16,7 @@ import (
   "github.com/nats-io/nats.go"
   "github.com/rs/cors"
   "github.com/valyala/bytebufferpool"
+  "go.deanishe.net/env"
   _ "go.uber.org/automaxprocs" // automatically set GOMAXPROCS
   "io"
   "log/slog"
@@ -107,7 +108,7 @@ func Serve(dbUrl string, natsUrl string) error {
     manager: cacheManager,
   })
 
-  server := listenAndServe(util.GetEnv("SERVER_PORT", "9044"), r)
+  server := listenAndServe(env.Get("SERVER_PORT", "9044"), r)
   slog.Info("started", "server", server.Addr, "clickhouse", dbUrl, "nats", natsUrl)
 
   waitUntilTerminated(server, 1*time.Minute)

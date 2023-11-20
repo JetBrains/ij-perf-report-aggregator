@@ -198,7 +198,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
     }
 
     if metric.isRequired {
-      if metric.Name != "bootstrap_d" || version.Compare(report.Version, "6", ">=") {
+      if metric.Name != "bootstrap_d" {
         logger.Error("metric is required, but not found, report will be skipped", "metric", metric.Name)
         return nil
       }

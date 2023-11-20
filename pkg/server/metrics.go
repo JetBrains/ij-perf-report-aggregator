@@ -57,6 +57,9 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
     jsonWriter.S("]")
   }
   isOk = true
+  if len(buffer.B) == 0 {
+    jsonWriter.S("[]")
+  }
   return buffer, true, nil
 }
 

@@ -20,6 +20,7 @@ declare module 'vue' {
     MultiSelect: typeof import('primevue/multiselect/MultiSelect.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SelectButton: typeof import('primevue/selectbutton/SelectButton.vue')['default']
     Slider: typeof import('primevue/slider/Slider.vue')['default']
     SplitButton: typeof import('primevue/splitbutton/SplitButton.vue')['default']
     TabPanel: typeof import('primevue/tabpanel/TabPanel.vue')['default']

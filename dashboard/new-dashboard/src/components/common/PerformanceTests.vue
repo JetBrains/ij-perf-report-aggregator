@@ -62,6 +62,7 @@
         <MachineSelect :machine-configurator="machineConfigurator" />
         <SelectButton
           v-model="testMetricSwitcher"
+          :allow-empty="false"
           :options="testMetricSwitcherOptions"
         />
       </template>
@@ -219,17 +220,10 @@ provide(dashboardConfiguratorsKey, configurators)
 const testMetricSwitcher: Ref<TestMetricSwitcher | null> = ref(TestMetricSwitcher.Tests)
 const testMetricSwitcherOptions = [TestMetricSwitcher.Tests, TestMetricSwitcher.Metrics]
 persistentStateManager.add("type", testMetricSwitcher)
-let previousValue: TestMetricSwitcher | null = null
 let watchStopHandle: WatchStopHandle | null = null
 watch(
   testMetricSwitcher,
   (value) => {
-    if (value == null) {
-      testMetricSwitcher.value = previousValue
-      return
-    }
-    if (value == previousValue) return
-    previousValue = value
     switch (value) {
       case TestMetricSwitcher.Tests: {
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])

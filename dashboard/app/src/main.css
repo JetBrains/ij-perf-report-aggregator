@@ -1,3 +1,5 @@
+@import "primevue.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,3 +24,4 @@ It allows us to use TailwindUI as is without any changes in sizes.
   visibility: visible;
   color: white;
 }
+

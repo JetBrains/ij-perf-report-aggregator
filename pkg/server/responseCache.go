@@ -54,6 +54,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
     result, err = decompressData(value)
     if err != nil {
       rcm.handleError(err, w)
+      return
     }
     prevEtag := request.Header.Get("If-None-Match")
     eTag := computeEtag(result)

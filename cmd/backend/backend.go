@@ -2,13 +2,13 @@ package main
 
 import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "go.deanishe.net/env"
   "log/slog"
   "os"
 )
 
 func main() {
-  err := server.Serve(util.GetEnv("CLICKHOUSE", server.DefaultDbUrl), util.GetEnv("NATS", ""))
+  err := server.Serve(env.Get("CLICKHOUSE", server.DefaultDbUrl), env.Get("NATS", ""))
   if err != nil {
     slog.Error("error", err)
     os.Exit(1)

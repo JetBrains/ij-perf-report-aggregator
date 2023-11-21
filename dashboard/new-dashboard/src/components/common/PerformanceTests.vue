@@ -19,7 +19,10 @@
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
-        <div v-if="testMetricSwitcher == TestMetricSwitcher.Tests">
+        <span
+          v-if="testMetricSwitcher == TestMetricSwitcher.Tests"
+          class="flex flex-row justify-between items-center"
+        >
           <DimensionSelect
             label="Tests"
             :selected-label="testsSelectLabelFormat"
@@ -38,8 +41,11 @@
               <BeakerIcon class="w-4 h-4 text-gray-500" />
             </template>
           </MeasureSelect>
-        </div>
-        <div v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics">
+        </span>
+        <span
+          v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics"
+          class="flex flex-row justify-between items-center"
+        >
           <MeasureSelect
             title="Metrics"
             :selected-label="metricsSelectLabelFormat"
@@ -58,12 +64,13 @@
               <ChartBarIcon class="w-4 h-4 text-gray-500" />
             </template>
           </DimensionSelect>
-        </div>
+        </span>
         <MachineSelect :machine-configurator="machineConfigurator" />
         <SelectButton
           v-model="testMetricSwitcher"
           :allow-empty="false"
           :options="testMetricSwitcherOptions"
+          class="flex flex-1"
         />
       </template>
       <template #end>
@@ -75,7 +82,7 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <div v-if="testMetricSwitcher == TestMetricSwitcher.Tests">
+        <span v-if="testMetricSwitcher == TestMetricSwitcher.Tests">
           <template
             v-for="measure in measureConfigurator.selected.value"
             :key="measure"
@@ -90,25 +97,19 @@
               :legend-formatter="(name) => name"
             />
           </template>
-        </div>
-        <div v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics">
-          <div
-            v-if="measureConfigurator.selected.value != null"
-            ref="container"
-            class="flex flex-1 flex-col gap-6 overflow-hidden"
+        </span>
+        <span v-else-if="testMetricSwitcher == TestMetricSwitcher.Metrics && measureConfigurator.selected.value != null && measureConfigurator.selected.value?.length > 0">
+          <template
+            v-for="scenario in scenarios"
+            :key="scenario"
           >
-            <template
-              v-for="scenario in scenarios"
-              :key="scenario"
-            >
-              <GroupProjectsChart
-                :measure="measureConfigurator.selected.value"
-                :projects="[scenario]"
-                :label="scenario"
-              />
-            </template>
-          </div>
-        </div>
+            <GroupProjectsChart
+              :measure="measureConfigurator.selected.value"
+              :projects="[scenario]"
+              :label="scenario"
+            />
+          </template>
+        </span>
       </div>
       <InfoSidebar />
     </main>

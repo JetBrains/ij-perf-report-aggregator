@@ -67,7 +67,7 @@ func doNotifyServer(natsUrl string) error {
   return nil
 }
 
-func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, initialSince time.Time, userSpecifiedSince time.Time, httpClient *http.Client) error {
+func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUrl string, projectId string, buildConfigurationIds []string, userSpecifiedSince time.Time, httpClient *http.Client) error {
   serverUrl := tcUrl + "/app/rest"
 
   config := analyzer.GetAnalyzer(projectId)
@@ -95,7 +95,6 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
           serverUrl,
           tcUrl,
           userSpecifiedSince,
-          initialSince,
           slog.With("buildTypeId", buildTypeId),
         )
       }
@@ -114,7 +113,6 @@ func collectBuildConfiguration(
   serverUrl string,
   serverHost string,
   userSpecifiedSince time.Time,
-  initialSince time.Time,
   logger *slog.Logger,
 ) error {
   serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
@@ -126,14 +124,11 @@ func collectBuildConfiguration(
 
   since := userSpecifiedSince
   if since.IsZero() {
-    since = initialSince
-    if since.IsZero() {
-      //goland:noinspection SqlResolve
-      query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
-      err := db.QueryRow(taskContext, query).Scan(&since)
-      if err != nil && !errors.Is(err, sql.ErrNoRows) {
-        return fmt.Errorf("cannot query last collect time: %w", err)
-      }
+    //goland:noinspection SqlResolve
+    query := "select last_time from collector_state where build_type_id = '" + sqlutil.StringEscaper.Replace(buildTypeId) + "' order by last_time desc limit 1"
+    err := db.QueryRow(taskContext, query).Scan(&since)
+    if err != nil && !errors.Is(err, sql.ErrNoRows) {
+      return fmt.Errorf("cannot query last collect time: %w", err)
     }
   }
 

@@ -85,8 +85,6 @@ func configureCollectFromTeamCity() error {
       break
     }
 
-    var initialSince time.Time
-
     var buildConfigurationIds []string
     switch {
     case chunk.Database == "ij":
@@ -123,14 +121,7 @@ func configureCollectFromTeamCity() error {
       }
     }
 
-    if len(chunk.InitialSince) != 0 {
-      initialSince, err = dateparse.ParseStrict(chunk.InitialSince)
-      if err != nil {
-        return fmt.Errorf("cannot parse initial since date: %w", err)
-      }
-    }
-
-    err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, initialSince, since, httpClient)
+    err = collectFromTeamCity(taskContext, clickHouseUrl, config.TeamcityUrl, chunk.Database, buildConfigurationIds, since, httpClient)
     if err != nil {
       return err
     }
@@ -159,6 +150,5 @@ type CollectorConfiguration struct {
 
 type CollectorChunk struct {
   Database       string   `json:"db"`
-  InitialSince   string   `json:"initialSince"`
   Configurations []string `json:"configurations"`
 }

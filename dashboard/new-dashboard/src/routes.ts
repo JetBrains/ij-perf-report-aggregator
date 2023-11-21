@@ -50,7 +50,7 @@ enum ROUTES {
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
-  IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrDashboard`,
+  IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrPerformanceDashboard`,
   IntelliJWorkspaceModelBenchmarksDashboard = `${ROUTE_PREFIX.IntelliJ}/wsmBenchmarks`,
   IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
@@ -1074,7 +1074,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJJBRDashboard,
-          component: () => import("./components/intelliJ/JBRDashboard.vue"),
+          component: () => import("./components/intelliJ/Jbr21PerformanceDashboard.vue"),
           meta: { pageTitle: "JBR Performance dashboard" },
         },
         {

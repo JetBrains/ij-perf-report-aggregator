@@ -377,30 +377,6 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="JVM Memory Allocated, Mb"
-        measure="JVM.totalMegabytesAllocated"
-        :projects="[
-          'RUBY-23764-Case1/ruby-23764-findusages-case1',
-          'RUBY-23764-Case2/ruby-23764-findusages-case2',
-          'gitlab-project-inspections-test/inspection-app',
-          'gitlab-project-inspections-test/inspection-RubyResolve-app',
-          'redmine-project-inspections-test/inspection-RubyResolve-app',
-          'redmine-project-inspections-test/inspection-app',
-          'GitLab/typing/enter/project_spec/describe',
-        ]"
-        :aliases="[
-          'Factory Find Usage (GL)',
-          'Let Variable Find Usage (GL)',
-          'All Inspections (GL)',
-          'Unresolved References Inspection (GL)',
-          'All Inspections (RM)',
-          'Unresolved References Inspection (RM)',
-          'Enter in Project Model Spec (GL)',
-        ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
         label="GC Memory Collected, Mb"
         measure="freedMemoryByGC"
         :projects="[

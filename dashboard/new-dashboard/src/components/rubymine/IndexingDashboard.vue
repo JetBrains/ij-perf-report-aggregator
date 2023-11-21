@@ -143,14 +143,6 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="JVM Memory Allocated, Mb"
-        measure="JVM.totalMegabytesAllocated"
-        :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"
-        :aliases="['Disaspora', 'RBS Collection', 'GitLab', 'Redmine']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
         label="GC Memory Collected, Mb"
         measure="freedMemoryByGC"
         :projects="['diaspora-project-test/indexing', 'gem-rbs-collection-indexing-test/indexing', 'gitlab-project-test/indexing', 'redmine-project-test/indexing']"

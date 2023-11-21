@@ -29,13 +29,9 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
+import { SharedIndicesProject } from "../../common/sharedIndices/SharedIndicesProject"
 
-interface test_project {
-  pretty_name: string
-  real_name: string
-}
-
-const projects: test_project[] = [
+const projects: SharedIndicesProject[] = [
   {
     pretty_name: "ToolboxEnterprise",
     real_name: "tbe",

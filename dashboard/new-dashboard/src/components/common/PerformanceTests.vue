@@ -83,7 +83,7 @@
             <LineChart
               :title="measure"
               :measures="[measure]"
-              :configurators="configurators"
+              :configurators="[...configurators, scenarioConfigurator]"
               :skip-zero-values="false"
               :value-unit="props.unit"
               :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
@@ -120,10 +120,9 @@ import { provide, Ref, ref, watch, WatchStopHandle } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
-import { DimensionConfigurator, dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
-import { NoOpConfigurator } from "../../configurators/NoOpConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerConfigurator } from "../../configurators/ServerConfigurator"
@@ -228,12 +227,6 @@ watch(
       case TestMetricSwitcher.Tests: {
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
-        const index = configurators.findIndex((configurator) => configurator instanceof NoOpConfigurator)
-        if (index == -1) {
-          configurators.push(scenarioConfigurator)
-        } else {
-          configurators[index] = scenarioConfigurator
-        }
         break
       }
       case TestMetricSwitcher.Metrics: {
@@ -245,7 +238,6 @@ watch(
             scenarios = toArray(value)
           }
         })
-        configurators[configurators.findIndex((configurator) => configurator instanceof DimensionConfigurator && configurator.name == "project")] = new NoOpConfigurator()
         break
       }
     }

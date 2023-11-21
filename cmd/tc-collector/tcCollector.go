@@ -133,7 +133,7 @@ func collectBuildConfiguration(
   }
 
   if !since.IsZero() {
-    locator += ",sinceDate:" + since.Format(tcTimeFormat)
+    locator += ",finishDate:(date:" + since.Format(tcTimeFormat) + ",condition:after)"
   }
 
   q.Set("locator", locator)
@@ -206,7 +206,7 @@ func collectBuildConfiguration(
 
     logger.Debug("load reports", "chunk", i)
 
-    lastBuildStartDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].StartDate)
+    lastBuildFinishDate, err := time.Parse(tcTimeFormat, builds[len(builds)-1].FinishDate)
     if err != nil {
       return fmt.Errorf("cannot parse last build start date: %w", err)
     }
@@ -229,7 +229,7 @@ func collectBuildConfiguration(
 
     // engine ReplacingMergeTree(last_time) is used, no need to delete old entry
     // set last collect time to 1 second after last build in chunk
-    err = updateLastCollectTime(taskContext, buildTypeId, lastBuildStartDate.Add(1*time.Second), db)
+    err = updateLastCollectTime(taskContext, buildTypeId, lastBuildFinishDate.Add(1*time.Second), db)
     if err != nil {
       return err
     }
@@ -238,7 +238,7 @@ func collectBuildConfiguration(
 }
 
 func buildTeamCityQuery() string {
-  return "count,href,nextHref,build(id,buildTypeId,number,startDate,status,agent(name),artifacts($locator(recursive:true,directory:false),file(href)),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
+  return "count,href,nextHref,build(id,buildTypeId,number,finishDate,status,agent(name),artifacts($locator(recursive:true,directory:false),file(href)),artifact-dependencies(build(id,buildTypeId,finishDate)),personal,triggered(user(email)))"
 }
 
 func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn) error {

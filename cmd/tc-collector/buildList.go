@@ -20,7 +20,7 @@ type Build struct {
   Type        string `json:"buildTypeId"`
   Status      string `json:"status"`
   Agent       Agent  `json:"agent"`
-  StartDate   string `json:"startDate"`
+  FinishDate  string `json:"finishDate"`
   BuildNumber string `json:"number"`
 
   ArtifactDependencies ArtifactDependencies `json:"artifact-dependencies"`

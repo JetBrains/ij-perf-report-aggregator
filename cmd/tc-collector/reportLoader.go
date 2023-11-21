@@ -26,7 +26,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
 
   for index, build := range builds {
     if reportExistenceChecker.has(build.Id) {
-      t.logger.Info("build already processed", "id", build.Id, "startDate", build.StartDate)
+      t.logger.Info("build already processed", "id", build.Id, "finishDate", build.FinishDate)
       builds[index] = nil
     }
   }
@@ -94,7 +94,7 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
             ReportFile:        artifact.path,
           }
 
-          currentBuildTime, err := analyzer.ParseTime(build.StartDate)
+          currentBuildTime, err := analyzer.ParseTime(build.FinishDate)
           if err == nil {
             data.CurrentBuildTime = currentBuildTime
           }

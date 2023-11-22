@@ -63,21 +63,27 @@ import { completionProjects, findUsagesProjects, highlightingProjects } from "..
 import K1VsK2ComparisonProjectCategoryFilter from "./K1VsK2ComparisonProjectCategoryFilter.vue"
 import K1VsK2ComparisonTable from "./K1VsK2ComparisonTable.vue"
 
-const dbName = "perfintDev"
+interface Props {
+  dbName: string
+  persistentId: string
+  initialBranch: string
+}
+
+const props = defineProps<Props>()
+
 const dbTable = "kotlin"
 const initialMachine = "linux-blade-hetzner"
-const persistentId = "kotlinDev_k1VsK2Comparison"
 
 const router = useRouter()
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerConfigurator(props.dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistentStateManager = new PersistentStateManager(
-  persistentId,
+  props.persistentId,
   {
     machine: initialMachine,
-    branch: "kt-master",
+    branch: props.initialBranch,
     projectCategories: [],
   },
   router

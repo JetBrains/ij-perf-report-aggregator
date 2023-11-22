@@ -105,6 +105,7 @@ enum ROUTES {
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
   KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
+  KotlinK1VsK2Comparison = `${ROUTE_PREFIX.Kotlin}/k1VsK2Comparison`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/memoryDashboard`,
@@ -553,6 +554,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinDebuggerDev,
           label: "Debugger (dev)",
+        },
+        {
+          url: ROUTES.KotlinK1VsK2Comparison,
+          label: "K1 vs. K2",
         },
         {
           url: ROUTES.KotlinK1VsK2ComparisonDev,
@@ -1672,8 +1677,13 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Kotlin debugger (dev/fast)" },
         },
         {
+          path: ROUTES.KotlinK1VsK2Comparison,
+          component: () => import("./components/kotlin/K1VsK2ComparisonDashboard.vue"),
+          meta: { pageTitle: "Kotlin K1 vs. K2" },
+        },
+        {
           path: ROUTES.KotlinK1VsK2ComparisonDev,
-          component: () => import("./components/kotlin/dev/K1VsK2ComparisonDashboard.vue"),
+          component: () => import("./components/kotlin/dev/K1VsK2ComparisonDevDashboard.vue"),
           meta: { pageTitle: "Kotlin K1 vs. K2 (dev/fast)" },
         },
         {

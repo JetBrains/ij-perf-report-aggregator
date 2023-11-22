@@ -25,6 +25,10 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
   if minimumSegmentLength == 0 {
     minimumSegmentLength = 5
   }
+  medianDifference := analysisSettings.MedianDifferenceThreshold
+  if medianDifference == 0 {
+    medianDifference = 10
+  }
 
   changePoints := GetChangePointIndexes(values, 1)
   segments := getSegmentsBetweenChangePoints(changePoints, values)
@@ -49,7 +53,7 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
     absoluteChange := math.Abs(currentMedian - previousMedian)
 
-    if absoluteChange < 10 || percentageChange < 10 {
+    if absoluteChange < 10 || percentageChange < medianDifference {
       break
     }
     isDegradation := false

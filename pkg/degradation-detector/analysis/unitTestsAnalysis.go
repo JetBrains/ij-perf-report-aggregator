@@ -24,16 +24,17 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
   settings := make([]detector.Settings, 0, 1000)
   for _, test := range tests {
     settings = append(settings, detector.Settings{
-      Test:                   test,
-      Db:                     mainSettings.Db,
-      Table:                  mainSettings.Table,
-      Channel:                mainSettings.Channel,
-      Branch:                 mainSettings.Branch,
-      Machine:                mainSettings.Machine,
-      Metric:                 mainSettings.Metric,
-      ProductLink:            mainSettings.ProductLink,
-      DoNotReportImprovement: true,
-      MinimumSegmentLength:   20,
+      Test:                      test,
+      Db:                        mainSettings.Db,
+      Table:                     mainSettings.Table,
+      Channel:                   mainSettings.Channel,
+      Branch:                    mainSettings.Branch,
+      Machine:                   mainSettings.Machine,
+      Metric:                    mainSettings.Metric,
+      ProductLink:               mainSettings.ProductLink,
+      DoNotReportImprovement:    true,
+      MinimumSegmentLength:      20,
+      MedianDifferenceThreshold: 20,
     })
   }
   return settings

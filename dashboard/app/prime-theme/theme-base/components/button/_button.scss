@@ -5,7 +5,7 @@
     //padding: $buttonPadding;
     //font-size: $fontSize;
     transition: $formElementTransition;
-    //border-radius: $borderRadius;
+    border-radius: $borderRadius;
 
     &:not(:disabled):hover {
         background: $buttonHoverBg;
@@ -121,9 +121,9 @@
         box-shadow: $raisedButtonShadow;
     }
 
-    //&.p-button-rounded {
-    //    border-radius: $roundedButtonBorderRadius;
-    //}
+    &.p-button-rounded {
+        border-radius: $roundedButtonBorderRadius;
+    }
 
     &.p-button-icon-only {
         //width: $buttonIconOnlyWidth;
@@ -134,10 +134,10 @@
             margin: 0;
         }
 
-        //&.p-button-rounded {
-        //    border-radius: 50%;
-        //    height: $buttonIconOnlyWidth;
-        //}
+        &.p-button-rounded {
+            border-radius: 50%;
+            height: $buttonIconOnlyWidth;
+        }
     }
 
     &.p-button-sm {
@@ -227,9 +227,9 @@
     }
 
     &.p-button-text {
-        //background-color: transparent;
-        //color: $secondaryButtonBg;
-        //border-color: transparent;
+        background-color: transparent;
+        color: $secondaryButtonBg;
+        border-color: transparent;
 
         &:not(:disabled):hover {
             background: rgba($secondaryButtonBg, $textButtonHoverBgOpacity);

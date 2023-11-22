@@ -1,14 +1,10 @@
 .p-button {
-  @apply text-sm rounded-md shadow-sm px-3 py-2 leading-4;
+  @apply text-sm shadow-sm px-3 py-2 leading-4;
 }
 
 /* see InputForm - input number right after button, but for button we use different line height and it leads to a larger height */
 .p-button + .p-inputnumber .p-inputtext {
   @apply leading-4;
-}
-
-.p-button-rounded {
-  @apply rounded-full shadow-sm;
 }
 
 .p-button-icon-only {

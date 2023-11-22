@@ -73,6 +73,10 @@
     <DashboardGroupCharts :definitions="evaluateExpressionChars" />
     <Divider title="Refactoring" />
     <DashboardGroupCharts :definitions="refactoringCharts" />
+    <Divider title="Script" />
+    <DashboardGroupCharts :definitions="scriptCompletionCharts" />
+    <DashboardGroupCharts :definitions="highlightingScriptCharts" />
+    <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
   </DashboardPage>
 </template>
 
@@ -81,5 +85,15 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
-import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, codeAnalysisCharts, refactoringCharts } from "./projects"
+import {
+  completionCharts,
+  evaluateExpressionChars,
+  findUsagesCharts,
+  highlightingCharts,
+  codeAnalysisCharts,
+  refactoringCharts,
+  scriptCompletionCharts,
+  highlightingScriptCharts,
+  codeAnalysisScriptCharts,
+} from "./projects"
 </script>

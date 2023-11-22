@@ -138,7 +138,6 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin language server'", completionProjects.kotlinLanguageServer),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
-  ...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript),
 ]
 
 export const mppCompletionCharts: ProjectsChartDefinition[] = [
@@ -305,7 +304,6 @@ const highlightingLabelsAndProjects = [
   { label: "'Toolbox Enterprise (TBE)'", projects: highlightingProjects.tbe },
   { label: "'Ktor samples'", projects: highlightingProjects.ktorSamples },
   { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
-  { label: "'Kotlin script'", projects: highlightingProjects.kotlinScript },
   { label: "'Spring framework'", projects: highlightingProjects.springFramework },
   { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
@@ -327,7 +325,6 @@ function generateHighlightingDefinition(labelPrefix: string, projects: string[])
     projects,
   }
 }
-
 export const codeAnalysisCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
 export const mppCodeAnalysisCharts: ProjectsChartDefinition[] = mppHighlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
 function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
@@ -472,6 +469,10 @@ function generateEvaluateExpressionDefinition(labelPrefix: string, projects: str
   }
 }
 
+const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingProjects.kotlinScript }]
+export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects))
+export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
+export const scriptCompletionCharts: ProjectsChartDefinition[] = [...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript)]
 export const KOTLIN_MAIN_METRICS = [
   "completion#mean_value",
   "completion#firstElementShown#mean_value",

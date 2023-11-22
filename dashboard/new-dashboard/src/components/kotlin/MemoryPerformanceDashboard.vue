@@ -16,6 +16,10 @@
     <MemoryDashboardGroupCharts :definitions="evaluateExpressionChars" />
     <Divider title="Refactoring" />
     <MemoryDashboardGroupCharts :definitions="refactoringCharts" />
+    <Divider title="Script" />
+    <MemoryDashboardGroupCharts :definitions="scriptCompletionCharts" />
+    <MemoryDashboardGroupCharts :definitions="highlightingScriptCharts" />
+    <MemoryDashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
   </DashboardPage>
 </template>
 
@@ -23,5 +27,15 @@
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import MemoryDashboardGroupCharts from "./MemoryDashboardGroupCharts.vue"
-import { completionCharts, evaluateExpressionChars, findUsagesCharts, highlightingCharts, codeAnalysisCharts, refactoringCharts } from "./projects"
+import {
+  completionCharts,
+  evaluateExpressionChars,
+  findUsagesCharts,
+  highlightingCharts,
+  codeAnalysisCharts,
+  refactoringCharts,
+  scriptCompletionCharts,
+  highlightingScriptCharts,
+  codeAnalysisScriptCharts,
+} from "./projects"
 </script>

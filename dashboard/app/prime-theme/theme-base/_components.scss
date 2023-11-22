@@ -2,7 +2,7 @@
 @import '_colors';
 
 @import './components/input/_editor';
-
+@layer primevue {
   @import '_common';
   //Input
   @import './components/input/_autocomplete';
@@ -103,3 +103,4 @@
   //@import './components/misc/_skeleton';
   //@import './components/misc/_tag';
   //@import './components/misc/_terminal';
+}

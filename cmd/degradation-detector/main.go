@@ -16,10 +16,12 @@ import (
 func main() {
   backendUrl := getBackendUrl()
   client := createHttpClient()
+  slog.Info("started")
   analysisSettings := generateAnalysisSettings(backendUrl, client)
   degradations := getDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
   sendDegradationsToSlack(insertionResults, client)
+  slog.Info("finished")
 }
 
 func getBackendUrl() string {
@@ -63,6 +65,7 @@ func generateAnalysisSettings(backendUrl string, client *http.Client) <-chan det
 func getDegradations(analysisSettings <-chan detector.Settings, client *http.Client, backendUrl string) <-chan detector.Degradation {
   degradationChan := make(chan detector.Degradation, 5)
   go func() {
+    defer close(degradationChan)
     var wg sync.WaitGroup
     pool := pond.New(5, 1000)
     for analysisSetting := range analysisSettings {
@@ -83,10 +86,7 @@ func getDegradations(analysisSettings <-chan detector.Settings, client *http.Cli
         }
       })
     }
-    go func() {
-      wg.Wait()
-      close(degradationChan)
-    }()
+    wg.Wait()
   }()
 
   return degradationChan

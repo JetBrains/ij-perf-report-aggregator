@@ -21,6 +21,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
   url := backendURL + "/api/meta/accidents"
   insertionResults := make(chan InsertionResults)
   go func() {
+    defer close(insertionResults)
     var wg sync.WaitGroup
     for degradation := range degradations {
       wg.Add(1)
@@ -69,11 +70,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
         insertionResults <- InsertionResults{degradation, true, nil}
       }(degradation)
     }
-
-    go func() {
-      wg.Wait()
-      close(insertionResults)
-    }()
+    wg.Wait()
   }()
 
   return insertionResults

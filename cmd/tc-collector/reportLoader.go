@@ -246,7 +246,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
 
 func computeBuildDate(build *Build) (int, time.Time, error) {
   for _, dependencyBuild := range build.ArtifactDependencies.Builds {
-    if strings.Contains(dependencyBuild.BuildTypeId, "Installer") {
+    if strings.Contains(dependencyBuild.BuildTypeId, "Installer") || strings.Contains(dependencyBuild.BuildTypeId, "Distribution") {
       result, err := time.Parse(tcTimeFormat, dependencyBuild.FinishDate)
       if err != nil {
         return -1, time.Time{}, err

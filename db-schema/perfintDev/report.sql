@@ -16,4 +16,4 @@ create table idea2
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))
-    order by (machine, branch, project, build_time, generated_time)
+    order by (branch, project, machine, build_time, generated_time)

@@ -28,12 +28,17 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing", "Scanning"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"],
-    projects: ["21jbr-community/indexing", "community/indexing"],
+    projects: ["21jbr-community/indexing", "community/indexing", "21jbr-intellij_sources/indexing", "intellij_sources/indexing"],
+  },
+  {
+    labels: ["VFS refresh"],
+    measures: ["vfs_initial_refresh"],
+    projects: ["21jbr-intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/default"],
   },
   {
     labels: ["Compilation"],
     measures: ["build_compilation_duration"],
-    projects: ["21jbr-community/rebuild", "community/rebuild"],
+    projects: ["21jbr-community/rebuild", "community/rebuild", "21jbr-intellij_sources/rebuild", "intellij_sources/rebuild"],
   },
   {
     labels: ["Find Usages Library.getName() before compilation", "First Code Analysis"],
@@ -70,7 +75,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-action/Runtime/typingLetterByLetter", "community/go-to-action/Runtime/typingLetterByLetter"],
   },
-
   {
     labels: ["SE: go-to-all Editor"],
     measures: ["searchEverywhere"],
@@ -86,7 +90,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-all/Runtime/typingLetterByLetter", "community/go-to-all/Runtime/typingLetterByLetter"],
   },
-
   {
     labels: ["SE: go-to-class Editor"],
     measures: ["searchEverywhere"],
@@ -102,7 +105,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-class/Runtime/typingLetterByLetter", "community/go-to-class/Runtime/typingLetterByLetter"],
   },
-
   {
     labels: ["SE: go-to-file Editor"],
     measures: ["searchEverywhere"],
@@ -118,7 +120,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-file/Runtime/typingLetterByLetter", "community/go-to-file/Runtime/typingLetterByLetter"],
   },
-
   {
     labels: ["SE: go-to-symbol Editor"],
     measures: ["searchEverywhere"],
@@ -134,7 +135,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-symbol/Runtime/typingLetterByLetter", "community/go-to-symbol/Runtime/typingLetterByLetter"],
   },
-
   {
     labels: ["SE: go-to-text Editor"],
     measures: ["searchEverywhere"],
@@ -149,6 +149,56 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["SE: go-to-text Runtime"],
     measures: ["searchEverywhere"],
     projects: ["21jbr-community/go-to-text/Runtime/typingLetterByLetter", "community/go-to-text/Runtime/typingLetterByLetter"],
+  },
+  {
+    labels: ["Local inspections java file"],
+    measures: ["localInspections"],
+    projects: ["21jbr-intellij_sources/localInspection/java_file", "intellij_sources/localInspection/java_file"],
+  },
+  {
+    labels: ["Local inspections kotlin file"],
+    measures: ["localInspections"],
+    projects: ["21jbr-intellij_sources/localInspection/kotlin_file", "intellij_sources/localInspection/kotlin_file"],
+  },
+  {
+    labels: ["File History"],
+    measures: ["showFileHistory"],
+    projects: ["21jbr-intellij_sources/showFileHistory/EditorImpl", "intellij_sources/showFileHistory/EditorImpl"],
+  },
+  {
+    labels: ["File Structure dialogue java file"],
+    measures: ["FileStructurePopup"],
+    projects: ["21jbr-intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/java_file"],
+  },
+  {
+    labels: ["File Structure dialogue kotlin file"],
+    measures: ["FileStructurePopup"],
+    projects: ["21jbr-intellij_sources/FileStructureDialog/kotlin_file", "intellij_sources/FileStructureDialog/kotlin_file"],
+  },
+  {
+    labels: ["Expand Editor menu"],
+    measures: ["%expandEditorMenu"],
+    projects: ["21jbr-intellij_sources/expandEditorMenu", "intellij_sources/expandEditorMenu"],
+  },
+  {
+    labels: ["Expand Main menu"],
+    measures: ["%expandMainMenu"],
+    projects: ["21jbr-intellij_sources/expandMainMenu", "intellij_sources/expandMainMenu"],
+  },
+  {
+    labels: ["Expand Project menu"],
+    measures: ["%expandProjectMenu"],
+    projects: ["21jbr-intellij_sources/expandProjectMenu", "intellij_sources/expandProjectMenu"],
+  },
+  {
+    labels: ["Create new java class"],
+    measures: ["createJavaFile"],
+    projects: ["21jbr-intellij_sources/createJavaClass", "intellij_sources/createJavaClass"],
+  },
+  {
+    labels: ["Create new kotlin class"],
+    measures: ["createKotlinFile"],
+    projects: ["21jbr-intellij_sources/createKotlinClass", "intellij_sources/createKotlinClass"],
   },
 ]
 

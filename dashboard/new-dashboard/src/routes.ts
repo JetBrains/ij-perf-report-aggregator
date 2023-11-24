@@ -32,6 +32,7 @@ const enum ROUTE_PREFIX {
   Clion = "/clion",
   Vcs = IntelliJ + "/vcs",
   PerfUnit = "/perfUnit",
+  ML = "/ml",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -184,6 +185,7 @@ enum ROUTES {
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
+  MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -1019,7 +1021,24 @@ const PERF_UNIT: Product = {
   ],
 }
 
-export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT]
+const ML_TESTS: Product = {
+  url: ROUTE_PREFIX.ML,
+  label: "ML Tests",
+  children: [
+    {
+      url: ROUTE_PREFIX.ML,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.MLDevTests,
+          label: "ML Tests on dev-server/fast-installer",
+        },
+      ],
+    },
+  ],
+}
+
+export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT, ML_TESTS]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1953,6 +1972,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Perf Unit Tests" },
+        },
+        {
+          path: ROUTES.MLDevTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "ml",
+            initialMachine: "linux-blade-hetzner",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "ML Tests dev-server" },
         },
       ],
     },

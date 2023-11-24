@@ -151,25 +151,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Diaspora, kb/sec"
+        label="Lexing Time, Diaspora, ms"
         :measure="[
-          'lexingSpeed#CSS',
-          'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript.6',
-          'lexingSpeed#Flow.JS',
-          'lexingSpeed#GenericSQL',
-          'lexingSpeed#HTML',
-          'lexingSpeed#Haml',
-          'lexingSpeed#JSON',
-          'lexingSpeed#Markdown',
-          'lexingSpeed#PostCSS',
-          'lexingSpeed#RHTML',
-          'lexingSpeed#SCSS',
-          'lexingSpeed#TypeScript',
-          'lexingSpeed#Vue',
-          'lexingSpeed#ruby',
-          'lexingSpeed#ruby.rbs',
-          'lexingSpeed#yaml',
+          'lexingTime#CSS',
+          'lexingTime#CoffeeScript',
+          'lexingTime#ECMAScript.6',
+          'lexingTime#Flow.JS',
+          'lexingTime#GenericSQL',
+          'lexingTime#HTML',
+          'lexingTime#Haml',
+          'lexingTime#JSON',
+          'lexingTime#Markdown',
+          'lexingTime#PostCSS',
+          'lexingTime#RHTML',
+          'lexingTime#SCSS',
+          'lexingTime#TypeScript',
+          'lexingTime#Vue',
+          'lexingTime#ruby',
+          'lexingTime#ruby.rbs',
+          'lexingTime#yaml',
         ]"
         :projects="['diaspora-project-test/indexing']"
         :aliases="['Diaspora']"
@@ -177,25 +177,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, RBS Collection, kb/sec"
+        label="Lexing Time, RBS Collection, ms"
         :measure="[
-          'lexingSpeed#CSS',
-          'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript.6',
-          'lexingSpeed#Flow.JS',
-          'lexingSpeed#GenericSQL',
-          'lexingSpeed#HTML',
-          'lexingSpeed#Haml',
-          'lexingSpeed#JSON',
-          'lexingSpeed#Markdown',
-          'lexingSpeed#PostCSS',
-          'lexingSpeed#RHTML',
-          'lexingSpeed#SCSS',
-          'lexingSpeed#TypeScript',
-          'lexingSpeed#Vue',
-          'lexingSpeed#ruby',
-          'lexingSpeed#ruby.rbs',
-          'lexingSpeed#yaml',
+          'lexingTime#CSS',
+          'lexingTime#CoffeeScript',
+          'lexingTime#ECMAScript.6',
+          'lexingTime#Flow.JS',
+          'lexingTime#GenericSQL',
+          'lexingTime#HTML',
+          'lexingTime#Haml',
+          'lexingTime#JSON',
+          'lexingTime#Markdown',
+          'lexingTime#PostCSS',
+          'lexingTime#RHTML',
+          'lexingTime#SCSS',
+          'lexingTime#TypeScript',
+          'lexingTime#Vue',
+          'lexingTime#ruby',
+          'lexingTime#ruby.rbs',
+          'lexingTime#yaml',
         ]"
         :projects="['gem-rbs-collection-indexing-test/indexing']"
         :aliases="['RBS Collection']"
@@ -203,25 +203,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Gitlab, kb/sec"
+        label="Lexing Time, Gitlab, ms"
         :measure="[
-          'lexingSpeed#CSS',
-          'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript.6',
-          'lexingSpeed#Flow.JS',
-          'lexingSpeed#GenericSQL',
-          'lexingSpeed#HTML',
-          'lexingSpeed#Haml',
-          'lexingSpeed#JSON',
-          'lexingSpeed#Markdown',
-          'lexingSpeed#PostCSS',
-          'lexingSpeed#RHTML',
-          'lexingSpeed#SCSS',
-          'lexingSpeed#TypeScript',
-          'lexingSpeed#Vue',
-          'lexingSpeed#ruby',
-          'lexingSpeed#ruby.rbs',
-          'lexingSpeed#yaml',
+          'lexingTime#CSS',
+          'lexingTime#CoffeeScript',
+          'lexingTime#ECMAScript.6',
+          'lexingTime#Flow.JS',
+          'lexingTime#GenericSQL',
+          'lexingTime#HTML',
+          'lexingTime#Haml',
+          'lexingTime#JSON',
+          'lexingTime#Markdown',
+          'lexingTime#PostCSS',
+          'lexingTime#RHTML',
+          'lexingTime#SCSS',
+          'lexingTime#TypeScript',
+          'lexingTime#Vue',
+          'lexingTime#ruby',
+          'lexingTime#ruby.rbs',
+          'lexingTime#yaml',
         ]"
         :projects="['gitlab-project-test/indexing']"
         :aliases="['GitLab']"
@@ -229,25 +229,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Lexing Speed, Redmine, kb/sec"
+        label="Lexing Time, Redmine, ms"
         :measure="[
-          'lexingSpeed#CSS',
-          'lexingSpeed#CoffeeScript',
-          'lexingSpeed#ECMAScript.6',
-          'lexingSpeed#Flow.JS',
-          'lexingSpeed#GenericSQL',
-          'lexingSpeed#HTML',
-          'lexingSpeed#Haml',
-          'lexingSpeed#JSON',
-          'lexingSpeed#Markdown',
-          'lexingSpeed#PostCSS',
-          'lexingSpeed#RHTML',
-          'lexingSpeed#SCSS',
-          'lexingSpeed#TypeScript',
-          'lexingSpeed#Vue',
-          'lexingSpeed#ruby',
-          'lexingSpeed#ruby.rbs',
-          'lexingSpeed#yaml',
+          'lexingTime#CSS',
+          'lexingTime#CoffeeScript',
+          'lexingTime#ECMAScript.6',
+          'lexingTime#Flow.JS',
+          'lexingTime#GenericSQL',
+          'lexingTime#HTML',
+          'lexingTime#Haml',
+          'lexingTime#JSON',
+          'lexingTime#Markdown',
+          'lexingTime#PostCSS',
+          'lexingTime#RHTML',
+          'lexingTime#SCSS',
+          'lexingTime#TypeScript',
+          'lexingTime#Vue',
+          'lexingTime#ruby',
+          'lexingTime#ruby.rbs',
+          'lexingTime#yaml',
         ]"
         :projects="['redmine-project-test/indexing']"
         :aliases="['Redmine']"
@@ -255,25 +255,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Parsing Speed, Diaspora, kb/sec"
+        label="Parsing Time, Diaspora, ms"
         :measure="[
-          'parsingSpeed#CSS',
-          'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript.6',
-          'parsingSpeed#Flow.JS',
-          'parsingSpeed#GenericSQL',
-          'parsingSpeed#HTML',
-          'parsingSpeed#Haml',
-          'parsingSpeed#JSON',
-          'parsingSpeed#Markdown',
-          'parsingSpeed#PostCSS',
-          'parsingSpeed#RHTML',
-          'parsingSpeed#SCSS',
-          'parsingSpeed#TypeScript',
-          'parsingSpeed#Vue',
-          'parsingSpeed#ruby',
-          'parsingSpeed#ruby.rbs',
-          'parsingSpeed#yaml',
+          'parsingTime#CSS',
+          'parsingTime#CoffeeScript',
+          'parsingTime#ECMAScript.6',
+          'parsingTime#Flow.JS',
+          'parsingTime#GenericSQL',
+          'parsingTime#HTML',
+          'parsingTime#Haml',
+          'parsingTime#JSON',
+          'parsingTime#Markdown',
+          'parsingTime#PostCSS',
+          'parsingTime#RHTML',
+          'parsingTime#SCSS',
+          'parsingTime#TypeScript',
+          'parsingTime#Vue',
+          'parsingTime#ruby',
+          'parsingTime#ruby.rbs',
+          'parsingTime#yaml',
         ]"
         :projects="['diaspora-project-test/indexing']"
         :aliases="['Diaspora']"
@@ -281,25 +281,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Parsing Speed, RBS Collection, kb/sec"
+        label="Parsing Time, RBS Collection, ms"
         :measure="[
-          'parsingSpeed#CSS',
-          'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript.6',
-          'parsingSpeed#Flow.JS',
-          'parsingSpeed#GenericSQL',
-          'parsingSpeed#HTML',
-          'parsingSpeed#Haml',
-          'parsingSpeed#JSON',
-          'parsingSpeed#Markdown',
-          'parsingSpeed#PostCSS',
-          'parsingSpeed#RHTML',
-          'parsingSpeed#SCSS',
-          'parsingSpeed#TypeScript',
-          'parsingSpeed#Vue',
-          'parsingSpeed#ruby',
-          'parsingSpeed#ruby.rbs',
-          'parsingSpeed#yaml',
+          'parsingTime#CSS',
+          'parsingTime#CoffeeScript',
+          'parsingTime#ECMAScript.6',
+          'parsingTime#Flow.JS',
+          'parsingTime#GenericSQL',
+          'parsingTime#HTML',
+          'parsingTime#Haml',
+          'parsingTime#JSON',
+          'parsingTime#Markdown',
+          'parsingTime#PostCSS',
+          'parsingTime#RHTML',
+          'parsingTime#SCSS',
+          'parsingTime#TypeScript',
+          'parsingTime#Vue',
+          'parsingTime#ruby',
+          'parsingTime#ruby.rbs',
+          'parsingTime#yaml',
         ]"
         :projects="['gem-rbs-collection-indexing-test/indexing']"
         :aliases="['RBS Collection']"
@@ -307,25 +307,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Parsing Speed, Gitlab, kb/sec"
+        label="Parsing Time, Gitlab, ms"
         :measure="[
-          'parsingSpeed#CSS',
-          'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript.6',
-          'parsingSpeed#Flow.JS',
-          'parsingSpeed#GenericSQL',
-          'parsingSpeed#HTML',
-          'parsingSpeed#Haml',
-          'parsingSpeed#JSON',
-          'parsingSpeed#Markdown',
-          'parsingSpeed#PostCSS',
-          'parsingSpeed#RHTML',
-          'parsingSpeed#SCSS',
-          'parsingSpeed#TypeScript',
-          'parsingSpeed#Vue',
-          'parsingSpeed#ruby',
-          'parsingSpeed#ruby.rbs',
-          'parsingSpeed#yaml',
+          'parsingTime#CSS',
+          'parsingTime#CoffeeScript',
+          'parsingTime#ECMAScript.6',
+          'parsingTime#Flow.JS',
+          'parsingTime#GenericSQL',
+          'parsingTime#HTML',
+          'parsingTime#Haml',
+          'parsingTime#JSON',
+          'parsingTime#Markdown',
+          'parsingTime#PostCSS',
+          'parsingTime#RHTML',
+          'parsingTime#SCSS',
+          'parsingTime#TypeScript',
+          'parsingTime#Vue',
+          'parsingTime#ruby',
+          'parsingTime#ruby.rbs',
+          'parsingTime#yaml',
         ]"
         :projects="['gitlab-project-test/indexing']"
         :aliases="['GitLab']"
@@ -333,25 +333,25 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Parsing Speed, Redmine, kb/sec"
+        label="Parsing Time, Redmine, ms"
         :measure="[
-          'parsingSpeed#CSS',
-          'parsingSpeed#CoffeeScript',
-          'parsingSpeed#ECMAScript.6',
-          'parsingSpeed#Flow.JS',
-          'parsingSpeed#GenericSQL',
-          'parsingSpeed#HTML',
-          'parsingSpeed#Haml',
-          'parsingSpeed#JSON',
-          'parsingSpeed#Markdown',
-          'parsingSpeed#PostCSS',
-          'parsingSpeed#RHTML',
-          'parsingSpeed#SCSS',
-          'parsingSpeed#TypeScript',
-          'parsingSpeed#Vue',
-          'parsingSpeed#ruby',
-          'parsingSpeed#ruby.rbs',
-          'parsingSpeed#yaml',
+          'parsingTime#CSS',
+          'parsingTime#CoffeeScript',
+          'parsingTime#ECMAScript.6',
+          'parsingTime#Flow.JS',
+          'parsingTime#GenericSQL',
+          'parsingTime#HTML',
+          'parsingTime#Haml',
+          'parsingTime#JSON',
+          'parsingTime#Markdown',
+          'parsingTime#PostCSS',
+          'parsingTime#RHTML',
+          'parsingTime#SCSS',
+          'parsingTime#TypeScript',
+          'parsingTime#Vue',
+          'parsingTime#ruby',
+          'parsingTime#ruby.rbs',
+          'parsingTime#yaml',
         ]"
         :projects="['redmine-project-test/indexing']"
         :aliases="['Redmine']"

@@ -5,6 +5,7 @@ import { InfoDataPerformance } from "../components/common/sideBar/InfoSidebarPer
 import { InfoDataFromStartup } from "../components/common/sideBar/InfoSidebarStartup"
 import { AccidentsConfigurator } from "../configurators/AccidentsConfigurator"
 import { ServerConfigurator } from "../configurators/ServerConfigurator"
+import { SimpleMeasureConfigurator } from "../configurators/SimpleMeasureConfigurator"
 import { FilterConfigurator } from "../configurators/filter"
 
 export const sidebarVmKey: InjectionKey<InfoSidebar<InfoDataPerformance>> = Symbol("sidebarVm")
@@ -14,3 +15,4 @@ export const containerKey: InjectionKey<Ref<HTMLElement | undefined>> = Symbol("
 export const serverConfiguratorKey: InjectionKey<ServerConfigurator> = Symbol("serverConfiguratorKey")
 export const accidentsConfiguratorKey: InjectionKey<AccidentsConfigurator> = Symbol("accidentsKey")
 export const dashboardConfiguratorsKey: InjectionKey<DataQueryConfigurator[] | FilterConfigurator[]> = Symbol("dashboardConfiguratorsKey")
+export const simpleMeasureConfiguratorKey: InjectionKey<SimpleMeasureConfigurator> = Symbol("measureConfiguratorKey")

@@ -4,6 +4,7 @@ import (
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "net/url"
+  "slices"
   "strings"
   "time"
 )
@@ -35,7 +36,11 @@ func (s CommonAnalysisSettings) GetMedianDifferenceThreshold() float64 {
 type Settings interface {
   DataQuery() []dataQuery.DataQuery
   DBTestName() string
-  CreateSlackMessage(degradation Degradation) SlackMessage
+  CreateSlackMessage(degradations []Degradation) SlackMessage
+  SlackChannel() string
+  GetMetric() string
+  GetProject() string
+  MergeAnother(settings Settings) Settings
   AnalysisSettings
 }
 
@@ -49,6 +54,12 @@ type PerformanceSettings struct {
   Channel     string
   ProductLink string
   CommonAnalysisSettings
+}
+
+func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
+  c := s
+  c.Project = s.Project + "," + settings.GetProject()
+  return c
 }
 
 func (s PerformanceSettings) DBTestName() string {
@@ -65,7 +76,11 @@ func (s PerformanceSettings) slackLink() string {
     s.ProductLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Project), url.QueryEscape(s.Metric))
 }
 
-func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
+func (s PerformanceSettings) CreateSlackMessage(degradations []Degradation) SlackMessage {
+  slices.SortFunc(degradations, func(a, b Degradation) int {
+    return int(b.medianValues.PercentageChange() - a.medianValues.PercentageChange())
+  })
+  d := degradations[0]
   reason := getMessageBasedOnMedianChange(d.medianValues)
   date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
   link := s.slackLink()
@@ -76,11 +91,23 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
       "Branch: %s\n"+
       "Date: %s\n"+
       "Reason: %s\n"+
-      "Link: %s", icon(d.medianValues), s.Project, s.Metric, d.build, s.Branch, date, reason, link)
+      "Link: %s", icon(d.medianValues), s.Project, s.Metric, d.Build, s.Branch, date, reason, link)
   return SlackMessage{
     Text:    text,
     Channel: s.Channel,
   }
+}
+
+func (s PerformanceSettings) SlackChannel() string {
+  return s.Channel
+}
+
+func (s PerformanceSettings) GetMetric() string {
+  return s.Metric
+}
+
+func (s PerformanceSettings) GetProject() string {
+  return s.Project
 }
 
 type StartupSettings struct {
@@ -104,7 +131,11 @@ func (s StartupSettings) slackLink() string {
     s.ProductLink, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product))
 }
 
-func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
+func (s StartupSettings) CreateSlackMessage(degradations []Degradation) SlackMessage {
+  slices.SortFunc(degradations, func(a, b Degradation) int {
+    return int(b.medianValues.PercentageChange() - a.medianValues.PercentageChange())
+  })
+  d := degradations[0]
   reason := getMessageBasedOnMedianChange(d.medianValues)
   date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
   link := s.slackLink()
@@ -116,11 +147,29 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
       "Branch: %s\n"+
       "Date: %s\n"+
       "Reason: %s\n"+
-      "Link: %s", icon(d.medianValues), s.Project, s.Metric, d.build, s.Branch, date, reason, link)
+      "Link: %s", icon(d.medianValues), s.Project, s.Metric, d.Build, s.Branch, date, reason, link)
   return SlackMessage{
     Text:    text,
     Channel: s.Channel,
   }
+}
+
+func (s StartupSettings) SlackChannel() string {
+  return s.Channel
+}
+
+func (s StartupSettings) GetMetric() string {
+  return s.Metric
+}
+
+func (s StartupSettings) GetProject() string {
+  return s.Project
+}
+
+func (s StartupSettings) MergeAnother(settings Settings) Settings {
+  c := s
+  c.Project = s.Project + "," + settings.GetProject()
+  return c
 }
 
 func icon(v MedianValues) string {

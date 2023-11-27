@@ -6,15 +6,19 @@ import (
 )
 
 type Degradation struct {
-  build         string
+  Build         string
   timestamp     int64
   medianValues  MedianValues
-  isDegradation bool
+  IsDegradation bool
 }
 
 type MedianValues struct {
   previousValue float64
   newValue      float64
+}
+
+func (v MedianValues) PercentageChange() float64 {
+  return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
 
 func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings AnalysisSettings) []Degradation {
@@ -64,10 +68,10 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
     }
     index := changePoints[len(segments)-2]
     degradations = append(degradations, Degradation{
-      build:         builds[index],
+      Build:         builds[index],
       timestamp:     timestamps[index],
       medianValues:  MedianValues{previousValue: previousMedian, newValue: currentMedian},
-      isDegradation: isDegradation,
+      IsDegradation: isDegradation,
     })
     break
   }

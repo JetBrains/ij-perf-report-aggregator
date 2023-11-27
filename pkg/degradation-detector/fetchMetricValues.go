@@ -77,7 +77,7 @@ func (s StartupSettings) DataQuery() []dataQuery.DataQuery {
   if !strings.HasSuffix(s.Metric, ".end") && !strings.Contains(s.Metric, "/") {
     fields = append(fields, dataQuery.DataQueryDimension{Name: s.Metric})
   }
-  fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+  fields = append(fields, dataQuery.DataQueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
 
   queries := []dataQuery.DataQuery{
     {
@@ -97,7 +97,7 @@ func (s PerformanceSettings) DataQuery() []dataQuery.DataQuery {
     {Name: "measures", SubName: "value"},
   }
   if s.Db == "perfint" {
-    fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+    fields = append(fields, dataQuery.DataQueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
   } else {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "tc_build_id"})
   }

@@ -7,12 +7,11 @@ import (
   "fmt"
   "github.com/cenkalti/backoff/v4"
   "log/slog"
-  "math"
   "net/http"
   "os"
 )
 
-func SendSlackMessage(ctx context.Context, client *http.Client, degradation DegradationWithContext) error {
+func SendSlackMessage(ctx context.Context, client *http.Client, degradation MultipleDegradationWithContext) error {
   slackMessage := degradation.Settings.CreateSlackMessage(degradation.Details)
   slackMessageJson, err := json.Marshal(slackMessage)
   if err != nil {
@@ -57,7 +56,7 @@ func getMachineGroup(pattern string) string {
 }
 
 func getMessageBasedOnMedianChange(medianValues MedianValues) string {
-  percentageChange := math.Abs((medianValues.newValue - medianValues.previousValue) / medianValues.previousValue * 100)
+  percentageChange := medianValues.PercentageChange()
   medianMessage := fmt.Sprintf("Median changed by: %.2f%%. Median was %.2f and now it is %.2f.", percentageChange, medianValues.previousValue, medianValues.newValue)
   if medianValues.newValue > medianValues.previousValue {
     return "Degradation detected. " + medianMessage

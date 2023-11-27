@@ -27,7 +27,8 @@ func main() {
   degradations := getDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
   filteredResults := filterErrors(insertionResults)
-  sendDegradationsToSlack(filteredResults, client)
+  mergedResults := detector.MergeDegradations(filteredResults)
+  sendDegradationsToSlack(mergedResults, client)
   slog.Info("finished")
 }
 
@@ -113,11 +114,11 @@ func filterErrors(insertionResults <-chan detector.InsertionResults) <-chan dete
   return ch
 }
 
-func sendDegradationsToSlack(insertionResults <-chan detector.DegradationWithContext, client *http.Client) {
+func sendDegradationsToSlack(insertionResults <-chan detector.MultipleDegradationWithContext, client *http.Client) {
   var wg sync.WaitGroup
   for result := range insertionResults {
     wg.Add(1)
-    go func(result detector.DegradationWithContext) {
+    go func(result detector.MultipleDegradationWithContext) {
       defer wg.Done()
       ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
       err := detector.SendSlackMessage(ctx, client, result)

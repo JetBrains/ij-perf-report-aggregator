@@ -35,10 +35,10 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
         date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
         medianMessage := getMessageBasedOnMedianChange(d.medianValues)
         kind := "InferredRegression"
-        if !d.isDegradation {
+        if !d.IsDegradation {
           kind = "InferredImprovement"
         }
-        insertParams := meta.AccidentInsertParams{Date: date, Test: degradation.Settings.DBTestName(), Kind: kind, Reason: medianMessage, BuildNumber: d.build}
+        insertParams := meta.AccidentInsertParams{Date: date, Test: degradation.Settings.DBTestName(), Kind: kind, Reason: medianMessage, BuildNumber: d.Build}
         params, err := json.Marshal(insertParams)
         if err != nil {
           insertionResults <- InsertionResults{Error: fmt.Errorf("failed to marshal query: %w", err)}

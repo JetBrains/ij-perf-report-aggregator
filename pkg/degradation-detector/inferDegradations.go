@@ -9,7 +9,7 @@ type DegradationWithSettings struct {
   Settings Settings
 }
 
-func InferDegradations(data <-chan responseDataWithSettings) <-chan DegradationWithSettings {
+func InferDegradations(data <-chan queryResultWithSettings) <-chan DegradationWithSettings {
   degradationChan := make(chan DegradationWithSettings)
   go func() {
     for datum := range data {

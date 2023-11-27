@@ -9,12 +9,14 @@ import (
 func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   settings := make([]detector.PerformanceSettings, 0, 1000)
   mainSettings := detector.PerformanceSettings{
-    Db:          "perfUnitTests",
-    Table:       "report",
+    Db:      "perfUnitTests",
+    Table:   "report",
+    Branch:  "master",
+    Machine: "%",
+    Metric:  "attempt.mean.ms",
+  }
+  slackSettings := detector.SlackSettings{
     Channel:     "ij-perf-unit-tests",
-    Branch:      "master",
-    Machine:     "%",
-    Metric:      "attempt.mean.ms",
     ProductLink: "perfUnit",
   }
   tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)
@@ -24,15 +26,14 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
   }
   for _, test := range tests {
     settings = append(settings, detector.PerformanceSettings{
-      Project:     test,
-      Db:          mainSettings.Db,
-      Table:       mainSettings.Table,
-      Channel:     mainSettings.Channel,
-      Branch:      mainSettings.Branch,
-      Machine:     mainSettings.Machine,
-      Metric:      mainSettings.Metric,
-      ProductLink: mainSettings.ProductLink,
-      CommonAnalysisSettings: detector.CommonAnalysisSettings{
+      Project:       test,
+      Db:            mainSettings.Db,
+      Table:         mainSettings.Table,
+      Branch:        mainSettings.Branch,
+      Machine:       mainSettings.Machine,
+      Metric:        mainSettings.Metric,
+      SlackSettings: slackSettings,
+      AnalysisSettings: detector.AnalysisSettings{
         DoNotReportImprovement:    true,
         MinimumSegmentLength:      20,
         MedianDifferenceThreshold: 20,

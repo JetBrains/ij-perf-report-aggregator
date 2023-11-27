@@ -31,14 +31,16 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
       for _, branch := range branches {
         for _, db := range dbs {
           settings = append(settings, detector.PerformanceSettings{
-            Db:          db,
-            Table:       "kotlin",
-            Channel:     "kotlin-plugin-perf-tests",
-            Machine:     "intellij-linux-hw-hetzner%",
-            Project:     test,
-            Metric:      metric,
-            Branch:      branch,
-            ProductLink: "kotlin",
+            Db:      db,
+            Table:   "kotlin",
+            Machine: "intellij-linux-hw-hetzner%",
+            Project: test,
+            Metric:  metric,
+            Branch:  branch,
+            SlackSettings: detector.SlackSettings{
+              Channel:     "kotlin-plugin-perf-tests",
+              ProductLink: "kotlin",
+            },
           })
         }
       }

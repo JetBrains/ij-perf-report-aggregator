@@ -9,10 +9,12 @@ import (
 func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.StartupSettings {
   settings := make([]detector.StartupSettings, 0, 100)
   mainSettings := detector.StartupSettings{
+    Branch:  "master",
+    Machine: "intellij-linux-hw-munit-%",
+    Product: "IU",
+  }
+  slackSettings := detector.SlackSettings{
     Channel:     "ij-startup-idea-reports",
-    Branch:      "master",
-    Machine:     "intellij-linux-hw-munit-%",
-    Product:     "IU",
     ProductLink: "intellij",
   }
   projects, err := detector.FetchAllProjects(backendUrl, client, mainSettings)
@@ -26,16 +28,15 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
   for _, project := range projects {
     for _, metric := range metrics {
       settings = append(settings, detector.StartupSettings{
-        Channel:     mainSettings.Channel,
-        Branch:      mainSettings.Branch,
-        Machine:     mainSettings.Machine,
-        Product:     mainSettings.Product,
-        ProductLink: mainSettings.ProductLink,
-        Project:     project,
-        Metric:      metric,
-        CommonAnalysisSettings: detector.CommonAnalysisSettings{
+        Branch:  mainSettings.Branch,
+        Machine: mainSettings.Machine,
+        Product: mainSettings.Product,
+        Project: project,
+        Metric:  metric,
+        AnalysisSettings: detector.AnalysisSettings{
           DoNotReportImprovement: true,
         },
+        SlackSettings: slackSettings,
       })
     }
   }

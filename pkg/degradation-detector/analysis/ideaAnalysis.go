@@ -29,14 +29,16 @@ func generateIdeaOnInstallerAnalysisSettings() []detector.PerformanceSettings {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:          "perfint",
-        Table:       "idea",
-        Channel:     "ij-perf-report-aggregator",
-        Branch:      "master",
-        Machine:     "intellij-linux-performance-aws-%",
-        Project:     test,
-        Metric:      metric,
-        ProductLink: "intellij",
+        Db:      "perfint",
+        Table:   "idea",
+        Branch:  "master",
+        Machine: "intellij-linux-performance-aws-%",
+        Project: test,
+        Metric:  metric,
+        SlackSettings: detector.SlackSettings{
+          Channel:     "ij-perf-report-aggregator",
+          ProductLink: "intellij",
+        },
       })
     }
 
@@ -64,14 +66,16 @@ func generateIdeaDevAnalysisSettings() []detector.PerformanceSettings {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:          "perfintDev",
-        Table:       "idea",
-        Channel:     "ij-perf-report-aggregator",
-        Branch:      "master",
-        Machine:     "intellij-linux-performance-aws-%",
-        Project:     test,
-        Metric:      metric,
-        ProductLink: "intellij",
+        Db:      "perfintDev",
+        Table:   "idea",
+        Branch:  "master",
+        Machine: "intellij-linux-performance-aws-%",
+        Project: test,
+        Metric:  metric,
+        SlackSettings: detector.SlackSettings{
+          Channel:     "ij-perf-report-aggregator",
+          ProductLink: "intellij",
+        },
       })
     }
 

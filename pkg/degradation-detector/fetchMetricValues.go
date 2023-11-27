@@ -15,23 +15,23 @@ import (
   "time"
 )
 
-type responseData struct {
+type queryResult struct {
   timestamps []int64
   values     []int
   builds     []string
 }
 
-type responseDataWithSettings struct {
-  responseData
+type queryResultWithSettings struct {
+  queryResult
   Settings
 }
 
-type dataQueryProducer interface {
-  DataQuery() dataQuery.DataQuery
+type queryProducer interface {
+  query() dataQuery.Query
 }
 
-func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backendUrl string) chan responseDataWithSettings {
-  dataChan := make(chan responseDataWithSettings, 5)
+func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backendUrl string) chan queryResultWithSettings {
+  dataChan := make(chan queryResultWithSettings, 5)
   go func() {
     defer close(dataChan)
     var wg sync.WaitGroup
@@ -43,15 +43,15 @@ func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
         defer wg.Done()
         ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
         defer cancel()
-        data, err := getDataFromClickhouse(ctx, client, backendUrl, setting.DataQuery())
+        data, err := getDataFromClickhouse(ctx, client, backendUrl, setting.query())
         if err != nil {
-          slog.Error("error while getting responseData from clickhouse", "error", err, "settings", setting)
+          slog.Error("error while getting queryResult from clickhouse", "error", err, "settings", setting)
           return
         }
         slog.Info("fetched from clickhouse", "settings", setting)
-        dataChan <- responseDataWithSettings{
-          responseData: data,
-          Settings:     setting,
+        dataChan <- queryResultWithSettings{
+          queryResult: data,
+          Settings:    setting,
         }
       })
     }
@@ -60,18 +60,18 @@ func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
   return dataChan
 }
 
-func getDataFromClickhouse(ctx context.Context, client *http.Client, backendUrl string, query dataQuery.DataQuery) (responseData, error) {
+func getDataFromClickhouse(ctx context.Context, client *http.Client, backendUrl string, query dataQuery.Query) (queryResult, error) {
   response, err := getValuesFromServer(ctx, client, backendUrl, query)
   if err != nil {
-    return responseData{}, err
+    return queryResult{}, err
   }
   data, err := extractDataFromRequest(response)
   return data, err
 }
 
-func getValuesFromServer(ctx context.Context, client *http.Client, backendURL string, query dataQuery.DataQuery) ([]byte, error) {
+func getValuesFromServer(ctx context.Context, client *http.Client, backendURL string, query dataQuery.Query) ([]byte, error) {
   url := backendURL + "/api/q/"
-  queries := []dataQuery.DataQuery{query}
+  queries := []dataQuery.Query{query}
   jsonQuery, err := json.Marshal(queries)
   if err != nil {
     return nil, fmt.Errorf("failed to marshal query: %w", err)
@@ -94,7 +94,7 @@ func getValuesFromServer(ctx context.Context, client *http.Client, backendURL st
   defer resp.Body.Close()
 
   if resp.StatusCode != http.StatusOK {
-    return nil, fmt.Errorf("failed to get responseData: %v", resp.Status)
+    return nil, fmt.Errorf("failed to get data: %v", resp.Status)
   }
   body, err := io.ReadAll(resp.Body)
   if err != nil {
@@ -103,11 +103,11 @@ func getValuesFromServer(ctx context.Context, client *http.Client, backendURL st
   return body, err
 }
 
-func (s StartupSettings) DataQuery() dataQuery.DataQuery {
-  fields := []dataQuery.DataQueryDimension{
+func (s StartupSettings) query() dataQuery.Query {
+  fields := []dataQuery.QueryDimension{
     {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
   }
-  filters := []dataQuery.DataQueryFilter{
+  filters := []dataQuery.QueryFilter{
     {Field: "branch", Value: s.Branch},
     {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
     {Field: "project", Value: s.Project},
@@ -116,20 +116,20 @@ func (s StartupSettings) DataQuery() dataQuery.DataQuery {
     {Field: "triggeredBy", Value: ""},
   }
   if strings.Contains(s.Metric, "/") {
-    filters = append(filters, dataQuery.DataQueryFilter{Field: "metrics.name", Value: s.Metric})
-    fields = append(fields, dataQuery.DataQueryDimension{Name: "metrics", SubName: "value"})
+    filters = append(filters, dataQuery.QueryFilter{Field: "metrics.name", Value: s.Metric})
+    fields = append(fields, dataQuery.QueryDimension{Name: "metrics", SubName: "value"})
   }
   if strings.HasSuffix(s.Metric, ".end") {
     metricName, _ := strings.CutSuffix(s.Metric, ".end")
-    filters = append(filters, dataQuery.DataQueryFilter{Field: "measure.name", Value: metricName})
-    fields = append(fields, dataQuery.DataQueryDimension{Name: "measure", SubName: "end", Sql: "(measure.start+measure.duration)"})
+    filters = append(filters, dataQuery.QueryFilter{Field: "measure.name", Value: metricName})
+    fields = append(fields, dataQuery.QueryDimension{Name: "measure", SubName: "end", Sql: "(measure.start+measure.duration)"})
   }
   if !strings.HasSuffix(s.Metric, ".end") && !strings.Contains(s.Metric, "/") {
-    fields = append(fields, dataQuery.DataQueryDimension{Name: s.Metric})
+    fields = append(fields, dataQuery.QueryDimension{Name: s.Metric})
   }
-  fields = append(fields, dataQuery.DataQueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+  fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
 
-  query := dataQuery.DataQuery{
+  query := dataQuery.Query{
     Database: "ij",
     Table:    "report",
     Fields:   fields,
@@ -139,22 +139,22 @@ func (s StartupSettings) DataQuery() dataQuery.DataQuery {
   return query
 }
 
-func (s PerformanceSettings) DataQuery() dataQuery.DataQuery {
-  fields := []dataQuery.DataQueryDimension{
+func (s PerformanceSettings) query() dataQuery.Query {
+  fields := []dataQuery.QueryDimension{
     {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
     {Name: "measures", SubName: "value"},
   }
   if s.Db == "perfint" {
-    fields = append(fields, dataQuery.DataQueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+    fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
   } else {
-    fields = append(fields, dataQuery.DataQueryDimension{Name: "tc_build_id"})
+    fields = append(fields, dataQuery.QueryDimension{Name: "tc_build_id"})
   }
 
-  query := dataQuery.DataQuery{
+  query := dataQuery.Query{
     Database: s.Db,
     Table:    s.Table,
     Fields:   fields,
-    Filters: []dataQuery.DataQueryFilter{
+    Filters: []dataQuery.QueryFilter{
       {Field: "branch", Value: s.Branch},
       {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
       {Field: "project", Value: s.Project},
@@ -167,32 +167,32 @@ func (s PerformanceSettings) DataQuery() dataQuery.DataQuery {
   return query
 }
 
-func extractDataFromRequest(response []byte) (responseData, error) {
+func extractDataFromRequest(response []byte) (queryResult, error) {
   var data [][][]interface{}
 
   err := json.Unmarshal(response, &data)
   if err != nil {
-    return responseData{}, fmt.Errorf("failed to decode JSON: %w", err)
+    return queryResult{}, fmt.Errorf("failed to decode JSON: %w", err)
   }
   if len(data) == 0 {
-    return responseData{}, fmt.Errorf("no responseData")
+    return queryResult{}, fmt.Errorf("no data")
   }
   if len(data[0]) < 3 {
-    return responseData{}, fmt.Errorf("not enough responseData")
+    return queryResult{}, fmt.Errorf("not enough data")
   }
   timestamps, err := SliceToSliceInt64(data[0][0])
   if err != nil {
-    return responseData{}, fmt.Errorf("failed to convert values: %w", err)
+    return queryResult{}, fmt.Errorf("failed to convert values: %w", err)
   }
   values, err := SliceToSliceOfInt(data[0][1])
   if err != nil {
-    return responseData{}, fmt.Errorf("failed to convert values: %w", err)
+    return queryResult{}, fmt.Errorf("failed to convert values: %w", err)
   }
   builds, err := SliceToSliceOfString(data[0][2])
   if err != nil {
-    return responseData{}, fmt.Errorf("failed to convert values: %w", err)
+    return queryResult{}, fmt.Errorf("failed to convert values: %w", err)
   }
-  return responseData{
+  return queryResult{
     timestamps: timestamps,
     values:     values,
     builds:     builds,

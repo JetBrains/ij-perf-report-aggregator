@@ -29,14 +29,16 @@ func GenerateGradleSettings() []detector.PerformanceSettings {
   for _, test := range tests {
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:          "perfint",
-        Table:       "idea",
-        Channel:     "build-tools-perf-tests-notifications",
-        Machine:     "intellij-linux-hw-hetzner%",
-        Project:     test,
-        Metric:      metric,
-        Branch:      "master",
-        ProductLink: "intellij",
+        Db:      "perfint",
+        Table:   "idea",
+        Machine: "intellij-linux-hw-hetzner%",
+        Project: test,
+        Metric:  metric,
+        Branch:  "master",
+        SlackSettings: detector.SlackSettings{
+          Channel:     "build-tools-perf-tests-notifications",
+          ProductLink: "intellij",
+        },
       })
     }
 

@@ -1,19 +1,19 @@
 package degradation_detector
 
-type CommonAnalysisSettings struct {
+type AnalysisSettings struct {
   DoNotReportImprovement    bool
   MinimumSegmentLength      int
   MedianDifferenceThreshold float64
 }
 
-func (s CommonAnalysisSettings) GetDoNotReportImprovement() bool {
+func (s AnalysisSettings) GetDoNotReportImprovement() bool {
   return s.DoNotReportImprovement
 }
 
-func (s CommonAnalysisSettings) GetMinimumSegmentLength() int {
+func (s AnalysisSettings) GetMinimumSegmentLength() int {
   return s.MinimumSegmentLength
 }
 
-func (s CommonAnalysisSettings) GetMedianDifferenceThreshold() float64 {
+func (s AnalysisSettings) GetMedianDifferenceThreshold() float64 {
   return s.MedianDifferenceThreshold
 }

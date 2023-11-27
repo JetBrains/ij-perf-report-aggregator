@@ -12,12 +12,12 @@ import (
 func FetchAllTests(backendUrl string, client *http.Client, settings PerformanceSettings) ([]string, error) {
   ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
   defer cancel()
-  query := dataQuery.DataQuery{
+  query := dataQuery.Query{
     Database: settings.Db,
     Table:    settings.Table,
-    Fields:   []dataQuery.DataQueryDimension{{Name: "project", Sql: "distinct project"}},
+    Fields:   []dataQuery.QueryDimension{{Name: "project", Sql: "distinct project"}},
     Flat:     true,
-    Filters: []dataQuery.DataQueryFilter{
+    Filters: []dataQuery.QueryFilter{
       {Field: "branch", Value: settings.Branch},
       {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
       {Field: "machine", Value: settings.Machine, Operator: "like"},
@@ -44,10 +44,10 @@ func extractValuesFromRequest(response []byte) ([]string, error) {
     return nil, fmt.Errorf("failed to decode JSON: %w", err)
   }
   if len(data) == 0 {
-    return nil, fmt.Errorf("no responseData")
+    return nil, fmt.Errorf("no data")
   }
   if len(data[0]) < 1 {
-    return nil, fmt.Errorf("not enough responseData")
+    return nil, fmt.Errorf("not enough data")
   }
   tests, err := SliceToSliceOfString(data[0])
   if err != nil {

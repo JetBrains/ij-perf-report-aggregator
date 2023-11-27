@@ -25,7 +25,7 @@ func (t *StatsServer) handleLoadRequest(request *http.Request) (*bytebufferpool.
   return t.load(request, dataQueries, wrappedAsArray)
 }
 
-func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQuery, wrappedAsArray bool) (*bytebufferpool.ByteBuffer, bool, error) {
+func (t *StatsServer) load(request *http.Request, dataQueries []data_query.Query, wrappedAsArray bool) (*bytebufferpool.ByteBuffer, bool, error) {
   buffer := byteBufferPool.Get()
   isOk := false
   defer func() {
@@ -63,7 +63,7 @@ func (t *StatsServer) load(request *http.Request, dataQueries []data_query.DataQ
   return buffer, true, nil
 }
 
-func (t *StatsServer) computeMeasureResponse(context context.Context, query data_query.DataQuery, jsonWriter *quicktemplate.QWriter) error {
+func (t *StatsServer) computeMeasureResponse(context context.Context, query data_query.Query, jsonWriter *quicktemplate.QWriter) error {
   table := query.Table
   if len(table) == 0 {
     table = "report"

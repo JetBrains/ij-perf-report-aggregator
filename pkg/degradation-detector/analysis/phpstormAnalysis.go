@@ -48,14 +48,16 @@ func GeneratePhpStormSettings() []detector.PerformanceSettings {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:          "perfint",
-        Table:       "phpstorm",
-        Channel:     "phpstorm-performance-degradations",
-        Branch:      "master",
-        Machine:     "intellij-linux-hw-hetzner%",
-        Project:     test,
-        Metric:      metric,
-        ProductLink: "phpstorm",
+        Db:      "perfint",
+        Table:   "phpstorm",
+        Branch:  "master",
+        Machine: "intellij-linux-hw-hetzner%",
+        Project: test,
+        Metric:  metric,
+        SlackSettings: detector.SlackSettings{
+          Channel:     "phpstorm-performance-degradations",
+          ProductLink: "phpstorm",
+        },
       })
     }
 

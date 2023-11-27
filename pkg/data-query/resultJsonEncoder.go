@@ -18,7 +18,7 @@ type SplitParameters struct {
 }
 
 //nolint:gocyclo
-func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers [][]*bytebufferpool.ByteBuffer, query DataQuery, splitParameters *SplitParameters) error {
+func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers [][]*bytebufferpool.ByteBuffer, query Query, splitParameters *SplitParameters) error {
   var rowToSplitIndex []int
 
   for _, column := range *result {

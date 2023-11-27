@@ -1,6 +1,9 @@
 package degradation_detector
 
-import "slices"
+import (
+  "fmt"
+  "slices"
+)
 
 type multipleDegradationWithSettings struct {
   Details  []Degradation
@@ -15,7 +18,7 @@ type mergeInfoProvider interface {
 
 func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
   c := s
-  c.Project = s.Project + "," + settings.GetProject()
+  c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
   return c
 }
 
@@ -37,7 +40,7 @@ func (s StartupSettings) GetProject() string {
 
 func (s StartupSettings) MergeAnother(settings Settings) Settings {
   c := s
-  c.Project = s.Project + "," + settings.GetProject()
+  c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
   return c
 }
 
@@ -57,9 +60,8 @@ func MergeDegradations(degradations <-chan DegradationWithSettings) chan Degrada
         build:        degradation.Details.Build,
       }
       if existing, found := m[key]; found {
-        d := make([]Degradation, len(existing.Details), len(existing.Details)+1)
-        copy(d, existing.Details)
-        d = append(d, degradation.Details)
+        d := []Degradation{degradation.Details}
+        d = append(d, existing.Details...)
         m[key] = multipleDegradationWithSettings{
           Details:  d,
           Settings: existing.Settings.MergeAnother(degradation.Settings),

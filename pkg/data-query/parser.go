@@ -33,7 +33,7 @@ func isValidFilterFieldName(v string) bool {
   return reNestedFieldName.MatchString(v)
 }
 
-func readQuery(s []byte) ([]DataQuery, error) {
+func readQuery(s []byte) ([]Query, error) {
   parser := queryParsers.Get()
   defer queryParsers.Put(parser)
 
@@ -42,7 +42,7 @@ func readQuery(s []byte) ([]DataQuery, error) {
     return nil, fmt.Errorf("cannot parse query: %w", err)
   }
 
-  var queries []DataQuery
+  var queries []Query
 
   if value.Type() == fastjson.TypeArray {
     for _, v := range value.GetArray() {
@@ -65,8 +65,8 @@ func readQuery(s []byte) ([]DataQuery, error) {
   return queries, nil
 }
 
-func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
-  query := &DataQuery{
+func readQueryValue(value *fastjson.Value) (*Query, error) {
+  query := &Query{
     Database: string(value.GetStringBytes("db")),
     Table:    string(value.GetStringBytes("table")),
     Flat:     value.GetBool("flat"),
@@ -128,7 +128,7 @@ func readQueryValue(value *fastjson.Value) (*DataQuery, error) {
   return query, nil
 }
 
-func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error {
+func readDimensions(list []*fastjson.Value, result *[]QueryDimension) error {
   for _, v := range list {
     t, err := readDimension(v)
     if err != nil {
@@ -146,22 +146,22 @@ func readDimensions(list []*fastjson.Value, result *[]DataQueryDimension) error 
   return nil
 }
 
-func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
-  var t DataQueryDimension
+func readDimension(v *fastjson.Value) (*QueryDimension, error) {
+  var t QueryDimension
   if v.Type() == fastjson.TypeString {
-    t = DataQueryDimension{
+    t = QueryDimension{
       Name: string(v.GetStringBytes()),
     }
   } else {
     subNameValue := v.Get("subName")
     if subNameValue == nil {
-      t = DataQueryDimension{
+      t = QueryDimension{
         Name: string(v.GetStringBytes("n")),
         Sql:  string(v.GetStringBytes("sql")),
       }
     } else {
       arrayJoin := string(v.GetStringBytes("n"))
-      t = DataQueryDimension{
+      t = QueryDimension{
         Name:               arrayJoin + "." + string(subNameValue.GetStringBytes()),
         arrayJoin:          arrayJoin,
         Sql:                string(v.GetStringBytes("sql")),
@@ -204,9 +204,9 @@ func readDimension(v *fastjson.Value) (*DataQueryDimension, error) {
   return &t, nil
 }
 
-func readFilters(list []*fastjson.Value, query *DataQuery) error {
+func readFilters(list []*fastjson.Value, query *Query) error {
   for _, v := range list {
-    t := DataQueryFilter{
+    t := QueryFilter{
       Field:    string(v.GetStringBytes("f")),
       Sql:      string(v.GetStringBytes("q")),
       Operator: string(v.GetStringBytes("o")),

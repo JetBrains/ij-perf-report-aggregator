@@ -15,7 +15,7 @@ type DatabaseConnectionSupplier interface {
   AcquireDatabase(ctx context.Context, name string) (*puddle.Resource[*ch.Client], error)
 }
 
-func executeQuery(ctx context.Context, sqlQuery string, query DataQuery, dbSupplier DatabaseConnectionSupplier, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) error {
+func executeQuery(ctx context.Context, sqlQuery string, query Query, dbSupplier DatabaseConnectionSupplier, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) error {
   for attempt := 0; attempt <= 120; attempt++ {
     dbResource, err := dbSupplier.AcquireDatabase(ctx, query.Database)
     if err != nil {

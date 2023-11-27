@@ -25,11 +25,12 @@ type slackSettings interface {
   SlackChannel() string
 }
 
-func (s PerformanceSettings) SlackChannel() string {
-  return s.Channel
+type SlackSettings struct {
+  Channel     string
+  ProductLink string
 }
 
-func (s StartupSettings) SlackChannel() string {
+func (s SlackSettings) SlackChannel() string {
   return s.Channel
 }
 

@@ -16,20 +16,20 @@ import (
   "strings"
 )
 
-type DataQuery struct {
-  Database string               `json:"db"`
-  Table    string               `json:"table"`
-  Flat     bool                 `json:"flat"`
-  Fields   []DataQueryDimension `json:"fields,omitempty"`
-  Filters  []DataQueryFilter    `json:"filters,omitempty"`
-  Order    []string             `json:"order,omitempty"`
+type Query struct {
+  Database string           `json:"db"`
+  Table    string           `json:"table"`
+  Flat     bool             `json:"flat"`
+  Fields   []QueryDimension `json:"fields,omitempty"`
+  Filters  []QueryFilter    `json:"filters,omitempty"`
+  Order    []string         `json:"order,omitempty"`
 
-  Aggregator          string               `json:"-"`
-  Dimensions          []DataQueryDimension `json:"-"`
-  TimeDimensionFormat string               `json:"-"`
+  Aggregator          string           `json:"-"`
+  Dimensions          []QueryDimension `json:"-"`
+  TimeDimensionFormat string           `json:"-"`
 }
 
-type DataQueryFilter struct {
+type QueryFilter struct {
   Field    string      `json:"f"`
   Value    interface{} `json:"v,omitempty"`
   Sql      string      `json:"q,omitempty"`
@@ -37,7 +37,7 @@ type DataQueryFilter struct {
   Split    bool        `json:"s"`
 }
 
-type DataQueryDimension struct {
+type QueryDimension struct {
   Name    string `json:"n"`
   Sql     string `json:"sql"`
   SubName string `json:"subName,omitempty"`
@@ -51,7 +51,7 @@ type DataQueryDimension struct {
   arrayJoin string
 }
 
-func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
+func ReadQueryV2(request *http.Request) ([]Query, bool, error) {
   decompressed, err := util.DecodeQuery(request.URL.Path[len("/api/q/"):])
   if err != nil {
     return nil, false, fmt.Errorf("cannot decode query: %w", err)
@@ -76,7 +76,7 @@ func ReadQueryV2(request *http.Request) ([]DataQuery, bool, error) {
   return list, wrappedAsArray, nil
 }
 
-func getSplitParameters(query DataQuery) (*SplitParameters, error) {
+func getSplitParameters(query Query) (*SplitParameters, error) {
   splitParameters := SplitParameters{
     numberOfSplits: 1,
   }
@@ -131,7 +131,7 @@ func convertValuesToMap(valueSlice []interface{}) (map[string]int, error) {
   return values, nil
 }
 
-func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
+func ReadQuery(request *http.Request) ([]Query, bool, error) {
   payload := request.URL.Path
 
   // array?
@@ -160,7 +160,7 @@ func ReadQuery(request *http.Request) ([]DataQuery, bool, error) {
   return list, wrappedAsArray, nil
 }
 
-func SelectRows(ctx context.Context, query DataQuery, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter) error {
+func SelectRows(ctx context.Context, query Query, table string, dbSupplier DatabaseConnectionSupplier, totalWriter *quicktemplate.QWriter) error {
   sqlQuery, columnNameToIndex, err := buildSql(query, table)
   if err != nil {
     return err
@@ -220,7 +220,7 @@ func writeBuffers(columnBuffers [][]*bytebufferpool.ByteBuffer, totalWriter *qui
 }
 
 //gocyclo:ignore
-func buildSql(query DataQuery, table string) (string, map[string]int, error) {
+func buildSql(query Query, table string) (string, map[string]int, error) {
   var sb strings.Builder
 
   sb.WriteString("select")
@@ -377,7 +377,7 @@ func buildSql(query DataQuery, table string) (string, map[string]int, error) {
   return sb.String(), columnNameToIndex, nil
 }
 
-func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {
+func writeExtractJsonObject(sb *strings.Builder, field QueryDimension) {
   sb.WriteString("arrayFirst(it -> JSONExtractString(it, 'n') = '")
   sb.WriteString(field.metricName)
   sb.WriteString("', JSONExtractArrayRaw(raw_report, '")
@@ -385,7 +385,7 @@ func writeExtractJsonObject(sb *strings.Builder, field DataQueryDimension) {
   sb.WriteString("'))")
 }
 
-func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
+func writeDimension(dimension QueryDimension, sb *strings.Builder) {
   if len(dimension.Sql) == 0 {
     sb.WriteString(dimension.Name)
   } else {
@@ -398,7 +398,7 @@ func writeDimension(dimension DataQueryDimension, sb *strings.Builder) {
   }
 }
 
-func writeWhereClause(sb *strings.Builder, query DataQuery) error {
+func writeWhereClause(sb *strings.Builder, query Query) error {
   sb.WriteString(" where")
 loop:
   for i, filter := range query.Filters {

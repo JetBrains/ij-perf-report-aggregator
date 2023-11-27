@@ -19,7 +19,7 @@ func TestWithoutDegradations(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := InferDegradations(data, builds, times, CommonAnalysisSettings{})
+  degradations := detectDegradations(data, builds, times, CommonAnalysisSettings{})
   assert.Equal(t, 0, len(degradations))
 }
 func TestWithoutDegradations2(t *testing.T) {
@@ -30,7 +30,7 @@ func TestWithoutDegradations2(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := InferDegradations(data, builds, times, CommonAnalysisSettings{})
+  degradations := detectDegradations(data, builds, times, CommonAnalysisSettings{})
   assert.Equal(t, 0, len(degradations))
 }
 
@@ -42,7 +42,7 @@ func TestWithDegradations(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := InferDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
+  degradations := detectDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
   assert.Equal(t, 1, len(degradations))
   assert.Equal(t, int64(5), degradations[0].timestamp)
 }
@@ -55,7 +55,7 @@ func TestWithoutDegradations3(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := InferDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
+  degradations := detectDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
   assert.Equal(t, 0, len(degradations))
 }
 
@@ -67,7 +67,7 @@ func TestWithDegradations2(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := InferDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
+  degradations := detectDegradations(data, builds, times, CommonAnalysisSettings{MinimumSegmentLength: 3})
   assert.Equal(t, 1, len(degradations))
   assert.Equal(t, int64(5), degradations[0].timestamp)
 }

@@ -9,25 +9,23 @@ import (
   "time"
 )
 
-func GetAllTests(backendUrl string, client *http.Client, settings PerformanceSettings) ([]string, error) {
+func FetchAllTests(backendUrl string, client *http.Client, settings PerformanceSettings) ([]string, error) {
   ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
   defer cancel()
-  query := []dataQuery.DataQuery{
-    {
-      Database: settings.Db,
-      Table:    settings.Table,
-      Fields:   []dataQuery.DataQueryDimension{{Name: "project", Sql: "distinct project"}},
-      Flat:     true,
-      Filters: []dataQuery.DataQueryFilter{
-        {Field: "branch", Value: settings.Branch},
-        {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-        {Field: "machine", Value: settings.Machine, Operator: "like"},
-        {Field: "triggeredBy", Value: ""},
-      },
-      Order: []string{"project"},
+  query := dataQuery.DataQuery{
+    Database: settings.Db,
+    Table:    settings.Table,
+    Fields:   []dataQuery.DataQueryDimension{{Name: "project", Sql: "distinct project"}},
+    Flat:     true,
+    Filters: []dataQuery.DataQueryFilter{
+      {Field: "branch", Value: settings.Branch},
+      {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
+      {Field: "machine", Value: settings.Machine, Operator: "like"},
+      {Field: "triggeredBy", Value: ""},
     },
+    Order: []string{"project"},
   }
-  response, err := GetValuesFromServer(ctx, client, backendUrl, query)
+  response, err := getValuesFromServer(ctx, client, backendUrl, query)
   if err != nil {
     return nil, err
   }
@@ -46,10 +44,10 @@ func extractValuesFromRequest(response []byte) ([]string, error) {
     return nil, fmt.Errorf("failed to decode JSON: %w", err)
   }
   if len(data) == 0 {
-    return nil, fmt.Errorf("no data")
+    return nil, fmt.Errorf("no responseData")
   }
   if len(data[0]) < 1 {
-    return nil, fmt.Errorf("not enough data")
+    return nil, fmt.Errorf("not enough responseData")
   }
   tests, err := SliceToSliceOfString(data[0])
   if err != nil {

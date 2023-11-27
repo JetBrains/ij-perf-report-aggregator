@@ -6,22 +6,45 @@ import (
   "encoding/json"
   "fmt"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
+  "log/slog"
   "net/http"
   "sync"
   "time"
 )
 
 type InsertionResults struct {
-  Degradation DegradationWithContext
+  Degradation DegradationWithSettings
   Error       error
 }
 
-type DegradationWithContext struct {
-  Details  Degradation
-  Settings Settings
+func FilterErrors(insertionResults <-chan InsertionResults) <-chan DegradationWithSettings {
+  ch := make(chan DegradationWithSettings)
+  go func() {
+    for result := range insertionResults {
+      if result.Error != nil {
+        slog.Error("error while inserting degradation", "error", result.Error, "degradation", result.Degradation)
+        continue
+      }
+      ch <- result.Degradation
+    }
+    close(ch)
+  }()
+  return ch
 }
 
-func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithContext) chan InsertionResults {
+type accidentWriter interface {
+  DBTestName() string
+}
+
+func (s PerformanceSettings) DBTestName() string {
+  return s.Project + "/" + s.Metric
+}
+
+func (s StartupSettings) DBTestName() string {
+  return s.Product + "/" + s.Project + "/" + s.Metric
+}
+
+func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithSettings) chan InsertionResults {
   url := backendURL + "/api/meta/accidents"
   insertionResults := make(chan InsertionResults)
   go func() {
@@ -29,7 +52,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
     var wg sync.WaitGroup
     for degradation := range degradations {
       wg.Add(1)
-      func(degradation DegradationWithContext) {
+      func(degradation DegradationWithSettings) {
         defer wg.Done()
         d := degradation.Details
         date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
@@ -70,7 +93,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
           return
         }
 
-        insertionResults <- InsertionResults{DegradationWithContext{d, degradation.Settings}, nil}
+        insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
       }(degradation)
     }
     wg.Wait()

@@ -17,11 +17,17 @@ type MedianValues struct {
   newValue      float64
 }
 
+type analysisSettings interface {
+  GetDoNotReportImprovement() bool
+  GetMinimumSegmentLength() int
+  GetMedianDifferenceThreshold() float64
+}
+
 func (v MedianValues) PercentageChange() float64 {
   return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
 
-func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings AnalysisSettings) []Degradation {
+func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
   degradations := make([]Degradation, 0)
 
   minimumSegmentLength := analysisSettings.GetMinimumSegmentLength()

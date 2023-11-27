@@ -1,20 +1,55 @@
 package degradation_detector
 
-type degradationKey struct {
-  slackChannel string
-  metric       string
-  build        string
-}
+import "slices"
 
-type MultipleDegradationWithContext struct {
+type multipleDegradationWithSettings struct {
   Details  []Degradation
   Settings Settings
 }
 
-func MergeDegradations(degradations <-chan DegradationWithContext) chan MultipleDegradationWithContext {
-  c := make(chan MultipleDegradationWithContext)
+type mergeInfoProvider interface {
+  GetMetric() string
+  GetProject() string
+  MergeAnother(settings Settings) Settings
+}
+
+func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
+  c := s
+  c.Project = s.Project + "," + settings.GetProject()
+  return c
+}
+
+func (s PerformanceSettings) GetMetric() string {
+  return s.Metric
+}
+
+func (s PerformanceSettings) GetProject() string {
+  return s.Project
+}
+
+func (s StartupSettings) GetMetric() string {
+  return s.Metric
+}
+
+func (s StartupSettings) GetProject() string {
+  return s.Project
+}
+
+func (s StartupSettings) MergeAnother(settings Settings) Settings {
+  c := s
+  c.Project = s.Project + "," + settings.GetProject()
+  return c
+}
+
+func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {
+  c := make(chan DegradationWithSettings)
   go func() {
-    m := make(map[degradationKey]MultipleDegradationWithContext, 100)
+    type degradationKey struct {
+      slackChannel string
+      metric       string
+      build        string
+    }
+    m := make(map[degradationKey]multipleDegradationWithSettings, 100)
     for degradation := range degradations {
       key := degradationKey{
         slackChannel: degradation.Settings.SlackChannel(),
@@ -22,24 +57,37 @@ func MergeDegradations(degradations <-chan DegradationWithContext) chan Multiple
         build:        degradation.Details.Build,
       }
       if existing, found := m[key]; found {
-        d := make([]Degradation, 0, len(existing.Details)+1)
+        d := make([]Degradation, len(existing.Details), len(existing.Details)+1)
         copy(d, existing.Details)
         d = append(d, degradation.Details)
-        m[key] = MultipleDegradationWithContext{
+        m[key] = multipleDegradationWithSettings{
           Details:  d,
           Settings: existing.Settings.MergeAnother(degradation.Settings),
         }
       } else {
         d := make([]Degradation, 0)
         d = append(d, degradation.Details)
-        m[key] = MultipleDegradationWithContext{
+        m[key] = multipleDegradationWithSettings{
           Details:  d,
           Settings: degradation.Settings,
         }
       }
     }
-    for _, value := range m {
-      c <- value
+    for _, v := range m {
+      merged := v
+      slices.SortFunc(merged.Details, func(a, b Degradation) int {
+        return int(b.medianValues.PercentageChange() - a.medianValues.PercentageChange())
+      })
+      d := merged.Details[0]
+      c <- DegradationWithSettings{
+        Details: Degradation{
+          Build:         d.Build,
+          timestamp:     d.timestamp,
+          medianValues:  d.medianValues,
+          IsDegradation: d.IsDegradation,
+        },
+        Settings: v.Settings,
+      }
     }
     close(c)
   }()

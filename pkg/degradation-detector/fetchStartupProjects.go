@@ -10,23 +10,21 @@ import (
 func FetchAllProjects(backendUrl string, client *http.Client, settings StartupSettings) ([]string, error) {
   ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
   defer cancel()
-  query := []dataQuery.DataQuery{
-    {
-      Database: "ij",
-      Table:    "report",
-      Fields:   []dataQuery.DataQueryDimension{{Name: "project", Sql: "distinct project"}},
-      Flat:     true,
-      Filters: []dataQuery.DataQueryFilter{
-        {Field: "branch", Value: settings.Branch},
-        {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-        {Field: "machine", Value: settings.Machine, Operator: "like"},
-        {Field: "triggeredBy", Value: ""},
-        {Field: "product", Value: settings.Product},
-      },
-      Order: []string{"project"},
+  query := dataQuery.DataQuery{
+    Database: "ij",
+    Table:    "report",
+    Fields:   []dataQuery.DataQueryDimension{{Name: "project", Sql: "distinct project"}},
+    Flat:     true,
+    Filters: []dataQuery.DataQueryFilter{
+      {Field: "branch", Value: settings.Branch},
+      {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
+      {Field: "machine", Value: settings.Machine, Operator: "like"},
+      {Field: "triggeredBy", Value: ""},
+      {Field: "product", Value: settings.Product},
     },
+    Order: []string{"project"},
   }
-  response, err := GetValuesFromServer(ctx, client, backendUrl, query)
+  response, err := getValuesFromServer(ctx, client, backendUrl, query)
   if err != nil {
     return nil, err
   }

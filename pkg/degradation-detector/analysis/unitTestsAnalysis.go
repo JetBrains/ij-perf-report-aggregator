@@ -17,7 +17,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
     Metric:      "attempt.mean.ms",
     ProductLink: "perfUnit",
   }
-  tests, err := detector.GetAllTests(backendUrl, client, mainSettings)
+  tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)
   if err != nil {
     slog.Error("error while getting tests", "error", err)
     return settings

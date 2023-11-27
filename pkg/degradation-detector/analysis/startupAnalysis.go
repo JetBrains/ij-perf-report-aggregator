@@ -9,7 +9,7 @@ import (
 func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.StartupSettings {
   settings := make([]detector.StartupSettings, 0, 100)
   mainSettings := detector.StartupSettings{
-    Channel:     "ij-perf-startup-tests",
+    Channel:     "ij-startup-idea-reports",
     Branch:      "master",
     Machine:     "intellij-linux-hw-munit-%",
     Product:     "IU",

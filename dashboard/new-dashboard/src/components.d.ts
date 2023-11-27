@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AccordionTab: typeof import('primevue/accordiontab/AccordionTab.vue')['default']
     Button: typeof import('primevue/button/Button.vue')['default']
     Checkbox: typeof import('primevue/checkbox/Checkbox.vue')['default']
     Column: typeof import('primevue/column/Column.vue')['default']

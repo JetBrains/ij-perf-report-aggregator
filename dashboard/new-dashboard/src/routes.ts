@@ -184,6 +184,7 @@ enum ROUTES {
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
+  VcsExperimentalDashboard = `${ROUTE_PREFIX.Vcs}/experimental`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
 }
@@ -468,6 +469,10 @@ const IDEA: Product = {
         {
           url: ROUTES.VcsDotnetDashboard,
           label: "Performance dashboard dotnet project",
+        },
+        {
+          url: ROUTES.VcsExperimentalDashboard,
+          label: "Experimental performance dashboard idea project",
         },
       ],
     },
@@ -1961,6 +1966,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsDotnetDashboard,
           component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
           meta: { pageTitle: "Vcs Dotnet performance dashboard" },
+        },
+        {
+          path: ROUTES.VcsDotnetDashboard,
+          component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
+          meta: { pageTitle: "Vcs Dotnet performance dashboard" },
+        },
+        {
+          path: ROUTES.VcsExperimentalDashboard,
+          component: () => import("./components/vcs/ExperimentalPerformanceDashboard.vue"),
+          meta: { pageTitle: "Vcs experimental Idea performance dashboard" },
         },
         {
           path: ROUTES.PerfUnitTests,

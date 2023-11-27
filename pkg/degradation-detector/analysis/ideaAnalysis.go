@@ -22,7 +22,7 @@ func generateIdeaOnInstallerAnalysisSettings() []detector.PerformanceSettings {
     "grails/completion/java_file", "kotlin_petclinic/debug", "grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions",
     "intellij_sources/showFileHistory/EditorImpl", "intellij_sources/expandProjectMenu", "intellij_sources/expandMainMenu", "intellij_sources/expandEditorMenu",
     "kotlin/highlight", "kotlin_coroutines/highlight", "intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file",
-    "intellij_sources/createJavaClass", "intellij_sources/createKotlinClass",
+    "intellij_sources/createJavaClass", "intellij_sources/createKotlinClass", "community/go-to-%",
   }
   settings := make([]detector.PerformanceSettings, 0, 100)
   for _, test := range tests {
@@ -136,6 +136,9 @@ func getMetricFromTestName(test string) []string {
   }
   if strings.Contains(test, "/findUsages") {
     return []string{"findUsages", "fus_find_usages_all", "fus_find_usages_first"}
+  }
+  if strings.Contains(test, "/go-to-") {
+    return []string{"searchEverywhere"}
   }
   return []string{}
 }

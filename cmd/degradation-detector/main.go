@@ -26,7 +26,8 @@ func main() {
   }
   degradations := getDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
-  sendDegradationsToSlack(insertionResults, client)
+  filteredResults := filterErrors(insertionResults)
+  sendDegradationsToSlack(filteredResults, client)
   slog.Info("finished")
 }
 
@@ -97,18 +98,29 @@ func getDegradations(settings []detector.Settings, client *http.Client, backendU
   return degradationChan
 }
 
-func sendDegradationsToSlack(insertionResults <-chan detector.InsertionResults, client *http.Client) {
+func filterErrors(insertionResults <-chan detector.InsertionResults) <-chan detector.DegradationWithContext {
+  ch := make(chan detector.DegradationWithContext)
+  go func() {
+    for result := range insertionResults {
+      if result.Error != nil {
+        slog.Error("error while inserting degradation", "error", result.Error, "degradation", result.Degradation)
+        continue
+      }
+      ch <- result.Degradation
+    }
+    close(ch)
+  }()
+  return ch
+}
+
+func sendDegradationsToSlack(insertionResults <-chan detector.DegradationWithContext, client *http.Client) {
   var wg sync.WaitGroup
   for result := range insertionResults {
-    if result.Error != nil {
-      slog.Error("error while inserting degradation", "error", result.Error, "degradation", result.Degradation)
-      continue
-    }
     wg.Add(1)
-    go func(result detector.InsertionResults) {
+    go func(result detector.DegradationWithContext) {
       defer wg.Done()
       ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-      err := detector.SendSlackMessage(ctx, client, result.Degradation)
+      err := detector.SendSlackMessage(ctx, client, result)
       if err != nil {
         slog.Error("error while sending slack message", "error", err)
       }

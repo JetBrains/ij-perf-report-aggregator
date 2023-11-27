@@ -6,11 +6,10 @@ import (
 )
 
 type Degradation struct {
-  build            string
-  timestamp        int64
-  medianValues     MedianValues
-  analysisSettings Settings
-  isDegradation    bool
+  build         string
+  timestamp     int64
+  medianValues  MedianValues
+  isDegradation bool
 }
 
 type MedianValues struct {
@@ -18,14 +17,14 @@ type MedianValues struct {
   newValue      float64
 }
 
-func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings Settings) []Degradation {
+func InferDegradations(values []int, builds []string, timestamps []int64, analysisSettings AnalysisSettings) []Degradation {
   degradations := make([]Degradation, 0)
 
-  minimumSegmentLength := analysisSettings.MinimumSegmentLength
+  minimumSegmentLength := analysisSettings.GetMinimumSegmentLength()
   if minimumSegmentLength == 0 {
     minimumSegmentLength = 5
   }
-  medianDifference := analysisSettings.MedianDifferenceThreshold
+  medianDifference := analysisSettings.GetMedianDifferenceThreshold()
   if medianDifference == 0 {
     medianDifference = 10
   }
@@ -60,16 +59,15 @@ func InferDegradations(values []int, builds []string, timestamps []int64, analys
     if currentMedian > previousMedian {
       isDegradation = true
     }
-    if !isDegradation && analysisSettings.DoNotReportImprovement {
+    if !isDegradation && analysisSettings.GetDoNotReportImprovement() {
       break
     }
     index := changePoints[len(segments)-2]
     degradations = append(degradations, Degradation{
-      build:            builds[index],
-      timestamp:        timestamps[index],
-      medianValues:     MedianValues{previousValue: previousMedian, newValue: currentMedian},
-      analysisSettings: analysisSettings,
-      isDegradation:    isDegradation,
+      build:         builds[index],
+      timestamp:     timestamps[index],
+      medianValues:  MedianValues{previousValue: previousMedian, newValue: currentMedian},
+      isDegradation: isDegradation,
     })
     break
   }

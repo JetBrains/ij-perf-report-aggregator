@@ -7,19 +7,16 @@ import (
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "io"
-  "log/slog"
   "net/http"
+  "strings"
 )
 
 func GetDataFromClickhouse(ctx context.Context, client *http.Client, backendURL string, analysisSettings Settings) ([]int64, []int, []string, error) {
-  response, err := GetValuesFromServer(ctx, client, backendURL, getDataQuery(analysisSettings))
+  response, err := GetValuesFromServer(ctx, client, backendURL, analysisSettings.DataQuery())
   if err != nil {
-    slog.Error("error while getting data from server", "error", err)
+    return nil, nil, nil, err
   }
   timestamps, values, builds, err := extractDataFromRequest(response)
-  if err != nil {
-    slog.Error("error while extracting data from request", "error", err)
-  }
   return timestamps, values, builds, err
 }
 
@@ -56,12 +53,50 @@ func GetValuesFromServer(ctx context.Context, client *http.Client, backendURL st
   return body, err
 }
 
-func getDataQuery(settings Settings) []dataQuery.DataQuery {
+func (s StartupSettings) DataQuery() []dataQuery.DataQuery {
+  fields := []dataQuery.DataQueryDimension{
+    {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
+  }
+  filters := []dataQuery.DataQueryFilter{
+    {Field: "branch", Value: s.Branch},
+    {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
+    {Field: "project", Value: s.Project},
+    {Field: "product", Value: s.Product},
+    {Field: "machine", Value: s.Machine, Operator: "like"},
+    {Field: "triggeredBy", Value: ""},
+  }
+  if strings.Contains(s.Metric, "/") {
+    filters = append(filters, dataQuery.DataQueryFilter{Field: "metrics.name", Value: s.Metric})
+    fields = append(fields, dataQuery.DataQueryDimension{Name: "metrics", SubName: "value"})
+  }
+  if strings.HasSuffix(s.Metric, ".end") {
+    metricName, _ := strings.CutSuffix(s.Metric, ".end")
+    filters = append(filters, dataQuery.DataQueryFilter{Field: "measure.name", Value: metricName})
+    fields = append(fields, dataQuery.DataQueryDimension{Name: "measure", SubName: "end", Sql: "(measure.start+measure.duration)"})
+  }
+  if !strings.HasSuffix(s.Metric, ".end") && !strings.Contains(s.Metric, "/") {
+    fields = append(fields, dataQuery.DataQueryDimension{Name: s.Metric})
+  }
+  fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+
+  queries := []dataQuery.DataQuery{
+    {
+      Database: "ij",
+      Table:    "report",
+      Fields:   fields,
+      Filters:  filters,
+      Order:    []string{"t"},
+    },
+  }
+  return queries
+}
+
+func (s PerformanceSettings) DataQuery() []dataQuery.DataQuery {
   fields := []dataQuery.DataQueryDimension{
     {Name: "t", Sql: "toUnixTimestamp(generated_time)*1000"},
     {Name: "measures", SubName: "value"},
   }
-  if settings.Db == "perfint" {
+  if s.Db == "perfint" {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
   } else {
     fields = append(fields, dataQuery.DataQueryDimension{Name: "tc_build_id"})
@@ -69,15 +104,15 @@ func getDataQuery(settings Settings) []dataQuery.DataQuery {
 
   queries := []dataQuery.DataQuery{
     {
-      Database: settings.Db,
-      Table:    settings.Table,
+      Database: s.Db,
+      Table:    s.Table,
       Fields:   fields,
       Filters: []dataQuery.DataQueryFilter{
-        {Field: "branch", Value: settings.Branch},
+        {Field: "branch", Value: s.Branch},
         {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-        {Field: "project", Value: settings.Test},
-        {Field: "measures.name", Value: settings.Metric},
-        {Field: "machine", Value: settings.Machine, Operator: "like"},
+        {Field: "project", Value: s.Branch},
+        {Field: "measures.name", Value: s.Metric},
+        {Field: "machine", Value: s.Machine, Operator: "like"},
         {Field: "triggeredBy", Value: ""},
       },
       Order: []string{"t"},

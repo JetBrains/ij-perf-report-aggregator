@@ -2,7 +2,7 @@ package analysis
 
 import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 
-func GenerateKotlinSettings() []detector.Settings {
+func GenerateKotlinSettings() []detector.PerformanceSettings {
   testNames := []string{"intellij_commit/completion/empty_place_with_library_cache",
     "intellij_commit/completion/after_parameter_with_library_cache",
     "intellij_commit/completion/empty_place_typing_with_library_cache",
@@ -22,7 +22,7 @@ func GenerateKotlinSettings() []detector.Settings {
     "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache",
   }
   tests := generateKotlinTests(testNames)
-  settings := make([]detector.Settings, 0, 50)
+  settings := make([]detector.PerformanceSettings, 0, 50)
   metrics := []string{"completion#mean_value"}
   dbs := []string{"perfint", "perfintDev"}
   branches := []string{"master", "kt-master"}
@@ -30,12 +30,12 @@ func GenerateKotlinSettings() []detector.Settings {
     for _, metric := range metrics {
       for _, branch := range branches {
         for _, db := range dbs {
-          settings = append(settings, detector.Settings{
+          settings = append(settings, detector.PerformanceSettings{
             Db:          db,
             Table:       "kotlin",
             Channel:     "kotlin-plugin-perf-tests",
             Machine:     "intellij-linux-hw-hetzner%",
-            Test:        test,
+            Project:     test,
             Metric:      metric,
             Branch:      branch,
             ProductLink: "kotlin",

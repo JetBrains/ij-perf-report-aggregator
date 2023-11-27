@@ -20,7 +20,7 @@ func TestDegradationDetector(_ *testing.T) {
     log.Printf("BACKEND_URL is not set, using default value: %s", backendUrl)
   }
 
-  analysisSettings := make([]degradation_detector.Settings, 0, 1000)
+  analysisSettings := make([]degradation_detector.PerformanceSettings, 0, 1000)
   analysisSettings = append(analysisSettings, analysis.GenerateIdeaSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateWorkspaceSettings()...)
   analysisSettings = append(analysisSettings, analysis.GenerateKotlinSettings()...)
@@ -45,7 +45,7 @@ func TestDegradationDetector(_ *testing.T) {
 
   for _, analysisSetting := range analysisSettings {
     wg.Add(1)
-    go func(as degradation_detector.Settings) {
+    go func(as degradation_detector.PerformanceSettings) {
       defer wg.Done()
       // Acquire a slot in the semaphore before proceeding.
       semaphore <- struct{}{}

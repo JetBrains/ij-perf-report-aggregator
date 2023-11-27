@@ -6,8 +6,9 @@ import (
   "net/http"
 )
 
-func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detector.Settings {
-  mainSettings := detector.Settings{
+func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+  settings := make([]detector.PerformanceSettings, 0, 1000)
+  mainSettings := detector.PerformanceSettings{
     Db:          "perfUnitTests",
     Table:       "report",
     Channel:     "ij-perf-unit-tests",
@@ -19,22 +20,23 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
   tests, err := detector.GetAllTests(backendUrl, client, mainSettings)
   if err != nil {
     slog.Error("error while getting tests", "error", err)
-    return nil
+    return settings
   }
-  settings := make([]detector.Settings, 0, 1000)
   for _, test := range tests {
-    settings = append(settings, detector.Settings{
-      Test:                      test,
-      Db:                        mainSettings.Db,
-      Table:                     mainSettings.Table,
-      Channel:                   mainSettings.Channel,
-      Branch:                    mainSettings.Branch,
-      Machine:                   mainSettings.Machine,
-      Metric:                    mainSettings.Metric,
-      ProductLink:               mainSettings.ProductLink,
-      DoNotReportImprovement:    true,
-      MinimumSegmentLength:      20,
-      MedianDifferenceThreshold: 20,
+    settings = append(settings, detector.PerformanceSettings{
+      Project:     test,
+      Db:          mainSettings.Db,
+      Table:       mainSettings.Table,
+      Channel:     mainSettings.Channel,
+      Branch:      mainSettings.Branch,
+      Machine:     mainSettings.Machine,
+      Metric:      mainSettings.Metric,
+      ProductLink: mainSettings.ProductLink,
+      CommonAnalysisSettings: detector.CommonAnalysisSettings{
+        DoNotReportImprovement:    true,
+        MinimumSegmentLength:      20,
+        MedianDifferenceThreshold: 20,
+      },
     })
   }
   return settings

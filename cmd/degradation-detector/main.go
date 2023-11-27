@@ -17,7 +17,13 @@ func main() {
   backendUrl := getBackendUrl()
   client := createHttpClient()
   slog.Info("started")
-  analysisSettings := generateAnalysisSettings(backendUrl, client)
+  analysisSettings := make([]detector.Settings, 0, 2000)
+  for _, setting := range generatePerformanceSettings(backendUrl, client) {
+    analysisSettings = append(analysisSettings, setting)
+  }
+  for _, setting := range generateStartupSettings(backendUrl, client) {
+    analysisSettings = append(analysisSettings, setting)
+  }
   degradations := getDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
   sendDegradationsToSlack(insertionResults, client)
@@ -43,8 +49,14 @@ func createHttpClient() *http.Client {
   }
 }
 
-func generateAnalysisSettings(backendUrl string, client *http.Client) <-chan detector.Settings {
-  settings := make([]detector.Settings, 0, 1000)
+func generateStartupSettings(backendUrl string, client *http.Client) []detector.StartupSettings {
+  settings := make([]detector.StartupSettings, 0, 1000)
+  settings = append(settings, analysis.GenerateStartupSettingsForIDEA(backendUrl, client)...)
+  return settings
+}
+
+func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+  settings := make([]detector.PerformanceSettings, 0, 1000)
   settings = append(settings, analysis.GenerateIdeaSettings()...)
   settings = append(settings, analysis.GenerateWorkspaceSettings()...)
   settings = append(settings, analysis.GenerateKotlinSettings()...)
@@ -52,37 +64,30 @@ func generateAnalysisSettings(backendUrl string, client *http.Client) <-chan det
   settings = append(settings, analysis.GenerateGradleSettings()...)
   settings = append(settings, analysis.GeneratePhpStormSettings()...)
   settings = append(settings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
-  settingsChan := make(chan detector.Settings)
-  go func() {
-    for _, setting := range settings {
-      settingsChan <- setting
-    }
-    close(settingsChan)
-  }()
-  return settingsChan
+  return settings
 }
 
-func getDegradations(analysisSettings <-chan detector.Settings, client *http.Client, backendUrl string) <-chan detector.Degradation {
-  degradationChan := make(chan detector.Degradation, 5)
+func getDegradations(settings []detector.Settings, client *http.Client, backendUrl string) <-chan detector.DegradationWithContext {
+  degradationChan := make(chan detector.DegradationWithContext, 5)
   go func() {
     defer close(degradationChan)
     var wg sync.WaitGroup
     pool := pond.New(5, 1000)
-    for analysisSetting := range analysisSettings {
+    for _, setting := range settings {
       wg.Add(1)
-      analysisSetting := analysisSetting
+      setting := setting
       pool.Submit(func() {
         defer wg.Done()
-        slog.Info("processing", "settings", analysisSetting)
-        ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+        slog.Info("fetching from clickhouse", "settings", setting)
+        ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
         defer cancel()
-        timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, analysisSetting)
+        timestamps, values, builds, err := detector.GetDataFromClickhouse(ctx, client, backendUrl, setting)
         if err != nil {
-          slog.Error("error while getting data from clickhouse", "error", err, "settings", analysisSetting)
+          slog.Error("error while getting data from clickhouse", "error", err, "settings", setting)
           return
         }
-        for _, degradation := range detector.InferDegradations(values, builds, timestamps, analysisSetting) {
-          degradationChan <- degradation
+        for _, degradation := range detector.InferDegradations(values, builds, timestamps, setting) {
+          degradationChan <- detector.DegradationWithContext{Details: degradation, Settings: setting}
         }
       })
     }
@@ -97,9 +102,6 @@ func sendDegradationsToSlack(insertionResults <-chan detector.InsertionResults, 
   for result := range insertionResults {
     if result.Error != nil {
       slog.Error("error while inserting degradation", "error", result.Error, "degradation", result.Degradation)
-      continue
-    }
-    if !result.WasInserted {
       continue
     }
     wg.Add(1)

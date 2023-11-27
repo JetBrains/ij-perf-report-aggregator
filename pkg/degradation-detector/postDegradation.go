@@ -12,12 +12,16 @@ import (
 )
 
 type InsertionResults struct {
-  Degradation Degradation
-  WasInserted bool
+  Degradation DegradationWithContext
   Error       error
 }
 
-func PostDegradations(client *http.Client, backendURL string, degradations <-chan Degradation) chan InsertionResults {
+type DegradationWithContext struct {
+  Details  Degradation
+  Settings Settings
+}
+
+func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithContext) chan InsertionResults {
   url := backendURL + "/api/meta/accidents"
   insertionResults := make(chan InsertionResults)
   go func() {
@@ -25,16 +29,16 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
     var wg sync.WaitGroup
     for degradation := range degradations {
       wg.Add(1)
-      func(degradation Degradation) {
+      func(degradation DegradationWithContext) {
         defer wg.Done()
-        analysisSettings := degradation.analysisSettings
-        date := time.UnixMilli(degradation.timestamp).UTC().Format("2006-01-02")
-        medianMessage := getMessageBasedOnMedianChange(degradation.medianValues)
+        d := degradation.Details
+        date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
+        medianMessage := getMessageBasedOnMedianChange(d.medianValues)
         kind := "InferredRegression"
-        if !degradation.isDegradation {
+        if !d.isDegradation {
           kind = "InferredImprovement"
         }
-        insertParams := meta.AccidentInsertParams{Date: date, Test: analysisSettings.Test + "/" + analysisSettings.Metric, Kind: kind, Reason: medianMessage, BuildNumber: degradation.build}
+        insertParams := meta.AccidentInsertParams{Date: date, Test: degradation.Settings.DBTestName(), Kind: kind, Reason: medianMessage, BuildNumber: d.build}
         params, err := json.Marshal(insertParams)
         if err != nil {
           insertionResults <- InsertionResults{Error: fmt.Errorf("failed to marshal query: %w", err)}
@@ -58,16 +62,15 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 
         // the accident already exists
         if resp.StatusCode == http.StatusConflict {
-          insertionResults <- InsertionResults{}
           return
         }
 
         if resp.StatusCode != http.StatusOK {
-          insertionResults <- InsertionResults{Error: fmt.Errorf("failed to post Degradation: %v", resp.Status)}
+          insertionResults <- InsertionResults{Error: fmt.Errorf("failed to post Details: %v", resp.Status)}
           return
         }
 
-        insertionResults <- InsertionResults{degradation, true, nil}
+        insertionResults <- InsertionResults{DegradationWithContext{d, degradation.Settings}, nil}
       }(degradation)
     }
     wg.Wait()

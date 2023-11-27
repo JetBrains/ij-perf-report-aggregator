@@ -2,7 +2,7 @@ package analysis
 
 import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 
-func GeneratePhpStormSettings() []detector.Settings {
+func GeneratePhpStormSettings() []detector.PerformanceSettings {
   tests := []string{"drupal8-master-with-plugin/inspection",
     "shopware/inspection",
     "b2c-demo-shop/inspection",
@@ -43,17 +43,17 @@ func GeneratePhpStormSettings() []detector.Settings {
     "WI_58306/completion",
     "mpdf/inlineRename",
   }
-  settings := make([]detector.Settings, 0, 100)
+  settings := make([]detector.PerformanceSettings, 0, 100)
   for _, test := range tests {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
-      settings = append(settings, detector.Settings{
+      settings = append(settings, detector.PerformanceSettings{
         Db:          "perfint",
         Table:       "phpstorm",
         Channel:     "phpstorm-performance-degradations",
         Branch:      "master",
         Machine:     "intellij-linux-hw-hetzner%",
-        Test:        test,
+        Project:     test,
         Metric:      metric,
         ProductLink: "phpstorm",
       })

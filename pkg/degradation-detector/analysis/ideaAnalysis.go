@@ -2,37 +2,40 @@ package analysis
 
 import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "net/http"
   "strings"
 )
 
-func GenerateIdeaSettings() []detector.PerformanceSettings {
+func GenerateIdeaSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, generateIdeaOnInstallerAnalysisSettings()...)
-  settings = append(settings, generateIdeaDevAnalysisSettings()...)
+  settings = append(settings, generateIdeaOnInstallerAnalysisSettings(backendUrl, client)...)
+  settings = append(settings, generateIdeaDevAnalysisSettings(backendUrl, client)...)
   return settings
 }
 
-func generateIdeaOnInstallerAnalysisSettings() []detector.PerformanceSettings {
-  tests := []string{"intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status",
-    "community/rebuild", "intellij_sources/rebuild", "grails/rebuild", "java/rebuild", "spring_boot/rebuild", "java/inspection", "grails/inspection",
-    "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection",
-    "intellij_sources/localInspection/java_file", "intellij_sources/localInspection/kotlin_file", "kotlin/localInspection",
-    "kotlin_coroutines/localInspection", "intellij_sources/localInspection/java_file", "intellij_sources/localInspection/kotlin_file",
-    "kotlin/localInspection", "kotlin_coroutines/localInspection", "community/completion/kotlin_file", "grails/completion/groovy_file",
-    "grails/completion/java_file", "kotlin_petclinic/debug", "grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions",
-    "intellij_sources/showFileHistory/EditorImpl", "intellij_sources/expandProjectMenu", "intellij_sources/expandMainMenu", "intellij_sources/expandEditorMenu",
-    "kotlin/highlight", "kotlin_coroutines/highlight", "intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file",
-    "intellij_sources/createJavaClass", "intellij_sources/createKotlinClass", "community/go-to-%",
+func generateIdeaOnInstallerAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+  tests := []string{
+    "intellij_sources/%", "grails/%", "java/%", "spring_boot/%",
+    "spring_boot_maven/%", "spring_boot/%", "kotlin/%", "kotlin_coroutines/%",
+    "kotlin_petclinic/%", "community/%", "empty_project/%", "keycloak_release_20/%",
+    "space/%", "toolbox_enterprise/%", "train-ticket/%",
   }
+  baseSettings := detector.PerformanceSettings{
+    Db:      "perfint",
+    Table:   "idea",
+    Branch:  "master",
+    Machine: "intellij-linux-performance-aws-%",
+  }
+  testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
   settings := make([]detector.PerformanceSettings, 0, 100)
-  for _, test := range tests {
+  for _, test := range testsExpanded {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:      "perfint",
-        Table:   "idea",
-        Branch:  "master",
-        Machine: "intellij-linux-performance-aws-%",
+        Db:      baseSettings.Db,
+        Table:   baseSettings.Table,
+        Branch:  baseSettings.Branch,
+        Machine: baseSettings.Machine,
         Project: test,
         Metric:  metric,
         SlackSettings: detector.SlackSettings{
@@ -46,30 +49,24 @@ func generateIdeaOnInstallerAnalysisSettings() []detector.PerformanceSettings {
   return settings
 }
 
-func generateIdeaDevAnalysisSettings() []detector.PerformanceSettings {
-  tests := []string{"intellij_commit/indexing", "intellij_commit/second-scanning", "intellij_commit/third-scanning", "intellij_commit/findUsages/Application_runReadAction",
-    "intellij_commit/findUsages/Library_getName", "intellij_commit/findUsages/PsiManager_getInstance", "intellij_commit/findUsages/PropertyMapping_value",
-    "intellij_commit/findUsages/ActionsKt_runReadAction", "intellij_commit/findUsages/DynamicPluginListener_TOPIC", "intellij_commit/findUsages/Path_div",
-    "intellij_commit/findUsages/Persistent_absolutePath", "intellij_sources/localInspection/java_file",
-    "intellij_sources/localInspection/kotlin_file",
-    "intellij_commit/localInspection/java_file",
-    "intellij_commit/localInspection/kotlin_file",
-    "intellij_commit/localInspection/kotlin_file_DexInlineTest",
-    "intellij_commit/localInspection/java_file_ContentManagerImpl",
-    "intellij_sources/completion/java_file",
-    "intellij_sources/completion/kotlin_file",
-    "intellij_commit/completion/java_file",
-    "intellij_commit/completion/kotlin_file"}
-
+func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+  tests := []string{"intellij_commit/%"}
+  baseSettings := detector.PerformanceSettings{
+    Db:      "perfintDev",
+    Table:   "idea",
+    Branch:  "master",
+    Machine: "intellij-linux-performance-aws-%",
+  }
+  testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
   settings := make([]detector.PerformanceSettings, 0, 100)
-  for _, test := range tests {
+  for _, test := range testsExpanded {
     metrics := getMetricFromTestName(test)
     for _, metric := range metrics {
       settings = append(settings, detector.PerformanceSettings{
-        Db:      "perfintDev",
-        Table:   "idea",
-        Branch:  "master",
-        Machine: "intellij-linux-performance-aws-%",
+        Db:      baseSettings.Db,
+        Table:   baseSettings.Table,
+        Branch:  baseSettings.Branch,
+        Machine: baseSettings.Machine,
         Project: test,
         Metric:  metric,
         SlackSettings: detector.SlackSettings{

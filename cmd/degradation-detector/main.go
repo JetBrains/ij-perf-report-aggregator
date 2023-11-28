@@ -56,12 +56,12 @@ func generateStartupSettings(backendUrl string, client *http.Client) []detector.
 
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, analysis.GenerateIdeaSettings()...)
+  settings = append(settings, analysis.GenerateIdeaSettings(backendUrl, client)...)
   settings = append(settings, analysis.GenerateWorkspaceSettings()...)
   settings = append(settings, analysis.GenerateKotlinSettings()...)
   settings = append(settings, analysis.GenerateMavenSettings()...)
   settings = append(settings, analysis.GenerateGradleSettings()...)
-  settings = append(settings, analysis.GeneratePhpStormSettings()...)
+  settings = append(settings, analysis.GeneratePhpStormSettings(backendUrl, client)...)
   settings = append(settings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
   return settings
 }

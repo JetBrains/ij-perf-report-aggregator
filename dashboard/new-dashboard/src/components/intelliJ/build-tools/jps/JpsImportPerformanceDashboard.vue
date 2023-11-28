@@ -156,8 +156,19 @@ const metricsDeclaration = [
   "compiler.ArtifactManagerBridge.getArtifacts.ms",
   "compiler.ArtifactManagerBridge.getArtifactsByType.ms",
   "compiler.ArtifactManagerBridge.initBridges.ms",
+  "compiler.ArtifactModifiableModelBridge.addArtifact.ms",
+  "compiler.ArtifactModifiableModelBridge.commit.ms",
+  "compiler.ArtifactModifiableModelBridge.dispose.ms",
+  "compiler.ArtifactModifiableModelBridge.findArtifacts.ms",
+  "compiler.ArtifactModifiableModelBridge.getArtifacts.ms",
+  "compiler.ArtifactModifiableModelBridge.getArtifactsByType.ms",
   "compiler.ArtifactVirtualFileListener.propertyChanged.ms",
   "compiler.ArtifactVirtualFileListener.filePathChanged.ms",
+
+  "writeAction.count",
+  "writeAction.max.wait.ms",
+  "writeAction.median.wait.ms",
+  "writeAction.wait.ms",
 
   "AWTEventQueue.dispatchTimeTotal",
   "CPU | Load |Total % 95th pctl",
@@ -168,14 +179,12 @@ const metricsDeclaration = [
   "fullGCPause",
   "freedMemoryByGC",
   "totalHeapUsedMax",
+
   "JVM.GC.collectionTimesMs",
   "JVM.GC.collections",
   "JVM.maxHeapMegabytes",
-  "JVM.threadCount",
+  "JVM.maxThreadCount",
   "JVM.totalCpuTimeMs",
-  "JVM.totalMegabytesAllocated",
-  "JVM.usedHeapMegabytes",
-  "JVM.usedNativeMegabytes",
 ]
 
 const projects = [
@@ -194,6 +203,7 @@ const projects = [
   "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
   "jps-cyclic-branches-checkout/measureStartup",
   "jps-modules-reload/measureStartup",
+  "jps-changes-in-artifacts/measureStartup",
 ]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)

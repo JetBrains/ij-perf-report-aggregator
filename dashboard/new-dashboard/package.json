@@ -13,9 +13,9 @@
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.41.0",
+    "primevue": "3.41.1",
     "rxjs": "8.0.0-alpha.10",
-    "vue": "3.3.8",
+    "vue": "3.3.9",
     "vue-router": "4.2.5"
   },
   "devDependencies": {

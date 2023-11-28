@@ -115,7 +115,7 @@ func getMetricFromTestName(test string) []string {
     return []string{"%expandEditorMenu"}
   }
   if strings.Contains(test, "/highlight") {
-    return []string{"highlight"}
+    return []string{"highlighting"}
   }
   if strings.Contains(test, "/FileStructureDialog") {
     return []string{"FileStructurePopup"}
@@ -140,6 +140,12 @@ func getMetricFromTestName(test string) []string {
   }
   if strings.Contains(test, "/go-to-") {
     return []string{"searchEverywhere"}
+  }
+  if strings.Contains(test, "/ultimate") {
+    return []string{"localInspections", "firstCodeAnalysis", "typingCodeAnalyzing", "completion"}
+  }
+  if strings.Contains(test, "/typing") {
+    return []string{"typingCodeAnalyzing", "typing"}
   }
   return []string{}
 }

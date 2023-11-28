@@ -35,8 +35,8 @@ const chartsDeclaration: ChartDefinition[] = [
       "package-checker-gradle-500-modules/get_all_modules/gradle",
       "gradlebuilddepchecker/show-warnings/gradle",
       "gradlebuildktsdepchecker/show-warnings/gradle-kts",
-      "vulnerable-path-gradle-test/show-warnings/kotlin",
-      "kotlin-petclinic/run-inspections/vulnerable-api-inspection",
+      "vulnerable-path-gradle-test/show_warnings/kotlin",
+      "kotlin_petclinic/run_inspections/vulnerable_api_inspection",
     ],
   },
 ]

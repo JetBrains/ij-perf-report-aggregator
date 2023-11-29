@@ -106,6 +106,7 @@ enum ROUTES {
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
   KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
+  KotlinScriptDev = `${ROUTE_PREFIX.Kotlin}/scriptDev`,
   KotlinK1VsK2Comparison = `${ROUTE_PREFIX.Kotlin}/k1VsK2Comparison`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
@@ -561,6 +562,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinDebuggerDev,
           label: "Debugger (dev)",
+        },
+        {
+          url: ROUTES.KotlinScriptDev,
+          label: "Kts (dev)",
         },
         {
           url: ROUTES.KotlinK1VsK2Comparison,
@@ -1699,6 +1704,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinDebuggerDev,
           component: () => import("./components/kotlin/dev/DebuggerDashboard.vue"),
           meta: { pageTitle: "Kotlin debugger (dev/fast)" },
+        },
+        {
+          path: ROUTES.KotlinScriptDev,
+          component: () => import("./components/kotlin/dev/ScriptDashboard.vue"),
+          meta: { pageTitle: "Kts (dev/fast)" },
         },
         {
           path: ROUTES.KotlinK1VsK2Comparison,

@@ -60,11 +60,13 @@
 
         <span v-if="highlightingPasses">
           <Divider label="Highlighting Passes" />
-          <PerformanceLineChart
-            title="Highlighting Passes"
-            :measures="highlightingPasses"
-            :configurators="configurators"
-          />
+          <span v-if="showAllPasses">
+            <PerformanceLineChart
+              title="Highlighting Passes"
+              :measures="highlightingPasses"
+              :configurators="configurators"
+            />
+          </span>
           <PerformanceLineChart
             title="Code Analysis"
             :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
@@ -92,7 +94,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { computed, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
@@ -183,6 +185,10 @@ function onChangeRange(value: TimeRange) {
 }
 
 const highlightingPasses = fetchHighlightingPasses()
+
+const showAllPasses = computed(() => {
+  return projectConfigurator.selected.value == null || projectConfigurator.selected.value.length == 1 || typeof projectConfigurator.selected.value == "string"
+})
 </script>
 
 <style>

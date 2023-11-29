@@ -2,7 +2,7 @@ import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { deepEqual } from "fast-equals"
-import { debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
+import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
@@ -188,7 +188,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   ) {}
 
   createObservable(): Observable<unknown> {
-    return refToObservable(this.skipZeroValues)
+    return combineLatest([refToObservable(this.skipZeroValues), refToObservable(this.measures)])
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {

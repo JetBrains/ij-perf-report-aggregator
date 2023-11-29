@@ -1,20 +1,15 @@
 import { Observable } from "rxjs"
-import { ref, Ref, shallowRef } from "vue"
+import { Ref, shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
-import { DataQueryConfigurator } from "../components/common/dataQuery"
 import { refToObservable } from "./rxjs"
 
-export class SimpleMeasureConfigurator implements DataQueryConfigurator {
+export class SimpleMeasureConfigurator {
   readonly data = shallowRef<string[] | null>(null)
   private readonly _selected = shallowRef<string[] | string | null>(null)
   readonly state = {
     loading: true,
     disabled: true,
   }
-  configureQuery(): boolean {
-    return true
-  }
-
   initData(value: string[]) {
     this.data.value = value
     this._selected.value = value
@@ -38,16 +33,6 @@ export class SimpleMeasureConfigurator implements DataQueryConfigurator {
     return ref as Ref<string[] | null>
   }
 
-  get selectedSafe(): Ref<string[]> {
-    const reference = this._selected
-    if (reference.value === null) {
-      return ref([])
-    }
-    if (typeof reference.value === "string") {
-      reference.value = [reference.value]
-    }
-    return reference as Ref<string[]>
-  }
   constructor(measureName: string, persistentStateManager: PersistentStateManager | null) {
     persistentStateManager?.add(measureName, this._selected)
   }

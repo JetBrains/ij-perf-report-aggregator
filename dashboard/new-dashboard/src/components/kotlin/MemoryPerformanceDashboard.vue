@@ -5,60 +5,64 @@
     persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
-    <MeasureSelect
-      title="Metrics"
-      :selected-label="metricsSelectLabelFormat"
-      :configurator="measureConfigurator"
-    ></MeasureSelect>
+    <template #configurator>
+      <MeasureSelect
+        :configurator="measureConfigurator"
+        title="Measure"
+        :label-formatter="metricsSelectLabelFormat"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        </template>
+      </MeasureSelect>
+    </template>
     <Divider title="Completion" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="completionCharts"
     />
     <Divider title="Code analysis" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="codeAnalysisCharts"
     />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="highlightingCharts"
     />
     <Divider title="Find usages" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="findUsagesCharts"
     />
     <Divider title="Debugger" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="evaluateExpressionChars"
     />
     <Divider title="Refactoring" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="refactoringCharts"
     />
     <Divider title="Script" />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="scriptCompletionCharts"
     />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="highlightingScriptCharts"
     />
     <MemoryDashboardGroupCharts
-      :metrics="measureConfigurator.selectedSafe"
+      :metrics="metrics"
       :definitions="codeAnalysisScriptCharts"
     />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import { provide } from "vue"
 import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
-import { simpleMeasureConfiguratorKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import DashboardPage from "../common/DashboardPage.vue"
@@ -75,8 +79,16 @@ import {
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
 } from "./projects"
+import { computed, Ref, ref } from "vue"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)
 measureConfigurator.initData(["freedMemoryByGC", "JVM.diffHeapUsageMb_afterGc"])
-provide(simpleMeasureConfiguratorKey, measureConfigurator)
+
+const metrics = computed(() => {
+  const reference = measureConfigurator.selected
+  if (reference.value === null) {
+    return ref([])
+  }
+  return reference as Ref<string[]>
+})
 </script>

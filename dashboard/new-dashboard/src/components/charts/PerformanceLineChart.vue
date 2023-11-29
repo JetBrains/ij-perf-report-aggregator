@@ -34,7 +34,7 @@ interface LineChartProps {
   chartType?: ChartType
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
-  withMeasureName: boolean
+  withMeasureName?: boolean
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {

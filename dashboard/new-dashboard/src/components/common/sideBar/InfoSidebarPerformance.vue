@@ -278,12 +278,14 @@ function handleNavigateToTest() {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+  const branch = vm.data.value?.branch ?? ""
+  const majorBranch = branch.slice(0, Math.max(0, branch.indexOf(".")))
   const testURL = parts.join("/")
   const query: Record<string, string> = {
     ...currentRoute.query,
     project: vm.data.value?.projectName ?? "",
     measure: vm.data.value?.metricName,
-    branch: vm.data.value?.branch ?? "",
+    branch: majorBranch,
   } as Record<string, string>
   const queryParams: string = new URLSearchParams(query).toString()
   void router.push(testURL + "?" + queryParams)

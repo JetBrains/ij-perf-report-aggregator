@@ -37,8 +37,8 @@ async function copyLink() {
   let url = window.location.href
   const now = new Date()
   const ago = getDateAgoByDuration(props.timerangeConfigurator.value.value)
-  const dayFrom = ago.getUTCDay() > 2 ? ago.getUTCDay() - 1 : ago.getUTCDay()
-  const dayTo = now.getUTCDay() < 31 ? now.getUTCDay() + 1 : now.getUTCDay()
+  const dayFrom = ago.getDate() >= 2 ? ago.getDate() - 1 : ago.getDate()
+  const dayTo = now.getDate() < 31 ? now.getDate() + 1 : now.getDate()
   const filter = `${ago.getFullYear()}-${ago.getUTCMonth() + 1}-${dayFrom}:${now.getFullYear()}-${now.getUTCMonth() + 1}-${dayTo}`
   url = url.replace(new RegExp("&?customRange=.+&?"), "")
   url = url.replace(new RegExp("&?timeRange=.+&?"), "")

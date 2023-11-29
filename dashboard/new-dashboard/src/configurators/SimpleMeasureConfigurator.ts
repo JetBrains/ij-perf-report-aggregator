@@ -10,6 +10,7 @@ export class SimpleMeasureConfigurator {
     loading: true,
     disabled: true,
   }
+
   initData(value: string[]) {
     this.data.value = value
     this._selected.value = value

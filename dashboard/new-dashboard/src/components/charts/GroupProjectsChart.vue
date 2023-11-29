@@ -38,6 +38,7 @@ const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
+
 const measureArray: Ref<string[]> = computed(() => {
   return Array.isArray(props.measure) ? props.measure : [props.measure]
 })

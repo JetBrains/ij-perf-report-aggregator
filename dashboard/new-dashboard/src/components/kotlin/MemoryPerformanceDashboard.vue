@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, Ref, ref } from "vue"
 import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import MeasureSelect from "../charts/MeasureSelect.vue"
@@ -79,11 +80,10 @@ import {
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
 } from "./projects"
-import { computed, Ref, ref } from "vue"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)
 measureConfigurator.initData(["freedMemoryByGC", "JVM.diffHeapUsageMb_afterGc"])
-
+measureConfigurator.setSelected("JVM.diffHeapUsageMb_afterGc")
 const metrics = computed(() => {
   const reference = measureConfigurator.selected
   if (reference.value === null) {

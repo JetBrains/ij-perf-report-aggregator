@@ -13,8 +13,8 @@
 import { computed, Ref, watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { injectOrError, injectOrNull } from "../../shared/injectionKeys"
-import { dashboardConfiguratorsKey, serverConfiguratorKey, simpleMeasureConfiguratorKey } from "../../shared/keys"
+import { injectOrError } from "../../shared/injectionKeys"
+import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
 import LineChart from "./PerformanceLineChart.vue"
@@ -36,12 +36,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
-const measureConfigurator = injectOrNull(simpleMeasureConfiguratorKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
-if (measureConfigurator != null) {
-  configurators.push(measureConfigurator)
-}
 const measureArray: Ref<string[]> = computed(() => {
   return Array.isArray(props.measure) ? props.measure : [props.measure]
 })

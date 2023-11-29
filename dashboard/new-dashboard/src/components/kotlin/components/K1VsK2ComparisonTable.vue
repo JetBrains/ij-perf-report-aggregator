@@ -24,7 +24,7 @@
       baseline-column-label="K1"
       current-column-label="K2"
       difference-column-label="Improvement (%)"
-      @update:result-data="(newValue) => (resultData = newValue)"
+      @update:result-data="(newValue: TestComparisonTableEntry[]) => (resultData = newValue)"
     />
 
     <p class="text-sm text-gray-500 text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>

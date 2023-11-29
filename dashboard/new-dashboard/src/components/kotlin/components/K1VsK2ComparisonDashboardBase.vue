@@ -13,7 +13,7 @@
       />
       <K1VsK2ComparisonProjectCategoryFilter
         :initial-project-categories="initialProjectCategories"
-        @update:selected-project-categories="(newValue) => (selectedProjectCategories = newValue)"
+        @update:selected-project-categories="(newValue: string[]) => (selectedProjectCategories = newValue)"
       />
       <span class="p-buttonset ml-4">
         <Button

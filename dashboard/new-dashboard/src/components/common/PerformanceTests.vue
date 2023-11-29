@@ -94,7 +94,7 @@
               :skip-zero-values="false"
               :value-unit="props.unit"
               :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
-              :legend-formatter="(name) => name"
+              :legend-formatter="(name: string) => name"
             />
           </template>
         </span>

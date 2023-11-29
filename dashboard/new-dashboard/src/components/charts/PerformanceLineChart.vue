@@ -22,6 +22,7 @@ import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
+import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 import { PerformanceLineChartVM } from "./PerformanceLineChartVM"
 
@@ -33,6 +34,7 @@ interface LineChartProps {
   chartType?: ChartType
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
+  withMeasureName: boolean
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
@@ -42,6 +44,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   legendFormatter(name: string): string {
     return name
   },
+  withMeasureName: false,
 })
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
@@ -90,7 +93,16 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   accidentsConfigurator
 )
 
-const dataQueryExecutor = new DataQueryExecutor([...props.configurators, measureConfigurator, infoFieldsConfigurator].filter((item): item is DataQueryConfigurator => item != null))
+if (measures.value.length == 1) {
+  new SeriesNameConfigurator(measures.value[0])
+}
+
+const configurators = [...props.configurators, measureConfigurator, infoFieldsConfigurator]
+if (props.withMeasureName) {
+  configurators.push(new SeriesNameConfigurator(measures.value[0]))
+}
+
+const dataQueryExecutor = new DataQueryExecutor([...configurators].filter((item): item is DataQueryConfigurator => item != null))
 
 function createChart() {
   if (chartVm != null) {

@@ -289,11 +289,11 @@ function handleNavigateToTest() {
   void router.push(testURL + "?" + queryParams)
 }
 
-function isOnTestPage(): boolean {
+function isNavigateToTestSupported(): boolean {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   const pageName = parts.at(-1)?.toLowerCase()
-  return pageName == "testsDev" || pageName == "tests"
+  return pageName == "testsDev" || pageName == "tests" || pageName == "startup"
 }
 
 function handleRemove(id: number) {
@@ -312,7 +312,7 @@ function getTestActions(): {
   command: () => void
 }[] {
   const actions = []
-  if (!isOnTestPage()) {
+  if (!isNavigateToTestSupported()) {
     actions.push({
       label: "Navigate to test",
       icon: "pi pi-chart-line",

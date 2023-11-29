@@ -51,7 +51,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     branch = dataSeries[7] as string
     accidentBuild = buildId.toString()
   }
-  if (dbType == DBType.FLEET) {
+  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     machineName = dataSeries[2] as string
     buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
@@ -60,6 +60,7 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     buildNum1 = dataSeries[7] as number
     buildNum2 = dataSeries[8] as number
     branch = dataSeries[9] as string
+    metricName = params.seriesName as string
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string

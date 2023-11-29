@@ -1089,7 +1089,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "IU",
             defaultProject: "idea",
@@ -1301,7 +1301,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PhpStormStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "PS",
             defaultProject: "stitcher with composer",
@@ -1363,7 +1363,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "GO",
             defaultProject: "kratos",
@@ -1460,7 +1460,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PyCharmStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "PY",
             defaultProject: "tensorflow",
@@ -1547,7 +1547,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.WebStormStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "WS",
             defaultProject: "angular",
@@ -1589,7 +1589,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RubyStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "RM",
             defaultProject: "diaspora",
@@ -1926,7 +1926,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.ClionStartupDashboard,
-          component: () => import("./components/startup/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "CL",
             defaultProject: "cmake",

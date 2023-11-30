@@ -25,7 +25,6 @@ func main() {
     slog.Error("cannot collect", "err", err)
     os.Exit(78)
   }
-  os.Exit(75) //temporary exit code to check how notifications work
 }
 
 func hasOSSuffix(osList []string, configuration string) bool {

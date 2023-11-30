@@ -89,6 +89,7 @@
           :measures="['metrics.notifications/number']"
           :skip-zero-values="false"
           :configurators="configurators"
+          :with-measure-name="true"
         />
 
         <Divider label="Exit" />

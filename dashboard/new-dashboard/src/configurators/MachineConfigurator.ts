@@ -134,6 +134,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
           groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
         } else if (value.startsWith("intellij-macos-perf-eqx")) {
           groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
+        } else if (value.startsWith("intellij-windows-aws-i")) {
+          groupName = "windows aws"
         } else {
           groupName = MachineConfigurator.valueToGroup[value] as string | null
         }

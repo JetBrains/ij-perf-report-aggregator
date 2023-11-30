@@ -16,7 +16,7 @@ func GenerateWorkspaceSettings() []detector.PerformanceSettings {
         Machine: "intellij-linux-hw-hetzner%",
         Metric:  metric,
         SlackSettings: detector.SlackSettings{
-          Channel:     "ij-workspace-model-degradations",
+          Channel:     "ij-workspace-model-perf-tests",
           ProductLink: "intellij",
         },
       })

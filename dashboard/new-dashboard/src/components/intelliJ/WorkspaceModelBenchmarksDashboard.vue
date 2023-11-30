@@ -34,6 +34,18 @@ const metricsDeclaration = [
   "Soft linked entities adding (2000000)",
   "duration",
   "duration_replace",
+  "10_duration",
+  "1_000_duration",
+  "100_000_duration",
+  "10_000_000_duration",
+  "addMappingSingleBuilderDuration",
+  "addMappingPerBuilderDuration",
+  "getEntitySingleBuilderDuration",
+  "getEntityPerBuilderDuration",
+  "getDataSingleBuilderDuration",
+  "getDataPerBuilderDuration",
+  "removeMappingSingleBuilderDuration",
+  "removeMappingPerBuilderDuration",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
@@ -55,6 +67,9 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "collect-changes",
       "add-diff-operation",
       "operations-of-references",
+      "operations-on-external-mappings",
+      "operations-on-external-mappings-update-builders-in-chain",
+      "get-for-kotlin-persistent-map",
     ],
   }
 })

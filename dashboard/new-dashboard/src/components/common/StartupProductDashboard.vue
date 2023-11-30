@@ -58,6 +58,15 @@
           />
         </section>
 
+        <section>
+          <PerformanceLineChart
+            title="FUS Total startup"
+            :measures="['metrics.startup/fusTotalDuration']"
+            :configurators="configurators"
+            :with-measure-name="true"
+          />
+        </section>
+
         <span v-if="highlightingPasses">
           <Divider label="Highlighting Passes" />
           <span v-if="showAllPasses">

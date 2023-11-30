@@ -279,7 +279,7 @@ function handleNavigateToTest() {
   const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
   const branch = vm.data.value?.branch ?? ""
-  const majorBranch = branch.slice(0, Math.max(0, branch.indexOf(".")))
+  const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
   const query: Record<string, string> = {
     ...currentRoute.query,

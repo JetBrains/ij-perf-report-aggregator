@@ -19,15 +19,16 @@ export function getInfoDataForStartup(originalParams: CallbackDataParams[] | nul
   const params = filterUniqueByName(originalParams)
   if (params && params.length > 0) {
     const dataSeries = params[0].value as OptionDataValue[]
+    console.log(dataSeries.length)
     const dateMs = dataSeries[0] as number
-    const machineName: string = dataSeries[2] as string
-    const buildId: number = dataSeries[3] as number
-    const projectName: string = dataSeries[4] as string
-    const installerId: number = dataSeries[5] as number
-    const buildVersion: number = dataSeries[6] as number
-    const buildNum1: number = dataSeries[7] as number
-    const buildNum2: number = dataSeries[8] as number
-    const branch: string = dataSeries[9] as string
+    const machineName: string = dataSeries[3] as string
+    const buildId: number = dataSeries[4] as number
+    const projectName: string = dataSeries[5] as string
+    const installerId: number = dataSeries[6] as number
+    const buildVersion: number = dataSeries[7] as number
+    const buildNum1: number = dataSeries[8] as number
+    const buildNum2: number = dataSeries[9] as number
+    const branch: string = dataSeries[10] as string
 
     const series: DataSeries[] = []
     const prefixes = params.map((param) => getPrefix(param.seriesName as string))

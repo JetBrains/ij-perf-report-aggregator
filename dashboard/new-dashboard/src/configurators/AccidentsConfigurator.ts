@@ -112,32 +112,72 @@ export class AccidentsConfigurator implements DataQueryConfigurator, FilterConfi
   }
 }
 
+function combineProjectsAndMetrics(projects: string | string[] | null, measures: string | string[] | null): string[] {
+  const projectAndMetrics: string[] = []
+  if (projects != null && measures != null) {
+    if (Array.isArray(projects)) {
+      projectAndMetrics.push(...projects)
+    } else {
+      projectAndMetrics.push(projects)
+    }
+
+    if (Array.isArray(projects)) {
+      if (Array.isArray(measures)) {
+        projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+      } else {
+        projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
+      }
+    } else {
+      if (Array.isArray(measures)) {
+        projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+      } else {
+        projectAndMetrics.push(`${projects}/${measures}`)
+      }
+    }
+  }
+  return projectAndMetrics
+}
+
+export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
+  constructor(
+    private product: string,
+    projects: Ref<string | string[] | null>,
+    metrics: Ref<string[] | string | null>,
+    timeRangeConfigurator: TimeRangeConfigurator
+  ) {
+    super()
+    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
+      const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
+      const projectAndMetricsWithProduct = projectAndMetrics.map((it) => `${product}/${it}`)
+      getAccidentsFromMetaDb(projectAndMetricsWithProduct, timeRange, customRange)
+        .then((value) => {
+          this.value.value = this.removeProductPrefix(product, value)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    })
+  }
+
+  private removeProductPrefix(product: string, response: Map<string, Accident[]>): Map<string, Accident[]> {
+    const map = new Map<string, Accident[]>()
+    for (const [key, value] of response) {
+      const keyWithoutProduct = key.replace(`${product}/`, "")
+      map.set(keyWithoutProduct, value)
+    }
+    return map
+  }
+
+  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
+    super.writeAccidentToMetaDb(date, this.product + "/" + affected_test, reason, build_number, kind)
+  }
+}
+
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
   constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator) {
     super()
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
-      const projectAndMetrics: string[] = []
-      if (projects != null && measures != null) {
-        if (Array.isArray(projects)) {
-          projectAndMetrics.push(...projects)
-        } else {
-          projectAndMetrics.push(projects)
-        }
-
-        if (Array.isArray(projects)) {
-          if (Array.isArray(measures)) {
-            projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
-          } else {
-            projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
-          }
-        } else {
-          if (Array.isArray(measures)) {
-            projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
-          } else {
-            projectAndMetrics.push(`${projects}/${measures}`)
-          }
-        }
-      }
+      const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
       getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
         .then((value) => {
           this.value.value = value
@@ -279,6 +319,11 @@ function isAccidentKind(str: string): str is AccidentKind {
 
 export function getAccidents(accidents: Map<string, Accident[]> | undefined, value: string[] | null): Accident[] | null {
   if (accidents != undefined) {
+    if (value?.length == 12) {
+      const key = `${value[5]}_${value[7]}.${value[8]}`
+      const keyWithMetric = `${value[5]}/${value[2]}_${value[7]}.${value[8]}`
+      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+    }
     //perf db
     if (value?.length == 13 || value?.length == 14) {
       const key = `${value[6]}_${value[8]}.${value[9]}`

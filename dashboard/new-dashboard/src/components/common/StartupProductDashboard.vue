@@ -106,6 +106,7 @@
 <script setup lang="ts">
 import { computed, provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -114,7 +115,7 @@ import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
-import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
 import CopyLink from "../settings/CopyLink.vue"
@@ -174,6 +175,25 @@ const projectConfigurator = createProjectConfigurator(productConfigurator, serve
   branchConfigurator,
 ])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+
+const metrics = ref([
+  "appInit_d",
+  "app initialization.end",
+  "classLoadingPreparedCount",
+  "classLoadingLoadedCount",
+  "editorRestoring",
+  "metrics.startup/fusTotalDuration",
+  "metrics.codeAnalysisDaemon/fusExecutionTime",
+  "metrics.runDaemon/executionTime",
+  "metrics.notifications/number",
+  "metrics.exitMetrics/application.exit",
+  "metrics.exitMetrics/saveSettingsOnExit",
+  "metrics.exitMetrics/disposeProjects",
+])
+
+const accidentsConfigurator = new AccidentsConfiguratorForStartup(props.product, projectConfigurator.selected, metrics, timeRangeConfigurator)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
+
 const configurators = [
   serverConfigurator,
   machineConfigurator,
@@ -182,6 +202,7 @@ const configurators = [
   projectConfigurator,
   branchConfigurator,
   triggeredByConfigurator,
+  accidentsConfigurator,
 ] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)

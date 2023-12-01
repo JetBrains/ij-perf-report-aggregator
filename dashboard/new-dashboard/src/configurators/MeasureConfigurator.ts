@@ -243,8 +243,9 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
     query.addField({ n: "measures", subName: "type" })
   }
 
-  if (query.db === "ij" && measureNames.every((it) => it.startsWith("metrics."))) {
-    query.addField({ n: "metrics", subName: "name" })
+  const metricNameField: DataQueryDimension = { n: "" }
+  if (query.table === "report") {
+    query.insertField(metricNameField, 2)
   }
 
   const prevFilters: DataQueryFilter[] = []
@@ -267,6 +268,18 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
       if (prevFilters.length > 0) {
         query.removeFilters(prevFilters)
         prevFilters.length = 0
+      }
+
+      if (query.table == "report") {
+        delete metricNameField.sql
+        delete metricNameField.subName
+        if (measure.startsWith("metrics.")) {
+          metricNameField.n = "metrics"
+          metricNameField.subName = "name"
+        } else {
+          metricNameField.n = "metricName"
+          metricNameField.sql = `'${measure}'`
+        }
       }
 
       let valueFieldName: string

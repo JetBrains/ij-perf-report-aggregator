@@ -2,6 +2,7 @@ import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { measureNameToLabel } from "../../../configurators/MeasureConfigurator"
 import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
@@ -52,15 +53,16 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
     accidentBuild = buildId.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
-    machineName = dataSeries[2] as string
-    buildId = dataSeries[3] as number
-    projectName = dataSeries[4] as string
-    installerId = dataSeries[5] as number
-    buildVersion = dataSeries[6] as number
-    buildNum1 = dataSeries[7] as number
-    buildNum2 = dataSeries[8] as number
-    branch = dataSeries[9] as string
-    metricName = params.seriesName as string
+    metricName = measureNameToLabel(dataSeries[2] as string)
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
+    projectName = dataSeries[5] as string
+    installerId = dataSeries[6] as number
+    buildVersion = dataSeries[7] as number
+    buildNum1 = dataSeries[8] as number
+    buildNum2 = dataSeries[9] as number
+    branch = dataSeries[10] as string
+    accidentBuild = `${buildVersion}.${buildNum1}`
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string

@@ -232,6 +232,16 @@ export const highlightingProjects = {
     "leak-canary-android/highlight/LeakStatusTest_with_library_cache",
     "leak-canary-android/highlight/Neo4JCommand_with_library_cache",
   ],
+  anki: [
+    "anki-android/highlight/AbstractSchedTest_with_library_cache",
+    "anki-android/highlight/ACRATest_with_library_cache",
+    "anki-android/highlight/Finder_with_library_cache",
+    "anki-android/highlight/FlashCardsContract_with_library_cache",
+    "anki-android/highlight/MetaDB_with_library_cache",
+    "anki-android/highlight/TagsUtilTest_with_library_cache",
+    "anki-android/highlight/TokenizerTest_with_library_cache",
+    "anki-android/highlight/UniqueArrayListTest_with_library_cache",
+  ],
   kotlinScript: [
     "arrow/highlight/build.gradle_with_library_cache",
     "kotlin_empty_kts/highlight/build.gradle_with_library_cache",
@@ -304,6 +314,7 @@ const highlightingLabelsAndProjects = [
   { label: "'Toolbox Enterprise (TBE)'", projects: highlightingProjects.tbe },
   { label: "'Ktor samples'", projects: highlightingProjects.ktorSamples },
   { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
+  { label: "'Android anki project'", projects: highlightingProjects.anki },
   { label: "'Spring framework'", projects: highlightingProjects.springFramework },
   { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
@@ -399,6 +410,12 @@ export const findUsagesProjects = {
     "leak-canary-android/findUsages/INT_with_library_cache",
     "leak-canary-android/findUsages/PrimitiveType_with_library_cache",
   ],
+  anki: [
+    "anki-android/findUsages/Card_with_library_cache",
+    "anki-android/findUsages/CompatHelper_with_library_cache",
+    "anki-android/findUsages/Decks_with_library_cache",
+    "anki-android/findUsages/load_with_library_cache",
+  ],
   kotlinCoroutines: [
     "kotlin_coroutines_commit/findUsages/assert_with_library_cache",
     "kotlin_coroutines_commit/findUsages/emit_with_library_cache",
@@ -425,6 +442,7 @@ export const findUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Kotlin lang'", findUsagesProjects.kotlinLang),
   generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
   generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
+  generateFindUsagesDefinition("'Android anki project'", findUsagesProjects.anki),
 ]
 export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Space'", findUsagesProjects.space),

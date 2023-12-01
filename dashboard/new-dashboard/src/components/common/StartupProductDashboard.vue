@@ -182,13 +182,13 @@ const metrics = ref([
   "classLoadingPreparedCount",
   "classLoadingLoadedCount",
   "editorRestoring",
-  "metrics.startup/fusTotalDuration",
-  "metrics.codeAnalysisDaemon/fusExecutionTime",
-  "metrics.runDaemon/executionTime",
-  "metrics.notifications/number",
-  "metrics.exitMetrics/application.exit",
-  "metrics.exitMetrics/saveSettingsOnExit",
-  "metrics.exitMetrics/disposeProjects",
+  "startup/fusTotalDuration",
+  "codeAnalysisDaemon/fusExecutionTime",
+  "runDaemon/executionTime",
+  "notifications/number",
+  "exitMetrics/application.exit",
+  "exitMetrics/saveSettingsOnExit",
+  "exitMetrics/disposeProjects",
 ])
 
 const accidentsConfigurator = new AccidentsConfiguratorForStartup(props.product, projectConfigurator.selected, metrics, timeRangeConfigurator)

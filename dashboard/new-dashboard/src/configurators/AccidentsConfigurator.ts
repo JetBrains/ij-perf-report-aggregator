@@ -169,7 +169,32 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   }
 
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
-    super.writeAccidentToMetaDb(date, this.product + "/" + affected_test, reason, build_number, kind)
+    const test = `${this.product}/${affected_test}`
+    fetch(accidents_url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ date, test, reason, build_number: build_number.toString(), kind }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("The accident wasn't created")
+        }
+        return response.text()
+      })
+      .then((idString) => {
+        const id = Number(idString)
+        if (this.value.value == undefined) {
+          this.value.value = new Map<string, Accident[]>()
+        }
+        const updatedMap = new Map(this.value.value)
+        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind }])
+        this.value.value = updatedMap //we need to update value in reference to trigger the change
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 }
 

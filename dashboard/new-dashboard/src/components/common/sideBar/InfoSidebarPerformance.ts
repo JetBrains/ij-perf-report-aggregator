@@ -7,7 +7,7 @@ import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
-import { durationAxisPointerFormatter, nsToMs, timeFormatWithoutSeconds } from "../formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, timeFormatWithoutSeconds } from "../formatter"
 import { encodeRison } from "../rison"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
 
@@ -54,6 +54,9 @@ export function getInfoDataFrom(dbType: DBType, params: CallbackDataParams, valu
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     metricName = measureNameToLabel(dataSeries[2] as string)
+    if (!isDurationFormatterApplicable(metricName)) {
+      type = "counter"
+    }
     machineName = dataSeries[3] as string
     buildId = dataSeries[4] as number
     projectName = dataSeries[5] as string

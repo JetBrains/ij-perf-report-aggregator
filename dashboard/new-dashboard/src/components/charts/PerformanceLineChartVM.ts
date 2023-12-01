@@ -6,7 +6,7 @@ import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
-import { durationAxisPointerFormatter, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
 import { useSettingsStore } from "../settings/settingsStore"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 
@@ -16,10 +16,14 @@ export class PerformanceLineChartVM {
     return (params: CallbackDataParams) => {
       const element = document.createElement("div")
       const data = params.value as (OptionDataValue | Delta)[]
-      const [dateMs, _1, _2, type] = data
+      const dateMs = data[0]
+      let type = data[4]
+      if (type != "c" && type != "d") {
+        type = isDurationFormatterApplicable(data[2] as string) ? "d" : "c"
+      }
       const durationMs = this.settings.scaling ? data.at(-1) : data[1]
       element.append(
-        durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type as string),
+        durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type),
         document.createElement("br"),
         timeFormatWithoutSeconds.format(dateMs as number)
       )
@@ -36,10 +40,10 @@ export class PerformanceLineChartVM {
       const delta = findDeltaInData(data)
       if (delta != undefined) {
         if (delta.prev != null) {
-          appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs as number, delta.prev, isMs, type as string))
+          appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs as number, delta.prev, isMs, type))
         }
         if (delta.next != null) {
-          appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs as number, delta.next, isMs, type as string))
+          appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs as number, delta.next, isMs, type))
         }
       }
       return element

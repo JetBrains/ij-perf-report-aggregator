@@ -75,6 +75,7 @@ const projects = [
   "project-import-gradle-1000-modules-limited-ram/measureStartup",
   "project-import-gradle-5000-modules/measureStartup",
   "project-import-gradle-android-extra-large/measureStartup",
+  "project-import-android-500-modules/measureStartup",
   "project-reimport-space/measureStartup",
   "project-import-space/measureStartup",
   "project-import-open-telemetry/measureStartup",

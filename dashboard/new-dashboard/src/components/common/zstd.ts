@@ -23,10 +23,8 @@ export function getCompressor(): CompressorUsingDictionary {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 if (import.meta.hot) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
   import.meta.hot.dispose(() => {
     if (compressor !== null) {
       compressor.dispose()

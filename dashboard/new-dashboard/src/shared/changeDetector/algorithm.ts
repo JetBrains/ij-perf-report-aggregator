@@ -1,9 +1,20 @@
-import { useWebWorkerFn } from "./webWorker/webWorker"
-
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
   OPTIMIZATION = "Optimization",
   NO_CHANGE = "No Change",
+}
+
+export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
+  const dataset = seriesData[1] as number[] | undefined
+  const changePointIndexes = getChangePointIndexes(dataset, 1)
+  const classifications = classifyChangePoint(changePointIndexes, dataset)
+  const resultMap = new Map<string, ChangePointClassification>()
+
+  for (const [index, value] of changePointIndexes.entries()) {
+    const extractedValues = extractValuesFromMatrix(seriesData, value)
+    resultMap.set(JSON.stringify(extractedValues), classifications[index])
+  }
+  return resultMap
 }
 
 const whichMin = (values: number[]): number => {
@@ -108,7 +119,7 @@ const extractValuesFromMatrix = (matrix: (string | number)[][], index: number): 
   return matrix.map((row) => row[index])
 }
 
-export const getChangePointIndexes = (data: number[] | undefined, minDistance: number = 1): number[] => {
+export function getChangePointIndexes(data: number[] | undefined, minDistance: number = 1): number[] {
   if (data == undefined) return []
   const n = data.length
 
@@ -152,24 +163,4 @@ export const getChangePointIndexes = (data: number[] | undefined, minDistance: n
     currentIndex = previousChangePointIndex[currentIndex]
   }
   return changePointIndexes.reverse().map((value) => value + 1)
-}
-
-export function detectChanges(seriesData: (string | number)[][]): Promise<Map<string, ChangePointClassification>> {
-  const worker = useWebWorkerFn(
-    (seriesData: (string | number)[][]) => {
-      const dataset = seriesData[1] as number[] | undefined
-
-      const changePointIndexes = getChangePointIndexes(dataset, 1)
-      const classifications = classifyChangePoint(changePointIndexes, dataset)
-      const resultMap = new Map<string, ChangePointClassification>()
-
-      for (const [index, value] of changePointIndexes.entries()) {
-        const extractedValues = extractValuesFromMatrix(seriesData, value)
-        resultMap.set(JSON.stringify(extractedValues), classifications[index])
-      }
-      return resultMap
-    },
-    { localDependencies: () => [whichMin, getSegmentCost, classifyChangePoint, hodgesLehmannEstimator, getChangePointIndexes, extractValuesFromMatrix, getPartialSums] }
-  )
-  return worker.workerFn(seriesData)
 }

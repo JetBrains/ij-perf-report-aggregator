@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { getChangePointIndexes } from "new-dashboard/src/shared/changeDetectorAlgo"
+import { getChangePointIndexes } from "../../new-dashboard/src/shared/changeDetector/algorithm"
 
 test("complex queries are not merged", () => {
   expect(

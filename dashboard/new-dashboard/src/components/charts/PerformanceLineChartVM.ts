@@ -191,7 +191,13 @@ export class PerformanceLineChartVM {
         }
       )
       for (const it of configuration.getChartConfigurators()) {
-        this.eChart.updateChart(it.configureChart(data, configuration))
+        it.configureChart(data, configuration)
+          .then((options) => {
+            this.eChart.updateChart(options)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
       }
     })
   }

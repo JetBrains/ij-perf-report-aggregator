@@ -83,7 +83,7 @@ import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
-import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
+import { DBType, InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
 import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
 
@@ -132,7 +132,7 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
+const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator, DBType.PERF_UNIT_TESTS)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]

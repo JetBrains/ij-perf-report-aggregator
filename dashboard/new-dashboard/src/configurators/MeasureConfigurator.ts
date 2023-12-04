@@ -15,7 +15,7 @@ import { METRICS_MAPPING } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
-import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "./AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfigurator"
 import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
@@ -328,10 +328,10 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   query.order = "t"
 }
 
-function getItemStyleForSeries(accidentMap: Map<string, Accident[]> | undefined, detectedChanges = new Map<string, ChangePointClassification>()) {
+function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
-      const accidents = getAccidents(accidentMap, seriesIndex.value as string[])
+      const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
         const detectChange = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))
         if (detectChange == ChangePointClassification.DEGRADATION) {
@@ -459,7 +459,7 @@ function configureChart(
         // 10 is a default value for scatter (  undefined doesn't work to unset)
         symbolSize(value: string[]): number {
           const symbolSize = symbolOptions.symbolSize ?? (chartType === "line" ? Math.min(800 / seriesData[0].length, 9) : 10)
-          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
+          const accidents = accidentsConfigurator?.getAccidents(value) ?? null
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return symbolSize * 4
           }
@@ -476,7 +476,7 @@ function configureChart(
           return detectChange == ChangePointClassification.OPTIMIZATION ? 180 : 0
         },
         symbol(value: string[]) {
-          const accidents = getAccidents(accidentsConfigurator?.value.value, value)
+          const accidents = accidentsConfigurator?.getAccidents(value) ?? null
           if (isValueShouldBeMarkedWithPin(accidents)) {
             return "pin"
           }
@@ -494,7 +494,7 @@ function configureChart(
           { name: xAxisName, type: "time" },
           { name: seriesName, type: "int" },
         ],
-        itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value, detectedChanges),
+        itemStyle: getItemStyleForSeries(accidentsConfigurator, detectedChanges),
       })
       if (settings.smoothing) {
         series.push({
@@ -510,7 +510,7 @@ function configureChart(
             x: xAxisName,
             y: seriesData.length - 2,
           },
-          itemStyle: getItemStyleForSeries(accidentsConfigurator?.value.value),
+          itemStyle: getItemStyleForSeries(accidentsConfigurator),
         })
       }
     }

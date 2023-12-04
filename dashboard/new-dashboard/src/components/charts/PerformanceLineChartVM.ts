@@ -1,5 +1,5 @@
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { Accident, AccidentKind, AccidentsConfigurator, getAccidents } from "../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
 import { appendLineWithIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
 import { Delta, findDeltaInData, getDifferenceString } from "../../util/Delta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
@@ -30,7 +30,7 @@ export class PerformanceLineChartVM {
 
       element.append(document.createElement("br"))
       element.append(`${params.seriesName}`)
-      const accidents = getAccidents(this.accidentsConfigurator?.value.value, data as string[])
+      const accidents = this.accidentsConfigurator?.getAccidents(data as string[]) ?? null
       if (accidents != null) {
         for (const accident of accidents) {
           appendLineWithIcon(element, getWarningIcon(), this.getAccidentMessage(accident))

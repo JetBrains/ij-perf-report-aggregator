@@ -2,6 +2,7 @@ import { combineLatest, Observable } from "rxjs"
 import { Ref, ref } from "vue"
 import { Chart } from "../components/charts/DashboardCharts"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
+import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
@@ -40,8 +41,9 @@ export class Accident {
   ) {}
 }
 
-export class AccidentsConfigurator implements DataQueryConfigurator, FilterConfigurator {
+export abstract class AccidentsConfigurator implements DataQueryConfigurator, FilterConfigurator {
   readonly value: Ref<Map<string, Accident[]> | undefined> = ref()
+  protected dbType: DBType = DBType.UNKNOWN
 
   createObservable(): Observable<Map<string, Accident[]> | undefined> {
     return refToObservable(this.value)
@@ -110,6 +112,28 @@ export class AccidentsConfigurator implements DataQueryConfigurator, FilterConfi
         console.error(error)
       })
   }
+
+  public getAccidents(value: string[] | null): Accident[] | null {
+    const accidents = this.value.value
+    if (accidents != undefined && value != null) {
+      if (this.dbType == DBType.STARTUP_TESTS) {
+        const key = `${value[5]}_${value[7]}.${value[8]}`
+        const keyWithMetric = `${value[5]}/${value[2]}_${value[7]}.${value[8]}`
+        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+      }
+      if (this.dbType == DBType.INTELLIJ) {
+        const key = `${value[6]}_${value[8]}.${value[9]}`
+        const keyWithMetric = `${value[6]}/${value[2]}_${value[8]}.${value[9]}`
+        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+      }
+      if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS) {
+        const key = `${value[6]}_${value[5]}`
+        const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
+        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+      }
+    }
+    return null
+  }
 }
 
 function combineProjectsAndMetrics(projects: string | string[] | null, measures: string | string[] | null): string[] {
@@ -146,6 +170,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     timeRangeConfigurator: TimeRangeConfigurator
   ) {
     super()
+    this.dbType = DBType.STARTUP_TESTS
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
       const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
       const projectAndMetricsWithProduct = projectAndMetrics.map((it) => `${product}/${it}`)
@@ -199,8 +224,9 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
 }
 
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
-  constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator) {
+  constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator, dbType: DBType) {
     super()
+    this.dbType = dbType
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
       const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
       getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
@@ -215,8 +241,9 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
 }
 
 export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
-  constructor(charts: Chart[] | null, timeRangeConfigurator: TimeRangeConfigurator) {
+  constructor(charts: Chart[] | null, timeRangeConfigurator: TimeRangeConfigurator, dbType: DBType) {
     super()
+    this.dbType = dbType
     const tests = this.getProjectAndProjectWithMetrics(charts)
     combineLatest([timeRangeConfigurator.createObservable()]).subscribe(([[timeRange, customRange]]) => {
       getAccidentsFromMetaDb(tests, timeRange, customRange)
@@ -340,27 +367,4 @@ function capitalizeFirstLetter(str: string): AccidentKind {
 
 function isAccidentKind(str: string): str is AccidentKind {
   return Object.values(AccidentKind).includes(str as AccidentKind)
-}
-
-export function getAccidents(accidents: Map<string, Accident[]> | undefined, value: string[] | null): Accident[] | null {
-  if (accidents != undefined) {
-    if (value?.length == 12) {
-      const key = `${value[5]}_${value[7]}.${value[8]}`
-      const keyWithMetric = `${value[5]}/${value[2]}_${value[7]}.${value[8]}`
-      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
-    }
-    //perf db
-    if (value?.length == 13 || value?.length == 14) {
-      const key = `${value[6]}_${value[8]}.${value[9]}`
-      const keyWithMetric = `${value[6]}/${value[2]}_${value[8]}.${value[9]}`
-      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
-    }
-    //perf dev db
-    if (value?.length == 9 || value?.length == 10) {
-      const key = `${value[6]}_${value[5]}`
-      const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
-      return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
-    }
-  }
-  return null
 }

@@ -198,7 +198,12 @@ let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, 
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
+const accidentsConfigurator = new AccidentsConfiguratorForTests(
+  scenarioConfigurator.selected,
+  measureConfigurator.selected,
+  timeRangeConfigurator,
+  getDBType(props.dbName, props.table)
+)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators: DataQueryConfigurator[] = [serverConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]

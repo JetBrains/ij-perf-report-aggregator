@@ -25,7 +25,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
     return null
   }
 
-  configureChart(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration): LineChartOptions {
+  configureChart(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration): Promise<LineChartOptions> {
     const series = new Array<LineSeriesOption | ScatterSeriesOption>()
     let useDurationFormatter = true
 
@@ -84,7 +84,7 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
     }
 
     const formatter: (valueInMs: number) => string = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
-    return {
+    return Promise.resolve({
       dataset,
       yAxis: {
         axisLabel: {
@@ -99,6 +99,6 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
         },
       },
       series: series as LineSeriesOption,
-    }
+    })
   }
 }

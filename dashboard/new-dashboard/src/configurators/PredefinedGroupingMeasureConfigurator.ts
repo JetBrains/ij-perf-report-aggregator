@@ -67,12 +67,12 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     return true
   }
 
-  configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): BarChartOptions {
+  configureChart(dataList: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<BarChartOptions> {
     return configureWithQueryProducers(dataList, configuration, this.chartStyle)
   }
 }
 
-function configureWithQueryProducers(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): BarChartOptions {
+function configureWithQueryProducers(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration, chartStyle: ChartStyle): Promise<BarChartOptions> {
   let useDurationFormatter = true
 
   const dimensionNameSet = new Set<string>()
@@ -122,13 +122,13 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
     }
   }
 
-  return {
+  return Promise.resolve({
     dataset: {
       dimensions,
       source,
     },
     series,
-  }
+  })
 }
 
 function getSeriesLabelFormatter(useDurationFormatter: boolean, valueUnit: ValueUnit): (p: CallbackDataParams) => string {

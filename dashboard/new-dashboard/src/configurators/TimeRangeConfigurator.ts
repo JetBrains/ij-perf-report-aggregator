@@ -46,9 +46,9 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     return this.configureQuery(query, null)
   }
 
-  configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): ECBasicOption {
+  configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
     const startTime = getStartTime(this.value.value)
-    return startTime == null ? {} : { xAxis: { min: startTime } }
+    return startTime == null ? Promise.resolve({}) : Promise.resolve({ xAxis: { min: startTime } })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration | null): boolean {

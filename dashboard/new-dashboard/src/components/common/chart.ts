@@ -25,7 +25,7 @@ export interface SymbolOptions {
 }
 
 export interface ChartConfigurator {
-  configureChart(data: (string | number)[][][], configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption>
+  configureChart(data: (string | number)[][][], configuration: DataQueryExecutorConfiguration): ECBasicOption
 }
 
 export const timeFormat = new Intl.DateTimeFormat(undefined, {

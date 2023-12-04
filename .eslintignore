@@ -8,5 +8,4 @@ cmd/frontend/resources/**
 /dashboard/new-dashboard/src/components/common/BranchIcon.vue
 /dashboard/new-dashboard/src/components/common/SpaceIcon.vue
 /dashboard/new-dashboard/src/components/common/CopyIcon.vue
-/dashboard/new-dashboard/src/shared/webWorker/**
 /dashboard/app/tests/**

@@ -14,9 +14,6 @@ importers:
       eslint-plugin-unicorn:
         specifier: ^49.0.0
         version: 49.0.0(eslint@8.55.0)
-      isoworker:
-        specifier: ^0.2.4
-        version: 0.2.4
       prettier:
         specifier: ^3.1.0
         version: 3.1.0
@@ -2458,10 +2455,6 @@ packages:
 
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
-
-  /isoworker@0.2.4:
-    resolution: {integrity: sha512-oIN3zgTUVzu52EWYyl7zVlqNOOA+vdsUQs2DIHLDwWgs1CnOohdwopN23HmIYiZKePmjU7sQLq+J4xYjMMfsYQ==}
-    dev: false
 
   /jiti@1.20.0:
     resolution: {integrity: sha512-3TV69ZbrvV6U5DfQimop50jE9Dl6J8O1ja1dvBbMba/sZ3YBEQqJ2VZRoQPVnhlzjNtU1vaXRZVrVjU4qtm8yA==}

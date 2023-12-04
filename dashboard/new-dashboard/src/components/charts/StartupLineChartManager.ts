@@ -137,16 +137,9 @@ export class StartupLineChartManager {
         this.chart.chart.showLoading("default", { showSpinner: false })
         return
       }
-      const chart = this.chart
-      chart.chart.hideLoading()
+      this.chart.chart.hideLoading()
       for (const it of configuration.getChartConfigurators()) {
-        it.configureChart(data, configuration)
-          .then((options) => {
-            chart.updateChart(options)
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+        this.chart.updateChart(it.configureChart(data, configuration))
       }
     })
   }

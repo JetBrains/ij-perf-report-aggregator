@@ -93,13 +93,7 @@ export class AggregationChartVM {
       }
       this.chartManager?.chart.hideLoading()
       for (const it of configuration.getChartConfigurators()) {
-        it.configureChart(data, configuration)
-          .then((options) => {
-            this.updateChartData(options)
-          })
-          .catch((error) => {
-            console.error(error)
-          })
+        this.updateChartData(it.configureChart(data, configuration))
       }
     })
   }

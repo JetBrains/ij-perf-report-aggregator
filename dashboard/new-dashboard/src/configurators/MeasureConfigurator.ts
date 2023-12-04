@@ -11,12 +11,12 @@ import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutor
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { useSettingsStore } from "../components/settings/settingsStore"
-import { ChangePointClassification, detectChanges } from "../shared/changeDetectorAlgo"
 import { METRICS_MAPPING } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfigurator"
+import { ChangePointClassification, detectChanges } from "./DetectChangesConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { ServerConfigurator } from "./ServerConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -127,7 +127,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
     return configureChart(configuration, data, this.chartType, "ms", this.symbolOptions)
   }
 
@@ -201,7 +201,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     return true
   }
 
-  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
+  configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): ECBasicOption {
     return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator)
   }
 }
@@ -367,14 +367,14 @@ function isChangeDetected(detectedChanges: Map<string, ChangePointClassification
   return changePointClassification != undefined && changePointClassification != ChangePointClassification.NO_CHANGE
 }
 
-async function configureChart(
+function configureChart(
   configuration: DataQueryExecutorConfiguration,
   dataList: DataQueryResult,
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
   accidentsConfigurator: AccidentsConfigurator | null = null
-): Promise<LineChartOptions | ScatterChartOptions> {
+): LineChartOptions | ScatterChartOptions {
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
 
@@ -434,7 +434,7 @@ async function configureChart(
 
     let detectedChanges = new Map<string, ChangePointClassification>()
     if (settings.detectChanges) {
-      detectedChanges = await detectChanges(seriesData)
+      detectedChanges = detectChanges(seriesData)
     }
 
     if (isNotEmpty) {

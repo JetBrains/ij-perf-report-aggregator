@@ -53,7 +53,7 @@ export const completionProjects = {
   intelliJ: [
     "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_with_library_cache",
     "intellij_commit/completion/DexInlineCallStackComparisonTest_after_parameter_with_library_cache",
-    "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_typing_with_library_cache_",
+    "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_typing_with_library_cache",
   ],
   intelliJ2: [
     "intellij_commit/completion/KotlinHighLevelFunctionParameterInfoHandler_emptyPlace_updateUIOrFail_typing_with_library_cache",

@@ -37,7 +37,7 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { TreeNode } from "primevue/tree"
+import { TreeNode } from "primevue/treenode"
 import { computed } from "vue"
 import { GroupedDimensionValue, MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { usePlaceholder } from "./placeholder"

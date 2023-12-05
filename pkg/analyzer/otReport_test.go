@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+  "github.com/stretchr/testify/assert"
   "os"
   "testing"
 )
@@ -20,11 +21,8 @@ func TestFilter(t *testing.T) {
 
   for name, expected := range testCases {
     t.Run(name, func(t *testing.T) {
-      if value, ok := got[name]; !ok {
-        t.Errorf("Expected key '%s' not found in output", name)
-      } else if value[0] != expected {
-        t.Errorf("Incorrect value for %s: got %v, want %v", name, value[0], expected)
-      }
+      assert.Contains(t, got, name)
+      assert.Equal(t, expected, got[name][0])
     })
   }
 }

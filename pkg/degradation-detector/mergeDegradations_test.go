@@ -1,6 +1,7 @@
 package degradation_detector
 
 import (
+  "github.com/stretchr/testify/assert"
   "testing"
 )
 
@@ -38,14 +39,10 @@ func TestMergeDegradations(t *testing.T) {
         "Link: https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=1M",
       Channel: r.Settings.SlackChannel(),
     }
-    if sM != eM {
-      t.Errorf("Incorrect slack message: %v", sM)
-    }
+    assert.Equal(t, eM, sM, "Incorrect slack message")
     total++
   }
-  if total != 1 {
-    t.Errorf("Too many degradations, they were not merged")
-  }
+  assert.Equal(t, 1, total, "Incorrect merge")
 }
 
 func TestSomeDegradationsNotMerged(t *testing.T) {
@@ -80,7 +77,5 @@ func TestSomeDegradationsNotMerged(t *testing.T) {
   for range outputChan {
     total++
   }
-  if total != 2 {
-    t.Errorf("Incorrect merge")
-  }
+  assert.Equal(t, 2, total, "Incorrect merge")
 }

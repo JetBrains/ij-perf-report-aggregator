@@ -1,6 +1,7 @@
 package tc_properties
 
 import (
+  "github.com/stretchr/testify/assert"
   "os"
   "testing"
 )
@@ -10,18 +11,12 @@ func TestFilter(t *testing.T) {
   t.Setenv("CLICKHOUSE_DATA_PATH", "test")
 
   data, err := os.ReadFile("../../testData/build.finish.properties")
-  if err != nil {
-    t.Error(err)
-  }
+  assert.NoError(t, err)
   properties, err := ReadProperties(data)
-  if err != nil {
-    t.Error(err)
-  }
+  assert.NoError(t, err)
 
   err = os.WriteFile("/tmp/foo.txt", properties, 0777)
-  if err != nil {
-    t.Error(err)
-  }
+  assert.NoError(t, err)
 
   // err = backup()
   // if err == nil || !strings.HasPrefix(err.Error(), "can't connect to ") {

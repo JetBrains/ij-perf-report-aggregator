@@ -81,7 +81,7 @@ func TestComplexDistributionFromUnitTestWithoutDegradation(t *testing.T) {
     times[i] = int64(i)
   }
 
-  degradations := detectDegradations(data, builds, times, AnalysisSettings{MinDistance: 30, MedianDifferenceThreshold: 20})
+  degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20})
   assert.Equal(t, 0, len(degradations), "degradations: %v", degradations)
 }
 
@@ -93,7 +93,7 @@ func TestComplexDistributionFromUnitTestWithDegradation(t *testing.T) {
   for i := range times {
     times[i] = int64(i)
   }
-  degradations := detectDegradations(data, builds, times, AnalysisSettings{MinDistance: 30, MedianDifferenceThreshold: 20})
+  degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20})
   assert.Equal(t, 1, len(degradations), "degradations: %v", degradations)
   assert.Equal(t, int64(667), degradations[0].timestamp)
 }

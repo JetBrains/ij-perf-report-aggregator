@@ -114,3 +114,74 @@ func TestDecode(t *testing.T) {
   a.NoError(err)
   a.Equal("Hello zstd!!", string(query))
 }
+
+func TestSpecialSymbolInSQL(t *testing.T) {
+  queries, err := readQuery([]byte(`
+[
+    {
+        "db": "ij",
+        "table": "report",
+        "fields": [
+            {
+                "n": "t",
+                "sql": "toUnixTimestamp(generated_time)*1000"
+            },
+            {
+                "n": "editorRestoring"
+            },
+            {
+                "n": "metricName",
+                "sql": "'editorRestoring'"
+            },
+            "machine",
+            "tc_build_id",
+            "project",
+            "tc_installer_build_id",
+            "build_c1",
+            "build_c2",
+            "build_c3",
+            "branch"
+        ],
+        "filters": [
+            {
+                "f": "machine",
+                "v": "intellij-linux-hw-munit-0%",
+                "o": "like"
+            },
+            {
+                "f": "generated_time",
+                "q": ">subtractMonths(now(),3)"
+            },
+            {
+                "f": "product",
+                "v": "IU"
+            },
+            {
+                "f": "project",
+                "v": "simple for IJ"
+            },
+            {
+                "f": "branch",
+                "v": "master"
+            },
+            {
+                "f": "triggeredBy",
+                "v": ""
+            },
+            {
+                "f": "editorRestoring",
+                "o": "!=",
+                "v": 0
+            }
+        ],
+        "order": "t"
+    }
+]
+`))
+  assert.NoError(t, err)
+  assert.NotEmpty(t, queries)
+
+  sql, _, err := buildSql(queries[0], "test")
+  assert.NoError(t, err)
+  assert.Equal(t, "select toUnixTimestamp(generated_time)*1000 as `t`, editorRestoring, 'editorRestoring' as `metricName`, machine, tc_build_id, project, tc_installer_build_id, build_c1, build_c2, build_c3, branch from test where (machine like 'intellij-linux-hw-munit-0%') and (generated_time >subtractMonths(now(),3)) and (product = 'IU') and (project = 'simple for IJ') and (branch = 'master') and (triggeredBy = '') and (editorRestoring!=0) order by t", sql)
+}

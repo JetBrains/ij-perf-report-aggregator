@@ -245,7 +245,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   }
 
   const metricNameField: DataQueryDimension = { n: "" }
-  if (query.table === "report") {
+  if (query.table == "report" && query.db != "perfUnitTests") {
     query.insertField(metricNameField, 2)
   }
 
@@ -271,7 +271,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (query.table == "report") {
+      if (query.table == "report" && query.db != "perfUnitTests") {
         delete metricNameField.sql
         delete metricNameField.subName
         if (measure.startsWith("metrics.")) {

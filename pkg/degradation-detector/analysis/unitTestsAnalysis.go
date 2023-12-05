@@ -35,7 +35,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
       SlackSettings: slackSettings,
       AnalysisSettings: detector.AnalysisSettings{
         DoNotReportImprovement:    true,
-        MinimumSegmentLength:      20,
+        MinimumSegmentLength:      30,
         MedianDifferenceThreshold: 20,
       },
     })

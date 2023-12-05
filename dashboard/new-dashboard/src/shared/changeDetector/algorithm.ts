@@ -6,7 +6,7 @@ export enum ChangePointClassification {
 
 export function detectChanges(seriesData: (string | number)[][]): Map<string, ChangePointClassification> {
   const dataset = seriesData[1] as number[] | undefined
-  const changePointIndexes = getChangePointIndexes(dataset, 1)
+  const changePointIndexes = getChangePointIndexes(dataset, 5)
   const classifications = classifyChangePoint(changePointIndexes, dataset)
   const resultMap = new Map<string, ChangePointClassification>()
 

@@ -470,7 +470,7 @@ async function configureChart(
           if (isValueShouldBeMarkedAsException(accidents)) {
             return symbolSize * 1.2
           }
-          return symbolSize
+          return settings.smoothing ? symbolSize / 2 : symbolSize
         },
         symbolRotate(value: string[]): number {
           const detectChange = detectedChanges.get(JSON.stringify(value))

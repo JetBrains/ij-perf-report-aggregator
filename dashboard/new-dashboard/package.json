@@ -4,7 +4,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.16",
     "@heroicons/vue": "2.0.18",
-    "@vueuse/core": "^10.6.1",
+    "@vueuse/core": "^10.7.0",
     "compare-versions": "6.1.0",
     "echarts": "5.4.3",
     "echarts-stat": "1.2.0",
@@ -15,7 +15,7 @@
     "pinia": "^2.1.7",
     "primevue": "3.42.0",
     "rxjs": "8.0.0-alpha.12",
-    "vue": "3.3.9",
+    "vue": "3.3.10",
     "vue-router": "4.2.5"
   },
   "devDependencies": {

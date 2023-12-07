@@ -90,6 +90,7 @@ const productCodeToName = new Map([
   ["GO", "GoLand"],
   ["PY", "PyCharm Professional"],
   ["RM", "RubyMine"],
+  ["CL", "CLion"],
 ])
 
 provideReportUrlProvider()

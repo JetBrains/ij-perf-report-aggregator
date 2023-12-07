@@ -1,5 +1,6 @@
 export const METRICS_MAPPING: Record<string, string> = {
   "processingTime#": "",
+  "processingSpeedAvg#": "",
   "lexingSpeed#": "",
   "parsingSpeed#": "",
   "lexingTime#": "",

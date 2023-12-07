@@ -55,6 +55,30 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Processing Speed: Gitlab"
+        :measure="[
+          'processingSpeedAvg#Ruby',
+          'processingSpeedAvg#JavaScript',
+          'processingSpeedAvg#Markdown',
+          'processingSpeedAvg#TypeScript',
+          'processingSpeedAvg#Vue.js',
+          'processingSpeedAvg#YAML',
+          'processingSpeedAvg#Slim',
+          'processingSpeedAvg#SQL',
+          'processingSpeedAvg#RHTML',
+          'processingSpeedAvg#RBS',
+          'processingSpeedAvg#JSON',
+          'processingSpeedAvg#Haml',
+          'processingSpeedAvg#Cucumber',
+          'processingSpeedAvg#CSS',
+          'processingSpeedAvg#SCSS',
+        ]"
+        :projects="['gitlab-project-test/indexing']"
+        :aliases="['Gitlab']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Processing Time: Diaspora"
         :measure="[
           'processingTime#Ruby',
@@ -72,6 +96,30 @@
           'processingTime#Cucumber',
           'processingTime#CSS',
           'processingTime#SCSS',
+        ]"
+        :projects="['diaspora-project-test/indexing']"
+        :aliases="['Diaspora']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Speed: Diaspora"
+        :measure="[
+          'processingSpeedAvg#Ruby',
+          'processingSpeedAvg#JavaScript',
+          'processingSpeedAvg#Markdown',
+          'processingSpeedAvg#TypeScript',
+          'processingSpeedAvg#Vue.js',
+          'processingSpeedAvg#YAML',
+          'processingSpeedAvg#Slim',
+          'processingSpeedAvg#SQL',
+          'processingSpeedAvg#RHTML',
+          'processingSpeedAvg#RBS',
+          'processingSpeedAvg#JSON',
+          'processingSpeedAvg#Haml',
+          'processingSpeedAvg#Cucumber',
+          'processingSpeedAvg#CSS',
+          'processingSpeedAvg#SCSS',
         ]"
         :projects="['diaspora-project-test/indexing']"
         :aliases="['Diaspora']"
@@ -103,6 +151,30 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Processing Speed: RBS Collection"
+        :measure="[
+          'processingSpeedAvg#Ruby',
+          'processingSpeedAvg#JavaScript',
+          'processingSpeedAvg#Markdown',
+          'processingSpeedAvg#TypeScript',
+          'processingSpeedAvg#Vue.js',
+          'processingSpeedAvg#YAML',
+          'processingSpeedAvg#Slim',
+          'processingSpeedAvg#SQL',
+          'processingSpeedAvg#RHTML',
+          'processingSpeedAvg#RBS',
+          'processingSpeedAvg#JSON',
+          'processingSpeedAvg#Haml',
+          'processingSpeedAvg#Cucumber',
+          'processingSpeedAvg#CSS',
+          'processingSpeedAvg#SCSS',
+        ]"
+        :projects="['gem-rbs-collection-indexing-test/indexing']"
+        :aliases="['RBS Collection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Processing Time: Redmine"
         :measure="[
           'processingTime#Ruby',
@@ -120,6 +192,30 @@
           'processingTime#Cucumber',
           'processingTime#CSS',
           'processingTime#SCSS',
+        ]"
+        :projects="['redmine-project-test/indexing']"
+        :aliases="['Redmine']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Speed: Redmine"
+        :measure="[
+          'processingSpeedAvg#Ruby',
+          'processingSpeedAvg#JavaScript',
+          'processingSpeedAvg#Markdown',
+          'processingSpeedAvg#TypeScript',
+          'processingSpeedAvg#Vue.js',
+          'processingSpeedAvg#YAML',
+          'processingSpeedAvg#Slim',
+          'processingSpeedAvg#SQL',
+          'processingSpeedAvg#RHTML',
+          'processingSpeedAvg#RBS',
+          'processingSpeedAvg#JSON',
+          'processingSpeedAvg#Haml',
+          'processingSpeedAvg#Cucumber',
+          'processingSpeedAvg#CSS',
+          'processingSpeedAvg#SCSS',
         ]"
         :projects="['redmine-project-test/indexing']"
         :aliases="['Redmine']"

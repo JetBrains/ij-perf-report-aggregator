@@ -191,19 +191,14 @@
         :measure="[
           'processingSpeedAvg#Ruby',
           'processingSpeedAvg#JavaScript',
-          'processingSpeedAvg#Markdown',
-          'processingSpeedAvg#TypeScript',
           'processingSpeedAvg#Vue.js',
           'processingSpeedAvg#YAML',
           'processingSpeedAvg#Slim',
           'processingSpeedAvg#SQL',
           'processingSpeedAvg#RHTML',
           'processingSpeedAvg#RBS',
-          'processingSpeedAvg#JSON',
           'processingSpeedAvg#Haml',
           'processingSpeedAvg#Cucumber',
-          'processingSpeedAvg#CSS',
-          'processingSpeedAvg#SCSS',
         ]"
         :projects="['redmine-project-test/indexing']"
         :aliases="['Redmine']"

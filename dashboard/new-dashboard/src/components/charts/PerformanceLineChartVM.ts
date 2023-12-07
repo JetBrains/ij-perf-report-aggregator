@@ -17,7 +17,7 @@ export class PerformanceLineChartVM {
       const element = document.createElement("div")
       const data = params.value as (OptionDataValue | Delta)[]
       const dateMs = data[0]
-      let type = data[4]
+      let type = data[3]
       if (type != "c" && type != "d") {
         type = isDurationFormatterApplicable(data[2] as string) ? "d" : "c"
       }

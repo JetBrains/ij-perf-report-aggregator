@@ -140,7 +140,6 @@
           'processingSpeedAvg#Vue.js',
           'processingSpeedAvg#YAML',
           'processingSpeedAvg#Slim',
-          'processingSpeedAvg#RHTML',
           'processingSpeedAvg#RBS',
           'processingSpeedAvg#JSON',
           'processingSpeedAvg#Haml',

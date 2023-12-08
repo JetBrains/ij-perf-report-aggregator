@@ -36,7 +36,8 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
       AnalysisSettings: detector.AnalysisSettings{
         DoNotReportImprovement:    true,
         MinimumSegmentLength:      30,
-        MedianDifferenceThreshold: 20,
+        MedianDifferenceThreshold: 10,
+        EffectSizeThreshold:       2,
       },
     })
   }

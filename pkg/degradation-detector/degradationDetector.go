@@ -21,10 +21,18 @@ type analysisSettings interface {
   GetDoNotReportImprovement() bool
   GetMinimumSegmentLength() int
   GetMedianDifferenceThreshold() float64
+  GetEffectSizeThreshold() float64
 }
 
 func (v MedianValues) PercentageChange() float64 {
   return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
+}
+
+func Min(a, b int) int {
+  if a < b {
+    return a
+  }
+  return b
 }
 
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
@@ -39,7 +47,12 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
     medianDifference = 10
   }
 
-  changePoints := GetChangePointIndexes(values, 1)
+  effectSizeThreshold := analysisSettings.GetEffectSizeThreshold()
+  if effectSizeThreshold == 0 {
+    effectSizeThreshold = 1.2
+  }
+
+  changePoints := GetChangePointIndexes(values, Min(minimumSegmentLength, len(values)/2))
   segments := getSegmentsBetweenChangePoints(changePoints, values)
   if len(segments) < 2 {
     slog.Info("no significant change points were detected")
@@ -65,6 +78,12 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
     if absoluteChange < 10 || percentageChange < medianDifference {
       break
     }
+
+    es := EffectSize(lastSegment, segments[i])
+    if es < effectSizeThreshold {
+      break
+    }
+
     isDegradation := false
     if currentMedian > previousMedian {
       isDegradation = true

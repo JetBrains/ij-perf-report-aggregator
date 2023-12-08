@@ -100,6 +100,9 @@
           'GitLab/typing/typing/parser/class',
           'GitLab/typing/typing/parser/class_array',
           'GitLab/typing/typing/parser/class_assoc',
+          'GitLab/typing/parser/newline_class_body',
+          'GitLab/typing/parser/newline_class_array',
+          'GitLab/typing/parser/newline_class_method',
         ]"
         :aliases="[
           'Ruby assoc with map',
@@ -111,6 +114,9 @@
           'Parser Class',
           'Parser Array',
           'Parser Assoc',
+          'Parser Class (new line)',
+          'Parser Array (new line)',
+          'Parser Method (new line)',
         ]"
       />
     </section>
@@ -128,6 +134,9 @@
           'GitLab/typing/typing/parser/class',
           'GitLab/typing/typing/parser/class_array',
           'GitLab/typing/typing/parser/class_assoc',
+          'GitLab/typing/parser/newline_class_body',
+          'GitLab/typing/parser/newline_class_array',
+          'GitLab/typing/parser/newline_class_method',
         ]"
         :aliases="[
           'Ruby assoc with map',
@@ -139,6 +148,9 @@
           'Parser Class',
           'Parser Array',
           'Parser Assoc',
+          'Parser Class (new line)',
+          'Parser Array (new line)',
+          'Parser Method (new line)',
         ]"
       />
     </section>

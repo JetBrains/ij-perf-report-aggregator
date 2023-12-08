@@ -101,19 +101,7 @@
     <section>
       <GroupProjectsChart
         label="Processing Speed: Diaspora"
-        :measure="[
-          'processingSpeedAvg#Ruby',
-          'processingSpeedAvg#JavaScript',
-          'processingSpeedAvg#Vue.js',
-          'processingSpeedAvg#YAML',
-          'processingSpeedAvg#Slim',
-          'processingSpeedAvg#SQL',
-          'processingSpeedAvg#RHTML',
-          'processingSpeedAvg#RBS',
-          'processingSpeedAvg#Haml',
-          'processingSpeedAvg#CSS',
-          'processingSpeedAvg#SCSS',
-        ]"
+        :measure="['processingSpeedAvg#Ruby', 'processingSpeedAvg#JavaScript', 'processingSpeedAvg#YAML', 'processingSpeedAvg#RBS']"
         :projects="['diaspora-project-test/indexing']"
         :aliases="['Diaspora']"
       />

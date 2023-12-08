@@ -100,9 +100,9 @@
           'GitLab/typing/typing/parser/class',
           'GitLab/typing/typing/parser/class_array',
           'GitLab/typing/typing/parser/class_assoc',
-          'GitLab/typing/parser/newline_class_body',
-          'GitLab/typing/parser/newline_class_array',
-          'GitLab/typing/parser/newline_class_method',
+          'GitLab/typing/typing/parser/newline_class_body',
+          'GitLab/typing/typing/parser/newline_class_array',
+          'GitLab/typing/typing/parser/newline_class_method',
         ]"
         :aliases="[
           'Ruby assoc with map',
@@ -134,9 +134,9 @@
           'GitLab/typing/typing/parser/class',
           'GitLab/typing/typing/parser/class_array',
           'GitLab/typing/typing/parser/class_assoc',
-          'GitLab/typing/parser/newline_class_body',
-          'GitLab/typing/parser/newline_class_array',
-          'GitLab/typing/parser/newline_class_method',
+          'GitLab/typing/typing/parser/newline_class_body',
+          'GitLab/typing/typing/parser/newline_class_array',
+          'GitLab/typing/typing/parser/newline_class_method',
         ]"
         :aliases="[
           'Ruby assoc with map',

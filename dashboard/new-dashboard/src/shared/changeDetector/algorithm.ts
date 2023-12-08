@@ -35,7 +35,16 @@ const getSegmentCost = (partialSums: number[][], tau1: number, tau2: number, k: 
   return ((2 * -Math.log(2 * n - 1)) / k) * sum
 }
 
-const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined) => {
+function median(data: number[]): number {
+  if (data.length === 0) {
+    throw new Error("Data array is empty")
+  }
+  const sortedData = [...data].sort((a, b) => a - b)
+  const mid = Math.floor(sortedData.length / 2)
+  return sortedData.length % 2 === 0 ? (sortedData[mid - 1] + sortedData[mid]) / 2 : sortedData[mid]
+}
+
+export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined) => {
   if (dataset == undefined) return []
   const classifications: ChangePointClassification[] = []
 
@@ -51,30 +60,28 @@ const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | u
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
 
-    const sortedSegmentBefore = segmentBefore.sort((a, b) => a - b)
-    const medianBefore =
-      sortedSegmentBefore.length % 2 === 0
-        ? (sortedSegmentBefore[sortedSegmentBefore.length / 2 - 1] + sortedSegmentBefore[sortedSegmentBefore.length / 2]) / 2
-        : sortedSegmentBefore[Math.floor(sortedSegmentBefore.length / 2)]
-
-    const sortedSegmentAfter = segmentAfter.sort((a, b) => a - b)
-    const medianAfter =
-      sortedSegmentAfter.length % 2 === 0
-        ? (sortedSegmentAfter[sortedSegmentAfter.length / 2 - 1] + sortedSegmentAfter[sortedSegmentAfter.length / 2]) / 2
-        : sortedSegmentAfter[Math.floor(sortedSegmentAfter.length / 2)]
+    const medianBefore = median(segmentBefore)
+    const medianAfter = median(segmentAfter)
 
     const percentageDifference = Math.abs(((medianAfter - medianBefore) / medianBefore) * 100)
 
     const hlValue = hodgesLehmannEstimator(segmentBefore, segmentAfter)
+    const shamos = pooledShamos(segmentBefore, segmentAfter)
+    const effectSize = hlValue / shamos
     let classification
+
     if (
-      (medianBefore < 2000 && percentageDifference > 5) ||
-      (medianBefore >= 2000 && medianBefore < 10000 && percentageDifference > 2) ||
-      (medianBefore >= 10000 && percentageDifference > 1)
+      (medianBefore < 2000 && percentageDifference < 5) ||
+      (medianBefore >= 2000 && medianBefore < 10000 && percentageDifference < 2) ||
+      (medianBefore >= 10000 && percentageDifference < 1)
     ) {
-      classification = hlValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
-    } else {
       classification = ChangePointClassification.NO_CHANGE
+    } else if (Math.abs(medianBefore - medianAfter) < 10) {
+      classification = ChangePointClassification.NO_CHANGE
+    } else if (Math.abs(effectSize) < 1.2) {
+      classification = ChangePointClassification.NO_CHANGE
+    } else {
+      classification = hlValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
     }
 
     classifications.push(classification)
@@ -82,19 +89,42 @@ const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | u
   return classifications
 }
 
+function pooledShamos(x: number[], y: number[]): number {
+  const n = x.length
+  const m = y.length
+
+  if (n < 2 || m < 2) {
+    throw new Error("Both arrays must contain at least two elements")
+  }
+
+  const shamosX = shamosEstimator(x)
+  const shamosY = shamosEstimator(y)
+
+  return Math.sqrt(((n - 1) * shamosX * shamosX + (m - 1) * shamosY * shamosY) / (n + m - 2))
+}
+
+function shamosEstimator(data: number[]): number {
+  if (data.length < 2) {
+    throw new Error("Data array must contain at least two elements")
+  }
+  const differences: number[] = []
+  // Generate all unique pairs and calculate their absolute differences
+  for (let i = 0; i < data.length; i++) {
+    for (let j = i + 1; j < data.length; j++) {
+      differences.push(Math.abs(data[i] - data[j]))
+    }
+  }
+  return median(differences)
+}
+
 const hodgesLehmannEstimator = (segmentA: number[], segmentB: number[]): number => {
   const pairwiseDifferences: number[] = []
-
   for (const valueA of segmentA) {
     for (const valueB of segmentB) {
       pairwiseDifferences.push(valueB - valueA)
     }
   }
-
-  pairwiseDifferences.sort((a, b) => a - b)
-
-  const middle = Math.floor(pairwiseDifferences.length / 2)
-  return pairwiseDifferences.length % 2 === 0 ? (pairwiseDifferences[middle - 1] + pairwiseDifferences[middle]) / 2 : pairwiseDifferences[middle]
+  return median(pairwiseDifferences)
 }
 
 const getPartialSums = (data: number[], k: number): number[][] => {
@@ -159,8 +189,8 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
   const changePointIndexes: number[] = []
   let currentIndex = previousChangePointIndex[n]
   while (currentIndex !== 0) {
-    changePointIndexes.push(currentIndex - 1)
+    changePointIndexes.push(currentIndex)
     currentIndex = previousChangePointIndex[currentIndex]
   }
-  return changePointIndexes.reverse().map((value) => value + 1)
+  return changePointIndexes.reverse()
 }

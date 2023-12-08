@@ -4,110 +4,136 @@
     table="idea"
     persistent-id="vcs_idea_ultimate_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-    :charts="charts"
   >
-    <section>
-      <GroupProjectsChart
-        v-for="chart in charts"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
-    </section>
+    <div>
+      <Chip><a href="#index">Vcs indexing</a></Chip>
+      <Chip><a href="#history">Show file history</a></Chip>
+      <Chip><a href="#checkout">Checkout</a></Chip>
+      <Chip><a href="#filter">Filter Vcs Log tab</a></Chip>
+    </div>
+
+    <Accordion
+      :multiple="true"
+      :active-index="[0, 1, 2, 3]"
+    >
+      <AccordionTab header="Indexing">
+        <a name="index" />
+        <section>
+          <GroupProjectsChart
+            label="Indexing"
+            measure="vcs-log-indexing"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Number of collected commits"
+            measure="vcs-log-indexing#numberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Real number of collected commits through git rev-list --count --all"
+            measure="realNumberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+      </AccordionTab>
+
+      <AccordionTab header="Show file history">
+        <a name="history" />
+        <section>
+          <GroupProjectsChart
+            label="Show file history (test metric)"
+            measure="showFileHistory"
+            :projects="historyProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Show file history - showing first pack of data (test metric)"
+            measure="showFirstPack"
+            :projects="historyProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Show file history - showing first pack of data (test metric)"
+            measure="showFirstPack"
+            :projects="historyProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Computing - time spent on computing a peace of history.
+          If index - time of computing before the first rename. If git - time of computing before timeout of operation occurred"
+            measure="file-history-computing"
+            :projects="historyProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Loading full VCS Log (all commits and references)"
+            measure="vcs-log-loading-full-log"
+            :projects="historyProjects"
+          />
+        </section>
+      </AccordionTab>
+
+      <AccordionTab header="Checkout">
+        <a name="checkout" />
+        <section>
+          <GroupProjectsChart
+            label="Checkout time"
+            measure="git-checkout"
+            :projects="checkoutProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Checkout duration(FUS)"
+            measure="git-checkout#fusCheckoutDuration"
+            :projects="checkoutProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Checkout VFS refresh duration(FUS)"
+            measure="git-checkout#fusVfsRefreshDuration"
+            :projects="checkoutProjects"
+          />
+        </section>
+      </AccordionTab>
+
+      <AccordionTab header="Filter Vcs Log tab">
+        <a name="filter" />
+        <section>
+          <GroupProjectsChart
+            label="Filter Vcs Log tab"
+            measure="vcs-log-filtering"
+            :projects="filteringProjects"
+          />
+        </section>
+      </AccordionTab>
+    </Accordion>
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import Accordion from "primevue/accordion"
+import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const intellijSpecific = "intellij_clone_specific_commit/gitLogIndexing"
-const intellijSpecificSql = "intellij_clone_specific_commit/gitLogIndexing-sql"
+const intellijSpecificProject = "intellij_clone_specific_commit/gitLogIndexing"
+const indexingProjects = [intellijSpecificProject, intellijSpecificProject + "-sql"]
 
-const showFileHistoryEditorPhm = "intellij_clone_specific_commit/EditorImpl-phm"
-const showFileHistoryEditorSql = "intellij_clone_specific_commit/EditorImpl-sql"
-const showFileHistoryEditorNoIndex = "intellij_clone_specific_commit/EditorImpl-noindex"
+const showFileHistoryEditorProject = "intellij_clone_specific_commit/EditorImpl-"
+const historyProjects = [showFileHistoryEditorProject + "phm", showFileHistoryEditorProject + "sql", showFileHistoryEditorProject + "noindex"]
 
-const vcsLogFilterPhm = "intellij_clone_specific_commit/filterVcsLogTab-phm"
-const vcsLogFilterSql = "intellij_clone_specific_commit/filterVcsLogTab-sql"
-const vcsLogFilterNoIndex = "intellij_clone_specific_commit/filterVcsLogTab-noindex"
+const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 
-const chartsDeclaration: ChartDefinition[] = [
-  //Indexing
-  {
-    labels: ["Indexing"],
-    measures: [["vcs-log-indexing"]],
-    projects: [intellijSpecific, intellijSpecificSql],
-  },
-  {
-    labels: ["Number of collected commits"],
-    measures: [["vcs-log-indexing#numberOfCommits"]],
-    projects: [intellijSpecific, intellijSpecificSql],
-  },
-  {
-    labels: ["Real number of collected commits through git rev-list --count --all"],
-    measures: [["realNumberOfCommits"]],
-    projects: [intellijSpecific, intellijSpecificSql],
-  },
-  //Show file history
-  {
-    labels: ["Show file history (test metric)"],
-    measures: [["showFileHistory"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  {
-    labels: ["Show file history - showing first pack of data (test metric)"],
-    measures: [["showFirstPack"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  {
-    labels: [
-      "Computing - time spent on computing a peace of history. If index - time of computing before the first rename. " +
-        "If git - time of computing before timeout of operation occurred",
-    ],
-    measures: [["file-history-computing"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  {
-    labels: ["Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"],
-    measures: [["vcs-log-refreshing"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  {
-    labels: ["Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"],
-    measures: [["vcs-log-building-graph"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  {
-    labels: ["Loading full VCS Log (all commits and references)"],
-    measures: [["vcs-log-loading-full-log"]],
-    projects: [showFileHistoryEditorPhm, showFileHistoryEditorSql, showFileHistoryEditorNoIndex],
-  },
-  //Checkout
-  {
-    labels: ["Checkout"],
-    measures: [["git-checkout"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
-  },
-  {
-    labels: ["Checkout FUS duration"],
-    measures: [["git-checkout#fusCheckoutDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
-  },
-  {
-    labels: ["Checkout FUS VFS refresh duration "],
-    measures: [["git-checkout#fusVfsRefreshDuration"]],
-    projects: ["intellij_clone_specific_commit/git-checkout"],
-  },
-  //Filter vcs log tab
-  {
-    labels: ["Filter Vcs Log tab"],
-    measures: [["vcs-log-filtering"]],
-    projects: [vcsLogFilterPhm, vcsLogFilterSql, vcsLogFilterNoIndex],
-  },
-]
-
-const charts = combineCharts(chartsDeclaration)
+const vcsLogFilterProject = "intellij_clone_specific_commit/filterVcsLogTab-"
+const filteringProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject + "sql", vcsLogFilterProject + "noindex"]
 </script>

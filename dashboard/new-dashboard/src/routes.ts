@@ -33,6 +33,7 @@ const enum ROUTE_PREFIX {
   Vcs = IntelliJ + "/vcs",
   PerfUnit = "/perfUnit",
   ML = "/ml",
+  DataGrip = "/datagrip",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -186,6 +187,7 @@ enum ROUTES {
   VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
+  DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
 }
 
 export interface Tab {
@@ -1004,6 +1006,23 @@ const CLION: Product = {
   ],
 }
 
+const DATAGRIP: Product = {
+  url: ROUTE_PREFIX.DataGrip,
+  label: "DataGrip",
+  children: [
+    {
+      url: ROUTE_PREFIX.DataGrip,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.DataGripStartupDashboard,
+          label: STARTUP_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
 const PERF_UNIT: Product = {
   url: ROUTE_PREFIX.PerfUnit,
   label: "Perf Unit Tests",
@@ -1038,7 +1057,7 @@ const ML_TESTS: Product = {
   ],
 }
 
-export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT, ML_TESTS]
+export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, DATAGRIP, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT, ML_TESTS]
 export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
 }
@@ -1916,7 +1935,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             product: "CL",
             defaultProject: "cmake",
           },
-          meta: { pageTitle: "Clion Startup dashboard" },
+          meta: { pageTitle: "CLion Startup dashboard" },
         },
         {
           path: ROUTES.ClionPerfDashboard,
@@ -1983,6 +2002,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "ML Tests dev-server" },
+        },
+        {
+          path: ROUTES.DataGripStartupDashboard,
+          component: () => import("./components/common/StartupProductDashboard.vue"),
+          props: {
+            product: "DG",
+            defaultProject: "empty project",
+          },
+          meta: { pageTitle: "DataGrip Startup dashboard" },
         },
       ],
     },

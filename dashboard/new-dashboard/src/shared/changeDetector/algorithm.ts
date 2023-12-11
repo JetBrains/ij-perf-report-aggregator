@@ -78,7 +78,7 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
       classification = ChangePointClassification.NO_CHANGE
     } else if (Math.abs(medianBefore - medianAfter) < 10) {
       classification = ChangePointClassification.NO_CHANGE
-    } else if (Math.abs(effectSize) < 1.2) {
+    } else if (Math.abs(effectSize) < 2) {
       classification = ChangePointClassification.NO_CHANGE
     } else {
       classification = hlValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION

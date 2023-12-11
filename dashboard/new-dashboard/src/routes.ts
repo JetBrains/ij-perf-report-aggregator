@@ -183,7 +183,7 @@ enum ROUTES {
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
-  VcsDotnetDashboard = `${ROUTE_PREFIX.Vcs}/dotnet`,
+  VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
 }
@@ -462,8 +462,8 @@ const IDEA: Product = {
           label: "Performance dashboard space project",
         },
         {
-          url: ROUTES.VcsDotnetDashboard,
-          label: "Performance dashboard dotnet project",
+          url: ROUTES.VcsStarterDashboard,
+          label: "Performance dashboard starter project",
         },
       ],
     },
@@ -1958,14 +1958,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Vcs Space performance dashboard" },
         },
         {
-          path: ROUTES.VcsDotnetDashboard,
-          component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
-          meta: { pageTitle: "Vcs Dotnet performance dashboard" },
-        },
-        {
-          path: ROUTES.VcsDotnetDashboard,
-          component: () => import("./components/vcs/PerformanceDotnetDashboard.vue"),
-          meta: { pageTitle: "Vcs Dotnet performance dashboard" },
+          path: ROUTES.VcsStarterDashboard,
+          component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
+          meta: { pageTitle: "Vcs Starer performance dashboard" },
         },
         {
           path: ROUTES.PerfUnitTests,

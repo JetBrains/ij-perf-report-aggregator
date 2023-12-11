@@ -1,0 +1,52 @@
+<template>
+  <DashboardPage
+    db-name="perfint"
+    table="idea"
+    persistent-id="vcs_idea_ultimate_dashboard"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+  >
+    <div>
+      <Chip><a href="#index">Vcs indexing</a></Chip>
+    </div>
+
+    <Accordion
+      :multiple="true"
+      :active-index="[0]"
+    >
+      <AccordionTab header="Indexing">
+        <a name="index" />
+        <section>
+          <GroupProjectsChart
+            label="Indexing"
+            measure="vcs-log-indexing"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Number of collected commits"
+            measure="vcs-log-indexing#numberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Real number of collected commits through git rev-list --count --all"
+            measure="realNumberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+      </AccordionTab>
+    </Accordion>
+  </DashboardPage>
+</template>
+
+<script setup lang="ts">
+import Accordion from "primevue/accordion"
+import Chip from "primevue/chip"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import DashboardPage from "../common/DashboardPage.vue"
+
+const intellijSpecificProject = "ide_starter/gitLogIndexing"
+const indexingProjects = [intellijSpecificProject, intellijSpecificProject + "-sql"]
+</script>

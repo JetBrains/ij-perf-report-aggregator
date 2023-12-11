@@ -49,7 +49,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 
   effectSizeThreshold := analysisSettings.GetEffectSizeThreshold()
   if effectSizeThreshold == 0 {
-    effectSizeThreshold = 1.2
+    effectSizeThreshold = 2
   }
 
   changePoints := GetChangePointIndexes(values, Min(minimumSegmentLength, len(values)/2))

@@ -154,9 +154,7 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
   const n = data.length
 
   if (n <= 2) return []
-  if (minDistance < 1 || minDistance > n) {
-    throw new Error(`minDistance (${minDistance}) should be in range from 1 to data.length`)
-  }
+  minDistance = Math.min(minDistance, n / 3)
 
   const penalty = 3 * Math.log(n)
   const k = Math.min(n, Math.ceil(4 * Math.log(n)))

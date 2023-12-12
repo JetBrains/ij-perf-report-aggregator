@@ -144,7 +144,7 @@ func getMachineGroup(pattern string) string {
   switch pattern {
   case "intellij-linux-performance-aws-%":
     return "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-  case "intellij-linux-hw-hetzner-%":
+  case "intellij-linux-hw-hetzner%":
     return "linux-blade-hetzner"
   case "intellij-linux-hw-munit-%":
     return "Linux Munich i7-3770, 32 Gb"

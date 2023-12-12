@@ -285,7 +285,7 @@
           'Project Model (GL)',
           'swagger_helper.rb',
           'activerecord-generated.rbs',
-          'User Model Spec (GL)',
+          'User Model Spec (Rails Sample)',
           'User Model (GL)',
           'Ruby Parser',
           'structure.sql (GL)',

@@ -62,6 +62,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
   settings = append(settings, setting.GenerateMavenSettings()...)
   settings = append(settings, setting.GenerateGradleSettings()...)
   settings = append(settings, setting.GeneratePhpStormSettings(backendUrl, client)...)
-  settings = append(settings, setting.GenerateUnitTestsSettings(backendUrl, client)...)
+  // settings = append(settings, setting.GenerateUnitTestsSettings(backendUrl, client)...)
   return settings
 }

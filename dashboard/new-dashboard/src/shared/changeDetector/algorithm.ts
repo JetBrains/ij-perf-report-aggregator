@@ -1,3 +1,5 @@
+import { hodgesLehmannEstimator, median, pooledShamos } from "./statistic"
+
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
   OPTIMIZATION = "Optimization",
@@ -33,15 +35,6 @@ const getSegmentCost = (partialSums: number[][], tau1: number, tau2: number, k: 
     }
   }
   return ((2 * -Math.log(2 * n - 1)) / k) * sum
-}
-
-function median(data: number[]): number {
-  if (data.length === 0) {
-    throw new Error("Data array is empty")
-  }
-  const sortedData = [...data].sort((a, b) => a - b)
-  const mid = Math.floor(sortedData.length / 2)
-  return sortedData.length % 2 === 0 ? (sortedData[mid - 1] + sortedData[mid]) / 2 : sortedData[mid]
 }
 
 export const classifyChangePoint = (changePointIndexes: number[], dataset: number[] | undefined) => {
@@ -87,44 +80,6 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     classifications.push(classification)
   }
   return classifications
-}
-
-function pooledShamos(x: number[], y: number[]): number {
-  const n = x.length
-  const m = y.length
-
-  if (n < 2 || m < 2) {
-    throw new Error("Both arrays must contain at least two elements")
-  }
-
-  const shamosX = shamosEstimator(x)
-  const shamosY = shamosEstimator(y)
-
-  return Math.sqrt(((n - 1) * shamosX * shamosX + (m - 1) * shamosY * shamosY) / (n + m - 2))
-}
-
-function shamosEstimator(data: number[]): number {
-  if (data.length < 2) {
-    throw new Error("Data array must contain at least two elements")
-  }
-  const differences: number[] = []
-  // Generate all unique pairs and calculate their absolute differences
-  for (let i = 0; i < data.length; i++) {
-    for (let j = i + 1; j < data.length; j++) {
-      differences.push(Math.abs(data[i] - data[j]))
-    }
-  }
-  return median(differences)
-}
-
-const hodgesLehmannEstimator = (segmentA: number[], segmentB: number[]): number => {
-  const pairwiseDifferences: number[] = []
-  for (const valueA of segmentA) {
-    for (const valueB of segmentB) {
-      pairwiseDifferences.push(valueB - valueA)
-    }
-  }
-  return median(pairwiseDifferences)
 }
 
 const getPartialSums = (data: number[], k: number): number[][] => {

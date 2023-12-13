@@ -5,7 +5,7 @@ import (
   "fmt"
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
   "net/http"
@@ -114,7 +114,7 @@ func getMedianValues(queryResults []struct {
       MeasureValues []int
     }) {
       defer wg.Done()
-      indexes := degradation_detector.GetChangePointIndexes(result.MeasureValues, 1)
+      indexes := statistic.GetChangePointIndexes(result.MeasureValues, 1)
       var valuesAfterLastChangePoint []int
       if len(indexes) == 0 {
         valuesAfterLastChangePoint = result.MeasureValues
@@ -122,7 +122,7 @@ func getMedianValues(queryResults []struct {
         lastIndex := indexes[len(indexes)-1]
         valuesAfterLastChangePoint = result.MeasureValues[lastIndex:]
       }
-      median := degradation_detector.CalculateMedian(valuesAfterLastChangePoint)
+      median := statistic.Median(valuesAfterLastChangePoint)
 
       responseChan <- responseItem{
         Project:     result.Project,

@@ -1,6 +1,7 @@
 package degradation_detector
 
 import (
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
   "log/slog"
   "math"
 )
@@ -28,13 +29,6 @@ func (v MedianValues) PercentageChange() float64 {
   return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
 
-func Min(a, b int) int {
-  if a < b {
-    return a
-  }
-  return b
-}
-
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
   degradations := make([]Degradation, 0)
 
@@ -52,7 +46,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
     effectSizeThreshold = 2
   }
 
-  changePoints := GetChangePointIndexes(values, Min(minimumSegmentLength, len(values)/2))
+  changePoints := statistic.GetChangePointIndexes(values, statistic.Min(minimumSegmentLength, len(values)/2))
   segments := getSegmentsBetweenChangePoints(changePoints, values)
   if len(segments) < 2 {
     slog.Info("no significant change points were detected")
@@ -70,8 +64,8 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
       skippedSegments++
       continue
     }
-    currentMedian := CalculateMedian(lastSegment)
-    previousMedian := CalculateMedian(segments[i])
+    currentMedian := statistic.Median(lastSegment)
+    previousMedian := statistic.Median(segments[i])
     percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
     absoluteChange := math.Abs(currentMedian - previousMedian)
 
@@ -79,7 +73,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
       break
     }
 
-    es := EffectSize(lastSegment, segments[i])
+    es := statistic.EffectSize(lastSegment, segments[i])
     if es < effectSizeThreshold {
       break
     }

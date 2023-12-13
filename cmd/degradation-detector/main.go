@@ -2,7 +2,7 @@ package main
 
 import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
-  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/analysis"
+  "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/setting"
   _ "go.uber.org/automaxprocs"
   "log/slog"
   "net/http"
@@ -15,11 +15,11 @@ func main() {
   client := createHttpClient()
   slog.Info("started")
   analysisSettings := make([]detector.Settings, 0, 2000)
-  for _, setting := range generatePerformanceSettings(backendUrl, client) {
-    analysisSettings = append(analysisSettings, setting)
+  for _, s := range generatePerformanceSettings(backendUrl, client) {
+    analysisSettings = append(analysisSettings, s)
   }
-  for _, setting := range generateStartupSettings(backendUrl, client) {
-    analysisSettings = append(analysisSettings, setting)
+  for _, s := range generateStartupSettings(backendUrl, client) {
+    analysisSettings = append(analysisSettings, s)
   }
   degradations := detector.GetDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
@@ -50,18 +50,18 @@ func createHttpClient() *http.Client {
 
 func generateStartupSettings(backendUrl string, client *http.Client) []detector.StartupSettings {
   settings := make([]detector.StartupSettings, 0, 1000)
-  settings = append(settings, analysis.GenerateStartupSettingsForIDEA(backendUrl, client)...)
+  settings = append(settings, setting.GenerateStartupSettingsForIDEA(backendUrl, client)...)
   return settings
 }
 
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, analysis.GenerateIdeaSettings(backendUrl, client)...)
-  settings = append(settings, analysis.GenerateWorkspaceSettings()...)
-  settings = append(settings, analysis.GenerateKotlinSettings()...)
-  settings = append(settings, analysis.GenerateMavenSettings()...)
-  settings = append(settings, analysis.GenerateGradleSettings()...)
-  settings = append(settings, analysis.GeneratePhpStormSettings(backendUrl, client)...)
-  settings = append(settings, analysis.GenerateUnitTestsSettings(backendUrl, client)...)
+  settings = append(settings, setting.GenerateIdeaSettings(backendUrl, client)...)
+  settings = append(settings, setting.GenerateWorkspaceSettings()...)
+  settings = append(settings, setting.GenerateKotlinSettings()...)
+  settings = append(settings, setting.GenerateMavenSettings()...)
+  settings = append(settings, setting.GenerateGradleSettings()...)
+  settings = append(settings, setting.GeneratePhpStormSettings(backendUrl, client)...)
+  settings = append(settings, setting.GenerateUnitTestsSettings(backendUrl, client)...)
   return settings
 }

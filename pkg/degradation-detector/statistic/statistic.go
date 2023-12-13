@@ -1,10 +1,61 @@
-package degradation_detector
+package statistic
 
 import (
   "errors"
   "math"
   "slices"
 )
+
+func Min(a, b int) int {
+  if a < b {
+    return a
+  }
+  return b
+}
+
+func MedianF(nums []float64) float64 {
+  if len(nums) == 0 {
+    return 0
+  }
+
+  var sortedNums []float64
+  if slices.IsSorted(nums) {
+    sortedNums = nums
+  } else {
+    sortedNums = make([]float64, len(nums))
+    copy(sortedNums, nums)
+    slices.Sort(sortedNums)
+  }
+
+  middle := len(sortedNums) / 2
+  if len(sortedNums)%2 == 0 {
+    return (sortedNums[middle-1] + sortedNums[middle]) / 2
+  }
+
+  return sortedNums[middle]
+}
+
+func Median(nums []int) float64 {
+  if len(nums) == 0 {
+    return 0
+  }
+
+  var sortedNums []int
+  if slices.IsSorted(nums) {
+    sortedNums = nums
+  } else {
+    sortedNums = make([]int, len(nums))
+    copy(sortedNums, nums)
+    slices.Sort(sortedNums)
+  }
+
+  middle := len(sortedNums) / 2
+  if len(sortedNums)%2 == 0 {
+    return float64(sortedNums[middle-1]+sortedNums[middle]) / 2
+  }
+
+  return float64(sortedNums[middle])
+}
 
 func EffectSize(segmentA, segmentB []int) float64 {
   hle := hodgesLehmannEstimator(segmentA, segmentB)
@@ -45,7 +96,7 @@ func shamosEstimator(data []int) (float64, error) {
       differences = append(differences, math.Abs(float64(data[i]-data[j])))
     }
   }
-  return medianF(differences), nil
+  return MedianF(differences), nil
 }
 
 func hodgesLehmannEstimator(segmentA, segmentB []int) float64 {
@@ -55,27 +106,5 @@ func hodgesLehmannEstimator(segmentA, segmentB []int) float64 {
       pairwiseDifferences = append(pairwiseDifferences, valueB-valueA)
     }
   }
-  return medianI(pairwiseDifferences)
-}
-
-func medianF(numbers []float64) float64 {
-  input := make([]float64, len(numbers))
-  copy(input, numbers)
-  slices.Sort(input)
-  middle := len(input) / 2
-  if len(input)%2 == 0 {
-    return (input[middle-1] + input[middle]) / 2
-  }
-  return input[middle]
-}
-
-func medianI(numbers []int) float64 {
-  input := make([]int, len(numbers))
-  copy(input, numbers)
-  slices.Sort(input)
-  middle := len(input) / 2
-  if len(input)%2 == 0 {
-    return float64(input[middle-1]+input[middle]) / 2
-  }
-  return float64(input[middle])
+  return Median(pairwiseDifferences)
 }

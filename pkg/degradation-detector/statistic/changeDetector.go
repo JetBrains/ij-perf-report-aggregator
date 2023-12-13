@@ -1,31 +1,9 @@
-package degradation_detector
+package statistic
 
 import (
   "math"
   "slices"
 )
-
-func CalculateMedian(nums []int) float64 {
-  if len(nums) == 0 {
-    return 0
-  }
-
-  var sortedNums []int
-  if slices.IsSorted(nums) {
-    sortedNums = nums
-  } else {
-    sortedNums = make([]int, len(nums))
-    copy(sortedNums, nums)
-    slices.Sort(sortedNums)
-  }
-
-  middle := len(sortedNums) / 2
-  if len(sortedNums)%2 == 0 {
-    return float64(sortedNums[middle-1]+sortedNums[middle]) / 2
-  }
-
-  return float64(sortedNums[middle])
-}
 
 func GetChangePointIndexes(data []int, minDistance int) []int {
   n := len(data)

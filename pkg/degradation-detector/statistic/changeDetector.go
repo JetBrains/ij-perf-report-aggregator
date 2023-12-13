@@ -53,13 +53,10 @@ func GetChangePointIndexes(data []int, minDistance int) []int {
   var changePointIndexes []int
   currentIndex := previousChangePointIndex[n]
   for currentIndex != 0 {
-    changePointIndexes = append(changePointIndexes, currentIndex-1)
+    changePointIndexes = append(changePointIndexes, currentIndex)
     currentIndex = previousChangePointIndex[currentIndex]
   }
   slices.Reverse(changePointIndexes)
-  for i := range changePointIndexes {
-    changePointIndexes[i]++
-  }
   return changePointIndexes
 }
 

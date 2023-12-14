@@ -187,6 +187,8 @@ enum ROUTES {
   VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
+  LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
+  FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
 }
 
@@ -1048,6 +1050,14 @@ const ML_TESTS: Product = {
       url: ROUTE_PREFIX.ML,
       label: "",
       tabs: [
+        {
+          url: ROUTES.LLMDevTests,
+          label: "LLM test dashboard dev-server/fast-installer",
+        },
+        {
+          url: ROUTES.FullLineDevTests,
+          label: "FullLine test dashboard dev-server/fast-installer",
+        },
         {
           url: ROUTES.MLDevTests,
           label: "ML Tests on dev-server/fast-installer",
@@ -1993,12 +2003,22 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Perf Unit Tests" },
         },
         {
+          path: ROUTES.LLMDevTests,
+          component: () => import("./components/ml/dev/LLMDashboard.vue"),
+          meta: { pageTitle: "LLM dashboard" },
+        },
+        {
+          path: ROUTES.FullLineDevTests,
+          component: () => import("./components/ml/dev/FullLineDashboard.vue"),
+          meta: { pageTitle: "FullLine dashboard" },
+        },
+        {
           path: ROUTES.MLDevTests,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfintDev",
             table: "ml",
-            initialMachine: "linux-blade-hetzner",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
             withInstaller: false,
           },
           meta: { pageTitle: "ML Tests dev-server" },

@@ -16,4 +16,4 @@ create table perfUnitTests.report
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))
-    order by (project, machine, tc_build_type, branch, generated_time)
+    order by (project, tc_build_type, branch, machine, generated_time)

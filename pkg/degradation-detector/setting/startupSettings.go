@@ -35,6 +35,7 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
         Metric:  metric,
         AnalysisSettings: detector.AnalysisSettings{
           DoNotReportImprovement: true,
+          MinimumSegmentLength:   10,
         },
         SlackSettings: slackSettings,
       })

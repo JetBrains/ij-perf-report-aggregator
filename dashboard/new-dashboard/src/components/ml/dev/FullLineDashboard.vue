@@ -8,7 +8,7 @@
   >
     <section>
       <GroupProjectsChart
-        label="LLM completion "
+        label="Full line completion "
         :measure="['inlineCompletionShow#mean_value']"
         :projects="['kotlin_language_server/full-line-completion/DefinitionTest/empty-fun-full-line']"
       />

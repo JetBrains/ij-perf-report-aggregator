@@ -12,7 +12,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
     Db:      "perfUnitTests",
     Table:   "report",
     Branch:  "master",
-    Machine: "%",
+    Machine: "intellij-linux-%-hetzner-%",
     Metric:  "attempt.mean.ms",
   }
   slackSettings := detector.SlackSettings{

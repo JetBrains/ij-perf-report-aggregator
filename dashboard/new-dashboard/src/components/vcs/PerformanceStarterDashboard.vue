@@ -36,6 +36,13 @@
             :projects="indexingProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="'vcs-log' directory size in bytes"
+            measure="vcs-log-size-bytes"
+            :projects="indexingProjects"
+          />
+        </section>
       </AccordionTab>
     </Accordion>
   </DashboardPage>

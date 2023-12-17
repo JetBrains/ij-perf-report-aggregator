@@ -44,6 +44,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["realNumberOfCommits"]],
     projects: [spaceSpecific, spaceSpecificSql],
   },
+  {
+    labels: ["'vcs-log' directory size in bytes"],
+    measures: [["vcs-log-size-bytes"]],
+    projects: [spaceSpecific, spaceSpecificSql],
+  },
   //Commit
   {
     labels: ["Commit FUS duration"],

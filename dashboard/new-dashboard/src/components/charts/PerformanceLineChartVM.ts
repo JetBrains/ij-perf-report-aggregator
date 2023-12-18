@@ -167,7 +167,7 @@ export class PerformanceLineChartVM {
             selector: [
               {
                 type: "inverse",
-                title: "reset",
+                title: "inverse",
               },
             ],
             formatter(name: string): string {

@@ -16,6 +16,7 @@ func FetchAllProjects(backendUrl string, client *http.Client, settings StartupSe
     Fields:   []dataQuery.QueryDimension{{Name: "project", Sql: "distinct project"}},
     Flat:     true,
     Filters: []dataQuery.QueryFilter{
+      {Sql: "not endsWith(project, '(fast installer)')"},
       {Field: "branch", Value: settings.Branch},
       {Field: "generated_time", Sql: ">subtractDays(now(),100)"},
       {Field: "machine", Value: settings.Machine, Operator: "like"},

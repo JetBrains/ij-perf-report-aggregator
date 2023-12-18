@@ -45,8 +45,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [spaceSpecific, spaceSpecificSql],
   },
   {
-    labels: ["'vcs-log' directory size in bytes"],
-    measures: [["vcs-log-size-bytes"]],
+    labels: ["'vcs-log' directory size in gb"],
+    measures: [["vcs-log-directory-size-gb"]],
     projects: [spaceSpecific, spaceSpecificSql],
   },
   //Commit

@@ -41,8 +41,8 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="'vcs-log' directory size in bytes"
-            measure="vcs-log-size-bytes"
+            label="'vcs-log' directory size in gb"
+            measure="vcs-log-directory-size-gb"
             :projects="indexingProjects"
           />
         </section>

@@ -88,7 +88,7 @@ func TestComplexDistributionFromUnitTestWithDegradation(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20})
-  assert.Empty(t, degradations, "degradations: %v", degradations)
+  assert.Len(t, degradations, 1, "degradations: %v", degradations)
   assert.Equal(t, int64(667), degradations[0].timestamp)
 }
 

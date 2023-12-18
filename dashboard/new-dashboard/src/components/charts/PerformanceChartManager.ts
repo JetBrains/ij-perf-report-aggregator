@@ -32,7 +32,7 @@ export class PerformanceChartManager {
   private readonly resizeObserver: ResizeObserver
 
   constructor(
-    chartContainer: HTMLElement,
+    public chartContainer: HTMLElement,
     private resizeContainer: HTMLElement = document.body
   ) {
     this.chart = initChart(chartContainer)

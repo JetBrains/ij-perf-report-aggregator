@@ -12,7 +12,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import { ECElementEvent } from "echarts/core"
 import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
@@ -114,9 +114,17 @@ function createChart() {
     chartManager = new PerformanceChartManager(chartElement.value, container.value)
     chartVm = new PerformanceLineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
-    chartManager.chart.on("click", (params: CallbackDataParams) => {
-      const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidentsConfigurator)
-      sidebarVm.show(infoData)
+    chartManager.chart.on("click", (params: ECElementEvent) => {
+      const useMetaKey = isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
+      if (useMetaKey && params.seriesType === "line") {
+        chartManager?.chart.dispatchAction({
+          type: "legendUnSelect",
+          name: params.seriesName,
+        })
+      } else {
+        const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidentsConfigurator)
+        sidebarVm.show(infoData)
+      }
     })
   } else {
     console.error("Dom was not yet initialized")
@@ -145,6 +153,11 @@ onUnmounted(() => {
   unsubscribe?.()
   chartManager?.dispose()
 })
+
+function isMacOS() {
+  const userAgent = navigator.userAgent.toLowerCase()
+  return userAgent.includes("mac")
+}
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
 </script>

@@ -2,6 +2,7 @@ package statistic
 
 import (
   "github.com/stretchr/testify/assert"
+  "github.com/stretchr/testify/require"
   "testing"
 )
 
@@ -26,6 +27,6 @@ func TestShamosEstimator(t *testing.T) {
     5849, 5901, 5993, 5226, 5338, 5356, 5299, 5426, 5479, 5687, 5594, 5497, 5735, 19094, 19217, 19264, 18976, 19040, 19348, 19092, 5777, 5810, 5636, 5600, 5681, 5528, 5573, 5494,
     5613, 5603, 5509, 5455, 5552, 5773, 5903, 5385}
   v, e := shamosEstimator(data)
-  assert.NoError(t, e)
+  require.NoError(t, e)
   assert.InDelta(t, 191.4089, v, 0.1)
 }

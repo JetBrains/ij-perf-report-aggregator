@@ -14,7 +14,7 @@ func TestWithoutDegradations(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{DoNotReportImprovement: true})
-  assert.Equal(t, 0, len(degradations))
+  assert.Empty(t, degradations)
 }
 func TestWithoutDegradations2(t *testing.T) {
   data := []int{2940, 2633, 2758, 2648, 2884, 2920, 3205, 2936, 2868, 3212, 2324, 2290, 2474, 3000, 2740, 2737, 2413, 2873, 3105, 3049, 2521, 3185, 2950, 2696, 2725, 3188, 3781, 2493, 2241, 2528, 2680, 3126, 3126, 2649, 2649, 2623, 2623, 2820, 2820, 2693, 2693, 2812, 2812, 2527, 2527, 3031, 3031, 2571, 2571, 3066, 3066, 2670, 2670, 2699, 2699, 3106, 2782, 2617}
@@ -25,7 +25,7 @@ func TestWithoutDegradations2(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{})
-  assert.Equal(t, 0, len(degradations))
+  assert.Empty(t, degradations)
 }
 
 func TestWithDegradations(t *testing.T) {
@@ -37,7 +37,7 @@ func TestWithDegradations(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 3})
-  assert.Equal(t, 1, len(degradations))
+  assert.Len(t, degradations, 1)
   assert.Equal(t, int64(5), degradations[0].timestamp)
 }
 
@@ -50,7 +50,7 @@ func TestWithoutDegradations3(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 3})
-  assert.Equal(t, 0, len(degradations))
+  assert.Empty(t, degradations)
 }
 
 func TestWithDegradations2(t *testing.T) {
@@ -62,7 +62,7 @@ func TestWithDegradations2(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 3})
-  assert.Equal(t, 1, len(degradations))
+  assert.Len(t, degradations, 1)
   assert.Equal(t, int64(5), degradations[0].timestamp)
 }
 
@@ -76,7 +76,7 @@ func TestComplexDistributionFromUnitTestWithoutDegradation(t *testing.T) {
   }
 
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20})
-  assert.Equal(t, 0, len(degradations), "degradations: %v", degradations)
+  assert.Empty(t, degradations, "degradations: %v", degradations)
 }
 
 func TestComplexDistributionFromUnitTestWithDegradation(t *testing.T) {
@@ -88,7 +88,7 @@ func TestComplexDistributionFromUnitTestWithDegradation(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20})
-  assert.Equal(t, 1, len(degradations), "degradations: %v", degradations)
+  assert.Empty(t, degradations, "degradations: %v", degradations)
   assert.Equal(t, int64(667), degradations[0].timestamp)
 }
 
@@ -101,7 +101,7 @@ func TestComplexDistributionFromUnitTestWithDegradation2(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20, EffectSizeThreshold: 0.7})
-  assert.Equal(t, 1, len(degradations), "degradations: %v", degradations)
+  assert.Len(t, degradations, 1, "degradations: %v", degradations)
   assert.Equal(t, int64(856), degradations[0].timestamp)
 }
 
@@ -114,7 +114,7 @@ func TestComplexDistributionFromUnitTestWithoutDegradation2(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20, EffectSizeThreshold: 0.2})
-  assert.Equal(t, 0, len(degradations), "degradations: %v", degradations)
+  assert.Empty(t, degradations, "degradations: %v", degradations)
 }
 
 func TestComplexDistributionFromUnitTestWithoutDegradation3(t *testing.T) {
@@ -126,5 +126,5 @@ func TestComplexDistributionFromUnitTestWithoutDegradation3(t *testing.T) {
     times[i] = int64(i)
   }
   degradations := detectDegradations(data, builds, times, AnalysisSettings{MinimumSegmentLength: 30, MedianDifferenceThreshold: 20, EffectSizeThreshold: 1.2})
-  assert.Equal(t, 0, len(degradations), "degradations: %v", degradations)
+  assert.Empty(t, degradations, "degradations: %v", degradations)
 }

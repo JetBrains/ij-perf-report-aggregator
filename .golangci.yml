@@ -133,6 +133,10 @@ linters:
     - nosprintfhostport # checks for misuse of Sprintf to construct a host with port in a URL
     - predeclared # finds code that shadows one of Go's predeclared identifiers
     - promlinter # checks Prometheus metrics naming via promlint
+    - perfsprint # check usages of fmt.Sprintf which have faster alternatives.
+    - sloglint # ensures consistent code style when using log/slog
+    - testifylint # Checks usage of github.com/stretchr/testify.
+    - mirror #suggests use of alternative functions/methods in order to gain performance boosts by avoiding unnecessary []byte/string conversion calls
     - reassign # checks that package variables are not reassigned
     - revive # fast, configurable, extensible, flexible, and beautiful linter for Go, drop-in replacement of golint
     - sqlclosecheck # checks that sql.Rows and sql.Stmt are closed

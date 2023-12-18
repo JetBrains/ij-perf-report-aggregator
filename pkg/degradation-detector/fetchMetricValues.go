@@ -48,7 +48,7 @@ func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
           slog.Error("error while getting queryResult from clickhouse", "error", err, "settings", setting)
           return
         }
-        slog.Info("fetched from clickhouse", "settings", setting)
+        slog.Debug("fetched from clickhouse", "settings", setting)
         dataChan <- queryResultWithSettings{
           queryResult: data,
           Settings:    setting,

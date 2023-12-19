@@ -151,9 +151,9 @@ main:
     }
 
     if len(backups) != 0 {
-      for i := len(backups) - 1; i > 0; i-- {
-        if len(backups[i].Broken) == 0 {
-          backupName = backups[i].BackupName
+      for j := len(backups) - 1; j > 0; j-- {
+        if len(backups[j].Broken) == 0 {
+          backupName = backups[j].BackupName
           break main
         }
       }

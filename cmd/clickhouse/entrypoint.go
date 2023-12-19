@@ -139,6 +139,7 @@ func restoreDb() error {
 
   attemptCount := 3
   var backupName string
+main:
   for i := 0; i < attemptCount; i++ {
     backups, err := backuper.GetRemoteBackups(context.Background(), true)
     if err != nil {
@@ -150,8 +151,12 @@ func restoreDb() error {
     }
 
     if len(backups) != 0 {
-      backupName = backups[len(backups)-1].BackupName
-      break
+      for i := len(backups) - 1; i > 0; i-- {
+        if len(backups[i].Broken) == 0 {
+          backupName = backups[i].BackupName
+          break main
+        }
+      }
     }
   }
   if len(backupName) == 0 {

@@ -84,7 +84,7 @@ export function createBranchConfigurator(
       configurator.values.value = [
         ...new Set(
           data.map((value, _n, _a) => {
-            const match = value.match(/^(\d+)\.\d+$/)
+            const match = `${value}`.match(/^(\d+)\.\d+$/)
             return match ? match[1] : value
           })
         ),

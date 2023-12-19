@@ -116,7 +116,7 @@ function createChart() {
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", (params: ECElementEvent) => {
       const useMetaKey = isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
-      if (useMetaKey && params.seriesType === "line") {
+      if (useMetaKey) {
         chartManager?.chart.dispatchAction({
           type: "legendUnSelect",
           name: params.seriesName,

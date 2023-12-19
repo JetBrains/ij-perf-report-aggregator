@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
       <template #start>
         <div class="flex items-center">
           <MachineSelect :machine-configurator="machineConfigurator" />
@@ -81,7 +81,7 @@
 
 <script setup lang="ts">
 import { combineLatest, filter, Observable } from "rxjs"
-import { provide, ref, watch } from "vue"
+import { onMounted, onUnmounted, provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -238,6 +238,15 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
 }
+
+const isSticky = ref(false)
+const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
+onMounted(() => {
+  window.addEventListener("scroll", checkIfSticky)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", checkIfSticky)
+})
 </script>
 
 <style>
@@ -245,6 +254,14 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
   background-color: transparent;
   border: none;
   padding: 0;
+}
+
+.stickyToolbar {
+  top: 0rem;
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+  border-radius: 0;
+  position: sticky;
+  z-index: 100;
 }
 
 .lower {

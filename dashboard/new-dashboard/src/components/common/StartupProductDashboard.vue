@@ -1,8 +1,7 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
       <template #start>
-        <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
           :ranges="timeRangeConfigurator.timeRanges"
           :value="timeRangeConfigurator.value.value"
@@ -18,6 +17,7 @@
           :dimension="projectConfigurator"
         />
         <MachineSelect :machine-configurator="machineConfigurator" />
+        <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <slot name="toolbar" />
       </template>
       <template #end>
@@ -104,7 +104,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, provide, ref } from "vue"
+import { computed, onMounted, onUnmounted, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -220,6 +220,15 @@ const highlightingPasses = fetchHighlightingPasses()
 const showAllPasses = computed(() => {
   return projectConfigurator.selected.value == null || projectConfigurator.selected.value.length == 1 || typeof projectConfigurator.selected.value == "string"
 })
+
+const isSticky = ref(false)
+const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
+onMounted(() => {
+  window.addEventListener("scroll", checkIfSticky)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", checkIfSticky)
+})
 </script>
 
 <style>
@@ -227,5 +236,13 @@ const showAllPasses = computed(() => {
   background-color: transparent;
   border: none;
   padding: 0;
+}
+
+.stickyToolbar {
+  top: 0rem;
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+  border-radius: 0;
+  position: sticky;
+  z-index: 100;
 }
 </style>

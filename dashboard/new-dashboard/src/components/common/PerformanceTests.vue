@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref, watch, WatchStopHandle } from "vue"
+import { onMounted, onUnmounted, provide, Ref, ref, watch, WatchStopHandle } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -260,6 +260,14 @@ function toArray(value: string | string[] | null): string[] {
 }
 
 let scenarios = toArray(scenarioConfigurator.selected.value)
+const isSticky = ref(false)
+const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
+onMounted(() => {
+  window.addEventListener("scroll", checkIfSticky)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", checkIfSticky)
+})
 </script>
 
 <style>
@@ -267,5 +275,13 @@ let scenarios = toArray(scenarioConfigurator.selected.value)
   background-color: transparent;
   border: none;
   padding: 0;
+}
+
+.stickyToolbar {
+  top: 0rem;
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+  border-radius: 0;
+  position: sticky;
+  z-index: 100;
 }
 </style>

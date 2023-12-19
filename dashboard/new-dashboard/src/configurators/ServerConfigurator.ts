@@ -32,7 +32,7 @@ export class ServerConfigurator implements DataQueryConfigurator, FilterConfigur
   }
 
   compressString(params: string): string {
-    return `${getCompressor().compress(params)}`
+    return getCompressor().compress(params)
   }
 
   computeQueryUrl(query: DataQuery): string {

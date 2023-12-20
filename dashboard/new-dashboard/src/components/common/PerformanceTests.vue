@@ -126,7 +126,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
@@ -174,7 +174,7 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(props.dbNam
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,

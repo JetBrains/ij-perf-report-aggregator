@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { sortBranches } from "new-dashboard/src/configurators/BranchConfigurator"
+import { sortBranches } from "../../src/configurators/BranchConfigurator"
 
 test("sort branches", () => {
   const branches = [

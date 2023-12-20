@@ -10,14 +10,23 @@ import { defineConfig, PluginOption } from "vite"
 import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
 import { OutputAsset, OutputChunk } from "rollup"
+import { configDefaults } from "vitest/config"
 
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
 export default defineConfig({
+  test: {
+    root: "dashboard/new-dashboard",
+    include: [...configDefaults.include, "**/*.{test,spec}.ts"],
+    globals: true,
+    environment: "jsdom",
+    testTimeout: 10000,
+  },
   plugins: [
     vue(),
     // visualizer({template: "sunburst"}),
     Components({
+      directoryAsNamespace: true,
       dts: path.resolve(__dirname, "dashboard/new-dashboard/src/components.d.ts"),
       resolvers: [
         PrimeVueResolver(),

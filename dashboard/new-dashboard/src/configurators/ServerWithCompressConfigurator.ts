@@ -1,14 +1,14 @@
 import { combineLatest, map, Observable, shareReplay } from "rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, serializeQuery } from "../components/common/dataQuery"
+import { DataQuery, DataQueryExecutorConfiguration, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { getCompressor, getZstdObservable } from "../components/common/zstd"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
 
-export class ServerConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
+export class ServerWithCompressConfigurator implements ServerConfigurator {
+  static readonly DEFAULT_SERVER_URL = "https://ij-perf-api.labs.jb.gg"
 
   private readonly observable: Observable<null>
-  private _serverUrl: string = ServerConfigurator.DEFAULT_SERVER_URL
+  private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL
 
   constructor(
     readonly db: string,

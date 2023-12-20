@@ -1,8 +1,7 @@
 import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
 import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
 import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
-import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter } from "./dataQuery"
+import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "./dataQuery"
 
 export declare type DataQueryResult = (string | number)[][][]
 export declare type DataQueryConsumer = (data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading: boolean) => void
@@ -21,7 +20,7 @@ export class DataQueryExecutor {
    * `isGroup = true` means that this DataQueryExecutor only manages dependent executors but doesn't load data itself.
    */
   constructor(configurators: DataQueryConfigurator[]) {
-    const serverConfigurator = configurators.find((it) => it instanceof ServerConfigurator) as ServerConfigurator
+    const serverConfigurator = configurators.find((it): it is ServerConfigurator => "serverUrl" in it) as ServerConfigurator
     let abortController = new AbortController()
     this.observable = combineLatest(
       configurators.map((configurator) => {
@@ -51,7 +50,12 @@ export class DataQueryExecutor {
           forkJoin(
             mergedQueries.map((it) => {
               const stringQuery = JSON.stringify(it)
-              return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`), defaultBodyConsumer, abortController)
+              const result = fromFetchWithRetryAndErrorHandling<DataQueryResult>(
+                serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`),
+                defaultBodyConsumer,
+                abortController
+              )
+              return result
             })
           ).pipe(
             // pass context along with data and flatten result

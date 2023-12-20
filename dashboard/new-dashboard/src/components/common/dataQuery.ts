@@ -103,6 +103,22 @@ export interface DataQueryConfigurator {
   createDimension?(): QueryProducer
 }
 
+export interface ServerConfigurator extends DataQueryConfigurator {
+  get serverUrl(): string
+
+  compressString(params: string): string
+
+  computeQueryUrl(query: DataQuery): string
+
+  computeSerializedQueryUrl(url: string): string
+
+  createObservable(): Observable<unknown>
+
+  configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean
+
+  createDimension?(): QueryProducer
+}
+
 export interface QueryProducer {
   size(): number
 
@@ -157,6 +173,7 @@ export class DataQueryExecutorConfiguration {
     }
     return result
   }
+
   set measures(value: string[]) {
     if (this._measures != null) {
       throw new Error("measure list is already set")

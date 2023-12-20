@@ -4,16 +4,16 @@
     <data-source source="LOCAL" name="perfint@localhost" uuid="2557058b-5f52-497f-8a1d-9cfd03894455">
       <driver-ref>clickhouse</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.clickhouse.jdbc.ClickHouseDriver</jdbc-driver>
+      <jdbc-driver>ru.yandex.clickhouse.ClickHouseDriver</jdbc-driver>
       <jdbc-url>jdbc:clickhouse://localhost:8123</jdbc-url>
     </data-source>
     <data-source source="LOCAL" name="remote" uuid="1141eb18-0654-487d-8eeb-e8a66a586805">
       <driver-ref>clickhouse</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>com.clickhouse.jdbc.ClickHouseDriver</jdbc-driver>
+      <jdbc-driver>ru.yandex.clickhouse.ClickHouseDriver</jdbc-driver>
       <jdbc-url>jdbc:clickhouse://127.0.0.1:2000/ij</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="ij-perf-staging-ij-meta-3KqlQK@10.21.36.3" uuid="a4002082-26a5-4832-8a26-e6fcd1028081">
+    <data-source source="LOCAL" name="PostgreSQL" uuid="a4002082-26a5-4832-8a26-e6fcd1028081">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

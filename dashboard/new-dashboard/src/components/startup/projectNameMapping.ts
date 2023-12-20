@@ -1,5 +1,5 @@
 import { DimensionConfigurator, dimensionConfigurator } from "../../configurators/DimensionConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 
@@ -21,7 +21,7 @@ export function getProjectName(value: string): string {
 
 export function createProjectConfigurator(
   productConfigurator: DimensionConfigurator,
-  serverConfigurator: ServerConfigurator,
+  serverConfigurator: ServerWithCompressConfigurator,
   persistentStateManager: PersistentStateManager,
   filters: FilterConfigurator[] = []
 ): DimensionConfigurator {

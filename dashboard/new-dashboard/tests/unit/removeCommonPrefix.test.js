@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { removeCommonSegments } from "new-dashboard/src/util/removeCommonPrefixes"
+import { removeCommonSegments } from "../../src/util/removeCommonPrefixes"
 
 test("remove common suffix", () => {
   expect(removeCommonSegments(["foo/indexing", "bar/indexing"])).toStrictEqual(["foo", "bar"])

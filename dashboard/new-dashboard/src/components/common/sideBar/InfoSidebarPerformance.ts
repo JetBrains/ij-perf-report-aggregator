@@ -2,8 +2,8 @@ import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { measureNameToLabel } from "../../../configurators/MeasureConfigurator"
-import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
@@ -172,7 +172,7 @@ class Description {
 }
 
 async function getDescriptionFromMetaDb(project: string | undefined, branch: string): Promise<Description | null> {
-  const description_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
+  const description_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
   const response = await fetch(description_url + encodeRison({ project, branch }))
   return response.ok ? response.json() : null
 }

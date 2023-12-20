@@ -122,7 +122,7 @@
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
@@ -150,7 +150,7 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbT
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistenceForDashboard = new PersistentStateManager(
   "fleetStartup_dashboard",

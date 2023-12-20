@@ -59,7 +59,7 @@ import { createBranchConfigurator } from "../../configurators/BranchConfigurator
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
@@ -110,7 +110,7 @@ provide(containerKey, container)
 const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>(getDBType(dbName, dbTable))
 provide(sidebarStartupKey, sidebarVm)
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager("ij-explore")
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)

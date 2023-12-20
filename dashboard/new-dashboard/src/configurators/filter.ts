@@ -1,6 +1,5 @@
 import { combineLatest, Observable } from "rxjs"
-import { DataQuery } from "../components/common/dataQuery"
-import { ServerConfigurator } from "./ServerConfigurator"
+import { DataQuery, ServerConfigurator } from "../components/common/dataQuery"
 
 export function createFilterObservable(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): Observable<unknown> {
   if (filters.length === 0) {

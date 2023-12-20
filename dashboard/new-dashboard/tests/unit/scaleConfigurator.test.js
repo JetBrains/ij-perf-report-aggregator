@@ -1,6 +1,5 @@
 import { expect, test } from "vitest"
-import { shamosBias, shamosEstimator } from "new-dashboard/src/shared/changeDetector/statistic"
-import { scaleToMedian } from "new-dashboard/src/configurators/ScalingConfigurator"
+import { scaleToMedian } from "../../src/configurators/ScalingConfigurator"
 
 test("scaling of empty array", () => {
   expect(scaleToMedian([])).toEqual([])

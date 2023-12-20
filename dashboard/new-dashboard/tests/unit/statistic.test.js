@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { shamosBias, shamosEstimator } from "new-dashboard/src/shared/changeDetector/statistic"
+import { shamosBias, shamosEstimator } from "../../src/shared/changeDetector/statistic"
 
 test("shamos factor 10", () => {
   expect(shamosBias(10)).toBeCloseTo(1.000643, 5)

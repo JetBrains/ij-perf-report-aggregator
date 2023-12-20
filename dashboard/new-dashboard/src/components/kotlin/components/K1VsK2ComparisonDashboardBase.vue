@@ -76,7 +76,7 @@ const initialMachine = "linux-blade-hetzner"
 
 const router = useRouter()
 
-const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistentStateManager = new PersistentStateManager(

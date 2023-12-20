@@ -46,18 +46,10 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { jbrLinuxConfigurations, jbrMacConfigurations, jbrWindowsConfigurations } from "./configurations"
 
 const metricsNames = ["avrora", "fop", "h2", "jython", "luindex", "lusearch", "pmd", "sunflow", "xalan"]
-const ubuntuConfigurations = ["Ubuntu2004x64", "Ubuntu2004x64OGL", "Ubuntu2204x64", "Ubuntu2204x64OGL"].map((config) => "DaCapo_" + config)
-const macOSConfigurations = [
-  "macOS13x64OGL",
-  "macOS13x64Metal",
-  "macOS13aarch64OGL",
-  "macOS13aarch64Metal",
-  "macOS12x64OGL",
-  "macOS12x64Metal",
-  "macOS12aarch64OGL",
-  "macOS12aarch64Metal",
-].map((config) => "DaCapo_" + config)
-const windowsConfigurations = ["Windows10x64"].map((config) => "DaCapo_" + config)
+const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "DaCapo_" + config)
+const macOSConfigurations = jbrMacConfigurations.map((config) => "DaCapo_" + config)
+const windowsConfigurations = jbrWindowsConfigurations.map((config) => "DaCapo_" + config)
 </script>

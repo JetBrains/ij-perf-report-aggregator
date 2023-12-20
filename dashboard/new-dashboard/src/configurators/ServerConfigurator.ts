@@ -32,6 +32,7 @@ export class ServerConfigurator implements DataQueryConfigurator, FilterConfigur
   }
 
   compressString(params: string): string {
+    // eslint-disable-next-line @typescript-eslint/no-useless-template-literals
     return `${getCompressor().compress(params)}`
   }
 

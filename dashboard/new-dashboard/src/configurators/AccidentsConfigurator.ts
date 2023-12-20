@@ -3,12 +3,12 @@ import { Ref, ref } from "vue"
 import { Chart } from "../components/charts/DashboardCharts"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
-import { ServerConfigurator } from "./ServerConfigurator"
+import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export const accidents_url = ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
+export const accidents_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
 
 class AccidentFromServer {
   constructor(
@@ -323,7 +323,7 @@ async function getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, cus
   const interval = intervalToPostgresInterval(timeRange, customRange)
   const params = tests.length === 0 ? { interval } : { interval, tests }
   try {
-    const response = await fetch(ServerConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
+    const response = await fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

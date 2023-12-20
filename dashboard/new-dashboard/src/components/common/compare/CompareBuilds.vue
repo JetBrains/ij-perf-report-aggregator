@@ -122,7 +122,7 @@ import { buildConfigurator } from "../../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../../configurators/ReleaseNightlyConfigurator"
-import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { refToObservable } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
 import { MAIN_METRICS_SET } from "../../../util/mainMetrics"
@@ -144,7 +144,7 @@ const router = useRouter()
 
 provide(containerKey, container)
 
-const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
   {

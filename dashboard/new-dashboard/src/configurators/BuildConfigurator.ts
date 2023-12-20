@@ -2,7 +2,7 @@ import { of, switchMap } from "rxjs"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { DimensionConfigurator } from "./DimensionConfigurator"
-import { ServerConfigurator } from "./ServerConfigurator"
+import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { ComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling } from "./rxjs"
@@ -17,7 +17,7 @@ export class BuildConfigurator extends DimensionConfigurator {
   }
 }
 
-function loadBuilds(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[], state: ComponentState) {
+function loadBuilds(serverConfigurator: ServerWithCompressConfigurator, filters: FilterConfigurator[], state: ComponentState) {
   const query = new DataQuery()
   query.addField({ n: "build", sql: "distinct concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))" })
   query.order = "build"
@@ -34,7 +34,7 @@ function loadBuilds(serverConfigurator: ServerConfigurator, filters: FilterConfi
 
 export function buildConfigurator(
   name: string,
-  serverConfigurator: ServerConfigurator,
+  serverConfigurator: ServerWithCompressConfigurator,
   persistentStateManager: PersistentStateManager | null,
   filters: FilterConfigurator[] = []
 ): DimensionConfigurator {

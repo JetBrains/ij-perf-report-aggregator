@@ -64,7 +64,7 @@ import { createBranchConfigurator } from "../../configurators/BranchConfigurator
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { ServerConfigurator } from "../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
@@ -94,7 +94,7 @@ const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbT
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerConfigurator(dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 const persistentStateManager = new PersistentStateManager(
   `${dbName}-${dbTable}-dashboard`,
   {

@@ -19,6 +19,9 @@
     "vue-router": "4.2.5"
   },
   "devDependencies": {
-    "@types/humanize-duration": "^3.27.3"
+    "@testing-library/vue": "^8.0.1",
+    "@types/humanize-duration": "^3.27.3",
+    "global-jsdom": "^9.1.0",
+    "jsdom": "^23.0.1"
   }
 }

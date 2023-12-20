@@ -2,13 +2,13 @@ import { Observable } from "rxjs"
 import { shallowRef } from "vue"
 import { DataQueryExecutor } from "../components/common/DataQueryExecutor"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "../components/common/dataQuery"
-import { ServerConfigurator } from "../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { refToObservable } from "../configurators/rxjs"
 
 export function getTeamcityBuildType(db: string, table: string, id: number, whenDone: (type: string | null) => void) {
-  const serverUrlObservable = refToObservable(shallowRef(ServerConfigurator.DEFAULT_SERVER_URL))
+  const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))
   new DataQueryExecutor([
-    new ServerConfigurator(db, table, serverUrlObservable),
+    new ServerWithCompressConfigurator(db, table, serverUrlObservable),
     new (class implements DataQueryConfigurator {
       configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
         configuration.queryProducers.push(new SimpleQueryProducer())

@@ -87,7 +87,7 @@ import { createBranchConfigurator } from "../../../configurators/BranchConfigura
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ReleaseNightlyConfigurator } from "../../../configurators/ReleaseNightlyConfigurator"
-import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
 import { fromFetchWithRetryAndErrorHandling } from "../../../configurators/rxjs"
 import { containerKey } from "../../../shared/keys"
@@ -121,7 +121,7 @@ const router = useRouter()
 
 provide(containerKey, container)
 
-const serverConfigurator = new ServerConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-compare-branches`,
   {

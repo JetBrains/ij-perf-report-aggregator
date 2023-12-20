@@ -53,7 +53,7 @@ import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
-import { ServerConfigurator } from "../../../configurators/ServerConfigurator"
+import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import BranchSelect from "../../common/BranchSelect.vue"
@@ -76,7 +76,7 @@ const initialMachine = "linux-blade-hetzner"
 
 const router = useRouter()
 
-const serverConfigurator = new ServerConfigurator(props.dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistentStateManager = new PersistentStateManager(

@@ -19,7 +19,7 @@ import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
-import { ServerConfigurator } from "./ServerConfigurator"
+import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -47,7 +47,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   constructor(
-    serverConfigurator: ServerConfigurator,
+    serverConfigurator: ServerWithCompressConfigurator,
     persistentStateManager: PersistentStateManager,
     filters: FilterConfigurator[] = [],
     readonly skipZeroValues: boolean = true,
@@ -152,7 +152,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 }
 
-function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {
+function getLoadMeasureListUrl(serverConfigurator: ServerWithCompressConfigurator, filters: FilterConfigurator[]): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {

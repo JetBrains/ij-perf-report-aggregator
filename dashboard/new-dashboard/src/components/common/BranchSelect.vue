@@ -141,7 +141,7 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { computed, ref } from "vue"
+import { computed, ref, toValue } from "vue"
 import { sortBranches } from "../../configurators/BranchConfigurator"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { branchesSelectLabelFormat } from "../../shared/labels"
@@ -182,9 +182,9 @@ function createItems(configurator?: DimensionConfigurator) {
     if (configurator == undefined) {
       return []
     }
-    const values = (configurator.values.value as string[]).sort((a, b) => {
-      if (configurator.selected.value?.includes(b)) return 1
-      if (configurator.selected.value?.includes(a)) return -1
+    const values = (toValue(configurator.values) as string[]).sort((a, b) => {
+      if (toValue(configurator.selected)?.includes(b)) return 1
+      if (toValue(configurator.selected)?.includes(a)) return -1
 
       return sortBranches(a, b)
     })
@@ -201,7 +201,7 @@ function createValueFrom(configurator?: DimensionConfigurator) {
       if (configurator == null) {
         return null
       }
-      const values = configurator.values.value
+      const values = toValue(configurator.values)
       if (values.length === 0) {
         return null
       }

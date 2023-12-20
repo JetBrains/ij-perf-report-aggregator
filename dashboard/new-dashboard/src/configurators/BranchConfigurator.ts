@@ -1,8 +1,7 @@
 import { switchMap } from "rxjs"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
-import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter } from "../components/common/dataQuery"
+import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
 import { DimensionConfigurator, filterSelected, loadDimension } from "./DimensionConfigurator"
-import { ServerConfigurator } from "./ServerConfigurator"
 import { updateComponentState } from "./componentState"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 

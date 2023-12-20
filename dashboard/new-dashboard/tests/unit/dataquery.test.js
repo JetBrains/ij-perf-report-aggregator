@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { mergeQueries } from "new-dashboard/src/components/common/DataQueryExecutor"
+import { mergeQueries } from "../../src/components/common/DataQueryExecutor"
 
 test("complex queries are not merged", () => {
   expect(

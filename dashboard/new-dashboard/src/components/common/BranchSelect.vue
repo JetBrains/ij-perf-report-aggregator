@@ -216,7 +216,6 @@ function createValueFrom(configurator?: DimensionConfigurator) {
     },
     set(value) {
       if (configurator == null) return
-      console.log("BRANCH VALUE", value)
       // eslint-disable-next-line vue/no-mutating-props
       configurator.selected.value = value == null || value.length === 0 ? null : value
     },

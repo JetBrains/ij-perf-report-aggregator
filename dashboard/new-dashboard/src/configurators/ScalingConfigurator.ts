@@ -33,6 +33,9 @@ export class ScalingConfigurator implements DataQueryConfigurator, FilterConfigu
 }
 
 export function scaleToMedian(arr: number[]): number[] {
+  if (arr.length === 0) {
+    return arr
+  }
   const medianValue = median(arr)
   return medianValue === 0 ? arr : arr.map((value) => (value / medianValue) * 50)
 }

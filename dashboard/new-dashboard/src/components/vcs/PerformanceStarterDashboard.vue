@@ -43,6 +43,13 @@
             :projects="indexingProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="git commit-graph write --reachable --changed-paths"
+            measure="git-build-commit-graph"
+            :projects="indexingProjects"
+          />
+        </section>
       </AccordionTab>
     </Accordion>
   </DashboardPage>

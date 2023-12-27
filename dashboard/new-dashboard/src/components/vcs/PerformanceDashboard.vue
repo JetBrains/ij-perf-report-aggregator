@@ -49,7 +49,7 @@
         <section>
           <GroupProjectsChart
             label="git commit-graph write --reachable --changed-paths"
-            measure="vcs-log-directory-size-gb"
+            measure="git-build-commit-graph"
             :projects="indexingProjects"
           />
         </section>

@@ -46,6 +46,13 @@
             :projects="indexingProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="git commit-graph write --reachable --changed-paths"
+            measure="vcs-log-directory-size-gb"
+            :projects="indexingProjects"
+          />
+        </section>
       </AccordionTab>
 
       <AccordionTab header="Show file history">

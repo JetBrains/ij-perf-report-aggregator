@@ -104,7 +104,7 @@ const vm = injectOrError(sidebarStartupKey)
 function getSpaceUrl() {
   if (vm.data.value?.installerId) {
     calculateChanges("ij", vm.data.value.installerId, (decodedChanges: string | null) => {
-      window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
+      window.open(`https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`)
     })
   }
 }

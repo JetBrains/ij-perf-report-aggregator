@@ -170,7 +170,7 @@ function navigateToSpace() {
       if (decodedChanges == null) {
         window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
       } else {
-        window.open("https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22" + decodedChanges + "%22&tab=changes")
+        window.open("https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22" + decodedChanges + "%22&tab=changes")
       }
     })
   }

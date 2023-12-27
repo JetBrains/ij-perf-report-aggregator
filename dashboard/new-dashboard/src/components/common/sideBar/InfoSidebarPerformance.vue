@@ -386,7 +386,7 @@ function getSpaceUrl() {
         console.log("No changes found")
         window.open(vm.data.value?.changesUrl)
       } else {
-        window.open(`https://jetbrains.team/p/ij/repositories/intellij/commits?query=%22${decodedChanges}%22&tab=changes`)
+        window.open(`https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`)
       }
     })
   }

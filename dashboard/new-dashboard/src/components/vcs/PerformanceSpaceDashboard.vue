@@ -71,6 +71,13 @@
         </section>
         <section>
           <GroupProjectsChart
+            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.). vcs.log.small.data.pack.commits.count = 100"
+            measure="vcs-log-partial-refreshing"
+            :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
             label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"
             measure="vcs-log-building-graph"
             :projects="commitProjects"

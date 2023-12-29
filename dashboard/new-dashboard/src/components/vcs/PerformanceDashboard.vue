@@ -73,13 +73,6 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Show file history - showing first pack of data (test metric)"
-            measure="showFirstPack"
-            :projects="historyProjects"
-          />
-        </section>
-        <section>
-          <GroupProjectsChart
             label="Computing - time spent on computing a peace of history.
           If index - time of computing before the first rename. If git - time of computing before timeout of operation occurred"
             measure="file-history-computing"

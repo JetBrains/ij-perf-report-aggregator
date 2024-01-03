@@ -224,17 +224,31 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		"completion#firstElementShown#mean_value", "evaluateExpression#mean_value",
 		"performInlineRename#mean_value", "startInlineRename#mean_value",
 		"prepareForRename#mean_value", "execute_editor_optimizeimports"}
+	aliases := map[string]string{
+		"completion#mean_value":                   "completion",
+		"completion#firstElementShown#mean_value": "completion",
+		"findUsages#mean_value":                   "findUsages",
+		"semanticHighlighting#mean_value":         "highlighting",
+		"localInspections#mean_value":             "highlighting",
+		"performInlineRename#mean_value":          "rename",
+		"prepareForRename#mean_value":             "rename",
+		"startInlineRename#mean_value":            "rename",
+		"execute_editor_optimizeimports":          "optimizeimports",
+		"evaluateExpression#mean_value":           "debugger",
+	}
 	settings := make([]detector.PerformanceSettings, 0, len(testNames)*len(metrics)*2)
 
 	for _, test := range tests {
 		for _, metric := range metrics {
+			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfint",
-				Table:   "kotlin",
-				Machine: "intellij-linux-hw-hetzner%",
-				Project: test,
-				Metric:  metric,
-				Branch:  "master",
+				Db:          "perfint",
+				Table:       "kotlin",
+				Machine:     "intellij-linux-hw-hetzner%",
+				Project:     test,
+				Metric:      metric,
+				Branch:      "master",
+				MetricAlias: alias,
 				SlackSettings: detector.SlackSettings{
 					Channel:     "kotlin-plugin-perf-tests",
 					ProductLink: "kotlin",
@@ -247,13 +261,15 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 	}
 	for _, test := range tests {
 		for _, metric := range metrics {
+			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfintDev",
-				Table:   "kotlin",
-				Machine: "intellij-linux-hw-hetzner%",
-				Project: test,
-				Metric:  metric,
-				Branch:  "kt-master",
+				Db:          "perfintDev",
+				Table:       "kotlin",
+				Machine:     "intellij-linux-hw-hetzner%",
+				Project:     test,
+				Metric:      metric,
+				Branch:      "kt-master",
+				MetricAlias: alias,
 				SlackSettings: detector.SlackSettings{
 					Channel:     "kotlin-plugin-perf-tests-kt-master",
 					ProductLink: "kotlin",
@@ -274,4 +290,12 @@ func generateKotlinTests(tests []string) []string {
 		k1K2tests = append(k1K2tests, test+"_k2")
 	}
 	return k1K2tests
+}
+
+func getAlias(metric string, aliases map[string]string) string {
+	alias, ok := aliases[metric]
+	if !ok {
+		alias = metric
+	}
+	return alias
 }

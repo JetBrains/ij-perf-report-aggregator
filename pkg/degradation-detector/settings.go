@@ -1,30 +1,31 @@
 package degradation_detector
 
 type Settings interface {
-  analysisSettings
-  queryProducer
-  accidentWriter
-  mergeInfoProvider
-  slackSettings
+	analysisSettings
+	queryProducer
+	accidentWriter
+	mergeInfoProvider
+	slackSettings
 }
 
 type PerformanceSettings struct {
-  Db      string
-  Table   string
-  Project string
-  Metric  string
-  Branch  string
-  Machine string
-  SlackSettings
-  AnalysisSettings
+	Db          string
+	Table       string
+	Project     string
+	Metric      string
+	Branch      string
+	Machine     string
+	MetricAlias string
+	SlackSettings
+	AnalysisSettings
 }
 
 type StartupSettings struct {
-  Product string
-  Project string
-  Metric  string
-  Branch  string
-  Machine string
-  SlackSettings
-  AnalysisSettings
+	Product string
+	Project string
+	Metric  string
+	Branch  string
+	Machine string
+	SlackSettings
+	AnalysisSettings
 }

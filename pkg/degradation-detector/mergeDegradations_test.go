@@ -92,6 +92,13 @@ func TestMetricAlias(t *testing.T) {
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "123", medianValues: MedianValues{
+				previousValue: 10,
+				newValue:      20,
+			}},
+			Settings: PerformanceSettings{Project: "a", Metric: "metricBetta", MetricAlias: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+		}
+		inputChan <- DegradationWithSettings{
+			Details: Degradation{Build: "123", medianValues: MedianValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
@@ -111,7 +118,7 @@ func TestMetricAlias(t *testing.T) {
 				"Branch: \n" +
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
-				"Link: https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta%2CmetricAlpha&timeRange=1M",
+				"Link: https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=1M",
 			Channel: r.Settings.SlackChannel(),
 		}
 		assert.Equal(t, eM, sM, "Incorrect slack message")

@@ -3,6 +3,7 @@ package degradation_detector
 import (
 	"fmt"
 	"slices"
+	"strings"
 )
 
 type multipleDegradationWithSettings struct {
@@ -19,8 +20,10 @@ type mergeInfoProvider interface {
 
 func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
 	c := s
-	c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
-	if s.MetricAlias != "" && s.Metric != settings.GetMetric() {
+	if !strings.Contains(c.Project, settings.GetProject()) {
+		c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
+	}
+	if s.MetricAlias != "" && s.Metric != settings.GetMetric() && !strings.Contains(c.Metric, settings.GetMetric()) {
 		c.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
 	}
 	return c

@@ -60,6 +60,7 @@ const importerRunMetrics = [
 
 const workspaceConfiguratorsMetrics = [
   "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenCompilerConfigurator",
+  "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenShadePluginConfigurator",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenAnnotationProcessorConfigurator",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenExternalAnnotationsConfigurator",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.MavenRemoteRepositoriesConfigurator",

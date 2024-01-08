@@ -61,14 +61,14 @@
           <GroupProjectsChart
             label="Show file history (test metric)"
             measure="showFileHistory"
-            :projects="historyProjects"
+            :projects="showFileHistoryProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
             label="Show file history - showing first pack of data (test metric)"
             measure="showFirstPack"
-            :projects="historyProjects"
+            :projects="showFileHistoryProjects"
           />
         </section>
         <section>
@@ -76,14 +76,14 @@
             label="Computing - time spent on computing a peace of history.
           If index - time of computing before the first rename. If git - time of computing before timeout of operation occurred"
             measure="file-history-computing"
-            :projects="historyProjects"
+            :projects="showFileHistoryProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
             label="Loading full VCS Log (all commits and references)"
             measure="vcs-log-loading-full-log"
-            :projects="historyProjects"
+            :projects="showFileHistoryProjects"
           />
         </section>
       </AccordionTab>
@@ -136,8 +136,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 const intellijSpecificProject = "intellij_clone_specific_commit/gitLogIndexing"
 const indexingProjects = [intellijSpecificProject, intellijSpecificProject + "-sql"]
 
-const showFileHistoryEditorProject = "intellij_clone_specific_commit/EditorImpl-"
-const historyProjects = [showFileHistoryEditorProject + "phm", showFileHistoryEditorProject + "sql", showFileHistoryEditorProject + "noindex"]
+const showFileHistory = "intellij_clone_specific_commit/EditorImpl-"
+const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "sql", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl"]
 
 const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 

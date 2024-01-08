@@ -64,7 +64,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"
+            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.). vcs.log.small.data.pack.commits.count = 100"
             measure="vcs-log-refreshing"
             :projects="commitProjects"
           />

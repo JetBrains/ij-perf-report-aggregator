@@ -246,6 +246,9 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
       if err == nil || jbrBranch == "master" {
         return jbrBranch, nil
       }
+      if jbrBranch == "dev" {
+        return "main", nil
+      }
     }
     logger.Error("format of JBR project is unexpected", "teamcity.project.id", extraData.TcBuildType)
     return "", errors.New("cannot infer branch from JBR project id")

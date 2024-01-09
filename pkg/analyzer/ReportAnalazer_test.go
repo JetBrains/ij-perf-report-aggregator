@@ -31,7 +31,6 @@ func TestBranchInferenceForJBRMaster(t *testing.T) {
 }
 
 func TestBranchInferenceForDevMain(t *testing.T) {
-  t.Skip("This test is not valid yet, we don't know the branch")
   r := &RunResult{}
   d := model.ExtraData{
     TcBuildProperties: []byte("{}"),
@@ -39,5 +38,5 @@ func TestBranchInferenceForDevMain(t *testing.T) {
   }
   b, e := getBranch(r, d, "jbr", slog.Default())
   require.NoError(t, e)
-  assert.Equal(t, "master", b)
+  assert.Equal(t, "main", b)
 }

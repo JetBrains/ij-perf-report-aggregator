@@ -82,7 +82,7 @@
             :configurators="configurators"
           />
         </span>
-
+        <slot :configurators="configurators"></slot>
         <Divider label="Notifications" />
         <PerformanceLineChart
           title="Notifications"

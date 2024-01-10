@@ -1382,7 +1382,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/goland/StartupDashboard.vue"),
           props: {
             product: "GO",
             defaultProject: "kratos",

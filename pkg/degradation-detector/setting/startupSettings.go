@@ -24,7 +24,7 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
   }
   metrics := []string{"appInit_d", "app initialization.end", "bootstrap_d",
     "classLoadingLoadedCount", "classLoadingPreparedCount", "editorRestoring",
-    "codeAnalysisDaemon/fusExecutionTime", "runDaemon/executionTime"}
+    "codeAnalysisDaemon/fusExecutionTime", "runDaemon/executionTime", "startup/fusTotalDuration", "exitMetrics/application.exit"}
   for _, project := range projects {
     for _, metric := range metrics {
       settings = append(settings, detector.StartupSettings{

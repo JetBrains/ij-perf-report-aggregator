@@ -4,6 +4,7 @@
     default-project="kratos"
   >
     <template #default="{ configurators }">
+      <Divider label="go list" />
       <PerformanceLineChart
         title="Updating Go modules dependencies"
         :measures="[
@@ -23,5 +24,6 @@
 </template>
 <script setup lang="ts">
 import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
+import Divider from "../common/Divider.vue"
 import StartupProductDashboard from "../common/StartupProductDashboard.vue"
 </script>

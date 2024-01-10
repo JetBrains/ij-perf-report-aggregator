@@ -37,10 +37,21 @@ import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
 
 const metricsDeclaration = [
+  // - total sync time
+  "ExternalSystemSyncProjectTask",
+  // GradleExecution - full time of the sink operation, with all our overhead for preparation
   "gradle.sync.duration",
+  // - work inside Gradle connection, operations that are performed inside connection
+  "GradleConnection",
+  // GradleCall - resolving models from daemon
   "GRADLE_CALL",
-  "PROJECT_RESOLVERS",
+  // - processing the data we received from Gradle
+  "ExternalSystemSyncResultProcessing",
+  // ProjectDataServices - work of data services
   "DATA_SERVICES",
+  // GradleProjectResolvers - project resolve
+  "PROJECT_RESOLVERS",
+  // WorkspaceModelApply - apply ws model
   "WORKSPACE_MODEL_APPLY",
   "fus_gradle.sync",
 

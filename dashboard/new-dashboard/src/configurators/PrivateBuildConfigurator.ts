@@ -23,6 +23,20 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
     query.addFilter(filter)
     return true
   }
+
+  configureFilter(query: DataQuery): boolean {
+    const value = this.selected.value
+    if (value == null || value.length === 0) {
+      query.addFilter({ f: this.name, v: "" })
+    } else {
+      if (Array.isArray(value)) {
+        query.addFilter({ f: this.name, v: [...value, ""] })
+      } else {
+        query.addFilter({ f: this.name, v: [value, ""] })
+      }
+    }
+    return true
+  }
 }
 
 export function privateBuildConfigurator(

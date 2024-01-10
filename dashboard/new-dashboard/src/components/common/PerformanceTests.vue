@@ -194,9 +194,10 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 if (machineConfigurator.selected.value.length === 0) {
   machineConfigurator.selected.value = [props.initialMachine]
 }
-let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
-let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
+const measureScenarioFilters = [branchConfigurator, triggeredByConfigurator, timeRangeConfigurator]
+let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
+let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
 
 const accidentsConfigurator = new AccidentsConfiguratorForTests(
   scenarioConfigurator.selected,
@@ -231,13 +232,13 @@ watch(
   (value) => {
     switch (value) {
       case TestMetricSwitcher.Tests: {
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
-        measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
+        measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, ...measureScenarioFilters], true, "line")
         break
       }
       case TestMetricSwitcher.Metrics: {
-        measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator], true, "line")
-        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator, measureConfigurator])
+        measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
+        scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...measureScenarioFilters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {
           if (value?.length != 0) {

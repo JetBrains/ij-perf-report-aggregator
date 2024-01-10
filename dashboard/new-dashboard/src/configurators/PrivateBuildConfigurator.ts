@@ -1,8 +1,7 @@
 import { switchMap } from "rxjs"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
-import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter } from "../components/common/dataQuery"
+import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
 import { configureQueryProducer, DimensionConfigurator, filterSelected, loadDimension } from "./DimensionConfigurator"
-import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { updateComponentState } from "./componentState"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 
@@ -40,7 +39,7 @@ export class PrivateBuildConfigurator extends DimensionConfigurator {
 }
 
 export function privateBuildConfigurator(
-  serverConfigurator: ServerWithCompressConfigurator,
+  serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
   filters: FilterConfigurator[] = []
 ): DimensionConfigurator {

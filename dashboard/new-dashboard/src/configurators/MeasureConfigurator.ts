@@ -7,7 +7,15 @@ import { Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
-import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, toMutableArray } from "../components/common/dataQuery"
+import {
+  DataQuery,
+  DataQueryConfigurator,
+  DataQueryDimension,
+  DataQueryExecutorConfiguration,
+  DataQueryFilter,
+  ServerConfigurator,
+  toMutableArray,
+} from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
 import { useSettingsStore } from "../components/settings/settingsStore"
@@ -19,7 +27,6 @@ import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
-import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
@@ -47,7 +54,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 
   constructor(
-    serverConfigurator: ServerWithCompressConfigurator,
+    serverConfigurator: ServerConfigurator,
     persistentStateManager: PersistentStateManager,
     filters: FilterConfigurator[] = [],
     readonly skipZeroValues: boolean = true,
@@ -152,7 +159,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   }
 }
 
-function getLoadMeasureListUrl(serverConfigurator: ServerWithCompressConfigurator, filters: FilterConfigurator[]): string | null {
+function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {
   const query = new DataQuery()
   const configuration = new DataQueryExecutorConfiguration()
   if (!serverConfigurator.configureQuery(query, configuration)) {

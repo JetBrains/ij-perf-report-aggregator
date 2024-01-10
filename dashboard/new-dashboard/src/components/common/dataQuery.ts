@@ -117,6 +117,10 @@ export interface ServerConfigurator extends DataQueryConfigurator {
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean
 
   createDimension?(): QueryProducer
+
+  db: string
+
+  table: string
 }
 
 export interface QueryProducer {

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw"
 import { setupServer } from "msw/node"
-import { assert, beforeEach, beforeAll, afterAll, describe, test, afterEach } from "vitest"
+import { assert, beforeAll, afterAll, describe, test, afterEach } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
@@ -14,22 +14,12 @@ describe("Branch configurator", () => {
 
   beforeAll(() => {
     server.listen()
-  })
-  afterAll(() => {
-    server.close()
+    const persistence = new PersistentStateManager("test-dashboard", {}, useRouter())
+    timeRangeConfigurator = new TimeRangeConfigurator(persistence)
   })
 
-  beforeEach(() => {
-    const persistence = new PersistentStateManager(
-      "test-dashboard",
-      {
-        machine: "machine",
-        project: [],
-        branch: "b1",
-      },
-      useRouter()
-    )
-    timeRangeConfigurator = new TimeRangeConfigurator(persistence)
+  afterAll(() => {
+    server.close()
   })
 
   afterEach(() => {

@@ -19,6 +19,18 @@ export class ReleaseNightlyConfigurator extends DimensionConfigurator {
     persistentStateManager?.add("releaseConfigurator", this.selected)
   }
 
+  configureFilter(query: DataQuery): boolean {
+    const value = this.selected.value
+    if (value == null || value.length === 0) {
+      return false
+    }
+    const filter = getFilter(value)
+    if (filter != null) {
+      query.addFilter(filter)
+    }
+    return true
+  }
+
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const value = this.selected.value
     if (value == null || value.length === 0) {

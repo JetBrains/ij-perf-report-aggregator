@@ -2,7 +2,6 @@ import { Observable, of, shareReplay, switchMap } from "rxjs"
 import { shallowRef } from "vue"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "../components/common/dataQuery"
-import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { ComponentState, createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
@@ -72,7 +71,7 @@ export function loadDimension(name: string, serverConfigurator: ServerConfigurat
 
 export function dimensionConfigurator(
   name: string,
-  serverConfigurator: ServerWithCompressConfigurator,
+  serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
   multiple: boolean = false,
   filters: FilterConfigurator[] = [],

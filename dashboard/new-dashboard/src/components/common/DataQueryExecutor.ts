@@ -20,7 +20,7 @@ export class DataQueryExecutor {
    * `isGroup = true` means that this DataQueryExecutor only manages dependent executors but doesn't load data itself.
    */
   constructor(configurators: DataQueryConfigurator[]) {
-    const serverConfigurator = configurators.find((it): it is ServerConfigurator => "serverUrl" in it) as ServerConfigurator
+    const serverConfigurator = configurators.find((it): it is ServerConfigurator => "serverUrl" in it && "computeSerializedQueryUrl" in it) as ServerConfigurator
     let abortController = new AbortController()
     this.observable = combineLatest(
       configurators.map((configurator) => {

@@ -57,8 +57,10 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
     return true
   }
 
+  protected abstract getAccidentUrl(): string
+
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
-    fetch(accidents_url, {
+    fetch(this.getAccidentUrl(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +88,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
   }
 
   removeAccidentFromMetaDb(id: number) {
-    fetch(accidents_url, {
+    fetch(this.getAccidentUrl(), {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -164,6 +166,7 @@ function combineProjectsAndMetrics(projects: string | string[] | null, measures:
 
 export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   constructor(
+    private serverUrl: string,
     private product: string,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
@@ -184,6 +187,10 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     })
   }
 
+  protected getAccidentUrl(): string {
+    return this.serverUrl + "/api/meta/accidents/"
+  }
+
   private removeProductPrefix(product: string, response: Map<string, Accident[]>): Map<string, Accident[]> {
     const map = new Map<string, Accident[]>()
     for (const [key, value] of response) {
@@ -195,7 +202,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
 
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
     const test = `${this.product}/${affected_test}`
-    fetch(accidents_url, {
+    fetch(this.getAccidentUrl(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -224,7 +231,13 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
 }
 
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
-  constructor(projects: Ref<string | string[] | null>, metrics: Ref<string[] | string | null>, timeRangeConfigurator: TimeRangeConfigurator, dbType: DBType) {
+  constructor(
+    private serverUrl: string,
+    projects: Ref<string | string[] | null>,
+    metrics: Ref<string[] | string | null>,
+    timeRangeConfigurator: TimeRangeConfigurator,
+    dbType: DBType
+  ) {
     super()
     this.dbType = dbType
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
@@ -238,10 +251,18 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
         })
     })
   }
+  protected getAccidentUrl(): string {
+    return this.serverUrl + "/api/meta/accidents/"
+  }
 }
 
 export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
-  constructor(charts: Chart[] | null, timeRangeConfigurator: TimeRangeConfigurator, dbType: DBType) {
+  constructor(
+    private serverUrl: string,
+    charts: Chart[] | null,
+    timeRangeConfigurator: TimeRangeConfigurator,
+    dbType: DBType
+  ) {
     super()
     this.dbType = dbType
     const tests = this.getProjectAndProjectWithMetrics(charts)
@@ -254,6 +275,10 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
           console.error(error)
         })
     })
+  }
+
+  protected getAccidentUrl(): string {
+    return this.serverUrl + "/api/meta/accidents/"
   }
 
   private getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {

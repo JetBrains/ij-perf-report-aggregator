@@ -132,7 +132,13 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator, DBType.PERF_UNIT_TESTS)
+const accidentsConfigurator = new AccidentsConfiguratorForTests(
+  serverConfigurator.serverUrl,
+  scenarioConfigurator.selected,
+  measureConfigurator.selected,
+  timeRangeConfigurator,
+  DBType.PERF_UNIT_TESTS
+)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]

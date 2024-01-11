@@ -119,7 +119,7 @@ if (machineConfigurator != null) {
   averagesConfigurators.push(machineConfigurator)
 }
 
-const accidentsConfigurator = new AccidentsConfiguratorForDashboard(props.charts, timeRangeConfigurator, getDBType(props.dbName, props.table))
+const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, props.charts, timeRangeConfigurator, getDBType(props.dbName, props.table))
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const dashboardConfigurators = [branchConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator] as FilterConfigurator[]

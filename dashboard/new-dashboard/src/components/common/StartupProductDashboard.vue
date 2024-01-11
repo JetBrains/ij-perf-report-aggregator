@@ -191,7 +191,7 @@ const metrics = ref([
   "exitMetrics/disposeProjects",
 ])
 
-const accidentsConfigurator = new AccidentsConfiguratorForStartup(props.product, projectConfigurator.selected, metrics, timeRangeConfigurator)
+const accidentsConfigurator = new AccidentsConfiguratorForStartup(serverConfigurator.serverUrl, props.product, projectConfigurator.selected, metrics, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators = [

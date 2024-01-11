@@ -200,6 +200,7 @@ let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, 
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
 
 const accidentsConfigurator = new AccidentsConfiguratorForTests(
+  serverConfigurator.serverUrl,
   scenarioConfigurator.selected,
   measureConfigurator.selected,
   timeRangeConfigurator,

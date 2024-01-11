@@ -64,6 +64,7 @@ enum ROUTES {
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
+  IntelliJNewGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/newGradleDashboard`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
@@ -308,6 +309,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJGradleDashboard,
           label: "Gradle Import",
+        },
+        {
+          url: ROUTES.IntelliJNewGradleDashboard,
+          label: "New Gradle Import",
         },
         {
           url: ROUTES.IntelliJMavenDashboard,
@@ -1144,6 +1149,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJGradleDashboard,
           component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboard.vue"),
           meta: { pageTitle: "Gradle Import dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJNewGradleDashboard,
+          component: () => import("./components/intelliJ/build-tools/gradle/NewGradleImportPerformanceDashboard.vue"),
+          meta: { pageTitle: "New gradle Import dashboard" },
         },
         {
           path: ROUTES.IntelliJMavenDashboard,

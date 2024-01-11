@@ -1,0 +1,17 @@
+export const GRADLE_PROJECTS = [
+  "grazie-platform-project-import-gradle/measureStartup",
+  "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
+  "project-import-gradle-micronaut/measureStartup",
+  "project-import-gradle-hibernate-orm/measureStartup",
+  "project-import-gradle-cas/measureStartup",
+  "project-reimport-gradle-cas/measureStartup",
+  "project-import-from-cache-gradle-cas/measureStartup",
+  "project-import-gradle-1000-modules/measureStartup",
+  "project-import-gradle-1000-modules-limited-ram/measureStartup",
+  "project-import-gradle-5000-modules/measureStartup",
+  "project-import-gradle-android-extra-large/measureStartup",
+  "project-import-android-500-modules/measureStartup",
+  "project-reimport-space/measureStartup",
+  "project-import-space/measureStartup",
+  "project-import-open-telemetry/measureStartup",
+]

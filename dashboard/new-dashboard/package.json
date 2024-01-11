@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "msw": "^2.0.13",
-    "@testing-library/vue": "^8.0.1",
     "@types/humanize-duration": "^3.27.4",
     "global-jsdom": "^9.1.0",
     "jsdom": "^23.2.0"

@@ -8,8 +8,6 @@ import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export const accidents_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/accidents/"
-
 class AccidentFromServer {
   constructor(
     readonly id: number,
@@ -115,7 +113,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       })
   }
 
-  public getAccidents(value: string[] | null): Accident[] | null {
+  public getAccidents(value: string[] | number[] | null): Accident[] | null {
     const accidents = this.value.value
     if (accidents != undefined && value != null) {
       if (this.dbType == DBType.STARTUP_TESTS) {
@@ -124,8 +122,9 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
       }
       if (this.dbType == DBType.INTELLIJ) {
-        const key = `${value[6]}_${value[8]}.${value[9]}`
-        const keyWithMetric = `${value[6]}/${value[2]}_${value[8]}.${value[9]}`
+        const buildNumber = value[10] == 0 ? `${value[8]}.${value[9]}` : `${value[8]}.${value[9]}.${value[10]}`
+        const key = `${value[6]}_${buildNumber}`
+        const keyWithMetric = `${value[6]}/${value[2]}_${buildNumber}`
         return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
       }
       if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS) {

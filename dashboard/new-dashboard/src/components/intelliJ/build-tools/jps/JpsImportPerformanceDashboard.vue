@@ -70,6 +70,7 @@ const metricsDeclaration = [
   "workspaceModel.check.recursive.update.ms",
   "workspaceModel.collect.changes.ms",
   "workspaceModel.delayed.project.synchronizer.sync.ms",
+  "workspaceModel.do.save.caches.ms",
   "workspaceModel.global.apply.state.to.project.builder.ms",
   "workspaceModel.global.apply.state.to.project.ms",
   "workspaceModel.global.updates.count",

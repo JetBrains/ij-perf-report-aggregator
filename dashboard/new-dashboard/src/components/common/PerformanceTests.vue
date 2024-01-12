@@ -125,7 +125,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
+import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
@@ -153,11 +153,13 @@ interface PerformanceTestsProps {
   initialMachine: string
   withInstaller?: boolean
   unit?: "ns" | "ms"
+  releaseConfigurator?: ReleaseType
 }
 
 const props = withDefaults(defineProps<PerformanceTestsProps>(), {
   withInstaller: true,
   unit: "ms",
+  releaseConfigurator: nightly,
 })
 
 enum TestMetricSwitcher {
@@ -184,6 +186,7 @@ const persistentStateManager = new PersistentStateManager(
     project: [],
     measure: [],
     type: TestMetricSwitcher.Tests,
+    releaseConfigurator: props.releaseConfigurator,
   },
   router
 )

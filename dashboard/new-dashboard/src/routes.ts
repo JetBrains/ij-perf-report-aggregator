@@ -2,6 +2,7 @@
 
 import { ParentRouteRecord } from "./components/common/route"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
+import { eap } from "./configurators/ReleaseNightlyConfigurator"
 
 const enum ROUTE_PREFIX {
   Startup = "/ij",
@@ -1791,6 +1792,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.RustPluginDashboard,
           component: () => import("./components/rust/PerformanceDashboardIdeWithRustPlugin.vue"),
+          props: {
+            releaseConfigurator: eap,
+          },
           meta: { pageTitle: "Rust Plugin Performance dashboard" },
         },
         {
@@ -1804,7 +1808,8 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "rust",
-            initialMachine: "Linux EC2 m5d.xlarge or 5d.xlarge or m5ad.xlarge",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+            releaseConfigurator: eap,
           },
           meta: { pageTitle: "Rust Performance tests" },
         },

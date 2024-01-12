@@ -3,10 +3,10 @@ import { PersistentStateManager } from "../components/common/PersistentStateMana
 import { DataQuery, DataQueryExecutorConfiguration, DataQueryFilter } from "../components/common/dataQuery"
 import { DimensionConfigurator } from "./DimensionConfigurator"
 
-const nightly = "Nightly"
-const eap = "EAP / Release"
+export const nightly = "Nightly"
+export const eap = "EAP / Release"
 
-type ReleaseType = typeof eap | typeof nightly
+export type ReleaseType = typeof eap | typeof nightly
 
 export class ReleaseNightlyConfigurator extends DimensionConfigurator {
   declare readonly selected: ShallowRef<ReleaseType | ReleaseType[] | null>

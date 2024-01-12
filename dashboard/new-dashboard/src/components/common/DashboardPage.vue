@@ -36,7 +36,7 @@ import { createBranchConfigurator } from "../../configurators/BranchConfigurator
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
-import { ReleaseNightlyConfigurator } from "../../configurators/ReleaseNightlyConfigurator"
+import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
@@ -60,6 +60,7 @@ interface PerformanceDashboardProps {
   withInstaller?: boolean
   charts?: Chart[] | null
   isBuildNumberExists?: boolean
+  releaseConfigurator?: ReleaseType
 }
 
 const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
@@ -67,6 +68,7 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
   isBuildNumberExists: false,
   charts: null,
   initialMachine: null,
+  releaseConfigurator: nightly,
 })
 
 provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
@@ -87,6 +89,7 @@ const persistenceForDashboard = new PersistentStateManager(
     machine: props.initialMachine ?? "",
     project: [],
     branch: "master",
+    releaseConfigurator: props.releaseConfigurator,
   },
   router
 )

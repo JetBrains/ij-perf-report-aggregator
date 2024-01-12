@@ -49,7 +49,7 @@ describe("Branch configurator", () => {
       )
     })
 
-    const configurator = new AccidentsConfiguratorForStartup(serverUrl, "RM", ref(null), ref(null), timeRangeConfigurator)
+    const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Regression)
     return testPromise
   })

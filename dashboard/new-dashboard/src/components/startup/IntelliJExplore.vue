@@ -33,13 +33,13 @@
     <main class="flex">
       <div
         ref="container"
-        class="flex flex-1 flex-col gap-6 overflow-hidden"
+        class="flex flex-1 flex-col gap-5 overflow-hidden pt-5"
       >
         <template
           v-for="measure in measureConfigurator.selected.value"
           :key="measure"
         >
-          <StartupLineChart
+          <PerformanceLineChart
             :title="measure"
             :measures="[measure]"
             :configurators="configurators"
@@ -47,38 +47,39 @@
           />
         </template>
       </div>
-      <InfoSidebarStartup />
+      <InfoSidebar />
     </main>
   </div>
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { provide, Ref, ref } from "vue"
-import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
+import { onMounted, onUnmounted, provide, ref } from "vue"
+import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
-import { aggregationOperatorConfiguratorKey, chartStyleKey, chartToolTipKey, configuratorListKey } from "../../shared/injectionKeys"
-import { containerKey, sidebarStartupKey } from "../../shared/keys"
+import { configuratorListKey } from "../../shared/injectionKeys"
+import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
-import StartupLineChart from "../charts/StartupLineChart.vue"
+import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
-import { chartDefaultStyle } from "../common/chart"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
-import { InfoDataFromStartup } from "../common/sideBar/InfoSidebarStartup"
-import InfoSidebarStartup from "../common/sideBar/InfoSidebarStartup.vue"
+import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
+import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
@@ -94,24 +95,26 @@ const productCodeToName = new Map([
 ])
 
 provideReportUrlProvider()
-provide(chartStyleKey, {
-  ...chartDefaultStyle,
-  // a lot of bars, as result, height of bar is not enough to make label readable
-  barSeriesLabelPosition: "right",
-})
-const tooltip = ref<typeof ChartTooltip>()
-provide(chartToolTipKey, tooltip as Ref<typeof ChartTooltip>)
 
 const dbName = "ij"
 const dbTable = "report"
 const container = ref<HTMLElement>()
-provide(containerKey, container)
 
-const sidebarVm = new InfoSidebarImpl<InfoDataFromStartup>(getDBType(dbName, dbTable))
-provide(sidebarStartupKey, sidebarVm)
+const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbTable))
+
+provide(containerKey, container)
+provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
-const persistentStateManager = new PersistentStateManager("ij-explore")
+provide(serverConfiguratorKey, serverConfigurator)
+const persistentStateManager = new PersistentStateManager(
+  "startup-explore",
+  {
+    machine: "Linux Munich i7-3770, 32Gb",
+    branch: "master",
+  },
+  useRouter()
+)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
@@ -123,6 +126,15 @@ const projectConfigurator = createProjectConfigurator(productConfigurator, serve
   productConfigurator,
   machineConfigurator,
 ])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+const accidentsConfigurator = new AccidentsConfiguratorForStartup(
+  serverConfigurator.serverUrl,
+  productConfigurator.selected,
+  projectConfigurator.selected,
+  ref(null),
+  timeRangeConfigurator
+)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [
   timeRangeConfigurator,
@@ -131,9 +143,17 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
   projectConfigurator,
   machineConfigurator,
 ])
-const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, productConfigurator, projectConfigurator, branchConfigurator] as DataQueryConfigurator[]
+const configurators = [
+  serverConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+  productConfigurator,
+  projectConfigurator,
+  branchConfigurator,
+  triggeredByConfigurator,
+  accidentsConfigurator,
+] as DataQueryConfigurator[]
 
-provide(aggregationOperatorConfiguratorKey, new AggregationOperatorConfigurator(persistentStateManager))
 provide(configuratorListKey, configurators)
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
@@ -143,4 +163,29 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
 function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
+
+const isSticky = ref(false)
+const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
+onMounted(() => {
+  window.addEventListener("scroll", checkIfSticky)
+})
+onUnmounted(() => {
+  window.removeEventListener("scroll", checkIfSticky)
+})
 </script>
+
+<style>
+.customToolbar {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.stickyToolbar {
+  top: 0rem;
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+  border-radius: 0;
+  position: sticky;
+  z-index: 100;
+}
+</style>

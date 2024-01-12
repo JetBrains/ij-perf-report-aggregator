@@ -11,7 +11,6 @@
   >
     <SmoothingSwitch class="mb-2" />
     <ScalingSwitch class="mb-2" />
-    <SidebarSwitch class="mb-2" />
     <DetectChangesSwitch />
   </OverlayPanel>
 </template>
@@ -24,7 +23,6 @@ import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
 import DetectChangesSwitch from "./DetectChangesSwitch.vue"
 import ScalingSwitch from "./ScalingSwitch.vue"
-import SidebarSwitch from "./SidebarSwitch.vue"
 import SmoothingSwitch from "./SmoothingSwitch.vue"
 
 const settingsPanel = shallowRef<OverlayPanel | null>(null)

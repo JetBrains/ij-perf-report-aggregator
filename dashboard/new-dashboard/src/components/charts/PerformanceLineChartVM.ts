@@ -13,42 +13,73 @@ import { PerformanceChartManager } from "./PerformanceChartManager"
 export class PerformanceLineChartVM {
   private settings = useSettingsStore()
   private getFormatter(isMs: boolean) {
-    return (params: CallbackDataParams) => {
-      const element = document.createElement("div")
-      const data = params.value as (OptionDataValue | Delta)[]
-      const dateMs = data[0]
-      let type = data[3]
-      if (type != "c" && type != "d") {
-        type = isDurationFormatterApplicable(data[2] as string) ? "d" : "c"
-      }
-      const durationMs = this.settings.scaling ? data.at(-1) : data[1]
-      element.append(
-        durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type),
-        document.createElement("br"),
-        timeFormatWithoutSeconds.format(dateMs as number)
-      )
-
-      element.append(document.createElement("br"))
-      element.append(`${params.seriesName}`)
-      const accidents = this.accidentsConfigurator?.getAccidents(data as string[]) ?? null
-      if (accidents != null) {
-        for (const accident of accidents) {
-          appendLineWithIcon(element, getWarningIcon(), this.getAccidentMessage(accident))
-        }
-      }
-
-      const delta = findDeltaInData(data)
-      if (delta != undefined) {
-        if (delta.prev != null) {
-          appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs as number, delta.prev, isMs, type))
-        }
-        if (delta.next != null) {
-          appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs as number, delta.next, isMs, type))
-        }
-      }
-      return element
+    return (params: CallbackDataParams[] | CallbackDataParams) => {
+      const paramsArray = Array.isArray(params) ? params : [params]
+      return paramsArray.length == 1 ? this.getElementForSingleSerie(isMs, paramsArray[0]) : this.getElementForMultipleSeries(isMs, paramsArray)
     }
   }
+
+  private getElementForMultipleSeries(isMs: boolean, params: CallbackDataParams[]) {
+    const element = document.createElement("div")
+    const dateMs = (params[0].value as (OptionDataValue | Delta)[])[0]
+    element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
+    for (const param of params) {
+      const seriesName = document.createElement("b")
+      seriesName.append(`${param.seriesName}`)
+      element.append(seriesName, document.createElement("br"))
+      const data = param.value as (OptionDataValue | Delta)[]
+      const type = this.getType(data)
+      const durationMs = this.settings.scaling ? data.at(-1) : data[1]
+      element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
+      this.appendAccidentInfo(data, element)
+      this.appendDelta(data, element, durationMs as number, isMs, type)
+    }
+    return element
+  }
+
+  private getType(data: (OptionDataValue | Delta)[]) {
+    let type = data[3]
+    if (type != "c" && type != "d") {
+      type = isDurationFormatterApplicable(data[2] as string) ? "d" : "c"
+    }
+    return type
+  }
+
+  private getElementForSingleSerie(isMs: boolean, params: CallbackDataParams) {
+    const element = document.createElement("div")
+    const data = params.value as (OptionDataValue | Delta)[]
+    const dateMs = data[0]
+    const type = this.getType(data)
+    const durationMs = this.settings.scaling ? data.at(-1) : data[1]
+    element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
+    element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
+    element.append(`${params.seriesName}`)
+    this.appendAccidentInfo(data, element)
+    this.appendDelta(data, element, durationMs as number, isMs, type)
+    return element
+  }
+
+  private appendAccidentInfo(data: (OptionDataValue | Delta)[], element: HTMLDivElement) {
+    const accidents = this.accidentsConfigurator?.getAccidents(data as string[]) ?? null
+    if (accidents != null) {
+      for (const accident of accidents) {
+        appendLineWithIcon(element, getWarningIcon(), this.getAccidentMessage(accident))
+      }
+    }
+  }
+
+  private appendDelta(data: (OptionDataValue | Delta)[], element: HTMLDivElement, durationMs: number, isMs: boolean, type: string) {
+    const delta = findDeltaInData(data)
+    if (delta != undefined) {
+      if (delta.prev != null) {
+        appendLineWithIcon(element, getLeftArrow(), getDifferenceString(durationMs, delta.prev, isMs, type))
+      }
+      if (delta.next != null) {
+        appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs, delta.next, isMs, type))
+      }
+    }
+  }
+
   private getAccidentMessage(accident: Accident): string {
     return accident.kind == AccidentKind.InferredRegression || accident.kind == AccidentKind.InferredImprovement
       ? accident.reason
@@ -99,10 +130,8 @@ export class PerformanceLineChartVM {
         bottom: 16,
         containLabel: true,
       },
-      // @ts-expect-error bug in echarts types
       tooltip: {
         show: true,
-        trigger: "item",
         enterable: true,
         axisPointer: {
           type: "cross",

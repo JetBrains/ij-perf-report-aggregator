@@ -1,6 +1,5 @@
 import { Observable } from "rxjs"
 import { inject, InjectionKey, Ref } from "vue"
-import ChartTooltip from "../components/charts/ChartTooltip.vue"
 import { ReportInfoProvider } from "../components/charts/StartupTooltipManager"
 import { ChartStyle } from "../components/common/chart"
 import { DataQueryConfigurator } from "../components/common/dataQuery"
@@ -16,8 +15,6 @@ export const reportInfoProviderKey: InjectionKey<ReportInfoProvider> = Symbol("t
 export const serverUrlObservableKey: InjectionKey<Observable<string>> = Symbol("serverUrlObservable")
 
 export const chartStyleKey: InjectionKey<ChartStyle> = Symbol("chartStyle")
-
-export const chartToolTipKey: InjectionKey<Ref<typeof ChartTooltip>> = Symbol("chartToolTip")
 
 export function injectOrError<T>(key: InjectionKey<T> | string): T {
   const value = inject(key)

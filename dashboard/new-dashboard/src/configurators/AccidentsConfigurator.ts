@@ -166,24 +166,28 @@ function combineProjectsAndMetrics(projects: string | string[] | null, measures:
 export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   constructor(
     private serverUrl: string,
-    private product: string,
+    private product: Ref<string | string[] | null>,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
     timeRangeConfigurator: TimeRangeConfigurator
   ) {
     super()
     this.dbType = DBType.STARTUP_TESTS
-    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
-      const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
-      const projectAndMetricsWithProduct = projectAndMetrics.map((it) => `${product}/${it}`)
-      getAccidentsFromMetaDb(projectAndMetricsWithProduct, timeRange, customRange)
-        .then((value) => {
-          this.value.value = this.removeProductPrefix(product, value)
-        })
-        .catch((error) => {
-          console.error(error)
-        })
-    })
+    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), refToObservable(product)]).subscribe(
+      ([projects, measures, [timeRange, customRange], product]) => {
+        if (product == null) return
+        if (Array.isArray(product)) return
+        const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
+        const projectAndMetricsWithProduct = projectAndMetrics.map((it) => `${product}/${it}`)
+        getAccidentsFromMetaDb(projectAndMetricsWithProduct, timeRange, customRange)
+          .then((value) => {
+            this.value.value = this.removeProductPrefix(product, value)
+          })
+          .catch((error) => {
+            console.error(error)
+          })
+      }
+    )
   }
 
   protected getAccidentUrl(): string {
@@ -200,7 +204,8 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   }
 
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
-    const test = `${this.product}/${affected_test}`
+    if (this.product.value == null || Array.isArray(this.product.value)) return
+    const test = `${this.product.value}/${affected_test}`
     fetch(this.getAccidentUrl(), {
       method: "POST",
       headers: {

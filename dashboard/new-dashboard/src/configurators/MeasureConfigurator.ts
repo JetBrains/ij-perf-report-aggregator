@@ -548,6 +548,9 @@ async function configureChart(
         },
       },
     },
+    tooltip: {
+      trigger: dataset.length > 5 ? "item" : "axis",
+    },
     series: series as LineSeriesOption,
   }
 }

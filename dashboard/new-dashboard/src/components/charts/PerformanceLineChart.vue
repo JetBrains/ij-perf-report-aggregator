@@ -126,8 +126,6 @@ function createChart() {
         sidebarVm.show(infoData)
       }
     })
-  } else {
-    console.error("Dom was not yet initialized")
   }
 }
 

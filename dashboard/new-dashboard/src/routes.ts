@@ -65,8 +65,11 @@ enum ROUTES {
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
+  IntelliJGradleDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardFastInstallers`,
   IntelliJNewGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/newGradleDashboard`,
+  IntelliJNewGradleDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/newGradleDashboardFastInstallers`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
+  IntelliJMavenDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardFastInstallers`,
   IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
@@ -312,12 +315,24 @@ const IDEA: Product = {
           label: "Gradle Import",
         },
         {
+          url: ROUTES.IntelliJGradleDashboardFastInstallers,
+          label: "Gradle Import Fast Installers",
+        },
+        {
           url: ROUTES.IntelliJNewGradleDashboard,
           label: "New Gradle Import",
         },
         {
+          url: ROUTES.IntelliJNewGradleDashboardFastInstallers,
+          label: "New Gradle Import Fast Installers",
+        },
+        {
           url: ROUTES.IntelliJMavenDashboard,
           label: "Maven Import",
+        },
+        {
+          url: ROUTES.IntelliJMavenDashboardFastInstallers,
+          label: "Maven Import Fast Installers",
         },
         {
           url: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,
@@ -1152,14 +1167,29 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Gradle Import dashboard" },
         },
         {
+          path: ROUTES.IntelliJGradleDashboardFastInstallers,
+          component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardFastInstallers.vue"),
+          meta: { pageTitle: "Gradle Import dashboard fast installers" },
+        },
+        {
           path: ROUTES.IntelliJNewGradleDashboard,
           component: () => import("./components/intelliJ/build-tools/gradle/NewGradleImportPerformanceDashboard.vue"),
           meta: { pageTitle: "New gradle Import dashboard" },
         },
         {
+          path: ROUTES.IntelliJNewGradleDashboardFastInstallers,
+          component: () => import("./components/intelliJ/build-tools/gradle/NewGradleImportPerformanceDashboardFastInstallers.vue"),
+          meta: { pageTitle: "New gradle Import dashboard fast installers" },
+        },
+        {
           path: ROUTES.IntelliJMavenDashboard,
           component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboard.vue"),
           meta: { pageTitle: "Maven Import dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJMavenDashboardFastInstallers,
+          component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardFastInstallers.vue"),
+          meta: { pageTitle: "Maven Import dashboard fast installers" },
         },
         {
           path: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,

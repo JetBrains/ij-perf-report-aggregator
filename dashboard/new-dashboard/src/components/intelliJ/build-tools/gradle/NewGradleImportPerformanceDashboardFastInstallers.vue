@@ -36,10 +36,10 @@ import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
 import { GRADLE_METRICS_NEW_DASHBOARD } from "./gradle-metrics"
-import { GRADLE_PROJECTS } from "./gradle-projects"
+import { GRADLE_PROJECTS_FAST_INSTALLERS } from "./gradle-projects"
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
-testConfigurator.initData(GRADLE_PROJECTS)
+testConfigurator.initData(GRADLE_PROJECTS_FAST_INSTALLERS)
 
 const charts = computed(() => {
   const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS_NEW_DASHBOARD.map((metric) => {

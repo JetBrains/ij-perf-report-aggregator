@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfint"
     table="idea"
-    persistent-id="idea_new_gradle_dashboard"
+    persistent-id="idea_maven_dashboard_fast_installers"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
   >
@@ -35,14 +35,14 @@ import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
-import { GRADLE_METRICS_NEW_DASHBOARD } from "./gradle-metrics"
-import { GRADLE_PROJECTS } from "./gradle-projects"
+import { MAVEN_METRICS_DASHBOARD } from "./maven-metrics"
+import { MAVEN_PROJECTS_FAST_INSTALLERS } from "./maven-projects"
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
-testConfigurator.initData(GRADLE_PROJECTS)
+testConfigurator.initData(MAVEN_PROJECTS_FAST_INSTALLERS)
 
 const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS_NEW_DASHBOARD.map((metric) => {
+  const chartsDeclaration: ChartDefinition[] = MAVEN_METRICS_DASHBOARD.map((metric) => {
     return {
       labels: [metric],
       measures: [metric],

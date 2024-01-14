@@ -35,40 +35,14 @@ import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
+import { GRADLE_METRICS } from "./gradle-metrics"
 import { GRADLE_PROJECTS } from "./gradle-projects"
-
-const metricsDeclaration = [
-  "gradle.sync.duration",
-  "GRADLE_CALL",
-  "DATA_SERVICES",
-  "PROJECT_RESOLVERS",
-  "WORKSPACE_MODEL_APPLY",
-  "fus_gradle.sync",
-
-  "AWTEventQueue.dispatchTimeTotal",
-  "CPU | Load |Total % 95th pctl",
-  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause",
-  "gcPauseCount",
-  "fullGCPause",
-  "freedMemoryByGC",
-  "totalHeapUsedMax",
-  "JVM.GC.collectionTimesMs",
-  "JVM.GC.collections",
-  "JVM.maxHeapMegabytes",
-  "JVM.threadCount",
-  "JVM.totalCpuTimeMs",
-  "JVM.totalMegabytesAllocated",
-  "JVM.usedHeapMegabytes",
-  "JVM.usedNativeMegabytes",
-]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(GRADLE_PROJECTS)
 
 const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
+  const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS.map((metric) => {
     return {
       labels: [metric],
       measures: [metric],

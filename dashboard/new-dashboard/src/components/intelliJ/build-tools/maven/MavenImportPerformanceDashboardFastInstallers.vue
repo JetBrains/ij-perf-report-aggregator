@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="idea"
     persistent-id="idea_maven_dashboard_fast_installers"
     initial-machine="linux-blade-hetzner"

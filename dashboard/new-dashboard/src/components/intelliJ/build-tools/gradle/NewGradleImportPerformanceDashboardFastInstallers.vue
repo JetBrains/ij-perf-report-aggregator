@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="idea"
     persistent-id="idea_new_gradle_dashboard"
     initial-machine="linux-blade-hetzner"

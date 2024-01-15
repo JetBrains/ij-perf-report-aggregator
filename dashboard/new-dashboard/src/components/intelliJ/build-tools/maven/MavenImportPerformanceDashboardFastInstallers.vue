@@ -5,6 +5,7 @@
     persistent-id="idea_maven_dashboard_fast_installers"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
+    :with-installer="false"
   >
     <template #configurator>
       <MeasureSelect

@@ -5,6 +5,7 @@
     persistent-id="idea_new_gradle_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
+    :with-installer="false"
   >
     <template #configurator>
       <MeasureSelect

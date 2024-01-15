@@ -49,7 +49,6 @@ import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
-import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
 import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
 
 interface PerformanceDashboardProps {
@@ -75,7 +74,7 @@ provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(props.dbName, props.table))
+const sidebarVm = new InfoSidebarImpl(getDBType(props.dbName, props.table))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

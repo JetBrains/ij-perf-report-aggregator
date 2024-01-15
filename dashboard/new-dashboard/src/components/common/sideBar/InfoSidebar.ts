@@ -1,4 +1,5 @@
-import { computed, ShallowRef, shallowRef } from "vue"
+import { computed, Ref, ShallowRef, shallowRef } from "vue"
+import { Accident } from "../../../configurators/AccidentsConfigurator"
 export const tcUrl = "https://buildserver.labs.intellij.net/"
 export const buildUrl = (id: number) => `${tcUrl}viewLog.html?buildId=${id}`
 
@@ -14,6 +15,21 @@ export interface InfoData {
   installerId: number | undefined
   date: string
   branch: string | undefined
+  series: DataSeries[]
+  accidents: Ref<Accident[] | undefined> | undefined
+  description: Ref<Description | null>
+  deltaPrevious: string | undefined
+  deltaNext: string | undefined
+}
+
+class Description {
+  constructor(
+    readonly project: string,
+    readonly branch: string,
+    readonly url: string,
+    readonly methodName: string,
+    readonly description: string
+  ) {}
 }
 
 export interface DataSeries {
@@ -35,18 +51,18 @@ export enum DBType {
   UNKNOWN = "unknown",
 }
 
-export interface InfoSidebar<T extends InfoData> {
-  data: ShallowRef<T | null>
+export interface InfoSidebar {
+  data: ShallowRef<InfoData | null>
   visible: ShallowRef<boolean>
   type: DBType
 
-  show(data: T): void
+  show(data: InfoData): void
 
   close(): void
 }
 
-export class InfoSidebarImpl<D extends InfoData> implements InfoSidebar<D> {
-  readonly data = shallowRef<D | null>(null)
+export class InfoSidebarImpl implements InfoSidebar {
+  readonly data = shallowRef<InfoData | null>(null)
   readonly visible = computed(() => this.data.value != null)
   type = DBType.INTELLIJ
 
@@ -54,7 +70,7 @@ export class InfoSidebarImpl<D extends InfoData> implements InfoSidebar<D> {
     this.type = type
   }
 
-  show(data: D): void {
+  show(data: InfoData): void {
     this.data.value = data
   }
 

@@ -131,7 +131,6 @@ import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 
-import { InfoDataPerformance } from "./sideBar/InfoSidebarPerformance"
 import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
 
 interface StartupProductDashboard {
@@ -147,7 +146,7 @@ const container = ref<HTMLElement>()
 const dbName = "ij"
 const dbTable = "report"
 
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbTable))
+const sidebarVm = new InfoSidebarImpl(getDBType(dbName, dbTable))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

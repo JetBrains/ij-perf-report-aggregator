@@ -78,7 +78,6 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
-import { InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 
@@ -89,7 +88,7 @@ const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl<InfoDataPerformance>(getDBType(dbName, dbTable))
+const sidebarVm = new InfoSidebarImpl(getDBType(dbName, dbTable))
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

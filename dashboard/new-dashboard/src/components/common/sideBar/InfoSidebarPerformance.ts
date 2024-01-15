@@ -1,7 +1,7 @@
 import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { computed, ref, Ref } from "vue"
-import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { computed, ref } from "vue"
+import { AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { measureNameToLabel } from "../../../configurators/MeasureConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
@@ -10,22 +10,6 @@ import { ValueUnit } from "../chart"
 import { durationAxisPointerFormatter, getValueFormatterByMeasureName, isDurationFormatterApplicable, nsToMs, timeFormatWithoutSeconds } from "../formatter"
 import { encodeRison } from "../rison"
 import { buildUrl, DataSeries, DBType, InfoData } from "./InfoSidebar"
-
-export interface InfoDataPerformance extends DataSeries, InfoData {
-  series: DataSeries[]
-  accidents: Ref<Accident[] | undefined> | undefined
-  description: Ref<Description | null>
-  deltaPrevious: string | undefined
-  deltaNext: string | undefined
-}
-
-export interface InfoDataFromStartup extends InfoData {
-  series: DataSeries[]
-  accidents: Ref<Accident[] | undefined> | undefined
-  description: Ref<Description | null>
-  deltaPrevious: string | undefined
-  deltaNext: string | undefined
-}
 
 function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataParams[] {
   const seen = new Set()
@@ -41,7 +25,7 @@ export function getInfoDataFrom(
   params: CallbackDataParams | CallbackDataParams[],
   valueUnit: ValueUnit,
   accidentsConfigurator: AccidentsConfigurator | null
-): InfoDataPerformance | InfoDataFromStartup {
+): InfoData {
   const accidents = accidentsConfigurator?.value
   if (Array.isArray(params) && params.length > 1) {
     const filteredParams = filterUniqueByName(params)

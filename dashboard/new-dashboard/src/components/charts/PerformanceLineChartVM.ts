@@ -9,7 +9,7 @@ import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
-import { getInfoDataFrom, InfoDataFromStartup, InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
+import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 
@@ -24,12 +24,7 @@ export class PerformanceLineChartVM {
     }
   }
 
-  public getOnClickHandler(
-    sidebarVm: InfoSidebar<InfoDataPerformance | InfoDataFromStartup>,
-    chartManager: PerformanceChartManager,
-    valueUnit: ValueUnit,
-    accidentsConfigurator: AccidentsConfigurator | null
-  ) {
+  public getOnClickHandler(sidebarVm: InfoSidebar, chartManager: PerformanceChartManager, valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null) {
     return (params: ECElementEvent) => {
       const useMetaKey = this.isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
       if (useMetaKey) {

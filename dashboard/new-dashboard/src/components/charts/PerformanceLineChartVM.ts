@@ -23,6 +23,8 @@ export class PerformanceLineChartVM {
     const element = document.createElement("div")
     const dateMs = (params[0].value as (OptionDataValue | Delta)[])[0]
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
+    const settings = useSettingsStore()
+    if (settings.smoothing) params = params.filter((_, index) => index % 2 == 0)
     for (const param of params) {
       const seriesName = document.createElement("b")
       seriesName.append(`${param.seriesName}`)

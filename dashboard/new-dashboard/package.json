@@ -4,7 +4,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.17",
     "@heroicons/vue": "2.1.1",
-    "@vueuse/core": "^10.7.1",
+    "@vueuse/core": "^10.7.2",
     "compare-versions": "6.1.0",
     "echarts": "5.4.3",
     "echarts-stat": "1.2.0",
@@ -15,13 +15,13 @@
     "pinia": "^2.1.7",
     "primevue": "3.46.0",
     "rxjs": "8.0.0-alpha.12",
-    "vue": "3.4.10",
+    "vue": "3.4.13",
     "vue-router": "4.2.5"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "global-jsdom": "^9.1.0",
     "jsdom": "^23.2.0",
-    "msw": "^2.0.13"
+    "msw": "^2.1.0"
   }
 }

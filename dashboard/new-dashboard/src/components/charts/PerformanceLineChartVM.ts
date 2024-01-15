@@ -1,3 +1,4 @@
+import { ECElementEvent } from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
 import { appendLineWithIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
@@ -7,16 +8,45 @@ import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
+import { InfoSidebar } from "../common/sideBar/InfoSidebar"
+import { getInfoDataFrom, InfoDataFromStartup, InfoDataPerformance } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 
 export class PerformanceLineChartVM {
   private settings = useSettingsStore()
+  private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
+      this.lastParams = params
       const paramsArray = Array.isArray(params) ? params : [params]
       return paramsArray.length == 1 ? this.getElementForSingleSerie(isMs, paramsArray[0]) : this.getElementForMultipleSeries(isMs, paramsArray)
     }
+  }
+
+  public getOnClickHandler(
+    sidebarVm: InfoSidebar<InfoDataPerformance | InfoDataFromStartup>,
+    chartManager: PerformanceChartManager,
+    valueUnit: ValueUnit,
+    accidentsConfigurator: AccidentsConfigurator | null
+  ) {
+    return (params: ECElementEvent) => {
+      const useMetaKey = this.isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
+      if (useMetaKey) {
+        chartManager.chart.dispatchAction({
+          type: "legendUnSelect",
+          name: params.seriesName,
+        })
+      } else {
+        const infoData = getInfoDataFrom(sidebarVm.type, this.lastParams ?? params, valueUnit, accidentsConfigurator)
+        sidebarVm.show(infoData)
+      }
+    }
+  }
+
+  private isMacOS() {
+    const userAgent = navigator.userAgent.toLowerCase()
+    return userAgent.includes("mac")
   }
 
   private getElementForMultipleSeries(isMs: boolean, params: CallbackDataParams[]) {

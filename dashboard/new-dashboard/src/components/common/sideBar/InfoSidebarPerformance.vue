@@ -19,8 +19,9 @@
       >
         <div class="flex gap-1.5 font-medium text-base items-center break-all">
           <span
+            v-if="vm.data.value?.series.length == 1"
             class="w-3 h-3 rounded-full"
-            :style="{ backgroundColor: vm.data.value?.color }"
+            :style="{ backgroundColor: vm.data.value?.series[0].color }"
           />
           <span class="underline decoration-dotted hover:no-underline">{{ vm.data.value?.projectName }}</span>
         </div>
@@ -35,8 +36,9 @@
         class="flex gap-1.5 font-medium text-base items-center break-all"
       >
         <span
+          v-if="vm.data.value?.series.length == 1"
           class="w-3 h-3 rounded-full"
-          :style="{ backgroundColor: vm.data.value?.color }"
+          :style="{ backgroundColor: vm.data.value?.series[0].color }"
         />
         {{ vm.data.value?.projectName }}
       </div>
@@ -63,17 +65,43 @@
           <BranchIcon class="w-4 h-4" />
           <span>{{ vm.data.value?.branch }}</span>
         </span>
-        <span
-          v-if="vm.data.value?.metricName"
-          class="flex gap-1.5 text-sm items-center"
+        <div
+          v-if="vm.data.value?.series.length == 1"
+          class="flex flex-col gap-2"
         >
-          <BeakerIcon class="w-4 h-4" />
-          <span>{{ vm.data.value?.metricName }}</span>
-        </span>
-        <span class="flex gap-1.5 text-sm items-center">
-          <ClockIcon class="w-4 h-4" />
-          {{ vm.data.value?.value }}
-        </span>
+          <span
+            v-if="vm.data.value?.series[0].metricName"
+            class="flex gap-1.5 text-sm items-center"
+          >
+            <BeakerIcon class="w-4 h-4" />
+            <span>{{ vm.data.value?.series[0].metricName }}</span>
+          </span>
+          <span class="flex gap-1.5 text-sm items-center">
+            <ClockIcon class="w-4 h-4" />
+            {{ vm.data.value?.series[0].value }}
+          </span>
+        </div>
+        <div v-else>
+          <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose text-sm">
+            <template
+              v-for="item in vm.data.value?.series"
+              :key="item.metricName"
+            >
+              <span
+                v-if="item.metricName"
+                class="rounded-lg w-2.5 h-2.5"
+                :style="{ 'background-color': item.color }"
+              />
+              <span v-if="item.metricName">{{ item.metricName.replace("metrics.", "") }}</span>
+              <span
+                v-if="item.metricName"
+                class="font-mono place-self-end"
+                >{{ item.value }}</span
+              >
+            </template>
+          </div>
+        </div>
+
         <span
           v-if="vm.data.value?.deltaPrevious"
           class="flex gap-1.5 text-sm items-center"
@@ -194,7 +222,10 @@
         >
       </span>
     </div>
-    <div class="flex items-center mb-4">
+    <div
+      v-if="vm.data.value?.series.length == 1"
+      class="flex items-center mb-4"
+    >
       <InputSwitch
         v-model="reportMetricOnly"
         input-id="reportMetricOnly"
@@ -253,9 +284,10 @@ function reportRegression() {
   if (value == null) {
     console.log("value is zero! This shouldn't happen")
   } else {
+    const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
     accidentsConfigurator?.writeAccidentToMetaDb(
       value.date,
-      value.projectName + (reportMetricOnly.value ? "/" + value.metricName : ""),
+      value.projectName + (reportOnlyMetric ? "/" + value.series[0].metricName : ""),
       reason.value,
       value.build ?? value.buildId.toString(),
       accidentType.value
@@ -276,26 +308,35 @@ function openTestInIDE(methodName: string) {
 
 function handleNavigateToTest() {
   const currentRoute = router.currentRoute.value
-  const parts = currentRoute.path.split("/")
-  parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+  let parts = currentRoute.path.split("/")
+  if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
+    parts = ["", "ij", "explore"]
+  } else {
+    parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+  }
   const branch = vm.data.value?.branch ?? ""
   const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
-  const query: Record<string, string> = {
+
+  const queryParams: string = new URLSearchParams({
     ...currentRoute.query,
     project: vm.data.value?.projectName ?? "",
-    measure: vm.data.value?.metricName,
     branch: majorBranch,
-  } as Record<string, string>
-  const queryParams: string = new URLSearchParams(query).toString()
-  void router.push(testURL + "?" + queryParams)
+  }).toString()
+
+  const measures =
+    vm.data.value?.series
+      .map((s) => s.metricName)
+      .map((m) => "&measure=" + m)
+      .join("") ?? ""
+  void router.push(testURL + "?" + queryParams + measures)
 }
 
 function isNavigateToTestSupported(): boolean {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   const pageName = parts.at(-1)?.toLowerCase()
-  return pageName == "testsDev" || pageName == "tests" || pageName == "startup"
+  return pageName != "testsDev" && pageName != "tests" && pageName != "explore" && pageName != "startup" && !parts.some((p) => p == "ij")
 }
 
 function handleRemove(id: number) {
@@ -314,7 +355,7 @@ function getTestActions(): {
   command: () => void
 }[] {
   const actions = []
-  if (!isNavigateToTestSupported()) {
+  if (isNavigateToTestSupported()) {
     actions.push({
       label: "Navigate to test",
       icon: "pi pi-chart-line",
@@ -378,6 +419,7 @@ function getArtifactsUrl() {
 function replaceUnderscore(project: string) {
   return project.replaceAll("_", "-")
 }
+
 function getSpaceUrl() {
   const db = serverConfigurator?.db
   if (db != null && (vm.data.value?.installerId ?? vm.data.value?.buildId)) {

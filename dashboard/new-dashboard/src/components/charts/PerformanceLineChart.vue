@@ -12,7 +12,6 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { ECElementEvent } from "echarts/core"
 import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
@@ -21,7 +20,6 @@ import { accidentsConfiguratorKey, containerKey, sidebarVmKey } from "../../shar
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
-import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { PerformanceChartManager } from "./PerformanceChartManager"
 import { PerformanceLineChartVM } from "./PerformanceLineChartVM"
@@ -114,18 +112,7 @@ function createChart() {
     chartManager = new PerformanceChartManager(chartElement.value, container.value)
     chartVm = new PerformanceLineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
-    chartManager.chart.on("click", (params: ECElementEvent) => {
-      const useMetaKey = isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
-      if (useMetaKey) {
-        chartManager?.chart.dispatchAction({
-          type: "legendUnSelect",
-          name: params.seriesName,
-        })
-      } else {
-        const infoData = getInfoDataFrom(sidebarVm.type, params, props.valueUnit, accidentsConfigurator)
-        sidebarVm.show(infoData)
-      }
-    })
+    chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, props.valueUnit, accidentsConfigurator))
   }
 }
 
@@ -151,11 +138,6 @@ onUnmounted(() => {
   unsubscribe?.()
   chartManager?.dispose()
 })
-
-function isMacOS() {
-  const userAgent = navigator.userAgent.toLowerCase()
-  return userAgent.includes("mac")
-}
 
 const chartHeight = DEFAULT_LINE_CHART_HEIGHT
 </script>

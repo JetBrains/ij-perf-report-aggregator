@@ -8,6 +8,7 @@
     :options="values"
     :placeholder="placeholder"
     class="max-w-lg"
+    :meta-key-selection="true"
   >
     <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{ value }">

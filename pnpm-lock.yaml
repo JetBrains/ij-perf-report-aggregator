@@ -160,8 +160,8 @@ importers:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.3.3)(vue@3.4.13)
       primevue:
-        specifier: 3.44.0
-        version: 3.44.0(vue@3.4.13)
+        specifier: 3.46.0
+        version: 3.46.0(vue@3.4.13)
       rxjs:
         specifier: 8.0.0-alpha.12
         version: 8.0.0-alpha.12
@@ -3660,14 +3660,6 @@ packages:
       '@jest/schemas': 29.6.3
       ansi-styles: 5.2.0
       react-is: 18.2.0
-    dev: false
-
-  /primevue@3.44.0(vue@3.4.13):
-    resolution: {integrity: sha512-BqSg6rKP0vq7WRHhLlVt4BD4rQZbVVXjgSfOAcebv3mO4wJZcJbgC04mxAI9fl26PhmPy1jLOuCtNOBWo7IekA==}
-    peerDependencies:
-      vue: ^3.0.0
-    dependencies:
-      vue: 3.4.13(typescript@5.3.3)
     dev: false
 
   /primevue@3.46.0(vue@3.4.13):

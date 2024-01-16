@@ -18,11 +18,8 @@ export const GRADLE_METRICS = [
   "JVM.GC.collectionTimesMs",
   "JVM.GC.collections",
   "JVM.maxHeapMegabytes",
-  "JVM.threadCount",
+  "JVM.maxThreadCount",
   "JVM.totalCpuTimeMs",
-  "JVM.totalMegabytesAllocated",
-  "JVM.usedHeapMegabytes",
-  "JVM.usedNativeMegabytes",
 ]
 
 export const GRADLE_METRICS_NEW_DASHBOARD = [

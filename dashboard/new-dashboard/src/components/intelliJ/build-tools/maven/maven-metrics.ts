@@ -44,11 +44,8 @@ export const MAVEN_METRICS_DASHBOARD = [
   "JVM.GC.collectionTimesMs",
   "JVM.GC.collections",
   "JVM.maxHeapMegabytes",
-  "JVM.threadCount",
+  "JVM.maxThreadCount",
   "JVM.totalCpuTimeMs",
-  "JVM.totalMegabytesAllocated",
-  "JVM.usedHeapMegabytes",
-  "JVM.usedNativeMegabytes",
 ]
 
 const importerRunMetricTypes = ["total_duration_ms", "number_of_modules"]

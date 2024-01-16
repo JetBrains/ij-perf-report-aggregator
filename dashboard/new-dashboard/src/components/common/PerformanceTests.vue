@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
+    <StickyToolbar>
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
@@ -76,7 +76,7 @@
       <template #end>
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>
-    </Toolbar>
+    </StickyToolbar>
     <main class="flex">
       <div
         ref="container"
@@ -141,6 +141,7 @@ import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
+import StickyToolbar from "./StickyToolbar.vue"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
@@ -264,28 +265,4 @@ function toArray(value: string | string[] | null): string[] {
 }
 
 let scenarios = toArray(scenarioConfigurator.selected.value)
-const isSticky = ref(false)
-const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
-onMounted(() => {
-  window.addEventListener("scroll", checkIfSticky)
-})
-onUnmounted(() => {
-  window.removeEventListener("scroll", checkIfSticky)
-})
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
-.stickyToolbar {
-  top: 0rem;
-  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
-  border-radius: 0;
-  position: sticky;
-  z-index: 100;
-}
-</style>

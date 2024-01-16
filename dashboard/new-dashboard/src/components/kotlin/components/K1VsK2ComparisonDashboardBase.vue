@@ -1,5 +1,5 @@
 <template>
-  <Toolbar class="customToolbar">
+  <StickyToolbar>
     <template #start>
       <TimeRangeSelect
         :ranges="timeRangeConfigurator.timeRanges"
@@ -25,7 +25,7 @@
         />
       </span>
     </template>
-  </Toolbar>
+  </StickyToolbar>
 
   <TabView
     v-model:activeIndex="activeTab"
@@ -58,6 +58,7 @@ import { TimeRange, TimeRangeConfigurator } from "../../../configurators/TimeRan
 import { serverConfiguratorKey } from "../../../shared/keys"
 import BranchSelect from "../../common/BranchSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
+import StickyToolbar from "../../common/StickyToolbar.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
 import { completionProjects, findUsagesProjects, highlightingProjects } from "../projects"
 import K1VsK2ComparisonProjectCategoryFilter from "./K1VsK2ComparisonProjectCategoryFilter.vue"
@@ -157,12 +158,6 @@ function flattenProjectCategories(projectsByCategory: Record<string, string[]>) 
 </script>
 
 <style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
 /* This together with the button set is basically a workaround for missing tabview styles, but I also like the button set design more
  * than the tab nav.
  */

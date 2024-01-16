@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <StickyToolbar>
       <template #start>
         <TimeRangeSelect
           :ranges="timeRangeConfigurator.timeRanges"
@@ -12,7 +12,7 @@
       <template #end>
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>
-    </Toolbar>
+    </StickyToolbar>
 
     <main class="flex">
       <div
@@ -130,6 +130,7 @@ import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
+import StickyToolbar from "../common/StickyToolbar.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"

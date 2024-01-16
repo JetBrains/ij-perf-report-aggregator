@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <StickyToolbar>
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect
@@ -35,7 +35,7 @@
       <template #end>
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>
-    </Toolbar>
+    </StickyToolbar>
     <main class="flex">
       <div
         v-if="measureConfigurator.selected.value != null"
@@ -81,6 +81,7 @@ import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
+import StickyToolbar from "./StickyToolbar.vue"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { DBType, InfoSidebarImpl } from "./sideBar/InfoSidebar"
@@ -160,11 +161,3 @@ const scenarios = computed(() => {
   return [scenarioConfigurator.selected.value]
 })
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-</style>

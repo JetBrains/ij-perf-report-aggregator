@@ -1,5 +1,5 @@
 <template>
-  <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
+  <StickyToolbar>
     <template #start>
       <TimeRangeSelect
         :ranges="props.timeRangeConfigurator.timeRanges"
@@ -21,11 +21,10 @@
     <template #end>
       <slot name="toolbar" />
     </template>
-  </Toolbar>
+  </StickyToolbar>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue"
 import { BranchConfigurator } from "../../configurators/BranchConfigurator"
 import { BuildConfigurator } from "../../configurators/BuildConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -34,6 +33,7 @@ import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeC
 import CopyLink from "../settings/CopyLink.vue"
 import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
+import StickyToolbar from "./StickyToolbar.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
 
 const props = defineProps<{
@@ -44,29 +44,4 @@ const props = defineProps<{
   machineConfigurator?: MachineConfigurator
   onChangeRange: (value: TimeRange) => void
 }>()
-
-const isSticky = ref(false)
-const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
-onMounted(() => {
-  window.addEventListener("scroll", checkIfSticky)
-})
-onUnmounted(() => {
-  window.removeEventListener("scroll", checkIfSticky)
-})
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
-.stickyToolbar {
-  top: 0rem;
-  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
-  border-radius: 0;
-  position: sticky;
-  z-index: 100;
-}
-</style>

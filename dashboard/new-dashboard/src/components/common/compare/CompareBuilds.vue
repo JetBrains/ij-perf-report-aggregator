@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar class="customToolbar">
+    <StickyToolbar>
       <template #start>
         <div class="flex items-center">
           <MachineSelect :machine-configurator="machineConfigurator" />
@@ -26,7 +26,7 @@
           :dimension="secondBuildConfigurator"
         />
       </template>
-    </Toolbar>
+    </StickyToolbar>
 
     <DataTable
       v-model:filters="filters"
@@ -131,6 +131,7 @@ import BranchSelect from "../BranchSelect.vue"
 import { DataQueryExecutor } from "../DataQueryExecutor"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
+import StickyToolbar from "../StickyToolbar.vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "../dataQuery"
 
 const props = defineProps<{
@@ -289,12 +290,6 @@ function getAllMetricsFromBuild(machineConfigurator: MachineConfigurator, build:
 </script>
 
 <style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
 .lower {
   font-weight: 700;
   color: #ff5252;

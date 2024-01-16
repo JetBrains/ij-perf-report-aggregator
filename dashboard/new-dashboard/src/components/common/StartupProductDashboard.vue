@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
+    <StickyToolbar>
       <template #start>
         <TimeRangeSelect
           :ranges="timeRangeConfigurator.timeRanges"
@@ -23,7 +23,7 @@
       <template #end>
         <PlotSettings @update:configurators="updateConfigurators" />
       </template>
-    </Toolbar>
+    </StickyToolbar>
     <main class="flex">
       <div
         ref="container"
@@ -126,6 +126,7 @@ import BranchSelect from "./BranchSelect.vue"
 import Divider from "./Divider.vue"
 import MachineSelect from "./MachineSelect.vue"
 import { PersistentStateManager } from "./PersistentStateManager"
+import StickyToolbar from "./StickyToolbar.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
@@ -219,29 +220,4 @@ const highlightingPasses = fetchHighlightingPasses()
 const showAllPasses = computed(() => {
   return projectConfigurator.selected.value == null || projectConfigurator.selected.value.length == 1 || typeof projectConfigurator.selected.value == "string"
 })
-
-const isSticky = ref(false)
-const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
-onMounted(() => {
-  window.addEventListener("scroll", checkIfSticky)
-})
-onUnmounted(() => {
-  window.removeEventListener("scroll", checkIfSticky)
-})
 </script>
-
-<style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
-.stickyToolbar {
-  top: 0rem;
-  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
-  border-radius: 0;
-  position: sticky;
-  z-index: 100;
-}
-</style>

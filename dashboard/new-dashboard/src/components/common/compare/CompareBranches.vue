@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-5">
-    <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
+    <StickyToolbar>
       <template #start>
         <div class="flex items-center">
           <MachineSelect :machine-configurator="machineConfigurator" />
@@ -31,7 +31,7 @@
           </template>
         </MeasureSelect>
       </template>
-    </Toolbar>
+    </StickyToolbar>
 
     <DataTable
       :value="tableData"
@@ -81,7 +81,7 @@
 
 <script setup lang="ts">
 import { combineLatest, filter, Observable } from "rxjs"
-import { onMounted, onUnmounted, provide, ref, watch } from "vue"
+import { provide, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -96,6 +96,7 @@ import MeasureSelect from "../../charts/MeasureSelect.vue"
 import BranchSelect from "../BranchSelect.vue"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
+import StickyToolbar from "../StickyToolbar.vue"
 
 interface CompareBranchesProps {
   dbName: string
@@ -238,32 +239,9 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
 }
-
-const isSticky = ref(false)
-const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
-onMounted(() => {
-  window.addEventListener("scroll", checkIfSticky)
-})
-onUnmounted(() => {
-  window.removeEventListener("scroll", checkIfSticky)
-})
 </script>
 
 <style>
-.customToolbar {
-  background-color: transparent;
-  border: none;
-  padding: 0;
-}
-
-.stickyToolbar {
-  top: 0rem;
-  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
-  border-radius: 0;
-  position: sticky;
-  z-index: 100;
-}
-
 .lower {
   font-weight: 700;
   color: #ff5252;

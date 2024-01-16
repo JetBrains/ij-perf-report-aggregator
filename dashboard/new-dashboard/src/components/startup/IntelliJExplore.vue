@@ -44,6 +44,7 @@
             :measures="[measure]"
             :configurators="configurators"
             :skip-zero-values="false"
+            :with-measure-name="true"
           />
         </template>
       </div>

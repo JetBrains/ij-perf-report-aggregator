@@ -75,13 +75,20 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             return of(null)
           }
 
+          const loadMetricsUrl = getLoadMetricsListUrl(serverConfigurator, filters)
+          if (loadMetricsUrl == null) {
+            return of(null)
+          }
+
           this.state.loading = true
           return isIj
             ? forkJoin([
                 fromFetchWithRetryAndErrorHandling<string[]>(`${serverConfigurator.serverUrl}/api/v1/meta/measure?db=${serverConfigurator.db}`),
                 fromFetchWithRetryAndErrorHandling<string[]>(loadMeasureListUrl),
+                fromFetchWithRetryAndErrorHandling<string[]>(loadMetricsUrl),
               ]).pipe(
                 map((data) => {
+                  data[2] = data[2].map((it) => "metrics." + it)
                   return data.flat(1)
                 })
               )
@@ -177,6 +184,26 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
   }
 
+  // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
+  query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
+  query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`
+  query.table = serverConfigurator.table
+  query.flat = true
+  return serverConfigurator.computeQueryUrl(query)
+}
+
+function getLoadMetricsListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {
+  const query = new DataQuery()
+  const configuration = new DataQueryExecutorConfiguration()
+  if (!serverConfigurator.configureQuery(query, configuration)) {
+    return null
+  }
+
+  if (!configureQueryFilters(query, filters)) {
+    return null
+  }
+
+  const fieldPrefix = "metrics"
   // "group by" is equivalent of distinct (https://clickhouse.tech/docs/en/sql-reference/statements/select/distinct/#alternatives)
   query.addDimension(fieldPrefix.length === 0 ? { n: "name" } : { n: fieldPrefix, subName: "name" })
   query.order = fieldPrefix.length === 0 ? "name" : `${fieldPrefix}.name`

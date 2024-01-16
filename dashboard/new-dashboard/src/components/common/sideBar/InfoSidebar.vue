@@ -338,7 +338,7 @@ function isNavigateToTestSupported(): boolean {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   const pageName = parts.at(-1)?.toLowerCase()
-  return pageName != "testsDev" && pageName != "tests" && pageName != "explore" && pageName != "startup"
+  return pageName != "testsDev" && pageName != "tests" && pageName != "explore"
 }
 
 function handleRemove(id: number) {

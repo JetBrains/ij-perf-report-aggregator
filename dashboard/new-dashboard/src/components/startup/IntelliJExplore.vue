@@ -7,7 +7,10 @@
           :value="timeRangeConfigurator.value.value"
           :on-change="onChangeRange"
         />
-        <BranchSelect :branch-configurator="branchConfigurator" />
+        <BranchSelect
+          :branch-configurator="branchConfigurator"
+          :triggered-by-configurator="triggeredByConfigurator"
+        />
         <DimensionSelect
           label="Product"
           :value-to-label="(it: string) => productCodeToName.get(it) ?? it"

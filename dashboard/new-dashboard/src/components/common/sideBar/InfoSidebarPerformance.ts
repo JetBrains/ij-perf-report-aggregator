@@ -3,7 +3,7 @@ import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/type
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
-import { measureNameToLabel } from "../../../shared/metricsMapping"
+import { getCommonPrefix, measureNameToLabel, removePrefix } from "../../../shared/metricsMapping"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
@@ -151,8 +151,7 @@ export function getInfoDataFrom(
     const filteredParams = filterUniqueByName(params)
     const info = getInfo(params[0], valueUnit, dbType, accidents)
     const series: DataSeries[] = []
-    const prefixes = filteredParams.map((param) => getPrefix(param.seriesName as string))
-    const commonPrefix = getCommonPrefix(prefixes)
+    const commonPrefix = getCommonPrefix(filteredParams)
     for (const param of filteredParams) {
       const currentSeriesData = param.value as OptionDataValue[]
       const nameToShow = measureNameToLabel(removePrefix(param.seriesName as string, commonPrefix))
@@ -203,35 +202,4 @@ async function getDescriptionFromMetaDb(project: string | undefined, branch: str
   const description_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
   const response = await fetch(description_url + encodeRison({ project, branch }))
   return response.ok ? response.json() : null
-}
-
-function getPrefix(name: string): string {
-  const lastDot = name.lastIndexOf(".")
-  const lastSlash = name.lastIndexOf("/")
-  const lastIndex = Math.max(lastDot, lastSlash)
-  return name.slice(0, Math.max(0, lastIndex))
-}
-
-function getCommonPrefix(names: string[]): string {
-  if (names.length === 0) {
-    return ""
-  }
-  let commonPrefix = names[0]
-  for (let i = 1; i < names.length; i++) {
-    while (!names[i].startsWith(commonPrefix) && commonPrefix) {
-      const lastIndex = Math.max(commonPrefix.lastIndexOf("/"), commonPrefix.lastIndexOf("."))
-      commonPrefix = commonPrefix.slice(0, Math.max(0, lastIndex))
-    }
-  }
-  if (commonPrefix.endsWith("/") || commonPrefix.endsWith(".")) {
-    commonPrefix = commonPrefix.slice(0, Math.max(0, commonPrefix.length - 1))
-  }
-  return commonPrefix
-}
-
-function removePrefix(name: string, prefix: string): string {
-  if (name.startsWith(prefix + ".") || name.startsWith(prefix + "/")) {
-    return name.slice(Math.max(0, prefix.length + 1))
-  }
-  return name
 }

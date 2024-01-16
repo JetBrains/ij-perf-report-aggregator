@@ -13,19 +13,24 @@
   </div>
 </template>
 <script setup lang="ts">
+import { computed } from "vue"
 import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
 import NavigationTabs from "./components/NavigationTabs.vue"
-import { getNavigationElement, Tab } from "./routes"
-
+import { getNavigationElement } from "./routes"
 import "./shared/overrides.scss"
 
 const router = useRouter()
-const currentPath = router.currentRoute.value.path
-const product = getNavigationElement(currentPath)
-const tabs: Tab[] =
-  product.children.find((child) => {
-    // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
-    return currentPath.slice(0, Math.max(0, currentPath.lastIndexOf("/"))) == child.url
-  })?.tabs ?? product.children[0].tabs
+const currentPath = computed(() => router.currentRoute.value.path)
+const product = computed(() => {
+  return getNavigationElement(currentPath.value)
+})
+
+const tabs = computed(() => {
+  return (
+    product.value.children.find((child) => {
+      return currentPath.value.slice(0, Math.max(0, currentPath.value.lastIndexOf("/"))) == child.url
+    })?.tabs ?? product.value.children[0].tabs
+  )
+})
 </script>

@@ -76,7 +76,6 @@ export class PersistentStateManager {
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
         // Persist empty arrays as `[]` to allow 0-value selections shared via the URL to override a user's local state.
-        console.log(value)
         query[name] = Array.isArray(value) && value.length === 0 ? "[]" : value
         isChanged = true
       }

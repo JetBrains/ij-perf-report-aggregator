@@ -41,7 +41,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, provide, ref } from "vue"
+import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"

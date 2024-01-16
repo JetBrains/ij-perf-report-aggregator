@@ -104,7 +104,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, provide, ref } from "vue"
+import { computed, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"

@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, provide, Ref, ref, watch, WatchStopHandle } from "vue"
+import { provide, Ref, ref, watch, WatchStopHandle } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"

@@ -2,6 +2,7 @@
   <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
     <template
       v-for="(_, name) in $slots"
+      :key="name"
       #[name]="slotProps"
     >
       <slot

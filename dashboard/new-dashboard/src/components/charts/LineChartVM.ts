@@ -1,6 +1,7 @@
 import { ECElementEvent } from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
+import { measureNameToLabel } from "../../shared/metricsMapping"
 import { appendLineWithIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
 import { Delta, findDeltaInData, getDifferenceString } from "../../util/Delta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
@@ -51,7 +52,7 @@ export class LineChartVM {
     if (this.settings.smoothing) params = params.filter((_, index) => index % 2 == 0)
     for (const param of params) {
       const seriesName = document.createElement("b")
-      seriesName.append(`${param.seriesName}`)
+      seriesName.append(measureNameToLabel(param.seriesName as string))
       element.append(seriesName, document.createElement("br"))
       const data = param.value as (OptionDataValue | Delta)[]
       const type = this.getType(data)
@@ -79,7 +80,7 @@ export class LineChartVM {
     const durationMs = this.settings.scaling ? data.at(-1) : data[1]
     element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
-    element.append(`${params.seriesName}`)
+    element.append(measureNameToLabel(params.seriesName as string))
     this.appendAccidentInfo(data, element)
     this.appendDelta(data, element, durationMs as number, isMs, type)
     return element
@@ -236,6 +237,7 @@ export class LineChartVM {
               },
             ],
             formatter(name: string): string {
+              name = measureNameToLabel(name)
               if (formatter("test") != "") {
                 return formatter(name)
               }

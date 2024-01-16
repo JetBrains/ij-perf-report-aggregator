@@ -21,7 +21,6 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
-import { METRICS_MAPPING } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -241,19 +240,6 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 }
 
-function replaceKeys(originalKey: string): string {
-  let modifiedKey = originalKey
-  for (const [searchValue, replaceValue] of Object.entries(METRICS_MAPPING)) {
-    modifiedKey = modifiedKey.replaceAll(searchValue, replaceValue)
-  }
-  return modifiedKey
-}
-
-export function measureNameToLabel(key: string): string {
-  key = replaceKeys(key)
-  return key.includes(".") ? key : /* remove _d or _i suffix */ key.replaceAll(/_[a-z]$/g, "")
-}
-
 function configureQuery(measureNames: string[], query: DataQuery, configuration: DataQueryExecutorConfiguration, skipZeroValues: boolean): void {
   // stable order of series (UI) and fields in query (caching)
   measureNames.sort((a, b) => collator.compare(a, b))
@@ -350,7 +336,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
       }
     },
     getSeriesName(index: number): string {
-      return measureNames.length > 1 ? measureNameToLabel(measureNames[index]) : ""
+      return measureNames.length > 1 ? measureNames[index] : ""
     },
     getMeasureName(index: number): string {
       return measureNames[index]
@@ -474,7 +460,7 @@ async function configureChart(
 
     if (isNotEmpty) {
       // noinspection SuspiciousTypeOfGuard
-      const name = typeof seriesName === "string" ? (seriesName.startsWith("metrics.") ? seriesName.slice("metrics.".length) : seriesName) : seriesName
+      const name = seriesName
       const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex

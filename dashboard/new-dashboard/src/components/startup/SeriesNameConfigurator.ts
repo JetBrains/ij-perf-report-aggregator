@@ -1,4 +1,3 @@
-import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 export class SeriesNameConfigurator implements DataQueryConfigurator {
@@ -10,7 +9,7 @@ export class SeriesNameConfigurator implements DataQueryConfigurator {
     const measureName = this.measureName
     configuration.queryProducers.push({
       getSeriesName(_index: number): string {
-        return measureNameToLabel(measureName)
+        return measureName
       },
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       mutate(_index: number): void {},

@@ -1,5 +1,4 @@
 import { combineLatest, concat, debounceTime, filter, forkJoin, map, Observable, of, shareReplay, switchMap } from "rxjs"
-import { measureNameToLabel } from "../../configurators/MeasureConfigurator"
 import { defaultBodyConsumer, fromFetchWithRetryAndErrorHandling } from "../../configurators/rxjs"
 import { DataQuery, DataQueryConfigurator, DataQueryDimension, DataQueryExecutorConfiguration, DataQueryFilter, ServerConfigurator } from "./dataQuery"
 
@@ -100,7 +99,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
           return configuration.measures[0]
         },
         getSeriesName(_index: number): string {
-          return measureNameToLabel(configuration.measures[0])
+          return configuration.measures[0]
         },
         mutate(): void {
           // the only value

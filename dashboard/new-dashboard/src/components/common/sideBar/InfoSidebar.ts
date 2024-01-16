@@ -36,6 +36,7 @@ export interface DataSeries {
   value: string
   metricName: string | undefined
   color: string
+  nameToShow: string
 }
 
 export enum DBType {

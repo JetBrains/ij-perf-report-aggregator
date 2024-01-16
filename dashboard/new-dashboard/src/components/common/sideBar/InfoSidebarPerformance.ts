@@ -2,8 +2,8 @@ import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
-import { measureNameToLabel } from "../../../configurators/MeasureConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
+import { measureNameToLabel } from "../../../shared/metricsMapping"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
@@ -53,7 +53,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     accidentBuild = buildId.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
-    metricName = measureNameToLabel(dataSeries[2] as string)
+    metricName = dataSeries[2] as string
     if (!isDurationFormatterApplicable(metricName)) {
       type = "counter"
     }
@@ -121,7 +121,6 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
   const description = computedAsync(async () => {
     return await getDescriptionFromMetaDb(projectName, "master")
   })
-
   return {
     build: fullBuildId,
     artifactsUrl,
@@ -156,9 +155,9 @@ export function getInfoDataFrom(
     const commonPrefix = getCommonPrefix(prefixes)
     for (const param of filteredParams) {
       const currentSeriesData = param.value as OptionDataValue[]
-      param.seriesName = removePrefix(param.seriesName as string, commonPrefix)
-      const value = getValueFormatterByMeasureName(param.seriesName)(currentSeriesData[1] as number)
-      series.push({ metricName: param.seriesName, value, color: param.color as string })
+      const nameToShow = measureNameToLabel(removePrefix(param.seriesName as string, commonPrefix))
+      const value = getValueFormatterByMeasureName(param.seriesName as string)(currentSeriesData[1] as number)
+      series.push({ metricName: param.seriesName, value, color: param.color as string, nameToShow })
     }
 
     return { ...info, series, deltaPrevious: undefined, deltaNext: undefined }
@@ -181,7 +180,12 @@ export function getInfoDataFrom(
         deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
       }
     }
-    return { ...info, deltaNext, deltaPrevious, series: [{ metricName: info.metricName, value: showValue, color: params.color as string }] }
+    return {
+      ...info,
+      deltaNext,
+      deltaPrevious,
+      series: [{ metricName: info.metricName, value: showValue, color: params.color as string, nameToShow: measureNameToLabel(info.metricName as string) }],
+    }
   }
 }
 

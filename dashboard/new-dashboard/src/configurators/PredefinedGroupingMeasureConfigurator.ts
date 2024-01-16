@@ -6,7 +6,6 @@ import { ChartConfigurator, ChartStyle, ValueUnit } from "../components/common/c
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { BarChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat } from "../components/common/formatter"
-import { measureNameToLabel } from "./MeasureConfigurator"
 import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
@@ -85,7 +84,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
         useDurationFormatter = false
       }
 
-      const measure = measureNameToLabel(configuration.measures[measureIndex])
+      const measure = configuration.measures[measureIndex]
       const classifier = configuration.seriesNames[dataIndex]
       let dimension = measure
       if (classifier.length > 0) {

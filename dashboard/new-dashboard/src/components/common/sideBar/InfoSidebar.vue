@@ -70,11 +70,11 @@
           class="flex flex-col gap-2"
         >
           <span
-            v-if="vm.data.value?.series[0].metricName"
+            v-if="vm.data.value?.series[0].nameToShow"
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
-            <span>{{ vm.data.value?.series[0].metricName }}</span>
+            <span>{{ vm.data.value?.series[0].nameToShow }}</span>
           </span>
           <span class="flex gap-1.5 text-sm items-center">
             <ClockIcon class="w-4 h-4" />
@@ -88,13 +88,13 @@
               :key="item.metricName"
             >
               <span
-                v-if="item.metricName"
+                v-if="item.nameToShow"
                 class="rounded-lg w-2.5 h-2.5"
                 :style="{ 'background-color': item.color }"
               />
-              <span v-if="item.metricName">{{ item.metricName.replace("metrics.", "") }}</span>
+              <span v-if="item.nameToShow">{{ item.nameToShow }}</span>
               <span
-                v-if="item.metricName"
+                v-if="item.nameToShow"
                 class="font-mono place-self-end"
                 >{{ item.value }}</span
               >
@@ -336,7 +336,7 @@ function isNavigateToTestSupported(): boolean {
   const currentRoute = router.currentRoute.value
   const parts = currentRoute.path.split("/")
   const pageName = parts.at(-1)?.toLowerCase()
-  return pageName != "testsDev" && pageName != "tests" && pageName != "explore" && pageName != "startup" && !parts.some((p) => p == "ij")
+  return pageName != "testsDev" && pageName != "tests" && pageName != "explore" && pageName != "startup"
 }
 
 function handleRemove(id: number) {

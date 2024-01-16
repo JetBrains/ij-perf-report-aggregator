@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
       <span class="flex justify-between uppercase text-xs">
-        {{ vm.data.value?.title }}
+        {{ data?.title }}
 
         <span
           class="infoSidebar_icon text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition duration-150 ease-out relative"
@@ -14,20 +14,20 @@
       </span>
 
       <VTooltip
-        v-if="vm.data.value?.description.value?.description"
+        v-if="data?.description.value?.description"
         theme="info"
       >
         <div class="flex gap-1.5 font-medium text-base items-center break-all">
           <span
-            v-if="vm.data.value?.series.length == 1"
+            v-if="data?.series.length == 1"
             class="w-3 h-3 rounded-full"
-            :style="{ backgroundColor: vm.data.value?.series[0].color }"
+            :style="{ backgroundColor: data?.series[0].color }"
           />
-          <span class="underline decoration-dotted hover:no-underline">{{ vm.data.value?.projectName }}</span>
+          <span class="underline decoration-dotted hover:no-underline">{{ data?.projectName }}</span>
         </div>
         <template #popper>
           <span class="text-sm">
-            {{ vm.data.value?.description.value?.description }}
+            {{ data?.description.value?.description }}
           </span>
         </template>
       </VTooltip>
@@ -36,11 +36,11 @@
         class="flex gap-1.5 font-medium text-base items-center break-all"
       >
         <span
-          v-if="vm.data.value?.series.length == 1"
+          v-if="data?.series.length == 1"
           class="w-3 h-3 rounded-full"
-          :style="{ backgroundColor: vm.data.value?.series[0].color }"
+          :style="{ backgroundColor: data?.series[0].color }"
         />
-        {{ vm.data.value?.projectName }}
+        {{ data?.projectName }}
       </div>
 
       <SplitButton
@@ -55,36 +55,36 @@
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
           <CalendarIcon class="w-4 h-4" />
-          {{ vm.data.value?.date }}
-          <span v-if="vm.data.value?.build">build {{ vm.data.value?.build }}</span>
+          {{ data?.date }}
+          <span v-if="data?.build">build {{ data?.build }}</span>
         </span>
         <span
-          v-if="vm.data.value?.branch"
+          v-if="data?.branch"
           class="flex gap-1.5 text-sm items-center"
         >
           <BranchIcon class="w-4 h-4" />
-          <span>{{ vm.data.value?.branch }}</span>
+          <span>{{ data?.branch }}</span>
         </span>
         <div
-          v-if="vm.data.value?.series.length == 1"
+          v-if="data?.series.length == 1"
           class="flex flex-col gap-2"
         >
           <span
-            v-if="vm.data.value?.series[0].nameToShow"
+            v-if="data?.series[0].nameToShow"
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
-            <span>{{ vm.data.value?.series[0].nameToShow }}</span>
+            <span>{{ data?.series[0].nameToShow }}</span>
           </span>
           <span class="flex gap-1.5 text-sm items-center">
             <ClockIcon class="w-4 h-4" />
-            {{ vm.data.value?.series[0].value }}
+            {{ data?.series[0].value }}
           </span>
         </div>
         <div v-else>
           <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose text-sm">
             <template
-              v-for="item in vm.data.value?.series"
+              v-for="item in data?.series"
               :key="item.metricName"
             >
               <span
@@ -103,38 +103,38 @@
         </div>
 
         <span
-          v-if="vm.data.value?.deltaPrevious"
+          v-if="data?.deltaPrevious"
           class="flex gap-1.5 text-sm items-center"
         >
           <ArrowLeftIcon class="w-4 h-4" />
-          {{ vm.data.value?.deltaPrevious }}
+          {{ data?.deltaPrevious }}
         </span>
         <span
-          v-if="vm.data.value?.deltaNext"
+          v-if="data?.deltaNext"
           class="flex gap-1.5 text-sm items-center"
         >
           <ArrowRightIcon class="w-4 h-4" />
-          {{ vm.data.value?.deltaNext }}
+          {{ data?.deltaNext }}
         </span>
 
         <span class="flex gap-1.5 text-sm items-center">
           <ComputerDesktopIcon class="w-4 h-4" />
-          {{ vm.data.value?.machineName }}
+          {{ data?.machineName }}
         </span>
 
         <span
-          v-if="vm.data.value?.accidents"
+          v-if="data?.accidents"
           class="flex gap-1.5 text-sm items-center"
         >
           <ExclamationTriangleIcon class="w-4 h-4" />
           Known events:
         </span>
         <ul
-          v-if="vm.data.value?.accidents"
+          v-if="data?.accidents"
           class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80"
         >
           <li
-            v-for="accident in vm.data.value?.accidents.value"
+            v-for="accident in data?.accidents.value"
             :key="accident?.id"
           >
             <span class="flex items-start justify-between gap-1.5 text-sm">
@@ -151,7 +151,7 @@
 
       <div class="flex gap-4 text-blue-500">
         <a
-          :href="vm.data.value?.changesUrl"
+          :href="data?.changesUrl"
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
@@ -166,8 +166,8 @@
           Test Artifacts
         </a>
         <a
-          v-if="vm.data.value?.installerUrl !== undefined"
-          :href="vm.data.value?.installerUrl"
+          v-if="data?.installerUrl !== undefined"
+          :href="data?.installerUrl"
           target="_blank"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
         >
@@ -177,7 +177,7 @@
       </div>
       <div class="flex gap-4 text-blue-500 justify-center">
         <a
-          v-if="vm.data.value?.installerId || vm.data.value?.buildId"
+          v-if="data?.installerId || vm.data.value?.buildId"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
           @click="getSpaceUrl"
         >
@@ -277,6 +277,8 @@ const accidentType = ref<string>("Regression")
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
 const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
+
+const data = computed(() => vm.data.value)
 
 function reportRegression() {
   showDialog.value = false

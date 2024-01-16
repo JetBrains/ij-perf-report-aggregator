@@ -9,13 +9,13 @@
     "echarts": "5.4.3",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
-    "floating-vue": "5.0.3",
+    "floating-vue": "5.1.0",
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
     "primevue": "3.46.0",
     "rxjs": "8.0.0-alpha.12",
-    "vue": "3.4.13",
+    "vue": "3.4.14",
     "vue-router": "4.2.5"
   },
   "devDependencies": {

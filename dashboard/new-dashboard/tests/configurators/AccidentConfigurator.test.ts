@@ -42,7 +42,7 @@ describe("Branch configurator", () => {
             })
             resolve()
           } catch (error) {
-            reject(error)
+            reject(error as Error)
           }
           return HttpResponse.json({})
         })

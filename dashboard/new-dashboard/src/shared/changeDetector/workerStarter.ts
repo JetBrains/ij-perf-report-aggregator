@@ -7,7 +7,7 @@ export function detectChanges(seriesData: (string | number)[][]): Promise<Map<st
   return new Promise((resolve, reject) => {
     worker.addEventListener("error", (event) => {
       console.log(event)
-      reject(event.error)
+      reject(event.error as Error)
       worker.terminate()
     })
     worker.addEventListener("message", (event: MessageEvent<Map<string, ChangePointClassification>>) => {

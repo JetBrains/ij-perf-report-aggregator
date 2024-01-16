@@ -55,29 +55,33 @@
 
 <script setup lang="ts">
 import Menu from "primevue/menu"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
-import { SubProject, getNavigationElement, PRODUCTS } from "./routes"
+import { getNavigationElement, PRODUCTS } from "./routes"
 
-const currentPath = useRouter().currentRoute.value.path
+const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject
 const items = ref(products)
 const menu = ref<Menu | null>(null)
-const product = getNavigationElement(currentPath)
+const product = computed(() => {
+  return getNavigationElement(currentPath.value.path)
+})
 
 function toggle(event: MouseEvent) {
   menu.value?.toggle(event)
 }
 
-const subMenuItems = product.children.map((child) => ({ ...child, url: child.tabs[0].url }))
-const isSubMenuExists = product.children.length > 1
-const subItems = ref(subMenuItems)
+const isSubMenuExists = computed(() => product.value.children.length > 1)
+const subItems = computed(() => product.value.children.map((child) => ({ ...child, url: child.tabs[0].url })))
 const subMenu = ref<Menu | null>(null)
 
-const selectedSubMenu: SubProject =
-  product.children.find((child) => {
-    return child.url == currentPath.slice(0, Math.max(0, currentPath.lastIndexOf("/")))
-  }) ?? product.children[0]
+const selectedSubMenu = computed(() => {
+  return (
+    product.value.children.find((child) => {
+      return child.url == currentPath.value.path.slice(0, Math.max(0, currentPath.value.path.lastIndexOf("/")))
+    }) ?? product.value.children[0]
+  )
+})
 
 function toggleSubMenu(event: MouseEvent) {
   subMenu.value?.toggle(event)

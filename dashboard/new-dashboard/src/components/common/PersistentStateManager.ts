@@ -11,6 +11,8 @@ export class PersistentStateManager {
   private readonly saveSubject = new Subject<null>()
   private readonly updateUrlSubject = new Subject<null>()
 
+  private MAX_ARRAY_SIZE = 30
+
   private readonly route: RouteLocationNormalizedLoaded | null
 
   constructor(
@@ -74,6 +76,7 @@ export class PersistentStateManager {
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
         // Persist empty arrays as `[]` to allow 0-value selections shared via the URL to override a user's local state.
+        console.log(value)
         query[name] = Array.isArray(value) && value.length === 0 ? "[]" : value
         isChanged = true
       }
@@ -88,6 +91,9 @@ export class PersistentStateManager {
   add(name: string, value: Ref<unknown>, existingValueTransformer: ((v: unknown) => unknown) | null = null): void {
     watch(value, (value) => {
       const oldValue = this.state[name]
+      if (Array.isArray(value) && value.length > this.MAX_ARRAY_SIZE) {
+        value = value.slice(0, this.MAX_ARRAY_SIZE)
+      }
       if (value !== oldValue) {
         this.state[name] = value
         this.saveSubject.next(null)

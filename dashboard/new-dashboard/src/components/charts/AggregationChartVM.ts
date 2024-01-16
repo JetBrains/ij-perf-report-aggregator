@@ -4,7 +4,7 @@ import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } 
 import { ref } from "vue"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"
-import { PerformanceChartManager } from "./PerformanceChartManager"
+import { ChartManager } from "./ChartManager"
 
 // LabelFormatterParams isn't exported from lib
 interface LabelFormatterParams {
@@ -22,7 +22,7 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 export class AggregationChartVM {
   average = ref(0)
 
-  private chartManager?: PerformanceChartManager
+  private chartManager?: ChartManager
 
   constructor(
     private readonly query: DataQueryExecutor,
@@ -31,7 +31,7 @@ export class AggregationChartVM {
   ) {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
-    this.chartManager = new PerformanceChartManager(element, resizeContainer)
+    this.chartManager = new ChartManager(element, resizeContainer)
     const isMs = this.valueUnit === "ms"
     this.chartManager.chart.setOption({
       legend: {

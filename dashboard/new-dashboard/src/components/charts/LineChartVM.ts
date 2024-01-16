@@ -11,9 +11,9 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
-import { PerformanceChartManager } from "./PerformanceChartManager"
+import { ChartManager } from "./ChartManager"
 
-export class PerformanceLineChartVM {
+export class LineChartVM {
   private settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
   private getFormatter(isMs: boolean) {
@@ -24,7 +24,7 @@ export class PerformanceLineChartVM {
     }
   }
 
-  public getOnClickHandler(sidebarVm: InfoSidebar, chartManager: PerformanceChartManager, valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null) {
+  public getOnClickHandler(sidebarVm: InfoSidebar, chartManager: ChartManager, valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null) {
     return (params: ECElementEvent) => {
       const useMetaKey = this.isMacOS() ? params.event?.event.metaKey : params.event?.event.ctrlKey
       if (useMetaKey) {
@@ -114,7 +114,7 @@ export class PerformanceLineChartVM {
 
   private accidentsConfigurator: AccidentsConfigurator | null
   constructor(
-    private readonly eChart: PerformanceChartManager,
+    private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
     accidentsConfigurator: AccidentsConfigurator | null,

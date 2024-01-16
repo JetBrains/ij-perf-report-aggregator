@@ -3,12 +3,12 @@
     <template #default="{ configurators }">
       <Divider label="Bootstrap" />
       <section class="grid grid-cols-2 gap-x-6">
-        <PerformanceLineChart
+        <LineChart
           :measures="['appInit_d', 'pluginDescriptorLoading_d', 'app initialization.end', 'connect FSRecords']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="['bootstrap_d', 'appStarter_d', 'pluginDescriptorInitV18_d', 'euaShowing_d']"
           :configurators="configurators"
           title=""
@@ -16,12 +16,12 @@
       </section>
 
       <section class="grid grid-cols-2 gap-x-6">
-        <PerformanceLineChart
+        <LineChart
           :measures="['PHM classes preloading', 'SvgCache creation', 'RunManager initialization']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="['classLoadingTime', 'classLoadingSearchTime', 'classLoadingDefineTime']"
           :configurators="configurators"
           title=""
@@ -30,12 +30,12 @@
 
       <Divider label="Class and Resource Loading" />
       <section class="grid grid-cols-2 gap-x-6">
-        <PerformanceLineChart
+        <LineChart
           :measures="['classLoadingCount', 'resourceLoadingCount', 'classLoadingPreparedCount', 'classLoadingLoadedCount']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="[
             'metrics.classLoadingMetrics/inlineCount',
             'metrics.classLoadingMetrics/companionCount',
@@ -49,13 +49,13 @@
 
       <Divider label="Services" />
       <section class="grid grid-cols-2 gap-x-6">
-        <PerformanceLineChart
+        <LineChart
           :skip-zero-values="false"
           :measures="['serviceSyncPreloading_d', 'serviceAsyncPreloading_d', 'projectServiceSyncPreloading_d', 'projectServiceAsyncPreloading_d']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="['projectDumbAware', 'appComponentCreation_d', 'projectComponentCreation_d']"
           :configurators="configurators"
           title=""
@@ -64,12 +64,12 @@
 
       <Divider label="Post-opening" />
       <section class="grid grid-cols-2 gap-x-6">
-        <PerformanceLineChart
+        <LineChart
           :measures="['editorRestoring', 'editorRestoringTillPaint', 'file opening in EDT']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="['splash_i', 'startUpCompleted', 'metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished']"
           :configurators="configurators"
           title=""
@@ -78,12 +78,12 @@
 
       <span v-if="highlightingPasses">
         <Divider label="Highlighting Passes" />
-        <PerformanceLineChart
+        <LineChart
           :measures="highlightingPasses"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
           :configurators="configurators"
           title=""
@@ -91,7 +91,7 @@
       </span>
 
       <Divider label="Notifications" />
-      <PerformanceLineChart
+      <LineChart
         :measures="['metrics.notifications/number']"
         :skip-zero-values="false"
         :configurators="configurators"
@@ -100,7 +100,7 @@
       />
 
       <Divider label="Exit" />
-      <PerformanceLineChart
+      <LineChart
         :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']"
         :configurators="configurators"
         title=""
@@ -109,7 +109,7 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"

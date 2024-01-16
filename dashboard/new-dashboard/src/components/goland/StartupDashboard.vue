@@ -5,7 +5,7 @@
   >
     <template #default="{ configurators }">
       <Divider label="go list" />
-      <PerformanceLineChart
+      <LineChart
         title="Updating Go modules dependencies"
         :measures="[
           'metrics.progressMetric/Progress: Updating Go modules dependencies',
@@ -14,7 +14,7 @@
         ]"
         :configurators="configurators"
       />
-      <PerformanceLineChart
+      <LineChart
         title="go list -m -json (median value)"
         :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value', 'metrics.progressMetric/Subtask: go list -m -json#standard_deviation']"
         :configurators="configurators"
@@ -23,7 +23,7 @@
   </StartupProductDashboard>
 </template>
 <script setup lang="ts">
-import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import StartupProductDashboard from "../common/StartupProductDashboard.vue"
 </script>

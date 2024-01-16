@@ -39,7 +39,7 @@
           v-for="measure in measureConfigurator.selected.value"
           :key="measure"
         >
-          <PerformanceLineChart
+          <LineChart
             :title="measure"
             :measures="[measure]"
             :configurators="configurators"
@@ -69,8 +69,8 @@ import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarV
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import DimensionSelect from "../charts/DimensionSelect.vue"
+import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
-import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
@@ -78,7 +78,7 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
-import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
+import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 

@@ -2,7 +2,7 @@
   <StartupPage>
     <template #default="{ configurators }">
       <Divider label="Classloading Files Size" />
-      <PerformanceLineChart
+      <LineChart
         :skip-zero-values="false"
         :measures="[
           'metrics.classLoadingMetrics/totalSizeKb',
@@ -17,7 +17,7 @@
         title=""
       />
       <Divider label="Memory" />
-      <PerformanceLineChart
+      <LineChart
         :skip-zero-values="false"
         :measures="['metrics.memory/usedMb', 'metrics.memory/metaspaceMb', 'metrics.memory/maxMb']"
         :configurators="configurators"
@@ -25,21 +25,21 @@
       />
       <Divider label="GC" />
       <div class="grid grid-cols-2 gap-6">
-        <PerformanceLineChart
+        <LineChart
           class="col-span-2"
           :skip-zero-values="false"
           :measures="['metrics.gc/totalHeapUsedMax', 'metrics.gc/freedMemoryByGC']"
           :configurators="configurators"
           title=""
         />
-        <PerformanceLineChart
+        <LineChart
           :skip-zero-values="false"
           title="Number of pauses"
           :measures="['metrics.gc/gcPauseCount']"
           :configurators="configurators"
           :with-measure-name="true"
         />
-        <PerformanceLineChart
+        <LineChart
           :skip-zero-values="false"
           :measures="['metrics.gc/fullGCPause', 'metrics.gc/gcPause']"
           :configurators="configurators"
@@ -50,7 +50,7 @@
   </StartupPage>
 </template>
 <script setup lang="ts">
-import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 </script>

@@ -126,7 +126,7 @@ import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCo
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import LineChart from "../charts/PerformanceLineChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
 import { PersistentStateManager } from "../common/PersistentStateManager"
@@ -134,7 +134,7 @@ import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import { DataQueryConfigurator } from "../common/dataQuery"
 import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
-import InfoSidebar from "../common/sideBar/InfoSidebarPerformance.vue"
+import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 
 provideReportUrlProvider()

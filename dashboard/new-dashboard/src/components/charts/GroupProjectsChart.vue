@@ -17,7 +17,7 @@ import { injectOrError } from "../../shared/injectionKeys"
 import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
-import LineChart from "./PerformanceLineChart.vue"
+import LineChart from "./LineChart.vue"
 
 interface Props {
   label: string

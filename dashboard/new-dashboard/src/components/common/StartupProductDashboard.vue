@@ -31,12 +31,12 @@
       >
         <Divider label="Bootstrap" />
         <section class="grid grid-cols-2 gap-x-6">
-          <PerformanceLineChart
+          <LineChart
             :measures="['appInit_d', 'app initialization.end']"
             title="App Initialization"
             :configurators="configurators"
           />
-          <PerformanceLineChart
+          <LineChart
             :measures="['bootstrap_d']"
             title="Bootstrap"
             :configurators="configurators"
@@ -45,12 +45,12 @@
         </section>
 
         <section class="grid grid-cols-2 gap-x-6">
-          <PerformanceLineChart
+          <LineChart
             :measures="['classLoadingPreparedCount', 'classLoadingLoadedCount']"
             title="Class Loading (Count)"
             :configurators="configurators"
           />
-          <PerformanceLineChart
+          <LineChart
             :configurators="configurators"
             :measures="['editorRestoring']"
             title="Editor restoring"
@@ -59,7 +59,7 @@
         </section>
 
         <section>
-          <PerformanceLineChart
+          <LineChart
             title="FUS Total startup"
             :measures="['metrics.startup/fusTotalDuration']"
             :configurators="configurators"
@@ -70,13 +70,13 @@
         <span v-if="highlightingPasses">
           <Divider label="Highlighting Passes" />
           <span v-if="showAllPasses">
-            <PerformanceLineChart
+            <LineChart
               title="Highlighting Passes"
               :measures="highlightingPasses"
               :configurators="configurators"
             />
           </span>
-          <PerformanceLineChart
+          <LineChart
             title="Code Analysis"
             :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
             :configurators="configurators"
@@ -84,7 +84,7 @@
         </span>
         <slot :configurators="configurators"></slot>
         <Divider label="Notifications" />
-        <PerformanceLineChart
+        <LineChart
           title="Notifications"
           :measures="['metrics.notifications/number']"
           :skip-zero-values="false"
@@ -93,7 +93,7 @@
         />
 
         <Divider label="Exit" />
-        <PerformanceLineChart
+        <LineChart
           title="Exit Metrics"
           :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']"
           :configurators="configurators"
@@ -117,7 +117,7 @@ import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import DimensionSelect from "../charts/DimensionSelect.vue"
-import PerformanceLineChart from "../charts/PerformanceLineChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "../startup/projectNameMapping"
@@ -131,7 +131,7 @@ import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 
-import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
+import InfoSidebar from "./sideBar/InfoSidebar.vue"
 
 interface StartupProductDashboard {
   product: string

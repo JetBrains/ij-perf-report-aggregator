@@ -84,7 +84,7 @@ import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { DBType, InfoSidebarImpl } from "./sideBar/InfoSidebar"
-import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
+import InfoSidebar from "./sideBar/InfoSidebar.vue"
 
 interface PerformanceTestsProps {
   dbName: string

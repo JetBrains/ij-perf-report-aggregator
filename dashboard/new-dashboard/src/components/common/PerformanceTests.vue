@@ -133,8 +133,8 @@ import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serv
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
-import LineChart from "../charts/PerformanceLineChart.vue"
 import BranchSelect from "../common/BranchSelect.vue"
 import TimeRangeSelect from "../common/TimeRangeSelect.vue"
 import CopyLink from "../settings/CopyLink.vue"
@@ -144,7 +144,7 @@ import { PersistentStateManager } from "./PersistentStateManager"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
-import InfoSidebar from "./sideBar/InfoSidebarPerformance.vue"
+import InfoSidebar from "./sideBar/InfoSidebar.vue"
 
 interface PerformanceTestsProps {
   dbName: string

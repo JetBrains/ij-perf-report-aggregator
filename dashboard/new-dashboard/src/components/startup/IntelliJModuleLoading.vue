@@ -6,21 +6,25 @@
           :measures="['cache loading', 'modules loading without cache', 'modules loading with cache', 'workspace file index initialization']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
         <LineChart
           :measures="['project files loading', 'serializers creation', 'applying loaded changes (in queue)', 'applying loaded changes']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
         <LineChart
           :measures="['modules instantiation', 'libraries instantiation', 'loading entities from files', 'unloaded modules loading']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
         <LineChart
           :measures="['postponed events sending', 'events sending (in queue)', 'events sending', 'firing modules_added event']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
       </div>
     </template>

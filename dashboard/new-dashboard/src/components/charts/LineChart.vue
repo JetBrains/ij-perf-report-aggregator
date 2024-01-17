@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
 import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
-import { PredefinedMeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, sidebarVmKey } from "../../shared/keys"
@@ -31,6 +31,7 @@ interface LineChartProps {
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
+  tooltipTrigger?: TooltipTrigger
   legendFormatter?: (name: string) => string
   withMeasureName?: boolean
 }
@@ -42,6 +43,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   legendFormatter(name: string): string {
     return name
   },
+  tooltipTrigger: "item",
   withMeasureName: false,
 })
 
@@ -88,7 +90,8 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
     symbolSize: 7,
     showSymbol: false,
   },
-  accidentsConfigurator
+  accidentsConfigurator,
+  props.tooltipTrigger
 )
 
 if (measures.value.length == 1) {

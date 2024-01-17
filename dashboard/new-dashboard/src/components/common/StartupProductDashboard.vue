@@ -35,6 +35,7 @@
             :measures="['appInit_d', 'app initialization.end']"
             title="App Initialization"
             :configurators="configurators"
+            tooltip-trigger="axis"
           />
           <LineChart
             :measures="['bootstrap_d']"
@@ -49,6 +50,7 @@
             :measures="['classLoadingPreparedCount', 'classLoadingLoadedCount']"
             title="Class Loading (Count)"
             :configurators="configurators"
+            tooltip-trigger="axis"
           />
           <LineChart
             :configurators="configurators"
@@ -80,6 +82,7 @@
             title="Code Analysis"
             :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
             :configurators="configurators"
+            tooltip-trigger="axis"
           />
         </span>
         <slot :configurators="configurators"></slot>
@@ -97,6 +100,7 @@
           title="Exit Metrics"
           :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']"
           :configurators="configurators"
+          tooltip-trigger="axis"
         />
       </div>
       <InfoSidebar />

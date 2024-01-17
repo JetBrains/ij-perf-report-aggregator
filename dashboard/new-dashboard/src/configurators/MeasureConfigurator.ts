@@ -31,6 +31,8 @@ import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 
+export type TooltipTrigger = "item" | "axis" | "none"
+
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator, FilterConfigurator {
   readonly data = shallowRef<string[]>([])
   private readonly _selected = shallowRef<string[] | string | null>(null)
@@ -218,7 +220,8 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
     private readonly chartType: ChartType = "line",
     private readonly valueUnit: ValueUnit = "ms",
     readonly symbolOptions: SymbolOptions = {},
-    readonly accidentsConfigurator: AccidentsConfigurator | null = null
+    readonly accidentsConfigurator: AccidentsConfigurator | null = null,
+    readonly toolTipTrigger: TooltipTrigger
   ) {}
 
   createObservable(): Observable<unknown> {
@@ -236,7 +239,7 @@ export class PredefinedMeasureConfigurator implements DataQueryConfigurator, Cha
   }
 
   configureChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
-    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator)
+    return configureChart(configuration, data, this.chartType, this.valueUnit, this.symbolOptions, this.accidentsConfigurator, this.toolTipTrigger)
   }
 }
 
@@ -394,8 +397,10 @@ async function configureChart(
   chartType: ChartType,
   valueUnit: ValueUnit = "ms",
   symbolOptions: SymbolOptions = {},
-  accidentsConfigurator: AccidentsConfigurator | null = null
+  accidentsConfigurator: AccidentsConfigurator | null = null,
+  tooltipTrigger: TooltipTrigger = "item"
 ): Promise<LineChartOptions | ScatterChartOptions> {
+  console.log(tooltipTrigger)
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
 
@@ -562,7 +567,7 @@ async function configureChart(
       },
     },
     tooltip: {
-      trigger: dataset.length > 5 ? "item" : "axis",
+      trigger: tooltipTrigger == "item" ? "item" : dataset.length > 5 ? "item" : "axis",
     },
     series: series as LineSeriesOption,
   }

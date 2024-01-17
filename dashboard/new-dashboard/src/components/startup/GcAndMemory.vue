@@ -15,6 +15,7 @@
         ]"
         :configurators="configurators"
         title=""
+        tooltip-trigger="axis"
       />
       <Divider label="Memory" />
       <LineChart
@@ -22,6 +23,7 @@
         :measures="['metrics.memory/usedMb', 'metrics.memory/metaspaceMb', 'metrics.memory/maxMb']"
         :configurators="configurators"
         title=""
+        tooltip-trigger="axis"
       />
       <Divider label="GC" />
       <div class="grid grid-cols-2 gap-6">
@@ -31,6 +33,7 @@
           :measures="['metrics.gc/totalHeapUsedMax', 'metrics.gc/freedMemoryByGC']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
         <LineChart
           :skip-zero-values="false"
@@ -38,12 +41,14 @@
           :measures="['metrics.gc/gcPauseCount']"
           :configurators="configurators"
           :with-measure-name="true"
+          tooltip-trigger="axis"
         />
         <LineChart
           :skip-zero-values="false"
           :measures="['metrics.gc/fullGCPause', 'metrics.gc/gcPause']"
           :configurators="configurators"
           title=""
+          tooltip-trigger="axis"
         />
       </div>
     </template>

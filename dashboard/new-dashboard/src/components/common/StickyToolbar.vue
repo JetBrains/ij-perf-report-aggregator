@@ -1,14 +1,13 @@
 <template>
   <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
-    <template
-      v-for="(_, name) in $slots"
-      :key="name"
-      #[name]="slotProps"
-    >
-      <slot
-        :name="name"
-        v-bind="slotProps"
-      ></slot>
+    <template #start>
+      <slot name="start" />
+    </template>
+    <template #center>
+      <slot name="center" />
+    </template>
+    <template #end>
+      <slot name="end" />
     </template>
   </Toolbar>
 </template>

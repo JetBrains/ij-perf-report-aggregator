@@ -5,6 +5,6 @@
     "src/**/*.vue",
     "../new-dashboard/src/components/common/shims-vue.d.ts",
     "../new-dashboard/src/components/common/toast-event-bus.d.ts",
-    "../new-dashboard/src/components/common/components.d.ts"
-  ]
+    "../new-dashboard/src/components/common/components.d.ts",
+  ],
 }

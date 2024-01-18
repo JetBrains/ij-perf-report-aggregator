@@ -2,5 +2,5 @@
   "extends": "./tsconfig-base.json",
   "compilerOptions": {},
   "include": ["dashboard/**/*.ts", "dashboard/**/*.vue"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

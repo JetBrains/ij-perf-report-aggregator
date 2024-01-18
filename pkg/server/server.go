@@ -88,7 +88,7 @@ func Serve(dbUrl string, natsUrl string) error {
   r.Use(middleware.Recoverer)
   compressor := middleware.NewCompressor(5)
   compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
-    return brotli.NewWriterLevel(w, level)
+    return brotli.NewWriterV2(w, level)
   })
   r.Use(compressor.Handler)
 

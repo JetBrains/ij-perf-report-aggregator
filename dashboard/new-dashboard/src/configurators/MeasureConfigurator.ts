@@ -400,7 +400,6 @@ async function configureChart(
   accidentsConfigurator: AccidentsConfigurator | null = null,
   tooltipTrigger: TooltipTrigger = "item"
 ): Promise<LineChartOptions | ScatterChartOptions> {
-  console.log(tooltipTrigger)
   const series = new Array<LineSeriesOption | ScatterSeriesOption>()
   let useDurationFormatter = true
 

@@ -455,6 +455,7 @@ async function configureChart(
     if (settings.scaling) {
       seriesData.push(seriesData[1])
       seriesData[1] = scaleToMedian(seriesData[1] as number[])
+      useDurationFormatter = false
     }
 
     let detectedChanges = new Map<string, ChangePointClassification>()

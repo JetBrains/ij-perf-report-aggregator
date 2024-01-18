@@ -82,7 +82,7 @@
         ref="container"
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <span v-if="testMetricSwitcher == TestMetricSwitcher.Tests">
+        <span v-if="testMetricSwitcher == TestMetricSwitcher.Tests && configuratorsUpdated">
           <template
             v-for="measure in measureConfigurator.selected.value"
             :key="measure"
@@ -222,7 +222,9 @@ function onChangeRange(value: TimeRange) {
   timeRangeConfigurator.value.value = value
 }
 
+const configuratorsUpdated = ref(false)
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configuratorsUpdated.value = true
   configurators.push(configurator)
 }
 provide(dashboardConfiguratorsKey, configurators)

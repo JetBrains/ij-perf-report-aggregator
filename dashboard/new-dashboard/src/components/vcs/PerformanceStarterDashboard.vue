@@ -45,7 +45,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="git commit-graph write --reachable --changed-paths"
+            label="Building of 'git commit-graph write --reachable --changed-paths' in minutes"
             measure="git-build-commit-graph"
             :projects="indexingProjects"
           />
@@ -62,5 +62,5 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const intellijSpecificProject = "ide_starter/gitLogIndexing"
-const indexingProjects = [intellijSpecificProject, intellijSpecificProject + "-sql"]
+const indexingProjects = [intellijSpecificProject]
 </script>

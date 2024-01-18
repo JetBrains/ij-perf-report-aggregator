@@ -48,7 +48,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="git commit-graph write --reachable --changed-paths"
+            label="Building of 'git commit-graph write --reachable --changed-paths' in minutes"
             measure="git-build-commit-graph"
             :projects="indexingProjects"
           />
@@ -117,9 +117,16 @@
         <a name="filter" />
         <section>
           <GroupProjectsChart
-            label="Filter Vcs Log tab"
+            label="Filter Vcs Log tab by name"
             measure="vcs-log-filtering"
-            :projects="filteringProjects"
+            :projects="filterByNameProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Filter Vcs Log tab by path"
+            measure="vcs-log-filtering"
+            :projects="filterByPathProjects"
           />
         </section>
       </AccordionTab>
@@ -134,13 +141,14 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const intellijSpecificProject = "intellij_clone_specific_commit/gitLogIndexing"
-const indexingProjects = [intellijSpecificProject, intellijSpecificProject + "-sql"]
+const indexingProjects = [intellijSpecificProject]
 
 const showFileHistory = "intellij_clone_specific_commit/EditorImpl-"
-const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "sql", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl"]
+const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl"]
 
 const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 
 const vcsLogFilterProject = "intellij_clone_specific_commit/filterVcsLogTab-"
-const filteringProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject + "sql", vcsLogFilterProject + "noindex"]
+const filterByNameProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject + "noindex"]
+const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProject + "path-noindex"]
 </script>

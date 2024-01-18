@@ -46,7 +46,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="git commit-graph write --reachable --changed-paths"
+            label="Building of 'git commit-graph write --reachable --changed-paths' in minutes"
             measure="git-build-commit-graph"
             :projects="indexingProjects"
           />
@@ -101,8 +101,8 @@ import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const spaceSpecificProject = "space/gitLogIndexing"
-const indexingProjects = [spaceSpecificProject, spaceSpecificProject + "-sql"]
+const spaceProject = "space/gitLogIndexing"
+const indexingProjects = [spaceProject]
 
 const commitProjects = ["space/git-commit"]
 </script>

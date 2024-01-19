@@ -64,14 +64,14 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.). vcs.log.small.data.pack.commits.count = 100"
+            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"
             measure="vcs-log-refreshing"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.). vcs.log.small.data.pack.commits.count = 100"
+            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.)"
             measure="vcs-log-partial-refreshing"
             :projects="commitProjects"
           />
@@ -104,5 +104,5 @@ import DashboardPage from "../common/DashboardPage.vue"
 const spaceProject = "space/gitLogIndexing"
 const indexingProjects = [spaceProject]
 
-const commitProjects = ["space/git-commit"]
+const commitProjects = ["space/git-commit", "space/git-commit-smallDataPack"]
 </script>

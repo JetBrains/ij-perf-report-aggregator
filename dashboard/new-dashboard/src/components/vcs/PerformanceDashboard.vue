@@ -10,11 +10,12 @@
       <Chip><a href="#history">Show file history</a></Chip>
       <Chip><a href="#checkout">Checkout</a></Chip>
       <Chip><a href="#filter">Filter Vcs Log tab</a></Chip>
+      <Chip><a href="#commit">Commit</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2, 3]"
+      :active-index="[0, 1, 2, 3, 4]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />
@@ -130,6 +131,44 @@
           />
         </section>
       </AccordionTab>
+      <AccordionTab header="Commit">
+        <a name="commit" />
+        <section>
+          <GroupProjectsChart
+            label="Commit FUS duration"
+            measure="git-commit#fusCommitDuration"
+            :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"
+            measure="vcs-log-refreshing"
+            :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.)"
+            measure="vcs-log-partial-refreshing"
+            :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"
+            measure="vcs-log-building-graph"
+            :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Loading full VCS Log (all commits and references)"
+            measure="vcs-log-loading-full-log"
+            :projects="commitProjects"
+          />
+        </section>
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>
@@ -151,4 +190,6 @@ const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 const vcsLogFilterProject = "intellij_clone_specific_commit/filterVcsLogTab-"
 const filterByNameProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject + "noindex"]
 const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProject + "path-noindex"]
+
+const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
 </script>

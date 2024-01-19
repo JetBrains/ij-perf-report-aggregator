@@ -127,7 +127,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         const keyWithMetric = `${value[6]}/${value[2]}_${buildNumber}`
         return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
       }
-      if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS) {
+      if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS || this.dbType == DBType.BAZEL) {
         const key = `${value[6]}_${value[5]}`
         const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
         return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null

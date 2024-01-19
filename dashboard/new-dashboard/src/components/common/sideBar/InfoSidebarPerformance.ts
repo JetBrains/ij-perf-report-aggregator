@@ -102,6 +102,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
+    accidentBuild = buildId.toString()
   }
   if (dbType == DBType.QODANA) {
     machineName = dataSeries[2] as string

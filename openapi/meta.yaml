@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: Accident API
+  description: Accident API
+  version: 1.0.0
+servers:
+  - url: 'https://ij-perf-api.labs.jb.gg'
+paths:
+  /api/meta/accidents:
+    post:
+      summary: Create a new accident record
+      description: This endpoint is used to create a new accident record in the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccidentInsertParams'
+      responses:
+        '200':
+          description: Accident record created successfully. Returns the ID of the new record.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: '42'
+        '400':
+          description: Bad Request. The JSON is malformed or missing required fields.
+        '409':
+          description: Conflict. An accident with the same details already exists.
+        '500':
+          description: Internal Server Error. An error occurred on the server.
+components:
+  schemas:
+    AccidentInsertParams:
+      type: object
+      required:
+        - date
+        - affected_test
+        - reason
+        - build_number
+      properties:
+        date:
+          type: string
+          format: date-time
+          example: 'Dec 19, 2023, 4:01 AM'
+        affected_test:
+          type: string
+          example: 'test123'
+          description: The name of the test that was affected by the accident (test123) or test with metric (test123/myMetric)
+        reason:
+          type: string
+          example: 'Known regression due to IDEA-1232'
+          description: Any additional information about the accident
+        build_number:
+          type: string
+          example: '450212'
+          description: Should be buildID or installer build number
+        kind:
+          type: string
+          example: 'Regression'
+          enum:
+            - Regression
+            - Exception
+            - Improvement
+            - Investigation
+            - InferredImprovement
+            - InferredRegression
+          description: Inferred* values are used by degradation detector
+        externalId:
+          type: string
+          example: 'ext-1001'
+          required: false
+  

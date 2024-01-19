@@ -267,7 +267,7 @@ import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
-import { tcUrl } from "./InfoSidebar"
+import { DBType, tcUrl } from "./InfoSidebar"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
@@ -309,12 +309,13 @@ function openTestInIDE(methodName: string) {
 }
 
 function handleNavigateToTest() {
+  const dbType = vm.data.value?.dbType
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
   if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
     parts = ["", "ij", "explore"]
   } else {
-    parts[parts.length - 1] = parts.at(-1)?.toLowerCase().endsWith("dev") ? "testsDev" : "tests"
+    parts[parts.length - 1] = dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   }
   const branch = vm.data.value?.branch ?? ""
   const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch

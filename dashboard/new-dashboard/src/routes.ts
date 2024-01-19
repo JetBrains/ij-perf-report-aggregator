@@ -73,6 +73,7 @@ enum ROUTES {
   IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
+  IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
   IntelliJSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexingDashboard`,
@@ -345,6 +346,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJBuildTests,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJBuildTestsDev,
+          label: "Tests (Fast Installer)",
         },
       ],
     },
@@ -1322,7 +1327,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Performance tests" },
         },
         {
-          path: ROUTES.IntelliJDevTests,
+          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${DEV_TEST_ROUTE}`,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfintDev",

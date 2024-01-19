@@ -20,6 +20,7 @@ export interface InfoData {
   description: Ref<Description | null>
   deltaPrevious: string | undefined
   deltaNext: string | undefined
+  dbType: DBType
 }
 
 class Description {

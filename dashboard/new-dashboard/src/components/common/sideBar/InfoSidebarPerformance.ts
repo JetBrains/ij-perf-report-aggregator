@@ -137,6 +137,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     branch,
     metricName,
     type,
+    dbType,
   }
 }
 

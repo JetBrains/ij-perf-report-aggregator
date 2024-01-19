@@ -193,8 +193,6 @@ const projects = [
   "project-import-jps-kotlin-10_000-modules/measureStartup",
   "project-import-jps-kotlin-50_000-modules/measureStartup",
   "project-reimport-jps-kotlin-10_000-modules/measureStartup",
-  "project-reimport-jps-kotlin-50_000-modules/measureStartup",
-  "project-import-from-cache-jps-kotlin-50_000-modules/measureStartup",
   "project-import-from-cache-jps-kotlin-10_000-modules/measureStartup",
   "project-import-jps-java-1_000-modules/measureStartup",
   "project-reimport-jps-java-1_000-modules/measureStartup",

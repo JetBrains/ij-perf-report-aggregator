@@ -12,6 +12,7 @@
         :measure="['inlineCompletionShow#mean_value']"
         :projects="[
           'kotlin_language_server/full-line-completion/DefinitionTest/empty-fun-full-line',
+          'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line',
           'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line flcc_fimModel=false flcc_ragEnabled=false',
           'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line flcc_fimModel=true flcc_ragEnabled=false',
           'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line flcc_fimModel=false flcc_ragEnabled=true',
@@ -23,6 +24,7 @@
         :measure="['inlineCompletionShow#mean_value']"
         :projects="[
           'kotlin_language_server/full-line-completion/DefinitionTest/empty-fun-full-line',
+          'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line',
           'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line flcc_maxModelCtx=1500',
           'kotlin_language_server_full_line/full-line-completion/DefinitionTest/empty-fun-full-line flcc_maxModelCtx=384',
         ]"

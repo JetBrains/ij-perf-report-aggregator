@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfint"
     table="ruby"
-    persistent-id="rubymine_indexing_dashboard"
+    persistent-id="rubymine_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
     <section>

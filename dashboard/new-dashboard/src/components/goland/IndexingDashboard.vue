@@ -22,35 +22,37 @@
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files: light projects"
-        measure="numberOfIndexedFiles"
+        measure="numberOfIndexedFilesWritingIndexValue"
         :projects="['cockroach/indexing', 'delve/indexing', 'mattermost-server/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files: heavy projects"
-        measure="numberOfIndexedFiles"
+        measure="numberOfIndexedFilesWritingIndexValue"
         :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
-
     <section>
       <GroupProjectsChart
-        label="Number Of Runs Of Indexing: light projects"
-        measure="numberOfRunsOfIndexing"
+        label="Processing time for GO files: light projects"
+        measure="processingTime#Go"
         :projects="['cockroach/indexing', 'delve/indexing', 'mattermost-server/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Number Of Runs Of Indexing: heavy projects"
-        measure="numberOfRunsOfIndexing"
+        label="Processing time for GO files: heavy projects"
+        measure="processingTime#Go"
         :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
   </DashboardPage>
 </template>
 
+
+
+//processingTime#Go
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"

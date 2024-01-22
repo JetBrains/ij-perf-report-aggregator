@@ -14,7 +14,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="GloBbal inspection execution time: light projects"
+        label="Global inspection execution time: light projects"
         measure="globalInspections"
         :projects="['delve/inspection', 'flux/inspection', 'istio/inspection']"
       />

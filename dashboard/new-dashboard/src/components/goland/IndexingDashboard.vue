@@ -50,7 +50,6 @@
   </DashboardPage>
 </template>
 
-
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"

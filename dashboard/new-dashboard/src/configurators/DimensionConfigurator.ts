@@ -128,10 +128,7 @@ export function configureQueryProducer(configuration: DataQueryExecutorConfigura
       filter.v = values[index]
     },
     getSeriesName(index: number): string {
-      if (aliases != null) {
-        return aliases.get(values[index]) ?? values[index]
-      }
-      return values[index]
+      return aliases?.get(values[index]) ?? values[index]
     },
     getMeasureName(_index: number): string {
       return configuration.measures[0]

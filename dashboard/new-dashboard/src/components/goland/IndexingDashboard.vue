@@ -47,6 +47,27 @@
         :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Number Of Indexed Files - second IDE run"
+        measure="processingTime#Go"
+        :projects="[
+          'kubernetes/secondScanning',
+          'flux/secondScanning',
+          'istio/secondScanning',
+          'cockroach/secondScanning',
+          'delve/secondScanning',
+          'mattermost-server/secondScanning',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Number Of Indexed Files - third IDE run"
+        measure="processingTime#Go"
+        :projects="['kubernetes/thirdScanning', 'flux/thirdScanning', 'istio/thirdScanning', 'cockroach/thirdScanning', 'delve/thirdScanning', 'mattermost-server/thirdScanning']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

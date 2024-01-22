@@ -17,7 +17,7 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   constructor(
     readonly name: string,
     readonly multiple: boolean,
-    public aliases: string[] | null = null
+    public aliases: Map<string, string> | null = null
   ) {
     this.observable = refToObservable(this.selected, true).pipe(shareReplay(1))
   }
@@ -76,7 +76,7 @@ export function dimensionConfigurator(
   multiple: boolean = false,
   filters: FilterConfigurator[] = [],
   customValueSort: ((a: string, b: string) => number) | null = null,
-  aliases: string[] | null = null
+  aliases: Map<string, string> | null = null
 ): DimensionConfigurator {
   const configurator = new DimensionConfigurator(name, multiple, aliases)
   persistentStateManager?.add(name, configurator.selected)
@@ -119,7 +119,7 @@ export function filterSelected(configurator: DimensionConfigurator, data: string
   }
 }
 
-export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[], aliases: string[] | null = null): void {
+export function configureQueryProducer(configuration: DataQueryExecutorConfiguration, filter: DataQueryFilter, values: string[], aliases: Map<string, string> | null = null): void {
   configuration.queryProducers.push({
     size(): number {
       return values.length
@@ -128,8 +128,8 @@ export function configureQueryProducer(configuration: DataQueryExecutorConfigura
       filter.v = values[index]
     },
     getSeriesName(index: number): string {
-      if (aliases != null && aliases.length > index) {
-        return aliases[index]
+      if (aliases != null) {
+        return aliases.get(values[index]) ?? values[index]
       }
       return values[index]
     },

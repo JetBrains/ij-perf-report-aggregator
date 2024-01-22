@@ -47,7 +47,8 @@ watch(
   () => [props.projects, props.aliases],
   ([projects, aliases]) => {
     if (projects != null) {
-      scenarioConfigurator.aliases = aliases ?? removeCommonSegments(projects)
+      const aliasesToUse = aliases ?? removeCommonSegments(projects)
+      scenarioConfigurator.aliases = new Map(projects.map((key, index) => [key, aliasesToUse[index]]))
     }
     scenarioConfigurator.selected.value = projects
   },

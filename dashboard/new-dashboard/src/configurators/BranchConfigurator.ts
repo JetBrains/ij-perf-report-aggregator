@@ -88,7 +88,7 @@ export function createBranchConfigurator(
           })
         ),
       ]
-      filterSelected(configurator, data, "branch")
+      filterSelected(configurator, data)
     })
   return configurator
 }

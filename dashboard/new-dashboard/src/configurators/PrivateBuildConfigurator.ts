@@ -59,7 +59,7 @@ export function privateBuildConfigurator(
 
       configurator.values.value = data.filter((value, _n, _a) => value != "")
 
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, data)
     })
   return configurator
 }

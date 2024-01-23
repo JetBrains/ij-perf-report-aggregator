@@ -96,17 +96,14 @@ export function dimensionConfigurator(
       }
       configurator.values.value = data
 
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, data)
     })
   return configurator
 }
 
-export function filterSelected(configurator: DimensionConfigurator, data: string[], name: string) {
+export function filterSelected(configurator: DimensionConfigurator, data: string[]) {
   const selectedRef = configurator.selected
-  if (data.length === 0) {
-    // do not update value - don't unset if values temporary not set
-    console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
-  } else {
+  if (data.length > 0) {
     const selected = selectedRef.value
     if (Array.isArray(selected) && selected.length > 0) {
       const filtered = selected.filter((it) => data.includes(it))

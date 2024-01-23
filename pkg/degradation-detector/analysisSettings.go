@@ -4,9 +4,9 @@ package degradation_detector
 type ReportType int
 
 const (
-	AllEvent         ReportType = 0
-	DegradationEvent ReportType = 1
-	ImprovementEvent ReportType = 2
+	AllEvent ReportType = iota
+	DegradationEvent
+	ImprovementEvent
 )
 
 type AnalysisSettings struct {

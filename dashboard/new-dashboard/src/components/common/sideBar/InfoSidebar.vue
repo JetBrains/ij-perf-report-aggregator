@@ -151,9 +151,8 @@
 
       <div class="flex gap-4 text-blue-500">
         <a
-          :href="data?.changesUrl"
-          target="_blank"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          @click="getChangesUrl"
         >
           <ArrowPathIcon class="w-4 h-4" />
           Changes
@@ -400,6 +399,23 @@ function getTestActions(): {
     }
   }
   return actions
+}
+
+function getChangesUrl() {
+  if (serverConfigurator?.table == null) {
+    window.open(vm.data.value?.changesUrl)
+  } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
+    const db = serverConfigurator.db
+    if (db == "perfint" || db == "perfintDev") {
+      getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId, (type: string | null) => {
+        if (vm.data.value) {
+          window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
+        }
+      })
+    } else {
+      window.open(vm.data.value.changesUrl)
+    }
+  }
 }
 
 function getArtifactsUrl() {

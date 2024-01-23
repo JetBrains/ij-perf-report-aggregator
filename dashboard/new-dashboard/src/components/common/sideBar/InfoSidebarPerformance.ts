@@ -112,7 +112,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     console.error("Unknown type of DB")
   }
   const fullBuildId = buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
-  const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&tab=changes` : `${buildUrl(installerId)}&tab=changes`
+  const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
   const filteredAccidents = computed(() => {

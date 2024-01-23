@@ -153,6 +153,7 @@ enum ROUTES {
   PyCharmSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesDumbModeDashboard`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
+  WebStormDashboardNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardNext`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
@@ -836,6 +837,10 @@ const WEBSTORM: Product = {
         {
           url: ROUTES.WebStormDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.WebStormDashboardNEXT,
+          label: "WebStorm NEXT",
         },
         {
           url: ROUTES.WebStormTests,
@@ -1633,6 +1638,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "WebStorm Performance tests" },
+        },
+        {
+          path: ROUTES.WebStormDashboardNEXT,
+          component: () => import("./components/webstorm/PerformanceDashboardNEXT.vue"),
+          meta: { pageTitle: "WebStorm NEXT" },
         },
         {
           path: ROUTES.WebStormCompare,

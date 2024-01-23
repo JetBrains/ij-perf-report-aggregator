@@ -50,7 +50,7 @@
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files - second IDE run"
-        measure="processingTime#Go"
+        measure="numberOfIndexedFilesWritingIndexValue"
         :projects="[
           'kubernetes/secondScanning',
           'flux/secondScanning',
@@ -64,7 +64,7 @@
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files - third IDE run"
-        measure="processingTime#Go"
+        measure="numberOfIndexedFilesWritingIndexValue"
         :projects="['kubernetes/thirdScanning', 'flux/thirdScanning', 'istio/thirdScanning', 'cockroach/thirdScanning', 'delve/thirdScanning', 'mattermost-server/thirdScanning']"
       />
     </section>

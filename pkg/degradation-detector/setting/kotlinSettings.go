@@ -254,7 +254,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					ProductLink: "kotlin",
 				},
 				AnalysisSettings: detector.AnalysisSettings{
-					DoNotReportImprovement: true,
+					ReportType: detector.DegradationEvent,
 				},
 			})
 		}
@@ -275,7 +275,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					ProductLink: "kotlin",
 				},
 				AnalysisSettings: detector.AnalysisSettings{
-					DoNotReportImprovement: true,
+					ReportType: detector.DegradationEvent,
 				},
 			})
 		}

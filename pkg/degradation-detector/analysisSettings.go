@@ -1,24 +1,33 @@
 package degradation_detector
 
+// enum for report type
+type ReportType int
+
+const (
+	AllEvent         ReportType = 0
+	DegradationEvent ReportType = 1
+	ImprovementEvent ReportType = 2
+)
+
 type AnalysisSettings struct {
-  DoNotReportImprovement    bool
-  MinimumSegmentLength      int
-  MedianDifferenceThreshold float64
-  EffectSizeThreshold       float64
+	ReportType                ReportType
+	MinimumSegmentLength      int
+	MedianDifferenceThreshold float64
+	EffectSizeThreshold       float64
 }
 
-func (s AnalysisSettings) GetDoNotReportImprovement() bool {
-  return s.DoNotReportImprovement
+func (s AnalysisSettings) GetReportType() ReportType {
+	return s.ReportType
 }
 
 func (s AnalysisSettings) GetMinimumSegmentLength() int {
-  return s.MinimumSegmentLength
+	return s.MinimumSegmentLength
 }
 
 func (s AnalysisSettings) GetMedianDifferenceThreshold() float64 {
-  return s.MedianDifferenceThreshold
+	return s.MedianDifferenceThreshold
 }
 
 func (s AnalysisSettings) GetEffectSizeThreshold() float64 {
-  return s.EffectSizeThreshold
+	return s.EffectSizeThreshold
 }

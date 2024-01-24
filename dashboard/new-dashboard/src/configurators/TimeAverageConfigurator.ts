@@ -35,6 +35,9 @@ export class TimeAverageConfigurator implements DataQueryConfigurator, ChartConf
       const measureName = configuration.measureNames[dataIndex]
       const seriesName = "aggregate"
       const seriesData = dataList[dataIndex]
+      if (seriesData.length === 0) {
+        continue
+      }
       seriesData[0] = seriesData[0].map((value, _n, _a) => {
         if (typeof value == "number") {
           value = value.toString()

@@ -24,6 +24,10 @@ jobs:
           args: --timeout 5m0s
       - name: Run Go tests
         run: go test ./pkg/...
+      - uses: ./.github/send-notification-action
+        if: ${{ failure() }}
+        with:
+          secret: ${{ secrets.SLACK_WEBHOOK_URL }}
   lintAndTestFrontEnd:
     name: lint and test frontend
     runs-on: ubuntu-latest
@@ -44,3 +48,7 @@ jobs:
         run: pnpm prettier --check . --log-level warn
       - name: Run tests
         run: pnpm test
+      - uses: ./.github/send-notification-action
+        if: ${{ failure() }}
+        with:
+          secret: ${{ secrets.SLACK_WEBHOOK_URL }}

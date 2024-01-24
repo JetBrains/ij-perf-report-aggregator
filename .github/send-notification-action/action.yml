@@ -4,6 +4,15 @@ inputs:
   secret:
     description: 'Slack hook URL'
     required: true
+  channel:
+    description: 'Channel the notification will be sent to'
+    required: true
+    default: 'ij-perf-alerts'
+  text:
+    description: 'Notification text'
+    required: true
+    default: ':x: The *ij-perf-report-aggregator/${{ github.workflow }}* `${{ github.job }}` job failed on <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.event.head_commit.message }}>'
+
 
 runs:
   using: "composite"
@@ -12,8 +21,17 @@ runs:
       with:
         payload: |
           {
-            "channel": "ij-perf-alerts",
-            "text": ":x: The ij-perf-report-aggregator/${{ github.workflow }}/${{ github.job }} job has failed on <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.event.head_commit.message }}>"
+            "channel": "${{ inputs.channel }}",
+            "text": "${{ inputs.text }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "${{ inputs.text }}"
+                }
+              }
+            ]
           }
       env:
         SLACK_WEBHOOK_URL: ${{ inputs.secret }}

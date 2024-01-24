@@ -95,7 +95,7 @@ const persistenceForDashboard = new PersistentStateManager(
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true, [timeRangeConfigurator])
+const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true)
 if (scenarioConfigurator != null && props.charts != null) {
   scenarioConfigurator.selected.value = extractUniqueProjects(props.charts)
 }

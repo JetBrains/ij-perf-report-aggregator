@@ -12,7 +12,6 @@
 <script setup lang="ts">
 import { computed, Ref, watch } from "vue"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
-import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError } from "../../shared/injectionKeys"
 import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
@@ -36,7 +35,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
-const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(dashboardConfigurators as FilterConfigurator[])], null)
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
 const measureArray: Ref<string[]> = computed(() => {

@@ -197,6 +197,7 @@ enum ROUTES {
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
+  ReportDegradations = "/degradations/report",
 }
 
 export interface Tab {
@@ -2091,6 +2092,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "empty project",
           },
           meta: { pageTitle: "DataGrip Startup dashboard" },
+        },
+        {
+          path: ROUTES.ReportDegradations,
+          component: () => import("./components/degradations/ReportDegradation.vue"),
+          meta: { pageTitle: "Report degradations" },
+          props: (route) => ({
+            tests: route.query["tests"],
+            build: route.query["build"],
+            date: route.query["date"],
+          }),
         },
       ],
     },

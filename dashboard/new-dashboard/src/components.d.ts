@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AccordionTab: typeof import('primevue/accordiontab/AccordionTab.vue')['default']
     Button: typeof import('primevue/button/Button.vue')['default']
+    Card: typeof import('primevue/card/Card.vue')['default']
     Checkbox: typeof import('primevue/checkbox/Checkbox.vue')['default']
     Column: typeof import('primevue/column/Column.vue')['default']
     DataTable: typeof import('primevue/datatable/DataTable.vue')['default']

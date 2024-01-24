@@ -126,7 +126,7 @@ const components = new Set<string>([
   "Breadcrumb",
   "Button",
   // "Calendar",
-  // "Card",
+  "Card",
   // "Carousel",
   // "CascadeSelect",
   "Chart",

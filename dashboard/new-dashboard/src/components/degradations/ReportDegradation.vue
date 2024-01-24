@@ -1,7 +1,10 @@
 <template>
   <div class="flex justify-center">
-    <div v-if="!reported">
-      <Card class="mt-3 border-1 max-w-2/3">
+    <div
+      v-if="!reported"
+      class="mt-3 border-1 w-1/2"
+    >
+      <Card>
         <template #title> <div class="text-blue-500">Report event</div></template>
         <template #content>
           <div class="flex items-center space-x-4">

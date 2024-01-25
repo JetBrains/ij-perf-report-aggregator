@@ -7,6 +7,7 @@
     :skip-zero-values="false"
     :legend-formatter="props.legendFormatter"
     :can-be-closed="props.canBeClosed"
+    @chart-closed="onChartClosed"
   />
 </template>
 
@@ -44,6 +45,11 @@ const configurators = [...dashboardConfigurators, scenarioConfigurator, serverCo
 const measureArray: Ref<string[]> = computed(() => {
   return Array.isArray(props.measure) ? props.measure : [props.measure]
 })
+
+const emit = defineEmits(["chartClosed"])
+function onChartClosed(): void {
+  emit("chartClosed", props.projects)
+}
 
 watch(
   () => [props.projects, props.aliases],

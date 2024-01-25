@@ -96,6 +96,7 @@
               :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
               :legend-formatter="(name: string) => name"
               :can-be-closed="true"
+              @chart-closed="onTestChartClosed"
             />
           </template>
         </span>
@@ -109,6 +110,7 @@
               :projects="[scenario]"
               :label="scenario"
               :can-be-closed="true"
+              @chart-closed="onMeasureChartClosed"
             />
           </template>
         </span>
@@ -231,6 +233,18 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
 }
 provide(dashboardConfiguratorsKey, configurators)
 
+function onTestChartClosed(metric: Ref<string[]>) {
+  measureConfigurator.setSelected(measureConfigurator.selected.value?.filter((item) => !metric.value.includes(item)) as string[])
+}
+
+function onMeasureChartClosed(projects: string[]) {
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = scenarioConfigurator.selected.value.filter((item) => !projects.includes(item))
+  } else if (scenarioConfigurator.selected.value != null && projects.includes(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = null
+  }
+}
+
 const testMetricSwitcher: Ref<TestMetricSwitcher | null> = ref(TestMetricSwitcher.Tests)
 const testMetricSwitcherOptions = [TestMetricSwitcher.Tests, TestMetricSwitcher.Metrics]
 persistentStateManager.add("type", testMetricSwitcher)
@@ -249,9 +263,7 @@ watch(
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...measureScenarioFilters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {
-          if (value?.length != 0) {
-            scenarios = toArray(value)
-          }
+          scenarios = toArray(value)
         })
         break
       }

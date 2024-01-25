@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, Ref, ref } from "vue"
+import { computed, provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"

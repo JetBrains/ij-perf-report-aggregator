@@ -1,23 +1,15 @@
 {% package tc_properties %}
 
-{% import "github.com/magiconair/properties" %}
 {% import "github.com/asaskevich/govalidator" %}
-{% import "sort" %}
 
 {% stripspace %}
-{% func PropertiesToJson(p *properties.Properties) %}
+{% func PropertiesToJson(p *Properties) %}
 {
   {% code
-  keys := p.Keys()
-  sort.Strings(keys)
   isFirst := true
   %}
-  {% for _, key := range keys %}
+  {% for key, v := range p.m %}
     {% code
-    if IsExcludedProperty(key) {
-      continue
-    }
-    v := p.GetString(key, "")
     if len(v) == 0 {
       continue
     }

@@ -5,101 +5,89 @@
 package tc_properties
 
 //line pkg/tc-properties/tcProperties.qtpl:3
-import "github.com/magiconair/properties"
-
-//line pkg/tc-properties/tcProperties.qtpl:4
 import "github.com/asaskevich/govalidator"
 
-//line pkg/tc-properties/tcProperties.qtpl:5
-import "sort"
-
-//line pkg/tc-properties/tcProperties.qtpl:8
+//line pkg/tc-properties/tcProperties.qtpl:6
 import (
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
 )
 
-//line pkg/tc-properties/tcProperties.qtpl:8
+//line pkg/tc-properties/tcProperties.qtpl:6
 var (
 	_ = qtio422016.Copy
 	_ = qt422016.AcquireByteBuffer
 )
 
-//line pkg/tc-properties/tcProperties.qtpl:8
-func StreamPropertiesToJson(qw422016 *qt422016.Writer, p *properties.Properties) {
-//line pkg/tc-properties/tcProperties.qtpl:8
+//line pkg/tc-properties/tcProperties.qtpl:6
+func StreamPropertiesToJson(qw422016 *qt422016.Writer, p *Properties) {
+//line pkg/tc-properties/tcProperties.qtpl:6
 	qw422016.N().S(`{`)
-//line pkg/tc-properties/tcProperties.qtpl:11
-	keys := p.Keys()
-	sort.Strings(keys)
+//line pkg/tc-properties/tcProperties.qtpl:9
 	isFirst := true
 
-//line pkg/tc-properties/tcProperties.qtpl:15
-	for _, key := range keys {
-//line pkg/tc-properties/tcProperties.qtpl:17
-		if IsExcludedProperty(key) {
-			continue
-		}
-		v := p.GetString(key, "")
+//line pkg/tc-properties/tcProperties.qtpl:11
+	for key, v := range p.m {
+//line pkg/tc-properties/tcProperties.qtpl:13
 		if len(v) == 0 {
 			continue
 		}
 
-//line pkg/tc-properties/tcProperties.qtpl:26
+//line pkg/tc-properties/tcProperties.qtpl:18
 		if !isFirst {
-//line pkg/tc-properties/tcProperties.qtpl:26
+//line pkg/tc-properties/tcProperties.qtpl:18
 			qw422016.N().S(`,`)
-//line pkg/tc-properties/tcProperties.qtpl:26
+//line pkg/tc-properties/tcProperties.qtpl:18
 		}
-//line pkg/tc-properties/tcProperties.qtpl:28
+//line pkg/tc-properties/tcProperties.qtpl:20
 		isFirst = false
 
-//line pkg/tc-properties/tcProperties.qtpl:29
+//line pkg/tc-properties/tcProperties.qtpl:21
 		qw422016.N().S(`"`)
-//line pkg/tc-properties/tcProperties.qtpl:31
+//line pkg/tc-properties/tcProperties.qtpl:23
 		qw422016.N().S(key)
-//line pkg/tc-properties/tcProperties.qtpl:31
+//line pkg/tc-properties/tcProperties.qtpl:23
 		qw422016.N().S(`":`)
-//line pkg/tc-properties/tcProperties.qtpl:32
+//line pkg/tc-properties/tcProperties.qtpl:24
 		if v == "true" || v == "false" || govalidator.IsInt(v) {
-//line pkg/tc-properties/tcProperties.qtpl:33
+//line pkg/tc-properties/tcProperties.qtpl:25
 			qw422016.N().S(v)
-//line pkg/tc-properties/tcProperties.qtpl:34
+//line pkg/tc-properties/tcProperties.qtpl:26
 		} else {
-//line pkg/tc-properties/tcProperties.qtpl:35
+//line pkg/tc-properties/tcProperties.qtpl:27
 			qw422016.N().Q(v)
-//line pkg/tc-properties/tcProperties.qtpl:36
+//line pkg/tc-properties/tcProperties.qtpl:28
 		}
-//line pkg/tc-properties/tcProperties.qtpl:37
+//line pkg/tc-properties/tcProperties.qtpl:29
 	}
-//line pkg/tc-properties/tcProperties.qtpl:37
+//line pkg/tc-properties/tcProperties.qtpl:29
 	qw422016.N().S(`}`)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 }
 
-//line pkg/tc-properties/tcProperties.qtpl:39
-func WritePropertiesToJson(qq422016 qtio422016.Writer, p *properties.Properties) {
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
+func WritePropertiesToJson(qq422016 qtio422016.Writer, p *Properties) {
+//line pkg/tc-properties/tcProperties.qtpl:31
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	StreamPropertiesToJson(qw422016, p)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	qt422016.ReleaseWriter(qw422016)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 }
 
-//line pkg/tc-properties/tcProperties.qtpl:39
-func PropertiesToJson(p *properties.Properties) string {
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
+func PropertiesToJson(p *Properties) string {
+//line pkg/tc-properties/tcProperties.qtpl:31
 	qb422016 := qt422016.AcquireByteBuffer()
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	WritePropertiesToJson(qb422016, p)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	qs422016 := string(qb422016.B)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	qt422016.ReleaseByteBuffer(qb422016)
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 	return qs422016
-//line pkg/tc-properties/tcProperties.qtpl:39
+//line pkg/tc-properties/tcProperties.qtpl:31
 }

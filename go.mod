@@ -18,7 +18,6 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.17.4
-	github.com/magiconair/properties v1.8.7
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/nats-io/nats.go v1.32.0
 	github.com/rs/cors v1.10.1

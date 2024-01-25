@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
     <h3 class="m-0 text-sm flex justify-between">
-      {{ props.title }}
+      {{ props.title + (settingStore.scaling ? " (scaled)" : "") }}
       <span
         v-if="props.canBeClosed"
         class="text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition"
@@ -25,6 +25,7 @@ import { accidentsConfiguratorKey, containerKey, sidebarVmKey } from "../../shar
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ChartType, DEFAULT_LINE_CHART_HEIGHT, ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import { useSettingsStore } from "../settings/settingsStore"
 import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
@@ -53,6 +54,8 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   withMeasureName: false,
   canBeClosed: false,
 })
+
+const settingStore = useSettingsStore()
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
 const chartElement = shallowRef<HTMLElement>()

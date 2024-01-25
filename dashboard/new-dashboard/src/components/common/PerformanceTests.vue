@@ -95,6 +95,7 @@
               :value-unit="props.unit"
               :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
               :legend-formatter="(name: string) => name"
+              :can-be-closed="true"
             />
           </template>
         </span>
@@ -107,6 +108,7 @@
               :measure="measureConfigurator.selected.value"
               :projects="[scenario]"
               :label="scenario"
+              :can-be-closed="true"
             />
           </template>
         </span>

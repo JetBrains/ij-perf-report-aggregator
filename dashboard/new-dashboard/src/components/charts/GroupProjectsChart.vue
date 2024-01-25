@@ -6,6 +6,7 @@
     :configurators="configurators"
     :skip-zero-values="false"
     :legend-formatter="props.legendFormatter"
+    :can-be-closed="props.canBeClosed"
   />
 </template>
 
@@ -25,12 +26,14 @@ interface Props {
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
   aliases?: string[] | null
+  canBeClosed?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   valueUnit: "ms",
   legendFormatter: (name: string) => name,
   aliases: null,
+  canBeClosed: false,
 })
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)

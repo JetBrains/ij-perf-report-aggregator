@@ -50,6 +50,7 @@
             :measure="measureConfigurator.selected.value"
             :projects="[scenario]"
             :label="scenario"
+            :can-be-closed="true"
           />
         </template>
       </div>

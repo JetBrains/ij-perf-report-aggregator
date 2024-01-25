@@ -1,7 +1,15 @@
 <template>
-  <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
-    <h3 class="m-0 text-sm">
+  <div
+    v-if="!closed"
+    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
+  >
+    <h3 class="m-0 text-sm flex justify-between">
       {{ props.title }}
+      <span
+        v-if="props.canBeClosed"
+        class="text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition"
+        @click="closeChart"
+      />
     </h3>
     <div
       ref="chartElement"
@@ -12,7 +20,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -34,6 +42,7 @@ interface LineChartProps {
   tooltipTrigger?: TooltipTrigger
   legendFormatter?: (name: string) => string
   withMeasureName?: boolean
+  canBeClosed?: boolean
 }
 
 const props = withDefaults(defineProps<LineChartProps>(), {
@@ -45,6 +54,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   },
   tooltipTrigger: "item",
   withMeasureName: false,
+  canBeClosed: false,
 })
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
@@ -117,6 +127,13 @@ function createChart() {
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, props.valueUnit, accidentsConfigurator))
   }
+}
+
+const closed = ref(false)
+function closeChart() {
+  chartManager?.dispose()
+  unsubscribe?.()
+  closed.value = true
 }
 
 function setupChartOnVisibility() {

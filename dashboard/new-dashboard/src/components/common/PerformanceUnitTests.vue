@@ -51,6 +51,7 @@
             :projects="[scenario]"
             :label="scenario"
             :can-be-closed="true"
+            @chart-closed="onChartClosed"
           />
         </template>
       </div>
@@ -60,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref } from "vue"
+import { computed, provide, Ref, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -152,6 +153,14 @@ function onChangeRange(value: TimeRange) {
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
+}
+
+function onChartClosed(projects: string[]) {
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = scenarioConfigurator.selected.value.filter((item) => !projects.includes(item))
+  } else if (scenarioConfigurator.selected.value != null && projects.includes(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = null
+  }
 }
 
 const scenarios = computed(() => {

@@ -13,7 +13,7 @@
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.46.0",
+    "primevue": "3.47.2",
     "rxjs": "8.0.0-alpha.12",
     "vue": "3.4.15",
     "vue-router": "4.2.5"
@@ -22,6 +22,6 @@
     "@types/humanize-duration": "^3.27.4",
     "global-jsdom": "^9.1.0",
     "jsdom": "^24.0.0",
-    "msw": "^2.1.4"
+    "msw": "^2.1.5"
   }
 }

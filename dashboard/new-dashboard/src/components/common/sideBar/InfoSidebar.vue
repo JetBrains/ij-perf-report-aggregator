@@ -206,8 +206,21 @@
         v-model="accidentType"
         placeholder="Event Type"
         :options="getAccidentTypes()"
-        class="w-[8rem]"
-      />
+      >
+        <template #value="{ value }">
+          <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+            {{ value }}
+            <ChevronDownIcon
+              class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+              aria-hidden="true"
+            />
+          </div>
+        </template>
+        <template #dropdownicon>
+          <!-- empty element to avoid ignoring override of slot -->
+          <span />
+        </template>
+      </Dropdown>
       <span class="p-float-label flex-grow">
         <InputText
           id="reason"
@@ -256,6 +269,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
+import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { useStorage } from "@vueuse/core/index"
 import { computed, ref } from "vue"
 import { useRouter } from "vue-router"

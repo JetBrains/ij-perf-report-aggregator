@@ -12,6 +12,7 @@ $colors: (
     "red": #FF3D32,
     "primary": $primaryColor
 );
+
 //reused color variables
 $shade000:#ffffff !default;    //surface
 $shade100:#f9fafb !default;    //header background
@@ -51,6 +52,7 @@ $scaleLG:1.25 !default;
 $focusOutlineColor:$primaryLightColor !default;
 $focusOutline:0 none !default;
 $focusOutlineOffset:0 !default;
+$inputFocusOutlineOffset:$focusOutlineOffset !default;
 $focusShadow:0 0 0 0.2rem $focusOutlineColor !default;
 
 //action icons
@@ -207,6 +209,17 @@ $dangerButtonActiveBg:#B91C1C !default;
 $dangerButtonTextActiveColor:$dangerButtonTextColor !default;
 $dangerButtonActiveBorderColor:#B91C1C !default;
 $dangerButtonFocusShadow:0 0 0 0.2rem #FECACA !default;
+
+$contrastButtonBg:$shade900 !default;
+$contrastButtonTextColor:#ffffff !default;
+$contrastButtonBorder:1px solid $contrastButtonBg !default;
+$contrastButtonHoverBg:$shade800 !default;
+$contrastButtonTextHoverColor:$contrastButtonTextColor !default;
+$contrastButtonHoverBorderColor:$shade800 !default;
+$contrastButtonActiveBg:$shade700 !default;
+$contrastButtonTextActiveColor:$contrastButtonTextColor !default;
+$contrastButtonActiveBorderColor:$shade700 !default;
+$contrastButtonFocusShadow:none !default;
 
 $linkButtonColor:$primaryDarkerColor !default;
 $linkButtonHoverColor:$primaryDarkerColor !default;
@@ -776,7 +789,7 @@ $avatarTextColor:$textColor !default;
 $chipBg:$shade300 !default;
 $chipTextColor:$textColor !default;
 $chipBorderRadius: 16px !default;
-$chipFocusBg:$shade400 !default;
+$chipFocusBg:$shade300 !default;
 $chipFocusTextColor:$textColor !default;
 
 //scrollTop
@@ -833,7 +846,6 @@ $imagePreviewActionIconWidth:3rem !default;
 $imagePreviewActionIconHeight:3rem !default;
 $imagePreviewActionIconFontSize:1.5rem !default;
 $imagePreviewActionIconBorderRadius:50% !default;
-
 
 :root {
     --surface-a:#{$shade000};

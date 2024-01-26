@@ -4,6 +4,7 @@
     border: $inputListBorder;
     border-radius: $borderRadius;
     transition: $formElementTransition;
+    outline-color: transparent;
 
     .p-listbox-header {
         padding: $inputListHeaderPadding;
@@ -36,6 +37,14 @@
             transition: $listItemTransition;
             border-radius: $inputListItemBorderRadius;
 
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
             &.p-highlight {
                 color: $highlightTextColor;
                 background: $highlightBg;
@@ -67,13 +76,18 @@
 
             &:not(.p-highlight):not(.p-disabled) {
                 &.p-focus {
-                    color: $inputListItemTextFocusColor;
-                    background: $inputListItemFocusBg;
+                    color: $inputListItemTextHoverColor;
+                    background: $inputListItemHoverBg;
                 }
 
                 &:hover {
                     color: $inputListItemTextHoverColor;
                     background: $inputListItemHoverBg;
+
+                    &.p-focus {
+                        color: $inputListItemTextHoverColor;
+                        background: $inputListItemHoverBg;
+                    }
                 }
             }
         }

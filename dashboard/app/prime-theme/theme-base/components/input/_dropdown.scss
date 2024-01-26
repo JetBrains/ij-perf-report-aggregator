@@ -3,6 +3,7 @@
     //border: $inputBorder;
     //transition: $formElementTransition;
     //border-radius: $borderRadius;
+    outline-color: transparent;
 
     &:not(.p-disabled):hover {
         border-color: $inputHoverBorderColor;
@@ -25,14 +26,14 @@
     //    &.p-placeholder {
     //        color: $inputPlaceholderTextColor;
     //    }
-
+    //
     //    &:focus,
     //    &:enabled:focus {
     //        outline: 0 none;
     //        box-shadow: none;
     //    }
     //}
-
+    //
     //.p-dropdown-trigger {
     //    background: transparent;
     //    color: $inputIconColor;
@@ -90,6 +91,14 @@
             transition: $listItemTransition;
             //border-radius: $inputListItemBorderRadius;
 
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
             //&.p-highlight {
             //    color: $highlightTextColor;
             //    background: $highlightBg;
@@ -101,14 +110,15 @@
 
             &:not(.p-highlight):not(.p-disabled) {
                 &.p-focus {
-                    color: $inputListItemTextFocusColor;
-                    background: $inputListItemFocusBg;
-                }
-
-                &:hover {
                     color: $inputListItemTextHoverColor;
                     background: $inputListItemHoverBg;
                 }
+            }
+
+            .p-dropdown-check-icon {
+                position: relative;
+                margin-left: -1 * $inlineSpacing;
+                margin-right: $inlineSpacing;
             }
         }
 

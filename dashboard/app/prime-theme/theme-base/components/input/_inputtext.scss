@@ -1,5 +1,6 @@
 .p-inputtext {
-    //font-family: $fontFamily;
+    //font-family: var(--font-family);
+    //font-feature-settings: var(--font-feature-settings, normal);
     //font-size: $inputTextFontSize;
     //color: $inputTextColor;
     //background: $inputBg;
@@ -8,15 +9,16 @@
     //transition: $formElementTransition;
     //appearance: none;
     //border-radius: $borderRadius;
+    outline-color: transparent;
 
     //&:enabled:hover {
     //    border-color: $inputHoverBorderColor;
     //}
-
+    //
     //&:enabled:focus {
     //    @include focused-input();
     //}
-
+    //
     //&.p-invalid.p-component {
     //    @include invalid-input();
     //}

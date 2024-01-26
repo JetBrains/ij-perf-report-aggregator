@@ -2,10 +2,11 @@
     color: $buttonTextColor;
     background: $buttonBg;
     border: $buttonBorder;
-    //padding: $buttonPadding;
-    //font-size: $fontSize;
+    padding: $buttonPadding;
+    font-size: $fontSize;
     transition: $formElementTransition;
     border-radius: $borderRadius;
+    outline-color: transparent;
 
     &:not(:disabled):hover {
         background: $buttonHoverBg;
@@ -84,7 +85,7 @@
         }
     }
 
-    &:focus {
+    &:focus-visible {
         @include focused();
     }
 
@@ -126,8 +127,8 @@
     }
 
     &.p-button-icon-only {
-        //width: $buttonIconOnlyWidth;
-        //padding: $buttonIconOnlyPadding;
+        width: $buttonIconOnlyWidth;
+        padding: $buttonIconOnlyPadding;
 
         .p-button-icon-left,
         .p-button-icon-right {
@@ -531,6 +532,66 @@
             background: rgba($dangerButtonBg, $textButtonActiveBgOpacity);
             border-color: transparent;
             color: $dangerButtonBg;
+        }
+    }
+}
+
+@if variable-exists(contrastButtonTextColor) {
+    .p-button.p-button-contrast, .p-buttonset.p-button-contrast > .p-button, .p-splitbutton.p-button-contrast > .p-button {
+        color: $contrastButtonTextColor;
+        background: $contrastButtonBg;
+        border: $contrastButtonBorder;
+    
+        &:not(:disabled):hover {
+            background: $contrastButtonHoverBg;
+            color: $contrastButtonTextHoverColor;
+            border-color: $contrastButtonHoverBorderColor;
+        }
+    
+        &:not(:disabled):focus {
+            box-shadow: $contrastButtonFocusShadow;
+        }
+    
+        &:not(:disabled):active {
+            background: $contrastButtonActiveBg;
+            color: $contrastButtonTextActiveColor;
+            border-color: $contrastButtonActiveBorderColor;
+        }
+    
+        &.p-button-outlined {
+            background-color: transparent;
+            color: $contrastButtonBg;
+            border: $outlinedButtonBorder;
+    
+            &:not(:disabled):hover {
+                background: rgba($contrastButtonBg, $textButtonHoverBgOpacity);
+                color: $contrastButtonBg;
+                border: $outlinedButtonBorder;
+            }
+    
+            &:not(:disabled):active {
+                background: rgba($contrastButtonBg, $textButtonActiveBgOpacity);
+                color: $contrastButtonBg;
+                border: $outlinedButtonBorder;
+            }
+        }
+    
+        &.p-button-text {
+            background-color: transparent;
+            color: $contrastButtonBg;
+            border-color: transparent;
+    
+            &:not(:disabled):hover {
+                background: rgba($contrastButtonBg, $textButtonHoverBgOpacity);
+                border-color: transparent;
+                color: $contrastButtonBg;
+            }
+    
+            &:not(:disabled):active {
+                background: rgba($contrastButtonBg, $textButtonActiveBgOpacity);
+                border-color: transparent;
+                color: $contrastButtonBg;
+            }
         }
     }
 }

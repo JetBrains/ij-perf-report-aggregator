@@ -3,9 +3,14 @@
     //border: $inputBorder;
     //transition: $formElementTransition;
     //border-radius: $borderRadius;
+    //outline-color: transparent;
+
+    &:not(.p-disabled):hover {
+        border-color: $inputHoverBorderColor;
+    }
 
     //&:not(.p-disabled).p-focus {
-        //@include focused-input();
+    //    @include focused-input();
     //}
 
     //.p-cascadeselect-label {
@@ -54,6 +59,14 @@
             transition: $listItemTransition;
             border-radius: $inputListItemBorderRadius;
 
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
             &.p-highlight {
                 color: $highlightTextColor;
                 background: $highlightBg;
@@ -65,16 +78,10 @@
 
             &:not(.p-highlight):not(.p-disabled) {
                 &.p-focus {
-                    color: $inputListItemTextFocusColor;
-                    background: $inputListItemFocusBg;
-                }
-
-                &:hover {
                     color: $inputListItemTextHoverColor;
                     background: $inputListItemHoverBg;
                 }
             }
-
 
             .p-cascadeselect-item-content {
                 padding: $inputListItemPadding;
@@ -94,7 +101,7 @@
         &:not(.p-disabled):hover {
             background-color: $inputFilledHoverBg;
         }
-    
+
         &:not(.p-disabled).p-focus {
             background-color: $inputFilledFocusBg;
         }

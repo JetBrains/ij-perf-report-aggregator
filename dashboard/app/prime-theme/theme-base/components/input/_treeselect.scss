@@ -5,6 +5,7 @@
     //border: $inputBorder;
     //transition: $formElementTransition;
     //border-radius: $borderRadius;
+    outline-color: transparent;
 
     //&:not(.p-disabled):hover {
     //    border-color: $inputHoverBorderColor;
@@ -40,7 +41,7 @@
     //    border-top-right-radius: $borderRadius;
     //    border-bottom-right-radius: $borderRadius;
     //}
-    
+    //
     //&.p-invalid.p-component {
     //    @include invalid-input();
     //}

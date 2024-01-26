@@ -23,7 +23,7 @@
                 //    margin-right: $inlineSpacing;
                 //    @include action-icon();
                 //}
-
+                //
                 //.p-treenode-icon {
                 //    margin-right: $inlineSpacing;
                 //    color: $treeNodeIconColor;
@@ -32,7 +32,7 @@
                 .p-checkbox {
                     margin-right: $inlineSpacing;
 
-                    .p-indeterminate {
+                    &.p-indeterminate {
                         .p-checkbox-icon {
                             color: $textColor;
                         }
@@ -52,7 +52,7 @@
                 //        }
                 //    }
                 //}
-
+                //
                 //&.p-treenode-selectable:not(.p-highlight):hover {
                 //    background: $inputListItemHoverBg;
                 //    color: $inputListItemTextHoverColor;

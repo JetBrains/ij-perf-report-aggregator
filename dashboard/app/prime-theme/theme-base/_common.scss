@@ -32,11 +32,17 @@
 //    font-size: $primeIconFontSize;
 //}
 
+.p-icon {
+    width: $primeIconFontSize;
+    height: $primeIconFontSize;
+}
+
 .p-link {
     font-family: var(--font-family);
     font-feature-settings: var(--font-feature-settings, normal);
     font-size: $fontSize;
     border-radius: $borderRadius;
+    outline-color: transparent;
 
     &:focus-visible {
         @include focused();

@@ -1,73 +1,73 @@
 @use 'sass:math';
 
 .p-inputswitch {
-  width: $inputSwitchWidth;
-  height: $inputSwitchHeight;
+    width: $inputSwitchWidth;
+    height: $inputSwitchHeight;
 
-  .p-inputswitch-input {
-    appearance: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    opacity: 0;
-    z-index: 1;
-    outline: 0 none;
-    border-radius: $inputSwitchBorderRadius;
-  }
-
-  .p-inputswitch-slider {
-    background: $inputSwitchSliderOffBg;
-    transition: $formElementTransition;
-    border-radius: $inputSwitchBorderRadius;
-    outline-color: transparent;
-
-    &:before {
-      background: $inputSwitchHandleOffBg;
-      width: $inputSwitchHandleWidth;
-      height: $inputSwitchHandleHeight;
-      left: $inputSwitchSliderPadding;
-      margin-top: math.div(-1 * $inputSwitchHandleHeight, 2);
-      border-radius: $inputSwitchHandleBorderRadius;
-      transition-duration: $transitionDuration;
+    .p-inputswitch-input {
+        appearance: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        opacity: 0;
+        z-index: 1;
+        outline: 0 none;
+        border-radius: $inputSwitchBorderRadius;
     }
-  }
 
-  &.p-highlight {
     .p-inputswitch-slider {
-      background: $inputSwitchSliderOnBg;
+        background: $inputSwitchSliderOffBg;
+        transition: $formElementTransition;
+        border-radius: $inputSwitchBorderRadius;
+        outline-color: transparent;
 
-      &:before {
-        background: $inputSwitchHandleOnBg;
-        transform: translateX($inputSwitchHandleWidth);
-      }
-    }
-  }
-
-  &:not(.p-disabled) {
-    &:has(.p-inputswitch-input:hover) {
-      .p-inputswitch-slider {
-        background: $inputSwitchSliderOffHoverBg;
-      }
-
-      &.p-highlight {
-        .p-inputswitch-slider {
-          background: $inputSwitchSliderOnHoverBg;
+        &:before {
+            background: $inputSwitchHandleOffBg;
+            width: $inputSwitchHandleWidth;
+            height: $inputSwitchHandleHeight;
+            left: $inputSwitchSliderPadding;
+            margin-top: math.div(-1 * $inputSwitchHandleHeight, 2);
+            border-radius: $inputSwitchHandleBorderRadius;
+            transition-duration: $transitionDuration;
         }
-      }
     }
 
-    &:has(.p-inputswitch-input:focus-visible) {
-      .p-inputswitch-slider {
-        @include focused();
-      }
-    }
-  }
+    &.p-highlight {
+        .p-inputswitch-slider {
+            background: $inputSwitchSliderOnBg;
 
-  &.p-invalid > .p-inputswitch-slider {
-    @include invalid-input();
-  }
+            &:before {
+                background: $inputSwitchHandleOnBg;
+                transform: translateX($inputSwitchHandleWidth);
+            }
+        }
+    }
+
+    &:not(.p-disabled) {
+        &:has(.p-inputswitch-input:hover) {
+            .p-inputswitch-slider {
+                background: $inputSwitchSliderOffHoverBg;
+            }
+
+            &.p-highlight {
+                .p-inputswitch-slider {
+                    background: $inputSwitchSliderOnHoverBg;
+                }
+            }
+        }
+
+        &:has(.p-inputswitch-input:focus-visible) {
+            .p-inputswitch-slider {
+                @include focused();
+            }
+        }
+    }
+
+    &.p-invalid > .p-inputswitch-slider {
+        @include invalid-input();
+    }
 }

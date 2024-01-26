@@ -1,28 +1,28 @@
 @use "sass:math";
 
 .p-multiselect {
-    //background: $inputBg;
-    //border: $inputBorder;
-    //transition: $formElementTransition;
-    //border-radius: $borderRadius;
+    background: $inputBg;
+    border: $inputBorder;
+    transition: $formElementTransition;
+    border-radius: $borderRadius;
     outline-color: transparent;
 
-    //&:not(.p-disabled):hover {
-    //    border-color: $inputHoverBorderColor;
-    //}
+    &:not(.p-disabled):hover {
+        border-color: $inputHoverBorderColor;
+    }
 
-    //&:not(.p-disabled).p-focus {
-    //    @include focused-input();
-    //}
+    &:not(.p-disabled).p-focus {
+        @include focused-input();
+    }
 
-    //.p-multiselect-label {
-    //    padding: $inputPadding;
-    //    transition: $formElementTransition;
-    //
-    //    &.p-placeholder {
-    //        color: $inputPlaceholderTextColor;
-    //    }
-    //}
+    .p-multiselect-label {
+        padding: $inputPadding;
+        transition: $formElementTransition;
+
+        &.p-placeholder {
+            color: $inputPlaceholderTextColor;
+        }
+    }
 
     &.p-multiselect-chip {
         .p-multiselect-token {
@@ -38,17 +38,17 @@
         }
     }
 
-    //.p-multiselect-trigger {
-    //    background: transparent;
-    //    color: $inputIconColor;
-    //    width: $inputGroupAddOnMinWidth;
-    //    border-top-right-radius: $borderRadius;
-    //    border-bottom-right-radius: $borderRadius;
-    //}
-    //
-    //&.p-invalid.p-component {
-    //    @include invalid-input();
-    //}
+    .p-multiselect-trigger {
+        background: transparent;
+        color: $inputIconColor;
+        //width: $inputGroupAddOnMinWidth;
+        border-top-right-radius: $borderRadius;
+        border-bottom-right-radius: $borderRadius;
+    }
+
+    &.p-invalid.p-component {
+        @include invalid-input();
+    }
 }
 
 .p-inputwrapper-filled {
@@ -63,20 +63,20 @@
 }
 
 .p-multiselect-panel {
-    //background: $inputOverlayBg;
-    //color: $inputListTextColor;
-    //border: $inputOverlayBorder;
-    //border-radius: $borderRadius;
-    //box-shadow: $inputOverlayShadow;
+    background: $inputOverlayBg;
+    color: $inputListTextColor;
+    border: $inputOverlayBorder;
+    border-radius: $borderRadius;
+    box-shadow: $inputOverlayShadow;
 
     .p-multiselect-header {
         //padding: $inputListHeaderPadding;
-        //border-bottom: $inputListHeaderBorder;
-        //color: $inputListHeaderTextColor;
-        //background: $inputOverlayHeaderBg;
+        border-bottom: $inputListHeaderBorder;
+        color: $inputListHeaderTextColor;
+        background: $inputOverlayHeaderBg;
         //margin: $inputListHeaderMargin;
-        //border-top-right-radius: $borderRadius;
-        //border-top-left-radius: $borderRadius;
+        border-top-right-radius: $borderRadius;
+        border-top-left-radius: $borderRadius;
 
         .p-multiselect-filter-container {
             .p-inputtext {
@@ -102,14 +102,14 @@
     .p-multiselect-items {
         //padding: $inputListPadding;
 
-        //.p-multiselect-item {
+        .p-multiselect-item {
         //    margin: $inputListItemMargin;
         //    padding: $inputListItemPadding;
-        //    border: $inputListItemBorder;
-        //    color: $inputListItemTextColor;
-        //    background: $inputListItemBg;
-        //    transition: $listItemTransition;
-        //    border-radius: $inputListItemBorderRadius;
+            border: $inputListItemBorder;
+            color: $inputListItemTextColor;
+            background: $inputListItemBg;
+            transition: $listItemTransition;
+            border-radius: $inputListItemBorderRadius;
         //
         //    &:first-child {
         //        margin-top: 0;
@@ -119,26 +119,26 @@
         //        margin-bottom: 0;
         //    }
         //
-        //    &.p-highlight {
-        //        color: $highlightTextColor;
-        //        background: $highlightBg;
-        //
-        //        &.p-focus {
-        //            background: $highlightFocusBg;
-        //        }
-        //    }
-        //
-        //    &:not(.p-highlight):not(.p-disabled) {
-        //        &.p-focus {
-        //            color: $inputListItemTextHoverColor;
-        //            background: $inputListItemHoverBg;
-        //        }
-        //    }
+            &.p-highlight {
+                color: $highlightTextColor;
+                background: $highlightBg;
+
+                &.p-focus {
+                    background: $highlightFocusBg;
+                }
+            }
+
+            &:not(.p-highlight):not(.p-disabled) {
+                &.p-focus {
+                    color: $inputListItemTextHoverColor;
+                    background: $inputListItemHoverBg;
+                }
+            }
         //
         //    .p-checkbox {
         //        margin-right: $inlineSpacing;
         //    }
-        //}
+        }
 
         .p-multiselect-item-group {
             margin: $submenuHeaderMargin;

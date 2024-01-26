@@ -1,11 +1,11 @@
 @use 'sass:math';
 
 .p-overlaypanel {
-    //background: $overlayContentBg;
-    //color: $panelContentTextColor;
-    //border: $overlayContentBorder;
-    //border-radius: $borderRadius;
-    //box-shadow: $overlayContainerShadow;
+    background: $overlayContentBg;
+    color: $panelContentTextColor;
+    border: $overlayContentBorder;
+    border-radius: $borderRadius;
+    box-shadow: $overlayContainerShadow;
     //
     //.p-overlaypanel-content {
     //    padding: $panelContentPadding;

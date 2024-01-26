@@ -1,32 +1,32 @@
 .p-cascadeselect {
-    //background: $inputBg;
-    //border: $inputBorder;
-    //transition: $formElementTransition;
-    //border-radius: $borderRadius;
-    //outline-color: transparent;
+    background: $inputBg;
+    border: $inputBorder;
+    transition: $formElementTransition;
+    border-radius: $borderRadius;
+    outline-color: transparent;
 
     &:not(.p-disabled):hover {
         border-color: $inputHoverBorderColor;
     }
 
-    //&:not(.p-disabled).p-focus {
-    //    @include focused-input();
-    //}
+    &:not(.p-disabled).p-focus {
+        @include focused-input();
+    }
 
-    //.p-cascadeselect-label {
-    //    background: transparent;
-    //    border: 0 none;
+    .p-cascadeselect-label {
+        background: transparent;
+        border: 0 none;
     //    padding: $inputPadding;
     //
-    //    &.p-placeholder {
-    //        color: $inputPlaceholderTextColor;
-    //    }
-    //
-    //    &:enabled:focus {
-    //        outline: 0 none;
-    //        box-shadow: none;
-    //    }
-    //}
+        &.p-placeholder {
+            color: $inputPlaceholderTextColor;
+        }
+
+        &:enabled:focus {
+            outline: 0 none;
+            box-shadow: none;
+        }
+    }
 
     .p-cascadeselect-trigger {
         background: transparent;
@@ -36,9 +36,9 @@
         border-bottom-right-radius: $borderRadius;
     }
 
-    //&.p-invalid.p-component {
-    //    @include invalid-input();
-    //}
+    &.p-invalid.p-component {
+        @include invalid-input();
+    }
 }
 
 .p-cascadeselect-panel {

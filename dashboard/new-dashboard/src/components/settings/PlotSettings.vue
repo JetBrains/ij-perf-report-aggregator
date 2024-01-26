@@ -1,7 +1,7 @@
 <template>
   <Cog8ToothIcon
     ref="settingsIcon"
-    class="w-6 h-6 text-blue-500"
+    class="w-6 h-6 text-primary"
     @click="showSettings"
   />
   <OverlayPanel

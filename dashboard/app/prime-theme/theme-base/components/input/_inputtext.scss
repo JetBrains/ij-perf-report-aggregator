@@ -2,26 +2,26 @@
     //font-family: var(--font-family);
     //font-feature-settings: var(--font-feature-settings, normal);
     //font-size: $inputTextFontSize;
-    //color: $inputTextColor;
-    //background: $inputBg;
+    color: $inputTextColor;
+    background: $inputBg;
     //padding: $inputPadding;
-    //border: $inputBorder;
-    //transition: $formElementTransition;
-    //appearance: none;
-    //border-radius: $borderRadius;
+    border: $inputBorder;
+    transition: $formElementTransition;
+    appearance: none;
+    border-radius: $borderRadius;
     outline-color: transparent;
 
-    //&:enabled:hover {
-    //    border-color: $inputHoverBorderColor;
-    //}
-    //
-    //&:enabled:focus {
-    //    @include focused-input();
-    //}
-    //
-    //&.p-invalid.p-component {
-    //    @include invalid-input();
-    //}
+    &:enabled:hover {
+        border-color: $inputHoverBorderColor;
+    }
+
+    &:enabled:focus {
+        @include focused-input();
+    }
+
+    &.p-invalid.p-component {
+        @include invalid-input();
+    }
 
     &.p-inputtext-sm {
         @include scaledFontSize($inputTextFontSize, $scaleSM);

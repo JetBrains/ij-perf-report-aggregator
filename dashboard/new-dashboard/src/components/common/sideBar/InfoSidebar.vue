@@ -149,16 +149,16 @@
         </ul>
       </div>
 
-      <div class="flex gap-4 text-blue-500">
+      <div class="flex gap-4 text-primary">
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getChangesUrl"
         >
           <ArrowPathIcon class="w-4 h-4" />
           Changes
         </a>
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getArtifactsUrl"
         >
           <ServerStackIcon class="w-4 h-4" />
@@ -168,16 +168,16 @@
           v-if="data?.installerUrl !== undefined"
           :href="data?.installerUrl"
           target="_blank"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker"
         >
           <ArrowDownTrayIcon class="w-4 h-4" />
           Installer
         </a>
       </div>
-      <div class="flex gap-4 text-blue-500 justify-center">
+      <div class="flex gap-4 text-primary justify-center">
         <a
           v-if="data?.installerId || vm.data.value?.buildId"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />

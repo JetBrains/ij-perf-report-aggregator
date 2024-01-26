@@ -5,7 +5,7 @@
       class="mt-3 border-1 w-1/2"
     >
       <Card>
-        <template #title> <div class="text-blue-500">Report event</div></template>
+        <template #title> <div class="text-darker">Report event</div></template>
         <template #content>
           <div class="flex items-center space-x-4">
             <div class="text-lg font-bold">Date:</div>

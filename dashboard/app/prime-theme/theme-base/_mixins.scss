@@ -95,8 +95,8 @@
     &:not(.p-highlight):not(.p-disabled) {
         &.p-focus {
             > .p-menuitem-content {
-                //color: $menuitemTextFocusColor;
-                //background: $menuitemFocusBg;
+                color: $menuitemTextFocusColor;
+                background: $menuitemFocusBg;
     
                 .p-menuitem-link {
                     .p-menuitem-text {

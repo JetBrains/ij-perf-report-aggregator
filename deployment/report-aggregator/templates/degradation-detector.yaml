@@ -25,10 +25,10 @@ spec:
               resources:
                 requests:
                   cpu: "1"
-                  memory: 1Gi
+                  memory: 512Mi
                 limits:
-                  cpu: "2"
-                  memory: 2Gi
+                  cpu: "1.5"
+                  memory: 1Gi
               env:
                 - name: SLACK_WEBHOOK_URL
                   value: {{ .Values.slack.webhookUrl | quote }}

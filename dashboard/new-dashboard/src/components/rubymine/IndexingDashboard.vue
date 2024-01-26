@@ -14,7 +14,6 @@
           'gem-rbs-collection-indexing-test/indexing',
           'gitlab-project-test/indexing',
           'redmine-project-test/indexing',
-          'rubygems-org-project-test/indexing',
           'markus-project-test/indexing',
           'mastodon-project-test/indexing',
           'rubygems-org-project-test/indexing',

@@ -142,28 +142,28 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"
+            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.) - vcs-log-refreshing"
             measure="vcs-log-refreshing"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.)"
+            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.) - vcs-log-partial-refreshing"
             measure="vcs-log-partial-refreshing"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"
+            label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits - vcs-log-building-graph"
             measure="vcs-log-building-graph"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Loading full VCS Log (all commits and references)"
+            label="Loading full VCS Log (all commits and references) - vcs-log-loading-full-log"
             measure="vcs-log-loading-full-log"
             :projects="commitProjects"
           />

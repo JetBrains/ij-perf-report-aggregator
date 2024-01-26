@@ -95,8 +95,9 @@
     &:not(.p-highlight):not(.p-disabled) {
         &.p-focus {
             > .p-menuitem-content {
-                color: $menuitemTextFocusColor;
-                background: $menuitemFocusBg;
+                //this is a fix for the default item focus in menu
+                //color: $menuitemTextFocusColor;
+                //background: $menuitemFocusBg;
     
                 .p-menuitem-link {
                     .p-menuitem-text {

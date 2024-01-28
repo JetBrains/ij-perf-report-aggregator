@@ -64,6 +64,18 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Routes Highlighting"
+        measure="highlighting"
+        :projects="[
+          'redmine-project-test/highlight/routes-highlighting',
+          'gitlab-project-test/highlight/routes-highlighting',
+          'diaspora-project-test/highlight/routes-highlighting',
+        ]"
+        :aliases="['Redmine', 'Gitlab', 'Diaspora']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Completion (Diaspora)"
         measure="completion"
         :projects="[

@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { shallowRef } from "vue"
+import { onBeforeUnmount, shallowRef } from "vue"
 import { DetectChangesConfigurator } from "../../configurators/DetectChangesConfigurator"
 import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
@@ -37,6 +37,7 @@ const showSettings = function (event: Event) {
   settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first
   setTimeout(() => {
     adjustPosition()
+    window.addEventListener("scroll", adjustPosition)
   }, 0)
 }
 
@@ -54,6 +55,8 @@ function adjustPosition() {
     // Screen margin to prevent the overlay from sticking to the edge.
     const screenMargin = 20
 
+    const topPosition = iconRect.bottom + window.scrollY
+
     // If the OverlayPanel would overflow the right edge of the screen
     if (leftPosition + overlayWidth + screenMargin > window.innerWidth) {
       leftPosition = window.innerWidth - overlayWidth - screenMargin
@@ -65,10 +68,14 @@ function adjustPosition() {
     }
 
     const verticalMargin = 10 // Margin between the icon and the OverlayPanel
-    overlayElement.style.top = `${iconRect.bottom + verticalMargin}px`
+    overlayElement.style.top = `${topPosition + verticalMargin}px`
     overlayElement.style.left = `${leftPosition}px`
   }
 }
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", adjustPosition)
+})
 </script>
 
 <style scoped></style>

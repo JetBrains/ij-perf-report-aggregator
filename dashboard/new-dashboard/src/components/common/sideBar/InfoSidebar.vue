@@ -4,6 +4,10 @@
     class="infoSidebar ml-5 text-gray-500 relative"
   >
     <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
+      <div
+        v-if="useScrollStore().isScrolled"
+        class="sticky h-10"
+      ></div>
       <span class="flex justify-between uppercase text-xs">
         {{ data?.title }}
 
@@ -271,7 +275,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { useStorage } from "@vueuse/core/index"
-import { computed, ref } from "vue"
+import { computed, onMounted, onUnmounted, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
@@ -280,6 +284,7 @@ import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
+import { useScrollListeners, useScrollStore } from "../scrollStore"
 import { DBType, tcUrl } from "./InfoSidebar"
 
 const vm = injectOrError(sidebarVmKey)
@@ -474,6 +479,8 @@ function getAccidentTypes(): string[] {
   values.splice(values.indexOf(AccidentKind.InferredImprovement), 1)
   return values
 }
+
+useScrollListeners()
 </script>
 <style>
 .infoSidebar {
@@ -486,6 +493,10 @@ function getAccidentTypes(): string[] {
   content: "";
   inset: -8px;
   transform: rotate(-45deg);
+}
+
+.extraMargin {
+  margin-top: 7rem; /* Replace [HeightOfYourToolbar] with the actual height */
 }
 
 .p-splitbutton.p-button-text > .p-button {

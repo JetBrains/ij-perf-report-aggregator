@@ -474,6 +474,7 @@ function getAccidentTypes(): string[] {
 }
 
 useScrollListeners()
+const description = computed(() => vm.data.value?.description.value?.description ?? "")
 </script>
 <style>
 .infoSidebar {

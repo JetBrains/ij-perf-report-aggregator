@@ -1,5 +1,6 @@
 <template>
   <router-view v-slot="{ Component, route }">
+    <ScrollTop />
     <template v-if="route.path.startsWith('/degradation')">
       <keep-alive
         :key="route.path"

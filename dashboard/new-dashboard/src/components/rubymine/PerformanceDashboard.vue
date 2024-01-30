@@ -371,7 +371,6 @@
           'RUBY-32357/class-variable',
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
-          'RUBY-32357/association',
         ]"
         :aliases="[
           'Project Model (GL)',
@@ -414,7 +413,6 @@
           'Epics Swimlanes Drag Drop Spec (GL)',
           'Feature Flag Script (GL)',
           'Framework Registry Finder (GL)',
-          'User Model (GL)',
         ]"
       />
     </section>

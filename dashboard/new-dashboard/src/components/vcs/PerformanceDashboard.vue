@@ -11,11 +11,12 @@
       <Chip><a href="#checkout">Checkout</a></Chip>
       <Chip><a href="#filter">Filter Vcs Log tab</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
+      <Chip><a href="#widget">Commit</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2, 3, 4]"
+      :active-index="[0, 1, 2, 3, 4, 5]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />
@@ -169,6 +170,16 @@
           />
         </section>
       </AccordionTab>
+      <AccordionTab header="Show branch widget">
+        <a name="widget" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of expanding the whole branch tree - GitBranchesTreePopup::waitTreeExpand"
+            measure="gitShowBranchWidget"
+            :projects="widgetProjects"
+          />
+        </section>
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>
@@ -192,4 +203,6 @@ const filterByNameProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject +
 const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProject + "path-noindex"]
 
 const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
+
+const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs-100k-branches/git-branch-widget"]
 </script>

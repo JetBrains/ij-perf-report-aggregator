@@ -179,9 +179,6 @@
             :projects="widgetProjects"
           />
         </section>
-      </AccordionTab>
-      <AccordionTab header="Show branch widget">
-        <a name="widget" />
         <section>
           <GroupProjectsChart
             label="Duration of initializing tree - git-branches-popup-building-tree"

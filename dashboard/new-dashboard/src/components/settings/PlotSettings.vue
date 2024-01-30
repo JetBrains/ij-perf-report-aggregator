@@ -46,11 +46,12 @@ function adjustPosition() {
   const iconRect = settingsIcon.value?.getBoundingClientRect()
 
   // Query for the OverlayPanel's DOM element.
-  const overlayElement = document.querySelector(".p-overlaypanel") as HTMLElement
+  const overlayElement = document.querySelector(".p-overlaypanel")
 
-  if (iconRect) {
+  if (iconRect && overlayElement != null) {
     let leftPosition = iconRect.left
-    const overlayWidth = overlayElement.offsetWidth
+    const overlayHTMLElement = overlayElement as HTMLElement
+    const overlayWidth = overlayHTMLElement.offsetWidth
 
     // Screen margin to prevent the overlay from sticking to the edge.
     const screenMargin = 20
@@ -68,8 +69,8 @@ function adjustPosition() {
     }
 
     const verticalMargin = 10 // Margin between the icon and the OverlayPanel
-    overlayElement.style.top = `${topPosition + verticalMargin}px`
-    overlayElement.style.left = `${leftPosition}px`
+    overlayHTMLElement.style.top = `${topPosition + verticalMargin}px`
+    overlayHTMLElement.style.left = `${leftPosition}px`
   }
 }
 

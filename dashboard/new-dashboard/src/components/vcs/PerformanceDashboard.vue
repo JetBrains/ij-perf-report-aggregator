@@ -9,9 +9,9 @@
       <Chip><a href="#index">Vcs indexing</a></Chip>
       <Chip><a href="#history">Show file history</a></Chip>
       <Chip><a href="#checkout">Checkout</a></Chip>
-      <Chip><a href="#filter">Filter Vcs Log tab</a></Chip>
+      <Chip><a href="#filter">Filter Log tab</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
-      <Chip><a href="#widget">Commit</a></Chip>
+      <Chip><a href="#widget">Branch widget</a></Chip>
     </div>
 
     <Accordion
@@ -176,6 +176,16 @@
           <GroupProjectsChart
             label="Duration of expanding the whole branch tree - GitBranchesTreePopup::waitTreeExpand"
             measure="gitShowBranchWidget"
+            :projects="widgetProjects"
+          />
+        </section>
+      </AccordionTab>
+      <AccordionTab header="Show branch widget">
+        <a name="widget" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of initializing tree - git-branches-popup-building-tree"
+            measure="git-branches-popup-building-tree"
             :projects="widgetProjects"
           />
         </section>

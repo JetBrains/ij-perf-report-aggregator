@@ -17,34 +17,18 @@
         />
       </span>
 
-      <VTooltip
-        v-if="data?.description.value?.description"
-        theme="info"
-      >
-        <div class="flex gap-1.5 font-medium text-base items-center break-all">
-          <span
-            v-if="data?.series.length == 1"
-            class="w-3 h-3 rounded-full"
-            :style="{ backgroundColor: data?.series[0].color }"
-          />
-          <span class="underline decoration-dotted hover:no-underline">{{ data?.projectName }}</span>
-        </div>
-        <template #popper>
-          <span class="text-sm">
-            {{ data?.description.value?.description }}
-          </span>
-        </template>
-      </VTooltip>
-      <div
-        v-else
-        class="flex gap-1.5 font-medium text-base items-center break-all"
-      >
+      <div class="flex gap-1.5 font-medium text-base items-center break-all">
         <span
           v-if="data?.series.length == 1"
           class="w-3 h-3 rounded-full"
           :style="{ backgroundColor: data?.series[0].color }"
         />
-        {{ data?.projectName }}
+        <span v-if="data?.series.length == 1">
+          {{ data?.seriesName }}
+        </span>
+        <span v-else>
+          {{ data?.projectName }}
+        </span>
       </div>
 
       <SplitButton
@@ -73,6 +57,23 @@
           v-if="data?.series.length == 1"
           class="flex flex-col gap-2"
         >
+          <span class="flex gap-1.5 text-sm items-center">
+            <ChartBarIcon class="w-4 h-4" />
+            <VTooltip
+              v-if="data?.description.value?.description"
+              theme="info"
+            >
+              <span class="underline decoration-dotted hover:no-underline">{{ data?.projectName }}</span>
+              <template #popper>
+                <span class="text-sm">
+                  {{ data?.description.value?.description }}
+                </span>
+              </template>
+            </VTooltip>
+            <span v-else>
+              {{ data?.projectName }}
+            </span>
+          </span>
           <span
             v-if="data?.series[0].nameToShow"
             class="flex gap-1.5 text-sm items-center"

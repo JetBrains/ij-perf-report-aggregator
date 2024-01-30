@@ -21,6 +21,7 @@ function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataP
 }
 
 function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBType, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+  const seriesName = params.seriesName as string
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   let projectName: string = params.seriesName as string
@@ -122,6 +123,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     return await getDescriptionFromMetaDb(projectName, "master")
   })
   return {
+    seriesName,
     build: fullBuildId,
     artifactsUrl,
     changesUrl,

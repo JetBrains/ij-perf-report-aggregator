@@ -275,7 +275,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { useStorage } from "@vueuse/core/index"
-import { computed, onMounted, onUnmounted, ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"

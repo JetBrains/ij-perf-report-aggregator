@@ -59,18 +59,10 @@
         >
           <span class="flex gap-1.5 text-sm items-center">
             <ChartBarIcon class="w-4 h-4" />
-            <VTooltip
-              v-if="data?.description.value?.description"
-              theme="info"
+            <span
+              v-tooltip.bottom="description"
+              :class="description != '' ? 'underline decoration-dotted hover:no-underline' : ''"
             >
-              <span class="underline decoration-dotted hover:no-underline">{{ data?.projectName }}</span>
-              <template #popper>
-                <span class="text-sm">
-                  {{ data?.description.value?.description }}
-                </span>
-              </template>
-            </VTooltip>
-            <span v-else>
               {{ data?.projectName }}
             </span>
           </span>

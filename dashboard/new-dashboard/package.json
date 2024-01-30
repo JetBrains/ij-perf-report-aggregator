@@ -9,7 +9,6 @@
     "echarts": "5.4.3",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
-    "floating-vue": "5.2.1",
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",

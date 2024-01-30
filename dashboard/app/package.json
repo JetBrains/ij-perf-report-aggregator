@@ -4,7 +4,6 @@
   "dependencies": {
     "@fontsource/inter": "5.0.16",
     "@fontsource/jetbrains-mono": "5.0.18",
-    "floating-vue": "5.2.1",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.7",
     "primevue": "3.47.2",

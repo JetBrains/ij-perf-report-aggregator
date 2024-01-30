@@ -8,12 +8,9 @@
       class="info"
       @click="copyLink"
     >
-      <VTooltip theme="info">
-        <span>
-          <CopyIcon />
-        </span>
-        <template #popper><span class="text-sm">Copy link to dashboard with current date timeline.</span></template>
-      </VTooltip>
+      <span v-tooltip.bottom="'Copy link to dashboard with current date timeline.'">
+        <CopyIcon />
+      </span>
     </a>
   </div>
   <div

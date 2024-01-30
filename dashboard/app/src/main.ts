@@ -1,11 +1,10 @@
 import "@fontsource/jetbrains-mono"
 import "@fontsource/inter"
-import "floating-vue/dist/style.css"
 import "./main.css"
-import FloatingVue from "floating-vue"
 import { createPinia } from "pinia"
 import PrimeVue from "primevue/config"
 import ToastService from "primevue/toastservice"
+import Tooltip from "primevue/tooltip"
 import { createApp } from "vue"
 import App from "./App.vue"
 import { createAndConfigureRouter } from "./route"
@@ -26,14 +25,7 @@ async function initApp() {
   app.use(PrimeVue)
   app.use(ToastService)
   app.use(pinia)
-  app.use(FloatingVue, {
-    themes: {
-      info: {
-        $extend: "tooltip",
-        placement: "top-start",
-      },
-    },
-  })
+  app.directive("tooltip", Tooltip)
 
   await router.isReady().then(() => app.mount("#app"))
 }

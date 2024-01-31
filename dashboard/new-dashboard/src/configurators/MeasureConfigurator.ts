@@ -578,5 +578,5 @@ function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
 }
 
 function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {
-  return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
+  return accidents != null && accidents.length > 0 && accidents.every((accident) => accident.kind == AccidentKind.Exception)
 }

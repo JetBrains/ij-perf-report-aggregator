@@ -46,7 +46,6 @@ function extractMainPrefix(inputString: string): string {
 }
 
 export function getMetricDescription(metric: string | undefined): MetricInfo | null {
-  console.log(metric)
   if (metric == undefined) return null
   const metricDescription = metricsDescription.get(metric) ?? metricsDescription.get(extractMainPrefix(metric) + "*") ?? null
   return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription

@@ -31,7 +31,18 @@
     <Column
       field="url"
       header="URL"
-    ></Column>
+    >
+      <template #body="slotProps">
+        <a
+          :href="slotProps.data.url"
+          target="_blank"
+          class="underline decoration-dotted hover:no-underline"
+          rel="noopener noreferrer"
+        >
+          {{ slotProps.data.url }}
+        </a>
+      </template>
+    </Column>
   </DataTable>
 </template>
 

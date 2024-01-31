@@ -29,6 +29,15 @@
         ref="container"
         class="flex flex-1 flex-col gap-5 overflow-hidden pt-5"
       >
+        <Divider label="Main Metrics" />
+        <section>
+          <LineChart
+            title="FUS Total startup"
+            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs']"
+            :configurators="configurators"
+          />
+        </section>
+
         <Divider label="Bootstrap" />
         <section class="grid grid-cols-2 gap-x-6">
           <LineChart
@@ -57,14 +66,6 @@
             :measures="['editorRestoring']"
             title="Editor restoring"
             :with-measure-name="true"
-          />
-        </section>
-
-        <section>
-          <LineChart
-            title="FUS Total startup"
-            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs']"
-            :configurators="configurators"
           />
         </section>
 

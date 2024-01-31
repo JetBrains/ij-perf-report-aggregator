@@ -26,6 +26,8 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["processingSpeedAvg#*", "Speed of indexing file type (in kb/s)"],
   ["processingTime#*", "CPU time spent on processing file type"],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
+  ["reopenProjectPerformance/fusCodeVisibleInEditorDurationMs", metricInfo("New main metric for startup", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
+  ["startup/fusTotalDuration", metricInfo("Old metric (outdated)", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
 ])
 
 export interface MetricInfo {
@@ -44,6 +46,7 @@ function extractMainPrefix(inputString: string): string {
 }
 
 export function getMetricDescription(metric: string | undefined): MetricInfo | null {
+  console.log(metric)
   if (metric == undefined) return null
   const metricDescription = metricsDescription.get(metric) ?? metricsDescription.get(extractMainPrefix(metric) + "*") ?? null
   return typeof metricDescription == "string" ? metricInfo(metricDescription) : metricDescription

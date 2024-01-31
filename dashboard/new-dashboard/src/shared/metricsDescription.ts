@@ -28,6 +28,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["reopenProjectPerformance/fusCodeVisibleInEditorDurationMs", metricInfo("New main metric for startup", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
   ["startup/fusTotalDuration", metricInfo("Old metric (outdated)", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
+  ["completion#mean_value", "Mean value of all completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
+  ["localInspections#mean_value", "Code analysis mean time. From Daemon#restart till DaemonListener#daemonFinished."],
+  ["semanticHighlighting#mean_value", "Semantic highlighting mean time. From Daemon#restart till end of GeneralHighlightingPass."],
+  ["findUsages#mean_value", "Mean time to show all usages in the popup"],
 ])
 
 export interface MetricInfo {

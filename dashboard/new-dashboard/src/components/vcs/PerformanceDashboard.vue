@@ -211,5 +211,5 @@ const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProj
 
 const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
 
-const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs-100k-branches/git-branch-widget"]
+const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
 </script>

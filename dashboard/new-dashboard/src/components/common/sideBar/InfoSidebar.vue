@@ -31,14 +31,7 @@
         </span>
       </div>
 
-      <SplitButton
-        v-if="testActions.length > 0"
-        :label="testActions[0].label"
-        :model="testActions.slice(1)"
-        link
-        icon="pi pi-chart-line"
-        @click="testActions[0].command"
-      />
+      <TestActions :data="data" />
 
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
@@ -200,7 +193,6 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { useRouter } from "vue-router"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getTeamcityBuildType } from "../../../util/artifacts"
@@ -208,13 +200,12 @@ import { calculateChanges } from "../../../util/changes"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"
-import { DBType, tcUrl } from "./InfoSidebar"
+import { tcUrl } from "./InfoSidebar"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
+import TestActions from "./TestActions.vue"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
-
-const router = useRouter()
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
@@ -222,107 +213,12 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
-function copyMethodNameToClipboard(methodName: string) {
-  void navigator.clipboard.writeText(methodName)
-}
-
-function openTestInIDE(methodName: string) {
-  const origin = encodeURIComponent("ssh://git@git.jetbrains.team/ij/intellij.git")
-  window.open(`jetbrains://idea/navigate/reference?origin=${origin}&fqn=${methodName}`)
-}
-
-function handleNavigateToTest() {
-  const dbType = vm.data.value?.dbType
-  const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
-  if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
-    parts = ["", "ij", "explore"]
-  } else {
-    parts[parts.length - 1] = dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  }
-  const branch = vm.data.value?.branch ?? ""
-  const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
-  const testURL = parts.join("/")
-
-  const queryParams: string = new URLSearchParams({
-    ...currentRoute.query,
-    project: vm.data.value?.projectName ?? "",
-    branch: majorBranch,
-  }).toString()
-
-  const measures =
-    vm.data.value?.series
-      .map((s) => s.metricName)
-      .map((m) => "&measure=" + m)
-      .join("") ?? ""
-  void router.push(testURL + "?" + queryParams + measures)
-}
-
-function isNavigateToTestSupported(): boolean {
-  const currentRoute = router.currentRoute.value
-  const parts = currentRoute.path.split("/")
-  const pageName = parts.at(-1)?.toLowerCase()
-  return pageName != "testsDev" && pageName != "tests" && pageName != "explore"
-}
-
 function handleRemove(id: number) {
   accidentsConfigurator?.removeAccidentFromMetaDb(id)
 }
 
 function handleCloseClick() {
   vm.close()
-}
-
-const testActions = computed(() => getTestActions())
-
-function getTestActions(): {
-  label: string
-  icon: string
-  command: () => void
-}[] {
-  const actions = []
-  if (isNavigateToTestSupported()) {
-    actions.push({
-      label: "Navigate to test",
-      icon: "pi pi-chart-line",
-      command() {
-        handleNavigateToTest()
-      },
-    })
-  }
-  if (vm.data.value?.description) {
-    const methodName = vm.data.value.description.value?.methodName
-    if (methodName && methodName != "") {
-      actions.push(
-        {
-          label: "Open test method",
-          icon: "pi pi-folder-open",
-          command() {
-            openTestInIDE(methodName)
-          },
-        },
-        {
-          label: "Copy test method name",
-          icon: "pi pi-copy",
-          command() {
-            copyMethodNameToClipboard(methodName)
-          },
-        }
-      )
-    }
-
-    const url = vm.data.value.description.value?.url
-    if (url && url != "") {
-      actions.push({
-        label: "Download test project",
-        icon: "pi pi-download",
-        command() {
-          window.open(url)
-        },
-      })
-    }
-  }
-  return actions
 }
 
 function getChangesUrl() {
@@ -395,13 +291,5 @@ const description = computed(() => vm.data.value?.description.value?.description
 
 .extraMargin {
   margin-top: 7rem; /* Replace [HeightOfYourToolbar] with the actual height */
-}
-
-.p-splitbutton.p-button-text > .p-button {
-  @apply text-gray-600 font-medium text-left border-t border-solid border-neutral-200 relative;
-}
-
-.p-tieredmenu .p-menuitem-content {
-  @apply text-sm text-gray-600 font-medium text-left relative;
 }
 </style>

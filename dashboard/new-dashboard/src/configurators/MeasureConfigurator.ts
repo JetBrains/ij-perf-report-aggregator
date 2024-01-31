@@ -103,21 +103,25 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }
 
         if (isIj) {
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it))
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.$/.test(it))
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it))
-
+          data = data.filter(
+            (it) =>
+              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it) &&
+              !/^c\.i\.ide\.[A-Za-z]\.$/.test(it) &&
+              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it) &&
+              !/^ProjectImpl@\d+ container$/.test(it)
+          )
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
 
-        //filter for editor menu
-        data = data.filter((it) => !/.*#[Uu]pdate@.*/.test(it))
-        data = data.filter((it) => !/.*#GetChildren@.*/.test(it))
-        data = data.filter((it) => !/.*#getSelection@.*/.test(it))
+        data = data.filter(
+          (it) =>
+            //filter for editor menu
+            !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
+            //filter out _23 metrics, we need them in DB but not in UI
+            !/.*_\d+(#.*)?$/.test(it)
+        )
 
         const selectedRef = this.selected
-        //filter out _23 metrics, we need them in DB but not in UI
-        data = data.filter((it) => !/.*_\d+(#.*)?$/.test(it))
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {

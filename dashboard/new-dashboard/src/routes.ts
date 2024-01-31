@@ -198,6 +198,7 @@ enum ROUTES {
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   ReportDegradations = "/degradations/report",
+  MetricsDescription = "/metrics/description",
 }
 
 export interface Tab {
@@ -2102,6 +2103,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             build: route.query["build"],
             date: route.query["date"],
           }),
+        },
+        {
+          path: ROUTES.MetricsDescription,
+          component: () => import("./components/metrics/MetricDescriptions.vue"),
+          meta: { pageTitle: "Metrics description" },
         },
       ],
     },

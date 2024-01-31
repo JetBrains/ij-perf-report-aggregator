@@ -53,7 +53,7 @@
           <span class="flex gap-1.5 text-sm items-center">
             <ChartBarIcon class="w-4 h-4" />
             <span
-              v-tooltip.bottom="description"
+              v-tooltip.left="description"
               :class="description != '' ? 'underline decoration-dotted hover:no-underline' : ''"
             >
               {{ data?.projectName }}
@@ -64,7 +64,7 @@
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
-            <span>{{ data?.series[0].nameToShow }}</span>
+            <span v-tooltip.left="getTooltipForMetric(data?.series[0].metricName)">{{ data?.series[0].nameToShow }}</span>
           </span>
           <span class="flex gap-1.5 text-sm items-center">
             <ClockIcon class="w-4 h-4" />
@@ -195,6 +195,7 @@
 import { computed, ref } from "vue"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { getMetricDescription } from "../../../shared/metricsDescription"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
 import BranchIcon from "../BranchIcon.vue"
@@ -275,6 +276,21 @@ function getSpaceUrl() {
 
 useScrollListeners()
 const description = computed(() => vm.data.value?.description.value?.description ?? "")
+
+function getTooltipForMetric(metricName: string | undefined) {
+  const metricInfo = getMetricDescription(metricName)
+
+  return metricInfo == null
+    ? {}
+    : {
+        value:
+          metricInfo.description +
+          (metricInfo.url ? "<br/><a class='text-xs underline decoration-dotted hover:no-underline' href='" + metricInfo.url + "' target='_blank'>More info</a>" : ""),
+        escape: false,
+        hideDelay: metricInfo.url ? 3000 : 0,
+        autoHide: !metricInfo.url,
+      }
+}
 </script>
 <style>
 .infoSidebar {

@@ -116,22 +116,28 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
   public getAccidents(value: string[] | number[] | null): Accident[] | null {
     const accidents = this.value.value
     if (accidents != undefined && value != null) {
+      let build = ""
+      let key = ""
+      let keyWithMetric = ""
       if (this.dbType == DBType.STARTUP_TESTS) {
-        const key = `${value[5]}_${value[7]}.${value[8]}`
-        const keyWithMetric = `${value[5]}/${value[2]}_${value[7]}.${value[8]}`
-        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+        build = `${value[7]}.${value[8]}`
+        key = `${value[5]}_${build}`
+        keyWithMetric = `${value[5]}/${value[2]}_${build}`
       }
       if (this.dbType == DBType.INTELLIJ) {
-        const buildNumber = value[10] == 0 ? `${value[8]}.${value[9]}` : `${value[8]}.${value[9]}.${value[10]}`
-        const key = `${value[6]}_${buildNumber}`
-        const keyWithMetric = `${value[6]}/${value[2]}_${buildNumber}`
-        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+        build = value[10] == 0 ? `${value[8]}.${value[9]}` : `${value[8]}.${value[9]}.${value[10]}`
+        key = `${value[6]}_${build}`
+        keyWithMetric = `${value[6]}/${value[2]}_${build}`
       }
       if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS || this.dbType == DBType.BAZEL) {
-        const key = `${value[6]}_${value[5]}`
-        const keyWithMetric = `${value[6]}/${value[2]}_${value[5]}`
-        return accidents.get(key) ?? accidents.get(keyWithMetric) ?? null
+        build = `${value[5]}`
+        key = `${value[6]}_${build}`
+        keyWithMetric = `${value[6]}/${value[2]}_${build}`
       }
+      const buildAccident = accidents.get(`_${build}`) ?? []
+      const testAccident = accidents.get(key) ?? []
+      const metricAccident = accidents.get(keyWithMetric) ?? []
+      return [...testAccident, ...buildAccident, ...metricAccident]
     }
     return null
   }

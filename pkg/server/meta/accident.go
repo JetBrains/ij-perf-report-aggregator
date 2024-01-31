@@ -60,7 +60,7 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 
     sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
     if params.Tests != nil {
-      sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ")"
+      sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ") or affected_test = ''"
     }
     rows, err := metaDb.Query(request.Context(), sql)
     if err != nil {

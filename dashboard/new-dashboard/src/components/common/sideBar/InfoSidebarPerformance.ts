@@ -116,8 +116,12 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
   const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
+
   const filteredAccidents = computed(() => {
-    return accidents?.value?.get(projectName + "_" + accidentBuild) ?? accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild)
+    const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
+    const metricAccident = accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? []
+    const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
+    return [...testAccident, ...buildAccident, ...metricAccident]
   })
   const description = computedAsync(async () => {
     return await getDescriptionFromMetaDb(projectName, "master")

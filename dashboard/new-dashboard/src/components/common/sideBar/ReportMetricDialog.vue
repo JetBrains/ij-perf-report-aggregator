@@ -5,7 +5,7 @@
     header="Report Event"
     :style="{ width: '30vw' }"
   >
-    <div class="flex items-center space-x-4 mb-4">
+    <div class="flex items-center space-x-4 mb-4 mt-4">
       <Dropdown
         v-model="accidentType"
         placeholder="Event Type"
@@ -39,7 +39,7 @@
       </span>
     </div>
     <div
-      v-if="props.data.series.length == 1"
+      v-if="props.data?.series.length == 1"
       class="flex items-center mb-4"
     >
       <InputSwitch
@@ -50,7 +50,22 @@
         for="reportMetricOnly"
         class="text-sm ml-2"
       >
-        Report metric only
+        Report only metric <code>{{ props.data.series[0].metricName }}</code>
+      </label>
+    </div>
+    <div
+      v-if="props.data?.series.length == 1"
+      class="flex items-center mb-4"
+    >
+      <InputSwitch
+        v-model="reportAllInBuild"
+        input-id="reportAllInBuild"
+      />
+      <label
+        for="reportAllInBuild"
+        class="text-sm ml-2"
+      >
+        Report all tests in build <code>{{ build }}</code>
       </label>
     </div>
     <!-- Footer buttons -->
@@ -75,34 +90,51 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { useStorage } from "@vueuse/core/index"
-import { ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
 
 const props = defineProps<{
-  data: InfoData
+  data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator
 }>()
 
 const showDialog = defineModel<boolean>()
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
+const reportAllInBuild = useStorage("reportAllInBuild", false)
 const accidentType = ref<string>("Regression")
 const reason = ref("")
+
+const build = computed(() => props.data?.build ?? props.data?.buildId.toString())
 
 function reportRegression() {
   showDialog.value = false
   const value = props.data
 
-  const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
-  props.accidentsConfigurator.writeAccidentToMetaDb(
-    value.date,
-    value.projectName + (reportOnlyMetric ? "/" + value.series[0].metricName : ""),
-    reason.value,
-    value.build ?? value.buildId.toString(),
-    accidentType.value
-  )
+  if (value != null && build.value != null) {
+    const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
+    props.accidentsConfigurator.writeAccidentToMetaDb(
+      value.date,
+      reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + value.series[0].metricName : ""),
+      reason.value,
+      build.value,
+      accidentType.value
+    )
+  }
 }
+
+watch(reportMetricOnly, (newValue) => {
+  if (newValue) {
+    reportAllInBuild.value = false
+  }
+})
+
+watch(reportAllInBuild, (newValue) => {
+  if (newValue) {
+    reportMetricOnly.value = false
+  }
+})
 
 function getAccidentTypes(): string[] {
   const values = Object.values(AccidentKind)

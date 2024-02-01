@@ -88,6 +88,13 @@
             :projects="showFileHistoryProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="Collecting revisions from the [com.intellij.vcs.log.VcsLogFileHistoryHandler]"
+            measure="file-history-collecting-revisions-from-handler"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
       </AccordionTab>
 
       <AccordionTab header="Checkout">

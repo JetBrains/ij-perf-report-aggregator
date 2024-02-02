@@ -23,6 +23,18 @@ export function replaceToLink(reason: string) {
   const matchCommit = result.match(commit)
   if (matchCommit && matchCommit.length > 2) {
     result = result.replace(commit, `<a ${style} href="${matchCommit[0]}">${matchCommit[3]}</a>`)
+  } else {
+    const commitHash = /\b(?=[\dA-Fa-f]*[A-Fa-f])(?=[\dA-Fa-f]*\d)[\dA-Fa-f]{4,}\b/g
+    const matchCommitHash = result.match(commitHash)
+    if (matchCommitHash) {
+      result = result.replaceAll(commitHash, `<a ${style} href="https://jetbrains.team/p/ij/repositories/ultimate/revision/${matchCommitHash[0]}">${matchCommitHash[0]}</a>`)
+    }
+  }
+
+  const review = /https:\/\/jetbrains.team\/p\/(\w+)\/reviews\/(\d+)\/timeline/g
+  const matchReview = result.match(review)
+  if (matchReview) {
+    result = result.replaceAll(review, `<a ${style} href="${matchReview[0]}">review</a>`)
   }
 
   return result

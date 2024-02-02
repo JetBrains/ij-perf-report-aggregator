@@ -37,3 +37,15 @@ test("transform commit", () => {
     'Speedup JPS Sync test <a class="underline decoration-dotted hover:no-underline" href="https://jetbrains.team/p/ij/repositories/intellij/revision/69f4102715f053745592433a771385f28cde8e3d">69f4102715f053745592433a771385f28cde8e3d</a>'
   )
 })
+
+test("transform commit hash", () => {
+  expect(replaceToLink("Project structure was changed: [python, ds, jupyter]: Migrate Python support to V2 Ilya Kazakevich 129 files 98f418c52d90")).toStrictEqual(
+    'Project structure was changed: [python, ds, jupyter]: Migrate Python support to V2 Ilya Kazakevich 129 files <a class="underline decoration-dotted hover:no-underline" href="https://jetbrains.team/p/ij/repositories/ultimate/revision/98f418c52d90">98f418c52d90</a>'
+  )
+})
+
+test("transform review", () => {
+  expect(replaceToLink("New metrics were added https://jetbrains.team/p/ij/reviews/120177/timeline https://jetbrains.team/p/ij/reviews/120151/timeline")).toStrictEqual(
+    'New metrics were added <a class="underline decoration-dotted hover:no-underline" href="https://jetbrains.team/p/ij/reviews/120177/timeline">review</a> <a class="underline decoration-dotted hover:no-underline" href="https://jetbrains.team/p/ij/reviews/120177/timeline">review</a>'
+  )
+})

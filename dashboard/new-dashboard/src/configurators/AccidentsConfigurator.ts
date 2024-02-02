@@ -58,7 +58,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
   protected abstract getAccidentUrl(): string
 
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
-    fetch(this.getAccidentUrl(), {
+    fetch(this.getAccidentUrl() + "accidents/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +86,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
   }
 
   removeAccidentFromMetaDb(id: number) {
-    fetch(this.getAccidentUrl(), {
+    fetch(this.getAccidentUrl() + "accidents/", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -111,6 +111,27 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       .catch((error) => {
         console.error(error)
       })
+  }
+
+  public getAccidentsAroundDate(date: string): Promise<Accident[]> {
+    return new Promise((resolve, reject) => {
+      fetch(this.getAccidentUrl() + "accidentsAroundDate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("The accidents weren't fetched")
+          }
+          resolve(response.json())
+        })
+        .catch((error: Error) => {
+          reject(error)
+        })
+    })
   }
 
   public getAccidents(value: string[] | number[] | null): Accident[] | null {
@@ -197,7 +218,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   }
 
   protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/accidents/"
+    return this.serverUrl + "/api/meta/"
   }
 
   private removeProductPrefix(product: string, response: Map<string, Accident[]>): Map<string, Accident[]> {
@@ -212,7 +233,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
     if (this.product.value == null || Array.isArray(this.product.value)) return
     const test = `${this.product.value}/${affected_test}`
-    fetch(this.getAccidentUrl(), {
+    fetch(this.getAccidentUrl() + "accidents/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -262,7 +283,7 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
     })
   }
   protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/accidents/"
+    return this.serverUrl + "/api/meta"
   }
 }
 
@@ -288,7 +309,7 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   }
 
   protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/accidents/"
+    return this.serverUrl + "/api/meta/"
   }
 
   private getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {

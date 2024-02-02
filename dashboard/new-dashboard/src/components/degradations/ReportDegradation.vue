@@ -84,7 +84,7 @@ const serverConfigurator = new ServerWithCompressConfigurator("", "")
 
 class AccidentReporter extends AccidentsConfigurator {
   protected getAccidentUrl(): string {
-    return serverConfigurator.serverUrl + "/api/meta/accidents/"
+    return serverConfigurator.serverUrl + "/api/meta"
   }
 }
 

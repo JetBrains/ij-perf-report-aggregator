@@ -139,6 +139,11 @@
         </ul>
       </div>
 
+      <RelatedAccidents
+        :data="data"
+        :accidents-configurator="accidentsConfigurator"
+      />
+
       <div class="flex gap-4 text-primary">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
@@ -202,6 +207,7 @@ import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"
 import { tcUrl } from "./InfoSidebar"
+import RelatedAccidents from "./RelatedAccidents.vue"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
 import TestActions from "./TestActions.vue"
 

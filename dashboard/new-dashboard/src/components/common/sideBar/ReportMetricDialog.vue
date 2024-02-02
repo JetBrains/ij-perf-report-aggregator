@@ -68,6 +68,10 @@
         Report all tests in build <code>{{ build }}</code>
       </label>
     </div>
+    <RelatedAccidents
+      :data="props.data"
+      :accidents-configurator="props.accidentsConfigurator"
+    />
     <!-- Footer buttons -->
     <template #footer>
       <div class="flex justify-end space-x-2">
@@ -93,6 +97,7 @@ import { useStorage } from "@vueuse/core/index"
 import { computed, ref, watch } from "vue"
 import { AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
+import RelatedAccidents from "./RelatedAccidents.vue"
 
 const props = defineProps<{
   data: InfoData | null

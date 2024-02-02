@@ -15,7 +15,8 @@
               <span
                 class="w-full"
                 :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
-                >{{ accident.reason }}</span
+                v-html="replaceToLink(accident.reason)"
+              />
               >
             </span>
           </li>
@@ -28,6 +29,7 @@
 import { computedAsync } from "@vueuse/core"
 import { ref } from "vue"
 import { AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { replaceToLink } from "../../../util/linkReplacer"
 import { InfoData } from "./InfoSidebar"
 
 const props = defineProps<{

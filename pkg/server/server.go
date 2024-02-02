@@ -96,6 +96,7 @@ func Serve(dbUrl string, natsUrl string) error {
   r.Post("/api/meta/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(dbpool))
   r.Delete("/api/meta/accidents*", meta.CreateDeleteAccidentRequestHandler(dbpool))
   r.Get("/api/meta/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
+  r.Post("/api/meta/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
   r.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))

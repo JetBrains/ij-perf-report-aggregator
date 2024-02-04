@@ -62,6 +62,7 @@
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
           'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
         ]"
         :aliases="[
           'Factory (GL)',
@@ -75,6 +76,7 @@
           'Global Variable (GL)',
           'Delegate Method (GL)',
           'Association (GL)',
+          'I18n Key (MA)'
         ]"
       />
     </section>
@@ -94,6 +96,7 @@
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
           'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
         ]"
         :aliases="[
           'Factory (GL)',
@@ -107,6 +110,7 @@
           'Global Variable (GL)',
           'Delegate Method (GL)',
           'Association (GL)',
+          'I18n Key (MA)',
         ]"
       />
     </section>
@@ -371,6 +375,7 @@
           'RUBY-32357/class-variable',
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
+          'mastodon-find-usages/i18n-key',
         ]"
         :aliases="[
           'Project Model (GL)',
@@ -413,6 +418,7 @@
           'Epics Swimlanes Drag Drop Spec (GL)',
           'Feature Flag Script (GL)',
           'Framework Registry Finder (GL)',
+          'Locale File (MA)',
         ]"
       />
     </section>
@@ -477,6 +483,7 @@
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
           'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
           'gitlab-project-inspections-test/inspection-app',
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'redmine-project-inspections-test/inspection-RubyResolve-app',
@@ -495,6 +502,7 @@
           'Global Variable Find Usage (GL)',
           'Delegate Method Find Usage (GL)',
           'Association Find Usage (GL)',
+          'I18n Key (MA)',
           'All Inspections (GL)',
           'Unresolved References Inspection (GL)',
           'All Inspections (RM)',
@@ -519,6 +527,7 @@
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
           'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
           'gitlab-project-inspections-test/inspection-app',
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'redmine-project-inspections-test/inspection-RubyResolve-app',
@@ -537,6 +546,7 @@
           'Global Variable Find Usage (GL)',
           'Delegate Method Find Usage (GL)',
           'Association Find Usage (GL)',
+          'I18n Key (MA)',
           'All Inspections (GL)',
           'Unresolved References Inspection (GL)',
           'All Inspections (RM)',

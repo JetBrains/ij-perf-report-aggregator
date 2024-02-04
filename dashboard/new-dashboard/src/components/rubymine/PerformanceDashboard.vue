@@ -76,7 +76,7 @@
           'Global Variable (GL)',
           'Delegate Method (GL)',
           'Association (GL)',
-          'I18n Key (MA)'
+          'I18n Key (MA)',
         ]"
       />
     </section>

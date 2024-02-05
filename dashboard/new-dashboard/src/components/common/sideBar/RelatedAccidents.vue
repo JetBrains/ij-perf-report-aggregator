@@ -12,12 +12,14 @@
           >
             <span class="flex items-start justify-between gap-1.5 text-sm">
               &bull;
+              <!-- eslint-disable vue/no-v-html -->
               <span
                 class="w-full"
                 :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
-                v-html="replaceToLink(accident.reason)"
+                v-html="sanitize(replaceToLink(accident.reason))"
               />
             </span>
+            <!-- eslint-enable -->
           </li>
         </ul>
       </DeferredContent>
@@ -26,6 +28,7 @@
 </template>
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
+import sanitizeHtml from "sanitize-html"
 import { ref } from "vue"
 import { AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { replaceToLink } from "../../../util/linkReplacer"
@@ -55,6 +58,15 @@ function loadEventsAroundDate() {
       accidentsAroundDate.value = deduplicateAccidents(transformedAccidents)
     }
   }).value
+}
+
+function sanitize(html: string): string {
+  return sanitizeHtml(html, {
+    allowedTags: ["a"],
+    allowedAttributes: {
+      a: ["href", "class"],
+    },
+  })
 }
 </script>
 <style #scoped>

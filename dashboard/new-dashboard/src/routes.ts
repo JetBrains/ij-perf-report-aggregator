@@ -32,6 +32,7 @@ const enum ROUTE_PREFIX {
   Qodana = "/qodana",
   Clion = "/clion",
   Vcs = IntelliJ + "/vcs",
+  EmbeddingSearch = IntelliJ + "/embeddingSearch",
   PerfUnit = "/perfUnit",
   ML = "/ml",
   DataGrip = "/datagrip",
@@ -60,6 +61,7 @@ enum ROUTES {
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
+  IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
@@ -497,6 +499,16 @@ const IDEA: Product = {
         {
           url: ROUTES.VcsStarterDashboard,
           label: "Performance dashboard starter project",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.EmbeddingSearch,
+      label: "Embedding Search",
+      tabs: [
+        {
+          url: ROUTES.IntelliJEmbeddingSearchDashboard,
+          label: "Embedding Search",
         },
       ],
     },
@@ -1322,6 +1334,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJGCDashboard,
           component: () => import("./components/intelliJ/experiments/GarbageCollectorDashboard.vue"),
           meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
+        },
+        {
+          path: ROUTES.IntelliJEmbeddingSearchDashboard,
+          component: () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"),
+          meta: { pageTitle: "IntelliJ performance tests for embedding search" },
         },
         {
           path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,

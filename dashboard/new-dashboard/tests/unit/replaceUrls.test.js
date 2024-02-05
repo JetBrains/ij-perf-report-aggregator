@@ -1,5 +1,4 @@
 import { expect, test } from "vitest"
-import { removeCommonSegments } from "../../src/util/removeCommonPrefixes"
 import { replaceToLink } from "../../src/util/linkReplacer"
 
 test("make link from YT issue", () => {

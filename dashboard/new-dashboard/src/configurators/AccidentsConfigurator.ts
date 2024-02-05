@@ -283,7 +283,7 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
     })
   }
   protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta"
+    return this.serverUrl + "/api/meta/"
   }
 }
 

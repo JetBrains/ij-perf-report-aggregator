@@ -25,21 +25,18 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["FindUsages PsiManager#getInstance Before and After Compilation"],
-    measures: ["findUsages"],
+    labels: ["FindUsages PsiManager#getInstance Before and After Compilation", "FindUsages PsiManager#getInstance isUpToDateCheck duration"],
+    measures: ["findUsages", "isUpToDateCheck"],
     projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
   },
   {
-    labels: ["FindUsages Library#getName (all usages)", "FindUsages Library#getName (first usage)"],
-    measures: [
-      ["findUsages", "fus_find_usages_all"],
-      ["findUsages_firstUsage", "fus_find_usages_first"],
-    ],
+    labels: ["FindUsages Library#getName (all usages)", "FindUsages Library#getName (first usage)", "FindUsages Library#getName isUpToDateCheck duration"],
+    measures: [["findUsages", "fus_find_usages_all"], ["findUsages_firstUsage", "fus_find_usages_first"], ["isUpToDateCheck"]],
     projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
   },
   {
-    labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation"],
-    measures: ["findUsages"],
+    labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation", "FindUsages LocalInspectionTool#getID isUpToDateCheck duration"],
+    measures: ["findUsages", "isUpToDateCheck"],
     projects: ["community/findUsages/LocalInspectionTool_getID_Before", "community/findUsages/LocalInspectionTool_getID_After"],
   },
   {

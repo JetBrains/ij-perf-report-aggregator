@@ -32,6 +32,11 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["localInspections#mean_value", "Code analysis mean time. From Daemon#restart till DaemonListener#daemonFinished."],
   ["semanticHighlighting#mean_value", "Semantic highlighting mean time. From Daemon#restart till end of GeneralHighlightingPass."],
   ["findUsages#mean_value", "Mean time to show all usages in the popup"],
+  ["test#average_awt_delay", "Average time in ms of processing an event in Event Dispatch Queue (approximation of UI delays); measured during the whole test"],
+  [
+    "typing#latency",
+    "Average time in ms of inserting a letter in the Editor (approximation of how long does it take from keyboard press till the appearance of the letter); measured during typing",
+  ],
 ])
 
 export interface MetricInfo {

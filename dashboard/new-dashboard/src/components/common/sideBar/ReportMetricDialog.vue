@@ -25,7 +25,7 @@
           <span />
         </template>
       </Dropdown>
-      <span class="p-float-label flex-grow">
+      <FloatLabel>
         <InputText
           id="reason"
           v-model="reason"
@@ -36,7 +36,7 @@
           for="reason"
           >Reason</label
         >
-      </span>
+      </FloatLabel>
     </div>
     <div
       v-if="props.data?.series.length == 1"

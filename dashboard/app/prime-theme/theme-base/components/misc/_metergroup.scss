@@ -1,5 +1,48 @@
+@use "sass:math";
+
+// core
 .p-metergroup {
-    .p-metergroup-meter-container {
+    display: flex;
+}
+
+.p-metergroup-meters {
+    display: flex;
+}
+
+.p-metergroup-vertical .p-metergroup-meters {
+    flex-direction: column;
+}
+
+.p-metergroup-labels {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.p-metergroup-vertical .p-metergroup-labels {
+    align-items: start;
+}
+
+.p-metergroup-labels-vertical {
+    flex-direction: column;
+}
+
+.p-metergroup-label {
+    display: inline-flex;
+    align-items: center;
+}
+
+.p-metergroup-label-marker {
+    display: inline-flex;
+}
+
+// theme
+.p-metergroup {
+    gap: $inlineSpacing * 2;
+
+    .p-metergroup-meters {
         background: $progressBarBg;
         border-radius: $borderRadius;
     }
@@ -9,33 +52,36 @@
         background: $progressBarValueBg;
     }
 
-    .p-metergroup-label-list {
-        .p-metergroup-label-list-item {
-            line-height: $progressBarHeight;
+    .p-metergroup-labels {
+        .p-metergroup-label {
+            gap: $inlineSpacing;
         }
-        
-        .p-metergroup-label-type {
+
+        .p-metergroup-label-marker {
             background: $progressBarValueBg;
             width: 0.5rem;
             height: 0.5rem;
             border-radius: 100%;
-            margin-right: $inlineSpacing;
         }
-        
-        .p-metergroup-label {
-            margin-right: $inlineSpacing * 2;
-        }
-    
+
         .p-metergroup-label-icon {
             width: 1rem;
             height: 1rem;
-            margin-right: $inlineSpacing;
+        }
+
+        &.p-metergroup-labels-vertical {
+            gap: $inlineSpacing;
+        }
+
+        &.p-metergroup-labels-horizontal {
+            gap: $inlineSpacing * 2;
         }
     }
 
-
     &.p-metergroup-horizontal {
-        .p-metergroup-meter-container {
+        flex-direction: column;
+
+        .p-metergroup-meters {
             height: 0.5rem;
         }
 
@@ -48,18 +94,12 @@
             border-top-right-radius: $borderRadius;
             border-bottom-right-radius: $borderRadius;
         }
-
-        .p-metergroup-label-list-start {
-            margin-bottom: $inlineSpacing * 2;
-        }
-    
-        .p-metergroup-label-list-end {
-            margin-top: $inlineSpacing * 2;
-        }
     }
 
     &.p-metergroup-vertical {
-        .p-metergroup-meter-container {
+        flex-direction: row;
+
+        .p-metergroup-meters {
             width: 0.5rem;
             height: 100%;
         }
@@ -68,14 +108,10 @@
             border-top-left-radius: $borderRadius;
             border-top-right-radius: $borderRadius;
         }
-    
+
         .p-metergroup-meter:last-of-type {
             border-bottom-left-radius: $borderRadius;
             border-bottom-right-radius: $borderRadius;
-        }
-
-        .p-metergroup-label-list:not(.p-metergroup-label-list-start) {
-            margin-left: $inlineSpacing * 2;
         }
     }
 }

@@ -150,6 +150,7 @@ const components = new Set<string>([
   // "Editor",
   // "Fieldset",
   "FileUpload",
+  "FloatLabel",
   // "FullCalendar",
   // "Galleria",
   // "Image",

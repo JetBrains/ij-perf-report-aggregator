@@ -17,6 +17,7 @@ declare module 'vue' {
     DeferredContent: typeof import('primevue/deferredcontent/DeferredContent.vue')['default']
     Dialog: typeof import('primevue/dialog/Dialog.vue')['default']
     Dropdown: typeof import('primevue/dropdown/Dropdown.vue')['default']
+    FloatLabel: typeof import('primevue/floatlabel/FloatLabel.vue')['default']
     InputNumber: typeof import('primevue/inputnumber/InputNumber.vue')['default']
     InputSwitch: typeof import('primevue/inputswitch/InputSwitch.vue')['default']
     InputText: typeof import('primevue/inputtext/InputText.vue')['default']

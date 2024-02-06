@@ -1,3 +1,35 @@
+// core
+.p-radiobutton {
+    position: relative;
+    display: inline-flex;
+    user-select: none;
+    vertical-align: bottom;
+}
+
+.p-radiobutton-input {
+    cursor: pointer;
+}
+
+.p-radiobutton-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.p-radiobutton-icon {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0) scale(.1);
+    border-radius: 50%;
+    visibility: hidden;
+}
+
+.p-radiobutton.p-highlight .p-radiobutton-icon {
+    transform: translateZ(0) scale(1.0, 1.0);
+    visibility: visible;
+}
+
+// theme
 .p-radiobutton {
     width: $radiobuttonWidth;
     height: $radiobuttonHeight;
@@ -53,7 +85,7 @@
                 .p-radiobutton-box {
                     border-color: $radiobuttonActiveHoverBorderColor;
                     background: $radiobuttonActiveHoverBg;
-                    
+
                     .p-radiobutton-icon {
                         background-color: $radiobuttonIconActiveHoverColor;
                     }
@@ -70,6 +102,32 @@
 
     &.p-invalid > .p-radiobutton-box {
         @include invalid-input();
+    }
+
+    &.p-variant-filled {
+        .p-radiobutton-box {
+            background-color: $inputFilledBg;
+        }
+
+        &.p-highlight {
+            .p-radiobutton-box {
+                background: $radiobuttonActiveBg;
+            }
+        }
+
+        &:not(.p-disabled) {
+            &:has(.p-radiobutton-input:hover) {
+                .p-radiobutton-box {
+                    background-color: $inputFilledHoverBg;
+                }
+
+                &.p-highlight {
+                    .p-radiobutton-box {
+                        background: $radiobuttonActiveHoverBg;
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -90,7 +148,7 @@
                 .p-radiobutton-box {
                     background-color: $inputFilledHoverBg;
                 }
-    
+
                 &.p-highlight {
                     .p-radiobutton-box {
                         background: $radiobuttonActiveHoverBg;

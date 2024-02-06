@@ -1,3 +1,22 @@
+// core
+.p-checkbox {
+    position: relative;
+    display: inline-flex;
+    user-select: none;
+    vertical-align: bottom;
+}
+
+.p-checkbox-input {
+    cursor: pointer;
+}
+
+.p-checkbox-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+// theme
 .p-checkbox {
     width: $checkboxWidth;
     height: $checkboxHeight;
@@ -72,6 +91,32 @@
     &.p-invalid > .p-checkbox-box {
         @include invalid-input();
     }
+
+    &.p-variant-filled {
+        .p-checkbox-box {
+            background-color: $inputFilledBg;
+        }
+
+        &.p-highlight {
+            .p-checkbox-box {
+                background: $checkboxActiveBg;
+            }
+        }
+
+        &:not(.p-disabled) {
+            &:has(.p-checkbox-input:hover) {
+                .p-checkbox-box {
+                    background-color: $inputFilledHoverBg;
+                }
+
+                &.p-highlight {
+                    .p-checkbox-box {
+                        background: $checkboxActiveHoverBg;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .p-input-filled {
@@ -91,7 +136,7 @@
                 .p-checkbox-box {
                     background-color: $inputFilledHoverBg;
                 }
-    
+
                 &.p-highlight {
                     .p-checkbox-box {
                         background: $checkboxActiveHoverBg;
@@ -110,4 +155,4 @@
             }
         }
     }
-} 
+}

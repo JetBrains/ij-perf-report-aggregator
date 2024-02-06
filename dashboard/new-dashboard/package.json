@@ -2,7 +2,7 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.17",
+    "@headlessui/vue": "^1.7.18",
     "@heroicons/vue": "2.1.1",
     "@vueuse/core": "^10.7.2",
     "compare-versions": "6.1.0",
@@ -12,7 +12,7 @@
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.47.2",
+    "primevue": "3.48.0",
     "rxjs": "8.0.0-alpha.12",
     "sanitize-html": "^2.11.0",
     "vue": "3.4.15",
@@ -23,6 +23,6 @@
     "@types/sanitize-html": "^2.11.0",
     "global-jsdom": "^24.0.0",
     "jsdom": "^24.0.0",
-    "msw": "^2.1.5"
+    "msw": "^2.1.6"
   }
 }

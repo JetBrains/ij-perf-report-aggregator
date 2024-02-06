@@ -65,7 +65,7 @@
           :aggregated-project="'radler/%/typing/%'"
           :aggregated-measure="'typing#latency#max'"
           :is-like="true"
-          :title="'[Radler] Typing latency(max)y'"
+          :title="'[Radler] Typing latency(max)'"
           :chart-color="'#F2994A'"
         />
       </div>

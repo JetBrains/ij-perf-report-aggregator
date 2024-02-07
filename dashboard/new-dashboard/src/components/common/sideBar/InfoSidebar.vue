@@ -129,7 +129,13 @@
           >
             <span class="flex items-start justify-between gap-1.5 text-sm">
               &bull;
-              <span class="w-full">{{ accident.kind }}: {{ accident.reason }}</span>
+              <!-- eslint-disable vue/no-v-html -->
+              <span
+                class="w-full"
+                :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
+                v-html="replaceToLink(accident.reason)"
+              />
+              <!-- eslint-enable -->
               <TrashIcon
                 class="w-4 h-4 text-red-500 flex-none"
                 @click="handleRemove(accident.id)"
@@ -203,6 +209,7 @@ import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from ".
 import { getMetricDescription } from "../../../shared/metricsDescription"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
+import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"

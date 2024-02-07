@@ -16,7 +16,7 @@
               <span
                 class="w-full"
                 :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
-                v-html="sanitize(replaceToLink(accident.reason))"
+                v-html="replaceToLink(accident.reason)"
               />
             </span>
             <!-- eslint-enable -->
@@ -28,7 +28,6 @@
 </template>
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
-import sanitizeHtml from "sanitize-html"
 import { ref } from "vue"
 import { AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { replaceToLink } from "../../../util/linkReplacer"
@@ -58,15 +57,6 @@ function loadEventsAroundDate() {
       accidentsAroundDate.value = deduplicateAccidents(transformedAccidents)
     }
   }).value
-}
-
-function sanitize(html: string): string {
-  return sanitizeHtml(html, {
-    allowedTags: ["a"],
-    allowedAttributes: {
-      a: ["href", "class"],
-    },
-  })
 }
 </script>
 <style #scoped>

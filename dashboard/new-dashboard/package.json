@@ -14,7 +14,6 @@
     "pinia": "^2.1.7",
     "primevue": "3.48.0",
     "rxjs": "8.0.0-alpha.12",
-    "sanitize-html": "^2.11.0",
     "vue": "3.4.15",
     "vue-router": "4.2.5"
   },

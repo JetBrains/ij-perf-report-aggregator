@@ -9,7 +9,7 @@
       @click="copyLink"
     >
       <span v-tooltip.bottom="'Copy link to dashboard with current date timeline.'">
-        <CopyIcon />
+        <ClipboardDocumentIcon class="w-6 h-6" />
       </span>
     </a>
   </div>
@@ -26,7 +26,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import { parseDuration, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import CopyIcon from "../common/CopyIcon.vue"
 const props = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
 }>()

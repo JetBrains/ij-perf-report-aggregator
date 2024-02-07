@@ -25,7 +25,7 @@
           <span />
         </template>
       </Dropdown>
-      <FloatLabel>
+      <FloatLabel class="w-full">
         <InputText
           id="reason"
           v-model="reason"

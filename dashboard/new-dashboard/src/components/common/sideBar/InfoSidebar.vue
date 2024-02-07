@@ -148,6 +148,7 @@
       <RelatedAccidents
         :data="data"
         :accidents-configurator="accidentsConfigurator"
+        :in-dialog="false"
       />
 
       <div class="flex gap-4 text-primary">

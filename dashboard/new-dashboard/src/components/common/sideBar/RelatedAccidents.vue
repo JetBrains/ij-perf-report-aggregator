@@ -1,5 +1,8 @@
 <template>
-  <Accordion lazy>
+  <Accordion
+    :lazy="props.inDialog"
+    :active-index="props.inDialog ? 0 : null"
+  >
     <AccordionTab header="Events around the date">
       <DeferredContent @load="loadEventsAroundDate">
         <ul
@@ -36,10 +39,10 @@ import { InfoData } from "./InfoSidebar"
 const props = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
+  inDialog: boolean
 }>()
 
 const accidentsAroundDate = ref<AccidentSimple[] | undefined>([])
-
 interface AccidentSimple {
   kind: string
   reason: string

@@ -71,6 +71,7 @@
     <RelatedAccidents
       :data="props.data"
       :accidents-configurator="props.accidentsConfigurator"
+      :in-dialog="true"
     />
     <!-- Footer buttons -->
     <template #footer>

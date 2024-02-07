@@ -410,10 +410,10 @@ loop:
 
     if len(filter.Sql) != 0 {
       if len(filter.Operator) != 0 {
-        return fmt.Errorf("sql and operator are mutually exclusive")
+        return errors.New("sql and operator are mutually exclusive")
       }
       if filter.Value != nil {
-        return fmt.Errorf("sql and value are mutually exclusive")
+        return errors.New("sql and value are mutually exclusive")
       }
 
       sb.WriteRune(' ')

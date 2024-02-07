@@ -3,6 +3,7 @@ package degradation_detector
 import (
   "context"
   "encoding/json"
+  "errors"
   "fmt"
   dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -175,10 +176,10 @@ func extractDataFromRequest(response []byte) (queryResult, error) {
     return queryResult{}, fmt.Errorf("failed to decode JSON: %w", err)
   }
   if len(data) == 0 {
-    return queryResult{}, fmt.Errorf("no data")
+    return queryResult{}, errors.New("no data")
   }
   if len(data[0]) < 3 {
-    return queryResult{}, fmt.Errorf("not enough data")
+    return queryResult{}, errors.New("not enough data")
   }
   timestamps, err := SliceToSliceInt64(data[0][0])
   if err != nil {

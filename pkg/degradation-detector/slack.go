@@ -4,6 +4,7 @@ import (
   "bytes"
   "context"
   "encoding/json"
+  "errors"
   "fmt"
   "github.com/cenkalti/backoff/v4"
   "log/slog"
@@ -141,7 +142,7 @@ func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
   }
   webhookUrl := os.Getenv("SLACK_WEBHOOK_URL")
   if len(webhookUrl) == 0 {
-    return fmt.Errorf("SLACK_WEBHOOK_URL is not set")
+    return errors.New("SLACK_WEBHOOK_URL is not set")
   }
   err = backoff.Retry(func() error {
     req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookUrl, bytes.NewBuffer(slackMessageJson))

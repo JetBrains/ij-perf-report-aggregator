@@ -72,6 +72,7 @@
       :data="props.data"
       :accidents-configurator="props.accidentsConfigurator"
       :in-dialog="true"
+      @copy-accident="copy"
     />
     <!-- Footer buttons -->
     <template #footer>
@@ -141,6 +142,11 @@ watch(reportAllInBuild, (newValue) => {
     reportMetricOnly.value = false
   }
 })
+
+function copy(accident: { kind: string; reason: string }) {
+  reason.value = accident.reason
+  accidentType.value = accident.kind
+}
 
 function getAccidentTypes(): string[] {
   const values = Object.values(AccidentKind)

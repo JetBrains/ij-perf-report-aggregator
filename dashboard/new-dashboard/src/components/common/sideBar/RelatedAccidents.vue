@@ -13,7 +13,13 @@
             v-for="accident in accidentsAroundDate"
             :key="accident?.reason"
           >
-            <span class="flex items-start justify-between gap-1.5 text-sm">
+            <span class="flex gap-1.5 text-sm">
+              <span v-if="props.inDialog">
+                <DocumentDuplicateIcon
+                  class="w-4 h-4"
+                  @click="copy(accident)"
+                />
+              </span>
               &bull;
               <!-- eslint-disable vue/no-v-html -->
               <span
@@ -60,6 +66,11 @@ function loadEventsAroundDate() {
       accidentsAroundDate.value = deduplicateAccidents(transformedAccidents)
     }
   }).value
+}
+
+const emit = defineEmits(["copyAccident"])
+function copy(accident: AccidentSimple): void {
+  emit("copyAccident", accident)
 }
 </script>
 <style #scoped>

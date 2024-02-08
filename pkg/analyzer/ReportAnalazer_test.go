@@ -16,7 +16,7 @@ func TestBranchInferenceForJBRNumber(t *testing.T) {
   }
   b, e := getBranch(r, d, "jbr", slog.Default())
   require.NoError(t, e)
-  assert.Equal(t, "232", b)
+  assert.Equal(t, "232_jbr17", b)
 }
 
 func TestBranchInferenceForJBRMaster(t *testing.T) {
@@ -27,7 +27,7 @@ func TestBranchInferenceForJBRMaster(t *testing.T) {
   }
   b, e := getBranch(r, d, "jbr", slog.Default())
   require.NoError(t, e)
-  assert.Equal(t, "master", b)
+  assert.Equal(t, "master_jbr17", b)
 }
 
 func TestBranchInferenceForDevMain(t *testing.T) {
@@ -38,5 +38,5 @@ func TestBranchInferenceForDevMain(t *testing.T) {
   }
   b, e := getBranch(r, d, "jbr", slog.Default())
   require.NoError(t, e)
-  assert.Equal(t, "main", b)
+  assert.Equal(t, "dev_main", b)
 }

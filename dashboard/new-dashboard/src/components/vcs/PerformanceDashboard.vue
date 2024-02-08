@@ -12,11 +12,12 @@
       <Chip><a href="#filter">Filter Log tab</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
       <Chip><a href="#widget">Branch widget</a></Chip>
+      <Chip><a href="#annotate">Branch widget</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2, 3, 4, 5]"
+      :active-index="[0, 1, 2, 3, 4, 5, 6]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />

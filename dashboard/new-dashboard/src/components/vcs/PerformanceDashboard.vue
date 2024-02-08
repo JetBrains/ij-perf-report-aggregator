@@ -83,7 +83,7 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Loading full VCS Log (all commits and references)"
+            label="Loading full VCS Log (all commits and references) - vcs-log-loading-full-log"
             measure="vcs-log-loading-full-log"
             :projects="showFileHistoryProjects"
           />
@@ -194,6 +194,16 @@
           />
         </section>
       </AccordionTab>
+      <AccordionTab header="Annotate">
+        <a name="annotate" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - showFileAnnotation"
+            measure="showFileAnnotation"
+            :projects="annotateProjects"
+          />
+        </section>
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>
@@ -219,4 +229,5 @@ const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProj
 const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
 
 const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
+const annotateProjects = ["intellij_clone_specific_commit/vcs-annotate-instant-git", "vcs_100k_branches/vcs-annotate"]
 </script>

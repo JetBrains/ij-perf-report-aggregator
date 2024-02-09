@@ -172,7 +172,7 @@ func SelectRows(ctx context.Context, query Query, table string, dbSupplier Datab
   }
 
   columnBuffers := make([][]*bytebufferpool.ByteBuffer, splitParameters.numberOfSplits)
-  err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(ctx context.Context, block proto.Block, result *proto.Results) error {
+  err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(_ context.Context, block proto.Block, result *proto.Results) error {
     if block.Rows == 0 {
       return nil
     }

@@ -37,7 +37,7 @@ type assetInfo struct {
 func run() error {
   var pathToAsset = map[string]*assetInfo{}
 
-  err := fs.WalkDir(assetFs, "resources", func(path string, d fs.DirEntry, err error) error {
+  err := fs.WalkDir(assetFs, "resources", func(path string, _ fs.DirEntry, err error) error {
     if err != nil {
       return err
     }

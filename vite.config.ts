@@ -66,6 +66,9 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "cmd/frontend/resources"),
     cssMinify: "lightningcss",
   },
+  css: {
+    preprocessorMaxWorkers: true,
+  },
 })
 
 function brotli(): PluginOption {

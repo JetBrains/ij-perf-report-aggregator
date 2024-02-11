@@ -12,7 +12,7 @@
       <Chip><a href="#filter">Filter Log tab</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
       <Chip><a href="#widget">Branch widget</a></Chip>
-      <Chip><a href="#annotate">Branch widget</a></Chip>
+      <Chip><a href="#annotate">Annotate</a></Chip>
     </div>
 
     <Accordion
@@ -204,6 +204,13 @@
             :projects="annotateProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - git-open-annotation"
+            measure="git-open-annotation"
+            :projects="annotateProjects"
+          />
+        </section>
       </AccordionTab>
     </Accordion>
   </DashboardPage>
@@ -230,5 +237,5 @@ const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProj
 const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
 
 const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
-const annotateProjects = ["intellij_clone_specific_commit/vcs-annotate-instant-git", "vcs_100k_branches/vcs-annotate"]
+const annotateProjects = ["intellij_clone_specific_commit/vcs-annotate-instant-git", "intellij_clone_specific_commit/vcs-annotate"]
 </script>

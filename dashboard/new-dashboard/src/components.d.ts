@@ -10,6 +10,7 @@ declare module 'vue' {
     Accordion: typeof import('primevue/accordion/Accordion.vue')['default']
     AccordionTab: typeof import('primevue/accordiontab/AccordionTab.vue')['default']
     Button: typeof import('primevue/button/Button.vue')['default']
+    Calendar: typeof import('primevue/calendar/Calendar.vue')['default']
     Card: typeof import('primevue/card/Card.vue')['default']
     Checkbox: typeof import('primevue/checkbox/Checkbox.vue')['default']
     Column: typeof import('primevue/column/Column.vue')['default']

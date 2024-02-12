@@ -38,6 +38,15 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     })
   }
 
+  public setCustomRange(start: Date, end: Date) {
+    this.value.value = "custom"
+    this.customRange.value = `${this.getStringFromDate(start)}:${this.getStringFromDate(end)}`
+  }
+
+  private getStringFromDate(date: Date): string {
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+  }
+
   createObservable(): Observable<[TimeRange, string]> {
     return combineLatest([refToObservable(this.value), refToObservable(this.customRange)]).pipe()
   }
@@ -48,7 +57,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
 
   configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
     const timeRange = this.value.value
-    return getStartTime(this.value.value) == null ? Promise.resolve({}) : Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
+    return Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration | null): boolean {

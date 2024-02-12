@@ -128,7 +128,7 @@ const components = new Set<string>([
   // "BlockUI",
   "Breadcrumb",
   "Button",
-  // "Calendar",
+  "Calendar",
   "Card",
   // "Carousel",
   // "CascadeSelect",

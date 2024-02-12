@@ -24,11 +24,30 @@
     <template #dropdownicon>
       <span class="hidden" />
     </template>
+    <template #footer>
+      <ul class="p-dropdown-items">
+        <div
+          class="p-dropdown-item"
+          @click="showCalendar"
+        >
+          Range
+        </div>
+      </ul>
+      <Calendar
+        v-if="isShowCalendar"
+        v-model="date"
+        class="text-sm"
+        date-format="dd/mm/yy"
+        selection-mode="range"
+        :inline="true"
+        @click.stop
+      />
+    </template>
   </Dropdown>
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { computed } from "vue"
+import { computed, ref, watch } from "vue"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 
 const props = defineProps<{
@@ -36,6 +55,30 @@ const props = defineProps<{
 }>()
 
 const model = props.timerangeConfigurator.value
-
 const currentValue = computed(() => props.timerangeConfigurator.timeRanges.value.find((item) => item.value === model.value))
+
+const date = ref()
+watch(date, (value: (Date | null)[] | null) => {
+  if (value != null) {
+    const start = value[0]
+    const end = value[1]
+    if (start != null && end != null) {
+      props.timerangeConfigurator.setCustomRange(start, end)
+    }
+  }
+})
+
+const isShowCalendar = ref(false)
+
+function showCalendar() {
+  isShowCalendar.value = !isShowCalendar.value
+}
 </script>
+<style #scoped>
+.p-datepicker table {
+  @apply text-sm;
+}
+.p-link {
+  @apply text-sm;
+}
+</style>

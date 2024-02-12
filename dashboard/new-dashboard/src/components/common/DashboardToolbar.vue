@@ -1,11 +1,7 @@
 <template>
   <StickyToolbar>
     <template #start>
-      <TimeRangeSelect
-        :ranges="props.timeRangeConfigurator.timeRanges"
-        :value="props.timeRangeConfigurator.value.value"
-        :on-change="onChangeRange"
-      />
+      <TimeRangeSelect :timerange-configurator="props.timeRangeConfigurator" />
       <BranchSelect
         :branch-configurator="props.branchConfigurator"
         :release-configurator="props.releaseConfigurator"

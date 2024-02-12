@@ -3,11 +3,7 @@
     <StickyToolbar>
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           v-if="releaseConfigurator != null"
           :branch-configurator="branchConfigurator"
@@ -131,7 +127,7 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
@@ -220,10 +216,6 @@ const configurators: DataQueryConfigurator[] = [serverConfigurator, branchConfig
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
-}
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
 }
 
 const configuratorsUpdated = ref(false)

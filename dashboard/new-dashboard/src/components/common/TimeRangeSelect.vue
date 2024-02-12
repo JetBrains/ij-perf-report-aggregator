@@ -2,7 +2,7 @@
   <Dropdown
     v-model="model"
     title="Time Range"
-    :options="props.ranges.value.filter((element) => element.label != '')"
+    :options="props.timerangeConfigurator.timeRanges.value.filter((element) => element.label != '')"
     option-label="label"
     option-value="value"
   >
@@ -28,23 +28,14 @@
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
-import { computed, Ref } from "vue"
-import { TimeRange, TimeRangeItem } from "../../configurators/TimeRangeConfigurator"
+import { computed } from "vue"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 
 const props = defineProps<{
-  value: TimeRange
-  onChange: (value: TimeRange) => void
-  ranges: Ref<TimeRangeItem[]>
+  timerangeConfigurator: TimeRangeConfigurator
 }>()
 
-const model = computed({
-  get() {
-    return props.value
-  },
-  set(value: TimeRange) {
-    props.onChange(value)
-  },
-})
+const model = props.timerangeConfigurator.value
 
-const currentValue = computed(() => props.ranges.value.find((item) => item.value === model.value))
+const currentValue = computed(() => props.timerangeConfigurator.timeRanges.value.find((item) => item.value === model.value))
 </script>

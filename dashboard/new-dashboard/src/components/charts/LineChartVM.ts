@@ -187,7 +187,6 @@ export class LineChartVM {
       },
       xAxis: {
         type: "time",
-        max: new Date(),
         axisPointer: {
           snap: false,
           label: {

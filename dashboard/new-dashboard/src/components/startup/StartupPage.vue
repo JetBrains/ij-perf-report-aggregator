@@ -2,11 +2,7 @@
   <div class="flex flex-col gap-5">
     <StickyToolbar>
       <template #start>
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"

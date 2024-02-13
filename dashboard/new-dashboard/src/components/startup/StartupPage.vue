@@ -45,7 +45,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
@@ -131,9 +131,5 @@ provide(configuratorListKey, configurators)
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
-}
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
 }
 </script>

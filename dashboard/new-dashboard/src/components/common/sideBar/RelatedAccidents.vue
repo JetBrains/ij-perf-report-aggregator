@@ -11,7 +11,7 @@
         >
           <li
             v-for="accident in accidentsAroundDate"
-            :key="accident?.reason"
+            :key="accident?.reason + accident?.kind"
           >
             <span class="flex gap-1.5 text-sm">
               <span v-if="props.inDialog">

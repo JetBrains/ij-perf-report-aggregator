@@ -65,7 +65,7 @@
           >
             <BeakerIcon class="w-4 h-4" />
             <span
-              v-tooltip.left="metricDescription"
+              v-tooltip.left="getTooltipForMetric(data?.series[0].metricName)"
               :class="metricDescription != null ? getURLStyle() : ''"
               >{{ data?.series[0].nameToShow }}</span
             >

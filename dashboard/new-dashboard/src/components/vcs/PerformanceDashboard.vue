@@ -226,7 +226,7 @@ const intellijSpecificProject = "intellij_clone_specific_commit/gitLogIndexing"
 const indexingProjects = [intellijSpecificProject]
 
 const showFileHistory = "intellij_clone_specific_commit/EditorImpl-"
-const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl"]
+const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl", "intellij_sources/showFileHistory/EditorImpl-instant-git"]
 
 const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 

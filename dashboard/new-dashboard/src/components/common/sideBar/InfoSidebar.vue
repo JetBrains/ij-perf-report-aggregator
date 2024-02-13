@@ -54,7 +54,7 @@
             <ChartBarIcon class="w-4 h-4" />
             <span
               v-tooltip.left="description"
-              :class="description != '' ? 'underline decoration-dotted hover:no-underline' : ''"
+              :class="description != '' ? getURLStyle() : ''"
             >
               {{ data?.projectName }}
             </span>
@@ -64,7 +64,11 @@
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
-            <span v-tooltip.left="getTooltipForMetric(data?.series[0].metricName)">{{ data?.series[0].nameToShow }}</span>
+            <span
+              v-tooltip.left="metricDescription"
+              :class="metricDescription != null ? getURLStyle() : ''"
+              >{{ data?.series[0].nameToShow }}</span
+            >
           </span>
           <span class="flex gap-1.5 text-sm items-center">
             <ClockIcon class="w-4 h-4" />
@@ -291,11 +295,13 @@ function getSpaceUrl() {
 useScrollListeners()
 const description = computed(() => vm.data.value?.description.value?.description ?? "")
 
+const metricDescription = computed(() => getMetricDescription(data.value?.series[0].metricName))
+
 function getTooltipForMetric(metricName: string | undefined) {
   const metricInfo = getMetricDescription(metricName)
 
   return metricInfo == null
-    ? {}
+    ? null
     : {
         value:
           metricInfo.description +
@@ -304,6 +310,10 @@ function getTooltipForMetric(metricName: string | undefined) {
         hideDelay: metricInfo.url ? 3000 : 0,
         autoHide: !metricInfo.url,
       }
+}
+
+function getURLStyle() {
+  return "underline decoration-dotted hover:no-underline"
 }
 </script>
 <style>

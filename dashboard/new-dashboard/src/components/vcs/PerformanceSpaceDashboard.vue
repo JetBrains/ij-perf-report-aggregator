@@ -9,11 +9,12 @@
       <Chip><a href="#index">Vcs indexing</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
       <Chip><a href="#history">Show file history</a></Chip>
+      <Chip><a href="#annotate">Annotate</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2]"
+      :active-index="[0, 1, 2, 3]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />
@@ -132,6 +133,24 @@
           />
         </section>
       </AccordionTab>
+
+      <AccordionTab header="Annotate">
+        <a name="annotate" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - showFileAnnotation"
+            measure="showFileAnnotation"
+            :projects="annotateProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - git-open-annotation"
+            measure="git-open-annotation"
+            :projects="annotateProjects"
+          />
+        </section>
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>
@@ -148,5 +167,7 @@ const indexingProjects = [spaceProject]
 const commitProjects = ["space/git-commit", "space/git-commit-smallDataPack"]
 
 const showFileHistoryProjects = ["space/DmsFacadeImpl-instant-git", "space/DmsFacadeImpl"]
+
+const annotateProjects = ["space/vcs-annotate-instant-git", "space/vcs-annotate"]
 
 </script>

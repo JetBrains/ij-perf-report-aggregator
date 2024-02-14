@@ -177,6 +177,13 @@
             :projects="commitProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="git-reading-repo-info"
+            measure="git-reading-repo-info"
+            :projects="commitProjects"
+          />
+        </section>
       </AccordionTab>
       <AccordionTab header="Show branch widget">
         <a name="widget" />

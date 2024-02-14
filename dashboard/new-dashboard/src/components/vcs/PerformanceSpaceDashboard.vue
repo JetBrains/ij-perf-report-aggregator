@@ -169,5 +169,4 @@ const commitProjects = ["space/git-commit", "space/git-commit-smallDataPack"]
 const showFileHistoryProjects = ["space/DmsFacadeImpl-instant-git", "space/DmsFacadeImpl"]
 
 const annotateProjects = ["space/vcs-annotate-instant-git", "space/vcs-annotate"]
-
 </script>

@@ -8,11 +8,12 @@
     <div>
       <Chip><a href="#index">Vcs indexing</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
+      <Chip><a href="#history">Show file history</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1]"
+      :active-index="[0, 1, 2]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />
@@ -91,6 +92,46 @@
           />
         </section>
       </AccordionTab>
+
+      <AccordionTab header="Show file history">
+        <a name="history" />
+        <section>
+          <GroupProjectsChart
+            label="Show file history (test metric)"
+            measure="showFileHistory"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Show file history - showing first pack of data (test metric)"
+            measure="showFirstPack"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Computing - time spent on computing a peace of history.
+          If index - time of computing before the first rename. If git - time of computing before timeout of operation occurred"
+            measure="file-history-computing"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Loading full VCS Log (all commits and references) - vcs-log-loading-full-log"
+            measure="vcs-log-loading-full-log"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Collecting revisions from the [com.intellij.vcs.log.VcsLogFileHistoryHandler]"
+            measure="file-history-collecting-revisions-from-handler"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>
@@ -105,4 +146,7 @@ const spaceProject = "space/gitLogIndexing"
 const indexingProjects = [spaceProject]
 
 const commitProjects = ["space/git-commit", "space/git-commit-smallDataPack"]
+
+const showFileHistoryProjects = ["space/DmsFacadeImpl-instant-git", "space/DmsFacadeImpl"]
+
 </script>

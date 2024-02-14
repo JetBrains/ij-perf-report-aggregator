@@ -202,6 +202,7 @@ const projects = [
   "jps_10K-modules-checkout-branch-with-changes/measureStartup",
   "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
   "jps-cyclic-branches-checkout/measureStartup",
+  "jps-branches-checkout-without-libraries-dependencies/measureStartup",
   "jps-modules-reload/measureStartup",
   "jps-changes-in-artifacts/measureStartup",
 ]

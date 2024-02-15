@@ -136,7 +136,8 @@ const accidentsConfigurator = new AccidentsConfiguratorForStartup(
   productConfigurator.selected,
   projectConfigurator.selected,
   ref(null),
-  timeRangeConfigurator
+  timeRangeConfigurator,
+  dbName
 )
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 

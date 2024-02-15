@@ -3,6 +3,7 @@ import { Ref, ref } from "vue"
 import { Chart } from "../components/charts/DashboardCharts"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
+import { getDBType } from "../shared/dbTypes"
 import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
@@ -155,6 +156,11 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`
       }
+      if (this.dbType == DBType.STARTUP_TESTS_DEV) {
+        build = `${value[4]}`
+        key = `${value[5]}_${build}`
+        keyWithMetric = `${value[5]}/${value[2]}_${build}`
+      }
       const buildAccident = accidents.get(`_${build}`) ?? []
       const testAccident = accidents.get(key) ?? []
       const metricAccident = accidents.get(keyWithMetric) ?? []
@@ -196,10 +202,11 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     private product: Ref<string | string[] | null>,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
-    timeRangeConfigurator: TimeRangeConfigurator
+    timeRangeConfigurator: TimeRangeConfigurator,
+    db: string = "ij"
   ) {
     super()
-    this.dbType = DBType.STARTUP_TESTS
+    this.dbType = getDBType(db, "report")
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), refToObservable(product)]).subscribe(
       ([projects, measures, [timeRange, customRange], product]) => {
         if (product == null) return

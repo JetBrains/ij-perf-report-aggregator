@@ -6,6 +6,7 @@ import { ChartConfigurator, ChartStyle, ValueUnit } from "../components/common/c
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { BarChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat } from "../components/common/formatter"
+import { isIJStartup } from "../shared/dbTypes"
 import { TimeRange } from "./TimeRangeConfigurator"
 
 export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigurator, ChartConfigurator {
@@ -38,7 +39,7 @@ export class PredefinedGroupingMeasureConfigurator implements DataQueryConfigura
     // do not sort - bar chart shows series exactly in the same order as provided measure name list
     // reverse because echarts layout from bottom to top, but we need to put first measures to top
     const measureNames = [...this.measures].reverse()
-    if (query.db === "ij" || query.db === "ijDev") {
+    if (isIJStartup(query.db, query.table)) {
       for (const measureName of measureNames) {
         query.addField(measureName)
       }

@@ -21,6 +21,7 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
+import { isIJStartup, isStartup } from "../shared/dbTypes"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -64,7 +65,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   ) {
     persistentStateManager.add("measure", this._selected)
 
-    const isIj = serverConfigurator.db === "ij" || serverConfigurator.db === "ijDev"
+    const isIj = isIJStartup(serverConfigurator.db, serverConfigurator.table)
 
     createFilterObservable(serverConfigurator, filters)
       .pipe(
@@ -183,7 +184,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   }
 
   let fieldPrefix: string
-  if (serverConfigurator.db === "ij" || serverConfigurator.db === "ijDev") {
+  if (isIJStartup(serverConfigurator.db, serverConfigurator.table)) {
     fieldPrefix = "measure"
   } else {
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
@@ -260,7 +261,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  const isIj = query.db === "ij" || query.db === "ijDev"
+  const isIj = isIJStartup(query.db, query.table)
   const structureName = isIj ? "measure" : "measures"
   const valueName = isIj ? "duration" : "value"
   const field: DataQueryDimension = { n: "" }
@@ -272,7 +273,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   }
 
   const metricNameField: DataQueryDimension = { n: "" }
-  if (query.table == "report" && (query.db == "ij" || query.db == "ijDev" || query.db == "fleet")) {
+  if (isStartup(query.db, query.table)) {
     query.insertField(metricNameField, 2)
   }
 
@@ -298,7 +299,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (query.table == "report" && (query.db == "ij" || query.db == "ijDev" || query.db == "fleet")) {
+      if (isStartup(query.db, query.table)) {
         delete metricNameField.sql
         delete metricNameField.subName
         if (measure.startsWith("metrics.")) {

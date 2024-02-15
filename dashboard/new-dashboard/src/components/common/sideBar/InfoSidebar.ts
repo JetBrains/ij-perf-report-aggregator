@@ -51,6 +51,7 @@ export enum DBType {
   BAZEL = "bazel",
   PERF_UNIT_TESTS = "perfUnitTests",
   STARTUP_TESTS = "startupTests",
+  STARTUP_TESTS_DEV = "startupTests_dev",
   UNKNOWN = "unknown",
 }
 

@@ -345,7 +345,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     if errors.Is(err, context.Canceled) {
       return err
     }
-    return fmt.Errorf("cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
+    return fmt.Errorf("cannot insert report (teamcityBuildId=%d, reportPath=%s): %w", report.extraData.TcBuildId, report.extraData.ReportFile, err)
   }
   return nil
 }

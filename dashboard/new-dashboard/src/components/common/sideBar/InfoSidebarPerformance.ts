@@ -68,6 +68,17 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     branch = dataSeries[10] as string
     accidentBuild = `${buildVersion}.${buildNum1}`
   }
+  if (dbType == DBType.STARTUP_TESTS_DEV) {
+    metricName = dataSeries[2] as string
+    if (!isDurationFormatterApplicable(metricName)) {
+      type = "counter"
+    }
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
+    projectName = dataSeries[5] as string
+    branch = dataSeries[6] as string
+    accidentBuild = buildId.toString()
+  }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {

@@ -64,7 +64,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   ) {
     persistentStateManager.add("measure", this._selected)
 
-    const isIj = serverConfigurator.db === "ij"
+    const isIj = serverConfigurator.db === "ij" || serverConfigurator.db === "ijDev"
 
     createFilterObservable(serverConfigurator, filters)
       .pipe(
@@ -183,7 +183,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   }
 
   let fieldPrefix: string
-  if (serverConfigurator.db === "ij") {
+  if (serverConfigurator.db === "ij" || serverConfigurator.db === "ijDev") {
     fieldPrefix = "measure"
   } else {
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
@@ -260,7 +260,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  const isIj = query.db === "ij"
+  const isIj = query.db === "ij" || query.db === "ijDev"
   const structureName = isIj ? "measure" : "measures"
   const valueName = isIj ? "duration" : "value"
   const field: DataQueryDimension = { n: "" }
@@ -272,7 +272,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   }
 
   const metricNameField: DataQueryDimension = { n: "" }
-  if (query.table == "report" && (query.db == "ij" || query.db == "fleet")) {
+  if (query.table == "report" && (query.db == "ij" || query.db == "ijDev" || query.db == "fleet")) {
     query.insertField(metricNameField, 2)
   }
 
@@ -298,7 +298,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (query.table == "report" && (query.db == "ij" || query.db == "fleet")) {
+      if (query.table == "report" && (query.db == "ij" || query.db == "ijDev" || query.db == "fleet")) {
         delete metricNameField.sql
         delete metricNameField.subName
         if (measure.startsWith("metrics.")) {

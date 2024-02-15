@@ -262,7 +262,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
   args = append(args, row.TriggeredBy)
 
-  if t.config.DbName == "ij" {
+  if t.config.DbName == "ij" || t.config.DbName == "ijDev" {
     err = ComputeIjMetrics(t.nonMetricFieldCount, row.Report, &args, logger)
     if err != nil {
       return err

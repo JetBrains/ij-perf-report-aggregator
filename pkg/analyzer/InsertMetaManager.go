@@ -14,6 +14,7 @@ type InsertMetaManager struct {
 
 func NewInsertMetaManager(insertContext context.Context) (*InsertMetaManager, error) {
   dbpool, err := pgxpool.New(insertContext, os.Getenv("DATABASE_URL"))
+  dbpool.Config().MaxConns = 1
   if err != nil {
     return nil, fmt.Errorf("cannot create pool: %w", err)
   }

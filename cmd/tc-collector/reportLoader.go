@@ -55,80 +55,78 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
     if build == nil || build.Agent.Name == "Dead agent" {
       continue
     }
-    errGroup.Go((func(build *Build) func() error {
-      return func() error {
-        t.logger.Info("processing build", "id", build.Id)
-        if t.config.HasInstallerField && build.installerInfo == nil {
-          // or already processed or cannot compute installer info
-          return nil
-        }
-
-        artifacts, err := t.downloadReports(loadContext, *build)
-        if err != nil {
-          return err
-        }
-
-        if len(artifacts) == 0 {
-          t.logger.Error("cannot find any performance report", "id", build.Id, "status", build.Status)
-          return nil
-        }
-
-        tcBuildProperties, err := t.downloadBuildProperties(loadContext, *build)
-        if err != nil {
-          return err
-        }
-        if tcBuildProperties == nil {
-          return nil
-        }
-
-        for _, artifact := range artifacts {
-          if loadContext.Err() != nil {
-            return nil
-          }
-
-          data := model.ExtraData{
-            Machine:           build.Agent.Name,
-            TcBuildId:         build.Id,
-            TcBuildType:       build.Type,
-            TcBuildProperties: tcBuildProperties,
-            ReportFile:        artifact.path,
-          }
-
-          currentBuildTime, err := analyzer.ParseTime(build.FinishDate)
-          if err == nil {
-            data.CurrentBuildTime = currentBuildTime
-          }
-
-          if build.Private && build.TriggeredBy.User != nil {
-            data.TriggeredBy = build.TriggeredBy.User.Email
-          }
-
-          if t.config.HasInstallerField {
-            installerInfo := build.installerInfo
-            data.BuildTime = installerInfo.buildTime
-            data.Changes = installerInfo.changes
-            data.TcInstallerBuildId = installerInfo.id
-          }
-          if t.config.HasNoInstallerButHasChanges {
-            data.Changes = build.buildInfo.changes
-          }
-
-          if t.config.HasBuildNumber {
-            data.TcBuildNumber = build.BuildNumber
-          }
-
-          err = reportAnalyzer.Analyze(artifact.data, data)
-          if err != nil {
-            if build.Status == "FAILURE" {
-              t.logger.Warn("cannot parse performance report in the failed build", "buildId", build.Id, "error", err)
-            } else {
-              return err
-            }
-          }
-        }
+    errGroup.Go(func() error {
+      t.logger.Info("processing build", "id", build.Id)
+      if t.config.HasInstallerField && build.installerInfo == nil {
+        // or already processed or cannot compute installer info
         return nil
       }
-    })(build))
+
+      artifacts, err := t.downloadReports(loadContext, *build)
+      if err != nil {
+        return err
+      }
+
+      if len(artifacts) == 0 {
+        t.logger.Error("cannot find any performance report", "id", build.Id, "status", build.Status)
+        return nil
+      }
+
+      tcBuildProperties, err := t.downloadBuildProperties(loadContext, *build)
+      if err != nil {
+        return err
+      }
+      if tcBuildProperties == nil {
+        return nil
+      }
+
+      for _, artifact := range artifacts {
+        if loadContext.Err() != nil {
+          return nil
+        }
+
+        data := model.ExtraData{
+          Machine:           build.Agent.Name,
+          TcBuildId:         build.Id,
+          TcBuildType:       build.Type,
+          TcBuildProperties: tcBuildProperties,
+          ReportFile:        artifact.path,
+        }
+
+        currentBuildTime, err := analyzer.ParseTime(build.FinishDate)
+        if err == nil {
+          data.CurrentBuildTime = currentBuildTime
+        }
+
+        if build.Private && build.TriggeredBy.User != nil {
+          data.TriggeredBy = build.TriggeredBy.User.Email
+        }
+
+        if t.config.HasInstallerField {
+          installerInfo := build.installerInfo
+          data.BuildTime = installerInfo.buildTime
+          data.Changes = installerInfo.changes
+          data.TcInstallerBuildId = installerInfo.id
+        }
+        if t.config.HasNoInstallerButHasChanges {
+          data.Changes = build.buildInfo.changes
+        }
+
+        if t.config.HasBuildNumber {
+          data.TcBuildNumber = build.BuildNumber
+        }
+
+        err = reportAnalyzer.Analyze(artifact.data, data)
+        if err != nil {
+          if build.Status == "FAILURE" {
+            t.logger.Warn("cannot parse performance report in the failed build", "buildId", build.Id, "error", err)
+          } else {
+            return err
+          }
+        }
+      }
+      return nil
+    })
   }
   return errGroup.Wait()
 }
@@ -168,16 +166,14 @@ func (t *Collector) loadChanges(builds []*Build, networkRequestCount int) error 
       continue
     }
 
-    errGroup.Go((func(buildInfo *BuildInfo) func() error {
-      return func() error {
-        var err error
-        buildInfo.changes, err = t.loadBuildChanges(loadContext, buildInfo.id)
-        if err != nil {
-          return fmt.Errorf("failed to load changes: %w", err)
-        }
-        return nil
+    errGroup.Go(func() error {
+      var err error
+      buildInfo.changes, err = t.loadBuildChanges(loadContext, buildInfo.id)
+      if err != nil {
+        return fmt.Errorf("failed to load changes: %w", err)
       }
-    })(buildInfo))
+      return nil
+    })
   }
   return errGroup.Wait()
 }
@@ -230,16 +226,14 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
       continue
     }
 
-    errGroup.Go((func(installerInfo *InstallerInfo) func() error {
-      return func() error {
-        var err error
-        installerInfo.changes, err = t.loadBuildChanges(loadContext, installerInfo.id)
-        if err != nil {
-          return fmt.Errorf("failed to load changes: %w", err)
-        }
-        return nil
+    errGroup.Go(func() error {
+      var err error
+      installerInfo.changes, err = t.loadBuildChanges(loadContext, installerInfo.id)
+      if err != nil {
+        return fmt.Errorf("failed to load changes: %w", err)
       }
-    })(installerInfo))
+      return nil
+    })
   }
   return errGroup.Wait()
 }

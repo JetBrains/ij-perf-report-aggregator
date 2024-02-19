@@ -119,7 +119,7 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
   var wg sync.WaitGroup
   for result := range insertionResults {
     wg.Add(1)
-    go func(result DegradationWithSettings) {
+    go func() {
       defer wg.Done()
       ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
       defer cancel()
@@ -130,7 +130,7 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
         return
       }
       slog.Info("slack message was sent", "degradation", message)
-    }(result)
+    }()
   }
   wg.Wait()
 }

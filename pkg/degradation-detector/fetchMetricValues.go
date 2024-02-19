@@ -39,7 +39,6 @@ func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
     pool := pond.New(5, 1000)
     for _, setting := range settings {
       wg.Add(1)
-      setting := setting
       pool.Submit(func() {
         defer wg.Done()
         ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

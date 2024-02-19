@@ -84,21 +84,19 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
     if taskContext.Err() != nil {
       return fmt.Errorf("error in context: %w", taskContext.Err())
     }
-    errGroup.Go(func(buildTypeId string) func() error {
-      return func() error {
-        return collectBuildConfiguration(
-          loadContext,
-          httpClient,
-          db,
-          config,
-          buildTypeId,
-          serverUrl,
-          tcUrl,
-          userSpecifiedSince,
-          slog.With("buildTypeId", buildTypeId),
-        )
-      }
-    }(buildTypeId))
+    errGroup.Go(func() error {
+      return collectBuildConfiguration(
+        loadContext,
+        httpClient,
+        db,
+        config,
+        buildTypeId,
+        serverUrl,
+        tcUrl,
+        userSpecifiedSince,
+        slog.With("buildTypeId", buildTypeId),
+      )
+    })
   }
   err = errGroup.Wait()
   return err

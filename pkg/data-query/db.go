@@ -16,7 +16,7 @@ type DatabaseConnectionSupplier interface {
 }
 
 func executeQuery(ctx context.Context, sqlQuery string, query Query, dbSupplier DatabaseConnectionSupplier, resultHandler func(ctx context.Context, block proto.Block, result *proto.Results) error, ) error {
-  for attempt := 0; attempt <= 120; attempt++ {
+  for range 120 {
     dbResource, err := dbSupplier.AcquireDatabase(ctx, query.Database)
     if err != nil {
       return err

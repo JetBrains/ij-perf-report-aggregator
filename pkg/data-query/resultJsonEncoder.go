@@ -36,7 +36,7 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
       }
     }
   }
-  for i := 0; i < splitParameters.numberOfSplits; i++ {
+  for i := range splitParameters.numberOfSplits {
     if columnBuffers[i] == nil {
       columnBuffers[i] = make([]*bytebufferpool.ByteBuffer, len(*result))
     }
@@ -156,7 +156,7 @@ func getBufferAndWriteSplittingComma(columnBuffers [][]*bytebufferpool.ByteBuffe
 }
 
 func releaseWriters(splitParameters *SplitParameters, templateWriters map[int]*quicktemplate.Writer) {
-  for i := 0; i < splitParameters.numberOfSplits; i++ {
+  for i := range splitParameters.numberOfSplits {
     quicktemplate.ReleaseWriter(templateWriters[i])
   }
 }
@@ -164,7 +164,7 @@ func releaseWriters(splitParameters *SplitParameters, templateWriters map[int]*q
 func getWriters(splitParameters *SplitParameters, columnBuffers [][]*bytebufferpool.ByteBuffer, columnIndex int) (map[int]*quicktemplate.Writer, map[int]*quicktemplate.QWriter) {
   templateWriters := make(map[int]*quicktemplate.Writer)
   jsonWriters := make(map[int]*quicktemplate.QWriter)
-  for i := 0; i < splitParameters.numberOfSplits; i++ {
+  for i := range splitParameters.numberOfSplits {
     templateWriters[i] = quicktemplate.AcquireWriter(columnBuffers[i][columnIndex])
     jsonWriters[i] = templateWriters[i].N()
   }

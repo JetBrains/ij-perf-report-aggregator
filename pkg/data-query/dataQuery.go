@@ -443,7 +443,7 @@ loop:
       writeString(sb, v)
     case []string:
       sb.WriteString(" in (")
-      for j := 0; j < len(v); j++ {
+      for j := range len(v) {
         if j != 0 {
           sb.WriteRune(',')
         }
@@ -452,7 +452,7 @@ loop:
       sb.WriteRune(')')
     case []interface{}:
       sb.WriteString(" in (")
-      for j := 0; j < len(v); j++ {
+      for j := range len(v) {
         if j != 0 {
           sb.WriteRune(',')
         }

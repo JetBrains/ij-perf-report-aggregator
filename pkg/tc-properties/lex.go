@@ -308,7 +308,7 @@ func (l *lexer) scanEscapeSequence() error {
 func (l *lexer) scanUnicodeLiteral() error {
   // scan the digits
   d := make([]rune, 4)
-  for i := 0; i < 4; i++ {
+  for i := range 4 {
     d[i] = l.next()
     if d[i] == eof || !strings.ContainsRune("0123456789abcdefABCDEF", d[i]) {
       return errors.New("invalid unicode literal")

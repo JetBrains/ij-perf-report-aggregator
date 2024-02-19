@@ -234,6 +234,10 @@ export class LineChartVM {
                 type: "inverse",
                 title: "inverse",
               },
+              {
+                type: "all",
+                title: "enable all",
+              },
             ],
             formatter(name: string): string {
               name = measureNameToLabel(name)

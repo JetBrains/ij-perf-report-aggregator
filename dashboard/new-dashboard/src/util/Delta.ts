@@ -37,5 +37,5 @@ export function getDifferenceString(value: number, otherValue: number, isMs: boo
 }
 
 export function findDeltaInData(data: (OptionDataValue | Delta)[]): Delta | undefined {
-  return data.find((obj) => typeof obj === "object" && "prev" in obj && "next" in obj) as Delta | undefined
+  return data.find((obj) => typeof obj === "object" && obj != null && "prev" in obj && "next" in obj) as Delta | undefined
 }

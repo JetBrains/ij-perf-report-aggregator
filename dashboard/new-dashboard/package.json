@@ -6,7 +6,7 @@
     "@heroicons/vue": "2.1.1",
     "@vueuse/core": "^10.7.2",
     "compare-versions": "6.1.0",
-    "echarts": "5.4.3",
+    "echarts": "5.5.0",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
     "humanize-duration": "3.31.0",
@@ -22,6 +22,6 @@
     "@types/sanitize-html": "^2.11.0",
     "global-jsdom": "^24.0.0",
     "jsdom": "^24.0.0",
-    "msw": "^2.2.0"
+    "msw": "^2.2.1"
   }
 }

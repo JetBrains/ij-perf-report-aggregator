@@ -7,6 +7,7 @@ import (
   "log/slog"
   "net/http"
   "os"
+  "slices"
   "time"
 )
 
@@ -55,13 +56,13 @@ func generateStartupSettings(backendUrl string, client *http.Client) []detector.
 }
 
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-  settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, setting.GenerateIdeaSettings(backendUrl, client)...)
-  settings = append(settings, setting.GenerateWorkspaceSettings()...)
-  settings = append(settings, setting.GenerateKotlinSettings()...)
-  settings = append(settings, setting.GenerateMavenSettings()...)
-  settings = append(settings, setting.GenerateGradleSettings()...)
-  settings = append(settings, setting.GeneratePhpStormSettings(backendUrl, client)...)
-  settings = append(settings, setting.GenerateUnitTestsSettings(backendUrl, client)...)
-  return settings
+  return slices.Concat(
+    setting.GenerateIdeaSettings(backendUrl, client),
+    setting.GenerateWorkspaceSettings(),
+    setting.GenerateKotlinSettings(),
+    setting.GenerateMavenSettings(),
+    setting.GenerateGradleSettings(),
+    setting.GeneratePhpStormSettings(backendUrl, client),
+    setting.GenerateUnitTestsSettings(backendUrl, client),
+  )
 }

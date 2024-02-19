@@ -3,14 +3,15 @@ package setting
 import (
   detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
   "net/http"
+  "slices"
   "strings"
 )
 
 func GenerateIdeaSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-  settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, generateIdeaOnInstallerAnalysisSettings(backendUrl, client)...)
-  settings = append(settings, generateIdeaDevAnalysisSettings(backendUrl, client)...)
-  return settings
+  return slices.Concat(
+    generateIdeaOnInstallerAnalysisSettings(backendUrl, client),
+    generateIdeaDevAnalysisSettings(backendUrl, client),
+  )
 }
 
 func generateIdeaOnInstallerAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

@@ -99,6 +99,7 @@ enum ROUTES {
   IntelliJExperimentsGradleSyncDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardGradleSync`,
   IntelliJExperimentsMonorepoDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardMonorepo`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
+  PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -534,6 +535,10 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.PhpStormLLMDashboard,
+          label: "LLM Dashboard",
         },
         {
           url: ROUTES.PhpStormTests,
@@ -1417,6 +1422,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PhpStorm Performance dashboard" },
+        },
+        {
+          path: ROUTES.PhpStormLLMDashboard,
+          component: () => import("./components/phpstorm/MLDashboard.vue"),
+          meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
         },
         {
           path: ROUTES.PhpStormWithPluginsDashboard,

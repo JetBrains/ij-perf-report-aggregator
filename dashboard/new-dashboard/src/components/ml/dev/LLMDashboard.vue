@@ -17,13 +17,6 @@
         ]"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="LLM completion "
-        :measure="['inlineCompletionShow#mean_value']"
-        :projects="['php/symfony/llm-completion/Tag/echoStatement', 'php/symfony/llm-completion/Tag/simpleResolve']"
-      />
-    </section>
   </DashboardPage>
 </template>
 <script setup lang="ts">

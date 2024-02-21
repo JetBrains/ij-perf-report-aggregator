@@ -33,7 +33,7 @@ const durationFormatOptions: HumanizerOptions = {
 
 export const durationAxisPointerFormatter = (valueInMs: number, type: string = "duration"): string => {
   if (type === "counter" || type == "c") {
-    return valueInMs.toString()
+    return valueInMs.toLocaleString()
   }
   const humanizer = humanizeDuration.humanizer(durationFormatOptions)
   return humanizer(valueInMs)

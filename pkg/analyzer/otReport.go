@@ -37,11 +37,11 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
   parser := otParsers.Get()
   defer otParsers.Put(parser)
   props, err := parser.ParseBytes(data.TcBuildProperties)
-  buildName := props.GetStringBytes("env.TEAMCITY_BUILDCONF_NAME")
-  runResult.Report.Project = string(buildName)
   if err != nil {
     return true
   }
+  buildName := props.GetStringBytes("env.TEAMCITY_BUILDCONF_NAME")
+  runResult.Report.Project = string(buildName)
 
   runResult.Report.Generated = data.CurrentBuildTime.String()
   measureNames := make([]string, 0)

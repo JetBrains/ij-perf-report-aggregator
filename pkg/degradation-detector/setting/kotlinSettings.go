@@ -254,7 +254,48 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					ProductLink: "kotlin",
 				},
 				AnalysisSettings: detector.AnalysisSettings{
-					DoNotReportImprovement: true,
+					ReportType: detector.DegradationEvent,
+				},
+			})
+		}
+	}
+	for _, test := range tests {
+		for _, metric := range metrics {
+			settings = append(settings, detector.PerformanceSettings{
+				Db:          "perfint",
+				Table:       "kotlin",
+				Machine:     "intellij-linux-hw-hetzner%",
+				Project:     test,
+				Metric:      metric,
+				Branch:      "master",
+				MetricAlias: "perf",
+				SlackSettings: detector.SlackSettings{
+					Channel:     "kotlin-plugin-perf-test-merged",
+					ProductLink: "kotlin",
+				},
+				AnalysisSettings: detector.AnalysisSettings{
+					ReportType: detector.DegradationEvent,
+				},
+			})
+		}
+	}
+	for _, test := range tests {
+		for _, metric := range metrics {
+			alias := getAlias(metric, aliases)
+			settings = append(settings, detector.PerformanceSettings{
+				Db:          "perfint",
+				Table:       "kotlin",
+				Machine:     "intellij-linux-hw-hetzner%",
+				Project:     test,
+				Metric:      metric,
+				Branch:      "master",
+				MetricAlias: alias,
+				SlackSettings: detector.SlackSettings{
+					Channel:     "kotlin-plugin-perf-tests-optimization",
+					ProductLink: "kotlin",
+				},
+				AnalysisSettings: detector.AnalysisSettings{
+					ReportType: detector.ImprovementEvent,
 				},
 			})
 		}
@@ -275,7 +316,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					ProductLink: "kotlin",
 				},
 				AnalysisSettings: detector.AnalysisSettings{
-					DoNotReportImprovement: true,
+					ReportType: detector.DegradationEvent,
 				},
 			})
 		}

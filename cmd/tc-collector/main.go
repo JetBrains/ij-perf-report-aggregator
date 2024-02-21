@@ -65,7 +65,7 @@ func configureCollectFromTeamCity() error {
 
   err = json.Unmarshal([]byte(rawJson), &config)
   if err != nil {
-    return fmt.Errorf("cannot parse json: " + rawJson)
+    return errors.New("cannot parse json: " + rawJson)
   }
 
   var httpClient = &http.Client{

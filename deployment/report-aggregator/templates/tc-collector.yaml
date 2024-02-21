@@ -24,11 +24,11 @@ spec:
               image: {{ .Values.images.collector }}
               resources:
                 requests:
-                  cpu: "1"
+                  cpu: "2"
                   memory: 1Gi
                 limits:
-                  cpu: "2"
-                  memory: 2Gi
+                  cpu: "4"
+                  memory: 4Gi
               env:
                 - name: TC_TOKEN
                   valueFrom:
@@ -44,6 +44,8 @@ spec:
                   value: "clickhouse:9000"
                 - name: DATABASE_URL
                   value: {{ .Values.postgres.db_url | quote }}
+                - name: GOMEMLIMIT
+                  value: "1000MiB"
               volumeMounts:
                 - mountPath: /etc/config
                   name: config

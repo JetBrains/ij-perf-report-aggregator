@@ -172,7 +172,7 @@ func TestClickhouse(_ *testing.T) {
     }
   }
   // Start the workers.
-  for i := 0; i < numWorkers; i++ {
+  for range numWorkers {
     go worker()
   }
 

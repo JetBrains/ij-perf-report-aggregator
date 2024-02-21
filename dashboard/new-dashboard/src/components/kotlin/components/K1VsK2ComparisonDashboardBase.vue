@@ -1,11 +1,7 @@
 <template>
   <StickyToolbar>
     <template #start>
-      <TimeRangeSelect
-        :ranges="timeRangeConfigurator.timeRanges"
-        :value="timeRangeConfigurator.value.value"
-        :on-change="onTimeRangeChange"
-      />
+      <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
       <BranchSelect
         :branch-configurator="branchConfigurator"
         :triggered-by-configurator="triggeredByConfigurator"
@@ -54,7 +50,7 @@ import { createBranchConfigurator } from "../../../configurators/BranchConfigura
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import BranchSelect from "../../common/BranchSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
@@ -107,10 +103,6 @@ persistentStateManager.add("projectCategories", selectedProjectCategories, (exis
 const initialProjectCategories = selectedProjectCategories.value
 
 const activeTab = ref(0)
-
-function onTimeRangeChange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
 
 function setActiveTab(index: number) {
   activeTab.value = index

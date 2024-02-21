@@ -94,10 +94,9 @@ describe("Machine configurator", () => {
     })
 
     test("Valid query when select single value for machine configurator", async () => {
-      dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 3)
-
+      branchConfigurator.selected.value = ["branch1"]
       machineConfigurator.selected.value = ["intellij-linux-hw-blade-test"]
+      dataQueryExecutor.subscribe(() => {})
       let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       await awaitMockCallsCount(data.fetchMock, 4)
       assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
@@ -109,26 +108,24 @@ describe("Machine configurator", () => {
     })
 
     test("Valid query when select single value for branch configurator", async () => {
-      dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 3)
-
       branchConfigurator.selected.value = ["branch2"]
+      dataQueryExecutor.subscribe(() => {})
       let expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"machine","sql":"distinct machine"}],"filters":[{"f":"generated_time","q":">subtractMonths(now(),1)"},{"f":"branch","q":" like 'branch2%'"}],"order":"machine","flat":true}`
-      await awaitMockCallsCount(data.fetchMock, 4)
-      assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
+      await awaitMockCallsCount(data.fetchMock, 3)
+      assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
 
       expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"machine","sql":"distinct machine"}],"filters":[{"f":"generated_time","q":">subtractMonths(now(),1)"},{"f":"branch","q":" like 'branch1%'"}],"order":"machine","flat":true}`
       branchConfigurator.selected.value = ["branch1"]
-      await awaitMockCallsCount(data.fetchMock, 5)
-      assert.equal(data.fetchMock.mock.calls[4][0], expectedValue)
+      await awaitMockCallsCount(data.fetchMock, 4)
+      assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
     })
 
     test("Valid query when select multiple value for machine configurator", async () => {
-      dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 3)
+      branchConfigurator.selected.value = ["branch1"]
       const values = ["intellij-linux-hw-blade-test", "intellij-macos-unit-2200-large-test"]
       machineConfigurator.selected.value = values
-      await awaitMockCallsCount(data.fetchMock, 5)
+      dataQueryExecutor.subscribe(() => {})
+      await awaitMockCallsCount(data.fetchMock, 4)
       for (const [index, value] of values.entries()) {
         const expected = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["${value}"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
         assert.equal(data.fetchMock.mock.calls[3 + index][0], expected)
@@ -136,12 +133,11 @@ describe("Machine configurator", () => {
     })
 
     test("Valid query when select multiple value for branch configurator", async () => {
-      dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 3)
       branchConfigurator.selected.value = ["bar", "foo"]
-      await awaitMockCallsCount(data.fetchMock, 4)
+      dataQueryExecutor.subscribe(() => {})
       const expected = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"machine","sql":"distinct machine"}],"filters":[{"f":"generated_time","q":">subtractMonths(now(),1)"},{"f":"branch","q":" = 'bar' or branch = 'foo'"}],"order":"machine","flat":true}`
-      assert.equal(data.fetchMock.mock.calls[3][0], expected)
+      await awaitMockCallsCount(data.fetchMock, 3)
+      assert.equal(data.fetchMock.mock.calls[2][0], expected)
     })
   })
 })

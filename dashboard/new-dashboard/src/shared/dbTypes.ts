@@ -28,5 +28,22 @@ export function getDBType(dbName: string, table: string): DBType {
   if (dbName == "ij") {
     return DBType.STARTUP_TESTS
   }
+  if (dbName == "ijDev") {
+    return DBType.STARTUP_TESTS_DEV
+  }
   return DBType.UNKNOWN
+}
+
+export function isStartup(db: string | undefined, table: string | undefined): boolean {
+  if (db == undefined || table == undefined) {
+    throw new Error("db or table is undefined")
+  }
+  return isIJStartup(db, table) || getDBType(db, table) == DBType.FLEET
+}
+
+export function isIJStartup(db: string | undefined, table: string | undefined): boolean {
+  if (db == undefined || table == undefined) {
+    throw new Error("db or table is undefined")
+  }
+  return getDBType(db, table) == DBType.STARTUP_TESTS || getDBType(db, table) == DBType.STARTUP_TESTS_DEV
 }

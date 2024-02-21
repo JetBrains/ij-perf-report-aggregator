@@ -52,7 +52,7 @@ func Serve(dbUrl string, natsUrl string) error {
   }
 
   defer func() {
-    statsServer.nameToDbPool.Range(func(name, pool interface{}) bool {
+    statsServer.nameToDbPool.Range(func(_, pool interface{}) bool {
       p, ok := pool.(*puddle.Pool[*ch.Client])
       if ok {
         p.Close()
@@ -96,13 +96,14 @@ func Serve(dbUrl string, natsUrl string) error {
   r.Post("/api/meta/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(dbpool))
   r.Delete("/api/meta/accidents*", meta.CreateDeleteAccidentRequestHandler(dbpool))
   r.Get("/api/meta/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
+  r.Post("/api/meta/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
   r.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
   r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
   r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
   r.Handle("/api/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
   r.Handle("/api/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
   r.Handle("/api/zstd-dictionary/*", &CachingHandler{
-    handler: func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+    handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
       return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
     },
     manager: cacheManager,

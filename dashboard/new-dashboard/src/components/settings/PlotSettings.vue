@@ -1,7 +1,7 @@
 <template>
   <Cog8ToothIcon
     ref="settingsIcon"
-    class="w-6 h-6 text-blue-500"
+    class="w-6 h-6 text-primary"
     @click="showSettings"
   />
   <OverlayPanel
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { shallowRef } from "vue"
+import { onBeforeUnmount, shallowRef } from "vue"
 import { DetectChangesConfigurator } from "../../configurators/DetectChangesConfigurator"
 import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
 import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
@@ -37,6 +37,7 @@ const showSettings = function (event: Event) {
   settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first
   setTimeout(() => {
     adjustPosition()
+    window.addEventListener("scroll", adjustPosition)
   }, 0)
 }
 
@@ -45,14 +46,17 @@ function adjustPosition() {
   const iconRect = settingsIcon.value?.getBoundingClientRect()
 
   // Query for the OverlayPanel's DOM element.
-  const overlayElement = document.querySelector(".p-overlaypanel") as HTMLElement
+  const overlayElement = document.querySelector(".p-overlaypanel")
 
-  if (iconRect) {
+  if (iconRect && overlayElement != null) {
     let leftPosition = iconRect.left
-    const overlayWidth = overlayElement.offsetWidth
+    const overlayHTMLElement = overlayElement as HTMLElement
+    const overlayWidth = overlayHTMLElement.offsetWidth
 
     // Screen margin to prevent the overlay from sticking to the edge.
     const screenMargin = 20
+
+    const topPosition = iconRect.bottom + window.scrollY
 
     // If the OverlayPanel would overflow the right edge of the screen
     if (leftPosition + overlayWidth + screenMargin > window.innerWidth) {
@@ -65,10 +69,14 @@ function adjustPosition() {
     }
 
     const verticalMargin = 10 // Margin between the icon and the OverlayPanel
-    overlayElement.style.top = `${iconRect.bottom + verticalMargin}px`
-    overlayElement.style.left = `${leftPosition}px`
+    overlayHTMLElement.style.top = `${topPosition + verticalMargin}px`
+    overlayHTMLElement.style.left = `${leftPosition}px`
   }
 }
+
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", adjustPosition)
+})
 </script>
 
 <style scoped></style>

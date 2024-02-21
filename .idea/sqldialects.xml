@@ -4,9 +4,11 @@
     <file url="file://$PROJECT_DIR$/db-schema/meta/accidents.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/db-schema/meta/project_description.sql" dialect="PostgreSQL" />
     <file url="file://$PROJECT_DIR$/pkg/analyzer/InsertMetaManager.go" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/pkg/server/meta" dialect="PostgreSQL" />
     <file url="PROJECT" dialect="ClickHouse" />
   </component>
   <component name="SqlResolveMappings">
     <file url="file://$PROJECT_DIR$/pkg/server/clickhouse.go" scope="{&quot;node&quot;:{  &quot;@negative&quot;:&quot;1&quot;,  &quot;group&quot;:{   &quot;@kind&quot;:&quot;root&quot;,   &quot;node&quot;:{    &quot;name&quot;:{     &quot;@qname&quot;:&quot;2557058b-5f52-497f-8a1d-9cfd03894455&quot;    },    &quot;group&quot;:{     &quot;@kind&quot;:&quot;schema&quot;,     &quot;node&quot;:{      &quot;name&quot;:{       &quot;@qname&quot;:&quot;ij&quot;      }     }    }   }  } }}" />
+    <file url="file://$PROJECT_DIR$/pkg/server/meta/accident.go" scope="{&quot;node&quot;:{  &quot;@negative&quot;:&quot;1&quot;,  &quot;group&quot;:{   &quot;@kind&quot;:&quot;root&quot;,   &quot;node&quot;:{    &quot;name&quot;:{     &quot;@qname&quot;:&quot;a4002082-26a5-4832-8a26-e6fcd1028081&quot;    },    &quot;group&quot;:{     &quot;@kind&quot;:&quot;database&quot;,     &quot;node&quot;:{      &quot;name&quot;:{       &quot;@qname&quot;:&quot;ij-perf-staging-ij-meta-3KqlQK&quot;      },      &quot;group&quot;:{       &quot;@kind&quot;:&quot;schema&quot;,       &quot;node&quot;:{        &quot;name&quot;:{         &quot;@qname&quot;:&quot;public&quot;        }       }      }     }    }   }  } }}" />
   </component>
 </project>

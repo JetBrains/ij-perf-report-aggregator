@@ -2,11 +2,7 @@
   <div class="flex flex-col gap-5">
     <StickyToolbar>
       <template #start>
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
@@ -65,7 +61,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
@@ -116,9 +112,5 @@ const configurators = [serverConfigurator, scenarioConfigurator, branchConfigura
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
-}
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
 }
 </script>

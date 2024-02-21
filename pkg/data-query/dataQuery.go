@@ -172,7 +172,7 @@ func SelectRows(ctx context.Context, query Query, table string, dbSupplier Datab
   }
 
   columnBuffers := make([][]*bytebufferpool.ByteBuffer, splitParameters.numberOfSplits)
-  err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(ctx context.Context, block proto.Block, result *proto.Results) error {
+  err = executeQuery(ctx, sqlQuery, query, dbSupplier, func(_ context.Context, block proto.Block, result *proto.Results) error {
     if block.Rows == 0 {
       return nil
     }
@@ -410,10 +410,10 @@ loop:
 
     if len(filter.Sql) != 0 {
       if len(filter.Operator) != 0 {
-        return fmt.Errorf("sql and operator are mutually exclusive")
+        return errors.New("sql and operator are mutually exclusive")
       }
       if filter.Value != nil {
-        return fmt.Errorf("sql and value are mutually exclusive")
+        return errors.New("sql and value are mutually exclusive")
       }
 
       sb.WriteRune(' ')
@@ -443,7 +443,7 @@ loop:
       writeString(sb, v)
     case []string:
       sb.WriteString(" in (")
-      for j := 0; j < len(v); j++ {
+      for j := range len(v) {
         if j != 0 {
           sb.WriteRune(',')
         }
@@ -452,7 +452,7 @@ loop:
       sb.WriteRune(')')
     case []interface{}:
       sb.WriteString(" in (")
-      for j := 0; j < len(v); j++ {
+      for j := range len(v) {
         if j != 0 {
           sb.WriteRune(',')
         }

@@ -36,7 +36,7 @@ export const GRADLE_METRICS_NEW_DASHBOARD = [
   // work of data services
   "ProjectDataServices",
   // project resolve
-  "GradleProjectResolvers",
+  "GradleProjectResolverDataProcessing",
   // apply ws model
   "WorkspaceModelApply",
 ]

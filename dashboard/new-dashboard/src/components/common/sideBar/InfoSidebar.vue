@@ -4,6 +4,10 @@
     class="infoSidebar ml-5 text-gray-500 relative"
   >
     <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
+      <div
+        v-if="useScrollStore().isScrolled"
+        class="sticky h-10"
+      ></div>
       <span class="flex justify-between uppercase text-xs">
         {{ data?.title }}
 
@@ -13,44 +17,21 @@
         />
       </span>
 
-      <VTooltip
-        v-if="data?.description.value?.description"
-        theme="info"
-      >
-        <div class="flex gap-1.5 font-medium text-base items-center break-all">
-          <span
-            v-if="data?.series.length == 1"
-            class="w-3 h-3 rounded-full"
-            :style="{ backgroundColor: data?.series[0].color }"
-          />
-          <span class="underline decoration-dotted hover:no-underline">{{ data?.projectName }}</span>
-        </div>
-        <template #popper>
-          <span class="text-sm">
-            {{ data?.description.value?.description }}
-          </span>
-        </template>
-      </VTooltip>
-      <div
-        v-else
-        class="flex gap-1.5 font-medium text-base items-center break-all"
-      >
+      <div class="flex gap-1.5 font-medium text-base items-center break-all">
         <span
           v-if="data?.series.length == 1"
           class="w-3 h-3 rounded-full"
           :style="{ backgroundColor: data?.series[0].color }"
         />
-        {{ data?.projectName }}
+        <span v-if="data?.series.length == 1">
+          {{ data?.seriesName }}
+        </span>
+        <span v-else>
+          {{ data?.projectName }}
+        </span>
       </div>
 
-      <SplitButton
-        v-if="testActions.length > 0"
-        :label="testActions[0].label"
-        :model="testActions.slice(1)"
-        link
-        icon="pi pi-chart-line"
-        @click="testActions[0].command"
-      />
+      <TestActions :data="data" />
 
       <div class="flex flex-col gap-2">
         <span class="flex gap-1.5 text-sm items-center">
@@ -69,12 +50,25 @@
           v-if="data?.series.length == 1"
           class="flex flex-col gap-2"
         >
+          <span class="flex gap-1.5 text-sm items-center">
+            <ChartBarIcon class="w-4 h-4" />
+            <span
+              v-tooltip.left="description"
+              :class="description != '' ? getURLStyle() : ''"
+            >
+              {{ data?.projectName }}
+            </span>
+          </span>
           <span
             v-if="data?.series[0].nameToShow"
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
-            <span>{{ data?.series[0].nameToShow }}</span>
+            <span
+              v-tooltip.left="getTooltipForMetric(data?.series[0].metricName)"
+              :class="metricDescription != null ? getURLStyle() : ''"
+              >{{ data?.series[0].nameToShow }}</span
+            >
           </span>
           <span class="flex gap-1.5 text-sm items-center">
             <ClockIcon class="w-4 h-4" />
@@ -139,7 +133,13 @@
           >
             <span class="flex items-start justify-between gap-1.5 text-sm">
               &bull;
-              <span class="w-full">{{ accident.kind }}: {{ accident.reason }}</span>
+              <!-- eslint-disable vue/no-v-html -->
+              <span
+                class="w-full"
+                :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
+                v-html="replaceToLink(accident.reason)"
+              />
+              <!-- eslint-enable -->
               <TrashIcon
                 class="w-4 h-4 text-red-500 flex-none"
                 @click="handleRemove(accident.id)"
@@ -149,16 +149,22 @@
         </ul>
       </div>
 
-      <div class="flex gap-4 text-blue-500">
+      <RelatedAccidents
+        :data="data"
+        :accidents-configurator="accidentsConfigurator"
+        :in-dialog="false"
+      />
+
+      <div class="flex gap-4 text-primary">
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getChangesUrl"
         >
           <ArrowPathIcon class="w-4 h-4" />
           Changes
         </a>
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getArtifactsUrl"
         >
           <ServerStackIcon class="w-4 h-4" />
@@ -168,16 +174,16 @@
           v-if="data?.installerUrl !== undefined"
           :href="data?.installerUrl"
           target="_blank"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker"
         >
           <ArrowDownTrayIcon class="w-4 h-4" />
           Installer
         </a>
       </div>
-      <div class="flex gap-4 text-blue-500 justify-center">
+      <div class="flex gap-4 text-primary justify-center">
         <a
           v-if="data?.installerId || vm.data.value?.buildId"
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-blue-600 cursor-pointer"
+          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />
@@ -195,151 +201,36 @@
       />
     </div>
   </div>
-  <Dialog
-    v-model:visible="showDialog"
-    modal
-    header="Report Event"
-    :style="{ width: '30vw' }"
-  >
-    <div class="flex items-center space-x-4 mb-4">
-      <Dropdown
-        v-model="accidentType"
-        placeholder="Event Type"
-        :options="getAccidentTypes()"
-        class="w-[8rem]"
-      />
-      <span class="p-float-label flex-grow">
-        <InputText
-          id="reason"
-          v-model="reason"
-          class="w-full"
-        />
-        <label
-          class="text-sm"
-          for="reason"
-          >Reason</label
-        >
-      </span>
-    </div>
-    <div
-      v-if="vm.data.value?.series.length == 1"
-      class="flex items-center mb-4"
-    >
-      <InputSwitch
-        v-model="reportMetricOnly"
-        input-id="reportMetricOnly"
-      />
-      <label
-        for="reportMetricOnly"
-        class="text-sm ml-2"
-      >
-        Report metric only
-      </label>
-    </div>
-    <!-- Footer buttons -->
-    <template #footer>
-      <div class="flex justify-end space-x-2">
-        <Button
-          label="Cancel"
-          icon="pi pi-times"
-          text
-          @click="showDialog = false"
-        />
-        <Button
-          label="Report"
-          icon="pi pi-check"
-          autofocus
-          @click="reportRegression"
-        />
-      </div>
-    </template>
-  </Dialog>
+  <ReportMetricDialog
+    v-model="showDialog"
+    :accidents-configurator="accidentsConfigurator"
+    :data="data"
+  />
 </template>
 <script setup lang="ts">
-import { useStorage } from "@vueuse/core/index"
 import { computed, ref } from "vue"
-import { useRouter } from "vue-router"
-import { AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { getMetricDescription } from "../../../shared/metricsDescription"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { calculateChanges } from "../../../util/changes"
+import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
-import { DBType, tcUrl } from "./InfoSidebar"
+import { useScrollListeners, useScrollStore } from "../scrollStore"
+import { tcUrl } from "./InfoSidebar"
+import RelatedAccidents from "./RelatedAccidents.vue"
+import ReportMetricDialog from "./ReportMetricDialog.vue"
+import TestActions from "./TestActions.vue"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
-const reason = ref("")
-const router = useRouter()
-const accidentType = ref<string>("Regression")
+
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
 const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
-
-function reportRegression() {
-  showDialog.value = false
-  const value = vm.data.value
-  if (value == null) {
-    console.log("value is zero! This shouldn't happen")
-  } else {
-    const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
-    accidentsConfigurator?.writeAccidentToMetaDb(
-      value.date,
-      value.projectName + (reportOnlyMetric ? "/" + value.series[0].metricName : ""),
-      reason.value,
-      value.build ?? value.buildId.toString(),
-      accidentType.value
-    )
-  }
-}
-
-const reportMetricOnly = useStorage("reportMetricOnly", false)
-
-function copyMethodNameToClipboard(methodName: string) {
-  void navigator.clipboard.writeText(methodName)
-}
-
-function openTestInIDE(methodName: string) {
-  const origin = encodeURIComponent("ssh://git@git.jetbrains.team/ij/intellij.git")
-  window.open(`jetbrains://idea/navigate/reference?origin=${origin}&fqn=${methodName}`)
-}
-
-function handleNavigateToTest() {
-  const dbType = vm.data.value?.dbType
-  const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
-  if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
-    parts = ["", "ij", "explore"]
-  } else {
-    parts[parts.length - 1] = dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  }
-  const branch = vm.data.value?.branch ?? ""
-  const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
-  const testURL = parts.join("/")
-
-  const queryParams: string = new URLSearchParams({
-    ...currentRoute.query,
-    project: vm.data.value?.projectName ?? "",
-    branch: majorBranch,
-  }).toString()
-
-  const measures =
-    vm.data.value?.series
-      .map((s) => s.metricName)
-      .map((m) => "&measure=" + m)
-      .join("") ?? ""
-  void router.push(testURL + "?" + queryParams + measures)
-}
-
-function isNavigateToTestSupported(): boolean {
-  const currentRoute = router.currentRoute.value
-  const parts = currentRoute.path.split("/")
-  const pageName = parts.at(-1)?.toLowerCase()
-  return pageName != "testsDev" && pageName != "tests" && pageName != "explore"
-}
 
 function handleRemove(id: number) {
   accidentsConfigurator?.removeAccidentFromMetaDb(id)
@@ -347,58 +238,6 @@ function handleRemove(id: number) {
 
 function handleCloseClick() {
   vm.close()
-}
-
-const testActions = computed(() => getTestActions())
-
-function getTestActions(): {
-  label: string
-  icon: string
-  command: () => void
-}[] {
-  const actions = []
-  if (isNavigateToTestSupported()) {
-    actions.push({
-      label: "Navigate to test",
-      icon: "pi pi-chart-line",
-      command() {
-        handleNavigateToTest()
-      },
-    })
-  }
-  if (vm.data.value?.description) {
-    const methodName = vm.data.value.description.value?.methodName
-    if (methodName && methodName != "") {
-      actions.push(
-        {
-          label: "Open test method",
-          icon: "pi pi-folder-open",
-          command() {
-            openTestInIDE(methodName)
-          },
-        },
-        {
-          label: "Copy test method name",
-          icon: "pi pi-copy",
-          command() {
-            copyMethodNameToClipboard(methodName)
-          },
-        }
-      )
-    }
-
-    const url = vm.data.value.description.value?.url
-    if (url && url != "") {
-      actions.push({
-        label: "Download test project",
-        icon: "pi pi-download",
-        command() {
-          window.open(url)
-        },
-      })
-    }
-  }
-  return actions
 }
 
 function getChangesUrl() {
@@ -453,12 +292,28 @@ function getSpaceUrl() {
   }
 }
 
-function getAccidentTypes(): string[] {
-  const values = Object.values(AccidentKind)
-  //don't report Inferred type manually
-  values.splice(values.indexOf(AccidentKind.InferredRegression), 1)
-  values.splice(values.indexOf(AccidentKind.InferredImprovement), 1)
-  return values
+useScrollListeners()
+const description = computed(() => vm.data.value?.description.value?.description ?? "")
+
+const metricDescription = computed(() => getMetricDescription(data.value?.series[0].metricName))
+
+function getTooltipForMetric(metricName: string | undefined) {
+  const metricInfo = getMetricDescription(metricName)
+
+  return metricInfo == null
+    ? null
+    : {
+        value:
+          metricInfo.description +
+          (metricInfo.url ? "<br/><a class='text-xs underline decoration-dotted hover:no-underline' href='" + metricInfo.url + "' target='_blank'>More info</a>" : ""),
+        escape: false,
+        hideDelay: metricInfo.url ? 3000 : 0,
+        autoHide: !metricInfo.url,
+      }
+}
+
+function getURLStyle() {
+  return "underline decoration-dotted hover:no-underline"
 }
 </script>
 <style>
@@ -474,11 +329,7 @@ function getAccidentTypes(): string[] {
   transform: rotate(-45deg);
 }
 
-.p-splitbutton.p-button-text > .p-button {
-  @apply text-gray-600 font-medium text-left border-t border-solid border-neutral-200 relative;
-}
-
-.p-tieredmenu .p-menuitem-content {
-  @apply text-sm text-gray-600 font-medium text-left relative;
+.extraMargin {
+  margin-top: 7rem; /* Replace [HeightOfYourToolbar] with the actual height */
 }
 </style>

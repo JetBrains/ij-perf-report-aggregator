@@ -10,12 +10,8 @@ module.exports = {
       },
       colors: {
         // Lara Light Blue
-        primary: {
-          // active tab border color, input focus border (TailwindUI uses border-indigo-500)
-          500: "#3B82F6",
-          // active tab text color (TailwindUI uses text-indigo-600, but PrimeVue uses the same primary color)
-          600: "#3B82F6",
-        },
+        primary: "#3B82F6",
+        darker: "#1D4ED8", // Lara Dark Blue
       },
     },
   },

@@ -3,11 +3,7 @@
     <StickyToolbar>
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           v-if="releaseConfigurator != null"
           :branch-configurator="branchConfigurator"
@@ -95,6 +91,8 @@
               :value-unit="props.unit"
               :chart-type="props.unit == 'ns' ? 'scatter' : 'line'"
               :legend-formatter="(name: string) => name"
+              :can-be-closed="true"
+              @chart-closed="onTestChartClosed"
             />
           </template>
         </span>
@@ -107,6 +105,8 @@
               :measure="measureConfigurator.selected.value"
               :projects="[scenario]"
               :label="scenario"
+              :can-be-closed="true"
+              @chart-closed="onMeasureChartClosed"
             />
           </template>
         </span>
@@ -127,7 +127,7 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
@@ -218,16 +218,24 @@ if (releaseConfigurator != null) {
   configurators.push(releaseConfigurator)
 }
 
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
-
 const configuratorsUpdated = ref(false)
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configuratorsUpdated.value = true
   configurators.push(configurator)
 }
 provide(dashboardConfiguratorsKey, configurators)
+
+function onTestChartClosed(metric: Ref<string[]>) {
+  measureConfigurator.setSelected(measureConfigurator.selected.value?.filter((item) => !metric.value.includes(item)) as string[])
+}
+
+function onMeasureChartClosed(projects: string[]) {
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = scenarioConfigurator.selected.value.filter((item) => !projects.includes(item))
+  } else if (scenarioConfigurator.selected.value != null && projects.includes(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = null
+  }
+}
 
 const testMetricSwitcher: Ref<TestMetricSwitcher | null> = ref(TestMetricSwitcher.Tests)
 const testMetricSwitcherOptions = [TestMetricSwitcher.Tests, TestMetricSwitcher.Metrics]
@@ -247,9 +255,7 @@ watch(
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...measureScenarioFilters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {
-          if (value?.length != 0) {
-            scenarios = toArray(value)
-          }
+          scenarios = toArray(value)
         })
         break
       }

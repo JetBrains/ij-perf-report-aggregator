@@ -50,6 +50,29 @@ func GetAnalyzer(id string) DatabaseConfiguration {
         }
       },
     }
+  case id == "ijDev":
+    fieldNames := []string{
+      "classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime", "classLoadingCount", "classLoadingPreparedCount", "classLoadingLoadedCount",
+      "resourceLoadingTime", "resourceLoadingCount",
+      "measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",
+    }
+    return DatabaseConfiguration{
+      DbName:            id,
+      HasProductField:   true,
+      HasInstallerField: false,
+      extraFieldCount:   len(IjMetricDescriptors) + len(fieldNames),
+      ReportReader:      analyzeIjReport,
+      insertStatementWriter: func(sb *strings.Builder) {
+        for _, metric := range IjMetricDescriptors {
+          sb.WriteRune(',')
+          sb.WriteString(metric.Name)
+        }
+        for _, fieldName := range fieldNames {
+          sb.WriteRune(',')
+          sb.WriteString(fieldName)
+        }
+      },
+    }
   case strings.HasPrefix(id, "perfintDev"):
     dbName, tableName := splitId(id)
     return DatabaseConfiguration{

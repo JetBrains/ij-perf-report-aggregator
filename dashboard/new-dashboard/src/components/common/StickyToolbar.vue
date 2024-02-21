@@ -1,5 +1,5 @@
 <template>
-  <Toolbar :class="isSticky ? 'stickyToolbar' : 'customToolbar'">
+  <Toolbar :class="useScrollStore().isScrolled ? 'stickyToolbar' : 'customToolbar'">
     <template #start>
       <slot name="start" />
     </template>
@@ -12,16 +12,9 @@
   </Toolbar>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue"
+import { useScrollListeners, useScrollStore } from "./scrollStore"
 
-const isSticky = ref(false)
-const checkIfSticky = () => (isSticky.value = window.scrollY > 100)
-onMounted(() => {
-  window.addEventListener("scroll", checkIfSticky)
-})
-onUnmounted(() => {
-  window.removeEventListener("scroll", checkIfSticky)
-})
+useScrollListeners()
 </script>
 <style scoped>
 .customToolbar {

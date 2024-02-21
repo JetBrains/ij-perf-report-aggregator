@@ -126,6 +126,10 @@ export class AggregationChartVM {
 
     if (options["dataset"]) {
       const dataset = options["dataset"] as DatasetOption[]
+      if (dataset.length === 0) {
+        this.average.value = 0
+        return
+      }
       const [_, values] = dataset[0].source as OptionSourceData[]
 
       this.average.value = this.calculateAverage(values as number[])

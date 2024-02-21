@@ -9,13 +9,15 @@
       <Chip><a href="#index">Vcs indexing</a></Chip>
       <Chip><a href="#history">Show file history</a></Chip>
       <Chip><a href="#checkout">Checkout</a></Chip>
-      <Chip><a href="#filter">Filter Vcs Log tab</a></Chip>
+      <Chip><a href="#filter">Filter Log tab</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
+      <Chip><a href="#widget">Branch widget</a></Chip>
+      <Chip><a href="#annotate">Annotate</a></Chip>
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2, 3, 4]"
+      :active-index="[0, 1, 2, 3, 4, 5, 6]"
     >
       <AccordionTab header="Indexing">
         <a name="index" />
@@ -82,8 +84,15 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Loading full VCS Log (all commits and references)"
+            label="Loading full VCS Log (all commits and references) - vcs-log-loading-full-log"
             measure="vcs-log-loading-full-log"
+            :projects="showFileHistoryProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Collecting revisions from the [com.intellij.vcs.log.VcsLogFileHistoryHandler]"
+            measure="file-history-collecting-revisions-from-handler"
             :projects="showFileHistoryProjects"
           />
         </section>
@@ -142,30 +151,71 @@
         </section>
         <section>
           <GroupProjectsChart
-            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.)"
+            label="Refreshing VCS Log when repositories change (on commit, rebase, checkout branch, etc.) - vcs-log-refreshing"
             measure="vcs-log-refreshing"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.)"
+            label="Partial refresh of the VCS Log, building of SmallDataPack (on commit, rebase, checkout branch, etc.) - vcs-log-partial-refreshing"
             measure="vcs-log-partial-refreshing"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits"
+            label="Building a [com.intellij.vcs.log.graph.PermanentGraph] for the list of commits - vcs-log-building-graph"
             measure="vcs-log-building-graph"
             :projects="commitProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
-            label="Loading full VCS Log (all commits and references)"
+            label="Loading full VCS Log (all commits and references) - vcs-log-loading-full-log"
             measure="vcs-log-loading-full-log"
             :projects="commitProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="git-reading-repo-info"
+            measure="git-reading-repo-info"
+            :projects="commitProjects"
+          />
+        </section>
+      </AccordionTab>
+      <AccordionTab header="Show branch widget">
+        <a name="widget" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of expanding the whole branch tree - GitBranchesTreePopup::waitTreeExpand"
+            measure="gitShowBranchWidget"
+            :projects="widgetProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Duration of initializing tree - git-branches-popup-building-tree"
+            measure="git-branches-popup-building-tree"
+            :projects="widgetProjects"
+          />
+        </section>
+      </AccordionTab>
+      <AccordionTab header="Annotate">
+        <a name="annotate" />
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - showFileAnnotation"
+            measure="showFileAnnotation"
+            :projects="annotateProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Duration of opening git annotation - git-open-annotation"
+            measure="git-open-annotation"
+            :projects="annotateProjects"
           />
         </section>
       </AccordionTab>
@@ -183,7 +233,12 @@ const intellijSpecificProject = "intellij_clone_specific_commit/gitLogIndexing"
 const indexingProjects = [intellijSpecificProject]
 
 const showFileHistory = "intellij_clone_specific_commit/EditorImpl-"
-const showFileHistoryProjects = [showFileHistory + "phm", showFileHistory + "noindex", "intellij_sources/showFileHistory/EditorImpl"]
+const showFileHistoryProjects = [
+  showFileHistory + "phm",
+  showFileHistory + "noindex",
+  "intellij_sources/showFileHistory/EditorImpl",
+  "intellij_sources/showFileHistory/EditorImpl-instant-git",
+]
 
 const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 
@@ -192,4 +247,7 @@ const filterByNameProjects = [vcsLogFilterProject + "phm", vcsLogFilterProject +
 const filterByPathProjects = [vcsLogFilterProject + "path-phm", vcsLogFilterProject + "path-noindex"]
 
 const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
+
+const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
+const annotateProjects = ["intellij_clone_specific_commit/vcs-annotate-instant-git", "intellij_clone_specific_commit/vcs-annotate"]
 </script>

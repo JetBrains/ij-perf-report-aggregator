@@ -1,27 +1,93 @@
-@use 'sass:math';
+@use "sass:math";
 
+// core
 .p-treeselect {
-    //background: $inputBg;
-    //border: $inputBorder;
-    //transition: $formElementTransition;
-    //border-radius: $borderRadius;
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+}
 
-    //&:not(.p-disabled):hover {
-    //    border-color: $inputHoverBorderColor;
-    //}
+.p-treeselect-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
-    //&:not(.p-disabled).p-focus {
-    //    @include focused-input();
-    //}
+.p-treeselect-label-container {
+    overflow: hidden;
+    flex: 1 1 auto;
+    cursor: pointer;
+}
 
-    //.p-treeselect-label {
-    //    padding: $inputPadding;
-    //    transition: $formElementTransition;
-    //
-    //    &.p-placeholder {
-    //        color: $inputPlaceholderTextColor;
-    //    }
-    //}
+.p-treeselect-label {
+    display: block;
+    white-space: nowrap;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.p-treeselect-label-empty {
+    overflow: hidden;
+    visibility: hidden;
+}
+
+.p-treeselect-token {
+    cursor: default;
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.p-treeselect .p-treeselect-panel {
+    min-width: 100%;
+}
+
+.p-treeselect-items-wrapper {
+    overflow: auto;
+}
+
+.p-fluid .p-treeselect {
+    display: flex;
+}
+
+// theme
+.p-treeselect {
+    background: $inputBg;
+    border: $inputBorder;
+    transition: $formElementTransition;
+    border-radius: $borderRadius;
+    outline-color: transparent;
+
+    &:not(.p-disabled):hover {
+        border-color: $inputHoverBorderColor;
+    }
+
+    &:not(.p-disabled).p-focus {
+        @include focused-input();
+    }
+
+    &.p-variant-filled {
+        background: $inputFilledBg;
+
+        &:not(.p-disabled):hover {
+            background-color: $inputFilledHoverBg;
+        }
+
+        &:not(.p-disabled).p-focus {
+            background-color: $inputFilledFocusBg;
+        }
+    }
+
+    .p-treeselect-label {
+        //padding: $inputPadding;
+        transition: $formElementTransition;
+
+        &.p-placeholder {
+            color: $inputPlaceholderTextColor;
+        }
+    }
 
     &.p-treeselect-chip {
         .p-treeselect-token {
@@ -33,17 +99,17 @@
         }
     }
 
-    //.p-treeselect-trigger {
-    //    background: transparent;
-    //    color: $inputIconColor;
-    //    width: $inputGroupAddOnMinWidth;
-    //    border-top-right-radius: $borderRadius;
-    //    border-bottom-right-radius: $borderRadius;
-    //}
-    
-    //&.p-invalid.p-component {
-    //    @include invalid-input();
-    //}
+    .p-treeselect-trigger {
+        background: transparent;
+        color: $inputIconColor;
+        //width: $inputGroupAddOnMinWidth;
+        border-top-right-radius: $borderRadius;
+        border-bottom-right-radius: $borderRadius;
+    }
+
+    &.p-invalid.p-component {
+        @include invalid-input();
+    }
 }
 
 //.p-inputwrapper-filled {
@@ -57,11 +123,11 @@
 //}
 
 .p-treeselect-panel {
-    //background: $inputOverlayBg;
-    //color: $inputListTextColor;
-    //border: $inputOverlayBorder;
-    //border-radius: $borderRadius;
-    //box-shadow: $inputOverlayShadow;
+    background: $inputOverlayBg;
+    color: $inputListTextColor;
+    border: $inputOverlayBorder;
+    border-radius: $borderRadius;
+    box-shadow: $inputOverlayShadow;
 
     .p-treeselect-items-wrapper {
         .p-tree {
@@ -76,16 +142,16 @@
     }
 }
 
-//.p-input-filled {
-//    .p-treeselect {
-//        background: $inputFilledBg;
-//
-//        &:not(.p-disabled):hover {
-//            background-color: $inputFilledHoverBg;
-//        }
-//
-//        &:not(.p-disabled).p-focus {
-//            background-color: $inputFilledFocusBg;
-//        }
-//    }
-//}
+.p-input-filled {
+    .p-treeselect {
+        background: $inputFilledBg;
+
+        &:not(.p-disabled):hover {
+            background-color: $inputFilledHoverBg;
+        }
+
+        &:not(.p-disabled).p-focus {
+            background-color: $inputFilledFocusBg;
+        }
+    }
+}

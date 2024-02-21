@@ -52,26 +52,24 @@ func execute(taskContext context.Context) error {
     //   continue
     // }
 
-    group.Go(func(index int, item Item) func() error {
-      return func() error {
-        // log.Printf("optimize %s.%s", item.Database, item.Table)
-        query := fmt.Sprintf("optimize table %s.%s", item.Database, item.Table)
-        // query := fmt.Sprintf("alter table %s.%s reset setting storage_policy", item.Database, item.Table)
-        // query := "create table IF NOT EXISTS " + item.Database + "." + item.Table + "2 as " + item.Database + "." + item.Table
-        // query := "insert into " + item.Database + "." + item.Table + "2 select * from " + item.Database + "." + item.Table
-        // query := "alter table " + item.Database + "." + item.Table + " drop column if exists raw_report"
-        // query := "rename table " + item.Database + "." + item.Table + " to " + item.Database + "." + strings.TrimSuffix(item.Table, "2")
-        // query := fmt.Sprintf("BACKUP TABLE %s.%s TO Disk('backups', '%s_%s')", item.Database, item.Table, item.Database, item.Table)
-        log.Println(query)
-        err = db.Exec(ctx, query)
-        if err != nil {
-          return fmt.Errorf("%w", err)
-        }
-
-        log.Printf("optimized %s.%s (%d of %d)", item.Database, item.Table, index, len(result))
-        return nil
+    group.Go(func() error {
+      // log.Printf("optimize %s.%s", item.Database, item.Table)
+      query := fmt.Sprintf("optimize table %s.%s", item.Database, item.Table)
+      // query := fmt.Sprintf("alter table %s.%s reset setting storage_policy", item.Database, item.Table)
+      // query := "create table IF NOT EXISTS " + item.Database + "." + item.Table + "2 as " + item.Database + "." + item.Table
+      // query := "insert into " + item.Database + "." + item.Table + "2 select * from " + item.Database + "." + item.Table
+      // query := "alter table " + item.Database + "." + item.Table + " drop column if exists raw_report"
+      // query := "rename table " + item.Database + "." + item.Table + " to " + item.Database + "." + strings.TrimSuffix(item.Table, "2")
+      // query := fmt.Sprintf("BACKUP TABLE %s.%s TO Disk('backups', '%s_%s')", item.Database, item.Table, item.Database, item.Table)
+      log.Println(query)
+      err = db.Exec(ctx, query)
+      if err != nil {
+        return fmt.Errorf("%w", err)
       }
-    }(index, item))
+
+      log.Printf("optimized %s.%s (%d of %d)", item.Database, item.Table, index, len(result))
+      return nil
+    })
   }
   return group.Wait()
 }

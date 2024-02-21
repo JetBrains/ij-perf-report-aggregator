@@ -2,26 +2,26 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.17",
+    "@headlessui/vue": "^1.7.19",
     "@heroicons/vue": "2.1.1",
     "@vueuse/core": "^10.7.2",
     "compare-versions": "6.1.0",
-    "echarts": "5.4.3",
+    "echarts": "5.5.0",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
-    "floating-vue": "5.2.0",
     "humanize-duration": "3.31.0",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
-    "primevue": "3.46.0",
+    "primevue": "3.48.1",
     "rxjs": "8.0.0-alpha.12",
-    "vue": "3.4.15",
+    "vue": "3.4.19",
     "vue-router": "4.2.5"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
-    "global-jsdom": "^9.1.0",
-    "jsdom": "^23.2.0",
-    "msw": "^2.1.2"
+    "@types/sanitize-html": "^2.11.0",
+    "global-jsdom": "^24.0.0",
+    "jsdom": "^24.0.0",
+    "msw": "^2.2.1"
   }
 }

@@ -52,7 +52,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
     var wg sync.WaitGroup
     for degradation := range degradations {
       wg.Add(1)
-      func(degradation DegradationWithSettings) {
+      func() {
         defer wg.Done()
         d := degradation.Details
         date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
@@ -94,7 +94,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
         }
 
         insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
-      }(degradation)
+      }()
     }
     wg.Wait()
   }()

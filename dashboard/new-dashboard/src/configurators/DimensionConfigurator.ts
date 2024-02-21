@@ -29,27 +29,27 @@ export class DimensionConfigurator implements DataQueryConfigurator, FilterConfi
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const value = this.selected.value
     if (value == null || value.length === 0) {
-      return false
-    }
-
-    const filter: DataQueryFilter = { f: this.name, v: value }
-    if (this.multiple && Array.isArray(value)) {
-      filter.v = value[0]
-      if (value.length > 1) {
-        configureQueryProducer(configuration, filter, value, this.aliases)
+      query.addFilter({ f: this.name, v: "" })
+    } else {
+      const filter: DataQueryFilter = { f: this.name, v: value }
+      if (this.multiple && Array.isArray(value)) {
+        filter.v = value[0]
+        if (value.length > 1) {
+          configureQueryProducer(configuration, filter, value, this.aliases)
+        }
       }
+      query.addFilter(filter)
     }
-    query.addFilter(filter)
     return true
   }
 
   configureFilter(query: DataQuery): boolean {
     const value = this.selected.value
     if (value == null || value.length === 0) {
-      return false
+      query.addFilter({ f: this.name, v: "" })
+    } else {
+      query.addFilter({ f: this.name, v: value })
     }
-
-    query.addFilter({ f: this.name, v: value })
     return true
   }
 }
@@ -96,25 +96,20 @@ export function dimensionConfigurator(
       }
       configurator.values.value = data
 
-      filterSelected(configurator, data, name)
+      filterSelected(configurator, data)
     })
   return configurator
 }
 
-export function filterSelected(configurator: DimensionConfigurator, data: string[], name: string) {
+export function filterSelected(configurator: DimensionConfigurator, data: string[]) {
   const selectedRef = configurator.selected
-  if (data.length === 0) {
-    // do not update value - don't unset if values temporary not set
-    console.debug(`[dimensionConfigurator(name=${name})] value list is empty`)
-  } else {
+  if (data.length > 0) {
     const selected = selectedRef.value
     if (Array.isArray(selected) && selected.length > 0) {
       const filtered = selected.filter((it) => data.includes(it))
       if (filtered.length !== selected.length) {
         selectedRef.value = filtered
       }
-    } else if (selected == null || selected.length === 0 || !data.includes(selected as string)) {
-      selectedRef.value = data[0]
     }
   }
 }

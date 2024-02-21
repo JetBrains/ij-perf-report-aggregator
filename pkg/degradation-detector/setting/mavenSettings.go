@@ -1,6 +1,9 @@
 package setting
 
-import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+import (
+  detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+  "slices"
+)
 
 func getTests() []string {
   return []string{
@@ -23,10 +26,10 @@ func getTests() []string {
 }
 
 func GenerateMavenSettings() []detector.PerformanceSettings {
-  settings := make([]detector.PerformanceSettings, 0, 1000)
-  settings = append(settings, generateMavenSettingsOnInstaller()...)
-  settings = append(settings, generateMavenSettingsOnFastInstaller()...)
-  return settings
+  return slices.Concat(
+    generateMavenSettingsOnInstaller(),
+    generateMavenSettingsOnFastInstaller(),
+  )
 }
 
 func generateMavenSettingsOnInstaller() []detector.PerformanceSettings {

@@ -19,7 +19,7 @@ type accident struct {
   Reason       string `json:"reason"`
   BuildNumber  string `json:"buildNumber"`
   Kind         string `json:"kind"`
-  ExternalId   string `json:"externalId"`
+  ExternalId   string `json:"externalId,omitempty"`
 }
 
 type accidentRequestParams struct {
@@ -38,6 +38,69 @@ type AccidentInsertParams struct {
 
 type accidentDeleteParams struct {
   Id int64 `json:"id"`
+}
+
+func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
+  type date struct {
+    Date string `json:"date"`
+  }
+  return func(writer http.ResponseWriter, request *http.Request) {
+    body := request.Body
+    all, err := io.ReadAll(body)
+    if err != nil {
+      slog.Error("Cannot read body", "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+      return
+    }
+    defer body.Close()
+
+    var params date
+    if err = json.Unmarshal(all, &params); err != nil {
+      slog.Error("Cannot unmarshal parameters", "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+      return
+    }
+
+    sql := "SELECT id, date, affected_test, reason, build_number, kind FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
+    rows, err := metaDb.Query(request.Context(), sql)
+    if err != nil {
+      slog.Error("unable to execute the query", "query", sql, "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+      return
+    }
+    defer rows.Close()
+
+    accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (accident, error) {
+      var id int64
+      var date pgtype.Date
+      var affectedTest, reason, buildNumber, kind string
+      err := row.Scan(&id, &date, &affectedTest, &reason, &buildNumber, &kind)
+      return accident{
+        ID:           id,
+        Date:         date.Time.String(),
+        AffectedTest: affectedTest,
+        Reason:       reason,
+        BuildNumber:  buildNumber,
+        Kind:         kind,
+      }, err
+    })
+    if err != nil {
+      slog.Error("unable to collect rows", "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+      return
+    }
+    jsonBytes, err := json.Marshal(accidents)
+    if err != nil {
+      slog.Error("unable to marshal accidents", "accidents", accidents, "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+      return
+    }
+    _, err = writer.Write(jsonBytes)
+    if err != nil {
+      slog.Error("unable to write response", "error", err)
+      writer.WriteHeader(http.StatusInternalServerError)
+    }
+  }
 }
 
 func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -60,7 +123,7 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 
     sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
     if params.Tests != nil {
-      sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ")"
+      sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ") or affected_test = ''"
     }
     rows, err := metaDb.Query(request.Context(), sql)
     if err != nil {

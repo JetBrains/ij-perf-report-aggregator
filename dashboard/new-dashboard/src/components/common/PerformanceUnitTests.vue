@@ -3,11 +3,7 @@
     <StickyToolbar>
       <template #start>
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
@@ -50,6 +46,8 @@
             :measure="measureConfigurator.selected.value"
             :projects="[scenario]"
             :label="scenario"
+            :can-be-closed="true"
+            @chart-closed="onChartClosed"
           />
         </template>
       </div>
@@ -68,7 +66,7 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
@@ -145,12 +143,16 @@ const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfi
 
 provide(dashboardConfiguratorsKey, configurators)
 
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
-}
-
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
+}
+
+function onChartClosed(projects: string[]) {
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = scenarioConfigurator.selected.value.filter((item) => !projects.includes(item))
+  } else if (scenarioConfigurator.selected.value != null && projects.includes(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = null
+  }
 }
 
 const scenarios = computed(() => {

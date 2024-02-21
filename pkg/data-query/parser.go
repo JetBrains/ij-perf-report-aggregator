@@ -224,7 +224,7 @@ func readFilters(list []*fastjson.Value, query *Query) error {
     }
 
     if !isValidFilterFieldName(t.Field) && len(t.Sql) == 0 {
-      return http_error.NewHttpError(400, fmt.Sprintf("%s is not a valid filter field name", t.Field))
+      return http_error.NewHttpError(400, t.Field+" is not a valid filter field name")
     }
 
     if len(t.Sql) == 0 && value == nil {

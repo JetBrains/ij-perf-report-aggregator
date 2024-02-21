@@ -50,40 +50,128 @@
       <GroupProjectsChart
         label="Find Usages: Execution Time"
         measure="findUsages"
-        :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
-        :aliases="['Factory (GL)', 'Let Variable (GL)']"
+        :projects="[
+          'RUBY-23764-Case1/ruby-23764-findusages-case1',
+          'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'RUBY-32357/class',
+          'RUBY-32357/module',
+          'RUBY-32357/method',
+          'RUBY-32357/singleton-method',
+          'RUBY-32357/instance-variable',
+          'RUBY-32357/class-variable',
+          'RUBY-32357/global-variable',
+          'RUBY-32357/delegate-method',
+          'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
+        ]"
+        :aliases="[
+          'Factory (GL)',
+          'Let Variable (GL)',
+          'Class (GL)',
+          'Module (GL)',
+          'Method (GL)',
+          'Singleton Method (GL)',
+          'Instance Variable (GL)',
+          'Class Variable (GL)',
+          'Global Variable (GL)',
+          'Delegate Method (GL)',
+          'Association (GL)',
+          'I18n Key (MA)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages: Quantity"
         measure="findUsages#number"
-        :projects="['RUBY-23764-Case1/ruby-23764-findusages-case1', 'RUBY-23764-Case2/ruby-23764-findusages-case2']"
-        :aliases="['Factory (GL)', 'Let Variable (GL)']"
+        :projects="[
+          'RUBY-23764-Case1/ruby-23764-findusages-case1',
+          'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'RUBY-32357/class',
+          'RUBY-32357/module',
+          'RUBY-32357/method',
+          'RUBY-32357/singleton-method',
+          'RUBY-32357/instance-variable',
+          'RUBY-32357/class-variable',
+          'RUBY-32357/global-variable',
+          'RUBY-32357/delegate-method',
+          'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
+        ]"
+        :aliases="[
+          'Factory (GL)',
+          'Let Variable (GL)',
+          'Class (GL)',
+          'Module (GL)',
+          'Method (GL)',
+          'Singleton Method (GL)',
+          'Instance Variable (GL)',
+          'Class Variable (GL)',
+          'Global Variable (GL)',
+          'Delegate Method (GL)',
+          'Association (GL)',
+          'I18n Key (MA)',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Routes Highlighting"
+        measure="highlighting"
+        :projects="[
+          'redmine-project-test/highlight/routes-highlighting',
+          'gitlab-project-test/highlight/routes-highlighting',
+          'diaspora-project-test/highlight/routes-highlighting',
+        ]"
+        :aliases="['Redmine', 'Gitlab', 'Diaspora']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion (Diaspora)"
         measure="completion"
-        :projects="['diaspora-project-test/completion/routes', 'diaspora-project-test/completion/exceptions', 'diaspora-project-test/completion/localization']"
-        :aliases="['Routes', 'Exceptions', 'I18n#t']"
+        :projects="[
+          'diaspora-project-test/completion/routes',
+          'diaspora-project-test/completion/exceptions',
+          'diaspora-project-test/completion/localization',
+          'diaspora-project-test/completion/constant',
+          'diaspora-project-test/completion/exceptions-prefix',
+          'diaspora-project-test/completion/method',
+          'diaspora-project-test/completion/qualified',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion (GitLab)"
         measure="completion"
-        :projects="['gitlab-project-test/completion/routes', 'gitlab-project-test/completion/exceptions', 'gitlab-project-test/completion/localization']"
-        :aliases="['Routes', 'Exceptions', 'I18n#t']"
+        :projects="[
+          'gitlab-project-test/completion/routes',
+          'gitlab-project-test/completion/exceptions',
+          'gitlab-project-test/completion/localization',
+          'gitlab-project-test/completion/constant',
+          'gitlab-project-test/completion/exceptions-prefix',
+          'gitlab-project-test/completion/method',
+          'gitlab-project-test/completion/qualified',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Completion (Redmine)"
         measure="completion"
-        :projects="['redmine-project-test/completion/routes', 'redmine-project-test/completion/exceptions', 'redmine-project-test/completion/localization']"
-        :aliases="['Routes', 'Exceptions', 'I18n#t']"
+        :projects="[
+          'redmine-project-test/completion/routes',
+          'redmine-project-test/completion/exceptions',
+          'redmine-project-test/completion/localization',
+          'redmine-project-test/completion/constant',
+          'redmine-project-test/completion/exceptions-prefix',
+          'redmine-project-test/completion/method',
+          'redmine-project-test/completion/qualified',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
       />
     </section>
     <section>
@@ -280,6 +368,14 @@
           'redmine-project-test/completion/qualified',
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'RUBY-32357/module',
+          'RUBY-32357/method',
+          'RUBY-32357/singleton-method',
+          'RUBY-32357/instance-variable',
+          'RUBY-32357/class-variable',
+          'RUBY-32357/global-variable',
+          'RUBY-32357/delegate-method',
+          'mastodon-find-usages/i18n-key',
         ]"
         :aliases="[
           'Project Model (GL)',
@@ -315,6 +411,14 @@
           'Admin Info View Erb (RM)',
           'Users Spec Factory (GL)',
           'File Collection Spec (GL)',
+          'GitLab Routing Helper (GL)',
+          'Todo Model (GL)',
+          'GitLab Script (GL)',
+          'Labels Finder (GL)',
+          'Epics Swimlanes Drag Drop Spec (GL)',
+          'Feature Flag Script (GL)',
+          'Framework Registry Finder (GL)',
+          'Locale File (MA)',
         ]"
       />
     </section>
@@ -370,6 +474,16 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'RUBY-32357/class',
+          'RUBY-32357/module',
+          'RUBY-32357/method',
+          'RUBY-32357/singleton-method',
+          'RUBY-32357/instance-variable',
+          'RUBY-32357/class-variable',
+          'RUBY-32357/global-variable',
+          'RUBY-32357/delegate-method',
+          'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
           'gitlab-project-inspections-test/inspection-app',
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'redmine-project-inspections-test/inspection-RubyResolve-app',
@@ -379,6 +493,16 @@
         :aliases="[
           'Factory Find Usage (GL)',
           'Let Variable Find Usage (GL)',
+          'Class Find Usage (GL)',
+          'Module Find Usage (GL)',
+          'Method Find Usage (GL)',
+          'Singleton Method Find Usage (GL)',
+          'Instance Variable Find Usage (GL)',
+          'Class Variable Find Usage (GL)',
+          'Global Variable Find Usage (GL)',
+          'Delegate Method Find Usage (GL)',
+          'Association Find Usage (GL)',
+          'I18n Key (MA)',
           'All Inspections (GL)',
           'Unresolved References Inspection (GL)',
           'All Inspections (RM)',
@@ -394,6 +518,16 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'RUBY-32357/class',
+          'RUBY-32357/module',
+          'RUBY-32357/method',
+          'RUBY-32357/singleton-method',
+          'RUBY-32357/instance-variable',
+          'RUBY-32357/class-variable',
+          'RUBY-32357/global-variable',
+          'RUBY-32357/delegate-method',
+          'RUBY-32357/association',
+          'mastodon-find-usages/i18n-key',
           'gitlab-project-inspections-test/inspection-app',
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'redmine-project-inspections-test/inspection-RubyResolve-app',
@@ -403,6 +537,16 @@
         :aliases="[
           'Factory Find Usage (GL)',
           'Let Variable Find Usage (GL)',
+          'Class Find Usage (GL)',
+          'Module Find Usage (GL)',
+          'Method Find Usage (GL)',
+          'Singleton Method Find Usage (GL)',
+          'Instance Variable Find Usage (GL)',
+          'Class Variable Find Usage (GL)',
+          'Global Variable Find Usage (GL)',
+          'Delegate Method Find Usage (GL)',
+          'Association Find Usage (GL)',
+          'I18n Key (MA)',
           'All Inspections (GL)',
           'Unresolved References Inspection (GL)',
           'All Inspections (RM)',

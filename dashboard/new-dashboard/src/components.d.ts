@@ -7,13 +7,18 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('primevue/accordion/Accordion.vue')['default']
     AccordionTab: typeof import('primevue/accordiontab/AccordionTab.vue')['default']
     Button: typeof import('primevue/button/Button.vue')['default']
+    Calendar: typeof import('primevue/calendar/Calendar.vue')['default']
+    Card: typeof import('primevue/card/Card.vue')['default']
     Checkbox: typeof import('primevue/checkbox/Checkbox.vue')['default']
     Column: typeof import('primevue/column/Column.vue')['default']
     DataTable: typeof import('primevue/datatable/DataTable.vue')['default']
+    DeferredContent: typeof import('primevue/deferredcontent/DeferredContent.vue')['default']
     Dialog: typeof import('primevue/dialog/Dialog.vue')['default']
     Dropdown: typeof import('primevue/dropdown/Dropdown.vue')['default']
+    FloatLabel: typeof import('primevue/floatlabel/FloatLabel.vue')['default']
     InputNumber: typeof import('primevue/inputnumber/InputNumber.vue')['default']
     InputSwitch: typeof import('primevue/inputswitch/InputSwitch.vue')['default']
     InputText: typeof import('primevue/inputtext/InputText.vue')['default']
@@ -21,6 +26,7 @@ declare module 'vue' {
     MultiSelect: typeof import('primevue/multiselect/MultiSelect.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ScrollTop: typeof import('primevue/scrolltop/ScrollTop.vue')['default']
     SelectButton: typeof import('primevue/selectbutton/SelectButton.vue')['default']
     Slider: typeof import('primevue/slider/Slider.vue')['default']
     SplitButton: typeof import('primevue/splitbutton/SplitButton.vue')['default']

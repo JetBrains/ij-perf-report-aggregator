@@ -1,25 +1,50 @@
+// core
+.p-fluid .p-inputtext {
+    width: 100%;
+}
+
+.p-fluid .p-input-icon-left,
+.p-fluid .p-input-icon-right {
+    width: 100%;
+}
+
+// theme
 .p-inputtext {
-    //font-family: $fontFamily;
+    //font-family: var(--font-family);
+    //font-feature-settings: var(--font-feature-settings, normal);
     //font-size: $inputTextFontSize;
-    //color: $inputTextColor;
-    //background: $inputBg;
+    color: $inputTextColor;
+    background: $inputBg;
     //padding: $inputPadding;
-    //border: $inputBorder;
-    //transition: $formElementTransition;
-    //appearance: none;
-    //border-radius: $borderRadius;
+    border: $inputBorder;
+    transition: $formElementTransition;
+    appearance: none;
+    border-radius: $borderRadius;
+    outline-color: transparent;
 
-    //&:enabled:hover {
-    //    border-color: $inputHoverBorderColor;
-    //}
+    &:enabled:hover {
+        border-color: $inputHoverBorderColor;
+    }
 
-    //&:enabled:focus {
-    //    @include focused-input();
-    //}
+    &:enabled:focus {
+        @include focused-input();
+    }
 
-    //&.p-invalid.p-component {
-    //    @include invalid-input();
-    //}
+    &.p-invalid.p-component {
+        @include invalid-input();
+    }
+
+    &.p-variant-filled {
+        background-color: $inputFilledBg;
+
+        &:enabled:hover {
+            background-color: $inputFilledHoverBg;
+        }
+
+        &:enabled:focus {
+            background-color: $inputFilledFocusBg;
+        }
+    }
 
     &.p-inputtext-sm {
         @include scaledFontSize($inputTextFontSize, $scaleSM);
@@ -57,7 +82,7 @@
 }
 
 .p-input-icon-right > svg:last-of-type,
-.p-input-icon-right > i:last-of-type  {
+.p-input-icon-right > i:last-of-type {
     right: nth($inputPadding, 2);
     color: $inputIconColor;
 }
@@ -67,8 +92,8 @@
 }
 
 @include placeholder {
-    color: $inputPlaceholderTextColor
-};
+    color: $inputPlaceholderTextColor;
+}
 
 .p-input-filled {
     .p-inputtext {
@@ -77,7 +102,7 @@
         &:enabled:hover {
             background-color: $inputFilledHoverBg;
         }
-    
+
         &:enabled:focus {
             background-color: $inputFilledFocusBg;
         }

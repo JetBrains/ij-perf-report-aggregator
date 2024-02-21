@@ -25,6 +25,11 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["IsUpToDateCheck duration"],
+    measures: ["isUpToDateCheck"],
+    projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
+  },
+  {
     labels: ["FindUsages PsiManager#getInstance Before and After Compilation"],
     measures: ["findUsages"],
     projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],

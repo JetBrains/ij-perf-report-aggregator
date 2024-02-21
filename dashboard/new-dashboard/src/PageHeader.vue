@@ -8,7 +8,7 @@
         Tests on
       </span>
       <button
-        class="text-blue-500 px-1 py-1 inline-flex text-xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-xl items-center"
         type="button"
         @click="toggle"
       >
@@ -28,7 +28,7 @@
       </span>
       <button
         v-if="isSubMenuExists"
-        class="text-blue-500 px-1 py-1 inline-flex text-xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-xl items-center"
         type="button"
         @click="toggleSubMenu"
       >
@@ -48,7 +48,7 @@
       target="_blank"
       rel="noopener noreferrer"
     >
-      <QuestionMarkCircleIcon class="w-7 h-7 text-blue-500" />
+      <QuestionMarkCircleIcon class="w-7 h-7 text-primary" />
     </a>
   </div>
 </template>

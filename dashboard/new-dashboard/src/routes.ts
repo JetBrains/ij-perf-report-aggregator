@@ -32,6 +32,7 @@ const enum ROUTE_PREFIX {
   Qodana = "/qodana",
   Clion = "/clion",
   Vcs = IntelliJ + "/vcs",
+  EmbeddingSearch = IntelliJ + "/embeddingSearch",
   PerfUnit = "/perfUnit",
   ML = "/ml",
   DataGrip = "/datagrip",
@@ -49,6 +50,7 @@ enum ROUTES {
   StartupModuleLoading = `${ROUTE_PREFIX.Startup}/moduleLoading`,
   StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
+  StartupExploreDev = `${ROUTE_PREFIX.Startup}/exploreDev`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
@@ -60,6 +62,7 @@ enum ROUTES {
   IntelliJDevDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardDev`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
+  IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
@@ -96,6 +99,7 @@ enum ROUTES {
   IntelliJExperimentsGradleSyncDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardGradleSync`,
   IntelliJExperimentsMonorepoDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardMonorepo`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
+  PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -197,6 +201,8 @@ enum ROUTES {
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
+  ReportDegradations = "/degradations/report",
+  MetricsDescription = "/metrics/description",
 }
 
 export interface Tab {
@@ -249,6 +255,10 @@ const IJ_STARTUP: Product = {
         {
           url: ROUTES.StartupExplore,
           label: "Explore",
+        },
+        {
+          url: ROUTES.StartupExploreDev,
+          label: "Explore (Dev)",
         },
         {
           url: ROUTES.StartupReport,
@@ -498,6 +508,16 @@ const IDEA: Product = {
         },
       ],
     },
+    {
+      url: ROUTE_PREFIX.EmbeddingSearch,
+      label: "Embedding Search",
+      tabs: [
+        {
+          url: ROUTES.IntelliJEmbeddingSearchDashboard,
+          label: "Embedding Search",
+        },
+      ],
+    },
   ],
 }
 const PHPSTORM: Product = {
@@ -515,6 +535,10 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.PhpStormLLMDashboard,
+          label: "LLM Dashboard",
         },
         {
           url: ROUTES.PhpStormTests,
@@ -1130,6 +1154,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.StartupExplore,
           component: () => import("./components/startup/IntelliJExplore.vue"),
+          props: {
+            withInstaller: true,
+          },
+          meta: { pageTitle: "Explore" },
+        },
+        {
+          path: ROUTES.StartupExploreDev,
+          component: () => import("./components/startup/IntelliJExplore.vue"),
+          props: {
+            withInstaller: false,
+          },
           meta: { pageTitle: "Explore" },
         },
         {
@@ -1322,6 +1357,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
         },
         {
+          path: ROUTES.IntelliJEmbeddingSearchDashboard,
+          component: () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"),
+          meta: { pageTitle: "IntelliJ performance tests for embedding search" },
+        },
+        {
           path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
@@ -1382,6 +1422,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PhpStorm Performance dashboard" },
+        },
+        {
+          path: ROUTES.PhpStormLLMDashboard,
+          component: () => import("./components/phpstorm/MLDashboard.vue"),
+          meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
         },
         {
           path: ROUTES.PhpStormWithPluginsDashboard,
@@ -2091,6 +2136,21 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "empty project",
           },
           meta: { pageTitle: "DataGrip Startup dashboard" },
+        },
+        {
+          path: ROUTES.ReportDegradations,
+          component: () => import("./components/degradations/ReportDegradation.vue"),
+          meta: { pageTitle: "Report degradations" },
+          props: (route) => ({
+            tests: route.query["tests"],
+            build: route.query["build"],
+            date: route.query["date"],
+          }),
+        },
+        {
+          path: ROUTES.MetricsDescription,
+          component: () => import("./components/metrics/MetricDescriptions.vue"),
+          meta: { pageTitle: "Metrics description" },
         },
       ],
     },

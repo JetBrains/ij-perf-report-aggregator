@@ -21,6 +21,7 @@ import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, nu
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
+import { isIJStartup, isStartup } from "../shared/dbTypes"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -64,7 +65,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   ) {
     persistentStateManager.add("measure", this._selected)
 
-    const isIj = serverConfigurator.db === "ij"
+    const isIj = isIJStartup(serverConfigurator.db, serverConfigurator.table)
 
     createFilterObservable(serverConfigurator, filters)
       .pipe(
@@ -103,21 +104,25 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         }
 
         if (isIj) {
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it))
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.$/.test(it))
-          data = data.filter((it) => !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it))
-
+          data = data.filter(
+            (it) =>
+              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z]: scheduled$/.test(it) &&
+              !/^c\.i\.ide\.[A-Za-z]\.$/.test(it) &&
+              !/^c\.i\.ide\.[A-Za-z]\.[A-Za-z](\.)?$/.test(it) &&
+              !/^ProjectImpl@\d+ container$/.test(it)
+          )
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
 
-        //filter for editor menu
-        data = data.filter((it) => !/.*#[Uu]pdate@.*/.test(it))
-        data = data.filter((it) => !/.*#GetChildren@.*/.test(it))
-        data = data.filter((it) => !/.*#getSelection@.*/.test(it))
+        data = data.filter(
+          (it) =>
+            //filter for editor menu
+            !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
+            //filter out _23 metrics, we need them in DB but not in UI
+            !/.*_\d+(#.*)?$/.test(it)
+        )
 
         const selectedRef = this.selected
-        //filter out _23 metrics, we need them in DB but not in UI
-        data = data.filter((it) => !/.*_\d+(#.*)?$/.test(it))
         this.data.value = data
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
@@ -179,7 +184,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   }
 
   let fieldPrefix: string
-  if (serverConfigurator.db === "ij") {
+  if (isIJStartup(serverConfigurator.db, serverConfigurator.table)) {
     fieldPrefix = "measure"
   } else {
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
@@ -256,7 +261,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  const isIj = query.db === "ij"
+  const isIj = isIJStartup(query.db, query.table)
   const structureName = isIj ? "measure" : "measures"
   const valueName = isIj ? "duration" : "value"
   const field: DataQueryDimension = { n: "" }
@@ -268,7 +273,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   }
 
   const metricNameField: DataQueryDimension = { n: "" }
-  if (query.table == "report" && (query.db == "ij" || query.db == "fleet")) {
+  if (isStartup(query.db, query.table)) {
     query.insertField(metricNameField, 2)
   }
 
@@ -294,7 +299,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (query.table == "report" && (query.db == "ij" || query.db == "fleet")) {
+      if (isStartup(query.db, query.table)) {
         delete metricNameField.sql
         delete metricNameField.subName
         if (measure.startsWith("metrics.")) {
@@ -578,5 +583,5 @@ function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
 }
 
 function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {
-  return accidents != null && accidents.every((accident) => accident.kind == AccidentKind.Exception)
+  return accidents != null && accidents.length > 0 && accidents.every((accident) => accident.kind == AccidentKind.Exception)
 }

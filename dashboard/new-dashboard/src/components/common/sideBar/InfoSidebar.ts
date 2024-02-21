@@ -4,6 +4,7 @@ export const tcUrl = "https://buildserver.labs.intellij.net/"
 export const buildUrl = (id: number) => `${tcUrl}viewLog.html?buildId=${id}`
 
 export interface InfoData {
+  seriesName: string
   build: string | undefined
   artifactsUrl: string
   changesUrl: string
@@ -50,6 +51,7 @@ export enum DBType {
   BAZEL = "bazel",
   PERF_UNIT_TESTS = "perfUnitTests",
   STARTUP_TESTS = "startupTests",
+  STARTUP_TESTS_DEV = "startupTests_dev",
   UNKNOWN = "unknown",
 }
 

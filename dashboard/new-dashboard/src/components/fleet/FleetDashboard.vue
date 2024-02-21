@@ -2,11 +2,7 @@
   <div class="flex flex-col gap-5">
     <StickyToolbar>
       <template #start>
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <MachineSelect :machine-configurator="machineConfigurator" />
       </template>
       <template #end>
@@ -123,7 +119,7 @@ import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import LineChart from "../charts/LineChart.vue"
@@ -170,9 +166,5 @@ const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRan
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   dashboardConfigurators.push(configurator)
-}
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
 }
 </script>

@@ -30,8 +30,47 @@ paths:
           description: Conflict. An accident with the same details already exists.
         '500':
           description: Internal Server Error. An error occurred on the server.
+  /api/meta/accidentsAroundDate:
+    post:
+      summary: Get accidents around a date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: true
+              properties:
+                date:
+                  type: string
+                  format: date-time
+                  example: 'Dec 19, 2023, 4:01 AM'
+                  description: The date to search around
+      responses:
+        '200':
+          description: Returns a list of accidents around the given date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Accident'
+        '500':
+          description: Bad Request. The JSON is malformed or missing required fields.
+
 components:
   schemas:
+    KindType:
+      type: string
+      example: 'Regression'
+      enum:
+        - Regression
+        - Exception
+        - Improvement
+        - Investigation
+        - InferredImprovement
+        - InferredRegression
+      description: Inferred* values are used by degradation detector
     AccidentInsertParams:
       type: object
       required:
@@ -57,18 +96,36 @@ components:
           example: '450212'
           description: Should be buildID or installer build number
         kind:
-          type: string
-          example: 'Regression'
-          enum:
-            - Regression
-            - Exception
-            - Improvement
-            - Investigation
-            - InferredImprovement
-            - InferredRegression
-          description: Inferred* values are used by degradation detector
+          $ref: '#/components/schemas/KindType'
         externalId:
           type: string
           example: 'ext-1001'
           required: false
-  
+    Accident:
+      type: object
+      required:
+        - ID
+        - Date
+        - AffectedTest
+        - Reason
+        - BuildNumber
+        - Kind
+      properties:
+        ID:
+          type: string
+          description: Unique identifier for the accident
+        Date:
+          type: string
+          format: date-time
+          description: Date and time when the accident occurred
+        AffectedTest:
+          type: string
+          description: Affected tests and metrics
+        Reason:
+          type: string
+          description: Reason for the accident
+        BuildNumber:
+          type: string
+          description: Build number associated with the accident
+        Kind:
+          $ref: '#/components/schemas/KindType'

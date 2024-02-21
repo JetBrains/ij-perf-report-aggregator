@@ -100,6 +100,10 @@ func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build 
   bo := backoff.NewExponentialBackOff()
   var result []byte
   err := backoff.Retry(func() error {
+    if err := ctx.Err(); err != nil {
+      return backoff.Permanent(fmt.Errorf("context cancelled or deadline exceeded: %w", err))
+    }
+
     data, err := t.downloadStartUpReport(ctx, build, artifactUrlString)
     if err != nil || data == nil {
       return fmt.Errorf("download failed: %w", err)

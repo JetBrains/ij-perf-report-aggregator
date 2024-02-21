@@ -239,16 +239,10 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
   }
 
   if projectId == "jbr" {
-    splitId := strings.SplitN(extraData.TcBuildType, "_", 3)
-    if len(splitId) == 3 {
-      jbrBranch := strings.ToLower(splitId[1])
-      _, err = strconv.Atoi(jbrBranch)
-      if err == nil || jbrBranch == "master" {
-        return jbrBranch, nil
-      }
-      if jbrBranch == "dev" {
-        return "main", nil
-      }
+    splitId := strings.SplitN(extraData.TcBuildType, "_", 4)
+    if len(splitId) == 4 {
+      jbrBranch := strings.ToLower(splitId[1]) + "_" + strings.ToLower(splitId[2])
+      return jbrBranch, nil
     }
     logger.Error("format of JBR project is unexpected", "teamcity.project.id", extraData.TcBuildType)
     return "", errors.New("cannot infer branch from JBR project id")
@@ -351,7 +345,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
     if errors.Is(err, context.Canceled) {
       return err
     }
-    return fmt.Errorf("cannot insert report (teamcityBuildId=%d, reportPath=%s)", report.extraData.TcBuildId, report.extraData.ReportFile)
+    return fmt.Errorf("cannot insert report (teamcityBuildId=%d, reportPath=%s): %w", report.extraData.TcBuildId, report.extraData.ReportFile, err)
   }
   return nil
 }

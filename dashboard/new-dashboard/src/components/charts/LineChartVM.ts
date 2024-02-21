@@ -187,7 +187,6 @@ export class LineChartVM {
       },
       xAxis: {
         type: "time",
-        max: new Date(),
         axisPointer: {
           snap: false,
           label: {
@@ -234,6 +233,10 @@ export class LineChartVM {
               {
                 type: "inverse",
                 title: "inverse",
+              },
+              {
+                type: "all",
+                title: "enable all",
               },
             ],
             formatter(name: string): string {

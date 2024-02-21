@@ -31,9 +31,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'clion/%/typing/%'"
-          :aggregated-measure="'%#average_awt_delay'"
+          :aggregated-measure="'typing#latency#max'"
           :is-like="true"
-          :title="'[CLion] UI responsiveness during typing'"
+          :title="'[CLion] Typing latency(max)'"
           :chart-color="'#F2994A'"
         />
       </div>
@@ -63,9 +63,9 @@
         <AggregationChart
           :configurators="averagesConfigurators"
           :aggregated-project="'radler/%/typing/%'"
-          :aggregated-measure="'%#average_awt_delay'"
+          :aggregated-measure="'typing#latency#max'"
           :is-like="true"
-          :title="'[Radler] UI responsiveness during typing'"
+          :title="'[Radler] Typing latency(max)'"
           :chart-color="'#F2994A'"
         />
       </div>

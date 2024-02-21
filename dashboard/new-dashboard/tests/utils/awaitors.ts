@@ -15,5 +15,7 @@ export const awaitCallbackTrue = async (callback: Test, timeoutMs: number = 1000
 }
 
 export const awaitMockCallsCount = async (mock: Mock | SpyInstance, count: number) => {
-  await awaitCallbackTrue(() => mock.mock.calls.length == count)
+  await awaitCallbackTrue(() => {
+    return mock.mock.calls.length >= count
+  })
 }

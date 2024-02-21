@@ -1,11 +1,82 @@
+// core
+.p-button {
+    display: inline-flex;
+    cursor: pointer;
+    user-select: none;
+    align-items: center;
+    vertical-align: bottom;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.p-button-label {
+    flex: 1 1 auto;
+}
+
+.p-button-icon-right {
+    order: 1;
+}
+
+.p-button:disabled {
+    cursor: default;
+}
+
+.p-button-icon-only {
+    justify-content: center;
+}
+
+.p-button-icon-only .p-button-label {
+    visibility: hidden;
+    width: 0;
+    flex: 0 0 auto;
+}
+
+.p-button-vertical {
+    flex-direction: column;
+}
+
+.p-button-icon-bottom {
+    order: 2;
+}
+
+.p-buttonset .p-button {
+    margin: 0;
+}
+
+.p-buttonset .p-button:not(:last-child), .p-buttonset .p-button:not(:last-child):hover {
+    border-right: 0 none;
+}
+
+.p-buttonset .p-button:not(:first-of-type):not(:last-of-type) {
+    border-radius: 0;
+}
+
+.p-buttonset .p-button:first-of-type:not(:only-of-type) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.p-buttonset .p-button:last-of-type:not(:only-of-type) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.p-buttonset .p-button:focus {
+    position: relative;
+    z-index: 1;
+}
+
+// theme
 .p-button {
     color: $buttonTextColor;
     background: $buttonBg;
     border: $buttonBorder;
-    //padding: $buttonPadding;
-    //font-size: $fontSize;
+    padding: $buttonPadding;
+    font-size: $fontSize;
     transition: $formElementTransition;
     border-radius: $borderRadius;
+    outline-color: transparent;
 
     &:not(:disabled):hover {
         background: $buttonHoverBg;
@@ -84,7 +155,7 @@
         }
     }
 
-    &:focus {
+    &:focus-visible {
         @include focused();
     }
 
@@ -126,8 +197,8 @@
     }
 
     &.p-button-icon-only {
-        //width: $buttonIconOnlyWidth;
-        //padding: $buttonIconOnlyPadding;
+        width: $buttonIconOnlyWidth;
+        padding: $buttonIconOnlyPadding;
 
         .p-button-icon-left,
         .p-button-icon-right {
@@ -531,6 +602,66 @@
             background: rgba($dangerButtonBg, $textButtonActiveBgOpacity);
             border-color: transparent;
             color: $dangerButtonBg;
+        }
+    }
+}
+
+@if variable-exists(contrastButtonTextColor) {
+    .p-button.p-button-contrast, .p-buttonset.p-button-contrast > .p-button, .p-splitbutton.p-button-contrast > .p-button {
+        color: $contrastButtonTextColor;
+        background: $contrastButtonBg;
+        border: $contrastButtonBorder;
+    
+        &:not(:disabled):hover {
+            background: $contrastButtonHoverBg;
+            color: $contrastButtonTextHoverColor;
+            border-color: $contrastButtonHoverBorderColor;
+        }
+    
+        &:not(:disabled):focus {
+            box-shadow: $contrastButtonFocusShadow;
+        }
+    
+        &:not(:disabled):active {
+            background: $contrastButtonActiveBg;
+            color: $contrastButtonTextActiveColor;
+            border-color: $contrastButtonActiveBorderColor;
+        }
+    
+        &.p-button-outlined {
+            background-color: transparent;
+            color: $contrastButtonBg;
+            border: $outlinedButtonBorder;
+    
+            &:not(:disabled):hover {
+                background: rgba($contrastButtonBg, $textButtonHoverBgOpacity);
+                color: $contrastButtonBg;
+                border: $outlinedButtonBorder;
+            }
+    
+            &:not(:disabled):active {
+                background: rgba($contrastButtonBg, $textButtonActiveBgOpacity);
+                color: $contrastButtonBg;
+                border: $outlinedButtonBorder;
+            }
+        }
+    
+        &.p-button-text {
+            background-color: transparent;
+            color: $contrastButtonBg;
+            border-color: transparent;
+    
+            &:not(:disabled):hover {
+                background: rgba($contrastButtonBg, $textButtonHoverBgOpacity);
+                border-color: transparent;
+                color: $contrastButtonBg;
+            }
+    
+            &:not(:disabled):active {
+                background: rgba($contrastButtonBg, $textButtonActiveBgOpacity);
+                border-color: transparent;
+                color: $contrastButtonBg;
+            }
         }
     }
 }

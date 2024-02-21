@@ -2,11 +2,7 @@
   <div class="flex flex-col gap-5">
     <StickyToolbar>
       <template #start>
-        <TimeRangeSelect
-          :ranges="timeRangeConfigurator.timeRanges"
-          :value="timeRangeConfigurator.value.value"
-          :on-change="onChangeRange"
-        />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
@@ -29,80 +25,84 @@
         ref="container"
         class="flex flex-1 flex-col gap-5 overflow-hidden pt-5"
       >
-        <Divider label="Bootstrap" />
-        <section class="grid grid-cols-2 gap-x-6">
-          <LineChart
-            :measures="['appInit_d', 'app initialization.end']"
-            title="App Initialization"
-            :configurators="configurators"
-            tooltip-trigger="axis"
-          />
-          <LineChart
-            :measures="['bootstrap_d']"
-            title="Bootstrap"
-            :configurators="configurators"
-            :with-measure-name="true"
-          />
-        </section>
-
-        <section class="grid grid-cols-2 gap-x-6">
-          <LineChart
-            :measures="['classLoadingPreparedCount', 'classLoadingLoadedCount']"
-            title="Class Loading (Count)"
-            :configurators="configurators"
-            tooltip-trigger="axis"
-          />
-          <LineChart
-            :configurators="configurators"
-            :measures="['editorRestoring']"
-            title="Editor restoring"
-            :with-measure-name="true"
-          />
-        </section>
-
+        <Divider label="Main Metrics" />
         <section>
           <LineChart
             title="FUS Total startup"
-            :measures="['metrics.startup/fusTotalDuration']"
+            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs']"
             :configurators="configurators"
-            :with-measure-name="true"
           />
         </section>
+        <Accordion :lazy="true">
+          <AccordionTab header="Additional metrics">
+            <Divider label="Bootstrap" />
+            <section class="grid grid-cols-2 gap-x-6">
+              <LineChart
+                :measures="['appInit_d', 'app initialization.end']"
+                title="App Initialization"
+                :configurators="configurators"
+                tooltip-trigger="axis"
+              />
+              <LineChart
+                :measures="['bootstrap_d']"
+                title="Bootstrap"
+                :configurators="configurators"
+                :with-measure-name="true"
+              />
+            </section>
 
-        <span v-if="highlightingPasses">
-          <Divider label="Highlighting Passes" />
-          <span v-if="showAllPasses">
+            <section class="grid grid-cols-2 gap-x-6">
+              <LineChart
+                :measures="['classLoadingPreparedCount', 'classLoadingLoadedCount']"
+                title="Class Loading (Count)"
+                :configurators="configurators"
+                tooltip-trigger="axis"
+              />
+              <LineChart
+                :configurators="configurators"
+                :measures="['editorRestoring']"
+                title="Editor restoring"
+                :with-measure-name="true"
+              />
+            </section>
+
+            <span v-if="highlightingPasses">
+              <Divider label="Highlighting Passes" />
+              <span v-if="showAllPasses">
+                <LineChart
+                  title="Highlighting Passes"
+                  :measures="highlightingPasses"
+                  :configurators="configurators"
+                />
+              </span>
+              <LineChart
+                title="Code Analysis"
+                :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
+                :configurators="configurators"
+                tooltip-trigger="axis"
+              />
+            </span>
+            <slot :configurators="configurators"></slot>
+            <Divider label="Notifications" />
             <LineChart
-              title="Highlighting Passes"
-              :measures="highlightingPasses"
+              title="Notifications"
+              :measures="['metrics.notifications/number']"
+              :skip-zero-values="false"
               :configurators="configurators"
+              :with-measure-name="true"
             />
-          </span>
-          <LineChart
-            title="Code Analysis"
-            :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
-            :configurators="configurators"
-            tooltip-trigger="axis"
-          />
-        </span>
-        <slot :configurators="configurators"></slot>
-        <Divider label="Notifications" />
-        <LineChart
-          title="Notifications"
-          :measures="['metrics.notifications/number']"
-          :skip-zero-values="false"
-          :configurators="configurators"
-          :with-measure-name="true"
-        />
 
-        <Divider label="Exit" />
-        <LineChart
-          title="Exit Metrics"
-          :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']"
-          :configurators="configurators"
-          tooltip-trigger="axis"
-        />
+            <Divider label="Exit" />
+            <LineChart
+              title="Exit Metrics"
+              :measures="['metrics.exitMetrics/application.exit', 'metrics.exitMetrics/saveSettingsOnExit', 'metrics.exitMetrics/disposeProjects']"
+              :configurators="configurators"
+              tooltip-trigger="axis"
+            />
+          </AccordionTab>
+        </Accordion>
       </div>
+
       <InfoSidebar />
     </main>
   </div>
@@ -116,7 +116,7 @@ import { dimensionConfigurator } from "../../configurators/DimensionConfigurator
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
@@ -213,10 +213,6 @@ provide(configuratorListKey, configurators)
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   configurators.push(configurator)
-}
-
-function onChangeRange(value: TimeRange) {
-  timeRangeConfigurator.value.value = value
 }
 
 const highlightingPasses = fetchHighlightingPasses()

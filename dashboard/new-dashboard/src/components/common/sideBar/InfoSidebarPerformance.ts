@@ -21,6 +21,7 @@ function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataP
 }
 
 function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBType, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+  const seriesName = params.seriesName as string
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   let projectName: string = params.seriesName as string
@@ -66,6 +67,17 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     buildNum2 = dataSeries[9] as number
     branch = dataSeries[10] as string
     accidentBuild = `${buildVersion}.${buildNum1}`
+  }
+  if (dbType == DBType.STARTUP_TESTS_DEV) {
+    metricName = dataSeries[2] as string
+    if (!isDurationFormatterApplicable(metricName)) {
+      type = "counter"
+    }
+    machineName = dataSeries[3] as string
+    buildId = dataSeries[4] as number
+    projectName = dataSeries[5] as string
+    branch = dataSeries[6] as string
+    accidentBuild = buildId.toString()
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
@@ -115,13 +127,18 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
   const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
+
   const filteredAccidents = computed(() => {
-    return accidents?.value?.get(projectName + "_" + accidentBuild) ?? accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild)
+    const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
+    const metricAccident = accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? []
+    const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
+    return [...testAccident, ...buildAccident, ...metricAccident]
   })
   const description = computedAsync(async () => {
     return await getDescriptionFromMetaDb(projectName, "master")
   })
   return {
+    seriesName,
     build: fullBuildId,
     artifactsUrl,
     changesUrl,

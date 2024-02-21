@@ -66,6 +66,9 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "cmd/frontend/resources"),
     cssMinify: "lightningcss",
   },
+  css: {
+    preprocessorMaxWorkers: true,
+  },
 })
 
 function brotli(): PluginOption {
@@ -125,8 +128,8 @@ const components = new Set<string>([
   // "BlockUI",
   "Breadcrumb",
   "Button",
-  // "Calendar",
-  // "Card",
+  "Calendar",
+  "Card",
   // "Carousel",
   // "CascadeSelect",
   "Chart",
@@ -150,6 +153,7 @@ const components = new Set<string>([
   // "Editor",
   // "Fieldset",
   "FileUpload",
+  "FloatLabel",
   // "FullCalendar",
   // "Galleria",
   // "Image",

@@ -1,13 +1,24 @@
 <template>
   <router-view v-slot="{ Component, route }">
-    <PageLayout>
+    <ScrollTop />
+    <template v-if="route.path.startsWith('/degradation') || route.path.startsWith('/metrics')">
       <keep-alive
         :key="route.path"
         max="4"
       >
         <component :is="Component" />
       </keep-alive>
-    </PageLayout>
+    </template>
+    <template v-else>
+      <PageLayout>
+        <keep-alive
+          :key="route.path"
+          max="4"
+        >
+          <component :is="Component" />
+        </keep-alive>
+      </PageLayout>
+    </template>
   </router-view>
 </template>
 <script setup lang="ts">

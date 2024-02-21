@@ -10,7 +10,7 @@
       <GroupProjectsChart
         label="LLM completion "
         :measure="['inlineCompletionShow#mean_value']"
-        :projects="['php/symfony/llm-completion/Tag/echoStatement', 'php/symfony/llm-completion/Tag/simpleResolve']"
+        :projects="['Symfony/completion/echoStatement', 'Symfony/completion/simpleResolve']"
       />
     </section>
   </DashboardPage>

@@ -1,29 +1,10 @@
 <template>
   <DashboardPage
-    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="webstorm"
     persistent-id="webstorm_dashboard"
     initial-machine="linux-blade-hetzner"
   >
-    <section class="flex gap-6">
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'completion\_%'"
-          :is-like="true"
-          :title="'Completion'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
-          :aggregated-measure="'test#average_awt_delay'"
-          :title="'UI responsiveness during typing'"
-          :chart-color="'#F2994A'"
-        />
-      </div>
-    </section>
     <section>
       <GroupProjectsChart
         label="Code Vision (JSReferencesCodeVisionProvider)"
@@ -303,19 +284,7 @@
 </template>
 
 <script setup lang="ts">
-import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
-import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
-
-const typingOnlyConfigurator = {
-  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    query.addFilter({ f: "project", v: "%typing", o: "like" })
-    return true
-  },
-  createObservable() {
-    return null
-  },
-}
 </script>

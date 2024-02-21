@@ -280,6 +280,23 @@
         />
       </div>
     </section>
+
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PHP Typing Average Responsiveness"
+          measure="test#average_awt_delay"
+          :projects="['WI_29056/typing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PHP Typing Responsiveness"
+          measure="test#max_awt_delay"
+          :projects="['WI_29056/typing', 'WI_41934/typing']"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

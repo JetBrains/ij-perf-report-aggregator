@@ -10,19 +10,17 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#JavaScript'"
-          :title="'Indexing JavaScript (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
+          :aggregated-measure="'completion\_%'"
+          :is-like="true"
+          :title="'Completion'"
         />
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#TypeScript'"
-          :title="'Indexing TypeScript (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
+          :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+          :aggregated-measure="'test#average_awt_delay'"
+          :title="'UI responsiveness during typing'"
+          :chart-color="'#F2994A'"
         />
       </div>
     </section>
@@ -36,6 +34,7 @@
           'toh-pt6/localInspection/hero.service.ts',
           'vue3-admin-vite/localInspection/index.vue',
           'eslint-plugin-jest/localInspection/misc.ts',
+          'allure-js/localInspection/JasmineAllureReporter.ts',
         ]"
       />
     </section>
@@ -55,7 +54,12 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts', 'novu/localInspection/init.ts']"
+          :projects="[
+            'aws_cdk/localInspection/logging',
+            'eslint-plugin-jest/localInspection/misc.ts',
+            'novu/localInspection/init.ts',
+            'allure-js/localInspection/JasmineAllureReporter.ts',
+          ]"
         />
       </div>
 
@@ -73,14 +77,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing', 'allure-js/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing', 'allure-js/indexing']"
         />
       </div>
     </section>
@@ -276,6 +280,23 @@
         />
       </div>
     </section>
+
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PHP Typing Average Responsiveness"
+          measure="test#average_awt_delay"
+          :projects="['WI_29056/typing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="PHP Typing Responsiveness"
+          measure="test#max_awt_delay"
+          :projects="['WI_29056/typing', 'WI_41934/typing']"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 
@@ -284,4 +305,15 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({ f: "project", v: "%typing", o: "like" })
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 </script>

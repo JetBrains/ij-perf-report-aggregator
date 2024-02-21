@@ -20,6 +20,8 @@
           'vue3-admin-vite/localInspection/index.vueNEXT',
           'eslint-plugin-jest/localInspection/misc.ts',
           'eslint-plugin-jest/localInspection/misc.tsNEXT',
+          'allure-js/localInspection/JasmineAllureReporter.ts',
+          'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
         ]"
       />
     </section>
@@ -46,6 +48,8 @@
             'eslint-plugin-jest/localInspection/misc.tsNEXT',
             'novu/localInspection/init.ts',
             'novu/localInspection/init.tsNEXT',
+            'allure-js/localInspection/JasmineAllureReporter.ts',
+            'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
           ]"
         />
       </div>

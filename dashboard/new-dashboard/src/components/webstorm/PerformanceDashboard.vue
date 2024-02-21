@@ -21,6 +21,23 @@
       />
     </section>
 
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing Average Responsiveness"
+          measure="test#average_awt_delay"
+          :projects="['axios/typing', 'vue-template/typing', 'react-todo-js/typing', 'toh-pt6/typing/toh-pt6', 'eslint-plugin-jest/typing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Typing Responsiveness"
+          measure="test#max_awt_delay"
+          :projects="['axios/typing', 'vue-template/typing', 'react-todo-js/typing', 'toh-pt6/typing/toh-pt6', 'eslint-plugin-jest/typing']"
+        />
+      </div>
+    </section>
+
     <Divider title="TypeScript" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">
@@ -260,23 +277,6 @@
           label="Completion"
           measure="completion"
           :projects="['WEB_62578_CSS/completion']"
-        />
-      </div>
-    </section>
-
-    <section class="flex gap-x-6">
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="PHP Typing Average Responsiveness"
-          measure="test#average_awt_delay"
-          :projects="['WI_29056/typing']"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="PHP Typing Responsiveness"
-          measure="test#max_awt_delay"
-          :projects="['WI_29056/typing', 'WI_41934/typing']"
         />
       </div>
     </section>

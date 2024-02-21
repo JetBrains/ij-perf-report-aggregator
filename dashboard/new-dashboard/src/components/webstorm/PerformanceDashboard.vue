@@ -35,6 +35,7 @@
           'vue3-admin-vite/localInspection/index.vue',
           'eslint-plugin-jest/localInspection/misc.ts',
           'allure-js/localInspection/JasmineAllureReporter.ts',
+          'ts-codec/localInspection/codec.test.ts',
         ]"
       />
     </section>
@@ -59,6 +60,7 @@
             'eslint-plugin-jest/localInspection/misc.ts',
             'novu/localInspection/init.ts',
             'allure-js/localInspection/JasmineAllureReporter.ts',
+            'ts-codec/localInspection/codec.test.ts',
           ]"
         />
       </div>

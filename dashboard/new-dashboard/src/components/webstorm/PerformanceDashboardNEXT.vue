@@ -22,6 +22,8 @@
           'eslint-plugin-jest/localInspection/misc.tsNEXT',
           'allure-js/localInspection/JasmineAllureReporter.ts',
           'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
+          'ts-codec/localInspection/codec.test.ts',
+          'ts-codec/localInspection/codec.test.tsNEXT',
         ]"
       />
     </section>
@@ -50,6 +52,8 @@
             'novu/localInspection/init.tsNEXT',
             'allure-js/localInspection/JasmineAllureReporter.ts',
             'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
+            'ts-codec/localInspection/codec.test.ts',
+            'ts-codec/localInspection/codec.test.tsNEXT',
           ]"
         />
       </div>

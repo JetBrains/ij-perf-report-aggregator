@@ -157,7 +157,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['toh-pt6/typing']"
+          :projects="['toh-pt6/typing/toh-pt6']"
         />
       </div>
     </section>

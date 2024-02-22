@@ -34,6 +34,7 @@ const enum ROUTE_PREFIX {
   Vcs = IntelliJ + "/vcs",
   EmbeddingSearch = IntelliJ + "/embeddingSearch",
   PerfUnit = "/perfUnit",
+  IJent = "/ijent",
   ML = "/ml",
   DataGrip = "/datagrip",
 }
@@ -197,6 +198,8 @@ enum ROUTES {
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
+  IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
+  IJentPerfTests = `${ROUTE_PREFIX.IJent}/performance`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
@@ -1097,6 +1100,27 @@ const PERF_UNIT: Product = {
   ],
 }
 
+const IJENT: Product = {
+  url: ROUTE_PREFIX.IJent,
+  label: "IJent",
+  children: [
+    {
+      url: ROUTE_PREFIX.IJent,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.IJentBenchmarks,
+          label: "Benchmarks",
+        },
+        {
+          url: ROUTES.IJentPerfTests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+
 const ML_TESTS: Product = {
   url: ROUTE_PREFIX.ML,
   label: "ML Tests",
@@ -1122,7 +1146,27 @@ const ML_TESTS: Product = {
   ],
 }
 
-export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, DATAGRIP, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT, ML_TESTS]
+export const PRODUCTS = [
+  IDEA,
+  PHPSTORM,
+  KOTLIN,
+  GOLAND,
+  RUBYMINE,
+  PYCHARM,
+  WEBSTORM,
+  CLION,
+  DATAGRIP,
+  RUST,
+  FLEET,
+  BAZEL,
+  QODANA,
+  IJ_STARTUP,
+  SCALA,
+  JBR,
+  PERF_UNIT,
+  IJENT,
+  ML_TESTS,
+]
 export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
   return PRODUCTS.find((PRODUCTS) => prefix == PRODUCTS.url) ?? PRODUCTS[0]
@@ -2107,6 +2151,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Perf Unit Tests" },
+        },
+        {
+          path: ROUTES.IJentBenchmarks,
+          component: () => import("./components/ijent/IJentBenchmarkTests.vue"),
+          meta: { pageTitle: "IJent Benchmarks" },
+        },
+        {
+          path: ROUTES.IJentPerfTests,
+          component: () => import("./components/ijent/IJentPerformanceTests.vue"),
+          meta: { pageTitle: "IJent Performance" },
         },
         {
           path: ROUTES.LLMDevTests,

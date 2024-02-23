@@ -136,7 +136,7 @@
               <!-- eslint-disable vue/no-v-html -->
               <span
                 class="w-full"
-                :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
+                :class="accident.kind == 'Regression' || accident.kind == 'InferredRegression' ? 'text-red-500' : 'text-green-500'"
                 v-html="replaceToLink(accident.reason)"
               />
               <!-- eslint-enable -->

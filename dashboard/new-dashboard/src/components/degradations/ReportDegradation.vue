@@ -71,6 +71,14 @@ const props = defineProps<{
 }>()
 const tests = computed(() => props.tests.split(","))
 
+const date = computed(() => {
+  const parts = props.date.split("-")
+  const day = Number.parseInt(parts[0])
+  const month = Number.parseInt(parts[1])
+  const year = Number.parseInt(parts[2])
+  return "" + year + "-" + month + "-" + day
+})
+
 const accidentType = ref<string>("Regression")
 const reason = ref("")
 function getAccidentTypes(): string[] {
@@ -92,7 +100,7 @@ const accidentReporter = new AccidentReporter()
 const reported = ref(false)
 function reportRegression() {
   for (const test of tests.value) {
-    accidentReporter.writeAccidentToMetaDb(props.date, test, reason.value, props.build, accidentType.value)
+    accidentReporter.writeAccidentToMetaDb(date.value, test, reason.value, props.build, accidentType.value)
   }
   reported.value = true
 }

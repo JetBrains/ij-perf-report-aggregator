@@ -5,7 +5,7 @@
     striped-rows
     paginator
     :rows="30"
-    table-style="min-width: 50rem"
+    :table-style="{ 'min-width': '50rem' }"
     class="p-datatable-sm"
     filter-display="row"
   >

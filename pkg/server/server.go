@@ -66,7 +66,7 @@ func Serve(dbUrl string, natsUrl string) error {
     return err
   }
 
-  r := chi.NewRouter()
+  router := chi.NewRouter()
 
   disposer := util.NewDisposer()
   defer disposer.Dispose()
@@ -77,39 +77,48 @@ func Serve(dbUrl string, natsUrl string) error {
     }
   }
 
-  r.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
-  r.Use(cors.New(cors.Options{
+  router.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
+  router.Use(cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
     AllowedMethods: []string{"GET", "POST", "DELETE"},
     AllowedHeaders: []string{"*"},
     MaxAge:         50,
   }).Handler)
-  r.Use(middleware.Heartbeat("/health-check"))
-  r.Use(middleware.Recoverer)
+  router.Use(middleware.Heartbeat("/health-check"))
+  router.Use(middleware.Recoverer)
   compressor := middleware.NewCompressor(5)
   compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
     return brotli.NewWriterV2(w, level)
   })
-  r.Use(compressor.Handler)
+  router.Use(compressor.Handler)
 
-  r.Post("/api/meta/accidents*", meta.CreatePostAccidentRequestHandler(dbpool))
-  r.Post("/api/meta/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(dbpool))
-  r.Delete("/api/meta/accidents*", meta.CreateDeleteAccidentRequestHandler(dbpool))
-  r.Get("/api/meta/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
-  r.Post("/api/meta/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
-  r.Handle("/api/v1/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
-  r.Handle("/api/v1/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
-  r.Handle("/api/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-  r.Handle("/api/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
-  r.Handle("/api/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
-  r.Handle("/api/zstd-dictionary/*", &CachingHandler{
-    handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-      return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
-    },
-    manager: cacheManager,
+  router.Route("/api/meta", func(r chi.Router) {
+    r.Route("/accidents", func(r chi.Router) {
+      r.Post("/*", meta.CreatePostAccidentRequestHandler(dbpool))
+      r.Delete("/*", meta.CreateDeleteAccidentRequestHandler(dbpool))
+    })
+    r.Post("/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(dbpool))
+    r.Get("/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
+    r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
   })
 
-  server := listenAndServe(env.Get("SERVER_PORT", "9044"), r)
+  router.Route("/api/", func(r chi.Router) {
+    r.Route("/v1", func(r chi.Router) {
+      r.Handle("/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
+      r.Handle("/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
+    })
+    r.Handle("/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
+    r.Handle("/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
+    r.Handle("/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
+    r.Handle("/zstd-dictionary/*", &CachingHandler{
+      handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+        return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
+      },
+      manager: cacheManager,
+    })
+  })
+
+  server := listenAndServe(env.Get("SERVER_PORT", "9044"), router)
   slog.Info("started", "server", server.Addr, "clickhouse", dbUrl, "nats", natsUrl)
 
   waitUntilTerminated(server, 1*time.Minute)

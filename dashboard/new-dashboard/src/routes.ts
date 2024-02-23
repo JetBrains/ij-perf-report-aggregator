@@ -1124,7 +1124,8 @@ const ML_TESTS: Product = {
 
 export const PRODUCTS = [IDEA, PHPSTORM, KOTLIN, GOLAND, RUBYMINE, PYCHARM, WEBSTORM, CLION, DATAGRIP, RUST, FLEET, BAZEL, QODANA, IJ_STARTUP, SCALA, JBR, PERF_UNIT, ML_TESTS]
 export function getNavigationElement(path: string): Product {
-  return PRODUCTS.find((PRODUCTS) => path.startsWith(PRODUCTS.url)) ?? PRODUCTS[0]
+  const prefix = "/" + path.split("/")[1]
+  return PRODUCTS.find((PRODUCTS) => prefix == PRODUCTS.url) ?? PRODUCTS[0]
 }
 
 export function getNewDashboardRoutes(): ParentRouteRecord[] {

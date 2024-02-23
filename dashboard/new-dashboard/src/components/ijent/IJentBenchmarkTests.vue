@@ -37,6 +37,16 @@ import MeasureSelect from "../charts/MeasureSelect.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
+  "ijent.file.exists.events.count",
+  "ijent.file.exists.median.ns",
+  "ijent.file.exists.standard.deviation.ns",
+  "ijent.file.exists.mad.ns",
+  "ijent.file.exists.range.ns",
+  "ijent.file.exists.95.percentile.ns",
+  "ijent.file.exists.99.percentile.ns",
+  "ijent.file.exists.min.ns",
+  "ijent.file.exists.max.ns",
+
   "AWTEventQueue.dispatchTimeTotal",
   "gcPause",
   "gcPauseCount",
@@ -52,9 +62,8 @@ const metricsDeclaration = [
 ]
 
 const projects = [
-  "project-import-jps-kotlin-10_000-modules/measureStartup",
-  "project-import-jps-kotlin-50_000-modules/measureStartup",
-  "project-reimport-jps-kotlin-10_000-modules/measureStartup",
+  "com.intellij.platform.ijent.performance.benchmarks.IjentWslNioFsBenchmarkTest.WSL - Files Exists - Provider checkAccess for existing files - WSL",
+  "com.intellij.platform.ijent.performance.benchmarks.IjentWslNioFsBenchmarkTest.IJent - Files Exists - Provider checkAccess for existing files - IJENT",
 ]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)

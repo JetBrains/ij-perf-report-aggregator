@@ -52,7 +52,7 @@ const metricsDeclaration = [
 ]
 
 // TODO: add future projects here
-const projects = [""]
+const projects = ["NO PROJECTS"]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(projects)

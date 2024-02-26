@@ -25,6 +25,9 @@ export function getDBType(dbName: string, table: string): DBType {
   if (dbName == "perfUnitTests") {
     return DBType.PERF_UNIT_TESTS
   }
+  if (dbName == "perfintDev_ijent") {
+    return DBType.IJENT_TESTS
+  }
   if (dbName == "ij") {
     return DBType.STARTUP_TESTS
   }

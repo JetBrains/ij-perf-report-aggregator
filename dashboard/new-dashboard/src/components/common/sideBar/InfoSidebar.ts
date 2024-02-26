@@ -50,6 +50,7 @@ export enum DBType {
   QODANA = "qodana",
   BAZEL = "bazel",
   PERF_UNIT_TESTS = "perfUnitTests",
+  IJENT_TESTS = "perfintDev_ijent",
   STARTUP_TESTS = "startupTests",
   STARTUP_TESTS_DEV = "startupTests_dev",
   UNKNOWN = "unknown",

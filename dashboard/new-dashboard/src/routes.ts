@@ -2155,6 +2155,12 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IJentBenchmarks,
           component: () => import("./components/ijent/IJentBenchmarkTests.vue"),
+          props: {
+            dbName: "perfintDev_ijent",
+            table: "report",
+            initialMachine: "windows-blade-hetzner",
+            withInstaller: false,
+          },
           meta: { pageTitle: "IJent Benchmarks" },
         },
         {

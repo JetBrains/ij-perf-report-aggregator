@@ -1,8 +1,5 @@
 <template>
-  <Accordion
-    :lazy="props.inDialog"
-    :active-index="props.inDialog ? 0 : null"
-  >
+  <Accordion :active-index="0">
     <AccordionTab header="Events around the date">
       <DeferredContent @load="loadEventsAroundDate">
         <ul

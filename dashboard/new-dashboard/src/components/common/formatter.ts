@@ -35,6 +35,10 @@ export const durationAxisPointerFormatter = (valueInMs: number, type: string = "
   if (type === "counter" || type == "c") {
     return valueInMs.toLocaleString()
   }
+  //humanizer doesn't handle values less than 1ms properly and just round them to either 0 or 1ms
+  if (valueInMs < 1) {
+    return valueInMs.toFixed(2) + "ms"
+  }
   const humanizer = humanizeDuration.humanizer(durationFormatOptions)
   return humanizer(valueInMs)
 }

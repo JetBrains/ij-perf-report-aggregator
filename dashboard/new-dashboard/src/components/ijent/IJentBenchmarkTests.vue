@@ -1,82 +1,165 @@
 <template>
-  <DashboardPage
-    db-name="perfint"
-    table="idea"
-    persistent-id="ijent_benchmarks_dashboard"
-    initial-machine="linux-blade-hetzner"
-    :charts="charts"
-  >
-    <template #configurator>
-      <MeasureSelect
-        :configurator="testConfigurator"
-        title="Test"
+  <div class="flex flex-col gap-5">
+    <StickyToolbar>
+      <template #start>
+        <CopyLink :timerange-configurator="timeRangeConfigurator" />
+        <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
+        <BranchSelect
+          :branch-configurator="branchConfigurator"
+          :triggered-by-configurator="triggeredByConfigurator"
+        />
+        <DimensionSelect
+          label="Tests"
+          :selected-label="testsSelectLabelFormat"
+          :dimension="scenarioConfigurator"
+        >
+          <template #icon>
+            <ChartBarIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </DimensionSelect>
+        <MeasureSelect
+          title="Metrics"
+          :selected-label="metricsSelectLabelFormat"
+          :configurator="measureConfigurator"
+        >
+          <template #icon>
+            <BeakerIcon class="w-4 h-4 text-gray-500" />
+          </template>
+        </MeasureSelect>
+        <MachineSelect :machine-configurator="machineConfigurator" />
+      </template>
+      <template #end>
+        <PlotSettings @update:configurators="updateConfigurators" />
+      </template>
+    </StickyToolbar>
+    <main class="flex">
+      <div
+        v-if="measureConfigurator.selected.value != null"
+        ref="container"
+        class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
-        <template #icon>
-          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        <template
+          v-for="scenario in scenarios"
+          :key="scenario"
+        >
+          <GroupProjectsChart
+            :measure="measureConfigurator.selected.value"
+            :projects="[scenario]"
+            :label="scenario"
+            :can-be-closed="true"
+            @chart-closed="onChartClosed"
+          />
         </template>
-      </MeasureSelect>
-    </template>
-    <section>
-      <GroupProjectsChart
-        v-for="chart in charts"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
-        :projects="chart.projects"
-      />
-    </section>
-  </DashboardPage>
+      </div>
+      <InfoSidebar />
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue"
-import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import { computed, provide, ref } from "vue"
+import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
+import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
+import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
+import { MachineConfigurator } from "../../configurators/MachineConfigurator"
+import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
+import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
+import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getDBType } from "../../shared/dbTypes"
+import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { metricsSelectLabelFormat, testsSelectLabelFormat } from "../../shared/labels"
+import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
-import DashboardPage from "../common/DashboardPage.vue"
+import BranchSelect from "../common/BranchSelect.vue"
+import MachineSelect from "../common/MachineSelect.vue"
+import { PersistentStateManager } from "../common/PersistentStateManager"
+import StickyToolbar from "../common/StickyToolbar.vue"
+import TimeRangeSelect from "../common/TimeRangeSelect.vue"
+import { DataQueryConfigurator } from "../common/dataQuery"
+import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider"
+import { DBType, InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
+import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
+import CopyLink from "../settings/CopyLink.vue"
+import PlotSettings from "../settings/PlotSettings.vue"
 
-const metricsDeclaration = [
-  "ijent.file.exists.events.count",
-  "ijent.file.exists.median.ns",
-  "ijent.file.exists.standard.deviation.ns",
-  "ijent.file.exists.mad.ns",
-  "ijent.file.exists.range.ns",
-  "ijent.file.exists.95.percentile.ns",
-  "ijent.file.exists.99.percentile.ns",
-  "ijent.file.exists.min.ns",
-  "ijent.file.exists.max.ns",
+interface PerformanceTestsProps {
+  dbName: string
+  table: string
+  initialMachine: string
+  withInstaller?: boolean
+  unit?: "ns" | "ms"
+}
 
-  "AWTEventQueue.dispatchTimeTotal",
-  "gcPause",
-  "gcPauseCount",
-  "fullGCPause",
-  "freedMemoryByGC",
-  "totalHeapUsedMax",
+const props = withDefaults(defineProps<PerformanceTestsProps>(), {
+  withInstaller: true,
+  unit: "ns",
+})
 
-  "JVM.GC.collectionTimesMs",
-  "JVM.GC.collections",
-  "JVM.maxHeapMegabytes",
-  "JVM.maxThreadCount",
-  "JVM.totalCpuTimeMs",
-]
+provideReportUrlProvider(props.withInstaller)
 
-const projects = [
-  "com.intellij.platform.ijent.performance.benchmarks.IjentWslNioFsBenchmarkTest.WSL - Files Exists - Provider checkAccess for existing files - WSL",
-  "com.intellij.platform.ijent.performance.benchmarks.IjentWslNioFsBenchmarkTest.IJent - Files Exists - Provider checkAccess for existing files - IJENT",
-]
+const container = ref<HTMLElement>()
+const router = useRouter()
+const sidebarVm = new InfoSidebarImpl(getDBType(props.dbName, props.table))
 
-const testConfigurator = new SimpleMeasureConfigurator("project", null)
-testConfigurator.initData(projects)
+provide(containerKey, container)
+provide(sidebarVmKey, sidebarVm)
 
-const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
-    return {
-      labels: [metric],
-      measures: [metric],
-      projects: testConfigurator.selected.value ?? [],
-    }
-  })
-  return combineCharts(chartsDeclaration)
+const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
+provide(serverConfiguratorKey, serverConfigurator)
+const persistentStateManager = new PersistentStateManager(
+  `${props.dbName}-${props.table}-dashboard`,
+  {
+    machine: props.initialMachine,
+    branch: "master",
+    project: [],
+    measure: [],
+  },
+  router
+)
+
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+if (machineConfigurator.selected.value.length === 0) {
+  machineConfigurator.selected.value = [props.initialMachine]
+}
+const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
+const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
+
+const accidentsConfigurator = new AccidentsConfiguratorForTests(
+  serverConfigurator.serverUrl,
+  scenarioConfigurator.selected,
+  measureConfigurator.selected,
+  timeRangeConfigurator,
+  DBType.PERF_UNIT_TESTS
+)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
+
+const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
+
+provide(dashboardConfiguratorsKey, configurators)
+
+const updateConfigurators = (configurator: DataQueryConfigurator) => {
+  configurators.push(configurator)
+}
+
+function onChartClosed(projects: string[]) {
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = scenarioConfigurator.selected.value.filter((item) => !projects.includes(item))
+  } else if (scenarioConfigurator.selected.value != null && projects.includes(scenarioConfigurator.selected.value)) {
+    scenarioConfigurator.selected.value = null
+  }
+}
+
+const scenarios = computed(() => {
+  if (scenarioConfigurator.selected.value == null) return []
+  if (Array.isArray(scenarioConfigurator.selected.value)) {
+    return scenarioConfigurator.selected.value
+  }
+  return [scenarioConfigurator.selected.value]
 })
 </script>

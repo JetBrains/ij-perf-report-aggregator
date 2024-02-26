@@ -6,9 +6,9 @@
     "@fontsource/jetbrains-mono": "5.0.18",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.7",
-    "primevue": "3.49.0",
+    "primevue": "3.49.1",
     "rxjs": "8.0.0-alpha.12",
-    "vue": "3.4.19",
+    "vue": "3.4.20",
     "vue-router": "4.3.0"
   }
 }

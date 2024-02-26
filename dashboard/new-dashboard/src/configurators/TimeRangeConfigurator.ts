@@ -71,10 +71,16 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
       query.addFilter({ f: "generated_time", q: sql })
     } else {
       const between = this.customRange.value.split(":")
-      const sql = `BETWEEN toDate('${between[0]}') AND toDate('${between[1]}')`
+      const startDate = this.getSQLDateTime(new Date(between[0]))
+      const endDate = this.getSQLDateTime(new Date(between[1]))
+      const sql = `BETWEEN toDateTime('${startDate} 00:00:00') AND toDateTime('${endDate} 23:59:59')`
       query.addFilter({ f: "generated_time", q: sql })
     }
     return true
+  }
+
+  private getSQLDateTime(date: Date) {
+    return date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0")
   }
 }
 

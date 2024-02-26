@@ -1,7 +1,10 @@
 <template>
-  <Accordion :active-index="0">
-    <AccordionTab header="Events around the date">
-      <DeferredContent @load="loadEventsAroundDate">
+  <DeferredContent @load="loadEventsAroundDate">
+    <Accordion
+      v-if="accidentsAroundDate?.length ?? 0 > 0"
+      :active-index="0"
+    >
+      <AccordionTab header="Events around the date">
         <ul
           v-if="accidentsAroundDate"
           class="gap-1.5 text-sm overflow-y-auto max-h-80"
@@ -28,9 +31,9 @@
             <!-- eslint-enable -->
           </li>
         </ul>
-      </DeferredContent>
-    </AccordionTab>
-  </Accordion>
+      </AccordionTab>
+    </Accordion>
+  </DeferredContent>
 </template>
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"

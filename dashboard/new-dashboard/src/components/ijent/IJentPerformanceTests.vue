@@ -1,7 +1,7 @@
 <template>
   <DashboardPage
-    db-name="perfint"
-    table="idea"
+    db-name="perfintDev"
+    table="ijent"
     persistent-id="ijent_performance_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="charts"

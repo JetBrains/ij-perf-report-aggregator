@@ -55,6 +55,16 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   canBeClosed: false,
 })
 
+const valueUnit: Ref<ValueUnit> = computed(() => {
+  if (props.measures.every((m) => m.endsWith(".ms"))) {
+    return "ms"
+  } else if (props.measures.every((m) => m.endsWith(".ns"))) {
+    return "ns"
+  } else {
+    return props.valueUnit
+  }
+})
+
 const settingStore = useSettingsStore()
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
@@ -95,7 +105,7 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   measures,
   skipZeroValues,
   props.chartType,
-  props.valueUnit,
+  valueUnit.value,
   {
     symbolSize: 7,
     showSymbol: false,
@@ -123,13 +133,14 @@ function createChart() {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, props.valueUnit, accidentsConfigurator, props.legendFormatter)
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnit.value, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
-    chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, props.valueUnit, accidentsConfigurator))
+    chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnit.value, accidentsConfigurator))
   }
 }
 
 const emit = defineEmits(["chartClosed"])
+
 function closeChart() {
   emit("chartClosed", measures)
 }

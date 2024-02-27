@@ -53,8 +53,8 @@ github.com/BurntSushi/toml v1.3.2/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbi
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/ClickHouse/ch-go v0.61.3 h1:MmBwUhXrAOBZK7n/sWBzq6FdIQ01cuF2SaaO8KlDRzI=
 github.com/ClickHouse/ch-go v0.61.3/go.mod h1:1PqXjMz/7S1ZUaKvwPA3i35W2bz2mAMFeCi6DIXgGwQ=
-github.com/ClickHouse/clickhouse-go/v2 v2.18.0 h1:O1LicIeg2JS2V29fKRH4+yT3f6jvvcJBm506dpVQ4mQ=
-github.com/ClickHouse/clickhouse-go/v2 v2.18.0/go.mod h1:ztQvX6wm7kAbhJslS87EXEhOVNY/TObXwyURnGju5FQ=
+github.com/ClickHouse/clickhouse-go/v2 v2.19.0 h1:ATG+lJz750bNlGPxo6RF45awzU06DvsyfRn+UTrk4Xo=
+github.com/ClickHouse/clickhouse-go/v2 v2.19.0/go.mod h1:nOpS65jVgN/AjSZs7LFEr/8aGWj/0Qk1qYESKmoBioc=
 github.com/QcloudApi/qcloud_sign_golang v0.0.0-20141224014652-e4130a326409/go.mod h1:1pk82RBxDY/JZnPQrtqHlUFfCctgdorsd9M06fMynOM=
 github.com/VictoriaMetrics/fastcache v1.12.2 h1:N0y9ASrJ0F6h0QaC3o6uJb3NIZ9VKLjCM7NQbSmF7WI=
 github.com/VictoriaMetrics/fastcache v1.12.2/go.mod h1:AmC+Nzz1+3G2eCPapF6UcsnkThDcMsQicp4xDukwJYI=

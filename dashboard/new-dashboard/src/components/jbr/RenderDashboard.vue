@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="jbr"
     table="report"
-    persistent-id="jbr_render_dashboard"
+    persistent-id="jbr_team_dashboard"
     :with-installer="false"
     :is-build-number-exists="true"
   >

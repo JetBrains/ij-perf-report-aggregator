@@ -33,16 +33,24 @@
           'diaspora-project-inspections-test/inspection-app',
           'gitlab-project-inspections-test/inspection-RubyResolve-app',
           'gitlab-project-inspections-test/inspection-app',
+          'gitlab-project-inspections-test/inspection-App-RubyResolve',
+          'gitlab-project-inspections-test/inspection-App',
           'redmine-project-inspections-test/inspection-RubyResolve-app',
           'redmine-project-inspections-test/inspection-app',
+          'mastodon-project-inspections-test/inspection-RubyResolve-app',
+          'mastodon-project-inspections-test/inspection-app',
         ]"
         :aliases="[
           'Unresolved References Inspection (DI)',
           'All Inspections (DI)',
           'Unresolved References Inspection (GL)',
           'All Inspections (GL)',
+          'Unresolved References Inspection (GL2)',
+          'All Inspections (GL2)',
           'Unresolved References Inspection (RM)',
           'All Inspections (RM)',
+          'Unresolved References Inspection (MN)',
+          'All Inspections (MN)',
         ]"
       />
     </section>

@@ -56,6 +56,42 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Gitlab Inspections"
+        measure="globalInspections"
+        :projects="[
+          'gitlab-project-inspections-test/inspection-App',
+          'gitlab-project-inspections-test/inspection-App-RubyResolve',
+          'gitlab-project-inspections-test/inspection-Yaml',
+          'gitlab-project-inspections-test/inspection-XML',
+          'gitlab-project-inspections-test/inspection-WebStorm-AppSpecFrontend',
+          'gitlab-project-inspections-test/inspection-Slim',
+          'gitlab-project-inspections-test/inspection-RubyMine-App',
+          'gitlab-project-inspections-test/inspection-Others',
+          'gitlab-project-inspections-test/inspection-Markdown',
+          'gitlab-project-inspections-test/inspection-Liquid',
+          'gitlab-project-inspections-test/inspection-Haml',
+          'gitlab-project-inspections-test/inspection-Erb',
+          'gitlab-project-inspections-test/inspection-DataGrip',
+        ]"
+        :aliases="[
+          'All (app/)',
+          'Unresolved Ruby References (app/)',
+          'Yaml',
+          'XML',
+          'All on WebStorm files (app/ & spec/frontend)',
+          'Slim',
+          'All on RubyMine files (app/)',
+          'All on all other files',
+          'Markdown',
+          'Liquid',
+          'Haml',
+          'Erb',
+          'All on DataGrip files',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Find Usages: Execution Time"
         measure="findUsages"
         :projects="[

@@ -165,6 +165,7 @@ enum ROUTES {
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
+  RubyMineInspectionsDashBoard = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboard`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
@@ -756,6 +757,10 @@ const RUBYMINE: Product = {
         {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.RubyMineInspectionsDashBoard,
+          label: "Inspections",
         },
         {
           url: ROUTES.RubyMineIndexingDashBoard,
@@ -1765,6 +1770,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RubyMineDashboard,
           component: () => import("./components/rubymine/PerformanceDashboard.vue"),
           meta: { pageTitle: "RubyMine Performance Dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineInspectionsDashBoard,
+          component: () => import("./components/rubymine/InspectionsDashboard.vue"),
+          meta: { pageTitle: "RubyMine Inspections Dashboard" },
         },
         {
           path: ROUTES.RubyMineIndexingDashBoard,

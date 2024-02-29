@@ -139,6 +139,10 @@
                 :class="accident.kind == 'Regression' || accident.kind == 'InferredRegression' ? 'text-red-500' : 'text-green-500'"
                 v-html="replaceToLink(accident.reason)"
               />
+              <GlobeAltIcon
+                v-if="accident.affectedTest == ''"
+                class="w-4 h-4 flex-none"
+              />
               <!-- eslint-enable -->
               <TrashIcon
                 class="w-4 h-4 text-red-500 flex-none"

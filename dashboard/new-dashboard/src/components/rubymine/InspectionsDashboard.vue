@@ -149,6 +149,13 @@
           'RUBY-32357/class-variable',
           'RUBY-32357/global-variable',
           'RUBY-32357/delegate-method',
+          'gitlab-find-usages/module',
+          'gitlab-find-usages/method',
+          'gitlab-find-usages/singleton-method',
+          'gitlab-find-usages/instance-variable',
+          'gitlab-find-usages/class-variable',
+          'gitlab-find-usages/global-variable',
+          'gitlab-find-usages/delegate-method',
           'mastodon-find-usages/i18n-key',
         ]"
         :aliases="[
@@ -194,6 +201,13 @@
           'Epics Swimlanes Drag Drop Spec (GL)',
           'Feature Flag Script (GL)',
           'Framework Registry Finder (GL)',
+          'GitLab Routing Helper (GL2)',
+          'Todo Model (GL2)',
+          'GitLab Script (GL2)',
+          'Labels Finder (GL2)',
+          'Epics Swimlanes Drag Drop Spec (GL2)',
+          'Feature Flag Script (GL2)',
+          'Framework Registry Finder (GL2)',
           'Locale File (MA)',
         ]"
       />

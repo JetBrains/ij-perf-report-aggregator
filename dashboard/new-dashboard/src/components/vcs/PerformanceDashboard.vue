@@ -229,44 +229,44 @@ import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const indexingProjects = ["intellij_clone_specific_commit/gitLogIndexing", "intellij-sources/gitLogIndexing"]
+const indexingProjects = ["intellij_clone_specific_commit/gitLogIndexing", "intellij_sources/gitLogIndexing"]
 
 const showFileHistoryProjects = [
   "intellij_clone_specific_commit/EditorImpl-phm",
   "intellij_clone_specific_commit/EditorImpl-noindex",
-  "intellij-sources/EditorImpl-phm",
-  "intellij-sources/EditorImpl-noindex",
+  "intellij_sources/EditorImpl-phm",
+  "intellij_sources/EditorImpl-noindex",
   "intellij_sources/showFileHistory/EditorImpl",
   "intellij_sources/showFileHistory/EditorImpl-instant-git",
 ]
 
-const checkoutProjects = ["intellij_clone_specific_commit/git-checkout", "intellij-sources/git-checkout"]
+const checkoutProjects = ["intellij_clone_specific_commit/git-checkout", "intellij_sources/git-checkout"]
 
 const filterByNameProjects = [
   "intellij_clone_specific_commit/filterVcsLogTab-phm",
   "intellij_clone_specific_commit/filterVcsLogTab-noindex",
-  "intellij-sources/filterVcsLogTab-phm",
-  "intellij-sources/filterVcsLogTab-noindex",
+  "intellij_sources/filterVcsLogTab-phm",
+  "intellij_sources/filterVcsLogTab-noindex",
 ]
 const filterByPathProjects = [
   "intellij_clone_specific_commit/filterVcsLogTab-path-phm",
   "intellij_clone_specific_commit/filterVcsLogTab-path-noindex",
-  "intellij-sources/filterVcsLogTab-path-phm",
-  "intellij-sources/filterVcsLogTab-path-noindex",
+  "intellij_sources/filterVcsLogTab-path-phm",
+  "intellij_sources/filterVcsLogTab-path-noindex",
 ]
 
 const commitProjects = [
   "intellij_clone_specific_commit/git-commit",
   "intellij_clone_specific_commit/git-commit-smallDataPack",
-  "intellij-sources/git-commit",
-  "intellij-sources/git-commit-smallDataPack",
+  "intellij_sources/git-commit",
+  "intellij_sources/git-commit-smallDataPack",
 ]
 
-const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "intellij-sources/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
+const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "intellij_sources/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
 const annotateProjects = [
   "intellij_clone_specific_commit/vcs-annotate-instant-git",
   "intellij_clone_specific_commit/vcs-annotate",
-  "intellij-sources/vcs-annotate-instant-git",
-  "intellij-sources/vcs-annotate",
+  "intellij_sources/vcs-annotate-instant-git",
+  "intellij_sources/vcs-annotate",
 ]
 </script>

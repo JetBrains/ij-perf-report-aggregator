@@ -31,6 +31,8 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'gitlab-find-usages/ruby-23764-findusages-case1',
+          'gitlab-find-usages/ruby-23764-findusages-case2',
           'RUBY-32357/class',
           'RUBY-32357/module',
           'RUBY-32357/method',
@@ -45,6 +47,8 @@
         :aliases="[
           'Factory (GL)',
           'Let Variable (GL)',
+          'Factory (GL2)',
+          'Let Variable (GL2)',
           'Class (GL)',
           'Module (GL)',
           'Method (GL)',
@@ -65,6 +69,8 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'gitlab-find-usages/ruby-23764-findusages-case1',
+          'gitlab-find-usages/ruby-23764-findusages-case2',
           'RUBY-32357/class',
           'RUBY-32357/module',
           'RUBY-32357/method',
@@ -79,6 +85,8 @@
         :aliases="[
           'Factory (GL)',
           'Let Variable (GL)',
+          'Factory (GL2)',
+          'Let Variable (GL2)',
           'Class (GL)',
           'Module (GL)',
           'Method (GL)',
@@ -347,6 +355,8 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'gitlab-find-usages/ruby-23764-findusages-case1',
+          'gitlab-find-usages/ruby-23764-findusages-case2',
           'RUBY-32357/class',
           'RUBY-32357/module',
           'RUBY-32357/method',
@@ -362,6 +372,8 @@
         :aliases="[
           'Factory Find Usage (GL)',
           'Let Variable Find Usage (GL)',
+          'Factory Find Usage (GL2)',
+          'Let Variable Find Usage (GL2)',
           'Class Find Usage (GL)',
           'Module Find Usage (GL)',
           'Method Find Usage (GL)',
@@ -383,6 +395,8 @@
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
+          'gitlab-find-usages/ruby-23764-findusages-case1',
+          'gitlab-find-usages/ruby-23764-findusages-case2',
           'RUBY-32357/class',
           'RUBY-32357/module',
           'RUBY-32357/method',
@@ -398,6 +412,8 @@
         :aliases="[
           'Factory Find Usage (GL)',
           'Let Variable Find Usage (GL)',
+          'Factory Find Usage (GL2)',
+          'Let Variable Find Usage (GL2)',
           'Class Find Usage (GL)',
           'Module Find Usage (GL)',
           'Method Find Usage (GL)',

@@ -17,6 +17,7 @@
           'eslint-plugin-jest/localInspection/misc.ts',
           'allure-js/localInspection/JasmineAllureReporter.ts',
           'ts-codec/localInspection/codec.test.ts',
+          'material-ui-react-admin/localInspection/PostEdit.tsx',
         ]"
       />
     </section>
@@ -45,7 +46,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['eslint-plugin-jest/completion/types', 'novu/completion/everything']"
+          :projects="['eslint-plugin-jest/completion/types']"
         />
       </div>
 
@@ -56,7 +57,6 @@
           :projects="[
             'aws_cdk/localInspection/logging',
             'eslint-plugin-jest/localInspection/misc.ts',
-            'novu/localInspection/init.ts',
             'allure-js/localInspection/JasmineAllureReporter.ts',
             'ts-codec/localInspection/codec.test.ts',
           ]"
@@ -67,7 +67,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typing', 'novu/typing']"
+          :projects="['eslint-plugin-jest/typing']"
         />
       </div>
     </section>
@@ -77,14 +77,14 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing', 'allure-js/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'allure-js/indexing']"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Scanning"
           measure="scanningTimeWithoutPauses"
-          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'novu/indexing', 'allure-js/indexing']"
+          :projects="['aws_cdk/indexing', 'angular/indexing', 'eslint-plugin-jest/indexing', 'dxos/indexing', 'allure-js/indexing']"
         />
       </div>
     </section>
@@ -186,7 +186,13 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['react-todo-js/completion/attribute', 'react-todo-js/completion/component', 'vkui/completion/component', 'ring-ui/completion/component']"
+          :projects="[
+            'react-todo-js/completion/attribute',
+            'react-todo-js/completion/component',
+            'vkui/completion/component',
+            'ring-ui/completion/component',
+            'material-ui-react-admin/completion/attribute',
+          ]"
         />
       </div>
 
@@ -194,7 +200,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['react-todo-js/localInspection/App.js', 'WEB_5976/localInspection/react_mui']"
+          :projects="['react-todo-js/localInspection/App.js', 'WEB_5976/localInspection/react_mui', 'material-ui-react-admin/localInspection/PostEdit.tsx']"
         />
       </div>
 

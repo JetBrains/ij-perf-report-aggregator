@@ -24,6 +24,8 @@
           'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
           'ts-codec/localInspection/codec.test.ts',
           'ts-codec/localInspection/codec.test.tsNEXT',
+          'material-ui-react-admin/localInspection/PostEdit.tsx',
+          'material-ui-react-admin/localInspection/PostEdit.tsxNEXT',
         ]"
       />
     </section>
@@ -35,7 +37,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['eslint-plugin-jest/completion/types', 'eslint-plugin-jest/completion/typesNEXT', 'novu/completion/everything', 'novu/completion/everythingNEXT']"
+          :projects="['eslint-plugin-jest/completion/types', 'eslint-plugin-jest/completion/typesNEXT']"
         />
       </div>
 
@@ -48,8 +50,6 @@
             'aws_cdk/localInspection/loggingNEXT',
             'eslint-plugin-jest/localInspection/misc.ts',
             'eslint-plugin-jest/localInspection/misc.tsNEXT',
-            'novu/localInspection/init.ts',
-            'novu/localInspection/init.tsNEXT',
             'allure-js/localInspection/JasmineAllureReporter.ts',
             'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
             'ts-codec/localInspection/codec.test.ts',
@@ -62,7 +62,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typing', 'eslint-plugin-jest/typingNEXT', 'novu/typing']"
+          :projects="['eslint-plugin-jest/typing', 'eslint-plugin-jest/typingNEXT']"
         />
       </div>
     </section>
@@ -123,7 +123,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['toh-pt6/typing', 'toh-pt6/typingNEXT']"
+          :projects="['toh-pt6/typing/toh-pt6', 'toh-pt6/typing/toh-pt6NEXT']"
         />
       </div>
     </section>
@@ -144,6 +144,8 @@
             'vkui/completion/componentNEXT',
             'ring-ui/completion/component',
             'ring-ui/completion/componentNEXT',
+            'material-ui-react-admin/completion/attribute',
+            'material-ui-react-admin/completion/attributeNEXT',
           ]"
         />
       </div>
@@ -157,6 +159,8 @@
             'react-todo-js/localInspection/App.jsNEXT',
             'WEB_5976/localInspection/react_mui',
             'WEB_5976/localInspection/react_muiNEXT',
+            'material-ui-react-admin/localInspection/PostEdit.tsx',
+            'material-ui-react-admin/localInspection/PostEdit.tsxNEXT',
           ]"
         />
       </div>

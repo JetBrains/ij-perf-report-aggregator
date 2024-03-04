@@ -139,6 +139,13 @@
             :projects="filterByPathProjects"
           />
         </section>
+        <section>
+          <GroupProjectsChart
+            label="Filter Vcs Log tab by date - from 2024-02-22 to 2024-03-21"
+            measure="vcs-log-filtering"
+            :projects="filterByDateProjects"
+          />
+        </section>
       </AccordionTab>
       <AccordionTab header="Commit">
         <a name="commit" />
@@ -253,6 +260,13 @@ const filterByPathProjects = [
   "intellij_clone_specific_commit/filterVcsLogTab-path-noindex",
   "intellij_sources/filterVcsLogTab-path-phm",
   "intellij_sources/filterVcsLogTab-path-noindex",
+]
+
+const filterByDateProjects = [
+  "intellij_clone_specific_commit/filterVcsLogTab-date-phm",
+  "intellij_clone_specific_commit/filterVcsLogTab-date-noindex",
+  "intellij_sources/filterVcsLogTab-date-phm",
+  "intellij_sources/filterVcsLogTab-date-noindex",
 ]
 
 const commitProjects = [

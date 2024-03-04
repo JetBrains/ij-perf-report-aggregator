@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.61.3
-	github.com/ClickHouse/clickhouse-go/v2 v2.19.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.20.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.8.3
@@ -22,7 +22,7 @@ require (
 	github.com/nats-io/nats.go v1.33.1
 	github.com/rs/cors v1.10.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/valyala/quicktemplate v1.7.0
@@ -145,9 +145,9 @@ require (
 	github.com/urfave/cli v1.22.14 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/otel v1.23.1 // indirect
-	go.opentelemetry.io/otel/metric v1.23.1 // indirect
-	go.opentelemetry.io/otel/trace v1.23.1 // indirect
+	go.opentelemetry.io/otel v1.24.0 // indirect
+	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect

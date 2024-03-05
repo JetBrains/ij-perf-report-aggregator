@@ -62,6 +62,7 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
     setting.GenerateKotlinSettings(),
     setting.GenerateMavenSettings(),
     setting.GenerateGradleSettings(),
+    setting.GenerateVCSSettings(),
     setting.GeneratePhpStormSettings(backendUrl, client),
     setting.GenerateUnitTestsSettings(backendUrl, client),
   )

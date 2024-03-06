@@ -2203,7 +2203,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.DataGripStartupDashboard,
           component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
-            product: "DG",
+            product: "DB",
             defaultProject: "empty project",
           },
           meta: { pageTitle: "DataGrip Startup dashboard" },

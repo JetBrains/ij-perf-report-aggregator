@@ -25,12 +25,6 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value) error {
 
   traceEvents := data.GetArray("traceEvents")
 
-  if len(traceEvents) == 0 {
-    slog.Warn("invalid report (due to opening second project?), report will be skipped", "id", runResult.TcBuildId, "generated", report.Generated)
-    runResult.Report = nil
-    return nil
-  }
-
   for _, v := range traceEvents {
     report.TraceEvents = append(report.TraceEvents, model.TraceEvent{
       Name:      string(v.GetStringBytes("name")),

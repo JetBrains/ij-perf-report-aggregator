@@ -76,19 +76,43 @@
     />
     <!-- Footer buttons -->
     <template #footer>
-      <div class="flex justify-end space-x-2">
-        <Button
-          label="Cancel"
-          icon="pi pi-times"
-          text
-          @click="showDialog = false"
-        />
-        <Button
-          label="Report"
-          icon="pi pi-check"
-          autofocus
-          @click="reportRegression"
-        />
+      <div v-if="accidentToEdit == null">
+        <div class="flex justify-end space-x-2">
+          <Button
+            label="Cancel"
+            icon="pi pi-times"
+            severity="secondary"
+            @click="showDialog = false"
+          />
+          <Button
+            label="Report"
+            icon="pi pi-check"
+            autofocus
+            @click="reportRegression"
+          />
+        </div>
+      </div>
+      <div v-else>
+        <div class="flex justify-end space-x-2">
+          <Button
+            label="Cancel"
+            icon="pi pi-times"
+            severity="secondary"
+            @click="showDialog = false"
+          />
+          <Button
+            label="Delete"
+            icon="pi pi-trash"
+            severity="danger"
+            @click="deleteRegression"
+          />
+          <Button
+            label="Update"
+            icon="pi pi-pencil"
+            autofocus
+            @click="updateRegression"
+          />
+        </div>
       </div>
     </template>
   </Dialog>
@@ -97,28 +121,36 @@
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { useStorage } from "@vueuse/core/index"
 import { computed, ref, watch } from "vue"
-import { AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 
 const props = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator
+  accidentToEdit: Accident | null
 }>()
 
 const showDialog = defineModel<boolean>()
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
-const accidentType = ref<string>("Regression")
-const reason = ref("")
+const accidentType = ref(props.accidentToEdit?.kind ?? "Regression")
+watch(
+  () => props.accidentToEdit,
+  (newVal) => {
+    accidentType.value = newVal?.kind ?? "Regression"
+    reason.value = newVal?.reason ?? ""
+  }
+)
+
+const reason = ref(props.accidentToEdit?.reason ?? "")
 
 const build = computed(() => props.data?.build ?? props.data?.buildId.toString())
 
 function reportRegression() {
   showDialog.value = false
   const value = props.data
-
   if (value != null && build.value != null) {
     const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
     props.accidentsConfigurator.writeAccidentToMetaDb(
@@ -129,6 +161,18 @@ function reportRegression() {
       accidentType.value
     )
   }
+}
+
+function deleteRegression() {
+  showDialog.value = false
+  if (props.accidentToEdit != null) {
+    props.accidentsConfigurator.removeAccidentFromMetaDb(props.accidentToEdit.id)
+  }
+}
+
+function updateRegression() {
+  deleteRegression()
+  reportRegression()
 }
 
 watch(reportMetricOnly, (newValue) => {

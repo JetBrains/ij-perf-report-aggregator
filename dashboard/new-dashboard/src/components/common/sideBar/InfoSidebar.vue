@@ -144,9 +144,9 @@
                 class="w-4 h-4 flex-none"
               />
               <!-- eslint-enable -->
-              <TrashIcon
-                class="w-4 h-4 text-red-500 flex-none"
-                @click="handleRemove(accident.id)"
+              <PencilSquareIcon
+                class="w-4 h-4 flex-none"
+                @click="editAccident(accident)"
               />
             </span>
           </li>
@@ -201,18 +201,20 @@
         label="Report Event"
         text
         size="small"
-        @click="showDialog = true"
+        @click="createAccident()"
       />
     </div>
   </div>
   <ReportMetricDialog
     v-model="showDialog"
     :accidents-configurator="accidentsConfigurator"
+    :accident-to-edit="accidentToEdit"
     :data="data"
   />
 </template>
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, Ref, ref } from "vue"
+import { Accident } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
@@ -229,6 +231,7 @@ import TestActions from "./TestActions.vue"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
+const accidentToEdit: Ref<Accident | null> = ref(null)
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
@@ -236,8 +239,13 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
-function handleRemove(id: number) {
-  accidentsConfigurator?.removeAccidentFromMetaDb(id)
+function editAccident(accident: Accident) {
+  showDialog.value = true
+  accidentToEdit.value = accident
+}
+function createAccident() {
+  showDialog.value = true
+  accidentToEdit.value = null
 }
 
 function handleCloseClick() {

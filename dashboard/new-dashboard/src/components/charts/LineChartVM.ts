@@ -2,7 +2,7 @@ import { ECElementEvent } from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
 import { measureNameToLabel } from "../../shared/metricsMapping"
-import { appendLineWithIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
+import { appendLineWithIcon, getDiffIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
 import { Delta, findDeltaInData, getDifferenceString } from "../../util/Delta"
 import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
@@ -17,6 +17,7 @@ import { ChartManager } from "./ChartManager"
 export class LineChartVM {
   private settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
+  private lastClickedValue: number | null = null
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
       this.lastParams = params
@@ -34,6 +35,7 @@ export class LineChartVM {
           name: params.seriesName,
         })
       } else {
+        this.lastClickedValue = Array.isArray(params.value) ? (params.value[1] as number) : null
         const infoData = getInfoDataFrom(sidebarVm.type, this.lastParams ?? params, valueUnit, accidentsConfigurator)
         sidebarVm.show(infoData)
       }
@@ -83,6 +85,9 @@ export class LineChartVM {
     element.append(measureNameToLabel(params.seriesName as string))
     this.appendAccidentInfo(data, element)
     this.appendDelta(data, element, durationMs as number, isMs, type)
+    if (this.lastClickedValue != null) {
+      this.appendDeltaWithLastClicked(durationMs as number, this.lastClickedValue, element, isMs, type)
+    }
     return element
   }
 
@@ -105,6 +110,10 @@ export class LineChartVM {
         appendLineWithIcon(element, getRightArrow(), getDifferenceString(durationMs, delta.next, isMs, type))
       }
     }
+  }
+
+  private appendDeltaWithLastClicked(durationMs: number, lastClicked: number, element: HTMLDivElement, isMs: boolean, type: string) {
+    appendLineWithIcon(element, getDiffIcon(), getDifferenceString(lastClicked, durationMs, isMs, type))
   }
 
   private getAccidentMessage(accident: Accident): string {

@@ -22,6 +22,14 @@
       />
     </section>
 
+    <section>
+      <GroupProjectsChart
+        label="Inspections"
+        measure="globalInspections"
+        :projects="['allure-js/inspection', 'axios/inspection', 'gitlab/inspection-app']"
+      />
+    </section>
+
     <section class="flex gap-x-6">
       <div class="flex-1 min-w-0">
         <GroupProjectsChart

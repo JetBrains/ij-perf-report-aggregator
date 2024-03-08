@@ -410,6 +410,8 @@ async function configureChart(
 
   const dataset: DatasetOption[] = []
 
+  const seriesNames: Map<string, number> = new Map<string, number>()
+
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
     const measureName = configuration.measureNames[dataIndex]
     let seriesName = configuration.seriesNames[dataIndex]
@@ -466,6 +468,20 @@ async function configureChart(
     let detectedChanges = new Map<string, ChangePointClassification>()
     if (settings.detectChanges) {
       detectedChanges = await detectChanges(seriesData)
+    }
+
+    if (seriesNames.has(seriesName)) {
+      //merge series with the same name
+      const seriesIndex = seriesNames.get(seriesName) as number
+      const source = dataset[seriesIndex]?.source as (number | string)[][]
+      if (Array.isArray(source)) {
+        for (const [i, seriesDatum] of seriesData.entries()) {
+          source[i] = [...source[i], ...seriesDatum]
+        }
+      }
+      continue
+    } else {
+      seriesNames.set(seriesName, dataIndex)
     }
 
     if (isNotEmpty) {
@@ -554,6 +570,7 @@ async function configureChart(
       sourceHeader: false,
     })
   }
+  console.log(dataset)
   const isNs = valueUnit == "ns"
   const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
   const formatter: (valueInMs: number) => string = isNs ? (v) => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter

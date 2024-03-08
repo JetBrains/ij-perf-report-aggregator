@@ -410,7 +410,7 @@ async function configureChart(
 
   const dataset: DatasetOption[] = []
 
-  const seriesNames: Map<string, number> = new Map<string, number>()
+  const seriesIds: Map<string, number> = new Map<string, number>()
 
   for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
     const measureName = configuration.measureNames[dataIndex]
@@ -470,20 +470,6 @@ async function configureChart(
       detectedChanges = await detectChanges(seriesData)
     }
 
-    if (seriesNames.has(seriesName)) {
-      //merge series with the same name
-      const seriesIndex = seriesNames.get(seriesName) as number
-      const source = dataset[seriesIndex]?.source as (number | string)[][]
-      if (Array.isArray(source)) {
-        for (const [i, seriesDatum] of seriesData.entries()) {
-          source[i] = [...source[i], ...seriesDatum]
-        }
-      }
-      continue
-    } else {
-      seriesNames.set(seriesName, dataIndex)
-    }
-
     if (isNotEmpty) {
       // noinspection SuspiciousTypeOfGuard
       const name = seriesName
@@ -491,6 +477,21 @@ async function configureChart(
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
+
+      if (seriesIds.has(id)) {
+        //merge series with the same name
+        const seriesIndex = seriesIds.get(id) as number
+        const source = dataset[seriesIndex]?.source as (number | string)[][]
+        if (Array.isArray(source)) {
+          for (const [i, seriesDatum] of seriesData.entries()) {
+            source[i] = [...source[i], ...seriesDatum]
+          }
+        }
+        continue
+      } else {
+        seriesIds.set(id, dataIndex)
+      }
+
       series.push({
         selectedMode: "single",
         select: {

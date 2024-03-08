@@ -55,6 +55,7 @@ enum ROUTES {
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
+  IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrPerformanceDashboard`,
   IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
@@ -79,6 +80,7 @@ enum ROUTES {
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
+  IntelliJUltimateDashboardOld = `${ROUTE_PREFIX.IntelliJUltimate}/ultimateDashboardOld`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
   IntelliJSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexingDashboard`,
   IntelliJSharedIndicesScanningDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesScanningDashboard`,
@@ -289,20 +291,24 @@ const IDEA: Product = {
           label: DASHBOARD_LABEL,
         },
         {
+          url: ROUTES.IntelliJDashboardOld,
+          label: "Dashboard (old)",
+        },
+        {
           url: ROUTES.IntelliJDevDashboard,
-          label: "Dashboard (Fast Installer)",
+          label: "Dashboard (Fast Installer) (old)",
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
-          label: "Find Usages Dashboard",
+          label: "Find Usages Dashboard (old)",
         },
         {
           url: ROUTES.IntelliJSEDashboard,
-          label: "Search Everywhere Dashboard",
+          label: "Search Everywhere Dashboard (old)",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
-          label: "Indexing Dashboard",
+          label: "Indexing Dashboard (old)",
         },
         {
           url: ROUTES.IntelliJJBRDashboard,
@@ -421,6 +427,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJUltimateDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJUltimateDashboardOld,
+          label: "Dashboard (old)",
         },
         {
           url: ROUTES.IntelliJUltimateTests,
@@ -1233,13 +1243,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJDashboard,
-          component: () => import("./components/intelliJ/PerformanceDashboard.vue"),
+          component: () => import("./components/intelliJ/PerformanceDashboardDevServer.vue"),
           meta: { pageTitle: "IntelliJ Performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJDashboardOld,
+          component: () => import("./components/intelliJ/PerformanceDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Performance dashboard (old)" },
         },
         {
           path: ROUTES.IntelliJIndexingDashboard,
           component: () => import("./components/intelliJ/IndexingDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
+          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (old)" },
         },
         {
           path: ROUTES.IntelliJJBRDashboard,
@@ -1297,8 +1312,13 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "JPS Import dashboard" },
         },
         {
-          path: ROUTES.IntelliJUltimateDashboard,
+          path: ROUTES.IntelliJUltimateDashboardOld,
           component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
+          meta: { pageTitle: "Ultimate Projects (old)" },
+        },
+        {
+          path: ROUTES.IntelliJUltimateDashboard,
+          component: () => import("./components/intelliJ/UltimateProjectsDashboardDevServer.vue"),
           meta: { pageTitle: "Ultimate Projects" },
         },
         {
@@ -1329,17 +1349,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJDevDashboard,
           component: () => import("./components/intelliJ/PerformanceDevDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard Fast Installer" },
+          meta: { pageTitle: "IntelliJ Performance dashboard Fast Installer (old)" },
         },
         {
           path: ROUTES.IntelliJFindUsagesDashboard,
           component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
-          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
+          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard (old)" },
         },
         {
           path: ROUTES.IntelliJSEDashboard,
           component: () => import("./components/intelliJ/PerformanceSEDashboard.vue"),
-          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard" },
+          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard (old)" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,

@@ -570,7 +570,6 @@ async function configureChart(
       sourceHeader: false,
     })
   }
-  console.log(dataset)
   const isNs = valueUnit == "ns"
   const valueInMsFormatter = useDurationFormatter ? durationAxisPointerFormatter : numberAxisLabelFormatter
   const formatter: (valueInMs: number) => string = isNs ? (v) => valueInMsFormatter(nsToMs(v)) : valueInMsFormatter

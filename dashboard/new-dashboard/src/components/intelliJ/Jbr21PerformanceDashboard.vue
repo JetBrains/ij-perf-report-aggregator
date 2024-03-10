@@ -29,17 +29,29 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing", "Scanning"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"],
-    projects: ["21jbr-community/indexing", "community/indexing", "21jbr-intellij_sources/indexing", "intellij_sources/indexing"],
+    projects: [
+      "21jbr-community/indexing",
+      "community/indexing",
+      "21jbr-intellij_sources/indexing",
+      "intellij_sources/indexing",
+      "21jbr-intellij_commit/indexing",
+      "intellij_commit/indexing",
+    ],
   },
   {
     labels: ["VFS refresh"],
     measures: ["vfs_initial_refresh"],
-    projects: ["21jbr-intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/default"],
+    projects: [
+      "21jbr-intellij_sources/vfsRefresh/default",
+      "intellij_sources/vfsRefresh/default",
+      "21jbr-intellij_commit/vfsRefresh/default",
+      "intellij_commit/vfsRefresh/default",
+    ],
   },
   {
     labels: ["Compilation"],
     measures: ["build_compilation_duration"],
-    projects: ["21jbr-community/rebuild", "community/rebuild", "21jbr-intellij_sources/rebuild", "intellij_sources/rebuild"],
+    projects: ["21jbr-community/rebuild", "community/rebuild"],
   },
   {
     labels: ["Find Usages Library.getName() before compilation", "First Code Analysis"],
@@ -158,52 +170,91 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Local inspections java file"],
     measures: ["localInspections"],
-    projects: ["21jbr-intellij_sources/localInspection/java_file", "intellij_sources/localInspection/java_file"],
+    projects: [
+      "21jbr-intellij_sources/localInspection/java_file",
+      "intellij_sources/localInspection/java_file",
+      "21jbr-intellij_commit/localInspection/java_file",
+      "intellij_commit/localInspection/java_file",
+      "21jbr-intellij_commit/localInspection/java_file_ContentManagerImpl",
+      "intellij_commit/localInspection/java_file_ContentManagerImpl",
+    ],
   },
   {
     labels: ["Local inspections kotlin file"],
     measures: ["localInspections"],
-    projects: ["21jbr-intellij_sources/localInspection/kotlin_file", "intellij_sources/localInspection/kotlin_file"],
+    projects: [
+      "21jbr-intellij_sources/localInspection/kotlin_file",
+      "intellij_sources/localInspection/kotlin_file",
+      "21jbr-intellij_commit/localInspection/kotlin_file",
+      "intellij_commit/localInspection/kotlin_file",
+      "21jbr-intellij_commit/localInspection/kotlin_file_DexInlineTest",
+      "intellij_commit/localInspection/kotlin_file_DexInlineTest",
+    ],
+  },
+  {
+    labels: ["Completion java file"],
+    measures: ["completion"],
+    projects: ["21jbr-intellij_commit/completion/java_file", "intellij_commit/completion/java_file"],
+  },
+  {
+    labels: ["Completion kotlin file"],
+    measures: ["completion"],
+    projects: ["21jbr-intellij_commit/completion/kotlin_file", "intellij_commit/completion/kotlin_file"],
   },
   {
     labels: ["File History"],
     measures: ["showFileHistory"],
-    projects: ["21jbr-intellij_sources/showFileHistory/EditorImpl", "intellij_sources/showFileHistory/EditorImpl"],
+    projects: [
+      "21jbr-intellij_sources/showFileHistory/EditorImpl",
+      "intellij_sources/showFileHistory/EditorImpl",
+      "21jbr-intellij_commit/showFileHistory/EditorImpl",
+      "intellij_commit/showFileHistory/EditorImpl",
+    ],
   },
   {
     labels: ["File Structure dialogue java file"],
     measures: ["FileStructurePopup"],
-    projects: ["21jbr-intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/java_file"],
+    projects: [
+      "21jbr-intellij_sources/FileStructureDialog/java_file",
+      "intellij_sources/FileStructureDialog/java_file",
+      "21jbr-intellij_commit/FileStructureDialog/java_file",
+      "intellij_commit/FileStructureDialog/java_file",
+    ],
   },
   {
     labels: ["File Structure dialogue kotlin file"],
     measures: ["FileStructurePopup"],
-    projects: ["21jbr-intellij_sources/FileStructureDialog/kotlin_file", "intellij_sources/FileStructureDialog/kotlin_file"],
+    projects: [
+      "21jbr-intellij_sources/FileStructureDialog/kotlin_file",
+      "intellij_sources/FileStructureDialog/kotlin_file",
+      "21jbr-intellij_commit/FileStructureDialog/kotlin_file",
+      "intellij_commit/FileStructureDialog/kotlin_file",
+    ],
   },
   {
     labels: ["Expand Editor menu"],
     measures: ["%expandEditorMenu"],
-    projects: ["21jbr-intellij_sources/expandEditorMenu", "intellij_sources/expandEditorMenu"],
+    projects: ["21jbr-intellij_sources/expandEditorMenu", "intellij_sources/expandEditorMenu", "21jbr-intellij_commit/expandEditorMenu", "intellij_commit/expandEditorMenu"],
   },
   {
     labels: ["Expand Main menu"],
     measures: ["%expandMainMenu"],
-    projects: ["21jbr-intellij_sources/expandMainMenu", "intellij_sources/expandMainMenu"],
+    projects: ["21jbr-intellij_sources/expandMainMenu", "intellij_sources/expandMainMenu", "21jbr-intellij_commit/expandMainMenu", "intellij_commit/expandMainMenu"],
   },
   {
     labels: ["Expand Project menu"],
     measures: ["%expandProjectMenu"],
-    projects: ["21jbr-intellij_sources/expandProjectMenu", "intellij_sources/expandProjectMenu"],
+    projects: ["21jbr-intellij_sources/expandProjectMenu", "intellij_sources/expandProjectMenu", "21jbr-intellij_commit/expandProjectMenu", "intellij_commit/expandProjectMenu"],
   },
   {
     labels: ["Create new java class"],
     measures: ["createJavaFile"],
-    projects: ["21jbr-intellij_sources/createJavaClass", "intellij_sources/createJavaClass"],
+    projects: ["21jbr-intellij_sources/createJavaClass", "intellij_sources/createJavaClass", "21jbr-intellij_commit/createJavaClass", "intellij_commit/createJavaClass"],
   },
   {
     labels: ["Create new kotlin class"],
     measures: ["createKotlinFile"],
-    projects: ["21jbr-intellij_sources/createKotlinClass", "intellij_sources/createKotlinClass"],
+    projects: ["21jbr-intellij_sources/createKotlinClass", "intellij_sources/createKotlinClass", "21jbr-intellij_commit/createKotlinClass", "intellij_commit/createKotlinClass"],
   },
 ]
 

@@ -18,10 +18,11 @@ import {
 } from "../components/common/dataQuery"
 import { LineChartOptions, ScatterChartOptions } from "../components/common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberAxisLabelFormatter } from "../components/common/formatter"
+import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
-import { isIJStartup, isStartup } from "../shared/dbTypes"
+import { getDBType, isIJStartup, isStartup } from "../shared/dbTypes"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -112,6 +113,10 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
               !/^ProjectImpl@\d+ container$/.test(it)
           )
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
+        }
+
+        if (getDBType(serverConfigurator.db, serverConfigurator.table) == DBType.FLEET) {
+          data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
         }
 
         data = data.filter(

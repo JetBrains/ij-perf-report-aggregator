@@ -1,47 +1,130 @@
 package setting
 
-import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+import (
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+	"slices"
+)
+
+func getGradleTests() []string {
+	return []string{
+		"grazie-platform-project-import-gradle/",
+		"project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/",
+		"project-import-gradle-micronaut/",
+		"project-import-gradle-hibernate-orm/",
+		"project-import-gradle-cas/",
+		"project-reimport-gradle-cas/",
+		"project-import-from-cache-gradle-cas/",
+		"project-import-gradle-1000-modules/",
+		"project-import-gradle-1000-modules-limited-ram/",
+		"project-import-gradle-5000-modules/",
+		"project-import-gradle-android-extra-large/",
+		"project-import-android-500-modules/",
+		"project-reimport-space/",
+		"project-import-space/",
+		"project-import-open-telemetry/",
+	}
+}
+
+func getGradleMetrics() []string {
+	return []string{
+		// total sync time
+		"ExternalSystemSyncProjectTask",
+		// full time of the sink operation, with all our overhead for preparation
+		"GradleExecution",
+		// work inside Gradle connection, operations that are performed inside connection
+		"GradleConnection",
+		// resolving models from daemon
+		"GradleCall",
+		// processing the data we received from Gradle
+		"ExternalSystemSyncResultProcessing",
+		// work of data services
+		"ProjectDataServices",
+		// project resolve
+		"GradleProjectResolverDataProcessing",
+		// apply ws model
+		"WorkspaceModelApply",
+		// total sync time from fus
+		"fus_gradle.sync",
+
+		"AWTEventQueue.dispatchTimeTotal",
+		"CPU | Load |Total % 95th pctl",
+		"Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+		"Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+		"gcPause",
+		"gcPauseCount",
+		"fullGCPause",
+		"freedMemoryByGC",
+		"totalHeapUsedMax",
+		"JVM.GC.collectionTimesMs",
+		"JVM.GC.collections",
+		"JVM.maxHeapMegabytes",
+		"JVM.maxThreadCount",
+		"JVM.totalCpuTimeMs",
+	}
+}
 
 func GenerateGradleSettings() []detector.PerformanceSettings {
-  tests := []string{
-    "grazie-platform-project-import-gradle/measureStartup",
-    "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/measureStartup",
-    "project-import-gradle-micronaut/measureStartup",
-    "project-import-gradle-hibernate-orm/measureStartup",
-    "project-import-gradle-cas/measureStartup",
-    "project-reimport-gradle-cas/measureStartup",
-    "project-import-from-cache-gradle-cas/measureStartup",
-    "project-import-gradle-1000-modules/measureStartup",
-    "project-import-gradle-1000-modules-limited-ram/measureStartup",
-    "project-import-gradle-5000-modules/measureStartup",
-    "project-import-gradle-android-extra-large/measureStartup",
-    "project-reimport-space/measureStartup",
-    "project-import-space/measureStartup",
-    "project-import-open-telemetry/measureStartup",
-  }
-  settings := make([]detector.PerformanceSettings, 0, 100)
-  metrics := []string{"gradle.sync.duration",
-    "GRADLE_CALL",
-    "PROJECT_RESOLVERS",
-    "DATA_SERVICES",
-    "WORKSPACE_MODEL_APPLY",
-    "fus_gradle.sync"}
-  for _, test := range tests {
-    for _, metric := range metrics {
-      settings = append(settings, detector.PerformanceSettings{
-        Db:      "perfint",
-        Table:   "idea",
-        Machine: "intellij-linux-hw-hetzner%",
-        Project: test,
-        Metric:  metric,
-        Branch:  "master",
-        SlackSettings: detector.SlackSettings{
-          Channel:     "build-tools-perf-tests-notifications",
-          ProductLink: "intellij",
-        },
-      })
-    }
+	return slices.Concat(
+		generateGradleSettingsOnInstaller(),
+		generateGradleSettingsOnFastInstaller(),
+	)
+}
 
-  }
-  return settings
+func generateGradleSettingsOnInstaller() []detector.PerformanceSettings {
+	tests := make([]string, 0, len(getGradleTests()))
+	for _, test := range getGradleTests() {
+		tests = append(tests, test+"measureStartup")
+	}
+	metrics := getGradleMetrics()
+
+	settings := make([]detector.PerformanceSettings, 0, 200)
+	for _, test := range tests {
+		for _, metric := range metrics {
+			settings = append(settings, detector.PerformanceSettings{
+				Db:      "perfint",
+				Table:   "idea",
+				Machine: "intellij-linux-hw-hetzner%",
+				Project: test,
+				Metric:  metric,
+				Branch:  "master",
+				SlackSettings: detector.SlackSettings{
+					Channel:     "gradle-perf-tests-notifications",
+					ProductLink: "intellij",
+				},
+			})
+		}
+
+	}
+	return settings
+}
+
+func generateGradleSettingsOnFastInstaller() []detector.PerformanceSettings {
+	tests := make([]string, 0, len(getGradleTests()))
+	for _, test := range getGradleTests() {
+		tests = append(tests, test+"fastInstaller")
+	}
+	metrics := getGradleMetrics()
+
+	settings := make([]detector.PerformanceSettings, 0, 200)
+	for _, test := range tests {
+		for _, metric := range metrics {
+			settings = append(settings, detector.PerformanceSettings{
+				Db:      "perfintDev",
+				Table:   "idea",
+				Machine: "intellij-linux-hw-hetzner%",
+				Project: test,
+				Metric:  metric,
+				Branch:  "master",
+				SlackSettings: detector.SlackSettings{
+					Channel:     "gradle-perf-tests-notifications",
+					ProductLink: "intellij",
+				},
+				AnalysisSettings: detector.AnalysisSettings{
+					MinimumSegmentLength: 10,
+				},
+			})
+		}
+
+	}
+	return settings
 }

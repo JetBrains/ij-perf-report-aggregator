@@ -188,6 +188,7 @@ enum ROUTES {
   FleetTest = `${ROUTE_PREFIX.Fleet}/${TEST_ROUTE}`,
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
+  FleetStartupExplore = `${ROUTE_PREFIX.Fleet}/startupExplore`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
   BazelBspDashboard = `${ROUTE_PREFIX.Bazel}/bazelBSPDashboard`,
   IntelliJBspDashboard = `${ROUTE_PREFIX.Bazel}/intellijBSPDashboard`,
@@ -992,6 +993,10 @@ const FLEET: Product = {
         {
           url: ROUTES.FleetStartupDashboard,
           label: "Startup Dashboard",
+        },
+        {
+          url: ROUTES.FleetStartupExplore,
+          label: "Startup Explore",
         },
         {
           url: ROUTES.FleetPerfDashboard,
@@ -2075,6 +2080,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.FleetStartupDashboard,
           component: () => import("./components/fleet/FleetDashboard.vue"),
           meta: { pageTitle: "Fleet Startup dashboard" },
+        },
+        {
+          path: ROUTES.FleetStartupExplore,
+          component: () => import("./components/fleet/FleetExplore.vue"),
+          meta: { pageTitle: "Fleet Startup Explore" },
+          props: {
+            withInstaller: true,
+          },
         },
         {
           path: ROUTES.BazelTest,

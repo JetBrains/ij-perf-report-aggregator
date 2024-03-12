@@ -7,6 +7,7 @@ export const MAVEN_METRICS_DASHBOARD = [
   "maven.import.stats.applying.model.task",
   "maven.import.stats.sync.project.task",
   "maven.import.after.import.configuration",
+  "maven.import.configure.post.process",
   "maven.project.importer.base.refreshing.files.task",
   "maven.project.importer.post.importing.task.marker",
   "post_import_tasks_run.total_duration_ms",

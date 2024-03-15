@@ -21,7 +21,8 @@ function replaceKeys(originalKey: string): string {
   return modifiedKey
 }
 
-export function measureNameToLabel(key: string): string {
+export function measureNameToLabel(key: string | undefined): string {
+  if (key == undefined) return ""
   key = replaceKeys(key)
   if (key.startsWith("metrics.")) {
     key = key.slice(8)

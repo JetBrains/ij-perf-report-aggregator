@@ -1,26 +1,4 @@
-export const GRADLE_METRICS = [
-  "gradle.sync.duration",
-  "GRADLE_CALL",
-  "DATA_SERVICES",
-  "PROJECT_RESOLVERS",
-  "WORKSPACE_MODEL_APPLY",
-  "fus_gradle.sync",
-
-  "AWTEventQueue.dispatchTimeTotal",
-  "CPU | Load |Total % 95th pctl",
-  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause",
-  "gcPauseCount",
-  "fullGCPause",
-  "freedMemoryByGC",
-  "totalHeapUsedMax",
-  "JVM.GC.collectionTimesMs",
-  "JVM.GC.collections",
-  "JVM.maxHeapMegabytes",
-  "JVM.maxThreadCount",
-  "JVM.totalCpuTimeMs",
-]
+export const GRADLE_METRICS = ["gradle.sync.duration", "GRADLE_CALL", "DATA_SERVICES", "PROJECT_RESOLVERS", "WORKSPACE_MODEL_APPLY"]
 
 export const GRADLE_METRICS_NEW_DASHBOARD = [
   // total sync time
@@ -39,4 +17,21 @@ export const GRADLE_METRICS_NEW_DASHBOARD = [
   "GradleProjectResolverDataProcessing",
   // apply ws model
   "WorkspaceModelApply",
+  // full sync from fus
+  "fus_gradle.sync",
+
+  "AWTEventQueue.dispatchTimeTotal",
+  "CPU | Load |Total % 95th pctl",
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+  "gcPause",
+  "gcPauseCount",
+  "fullGCPause",
+  "freedMemoryByGC",
+  "totalHeapUsedMax",
+  "JVM.GC.collectionTimesMs",
+  "JVM.GC.collections",
+  "JVM.maxHeapMegabytes",
+  "JVM.maxThreadCount",
+  "JVM.totalCpuTimeMs",
 ]

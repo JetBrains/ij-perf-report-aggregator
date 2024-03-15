@@ -51,7 +51,6 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
@@ -79,7 +78,7 @@ const dbName = "fleet"
 const dbTable = "report"
 const container = ref<HTMLElement>()
 
-const sidebarVm = new InfoSidebarImpl(getDBType(dbName, dbTable))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

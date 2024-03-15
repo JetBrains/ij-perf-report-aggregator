@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from "pinia"
 import { assert, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { MeasureConfigurator } from "../../src/configurators/MeasureConfigurator"
@@ -10,6 +11,7 @@ describe("Private build configurator", () => {
   let configurator: PrivateBuildConfigurator
   let dataQueryExecutor: DataQueryExecutor
   beforeEach(() => {
+    setActivePinia(createPinia())
     data = ConfiguratorTest.setupPreconditions(["b1", "b2"])
   })
 

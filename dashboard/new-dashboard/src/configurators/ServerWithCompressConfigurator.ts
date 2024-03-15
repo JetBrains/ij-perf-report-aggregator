@@ -1,6 +1,7 @@
 import { combineLatest, map, Observable, shareReplay } from "rxjs"
 import { DataQuery, DataQueryExecutorConfiguration, serializeQuery, ServerConfigurator } from "../components/common/dataQuery"
 import { getCompressor, getZstdObservable } from "../components/common/zstd"
+import { dbTypeStore } from "../shared/dbTypes"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerWithCompressConfigurator implements ServerConfigurator {
@@ -14,6 +15,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
     readonly table: string,
     serverUrlObservable: Observable<string> | null = null
   ) {
+    dbTypeStore().setDbType(db, table)
     if (serverUrlObservable == null) {
       serverUrlObservable = injectOrError(serverUrlObservableKey)
     }

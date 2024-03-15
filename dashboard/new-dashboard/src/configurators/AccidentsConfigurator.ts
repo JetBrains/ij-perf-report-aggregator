@@ -3,7 +3,7 @@ import { Ref, ref } from "vue"
 import { Chart } from "../components/charts/DashboardCharts"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
-import { getDBType } from "../shared/dbTypes"
+import { dbTypeStore } from "../shared/dbTypes"
 import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
@@ -202,11 +202,10 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     private product: Ref<string | string[] | null>,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
-    timeRangeConfigurator: TimeRangeConfigurator,
-    db: string = "ij"
+    timeRangeConfigurator: TimeRangeConfigurator
   ) {
     super()
-    this.dbType = getDBType(db, "report")
+    this.dbType = dbTypeStore().dbType
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), refToObservable(product)]).subscribe(
       ([projects, measures, [timeRange, customRange], product]) => {
         if (product == null) return
@@ -273,11 +272,10 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
     private serverUrl: string,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
-    timeRangeConfigurator: TimeRangeConfigurator,
-    dbType: DBType
+    timeRangeConfigurator: TimeRangeConfigurator
   ) {
     super()
-    this.dbType = dbType
+    this.dbType = dbTypeStore().dbType
     combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
       const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
       getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
@@ -298,11 +296,10 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   constructor(
     private serverUrl: string,
     charts: Chart[] | null,
-    timeRangeConfigurator: TimeRangeConfigurator,
-    dbType: DBType
+    timeRangeConfigurator: TimeRangeConfigurator
   ) {
     super()
-    this.dbType = dbType
+    this.dbType = dbTypeStore().dbType
     const tests = this.getProjectAndProjectWithMetrics(charts)
     combineLatest([timeRangeConfigurator.createObservable()]).subscribe(([[timeRange, customRange]]) => {
       getAccidentsFromMetaDb(tests, timeRange, customRange)

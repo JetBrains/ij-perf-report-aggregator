@@ -117,7 +117,6 @@ import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { getDBType } from "../../shared/dbTypes"
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -151,7 +150,7 @@ const container = ref<HTMLElement>()
 const dbName = "ij"
 const dbTable = "report"
 
-const sidebarVm = new InfoSidebarImpl(getDBType(dbName, dbTable))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

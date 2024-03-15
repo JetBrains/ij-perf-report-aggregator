@@ -11,6 +11,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { useRouter } from "vue-router"
+import { dbTypeStore } from "../../../shared/dbTypes"
 import { DBType, InfoData } from "./InfoSidebar"
 
 const router = useRouter()
@@ -88,13 +89,12 @@ function openTestInIDE(methodName: string) {
 }
 
 function handleNavigateToTest() {
-  const dbType = props.data?.dbType
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
   if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
     parts = ["", "ij", "explore"]
   } else {
-    parts[parts.length - 1] = dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
+    parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   }
   const branch = props.data?.branch ?? ""
   const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch

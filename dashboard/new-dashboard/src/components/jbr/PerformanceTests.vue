@@ -62,7 +62,6 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { getDBType } from "../../shared/dbTypes"
 import { containerKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -85,7 +84,7 @@ const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl(getDBType(dbName, dbTable))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)

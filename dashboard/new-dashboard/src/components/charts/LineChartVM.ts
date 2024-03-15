@@ -10,7 +10,7 @@ import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
 import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
-import { getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
+import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 
@@ -36,7 +36,7 @@ export class LineChartVM {
         })
       } else {
         this.lastClickedValue = Array.isArray(params.value) ? (params.value[1] as number) : null
-        const infoData = getInfoDataFrom(sidebarVm.type, this.lastParams ?? params, valueUnit, accidentsConfigurator)
+        const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator)
         sidebarVm.show(infoData)
       }
     }
@@ -52,6 +52,10 @@ export class LineChartVM {
     const dateMs = (params[0].value as (OptionDataValue | Delta)[])[0]
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
     if (this.settings.smoothing) params = params.filter((_, index) => index % 2 == 0)
+    const buildId = getFullBuildId(params[0])
+    if (buildId != undefined) {
+      element.append(buildId, document.createElement("br"))
+    }
     for (const param of params) {
       const seriesName = document.createElement("b")
       seriesName.append(measureNameToLabel(param.seriesName as string))
@@ -83,6 +87,10 @@ export class LineChartVM {
     element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
     element.append(measureNameToLabel(params.seriesName as string))
+    const buildId = getFullBuildId(params)
+    if (buildId != undefined) {
+      element.append(document.createElement("br"), buildId)
+    }
     this.appendAccidentInfo(data, element)
     this.appendDelta(data, element, durationMs as number, isMs, type)
     if (this.lastClickedValue != null) {
@@ -123,6 +131,7 @@ export class LineChartVM {
   }
 
   private accidentsConfigurator: AccidentsConfigurator | null
+
   constructor(
     private readonly eChart: ChartManager,
     private readonly dataQuery: DataQueryExecutor,

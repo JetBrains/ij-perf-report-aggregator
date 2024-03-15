@@ -1,3 +1,4 @@
+import { createPinia, setActivePinia } from "pinia"
 import { assert, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { dimensionConfigurator } from "../../src/configurators/DimensionConfigurator"
@@ -10,6 +11,7 @@ describe("Release Nightly configurator", () => {
   let data: ConfigurationTestData
   let configurator: ReleaseNightlyConfigurator
   beforeEach(() => {
+    setActivePinia(createPinia())
     data = ConfiguratorTest.setupPreconditions(["b1", "b2"])
   })
 

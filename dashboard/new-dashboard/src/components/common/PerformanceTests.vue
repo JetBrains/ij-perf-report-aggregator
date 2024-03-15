@@ -128,7 +128,6 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configurators/ReleaseNightlyConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -171,7 +170,7 @@ provideReportUrlProvider(props.withInstaller)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl(getDBType(props.dbName, props.table))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
@@ -202,13 +201,7 @@ const measureScenarioFilters = [branchConfigurator, triggeredByConfigurator, tim
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(
-  serverConfigurator.serverUrl,
-  scenarioConfigurator.selected,
-  measureConfigurator.selected,
-  timeRangeConfigurator,
-  getDBType(props.dbName, props.table)
-)
+const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators: DataQueryConfigurator[] = [serverConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]

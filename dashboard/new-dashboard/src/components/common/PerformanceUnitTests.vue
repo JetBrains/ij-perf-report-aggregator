@@ -67,7 +67,6 @@ import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
@@ -82,7 +81,7 @@ import { PersistentStateManager } from "./PersistentStateManager"
 import StickyToolbar from "./StickyToolbar.vue"
 import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
-import { DBType, InfoSidebarImpl } from "./sideBar/InfoSidebar"
+import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
 
 interface PerformanceTestsProps {
@@ -102,7 +101,7 @@ provideReportUrlProvider(props.withInstaller)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl(getDBType(props.dbName, props.table))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
@@ -130,13 +129,7 @@ const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, branchConfigurator, timeRangeConfigurator], true, "line")
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(
-  serverConfigurator.serverUrl,
-  scenarioConfigurator.selected,
-  measureConfigurator.selected,
-  timeRangeConfigurator,
-  DBType.PERF_UNIT_TESTS
-)
+const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators: DataQueryConfigurator[] = [branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]

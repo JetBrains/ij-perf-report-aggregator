@@ -3,6 +3,7 @@ import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/type
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
+import { dbTypeStore } from "../../../shared/dbTypes"
 import { getCommonPrefix, measureNameToLabel, removePrefix } from "../../../shared/metricsMapping"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
@@ -20,25 +21,106 @@ function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataP
   }) as CallbackDataParams[]
 }
 
-function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBType, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+export function getBuildId(params: CallbackDataParams): number | undefined {
+  const dbType = dbTypeStore().dbType
+  const dataSeries = params.value as OptionDataValue[]
+
+  let buildId: number | undefined
+
+  if (dbType == DBType.DEV_FLEET) {
+    buildId = dataSeries[3] as number
+  }
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
+    buildId = dataSeries[5] as number
+  }
+  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+    buildId = dataSeries[4] as number
+  }
+  if (dbType == DBType.STARTUP_TESTS_DEV) {
+    buildId = dataSeries[4] as number
+  }
+  if (dbType == DBType.JBR) {
+    buildId = dataSeries[5] as number
+  }
+  if (dbType == DBType.INTELLIJ) {
+    buildId = dataSeries[5] as number
+  }
+  if (dbType == DBType.BAZEL) {
+    buildId = dataSeries[5] as number
+  }
+  if (dbType == DBType.QODANA) {
+    buildId = dataSeries[3] as number
+  }
+  if (dbType == DBType.UNKNOWN) {
+    console.error("Unknown type of DB")
+  }
+  return buildId
+}
+
+export function getAccidentBuild(params: CallbackDataParams) {
+  const dbType = dbTypeStore().dbType
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
+    return getBuildId(params)
+  }
+  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+    return getFullBuildId(params)
+  }
+  if (dbType == DBType.STARTUP_TESTS_DEV) {
+    return getBuildId(params)
+  }
+  if (dbType == DBType.INTELLIJ) {
+    return getFullBuildId(params)
+  }
+  if (dbType == DBType.BAZEL) {
+    return getBuildId(params)
+  }
+  if (dbType == DBType.UNKNOWN) {
+    console.error("Unknown type of DB")
+  }
+  return
+}
+
+export function getFullBuildId(params: CallbackDataParams): string | undefined {
+  const dbType = dbTypeStore().dbType
+  const dataSeries = params.value as OptionDataValue[]
+
+  let buildVersion: number | undefined
+  let buildNum1: number | undefined
+  let buildNum2: number | undefined
+  let buildNumber: string | undefined
+
+  if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
+    buildVersion = dataSeries[7] as number
+    buildNum1 = dataSeries[8] as number
+    buildNum2 = dataSeries[9] as number
+  }
+  if (dbType == DBType.JBR) {
+    buildNumber = dataSeries[7] as string
+  }
+  if (dbType == DBType.INTELLIJ) {
+    buildVersion = dataSeries[8] as number
+    buildNum1 = dataSeries[9] as number
+    buildNum2 = dataSeries[10] as number
+  }
+  if (dbType == DBType.UNKNOWN) {
+    console.error("Unknown type of DB")
+  }
+  return buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+}
+
+function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
   const seriesName = params.seriesName as string
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
   let projectName: string = params.seriesName as string
   let machineName: string | undefined
   let metricName: string | undefined
-  let buildId: number | undefined
   let installerId: number | undefined
-  let buildVersion: number | undefined
-  let buildNum1: number | undefined
-  let buildNum2: number | undefined
   let type: ValueUnit | undefined = valueUnit
-  let buildNumber: string | undefined
-  let accidentBuild: string | undefined
   let branch: string | undefined
+  const dbType = dbTypeStore().dbType
   if (dbType == DBType.DEV_FLEET) {
     machineName = dataSeries[2] as string
-    buildId = dataSeries[3] as number
     projectName = dataSeries[4] as string
     branch = dataSeries[5] as string
   }
@@ -48,10 +130,8 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[4] as string
-    buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
-    accidentBuild = buildId.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     metricName = dataSeries[2] as string
@@ -59,14 +139,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
     projectName = dataSeries[5] as string
     installerId = dataSeries[6] as number
-    buildVersion = dataSeries[7] as number
-    buildNum1 = dataSeries[8] as number
-    buildNum2 = dataSeries[9] as number
     branch = dataSeries[10] as string
-    accidentBuild = `${buildVersion}.${buildNum1}`
   }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
     metricName = dataSeries[2] as string
@@ -74,10 +149,8 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[3] as string
-    buildId = dataSeries[4] as number
     projectName = dataSeries[5] as string
     branch = dataSeries[6] as string
-    accidentBuild = buildId.toString()
   }
   if (dbType == DBType.JBR) {
     metricName = dataSeries[2] as string
@@ -85,10 +158,8 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[4] as string
-    buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
-    buildNumber = dataSeries[8] as string
-    branch = dataSeries[9] as string
+    branch = dataSeries[8] as string
   }
   if (dbType == DBType.INTELLIJ) {
     metricName = dataSeries[2] as string
@@ -96,14 +167,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[4] as string
-    buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
     installerId = dataSeries[7] as number
-    buildVersion = dataSeries[8] as number
-    buildNum1 = dataSeries[9] as number
-    buildNum2 = dataSeries[10] as number
     branch = dataSeries[11] as string
-    accidentBuild = `${buildVersion}.${buildNum1}`
   }
   if (dbType == DBType.BAZEL) {
     metricName = dataSeries[2] as string
@@ -111,22 +177,23 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
       type = "counter"
     }
     machineName = dataSeries[4] as string
-    buildId = dataSeries[5] as number
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
-    accidentBuild = buildId.toString()
   }
   if (dbType == DBType.QODANA) {
     machineName = dataSeries[2] as string
-    buildId = dataSeries[3] as number
+    branch = dataSeries[5] as string
+    projectName = dataSeries[4] as string
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
   }
-  const fullBuildId = buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
+
+  const buildId: number | undefined = getBuildId(params)
   const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
+  const accidentBuild = getAccidentBuild(params)
 
   const filteredAccidents = computed(() => {
     const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
@@ -139,7 +206,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
   })
   return {
     seriesName,
-    build: fullBuildId,
+    build: getFullBuildId(params),
     artifactsUrl,
     changesUrl,
     installerUrl,
@@ -154,20 +221,14 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, dbType: DBTyp
     branch,
     metricName,
     type,
-    dbType,
   }
 }
 
-export function getInfoDataFrom(
-  dbType: DBType,
-  params: CallbackDataParams | CallbackDataParams[],
-  valueUnit: ValueUnit,
-  accidentsConfigurator: AccidentsConfigurator | null
-): InfoData {
+export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[], valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null): InfoData {
   const accidents = accidentsConfigurator?.value
   if (Array.isArray(params) && params.length > 1) {
     const filteredParams = filterUniqueByName(params)
-    const info = getInfo(params[0], valueUnit, dbType, accidents)
+    const info = getInfo(params[0], valueUnit, accidents)
     const series: DataSeries[] = []
     const commonPrefix = getCommonPrefix(filteredParams)
     for (const param of filteredParams) {
@@ -182,7 +243,7 @@ export function getInfoDataFrom(
     if (Array.isArray(params)) {
       params = params[0]
     }
-    const info = getInfo(params, valueUnit, dbType, accidents)
+    const info = getInfo(params, valueUnit, accidents)
     const dataSeries = params.value as OptionDataValue[]
     const value: number = useSettingsStore().scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
     const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, info.type)

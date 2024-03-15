@@ -40,7 +40,6 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { getDBType } from "../../shared/dbTypes"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import PlotSettings from "../settings/PlotSettings.vue"
@@ -74,7 +73,7 @@ provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
 const container = ref<HTMLElement>()
 const router = useRouter()
-const sidebarVm = new InfoSidebarImpl(getDBType(props.dbName, props.table))
+const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
@@ -121,7 +120,7 @@ if (machineConfigurator != null) {
   averagesConfigurators.push(machineConfigurator)
 }
 
-const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, props.charts, timeRangeConfigurator, getDBType(props.dbName, props.table))
+const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, props.charts, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const dashboardConfigurators = [branchConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator] as FilterConfigurator[]

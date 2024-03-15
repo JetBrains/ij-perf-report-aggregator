@@ -1,52 +1,50 @@
+import { defineStore } from "pinia"
+import { ref, Ref } from "vue"
 import { DBType } from "../components/common/sideBar/InfoSidebar"
 
-export function getDBType(dbName: string, table: string): DBType {
-  if (dbName == "perfint") {
-    return DBType.INTELLIJ
-  }
-  if (dbName == "jbr") {
-    return DBType.JBR
-  }
-  if (dbName == "perfintDev") {
-    return DBType.INTELLIJ_DEV
-  }
-  if (dbName == "fleet" && table == "measure") {
-    return DBType.DEV_FLEET
-  }
-  if (dbName == "fleet" && table == "report") {
-    return DBType.FLEET
-  }
-  if (dbName == "qodana") {
-    return DBType.QODANA
-  }
-  if (dbName == "bazel") {
-    return DBType.BAZEL
-  }
-  if (dbName == "perfUnitTests") {
-    return DBType.PERF_UNIT_TESTS
-  }
-  if (dbName == "perfintDev_ijent") {
-    return DBType.IJENT_TESTS
-  }
-  if (dbName == "ij") {
-    return DBType.STARTUP_TESTS
-  }
-  if (dbName == "ijDev") {
-    return DBType.STARTUP_TESTS_DEV
-  }
-  return DBType.UNKNOWN
-}
+export const dbTypeStore = defineStore("dbTypeStore", () => {
+  const dbType: Ref<DBType> = ref(DBType.UNKNOWN)
 
-export function isStartup(db: string | undefined, table: string | undefined): boolean {
-  if (db == undefined || table == undefined) {
-    throw new Error("db or table is undefined")
+  function setDbType(dbName: string, table: string): void {
+    if (dbName == "perfint") {
+      dbType.value = DBType.INTELLIJ
+    }
+    if (dbName == "jbr") {
+      dbType.value = DBType.JBR
+    }
+    if (dbName == "perfintDev") {
+      dbType.value = DBType.INTELLIJ_DEV
+    }
+    if (dbName == "fleet" && table == "measure") {
+      dbType.value = DBType.DEV_FLEET
+    }
+    if (dbName == "fleet" && table == "report") {
+      dbType.value = DBType.FLEET
+    }
+    if (dbName == "qodana") {
+      dbType.value = DBType.QODANA
+    }
+    if (dbName == "bazel") {
+      dbType.value = DBType.BAZEL
+    }
+    if (dbName == "perfUnitTests") {
+      dbType.value = DBType.PERF_UNIT_TESTS
+    }
+    if (dbName == "ij") {
+      dbType.value = DBType.STARTUP_TESTS
+    }
+    if (dbName == "ijDev") {
+      dbType.value = DBType.STARTUP_TESTS_DEV
+    }
   }
-  return isIJStartup(db, table) || getDBType(db, table) == DBType.FLEET
-}
 
-export function isIJStartup(db: string | undefined, table: string | undefined): boolean {
-  if (db == undefined || table == undefined) {
-    throw new Error("db or table is undefined")
+  function isStartup(): boolean {
+    return isIJStartup() || dbType.value == DBType.FLEET
   }
-  return getDBType(db, table) == DBType.STARTUP_TESTS || getDBType(db, table) == DBType.STARTUP_TESTS_DEV
-}
+
+  function isIJStartup(): boolean {
+    return dbType.value == DBType.STARTUP_TESTS || dbType.value == DBType.STARTUP_TESTS_DEV
+  }
+
+  return { dbType, setDbType, isStartup, isIJStartup }
+})

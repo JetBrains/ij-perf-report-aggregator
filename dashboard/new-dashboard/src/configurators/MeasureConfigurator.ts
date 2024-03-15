@@ -22,7 +22,7 @@ import { DBType } from "../components/common/sideBar/InfoSidebar"
 import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
-import { getDBType, isIJStartup, isStartup } from "../shared/dbTypes"
+import { dbTypeStore } from "../shared/dbTypes"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -66,7 +66,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   ) {
     persistentStateManager.add("measure", this._selected)
 
-    const isIj = isIJStartup(serverConfigurator.db, serverConfigurator.table)
+    const isIj = dbTypeStore().isIJStartup()
 
     createFilterObservable(serverConfigurator, filters)
       .pipe(
@@ -115,7 +115,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           data = [...new Set(data.map((it) => (/^c\.i\.ide\.[A-Za-z]\.[A-Za-z] preloading$/.test(it) ? "com.intellij.ide.misc.EvaluationSupport" : it)))]
         }
 
-        if (getDBType(serverConfigurator.db, serverConfigurator.table) == DBType.FLEET) {
+        if (dbTypeStore().dbType == DBType.FLEET) {
           data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
         }
 
@@ -189,7 +189,7 @@ function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: 
   }
 
   let fieldPrefix: string
-  if (isIJStartup(serverConfigurator.db, serverConfigurator.table)) {
+  if (dbTypeStore().isIJStartup()) {
     fieldPrefix = "measure"
   } else {
     fieldPrefix = serverConfigurator.table === "measure" ? "" : "measures"
@@ -266,7 +266,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   )
 
   // we cannot request several measures in one SQL query - for each measure separate SQl query with filter by measure name
-  const isIj = isIJStartup(query.db, query.table)
+  const isIj = dbTypeStore().isIJStartup()
   const structureName = isIj ? "measure" : "measures"
   const valueName = isIj ? "duration" : "value"
   const field: DataQueryDimension = { n: "" }
@@ -278,7 +278,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   }
 
   const metricNameField: DataQueryDimension = { n: "" }
-  if (isStartup(query.db, query.table)) {
+  if (dbTypeStore().isStartup()) {
     query.insertField(metricNameField, 2)
   }
 
@@ -304,7 +304,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
         prevFilters.length = 0
       }
 
-      if (isStartup(query.db, query.table)) {
+      if (dbTypeStore().isStartup()) {
         delete metricNameField.sql
         delete metricNameField.subName
         if (measure.startsWith("metrics.")) {

@@ -21,7 +21,6 @@ export interface InfoData {
   description: Ref<Description | null>
   deltaPrevious: string | undefined
   deltaNext: string | undefined
-  dbType: DBType
 }
 
 class Description {
@@ -50,7 +49,6 @@ export enum DBType {
   QODANA = "qodana",
   BAZEL = "bazel",
   PERF_UNIT_TESTS = "perfUnitTests",
-  IJENT_TESTS = "perfintDev_ijent",
   STARTUP_TESTS = "startupTests",
   STARTUP_TESTS_DEV = "startupTests_dev",
   UNKNOWN = "unknown",
@@ -59,7 +57,6 @@ export enum DBType {
 export interface InfoSidebar {
   data: ShallowRef<InfoData | null>
   visible: ShallowRef<boolean>
-  type: DBType
 
   show(data: InfoData): void
 
@@ -69,11 +66,6 @@ export interface InfoSidebar {
 export class InfoSidebarImpl implements InfoSidebar {
   readonly data = shallowRef<InfoData | null>(null)
   readonly visible = computed(() => this.data.value != null)
-  type = DBType.INTELLIJ
-
-  constructor(type: DBType) {
-    this.type = type
-  }
 
   show(data: InfoData): void {
     this.data.value = data

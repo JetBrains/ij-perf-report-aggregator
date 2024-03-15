@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw"
 import { setupServer } from "msw/node"
+import { createPinia, setActivePinia } from "pinia"
 import { assert, beforeAll, afterAll, describe, test, afterEach } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
@@ -14,6 +15,7 @@ describe("Branch configurator", () => {
 
   beforeAll(() => {
     server.listen()
+    setActivePinia(createPinia())
     const persistence = new PersistentStateManager("test-dashboard", {}, useRouter())
     timeRangeConfigurator = new TimeRangeConfigurator(persistence)
   })

@@ -415,12 +415,41 @@ async function configureChart(
 
   const dataset: DatasetOption[] = []
 
-  const seriesIds: Map<string, number> = new Map<string, number>()
-
-  for (let dataIndex = 0, n = dataList.length; dataIndex < n; dataIndex++) {
+  const mergedDataList: DataQueryResult = []
+  const seriesIdsToIndex = new Map<string, number>()
+  const seriesIdToSeriesName = new Map<number, string>()
+  const seriesIdToMeasureName = new Map<number, string>()
+  for (const [dataIndex, seriesData] of dataList.entries()) {
     const measureName = configuration.measureNames[dataIndex]
     let seriesName = configuration.seriesNames[dataIndex]
-    const seriesData = dataList[dataIndex]
+    //fleet
+    if (seriesName == "" && (seriesData.length == 6 || seriesData.length == 10)) {
+      seriesName = seriesData[4][0] as string
+    } else if (seriesName == "" && seriesData.length > 6) {
+      // we take only the one project name, there can't be more
+      seriesName = seriesData[6][0] as string
+    }
+    const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+    if (seriesIdsToIndex.has(id)) {
+      //merge series with the same name
+      const seriesIndex = seriesIdsToIndex.get(id) as number
+      const values = mergedDataList[seriesIndex]
+      if (Array.isArray(values)) {
+        for (const [i, seriesDatum] of seriesData.entries()) {
+          values[i] = [...values[i], ...seriesDatum]
+        }
+      }
+    } else {
+      const newId = mergedDataList.push(seriesData) - 1
+      seriesIdsToIndex.set(id, newId)
+      seriesIdToSeriesName.set(newId, seriesName)
+      seriesIdToMeasureName.set(newId, measureName)
+    }
+  }
+
+  for (const [dataIndex, seriesData] of mergedDataList.entries()) {
+    const measureName = seriesIdToMeasureName.get(dataIndex) as string
+    const seriesName = seriesIdToSeriesName.get(dataIndex) as string
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (seriesData[1] == undefined) {
@@ -445,13 +474,6 @@ async function configureChart(
       } else if (type === "d") {
         useDurationFormatter = true
       }
-    }
-    //fleet
-    if (seriesName == "" && (seriesData.length == 6 || seriesData.length == 10)) {
-      seriesName = seriesData[4][0] as string
-    } else if (seriesName == "" && seriesData.length > 6) {
-      // we take only the one project name, there can't be more
-      seriesName = seriesData[6][0] as string
     }
 
     const settings = useSettingsStore()
@@ -482,20 +504,6 @@ async function configureChart(
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
-
-      if (seriesIds.has(id)) {
-        //merge series with the same name
-        const seriesIndex = seriesIds.get(id) as number
-        const source = dataset[seriesIndex]?.source as (number | string)[][]
-        if (Array.isArray(source)) {
-          for (const [i, seriesDatum] of seriesData.entries()) {
-            source[i] = [...source[i], ...seriesDatum]
-          }
-        }
-        continue
-      } else {
-        seriesIds.set(id, dataIndex)
-      }
 
       series.push({
         selectedMode: "single",

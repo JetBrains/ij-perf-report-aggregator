@@ -401,21 +401,23 @@ function isChangeDetected(detectedChanges: Map<string, ChangePointClassification
   return changePointClassification != undefined && changePointClassification != ChangePointClassification.NO_CHANGE
 }
 
-async function configureChart(
-  configuration: DataQueryExecutorConfiguration,
-  dataList: DataQueryResult,
-  chartType: ChartType,
-  valueUnit: ValueUnit = "ms",
-  symbolOptions: SymbolOptions = {},
-  accidentsConfigurator: AccidentsConfigurator | null = null,
-  tooltipTrigger: TooltipTrigger = "item"
-): Promise<LineChartOptions | ScatterChartOptions> {
-  const series = new Array<LineSeriesOption | ScatterSeriesOption>()
-  let useDurationFormatter = true
+class MergeResults {
+  constructor(
+    readonly data: DataQueryResult,
+    private readonly idToSeriesName: Map<number, string>,
+    private readonly idToMeasureName: Map<number, string>
+  ) {}
 
-  const dataset: DatasetOption[] = []
+  getSeriesName(index: number): string {
+    return this.idToSeriesName.get(index) as string
+  }
 
-  //merge series with the same name
+  getMeasureName(index: number): string {
+    return this.idToMeasureName.get(index) as string
+  }
+}
+
+function mergeSeries(dataList: (string | number)[][][], configuration: DataQueryExecutorConfiguration) {
   const mergedDataList: DataQueryResult = []
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
@@ -446,9 +448,28 @@ async function configureChart(
       seriesIdToMeasureName.set(newId, measureName)
     }
   }
+  return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName)
+}
+
+async function configureChart(
+  configuration: DataQueryExecutorConfiguration,
+  dataList: DataQueryResult,
+  chartType: ChartType,
+  valueUnit: ValueUnit = "ms",
+  symbolOptions: SymbolOptions = {},
+  accidentsConfigurator: AccidentsConfigurator | null = null,
+  tooltipTrigger: TooltipTrigger = "item"
+): Promise<LineChartOptions | ScatterChartOptions> {
+  const series = new Array<LineSeriesOption | ScatterSeriesOption>()
+  let useDurationFormatter = true
+
+  const dataset: DatasetOption[] = []
+
+  //merge series with the same name
+  const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
-  for (const [dataIndex, seriesData] of mergedDataList.entries()) {
+  for (const [dataIndex, seriesData] of mergeResults.data.entries()) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (seriesData[1] == undefined) {
       //we need to push even empty dataset otherwise it will be out of sync with series and plot will be empty
@@ -496,8 +517,8 @@ async function configureChart(
     }
     if (isNotEmpty) {
       // noinspection SuspiciousTypeOfGuard
-      const measureName = seriesIdToMeasureName.get(dataIndex) as string
-      const seriesName = seriesIdToSeriesName.get(dataIndex) as string
+      const measureName = mergeResults.getMeasureName(dataIndex)
+      const seriesName = mergeResults.getSeriesName(dataIndex)
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
@@ -571,7 +592,7 @@ async function configureChart(
         })
       }
     }
-    if (useDurationFormatter && !isDurationFormatterApplicable(seriesIdToMeasureName.get(dataIndex) as string)) {
+    if (useDurationFormatter && !isDurationFormatterApplicable(mergeResults.getMeasureName(dataIndex))) {
       useDurationFormatter = false
     }
 

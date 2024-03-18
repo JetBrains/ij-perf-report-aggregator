@@ -415,6 +415,7 @@ async function configureChart(
 
   const dataset: DatasetOption[] = []
 
+  //merge series with the same name
   const mergedDataList: DataQueryResult = []
   const seriesIdsToIndex = new Map<string, number>()
   const seriesIdToSeriesName = new Map<number, string>()
@@ -431,7 +432,6 @@ async function configureChart(
     }
     const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
     if (seriesIdsToIndex.has(id)) {
-      //merge series with the same name
       const seriesIndex = seriesIdsToIndex.get(id) as number
       const values = mergedDataList[seriesIndex]
       if (Array.isArray(values)) {
@@ -447,10 +447,8 @@ async function configureChart(
     }
   }
 
+  const settings = useSettingsStore()
   for (const [dataIndex, seriesData] of mergedDataList.entries()) {
-    const measureName = seriesIdToMeasureName.get(dataIndex) as string
-    const seriesName = seriesIdToSeriesName.get(dataIndex) as string
-
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (seriesData[1] == undefined) {
       //we need to push even empty dataset otherwise it will be out of sync with series and plot will be empty
@@ -459,11 +457,6 @@ async function configureChart(
         sourceHeader: false,
       })
       continue
-    }
-
-    let isNotEmpty = false
-    for (const data of seriesData) {
-      isNotEmpty = isNotEmpty || data.length > 0
     }
 
     if (seriesData.length > 3) {
@@ -476,7 +469,6 @@ async function configureChart(
       }
     }
 
-    const settings = useSettingsStore()
     if (settings.smoothing) {
       const smoothedData = exponentialSmoothingWithAlphaInference(seriesData[1] as number[])
       seriesData.push(smoothedData)
@@ -486,6 +478,7 @@ async function configureChart(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
     seriesData.push(deltaValues)
+
     if (settings.scaling) {
       seriesData.push(seriesData[1])
       seriesData[1] = scaleToMedian(seriesData[1] as number[])
@@ -497,14 +490,17 @@ async function configureChart(
       detectedChanges = await detectChanges(seriesData)
     }
 
+    let isNotEmpty = false
+    for (const data of seriesData) {
+      isNotEmpty = isNotEmpty || data.length > 0
+    }
     if (isNotEmpty) {
       // noinspection SuspiciousTypeOfGuard
-      const name = seriesName
-      const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
+      const measureName = seriesIdToMeasureName.get(dataIndex) as string
+      const seriesName = seriesIdToSeriesName.get(dataIndex) as string
       const seriesLayoutBy = "row"
       const datasetIndex = dataIndex
       const xAxisName = useDurationFormatter ? "time" : "count"
-
       series.push({
         selectedMode: "single",
         select: {
@@ -513,8 +509,8 @@ async function configureChart(
           },
         },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-        id,
-        name,
+        id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
+        name: seriesName,
         type: settings.smoothing ? "scatter" : chartType,
         // showSymbol: symbolOptions.showSymbol == undefined ? seriesData[0].length < 100 : symbolOptions.showSymbol,
         // 10 is a default value for scatter (  undefined doesn't work to unset)
@@ -560,8 +556,8 @@ async function configureChart(
       if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-          id: id + "smoothed",
-          name,
+          id: (measureName === seriesName ? seriesName : `${measureName}@${seriesName}`) + "smoothed",
+          name: seriesName,
           type: "line",
           symbol: "none",
           silent: true,
@@ -575,7 +571,7 @@ async function configureChart(
         })
       }
     }
-    if (useDurationFormatter && !isDurationFormatterApplicable(measureName)) {
+    if (useDurationFormatter && !isDurationFormatterApplicable(seriesIdToMeasureName.get(dataIndex) as string)) {
       useDurationFormatter = false
     }
 

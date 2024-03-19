@@ -86,6 +86,10 @@ const workspaceConfiguratorsMetrics = [
   "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporterEx",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporterEx",
   "workspace_import.configurator_run.org.jetbrains.kotlin.idea.maven.KotlinMavenImporterEx",
+  "workspace_import.configurator_run.org.jetbrains.idea.maven.plugins.buildHelper.MavenBuildHelperPluginConfigurator",
+  "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.workspaceModel.LegacyToWorkspaceConfiguratorBridgeDynamic",
+  "workspace_import.configurator_run.org.jetbrains.idea.maven.importing.workspaceModel.LegacyToWorkspaceConfiguratorBridgeStatic",
+  "workspace_import.configurator_run.org.jetbrains.idea.maven.plugins.buildHelper.MavenBuildHelperPluginConfigurator",
 ]
 
 export const MAVEN_METRICS_CONFIGURATORS = [

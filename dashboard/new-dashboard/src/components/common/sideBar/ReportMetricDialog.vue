@@ -152,10 +152,11 @@ function reportRegression() {
   showDialog.value = false
   const value = props.data
   if (value != null && build.value != null) {
-    const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1
+    const metricName = value.series[0].metricName
+    const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1 && metricName != undefined
     props.accidentsConfigurator.writeAccidentToMetaDb(
       value.date,
-      reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + value.series[0].metricName : ""),
+      reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
       reason.value,
       build.value,
       accidentType.value

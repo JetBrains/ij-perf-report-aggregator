@@ -73,7 +73,7 @@ export class ChartComponent {
           this.chartManager = chartManager
           chartManager.render(dataManager)
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error("Cannot create chart", error)
           this.toast.add({ severity: "error", summary: "Cannot create chart", detail: (error as Error).toString() })
         })

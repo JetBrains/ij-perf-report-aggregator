@@ -97,7 +97,7 @@ export class AggregationChartVM {
           .then((options) => {
             this.updateChartData(options)
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error)
           })
       }

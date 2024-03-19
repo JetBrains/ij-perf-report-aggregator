@@ -283,7 +283,7 @@ export class LineChartVM {
           .then((options) => {
             this.eChart.updateChart(options)
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error)
           })
       }

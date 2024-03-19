@@ -44,7 +44,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   }
 
   private getStringFromDate(date: Date): string {
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+    return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString() + "-" + date.getDate().toString()
   }
 
   createObservable(): Observable<[TimeRange, string]> {
@@ -80,7 +80,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   }
 
   private getSQLDateTime(date: Date) {
-    return date.getFullYear() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0")
+    return date.getFullYear().toString() + "-" + (date.getMonth() + 1).toString().padStart(2, "0") + "-" + date.getDate().toString().padStart(2, "0")
   }
 }
 

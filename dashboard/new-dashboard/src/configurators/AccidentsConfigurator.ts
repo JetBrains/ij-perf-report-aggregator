@@ -81,7 +81,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind }])
         this.value.value = updatedMap //we need to update value in reference to trigger the change
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(error)
       })
   }
@@ -109,7 +109,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         }
         this.value.value = updatedMap //we need to update value in reference to trigger the change
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(error)
       })
   }
@@ -129,8 +129,9 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
           }
           resolve(response.json())
         })
-        .catch((error: Error) => {
-          reject(error)
+        .catch((error: unknown) => {
+          console.error(error)
+          reject(new Error("The accidents around date weren't fetched"))
         })
     })
   }
@@ -216,7 +217,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
           .then((value) => {
             this.value.value = this.removeProductPrefix(product, value)
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error)
           })
       }
@@ -261,7 +262,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
         updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind }])
         this.value.value = updatedMap //we need to update value in reference to trigger the change
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.error(error)
       })
   }
@@ -282,7 +283,7 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
         .then((value) => {
           this.value.value = value
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error(error)
         })
     })
@@ -306,7 +307,7 @@ export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
         .then((value) => {
           this.value.value = value
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error(error)
         })
     })
@@ -344,7 +345,7 @@ function intervalToPostgresInterval(interval: TimeRange, customRange: string): s
     if (delimiter > 0) {
       days = getDaysDifference(customRange.slice(0, delimiter))
     }
-    return days + " DAYS"
+    return days.toString() + " DAYS"
   }
   return intervalMapping[interval]
 }

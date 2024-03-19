@@ -10,7 +10,7 @@ export function fetchHighlightingPasses(): Ref<string[] | null> {
         .then((data: string[]) => {
           return data.map((it) => "metrics." + it)
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error(error)
           return null
         }),

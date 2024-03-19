@@ -76,7 +76,7 @@ const date = computed(() => {
   const day = Number.parseInt(parts[0])
   const month = Number.parseInt(parts[1])
   const year = Number.parseInt(parts[2])
-  return "" + year + "-" + month + "-" + day
+  return year.toString() + "-" + month.toString() + "-" + day.toString()
 })
 
 const accidentType = ref<string>("Regression")

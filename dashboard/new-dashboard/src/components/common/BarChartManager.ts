@@ -52,7 +52,7 @@ export class BarChartManager {
           .then((options) => {
             this.chart.replaceDataSetAndSeries(options)
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             console.error(error)
           })
       }

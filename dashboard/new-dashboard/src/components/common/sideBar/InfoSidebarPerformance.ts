@@ -57,22 +57,22 @@ export function getBuildId(params: CallbackDataParams): number | undefined {
   return buildId
 }
 
-export function getAccidentBuild(params: CallbackDataParams) {
+export function getAccidentBuild(params: CallbackDataParams): string | undefined {
   const dbType = dbTypeStore().dbType
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
-    return getBuildId(params)
+    return getBuildId(params)?.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     return getFullBuildId(params)
   }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
-    return getBuildId(params)
+    return getBuildId(params)?.toString()
   }
   if (dbType == DBType.INTELLIJ) {
     return getFullBuildId(params)
   }
   if (dbType == DBType.BAZEL) {
-    return getBuildId(params)
+    return getBuildId(params)?.toString()
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
@@ -196,8 +196,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   const accidentBuild = getAccidentBuild(params)
 
   const filteredAccidents = computed(() => {
+    if (accidentBuild == undefined) return []
     const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
-    const metricAccident = accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? []
+    const metricAccident = metricName == undefined ? [] : accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? []
     const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
     return [...testAccident, ...buildAccident, ...metricAccident]
   })
@@ -235,7 +236,7 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
       const currentSeriesData = param.value as OptionDataValue[]
       const nameToShow = measureNameToLabel(removePrefix(param.seriesName as string, commonPrefix))
       const value = getValueFormatterByMeasureName(param.seriesName as string)(currentSeriesData[1] as number)
-      series.push({ metricName: param.seriesName, value, color: param.color as string, nameToShow })
+      series.push({ metricName: param.seriesName as string, value, color: param.color as string, nameToShow })
     }
 
     return { ...info, series, deltaPrevious: undefined, deltaNext: undefined }

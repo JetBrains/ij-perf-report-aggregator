@@ -216,7 +216,7 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter,
   if (filter1.q !== undefined || filter2.q !== undefined) return false
 
   //We need filter name to be present in fields to later split the data
-  return fields.some((field) => (typeof field === "string" ? field === filter1.f : field.n + "." + field.subName === filter1.f))
+  return fields.some((field) => (typeof field === "string" ? field === filter1.f : field.n + "." + (field.subName ?? "") === filter1.f))
 }
 
 export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecutorConfiguration | null): DataQuery[] {

@@ -109,7 +109,8 @@ function handleNavigateToTest() {
   const measures =
     props.data?.series
       .map((s) => s.metricName)
-      .map((m) => "&measure=" + m)
+      .filter((m) => m != undefined)
+      .map((m) => "&measure=" + (m as string))
       .join("") ?? ""
   void router.push(testURL + "?" + queryParams + measures)
 }

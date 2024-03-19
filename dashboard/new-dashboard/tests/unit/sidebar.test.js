@@ -2,6 +2,7 @@ import { createPinia, setActivePinia } from "pinia"
 import { expect, test, describe, beforeEach } from "vitest"
 import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebarPerformance"
 import { dbTypeStore } from "../../src/shared/dbTypes"
+import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 
 describe("InfoSideBar Test", () => {
   beforeEach(() => {
@@ -39,7 +40,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(419534345)
     expect(result.deltaNext).toEqual("+23 (+0.8%)")
     expect(result.deltaPrevious).toEqual("+62 (+2.1%)")
-    expect(result.date).toEqual("Dec 16, 2023, 11:45 PM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1702766751000))
     expect(result.projectName).toEqual("DaCapo_MacOS12x86_64OGL")
   })
 
@@ -78,7 +79,7 @@ describe("InfoSideBar Test", () => {
     expect(result.installerId).toEqual(437052912)
     expect(result.deltaNext).toEqual("-736 ms (-11.2%)")
     expect(result.deltaPrevious).toEqual("-469 ms (-7.1%)")
-    expect(result.date).toEqual("Jan 26, 2024, 1:23 AM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706228613000))
     expect(result.projectName).toEqual("intellij_sources/vfsRefresh/with-1-thread(s)")
   })
 
@@ -111,7 +112,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(465279364)
     expect(result.deltaNext).toEqual("-59 s, 422 ms (-97.0%)")
     expect(result.deltaPrevious).toEqual("-50 s, 701 ms (-82.8%)")
-    expect(result.date).toEqual("Mar 13, 2024, 5:34 PM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1710347658000))
     expect(result.projectName).toEqual("intellij_commit/vfsRefresh/git-status")
   })
 
@@ -149,7 +150,7 @@ describe("InfoSideBar Test", () => {
     expect(result.build).toEqual("241.11368")
     expect(result.deltaNext).toEqual("-161 ms (-2.4%)")
     expect(result.deltaPrevious).toEqual("+60 ms (+0.9%)")
-    expect(result.date).toEqual("Feb 2, 2024, 10:02 AM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706864572000))
     expect(result.projectName).toEqual("simple for IJ")
   })
 
@@ -181,7 +182,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(443891895)
     expect(result.deltaNext).toEqual("-1 s, 27 ms (-35.8%)")
     expect(result.deltaPrevious).toEqual("-937 ms (-32.6%)")
-    expect(result.date).toEqual("Feb 8, 2024, 4:20 PM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1707405609000))
     expect(result.projectName).toEqual("simple for alfio")
   })
 
@@ -214,7 +215,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(429902567)
     expect(result.deltaNext).toEqual("0 (0.0%)")
     expect(result.deltaPrevious).toEqual("+14 (+6.5%)")
-    expect(result.date).toEqual("Jan 13, 2024, 2:10 AM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1705108226000))
     expect(result.projectName).toEqual("Synthetic 20000 project")
   })
 
@@ -245,7 +246,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(466545404)
     expect(result.deltaNext).toEqual("-96 ms (-14.8%)")
     expect(result.deltaPrevious).toEqual("+18 ms (+2.8%)")
-    expect(result.date).toEqual("Mar 15, 2024, 7:31 AM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1710484278000))
     expect(result.projectName).toEqual("Byte_Buddy")
   })
 
@@ -278,7 +279,7 @@ describe("InfoSideBar Test", () => {
     expect(result.buildId).toEqual(458553579)
     expect(result.deltaNext).toEqual("0 (0.0%)")
     expect(result.deltaPrevious).toEqual("0 (0.0%)")
-    expect(result.date).toEqual("Mar 3, 2024, 4:41 PM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1709480472000))
     expect(result.projectName).toEqual("com.intellij.codeInsight.JavaCommentByLineTest.testUncommentLargeFilePerformance - Uncommenting large file")
   })
 
@@ -316,7 +317,7 @@ describe("InfoSideBar Test", () => {
     expect(result.build).toEqual("1.31.4")
     expect(result.deltaNext).toEqual("-1 s, 280 ms (-22.6%)")
     expect(result.deltaPrevious).toEqual("0.00 ms (0.0%)")
-    expect(result.date).toEqual("Jan 24, 2024, 6:53 AM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706075619000))
     expect(result.projectName).toEqual("fleet")
   })
 
@@ -345,7 +346,7 @@ describe("InfoSideBar Test", () => {
     expect(result.seriesName).toEqual("test")
     expect(result.machineName).toEqual("intellij-linux-hw-hetzner-agent-23")
     expect(result.buildId).toEqual(437946452)
-    expect(result.date).toEqual("Jan 27, 2024, 6:46 PM")
+    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706377569000))
     expect(result.projectName).toEqual("multiCaretTyping")
     expect(result.deltaNext).toEqual("-4 s, 797 ms (-37.8%)")
     expect(result.deltaPrevious).toEqual("-5 s, 298 ms (-41.7%)")

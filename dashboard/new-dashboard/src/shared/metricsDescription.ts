@@ -37,6 +37,8 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     "typing#latency",
     "Average time in ms of inserting a letter in the Editor (approximation of how long does it take from keyboard press till the appearance of the letter); measured during typing",
   ],
+  ["runDaemon/executionTime", "Time it takes to complete a first daemon run. It might be restarted so it's not a full time."],
+  ["codeAnalysisDaemon/fusExecutionTime", "Full highlighting duration since the file was modified and/or dumb mode status changed. It should be equal to the sum of segments."],
 ])
 
 export interface MetricInfo {

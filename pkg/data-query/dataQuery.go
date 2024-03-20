@@ -228,7 +228,7 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
   // the only array join is supported for now
   arrayJoin := ""
   for _, dimension := range query.Fields {
-    if len(dimension.arrayJoin) != 0 {
+    if dimension.arrayJoin != "" {
       // the only array join is supported for now
       arrayJoin = dimension.arrayJoin
       // for field add distinct to filter duplicates out
@@ -271,7 +271,7 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
     }
     sb.WriteRune(' ')
 
-    if len(field.Sql) != 0 {
+    if field.Sql != "" {
       columnNameToIndex[field.Name] = columnIndex
       columnIndex++
       writeDimension(field, &sb)
@@ -280,12 +280,12 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
 
     var effectiveColumnName = ""
 
-    if len(query.Aggregator) != 0 {
+    if query.Aggregator != "" {
       sb.WriteString(query.Aggregator)
       sb.WriteRune('(')
     }
 
-    if len(field.metricPath) == 0 {
+    if field.metricPath == "" {
       sb.WriteString(field.Name)
       effectiveColumnName = field.Name
     } else {
@@ -305,17 +305,17 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
       }
     }
 
-    if len(query.Aggregator) != 0 {
+    if query.Aggregator != "" {
       sb.WriteRune(')')
     }
 
-    if len(field.resultPropertyName) != 0 {
+    if field.resultPropertyName != "" {
       sb.WriteString(" as ")
       sb.WriteString(field.resultPropertyName)
       effectiveColumnName = field.resultPropertyName
-    } else if len(query.Aggregator) != 0 {
+    } else if query.Aggregator != "" {
       sb.WriteString(" as ")
-      if len(field.arrayJoin) == 0 {
+      if field.arrayJoin == "" {
         effectiveColumnName = field.Name
       } else {
         // measures.values is not a valid field name
@@ -331,16 +331,16 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
   sb.WriteString(" from ")
   sb.WriteString(table)
 
-  if len(arrayJoin) == 0 {
+  if arrayJoin == "" {
     for _, dimension := range query.Dimensions {
-      if len(dimension.arrayJoin) != 0 {
+      if dimension.arrayJoin != "" {
         arrayJoin = dimension.arrayJoin
         break
       }
     }
   }
 
-  if len(arrayJoin) != 0 {
+  if arrayJoin != "" {
     sb.WriteString(" array join ")
     sb.WriteString(arrayJoin)
   }
@@ -386,21 +386,20 @@ func writeExtractJsonObject(sb *strings.Builder, field QueryDimension) {
 }
 
 func writeDimension(dimension QueryDimension, sb *strings.Builder) {
-  if len(dimension.Sql) == 0 {
+  if dimension.Sql == "" {
     sb.WriteString(dimension.Name)
   } else {
     sb.WriteString(dimension.Sql)
     sb.WriteString(" as ")
     // escape - maybe nested name with dot
-    sb.WriteRune('`')
+    sb.WriteByte('`')
     sb.WriteString(dimension.Name)
-    sb.WriteRune('`')
+    sb.WriteByte('`')
   }
 }
 
 func writeWhereClause(sb *strings.Builder, query Query) error {
   sb.WriteString(" where")
-loop:
   for i, filter := range query.Filters {
     if i != 0 {
       sb.WriteString(" and")
@@ -408,18 +407,18 @@ loop:
     sb.WriteString(" (")
     sb.WriteString(filter.Field)
 
-    if len(filter.Sql) != 0 {
-      if len(filter.Operator) != 0 {
+    if filter.Sql != "" {
+      if filter.Operator != "" {
         return errors.New("sql and operator are mutually exclusive")
       }
       if filter.Value != nil {
         return errors.New("sql and value are mutually exclusive")
       }
 
-      sb.WriteRune(' ')
+      sb.WriteByte(' ')
       sb.WriteString(filter.Sql)
-      sb.WriteRune(')')
-      continue loop
+      sb.WriteByte(')')
+      continue
     }
 
     switch v := filter.Value.(type) {
@@ -445,16 +444,16 @@ loop:
       sb.WriteString(" in (")
       for j := range len(v) {
         if j != 0 {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
         }
         writeString(sb, v[j])
       }
-      sb.WriteRune(')')
+      sb.WriteByte(')')
     case []interface{}:
       sb.WriteString(" in (")
       for j := range len(v) {
         if j != 0 {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
         }
         switch e := v[j].(type) {
         case string:
@@ -465,11 +464,11 @@ loop:
           return fmt.Errorf("filter value type [%T] is not supported", v[j])
         }
       }
-      sb.WriteRune(')')
+      sb.WriteByte(')')
     default:
       return fmt.Errorf("filter value type %T is not supported", v)
     }
-    sb.WriteRune(')')
+    sb.WriteByte(')')
   }
   return nil
 }

@@ -7,7 +7,6 @@ import (
   "github.com/VictoriaMetrics/fastcache"
   "github.com/valyala/bytebufferpool"
   "github.com/zeebo/xxh3"
-  "io"
   "log/slog"
   "net/http"
   "strconv"
@@ -91,6 +90,7 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
   if err != nil {
     slog.Error("cannot write cached result", "error", err)
     http.Error(w, err.Error(), http.StatusServiceUnavailable)
+    return
   }
 }
 
@@ -99,13 +99,13 @@ func generateCacheKey(request *http.Request) []byte {
   defer bytebufferpool.Put(buffer)
   // if json requested, it means that handler can return data in several formats
   if request.Header.Get("Accept") == "application/json" {
-    _, _ = buffer.Write([]byte("j:"))
+    _, _ = buffer.WriteString("j:")
   }
   u := request.URL
-  _, _ = io.WriteString(buffer, u.Path)
+  _, _ = buffer.WriteString(u.Path)
   // do not complicate, use RawQuery as is without sorting
-  if len(u.RawQuery) > 0 {
-    _, _ = io.WriteString(buffer, u.RawQuery)
+  if u.RawQuery != "" {
+    _, _ = buffer.WriteString(u.RawQuery)
   }
   return CopyBuffer(buffer)
 }

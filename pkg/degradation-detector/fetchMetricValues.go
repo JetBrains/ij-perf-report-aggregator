@@ -82,7 +82,7 @@ func getValuesFromServer(ctx context.Context, client *http.Client, backendURL st
     return nil, fmt.Errorf("failed to encode query: %w", err)
   }
 
-  req, err := http.NewRequestWithContext(ctx, http.MethodGet, url+encoded, nil)
+  req, err := http.NewRequestWithContext(ctx, http.MethodGet, url+encoded, http.NoBody)
   if err != nil {
     return nil, fmt.Errorf("failed to create request: %w", err)
   }

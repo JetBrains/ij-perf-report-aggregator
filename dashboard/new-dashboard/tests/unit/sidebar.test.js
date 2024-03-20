@@ -1,8 +1,8 @@
 import { createPinia, setActivePinia } from "pinia"
 import { expect, test, describe, beforeEach } from "vitest"
+import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebarPerformance"
 import { dbTypeStore } from "../../src/shared/dbTypes"
-import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 
 describe("InfoSideBar Test", () => {
   beforeEach(() => {

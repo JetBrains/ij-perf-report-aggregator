@@ -24,7 +24,7 @@ var clickhouseConfig []byte
 func main() {
   clickhouseExecutable := "/usr/bin/clickhouse"
 
-  isLocalRun := len(os.Getenv("KUBERNETES_SERVICE_HOST")) == 0
+  isLocalRun := os.Getenv("KUBERNETES_SERVICE_HOST") == ""
   if isLocalRun {
     clickhouseExecutable = "/Users/maxim.kolmakov/clickhouse"
     clickhousebackup.SetS3EnvForLocalRun()
@@ -42,7 +42,7 @@ func main() {
     if err != nil {
       log.Fatal(err)
     }
-    configFile = filepath.Join(workingDir, "deployment/ch-local-config.xml")
+    configFile = filepath.Join(workingDir, "deployment", "ch-local-config.xml")
   }
 
   if restoreData {
@@ -123,7 +123,7 @@ func prepareConfigAndDir(isLocalRun bool, bucket string, s3AccessKey string, s3S
     ).Replace(string(clickhouseConfig))
 
     // /etc is not writeable
-    err = os.WriteFile(configFile, []byte(s), 0666)
+    err = os.WriteFile(configFile, []byte(s), 0o666)
     if err != nil {
       return err
     }
@@ -152,14 +152,14 @@ main:
 
     if len(backups) != 0 {
       for j := len(backups) - 1; j > 0; j-- {
-        if len(backups[j].Broken) == 0 {
+        if backups[j].Broken == "" {
           backupName = backups[j].BackupName
           break main
         }
       }
     }
   }
-  if len(backupName) == 0 {
+  if backupName == "" {
     return errors.New("no remote backup")
   }
 
@@ -174,7 +174,7 @@ main:
 
 func requestClearCache() {
   url := os.Getenv("NATS")
-  if len(url) == 0 {
+  if url == "" {
     url = "nats://nats:4222"
   }
 
@@ -197,7 +197,7 @@ func requestClearCache() {
 
 func getEnvOrFile(envName string, file string) string {
   v := os.Getenv(envName)
-  if len(v) == 0 {
+  if v == "" {
     b, err := os.ReadFile(file)
     if err != nil {
       log.Fatal(err)

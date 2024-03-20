@@ -147,7 +147,7 @@ func run() error {
     header.Set("Content-Type", asset.contentType)
 
     // https://medium.com/adobetech/an-http-caching-strategy-for-static-assets-configuring-the-server-1192452ce06a
-    if len(asset.eTag) == 0 {
+    if asset.eTag == "" {
       header.Set("Cache-Control", "public,max-age=31536000,immutable")
     } else {
       header.Set("Cache-Control", "no-cache")

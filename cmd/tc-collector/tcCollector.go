@@ -175,7 +175,7 @@ func collectBuildConfiguration(
 
   totalCount := len(buildList.Builds)
   nextHref := buildList.NextHref
-  for len(buildList.NextHref) != 0 {
+  for buildList.NextHref != "" {
     if taskContext.Err() != nil {
       return fmt.Errorf("error in context: %w", taskContext.Err())
     }
@@ -270,13 +270,13 @@ func getTcSessionIdCookie(cookies []*http.Cookie) string {
 func (t *Collector) storeSessionIdCookie(response *http.Response) {
   cookie := getTcSessionIdCookie(response.Cookies())
   // TC doesn't set cookie if it was already set for request
-  if len(cookie) > 0 {
+  if cookie != "" {
     t.tcSessionId.Store(cookie)
   }
 }
 
-func (t *Collector) get(ctx context.Context, url string) (*http.Response, error) {
-  request, err := t.createRequest(ctx, url)
+func (t *Collector) get(ctx context.Context, targetUrl string) (*http.Response, error) {
+  request, err := t.createRequest(ctx, targetUrl)
   if err != nil {
     return nil, err
   }
@@ -286,7 +286,7 @@ func (t *Collector) get(ctx context.Context, url string) (*http.Response, error)
     if errors.Is(err, context.Canceled) {
       return nil, err
     }
-    return nil, fmt.Errorf("cannot get %s: %w", url, err)
+    return nil, fmt.Errorf("cannot get %s: %w", targetUrl, err)
   }
   return response, nil
 }
@@ -412,14 +412,14 @@ func (t *Collector) isComposite(ctx context.Context, configuration string) (bool
   return buildType.Value == "COMPOSITE", err
 }
 
-func (t *Collector) createRequest(ctx context.Context, url string) (*http.Request, error) {
-  request, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+func (t *Collector) createRequest(ctx context.Context, requestURL string) (*http.Request, error) {
+  request, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, http.NoBody)
   if err != nil {
     return nil, fmt.Errorf("cannot create request: %w", err)
   }
 
   sessionId := t.tcSessionId.Load()
-  if len(sessionId) != 0 {
+  if sessionId != "" {
     request.AddCookie(&http.Cookie{Name: "TCSESSIONID", Value: sessionId})
   }
   request.Header.Add("Authorization", "Bearer "+os.Getenv("TC_TOKEN"))

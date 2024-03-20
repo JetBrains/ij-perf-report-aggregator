@@ -141,7 +141,7 @@ func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
     return fmt.Errorf("failed to marshal slack message: %w", err)
   }
   webhookUrl := os.Getenv("SLACK_WEBHOOK_URL")
-  if len(webhookUrl) == 0 {
+  if webhookUrl == "" {
     return errors.New("SLACK_WEBHOOK_URL is not set")
   }
   err = backoff.Retry(func() error {

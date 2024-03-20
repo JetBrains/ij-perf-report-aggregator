@@ -44,7 +44,7 @@ func configureCollectFromTeamCity() error {
   flag.Parse()
 
   var since time.Time
-  if len(*sinceDate) > 0 {
+  if *sinceDate != "" {
     var err error
     since, err = dateparse.ParseStrict(*sinceDate)
     if err != nil {
@@ -59,7 +59,7 @@ func configureCollectFromTeamCity() error {
   }
 
   rawJson = strings.TrimSpace(rawJson)
-  if len(rawJson) == 0 {
+  if rawJson == "" {
     return errors.New("file /etc/config/config.json is empty or env CONFIG is not set")
   }
 
@@ -128,7 +128,7 @@ func configureCollectFromTeamCity() error {
   }
 
   natsUrl := os.Getenv("NATS")
-  if len(natsUrl) > 0 {
+  if natsUrl != "" {
     err = doNotifyServer(natsUrl)
     if err != nil {
       return err

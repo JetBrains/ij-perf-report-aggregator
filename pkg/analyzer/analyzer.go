@@ -41,11 +41,11 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzeIjReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
           sb.WriteString(metric.Name)
         }
         for _, fieldName := range fieldNames {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
           sb.WriteString(fieldName)
         }
       },
@@ -64,11 +64,11 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       ReportReader:      analyzeIjReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
           sb.WriteString(metric.Name)
         }
         for _, fieldName := range fieldNames {
-          sb.WriteRune(',')
+          sb.WriteByte(',')
           sb.WriteString(fieldName)
         }
       },

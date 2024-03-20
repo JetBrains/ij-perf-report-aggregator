@@ -73,11 +73,11 @@ func readQueryValue(value *fastjson.Value) (*Query, error) {
   }
 
   switch {
-  case len(query.Database) == 0:
+  case query.Database == "":
     query.Database = "default"
   case !reDbName.MatchString(query.Database):
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Database name %s contains illegal chars", query.Database))
-  case len(query.Table) > 0 && !reDbName.MatchString(query.Table):
+  case query.Table != "" && !reDbName.MatchString(query.Table):
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Table name %s contains illegal chars", query.Table))
   }
 
@@ -112,7 +112,7 @@ func readQueryValue(value *fastjson.Value) (*Query, error) {
   }
 
   query.Aggregator = string(value.GetStringBytes("aggregator"))
-  if len(query.Aggregator) != 0 && !reAggregator.MatchString(query.Aggregator) {
+  if query.Aggregator != "" && !reAggregator.MatchString(query.Aggregator) {
     return nil, http_error.NewHttpError(400, fmt.Sprintf("Aggregator %s contains illegal chars", query.Aggregator))
   }
 
@@ -122,7 +122,7 @@ func readQueryValue(value *fastjson.Value) (*Query, error) {
   }
 
   query.TimeDimensionFormat = string(value.GetStringBytes("timeDimensionFormat"))
-  if len(query.Aggregator) != 0 && !reAggregator.MatchString(query.Aggregator) {
+  if query.Aggregator != "" && !reAggregator.MatchString(query.Aggregator) {
     return nil, http_error.NewHttpError(400, fmt.Sprintf("timeDimensionFormat %s contains illegal chars", query.TimeDimensionFormat))
   }
   return query, nil
@@ -135,10 +135,10 @@ func readDimensions(list []*fastjson.Value, result *[]QueryDimension) error {
       return err
     }
 
-    if len(t.Sql) != 0 && !reAggregator.MatchString(t.Sql) {
+    if t.Sql != "" && !reAggregator.MatchString(t.Sql) {
       return http_error.NewHttpError(400, fmt.Sprintf("Dimension SQL %s contains illegal chars", t.Sql))
     }
-    if len(t.resultPropertyName) != 0 && !isValidFieldName(t.resultPropertyName) {
+    if t.resultPropertyName != "" && !isValidFieldName(t.resultPropertyName) {
       return http_error.NewHttpError(400, fmt.Sprintf("resultPropertyName %s is not a valid field name", t.Name))
     }
     *result = append(*result, *t)
@@ -193,7 +193,7 @@ func readDimension(v *fastjson.Value) (*QueryDimension, error) {
       t.metricName = t.metricName[:metricNameLength-2]
     }
 
-    if len(t.resultPropertyName) == 0 {
+    if t.resultPropertyName == "" {
       t.resultPropertyName = strings.ReplaceAll(t.metricName, " ", "_")
     }
 
@@ -213,7 +213,7 @@ func readFilters(list []*fastjson.Value, query *Query) error {
       Split:    false,
     }
 
-    if len(t.Sql) == 0 {
+    if t.Sql == "" {
       t.Sql = string(v.GetStringBytes("sql"))
     }
 
@@ -223,14 +223,14 @@ func readFilters(list []*fastjson.Value, query *Query) error {
       value = v.Get("value")
     }
 
-    if !isValidFilterFieldName(t.Field) && len(t.Sql) == 0 {
+    if !isValidFilterFieldName(t.Field) && t.Sql == "" {
       return http_error.NewHttpError(400, t.Field+" is not a valid filter field name")
     }
 
-    if len(t.Sql) == 0 && value == nil {
+    if t.Sql == "" && value == nil {
       return errors.New("filter value is not specified")
     }
-    if len(t.Sql) == 0 {
+    if t.Sql == "" {
       switch value.Type() {
       case fastjson.TypeString:
         t.Value = string(value.GetStringBytes())
@@ -255,14 +255,14 @@ func readFilters(list []*fastjson.Value, query *Query) error {
         return fmt.Errorf("filter value %v is not supported", value)
       }
 
-      if len(t.Operator) == 0 {
+      if t.Operator == "" {
         t.Operator = "="
       } else if t.Operator != ">" && t.Operator != "<" && t.Operator != "=" && t.Operator != "!=" && t.Operator != "like" {
         return fmt.Errorf("operator %s is not supported", t.Operator)
       }
     } else {
       // by intention sql string is not validated
-      if len(t.Operator) != 0 {
+      if t.Operator != "" {
         return http_error.NewHttpError(400, fmt.Sprintf("sql and operator are mutually exclusive (filter=%s)", t.Field))
       }
       if t.Value != nil {

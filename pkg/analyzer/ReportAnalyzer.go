@@ -148,14 +148,14 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
     return nil
   }
 
-  if len(extraData.ProductCode) == 0 {
+  if extraData.ProductCode == "" {
     extraData.ProductCode = runResult.Report.ProductCode
   }
-  if len(extraData.BuildNumber) == 0 {
+  if extraData.BuildNumber == "" {
     extraData.BuildNumber = runResult.Report.Build
   }
 
-  if len(extraData.Machine) == 0 {
+  if extraData.Machine == "" {
     return errors.New("machine is not specified")
   }
 
@@ -175,7 +175,7 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
   if t.config.HasInstallerField {
     runResult.BuildTime = extraData.BuildTime
 
-    if len(extraData.BuildNumber) == 0 {
+    if extraData.BuildNumber == "" {
       t.logger.Error("buildNumber is missed")
       return nil
     }
@@ -259,7 +259,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 
   //goland:noinspection SpellCheckingInspection
   branch := string(props.GetStringBytes("teamcity.build.branch"))
-  if len(branch) != 0 && branch != "<default>" {
+  if branch != "" && branch != "<default>" {
     return branch, nil
   }
   branchInt := props.GetInt("teamcity.build.branch")

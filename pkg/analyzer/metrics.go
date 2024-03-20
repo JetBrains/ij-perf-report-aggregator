@@ -206,7 +206,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
 
     // undefined
     (*result)[nonMetricFieldCount+metric.index] = 0
-    if len(metric.sinceVersion) != 0 && version.Compare(report.Version, metric.sinceVersion, ">=") {
+    if metric.sinceVersion != "" && version.Compare(report.Version, metric.sinceVersion, ">=") {
       notFoundMetrics = append(notFoundMetrics, metric.Name)
     }
   }
@@ -224,7 +224,7 @@ func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.R
     return nil
   }
 
-  if len(info.sinceVersion) != 0 && version.Compare(report.Version, info.sinceVersion, "<") {
+  if info.sinceVersion != "" && version.Compare(report.Version, info.sinceVersion, "<") {
     return nil
   }
 

@@ -66,7 +66,6 @@ func ReadProperties(data []byte) ([]byte, error) {
 }
 
 // cat '/Volumes/data/Downloads/build.finish.properties' | python -m json.tool > f.json
-//nolint:gocyclo
 func IsExcludedProperty(key string) bool {
   if excludedTcProperties[key] ||
     strings.HasPrefix(key, "DotNetCredentialProvider") ||

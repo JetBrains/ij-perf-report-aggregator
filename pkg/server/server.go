@@ -38,7 +38,7 @@ type StatsServer struct {
 }
 
 func Serve(dbUrl string, natsUrl string) error {
-  if len(dbUrl) == 0 {
+  if dbUrl == "" {
     dbUrl = DefaultDbUrl
   }
 
@@ -70,7 +70,7 @@ func Serve(dbUrl string, natsUrl string) error {
 
   disposer := util.NewDisposer()
   defer disposer.Dispose()
-  if len(natsUrl) > 0 {
+  if natsUrl != "" {
     err = listenNats(cacheManager, natsUrl, disposer)
     if err != nil {
       return err

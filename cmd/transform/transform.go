@@ -195,7 +195,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
   defer util.Close(rows)
 
   var row ReportRow
-rowLoop:
+
   for rows.Next() {
     err = rows.ScanStruct(&row)
     if err != nil {
@@ -223,7 +223,7 @@ rowLoop:
 
       if runResult.Report == nil {
         // ignore report
-        continue rowLoop
+        continue
       }
     }
 

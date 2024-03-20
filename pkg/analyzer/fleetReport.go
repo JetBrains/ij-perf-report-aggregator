@@ -48,7 +48,7 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
   for _, groupField := range []string{"items", "prepareAppInitActivities"} {
     for _, measure := range data.GetArray(groupField) {
       name := string(measure.GetStringBytes("n"))
-      if len(name) == 0 {
+      if name == "" {
         continue
       }
 

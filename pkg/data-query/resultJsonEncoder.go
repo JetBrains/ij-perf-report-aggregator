@@ -17,7 +17,6 @@ type SplitParameters struct {
   values         map[string]int
 }
 
-//nolint:gocyclo
 func writeResult(result *proto.Results, columnNameToIndex map[string]int, columnBuffers [][]*bytebufferpool.ByteBuffer, query Query, splitParameters *SplitParameters) error {
   var rowToSplitIndex []int
 

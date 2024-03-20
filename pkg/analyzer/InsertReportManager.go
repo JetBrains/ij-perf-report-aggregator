@@ -62,10 +62,10 @@ type InsertReportManager struct {
   TableName                        string
 }
 
-func NewInsertReportManager(context context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int) (*InsertReportManager, error) {
+func NewInsertReportManager(ctx context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int) (*InsertReportManager, error) {
   var err error
 
-  if len(config.TableName) != 0 {
+  if config.TableName != "" {
     tableName = config.TableName
   }
 
@@ -107,14 +107,14 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
   effectiveSql := sb.String()
 
-  insertManager := sql_util.NewBatchInsertManager(context, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
+  insertManager := sql_util.NewBatchInsertManager(ctx, db, effectiveSql, insertWorkerCount, slog.With("type", "report"))
 
   // large inserts leads to large memory usage, so, allow to override INSERT_BATCH_SIZE via env
   insertManager.BatchSize = env.GetInt("INSERT_BATCH_SIZE", 20_000)
 
   var installerManager *InsertInstallerManager
   if config.HasInstallerField || config.HasNoInstallerButHasChanges {
-    installerManager, err = NewInstallerInsertManager(context, db)
+    installerManager, err = NewInstallerInsertManager(ctx, db)
     if err != nil {
       return nil, err
     }
@@ -122,7 +122,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
 
   var metaManager *InsertMetaManager
   if config.HasMetaDB {
-    metaManager, err = NewInsertMetaManager(context)
+    metaManager, err = NewInsertMetaManager(ctx)
     if err != nil {
       return nil, err
     }
@@ -136,7 +136,7 @@ func NewInsertReportManager(context context.Context, db driver.Conn, config Data
       InsertManager: insertManager,
     },
 
-    context:                context,
+    context:                ctx,
     insertInstallerManager: installerManager,
     insertMetaManager:      metaManager,
   }
@@ -224,11 +224,11 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
   }
 
   project := row.Report.Project
-  if len(project) == 0 {
+  if project == "" {
     project = providedProject
   } else if t.config.HasInstallerField {
     customName := projectIdToName[row.Report.Project]
-    if len(customName) != 0 {
+    if customName != "" {
       project = customName
     }
   }

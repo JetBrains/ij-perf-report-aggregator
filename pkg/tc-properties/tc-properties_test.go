@@ -16,7 +16,7 @@ func TestFilter(t *testing.T) {
   properties, err := ReadProperties(data)
   require.NoError(t, err)
 
-  err = os.WriteFile("/tmp/foo.txt", properties, 0777)
+  err = os.WriteFile("/tmp/foo.txt", properties, 0o777)
   require.NoError(t, err)
 
   // err = backup()

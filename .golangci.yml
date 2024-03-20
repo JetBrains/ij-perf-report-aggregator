@@ -147,6 +147,8 @@ linters:
     - unconvert # removes unnecessary type conversions
     - unparam # reports unused function parameters
     - usestdlibvars # detects the possibility to use variables/constants from the Go standard library
+    - copyloopvar # checks for copying loop variables by reference
+    - intrange # checks for integer ranges that can be simplified
 
 issues:
   # Maximum count of issues with the same text.

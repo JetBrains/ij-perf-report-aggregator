@@ -117,10 +117,11 @@
 <script setup lang="ts">
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
-import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import LineChart from "../charts/LineChart.vue"
 import Divider from "../common/Divider.vue"
 import MachineSelect from "../common/MachineSelect.vue"
@@ -160,8 +161,10 @@ const persistenceForDashboard = new PersistentStateManager(
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
+const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, ref("fleet"), ref(null), timeRangeConfigurator)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
+const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, accidentsConfigurator] as DataQueryConfigurator[]
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   dashboardConfigurators.push(configurator)

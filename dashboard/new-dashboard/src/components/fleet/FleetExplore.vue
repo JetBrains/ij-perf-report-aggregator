@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { provide, ref } from "vue"
 import { useRouter } from "vue-router"
+import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -52,7 +53,7 @@ import { privateBuildConfigurator } from "../../configurators/PrivateBuildConfig
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { configuratorListKey } from "../../shared/injectionKeys"
-import { containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
 import ChartTooltip from "../charts/ChartTooltip.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -101,7 +102,18 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 
 const measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator, machineConfigurator])
-const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, branchConfigurator, triggeredByConfigurator] as DataQueryConfigurator[]
+
+const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, ref("fleet"), ref(measureConfigurator.selected), timeRangeConfigurator)
+provide(accidentsConfiguratorKey, accidentsConfigurator)
+
+const configurators = [
+  serverConfigurator,
+  machineConfigurator,
+  timeRangeConfigurator,
+  branchConfigurator,
+  triggeredByConfigurator,
+  accidentsConfigurator,
+] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)
 

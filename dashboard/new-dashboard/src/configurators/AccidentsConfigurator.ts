@@ -142,11 +142,15 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       let build = ""
       let key = ""
       let keyWithMetric = ""
+      if (this.dbType == DBType.DEV_FLEET) {
+        build = `${value[3]}`
+        key = `${value[4]}_${build}`
+        keyWithMetric = `${value[5]}/${value[2]}_${build}`
+      }
       if (this.dbType == DBType.FLEET) {
         build = value[9] == 0 ? `${value[7]}.${value[8]}` : `${value[7]}.${value[8]}.${value[9]}`
         key = `${value[5]}_${build}`
         keyWithMetric = `${value[5]}/${value[2]}_${build}`
-        console.log(keyWithMetric)
       }
       if (this.dbType == DBType.STARTUP_TESTS) {
         build = `${value[7]}.${value[8]}`

@@ -65,6 +65,9 @@ export function getAccidentBuild(params: CallbackDataParams): string | undefined
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     return getFullBuildId(params)
   }
+  if (dbType == DBType.DEV_FLEET) {
+    return getBuildId(params)?.toString()
+  }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
     return getBuildId(params)?.toString()
   }

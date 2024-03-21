@@ -44,6 +44,10 @@ func (s StartupSettings) DBTestName() string {
   return s.Product + "/" + s.Project + "/" + s.Metric
 }
 
+func (s FleetStartupSettings) DBTestName() string {
+  return "fleet" + "/" + s.Metric
+}
+
 func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithSettings) chan InsertionResults {
   url := backendURL + "/api/meta/accidents"
   insertionResults := make(chan InsertionResults)

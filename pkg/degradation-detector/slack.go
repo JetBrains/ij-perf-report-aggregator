@@ -87,6 +87,36 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
   }
 }
 
+func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
+  reason := getMessageBasedOnMedianChange(d.medianValues)
+  date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
+  link := s.slackLink()
+
+  text := fmt.Sprintf(
+    "%sMetric: %s\n"+
+      "Build: %s\n"+
+      "Branch: %s\n"+
+      "Date: %s\n"+
+      "Reason: %s\n"+
+      "Link: %s\n", icon(d.medianValues), s.Metric, d.Build, s.Branch, date, reason, link)
+  return SlackMessage{
+    Text:    text,
+    Channel: s.Channel,
+  }
+}
+
+func (s FleetStartupSettings) slackLink() string {
+  machineGroup := getMachineGroup(s.Machine)
+  measurements := strings.Split(s.Metric, ",")
+  escapedMeasurements := make([]string, 0, len(measurements))
+  for _, m := range measurements {
+    escapedMeasurements = append(escapedMeasurements, url.QueryEscape(m))
+  }
+  measure := strings.Join(escapedMeasurements, "&measure=")
+  return fmt.Sprintf("https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&timeRange=1M",
+    url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure)
+}
+
 func (s PerformanceSettings) slackLink() string {
   testPage := "tests"
   if strings.HasSuffix(s.Db, "Dev") {

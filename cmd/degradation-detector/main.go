@@ -22,6 +22,9 @@ func main() {
   for _, s := range generateStartupSettings(backendUrl, client) {
     analysisSettings = append(analysisSettings, s)
   }
+  for _, s := range generateFleetStartupSettings() {
+    analysisSettings = append(analysisSettings, s)
+  }
   degradations := detector.GetDegradations(analysisSettings, client, backendUrl)
   insertionResults := detector.PostDegradations(client, backendUrl, degradations)
   filteredResults := detector.FilterErrors(insertionResults)
@@ -50,9 +53,15 @@ func createHttpClient() *http.Client {
 }
 
 func generateStartupSettings(backendUrl string, client *http.Client) []detector.StartupSettings {
-  settings := make([]detector.StartupSettings, 0, 1000)
-  settings = append(settings, setting.GenerateStartupSettingsForIDEA(backendUrl, client)...)
-  return settings
+  return slices.Concat(
+    setting.GenerateStartupSettingsForIDEA(backendUrl, client),
+  )
+}
+
+func generateFleetStartupSettings() []detector.FleetStartupSettings {
+  return slices.Concat(
+    setting.GenerateFleetStartupSettings(),
+  )
 }
 
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

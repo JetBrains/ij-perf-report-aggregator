@@ -117,6 +117,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
         if (dbTypeStore().dbType == DBType.FLEET) {
           data = data.filter((it) => !/.*id=.*/.test(it) && it.length < 120)
+          data = data.map((it) => it + ".end")
         }
 
         data = data.filter(

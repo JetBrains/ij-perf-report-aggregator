@@ -1,3 +1,4 @@
+[![JetBrains incubator project](https://jb.gg/badges/incubator-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 ![](https://camo.githubusercontent.com/be6f8b50b2400e8b0dc74e58dd9a68803fe6698f5f30d843a7504888879f8392/68747470733a2f2f6a622e67672f6261646765732f696e63756261746f722d706c61737469632e737667)
 [![lint-and-test](https://github.com/JetBrains/ij-perf-report-aggregator/actions/workflows/lint-and-test.yml/badge.svg)](https://github.com/JetBrains/ij-perf-report-aggregator/actions/workflows/lint-and-test.yml)
 

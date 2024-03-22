@@ -14,10 +14,18 @@ import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPe
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 
+class ClickedValue {
+  constructor(
+    public readonly timestamp: number,
+    public readonly value: number
+  ) {}
+}
+
 export class LineChartVM {
   private settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
-  private lastClickedValue: number | null = null
+  private lastClickedValue = new Map<string, ClickedValue>()
+
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
       this.lastParams = params
@@ -35,7 +43,14 @@ export class LineChartVM {
           name: params.seriesName,
         })
       } else {
-        this.lastClickedValue = Array.isArray(params.value) ? (params.value[1] as number) : null
+        if (params.seriesName && Array.isArray(params.value)) {
+          // if the same value is clicked again remove
+          if (this.lastClickedValue.get(params.seriesName)?.timestamp == (params.value[0] as number)) {
+            this.lastClickedValue.delete(params.seriesName)
+          } else {
+            this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
+          }
+        }
         const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator)
         sidebarVm.show(infoData)
       }
@@ -93,8 +108,8 @@ export class LineChartVM {
     }
     this.appendAccidentInfo(data, element)
     this.appendDelta(data, element, durationMs as number, isMs, type)
-    if (this.lastClickedValue != null) {
-      this.appendDeltaWithLastClicked(durationMs as number, this.lastClickedValue, element, isMs, type)
+    if (params.seriesName && this.lastClickedValue.get(params.seriesName)) {
+      this.appendDeltaWithLastClicked(durationMs as number, this.lastClickedValue.get(params.seriesName)?.value as number, element, isMs, type)
     }
     return element
   }

@@ -7,6 +7,7 @@ import (
   "errors"
   "fmt"
   "github.com/cenkalti/backoff/v4"
+  "io"
   "log/slog"
   "net/http"
   "net/url"
@@ -185,6 +186,10 @@ func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
       return fmt.Errorf("sending slack message failed: %w", err)
     }
     defer resp.Body.Close()
+    if resp.StatusCode != http.StatusOK {
+      b, _ := io.ReadAll(resp.Body)
+      slog.Error("sending slack message failed", "status", errors.New(resp.Status), "body", b)
+    }
     return nil
   }, backoff.NewExponentialBackOff())
   return err

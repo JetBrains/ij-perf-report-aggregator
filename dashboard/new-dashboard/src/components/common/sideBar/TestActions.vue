@@ -93,8 +93,7 @@ function handleNavigateToTest() {
   let parts = currentRoute.path.split("/")
   if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
     parts = ["", "ij", "explore"]
-  }
-  if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
+  } else if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
     parts = ["", "fleet", "startupExplore"]
   } else {
     parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
@@ -113,8 +112,10 @@ function handleNavigateToTest() {
     props.data?.series
       .map((s) => s.metricName)
       .filter((m) => m != undefined)
+      .map((m) => (dbTypeStore().isIJStartup() && (m as string).includes("/") ? "metrics." + (m as string) : m))
       .map((m) => "&measure=" + (m as string))
       .join("") ?? ""
+
   void router.push(testURL + "?" + queryParams + measures)
 }
 </script>

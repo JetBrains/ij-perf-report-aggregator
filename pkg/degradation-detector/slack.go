@@ -171,15 +171,16 @@ func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
   if err != nil {
     return fmt.Errorf("failed to marshal slack message: %w", err)
   }
-  webhookUrl := os.Getenv("SLACK_WEBHOOK_URL")
-  if webhookUrl == "" {
-    return errors.New("SLACK_WEBHOOK_URL is not set")
+  slackToken := os.Getenv("SLACK_TOKEN")
+  if slackToken == "" {
+    return errors.New("SLACK_TOKEN is not set")
   }
   err = backoff.Retry(func() error {
-    req, err := http.NewRequestWithContext(ctx, http.MethodPost, webhookUrl, bytes.NewBuffer(slackMessageJson))
+    req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://slack.com/api/chat.postMessage", bytes.NewBuffer(slackMessageJson))
     if err != nil {
       return fmt.Errorf("failed to create request: %w", err)
     }
+    req.Header.Add("Authorization", "Bearer "+slackToken)
     req.Header.Set("Content-Type", "application/json")
     resp, err := client.Do(req)
     if err != nil {

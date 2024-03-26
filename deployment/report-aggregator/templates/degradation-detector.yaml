@@ -30,8 +30,8 @@ spec:
                   cpu: "1.5"
                   memory: 1Gi
               env:
-                - name: SLACK_WEBHOOK_URL
-                  value: {{ .Values.slack.webhookUrl | quote }}
+                - name: SLACK_TOKEN
+                  value: {{ .Values.slack.token | quote }}
                 - name: BACKEND_URL
                   value: "http://backend:80"
           imagePullSecrets:

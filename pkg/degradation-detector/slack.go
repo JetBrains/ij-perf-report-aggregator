@@ -183,6 +183,10 @@ func getMachineGroup(pattern string) string {
     return "linux-blade-hetzner"
   case "intellij-linux-hw-munit-%":
     return "Linux Munich i7-3770, 32 Gb"
+  case "intellij-windows-hw-munit-%":
+    return "Windows Munich i7-3770, 32 Gb"
+  case "intellij-macos-hw-munit-%":
+    return "macMini M1, 16 Gb"
   }
   return ""
 }

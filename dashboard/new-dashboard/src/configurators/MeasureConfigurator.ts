@@ -627,7 +627,7 @@ async function configureChart(
 }
 
 function isValueShouldBeMarkedWithPin(accidents: Accident[] | null): boolean {
-  return accidents != null && accidents.some((accident) => accident.kind != AccidentKind.Exception)
+  return accidents?.some((accident) => accident.kind != AccidentKind.Exception) ?? false
 }
 
 function isValueShouldBeMarkedAsException(accidents: Accident[] | null): boolean {

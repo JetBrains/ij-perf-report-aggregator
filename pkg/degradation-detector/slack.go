@@ -1,13 +1,10 @@
 package degradation_detector
 
 import (
-  "bytes"
   "context"
-  "encoding/json"
   "errors"
   "fmt"
-  "github.com/cenkalti/backoff/v4"
-  "io"
+  "github.com/slack-go/slack"
   "log/slog"
   "net/http"
   "net/url"
@@ -167,32 +164,12 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
 }
 
 func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage SlackMessage) error {
-  slackMessageJson, err := json.Marshal(slackMessage)
-  if err != nil {
-    return fmt.Errorf("failed to marshal slack message: %w", err)
-  }
   slackToken := os.Getenv("SLACK_TOKEN")
   if slackToken == "" {
     return errors.New("SLACK_TOKEN is not set")
   }
-  err = backoff.Retry(func() error {
-    req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://slack.com/api/chat.postMessage", bytes.NewBuffer(slackMessageJson))
-    if err != nil {
-      return fmt.Errorf("failed to create request: %w", err)
-    }
-    req.Header.Add("Authorization", "Bearer "+slackToken)
-    req.Header.Set("Content-Type", "application/json")
-    resp, err := client.Do(req)
-    if err != nil {
-      return fmt.Errorf("sending slack message failed: %w", err)
-    }
-    defer resp.Body.Close()
-    if resp.StatusCode != http.StatusOK {
-      b, _ := io.ReadAll(resp.Body)
-      slog.Error("sending slack message failed", "status", errors.New(resp.Status), "body", b)
-    }
-    return nil
-  }, backoff.NewExponentialBackOff())
+  api := slack.New(slackToken, slack.OptionHTTPClient(client))
+  _, _, _, err := api.SendMessageContext(ctx, slackMessage.Channel, slack.MsgOptionText(slackMessage.Text, false))
   return err
 }
 

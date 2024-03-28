@@ -40,6 +40,7 @@ const enum ROUTE_PREFIX {
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
+const DEV_TEST_ROUTE_2 = "dev/testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
 const COMPARE_ROUTE = "compare"
@@ -115,6 +116,7 @@ enum ROUTES {
   KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
+  KotlinTestsDev2 = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE_2}`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
   KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
@@ -1861,6 +1863,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.KotlinTestsDev,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlin",
+            initialMachine: "linux-blade-hetzner",
+            withInstaller: false,
+          },
+          meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
+        },
+        {
+          path: ROUTES.KotlinTestsDev2,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfintDev",

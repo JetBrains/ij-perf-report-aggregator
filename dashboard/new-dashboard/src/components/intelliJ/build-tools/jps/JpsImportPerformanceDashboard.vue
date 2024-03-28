@@ -38,6 +38,7 @@ import DashboardPage from "../../../common/DashboardPage.vue"
 
 const metricsDeclaration = [
   "jps.aggregate.sync.duration",
+  "jps.aggregate.counters",
   "project.opening",
   "jps.app.storage.content.reader.load.component.ms",
   "jps.app.storage.content.writer.save.component.ms",

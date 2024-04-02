@@ -5,14 +5,14 @@ go 1.22
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.61.5
-	github.com/ClickHouse/clickhouse-go/v2 v2.22.2
+	github.com/ClickHouse/clickhouse-go/v2 v2.23.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.8.3
 	github.com/andybalholm/brotli v1.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
-	github.com/cenkalti/backoff/v4 v4.2.1
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/go-chi/chi/v5 v5.0.12
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/jackc/puddle/v2 v2.2.1
@@ -22,6 +22,7 @@ require (
 	github.com/nats-io/nats.go v1.34.0
 	github.com/rs/cors v1.10.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
+	github.com/slack-go/slack v0.12.5
 	github.com/stretchr/testify v1.9.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
@@ -140,7 +141,6 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/asm v1.2.0 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
-	github.com/slack-go/slack v0.12.5 // indirect
 	github.com/tencentyun/cos-go-sdk-v5 v0.7.45 // indirect
 	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect

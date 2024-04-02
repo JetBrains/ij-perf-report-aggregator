@@ -1,12 +1,11 @@
 <template>
   <DashboardPage
     v-slot="{ averagesConfigurators }"
-    db-name="perfintDev"
+    db-name="perfint"
     table="idea"
-    persistent-id="idea_indexing_dashboard_dev"
+    persistent-id="idea_indexing_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
-    :with-installer="false"
   >
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
@@ -50,22 +49,38 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Big projects)", "Initial Scanning (Big projects)", "Initial Number of indexed files (Big projects)"],
     measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
-    projects: ["community/indexing", "intellij_commit/indexing"],
+    projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
     labels: ["Processing Time Java", "Processing Time Kotlin"],
     measures: ["processingTime#JAVA", "processingTime#Kotlin"],
-    projects: ["community/indexing", "intellij_commit/indexing"],
+    projects: ["community/indexing", "intellij_sources/indexing", "space/indexing"],
   },
   {
     labels: ["Second Scanning (Big projects)", "Second Number of indexed files (Big projects)"],
     measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
-    projects: ["community/second-scanning", "intellij_commit/second-scanning"],
+    projects: ["community/second-scanning", "intellij_sources/second-scanning", "space/second-scanning"],
   },
   {
     labels: ["Third Scanning (Big projects)", "Third Number of indexed files (Big projects)"],
     measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
-    projects: ["community/third-scanning", "intellij_commit/third-scanning"],
+    projects: ["community/third-scanning", "intellij_sources/third-scanning", "space/third-scanning"],
+  },
+  {
+    labels: [
+      "Indexing with the new record storages (IntelliJ project)",
+      "Scanning with the new record storages (IntelliJ project)",
+      "Number of indexed files with the new record storages (IntelliJ project)",
+    ],
+    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    projects: [
+      "vfs-record-storage/in-memory-intellij_sources/indexing",
+      "vfs-record-storage/over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/attributes-over-lock-free-file-page-cache-intellij_sources/indexing",
+      "vfs-record-storage/attributes-over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/content-hashes-and-attributes-over-mmapped-file-intellij_sources/indexing",
+      "vfs-record-storage/content-and-attributes-over-lock-free-file-page-cache-intellij_sources/indexing",
+    ],
   },
   {
     labels: ["Indexing", "Scanning", "Number of indexed files"],

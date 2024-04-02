@@ -1,11 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
+    db-name="perfint"
     table="idea"
-    persistent-id="idea_find_usages_dashboard_dev"
+    persistent-id="idea_find_usages_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
-    :with-installer="false"
   >
     <section>
       <GroupProjectsChart
@@ -41,7 +40,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After", "intellij_commit/findUsages/Library_getName"],
+    projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After"],
   },
   {
     labels: ["FindUsages LocalInspectionTool#getID Before and After Compilation"],
@@ -56,8 +55,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "community/findUsages/ActionsKt_runReadAction_After",
       "community/findUsages/Application_runReadAction_Before",
       "community/findUsages/Application_runReadAction_After",
-      "intellij_commit/findUsages/ActionsKt_runReadAction",
-      "intellij_commit/findUsages/Application_runReadAction",
     ],
   },
   {
@@ -68,7 +65,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "community/findUsages/Persistent_absolutePath_After",
       "community/findUsages/PropertyMapping_value_Before",
       "community/findUsages/PropertyMapping_value_After",
-      "intellij_commit/findUsages/Persistent_absolutePath",
     ],
   },
   {
@@ -92,15 +88,15 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FindUsages Path#div Before and After Compilation"],
     measures: ["findUsages"],
-    projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After", "intellij_commit/findUsages/Path_div"],
+    projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After"],
   },
   {
     labels: ["Find Usages with idea.is.internal=true Before Compilation"],
     measures: ["findUsages"],
     projects: [
-      "intellij_commit/findUsages/PsiManager_getInstance_firstCall",
-      "intellij_commit/findUsages/PsiManager_getInstance_secondCall",
-      "intellij_commit/findUsages/PsiManager_getInstance_thirdCallInternalMode",
+      "intellij_sources/findUsages/PsiManager_getInstance_firstCall",
+      "intellij_sources/findUsages/PsiManager_getInstance_secondCall",
+      "intellij_sources/findUsages/PsiManager_getInstance_thirdCallInternalMode",
     ],
   },
 ]

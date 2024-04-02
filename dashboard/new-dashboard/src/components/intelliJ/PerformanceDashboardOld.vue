@@ -1,12 +1,11 @@
 <template>
   <DashboardPage
     v-slot="{ averagesConfigurators }"
-    db-name="perfintDev"
+    db-name="perfint"
     table="idea"
-    persistent-id="ideaDev_performance_dashboard"
+    persistent-id="idea_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
-    :with-installer="false"
   >
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
@@ -19,10 +18,9 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'searchEverywhere\_%'"
-          :is-like="true"
-          :title="'Search Everywhere'"
+          :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+          :aggregated-measure="'test#average_awt_delay'"
+          :title="'UI responsiveness during typing'"
           :chart-color="'#F2994A'"
         />
       </div>
@@ -45,18 +43,19 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["VFS Refresh"],
     measures: ["vfs_initial_refresh"],
-    projects: ["intellij_commit/vfsRefresh/default", "intellij_commit/vfsRefresh/with-1-thread(s)", "intellij_commit/vfsRefresh/git-status"],
+    projects: ["intellij_sources/vfsRefresh/default", "intellij_sources/vfsRefresh/with-1-thread(s)", "intellij_sources/vfsRefresh/git-status"],
     aliases: ["default", "1 thread", "git status"],
   },
   {
     labels: ["Rebuild (Big projects)"],
     measures: ["build_compilation_duration"],
-    projects: ["community/rebuild"],
+    projects: ["community/rebuild", "intellij_sources/rebuild"],
   },
   {
     labels: ["Rebuild"],
@@ -71,25 +70,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Local Inspection", "First Code Analysis"],
     measures: ["localInspections", "firstCodeAnalysis"],
-    projects: [
-      "intellij_commit/localInspection/java_file",
-      "intellij_commit/localInspection/kotlin_file",
-      "kotlin/localInspection",
-      "kotlin_coroutines/localInspection",
-      "intellij_commit/localInspection/java_file-ContentManagerImpl",
-      "intellij_commit/localInspection/kotlin_file-DexInlineTest",
-    ],
+    projects: ["intellij_sources/localInspection/java_file", "intellij_sources/localInspection/kotlin_file", "kotlin/localInspection", "kotlin_coroutines/localInspection"],
   },
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [
-      "community/completion/kotlin_file",
-      "grails/completion/groovy_file",
-      "grails/completion/java_file",
-      "intellij_commit/completion/kotlin_file",
-      "intellij_commit/completion/java_file",
-    ],
+    projects: ["community/completion/kotlin_file", "grails/completion/groovy_file", "grails/completion/java_file"],
   },
   {
     labels: ["Debug run configuration", "Debug step into"],
@@ -104,22 +90,22 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Show File History"],
     measures: ["showFileHistory"],
-    projects: ["intellij_commit/showFileHistory/EditorImpl"],
+    projects: ["intellij_sources/showFileHistory/EditorImpl"],
   },
   {
     labels: ["Expand Project Menu"],
     measures: ["%expandProjectMenu"],
-    projects: ["intellij_commit/expandProjectMenu"],
+    projects: ["intellij_sources/expandProjectMenu"],
   },
   {
     labels: ["Expand Main Menu"],
     measures: ["%expandMainMenu"],
-    projects: ["intellij_commit/expandMainMenu"],
+    projects: ["intellij_sources/expandMainMenu"],
   },
   {
     labels: ["Expand Editor Menu"],
     measures: ["%expandEditorMenu"],
-    projects: ["intellij_commit/expandEditorMenu"],
+    projects: ["intellij_sources/expandEditorMenu"],
   },
   {
     labels: ["Highlight"],
@@ -129,14 +115,29 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FileStructure"],
     measures: ["FileStructurePopup"],
-    projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
+    projects: ["intellij_sources/FileStructureDialog/java_file", "intellij_sources/FileStructureDialog/kotlin_file"],
   },
   {
     labels: ["Creating a new file"],
     measures: [["createJavaFile", "createKotlinFile"]],
-    projects: ["intellij_commit/createJavaClass", "intellij_commit/createKotlinClass"],
+    projects: ["intellij_sources/createJavaClass", "intellij_sources/createKotlinClass"],
+  },
+  {
+    labels: ["Typing during indexing (average awt delay)", "Typing during indexing (max awt delay)"],
+    measures: ["test#average_awt_delay", "test#max_awt_delay"],
+    projects: ["typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing", "typingInKotlinFile_16Threads/typing", "typingInKotlinFile_4Threads/typing"],
   },
 ]
 
 const charts = combineCharts(chartsDeclaration)
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({ f: "project", v: "%typing", o: "like" })
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 </script>

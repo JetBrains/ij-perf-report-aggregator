@@ -1,10 +1,11 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="idea"
-    persistent-id="idea_ultimate_dashboard"
+    persistent-id="idea_ultimate_dashboard_devserver"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
+    :with-installer="false"
   >
     <section>
       <GroupProjectsChart

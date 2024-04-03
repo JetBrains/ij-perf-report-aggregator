@@ -198,7 +198,8 @@ enum ROUTES {
   BazelBspDashboard = `${ROUTE_PREFIX.Bazel}/bazelBSPDashboard`,
   IntelliJBspDashboard = `${ROUTE_PREFIX.Bazel}/intellijBSPDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
-  ClionStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
+  ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
+  ClionNovaStartupDashboard = `${ROUTE_PREFIX.Clion}/nova_${STARTUP_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
@@ -1079,8 +1080,12 @@ const CLION: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.ClionStartupDashboard,
-          label: STARTUP_LABEL,
+          url: ROUTES.ClionClassicStartupDashboard,
+          label: "CLion Classic Startup",
+        },
+        {
+          url: ROUTES.ClionNovaStartupDashboard,
+          label: "CLion Nova Startup",
         },
         {
           url: ROUTES.ClionPerfDashboard,
@@ -2175,13 +2180,22 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "CLion tests" },
         },
         {
-          path: ROUTES.ClionStartupDashboard,
+          path: ROUTES.ClionClassicStartupDashboard,
           component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "CL",
-            defaultProject: "cmake",
+            defaultProject: "clion/cmake",
           },
-          meta: { pageTitle: "CLion Startup dashboard" },
+          meta: { pageTitle: "CLion Classic Startup dashboard" },
+        },
+        {
+          path: ROUTES.ClionNovaStartupDashboard,
+          component: () => import("./components/common/StartupProductDashboard.vue"),
+          props: {
+            product: "CL",
+            defaultProject: "radler/cmake",
+          },
+          meta: { pageTitle: "CLion Classic Startup dashboard" },
         },
         {
           path: ROUTES.ClionPerfDashboard,

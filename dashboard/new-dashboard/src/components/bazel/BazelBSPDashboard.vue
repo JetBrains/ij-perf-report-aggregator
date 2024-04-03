@@ -25,8 +25,6 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
-  "apply.project.tree.view.fix.memory.mb",
-  "apply.project.tree.view.fix.time.ms",
   "build.dependency.tree.memory.mb",
   "build.dependency.tree.time.ms",
   "build.reverse.sources.memory.mb",

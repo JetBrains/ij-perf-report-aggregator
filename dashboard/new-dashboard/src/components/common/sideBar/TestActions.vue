@@ -117,7 +117,7 @@ function handleNavigateToTest() {
       .map((m) => "&measure=" + m)
       .join("") ?? ""
 
-  void router.push(testURL + "?" + queryParams + measures)
+  window.open(router.resolve(testURL + "?" + queryParams + measures).href, "_blank")
 }
 </script>
 <style #scoped>

@@ -113,7 +113,8 @@ function handleNavigateToTest() {
       .map((s) => s.metricName)
       .filter((m) => m != undefined)
       .map((m) => (dbTypeStore().isIJStartup() && (m as string).includes("/") ? "metrics." + (m as string) : m))
-      .map((m) => "&measure=" + (m as string))
+      .map((m) => encodeURIComponent(m as string))
+      .map((m) => "&measure=" + m)
       .join("") ?? ""
 
   void router.push(testURL + "?" + queryParams + measures)

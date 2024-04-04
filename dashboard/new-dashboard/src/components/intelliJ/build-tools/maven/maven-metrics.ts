@@ -81,8 +81,6 @@ const workspaceConfiguratorsMetrics = [
   "workspace_import.configurator_run.org.jetbrains.idea.maven.plugins.groovy.GroovyPluginConfigurator",
   "workspace_import.configurator_run.com.intellij.spring.facet.importer.maven.SpringFacetImporter",
   "workspace_import.configurator_run.com.intellij.spring.mvc.importer.boot.SpringBootWebFacetImporter",
-  "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporter",
-  "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporter",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.web.WebFacetImporterEx",
   "workspace_import.configurator_run.org.jetbrains.idea.maven.ext.javaee.ear.EarFacetImporterEx",
   "workspace_import.configurator_run.org.jetbrains.kotlin.idea.maven.KotlinMavenImporterEx",

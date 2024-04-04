@@ -1,10 +1,11 @@
 <template>
   <DashboardPage
     v-slot="{ averagesConfigurators }"
-    db-name="perfint"
+    db-name="perfintDev"
     table="kotlin"
-    persistent-id="kmp_kotlin_dashboard"
+    persistent-id="kmp_kotlin_dashboard_dev"
     initial-machine="linux-blade-hetzner"
+    :with-installer="false"
   >
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">

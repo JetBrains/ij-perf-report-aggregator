@@ -1,9 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlin_dashboard"
+    persistent-id="kotlin_dashboard_dev"
     initial-machine="linux-blade-hetzner"
+    :with-installer="false"
   >
     <template #configurator>
       <MeasureSelect
@@ -63,12 +64,12 @@
 
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
-import { metricsSelectLabelFormat } from "../../shared/labels"
-import MeasureSelect from "../charts/MeasureSelect.vue"
-import DashboardPage from "../common/DashboardPage.vue"
-import Divider from "../common/Divider.vue"
-import MemoryDashboardGroupCharts from "./MemoryDashboardGroupCharts.vue"
+import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
+import { metricsSelectLabelFormat } from "../../../shared/labels"
+import MeasureSelect from "../../charts/MeasureSelect.vue"
+import DashboardPage from "../../common/DashboardPage.vue"
+import Divider from "../../common/Divider.vue"
+import MemoryDashboardGroupCharts from "../MemoryDashboardGroupCharts.vue"
 import {
   completionCharts,
   evaluateExpressionChars,
@@ -79,7 +80,7 @@ import {
   scriptCompletionCharts,
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
-} from "./projects"
+} from "../projects"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)
 measureConfigurator.initData(["freedMemoryByGC"])

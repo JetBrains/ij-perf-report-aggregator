@@ -18,9 +18,8 @@ const enum ROUTE_PREFIX {
   GoLandSharedIndices = "/goland/sharedIndexes",
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
-  KotlinK1VsK2 = "/kotlinK1VsK2",
-  KotlinMemory = "/kotlinMemory",
-  KotlinMPP = "/kotlinMPP",
+  KotlinMemory = Kotlin + "/memory",
+  KotlinKMP = Kotlin + "/kmp",
   Rust = "/rust",
   Scala = "/scala",
   JBR = "/jbr",
@@ -40,7 +39,6 @@ const enum ROUTE_PREFIX {
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
-const DEV_TEST_ROUTE_2 = "dev/testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
 const COMPARE_ROUTE = "compare"
@@ -112,12 +110,11 @@ enum ROUTES {
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
-  KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/dev/${DASHBOARD_ROUTE}`,
+  KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}Dev`,
   KotlinCodeAnalysis = `${ROUTE_PREFIX.Kotlin}/codeAnalysis`,
   KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
-  KotlinTestsDev2 = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE_2}`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
   KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
@@ -127,8 +124,10 @@ enum ROUTES {
   KotlinK1VsK2Comparison = `${ROUTE_PREFIX.Kotlin}/k1VsK2Comparison`,
   KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
-  KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/memoryDashboard`,
-  KotlinMPPDashboard = `${ROUTE_PREFIX.KotlinMPP}/dashboard`,
+  KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/dashboard`,
+  KotlinMemoryDashboardDev = `${ROUTE_PREFIX.KotlinMemory}/dashboardDev`,
+  KotlinMPPDashboard = `${ROUTE_PREFIX.KotlinKMP}/dashboard`,
+  KotlinMPPDashboardDev = `${ROUTE_PREFIX.KotlinKMP}/dashboardDev`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandStartupDashboard = `${ROUTE_PREFIX.GoLand}/${STARTUP_ROUTE}`,
@@ -589,7 +588,7 @@ const KOTLIN: Product = {
   label: "Kotlin",
   children: [
     {
-      url: ROUTE_PREFIX.KotlinK1VsK2,
+      url: ROUTE_PREFIX.Kotlin,
       label: "K1 vs K2",
       tabs: [
         {
@@ -610,7 +609,7 @@ const KOTLIN: Product = {
         },
         {
           url: ROUTES.KotlinTestsDev,
-          label: "Explore (dev/fast installer)",
+          label: "Tests (dev)",
         },
         {
           url: ROUTES.KotlinCompletionDev,
@@ -659,22 +658,30 @@ const KOTLIN: Product = {
       ],
     },
     {
-      url: ROUTE_PREFIX.KotlinMPP,
-      label: "MPP projects",
-      tabs: [
-        {
-          url: ROUTES.KotlinMPPDashboard,
-          label: "k1 vs k2",
-        },
-      ],
-    },
-    {
       url: ROUTE_PREFIX.KotlinMemory,
       label: "Memory dashboards",
       tabs: [
         {
+          url: ROUTES.KotlinMemoryDashboardDev,
+          label: "Memory k1 vs k2 (dev)",
+        },
+        {
           url: ROUTES.KotlinMemoryDashboard,
           label: "Memory k1 vs k2",
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.KotlinKMP,
+      label: "Kotlin KMP",
+      tabs: [
+        {
+          url: ROUTES.KotlinMPPDashboardDev,
+          label: DASHBOARD_LABEL + " (dev)",
+        },
+        {
+          url: ROUTES.KotlinMPPDashboard,
+          label: DASHBOARD_LABEL,
         },
       ],
     },
@@ -1888,17 +1895,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
         },
         {
-          path: ROUTES.KotlinTestsDev2,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "kotlin",
-            initialMachine: "linux-blade-hetzner",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
-        },
-        {
           path: ROUTES.KotlinDashboard,
           component: () => import("./components/kotlin/PerformanceDashboard.vue"),
           meta: { pageTitle: "Kotlin Performance dashboard" },
@@ -1993,9 +1989,19 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Memory" },
         },
         {
+          path: ROUTES.KotlinMemoryDashboardDev,
+          component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
+          meta: { pageTitle: "Memory (dev)" },
+        },
+        {
+          path: ROUTES.KotlinMPPDashboardDev,
+          component: () => import("./components/kotlin/dev/KmpDashboard.vue"),
+          meta: { pageTitle: "KMP projects (dev)" },
+        },
+        {
           path: ROUTES.KotlinMPPDashboard,
           component: () => import("./components/kotlin/mpp/Dashboard.vue"),
-          meta: { pageTitle: "Mpp projects" },
+          meta: { pageTitle: "KMP projects" },
         },
         {
           path: ROUTES.RustPluginDashboard,

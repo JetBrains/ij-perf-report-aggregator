@@ -1,11 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
+    db-name="perfint"
     table="idea"
-    persistent-id="idea_new_gradle_dashboard"
+    persistent-id="idea_gradle_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
-    :with-installer="false"
   >
     <template #configurator>
       <MeasureSelect
@@ -36,14 +35,14 @@ import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
-import { GRADLE_METRICS_NEW_DASHBOARD } from "./gradle-metrics"
-import { GRADLE_PROJECTS_FAST_INSTALLERS } from "./gradle-projects"
+import { GRADLE_METRICS } from "./gradle-metrics"
+import { GRADLE_PROJECTS } from "./gradle-projects"
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
-testConfigurator.initData(GRADLE_PROJECTS_FAST_INSTALLERS)
+testConfigurator.initData(GRADLE_PROJECTS)
 
 const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS_NEW_DASHBOARD.map((metric) => {
+  const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS.map((metric) => {
     return {
       labels: [metric],
       measures: [metric],

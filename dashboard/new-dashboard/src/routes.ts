@@ -72,10 +72,9 @@ enum ROUTES {
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
+  IntelliJGradleDashboardDeprecated = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDeprecated`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
   IntelliJGradleDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardFastInstallers`,
-  IntelliJNewGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/newGradleDashboard`,
-  IntelliJNewGradleDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/newGradleDashboardFastInstallers`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
   IntelliJMavenDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardFastInstallers`,
   IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
@@ -356,14 +355,6 @@ const IDEA: Product = {
           label: "Gradle Import Fast Installers",
         },
         {
-          url: ROUTES.IntelliJNewGradleDashboard,
-          label: "New Gradle Import",
-        },
-        {
-          url: ROUTES.IntelliJNewGradleDashboardFastInstallers,
-          label: "New Gradle Import Fast Installers",
-        },
-        {
           url: ROUTES.IntelliJMavenDashboard,
           label: "Maven Import",
         },
@@ -386,6 +377,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJBuildTestsDev,
           label: "Tests (Fast Installer)",
+        },
+        {
+          url: ROUTES.IntelliJGradleDashboardDeprecated,
+          label: "Gradle(deprecated)",
         },
       ],
     },
@@ -1304,24 +1299,19 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Scalability dashboard" },
         },
         {
+          path: ROUTES.IntelliJGradleDashboardDeprecated,
+          component: () => import("./components/intelliJ/build-tools/gradle/DeprecatedGradleImportPerformanceDashboard.vue"),
+          meta: { pageTitle: "Gradle(deprecated)" },
+        },
+        {
           path: ROUTES.IntelliJGradleDashboard,
           component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboard.vue"),
-          meta: { pageTitle: "Gradle Import dashboard" },
+          meta: { pageTitle: "Gradle Import" },
         },
         {
           path: ROUTES.IntelliJGradleDashboardFastInstallers,
           component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardFastInstallers.vue"),
-          meta: { pageTitle: "Gradle Import dashboard fast installers" },
-        },
-        {
-          path: ROUTES.IntelliJNewGradleDashboard,
-          component: () => import("./components/intelliJ/build-tools/gradle/NewGradleImportPerformanceDashboard.vue"),
-          meta: { pageTitle: "New gradle Import dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJNewGradleDashboardFastInstallers,
-          component: () => import("./components/intelliJ/build-tools/gradle/NewGradleImportPerformanceDashboardFastInstallers.vue"),
-          meta: { pageTitle: "New gradle Import dashboard fast installers" },
+          meta: { pageTitle: "Gradle Import fast installers" },
         },
         {
           path: ROUTES.IntelliJMavenDashboard,

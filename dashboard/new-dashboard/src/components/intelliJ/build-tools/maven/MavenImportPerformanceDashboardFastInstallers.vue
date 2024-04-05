@@ -36,6 +36,7 @@ import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
+import { COMMON_METRICS } from "../common-metrics"
 import { MAVEN_METRICS_DASHBOARD } from "./maven-metrics"
 import { MAVEN_PROJECTS_FAST_INSTALLERS } from "./maven-projects"
 
@@ -43,7 +44,7 @@ const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(MAVEN_PROJECTS_FAST_INSTALLERS)
 
 const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = MAVEN_METRICS_DASHBOARD.map((metric) => {
+  const chartsDeclaration: ChartDefinition[] = [...MAVEN_METRICS_DASHBOARD, ...COMMON_METRICS].map((metric) => {
     return {
       labels: [metric],
       measures: [metric],

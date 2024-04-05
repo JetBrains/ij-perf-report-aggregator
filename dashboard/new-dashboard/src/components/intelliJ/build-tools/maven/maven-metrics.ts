@@ -31,22 +31,6 @@ export const MAVEN_METRICS_DASHBOARD = [
   "legacy_import.delete_obsolete.duration_ms",
   "legacy_import.duration_ms",
   "legacy_import.importers.duration_ms",
-
-  // IDE/Java common metrics
-  "AWTEventQueue.dispatchTimeTotal",
-  "CPU | Load |Total % 95th pctl",
-  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause",
-  "gcPauseCount",
-  "fullGCPause",
-  "freedMemoryByGC",
-  "totalHeapUsedMax",
-  "JVM.GC.collectionTimesMs",
-  "JVM.GC.collections",
-  "JVM.maxHeapMegabytes",
-  "JVM.maxThreadCount",
-  "JVM.totalCpuTimeMs",
 ]
 
 const importerRunMetricTypes = ["total_duration_ms", "number_of_modules"]

@@ -1,37 +1,15 @@
+import { MetricInfo } from "../../../../shared/metricsDescription"
+
 export const GRADLE_METRICS = ["gradle.sync.duration", "GRADLE_CALL", "DATA_SERVICES", "PROJECT_RESOLVERS", "WORKSPACE_MODEL_APPLY"]
 
-export const GRADLE_METRICS_NEW_DASHBOARD = [
-  // total sync time
-  "ExternalSystemSyncProjectTask",
-  // full time of the sink operation, with all our overhead for preparation
-  "GradleExecution",
-  // work inside Gradle connection, operations that are performed inside connection
-  "GradleConnection",
-  // resolving models from daemon
-  "GradleCall",
-  // processing the data we received from Gradle
-  "ExternalSystemSyncResultProcessing",
-  // work of data services
-  "ProjectDataServices",
-  // project resolve
-  "GradleProjectResolverDataProcessing",
-  // apply ws model
-  "WorkspaceModelApply",
-  // full sync from fus
-  "fus_gradle.sync",
-
-  "AWTEventQueue.dispatchTimeTotal",
-  "CPU | Load |Total % 95th pctl",
-  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-  "gcPause",
-  "gcPauseCount",
-  "fullGCPause",
-  "freedMemoryByGC",
-  "totalHeapUsedMax",
-  "JVM.GC.collectionTimesMs",
-  "JVM.GC.collections",
-  "JVM.maxHeapMegabytes",
-  "JVM.maxThreadCount",
-  "JVM.totalCpuTimeMs",
-]
+export const GRADLE_METRICS_NEW_DASHBOARD: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
+  ["ExternalSystemSyncProjectTask", "Total gradle sync time"],
+  ["GradleExecution", "Full time of the sink operation, with all our overhead for preparation"],
+  ["GradleConnection", "Work inside Gradle connection, operations that are performed inside connection"],
+  ["GradleCall", "Resolving models from daemon"],
+  ["ExternalSystemSyncResultProcessing", "Processing the data we received from Gradle"],
+  ["ProjectDataServices", "Work of data services"],
+  ["GradleProjectResolverDataProcessing", "Project resolve"],
+  ["WorkspaceModelApply", "Apply ws model"],
+  ["fus_gradle.sync", "Total gradle sync time (FUS)"],
+])

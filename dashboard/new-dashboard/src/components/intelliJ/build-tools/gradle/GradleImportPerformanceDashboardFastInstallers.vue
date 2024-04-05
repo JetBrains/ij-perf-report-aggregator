@@ -36,6 +36,7 @@ import { ChartDefinition, combineCharts } from "../../../charts/DashboardCharts"
 import GroupProjectsChart from "../../../charts/GroupProjectsChart.vue"
 import MeasureSelect from "../../../charts/MeasureSelect.vue"
 import DashboardPage from "../../../common/DashboardPage.vue"
+import { COMMON_METRICS } from "../common-metrics"
 import { GRADLE_METRICS_NEW_DASHBOARD } from "./gradle-metrics"
 import { GRADLE_PROJECTS_FAST_INSTALLERS } from "./gradle-projects"
 
@@ -43,7 +44,7 @@ const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(GRADLE_PROJECTS_FAST_INSTALLERS)
 
 const charts = computed(() => {
-  const chartsDeclaration: ChartDefinition[] = GRADLE_METRICS_NEW_DASHBOARD.map((metric) => {
+  const chartsDeclaration: ChartDefinition[] = [...GRADLE_METRICS_NEW_DASHBOARD.keys(), ...COMMON_METRICS].map((metric) => {
     return {
       labels: [metric],
       measures: [metric],

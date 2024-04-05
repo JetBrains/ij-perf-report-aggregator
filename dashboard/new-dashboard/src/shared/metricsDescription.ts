@@ -1,3 +1,5 @@
+import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools/gradle/gradle-metrics"
+
 /**
  * Map of metric names to their descriptions.
  * The syntax is either:
@@ -64,6 +66,7 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["searchEverywhere_*", "Time to fill all search everywhere results"],
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
+  ...GRADLE_METRICS_NEW_DASHBOARD,
 ])
 
 export interface MetricInfo {

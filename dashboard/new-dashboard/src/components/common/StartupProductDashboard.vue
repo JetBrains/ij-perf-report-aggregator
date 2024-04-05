@@ -140,9 +140,12 @@ import InfoSidebar from "./sideBar/InfoSidebar.vue"
 interface StartupProductDashboard {
   product: string
   defaultProject: string
+  persistentId?: string | null
 }
 
-const props = defineProps<StartupProductDashboard>()
+const props = withDefaults(defineProps<StartupProductDashboard>(), {
+  persistentId: null,
+})
 provideReportUrlProvider()
 
 const container = ref<HTMLElement>()
@@ -158,7 +161,7 @@ provide(sidebarVmKey, sidebarVm)
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
-  `${props.product}-startup-dashboard`,
+  props.persistentId ?? `${props.product}-startup-dashboard`,
   {
     project: props.defaultProject,
     machine: "Windows Munich i7-3770, 32Gb",

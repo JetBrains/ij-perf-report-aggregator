@@ -2189,6 +2189,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
             product: "CL",
+            persistentId: "nova-startup-dashboard",
             defaultProject: "radler/cmake",
           },
           meta: { pageTitle: "CLion Classic Startup dashboard" },

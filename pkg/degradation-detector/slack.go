@@ -139,8 +139,8 @@ func (s PerformanceSettings) slackLink() string {
 
 func (s StartupSettings) slackLink() string {
   machineGroup := getMachineGroup(s.Machine)
-  return fmt.Sprintf("https://ij-perf.labs.jb.gg/%s/startup?machine=%s&branch=%s&product=%s&project=%s&timeRange=1M",
-    s.ProductLink, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project))
+  return fmt.Sprintf("https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&timeRange=1M",
+    url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project))
 }
 
 func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, client *http.Client) {

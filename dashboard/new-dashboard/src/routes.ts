@@ -174,8 +174,8 @@ enum ROUTES {
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
-  RustPluginDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
-  RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustRoverDashboard`,
+  RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
+  RustRoverFirstStartupDashboard = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboard`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
   RustCompareBranches = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}`,
@@ -927,12 +927,12 @@ const RUST: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.RustPluginDashboard,
-          label: "Rust Plugin Dashboard",
-        },
-        {
           url: ROUTES.RustRoverDashboard,
           label: "RustRover Dashboard",
+        },
+        {
+          url: ROUTES.RustRoverFirstStartupDashboard,
+          label: "RustRover First Startup Dashboard",
         },
         {
           url: ROUTES.RustTests,
@@ -2004,17 +2004,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "KMP projects" },
         },
         {
-          path: ROUTES.RustPluginDashboard,
-          component: () => import("./components/rust/PerformanceDashboardIdeWithRustPlugin.vue"),
+          path: ROUTES.RustRoverDashboard,
+          component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
           props: {
             releaseConfigurator: eap,
           },
-          meta: { pageTitle: "Rust Plugin Performance dashboard" },
+          meta: { pageTitle: "RustRover Performance dashboard" },
         },
         {
-          path: ROUTES.RustRoverDashboard,
-          component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
-          meta: { pageTitle: "RustRover Performance dashboard" },
+          path: ROUTES.RustRoverFirstStartupDashboard,
+          component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartup.vue"),
+          meta: { pageTitle: "RustRover First Startup Performance dashboard" },
         },
         {
           path: ROUTES.RustTests,

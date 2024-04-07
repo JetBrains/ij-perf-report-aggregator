@@ -40,13 +40,6 @@
         :projects="globalInspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Global Inspection (Rust-Only))"
-        measure="globalInspections"
-        :projects="globalInspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`)"
-      />
-    </section>
 
     <section>
       <GroupProjectsChart
@@ -319,6 +312,7 @@ const globalInspectionProjects = [
   "fd",
   "fuel",
   "hyperfine",
+  "hello-world",
   "meiliSearch",
   "nalgebra",
   "rand",

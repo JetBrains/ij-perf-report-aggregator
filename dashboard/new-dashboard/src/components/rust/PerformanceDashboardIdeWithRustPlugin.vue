@@ -37,14 +37,14 @@
       <GroupProjectsChart
         label="Global Inspection execution time"
         measure="globalInspections"
-        :projects="inspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
+        :projects="globalInspectionProjects.map((project) => `global-inspection/${project}-inspection`)"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Global Inspection (Rust-Only))"
         measure="globalInspections"
-        :projects="inspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`)"
+        :projects="globalInspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`)"
       />
     </section>
 
@@ -62,177 +62,33 @@
         :projects="['find-usages/yew', 'find-usages/wasm']"
       />
     </section>
+
     <section>
       <GroupProjectsChart
-        label="Local Inspections (on file open)"
+        label="Local Inspections (on file open, metric 'firstCodeAnalysis')"
         measure="firstCodeAnalysis"
-        :projects="[
-          'arrow-rs/local-inspection/parse',
-          'arrow-rs/local-inspection/cast',
-          'arrow-rs/local-inspection/comparison',
-          'bat/local-inspection/src/bin/bat/clap_app.rs',
-          'bat/local-inspection/src/diff.rs',
-          'bevy/local-inspection/crates/bevy_pbr/src/light.rs',
-          'bevy/local-inspection/crates/bevy_pbr/src/render/light.rs',
-          'bevy/local-inspection/crates/bevy_render/macros/src/as_bind_group.rs',
-          'fd/local-inspection/src/cli.rs',
-          'fuel/local-inspection/crates/fuel-core/src/executor.rs',
-          'cargo/local-inspection/testsuite/build.rs',
-          'cargo/local-inspection/testsuite/build_script.rs',
-          'cargo/local-inspection/testsuite/metadata.rs',
-          'cargo/local-inspection/testsuite/test.rs',
-          'cargo/local-inspection/testsuite/git.rs',
-          'cargo/local-inspection/config/mod.rs',
-          'cargo/local-inspection/fingerprint/mod.rs',
-          'cargo/local-inspection/toml/mod.rs',
-          'chrono/local-inspection/src/naive/date.rs',
-          'chrono/local-inspection/src/duration.rs',
-          'clap/local-inspection/toml/mod.rs',
-          'clap/local-inspection/derives/subcommand.rs',
-          'clap/local-inspection/parser/parser.rs',
-          'deno/local-inspection/integration/run_tests.rs',
-          'deno/local-inspection/args/flags.rs',
-          'diesel/local-inspection/src/table.rs',
-          'diesel/local-inspection/connection/mod.rs',
-          'diesel/local-inspection/macros/mod.rs',
-          'diesel/local-inspection/type_impls/tuples.rs',
-          'diesel/local-inspection/src/sql_function.rs',
-          'hyperfine/local-inspection/src/command.rs',
-          'hyperfine/local-inspection/src/export/markup.rs',
-          'lemmy/local-inspection/comment_report_view.rs',
-          'nalgebra/local-inspection/src/base/matrix.rs',
-          'nalgebra/local-inspection/src/base/alias_slice.rs',
-          'nalgebra/local-inspection/src/linalg/cholesky.rs',
-          'mySql/local-inspection/conn/mod.rs',
-          'mySql/local-inspection/opts/mod.rs',
-          'mySql/local-inspection/pool/mod.rs',
-          'mySql/local-inspection/io/mod.rs',
-          'mySql/local-inspection/src/query.rs',
-          'mySql/local-inspection/routines/helpers.rs',
-          'rustAnalyzer/local-inspection/crates/ide-db/src/generated/lints.rs',
-          'rustAnalyzer/local-inspection/crates/hir-ty/src/chalk_db.rs',
-          'solana/local-inspection/progress_map.rs',
-          'tokio/local-inspection/tokio/src/net/udp.rs',
-          'tokio/local-inspection/tokio/tests/rt_common.rs',
-          'tokio/local-inspection/tokio/src/time/interval.rs',
-        ]"
+        :projects="localInspectionCases"
       />
     </section>
+
     <section>
       <GroupProjectsChart
-        label="Local Inspections (on typing top-level)"
+        label="Local Inspections (on typing top-level, metric 'typingCodeAnalyzing#mean_value')"
         measure="typingCodeAnalyzing#mean_value"
-        :projects="[
-          'arrow-rs/local-inspection/parse-top-level-typing',
-          'arrow-rs/local-inspection/cast-top-level-typing',
-          'arrow-rs/local-inspection/comparison-top-level-typing',
-          'bat/local-inspection/src/bin/bat/clap_app.rs-top-level-typing',
-          'bat/local-inspection/src/diff.rs-top-level-typing',
-          'bevy/local-inspection/crates/bevy_pbr/src/light.rs-top-level-typing',
-          'bevy/local-inspection/crates/bevy_pbr/src/render/light.rs-top-level-typing',
-          'bevy/local-inspection/crates/bevy_render/macros/src/as_bind_group.rs-top-level-typing',
-          'fd/local-inspection/src/cli.rs-top-level-typing',
-          'fuel/local-inspection/crates/fuel-core/src/executor.rs-top-level-typing',
-          'cargo/local-inspection/testsuite/build.rs-top-level-typing',
-          'cargo/local-inspection/testsuite/build_script.rs-top-level-typing',
-          'cargo/local-inspection/testsuite/metadata.rs-top-level-typing',
-          'cargo/local-inspection/testsuite/test.rs-top-level-typing',
-          'cargo/local-inspection/testsuite/git.rs-top-level-typing',
-          'cargo/local-inspection/config/mod.rs-top-level-typing',
-          'cargo/local-inspection/fingerprint/mod.rs-top-level-typing',
-          'cargo/local-inspection/toml/mod.rs-top-level-typing',
-          'chrono/local-inspection/src/naive/date.rs-top-level-typing',
-          'chrono/local-inspection/src/duration.rs-top-level-typing',
-          'clap/local-inspection/toml/mod.rs-top-level-typing',
-          'clap/local-inspection/derives/subcommand.rs-top-level-typing',
-          'clap/local-inspection/parser/parser.rs-top-level-typing',
-          'deno/local-inspection/integration/run_tests.rs-top-level-typing',
-          'deno/local-inspection/args/flags.rs-top-level-typing',
-          'diesel/local-inspection/src/table.rs-top-level-typing',
-          'diesel/local-inspection/connection/mod.rs-top-level-typing',
-          'diesel/local-inspection/macros/mod.rs-top-level-typing',
-          'diesel/local-inspection/type_impls/tuples.rs-top-level-typing',
-          'diesel/local-inspection/src/sql_function.rs-top-level-typing',
-          'hyperfine/local-inspection/src/command.rs-top-level-typing',
-          'hyperfine/local-inspection/src/export/markup.rs-top-level-typing',
-          'lemmy/local-inspection/comment_report_view.rs-top-level-typing',
-          'nalgebra/local-inspection/src/base/matrix.rs-top-level-typing',
-          'nalgebra/local-inspection/src/base/alias_slice.rs-top-level-typing',
-          'nalgebra/local-inspection/src/linalg/cholesky.rs-top-level-typing',
-          'mySql/local-inspection/conn/mod.rs-top-level-typing',
-          'mySql/local-inspection/opts/mod.rs-top-level-typing',
-          'mySql/local-inspection/pool/mod.rs-top-level-typing',
-          'mySql/local-inspection/io/mod.rs-top-level-typing',
-          'mySql/local-inspection/src/query.rs-top-level-typing',
-          'mySql/local-inspection/routines/helpers.rs-top-level-typing',
-          'rustAnalyzer/local-inspection/crates/ide-db/src/generated/lints.rs-top-level-typing',
-          'rustAnalyzer/local-inspection/crates/hir-ty/src/chalk_db.rs-top-level-typing',
-          'solana/local-inspection/progress_map.rs-top-level-typing',
-          'tokio/local-inspection/tokio/src/net/udp.rs-top-level-typing',
-          'tokio/local-inspection/tokio/tests/rt_common.rs-top-level-typing',
-          'tokio/local-inspection/tokio/src/time/interval.rs-top-level-typing',
-        ]"
+        :projects="localInspectionCases.map((testCase) => `${testCase}-top-level-typing`)"
       />
     </section>
+
     <section>
       <GroupProjectsChart
-        label="Local Inspections (on typing stmt)"
+        label="Local Inspections (on typing stmt, metric 'typingCodeAnalyzing#mean_value')"
         measure="typingCodeAnalyzing#mean_value"
-        :projects="[
-          'arrow-rs/local-inspection/parse',
-          'arrow-rs/local-inspection/cast',
-          'arrow-rs/local-inspection/comparison',
-          'bat/local-inspection/src/bin/bat/clap_app.rs',
-          'bat/local-inspection/src/diff.rs',
-          'bevy/local-inspection/crates/bevy_pbr/src/light.rs',
-          'bevy/local-inspection/crates/bevy_pbr/src/render/light.rs',
-          'bevy/local-inspection/crates/bevy_render/macros/src/as_bind_group.rs',
-          'fd/local-inspection/src/cli.rs',
-          'fuel/local-inspection/crates/fuel-core/src/executor.rs',
-          'cargo/local-inspection/testsuite/build.rs',
-          'cargo/local-inspection/testsuite/build_script.rs',
-          'cargo/local-inspection/testsuite/metadata.rs',
-          'cargo/local-inspection/testsuite/test.rs',
-          'cargo/local-inspection/testsuite/git.rs',
-          'cargo/local-inspection/config/mod.rs',
-          'cargo/local-inspection/fingerprint/mod.rs',
-          'cargo/local-inspection/toml/mod.rs',
-          'chrono/local-inspection/src/naive/date.rs',
-          'chrono/local-inspection/src/duration.rs',
-          'clap/local-inspection/toml/mod.rs',
-          'clap/local-inspection/derives/subcommand.rs',
-          'clap/local-inspection/parser/parser.rs',
-          'deno/local-inspection/integration/run_tests.rs',
-          'deno/local-inspection/args/flags.rs',
-          'diesel/local-inspection/src/table.rs',
-          'diesel/local-inspection/connection/mod.rs',
-          'diesel/local-inspection/macros/mod.rs',
-          'diesel/local-inspection/type_impls/tuples.rs',
-          'diesel/local-inspection/src/sql_function.rs',
-          'hyperfine/local-inspection/src/command.rs',
-          'hyperfine/local-inspection/src/export/markup.rs',
-          'lemmy/local-inspection/comment_report_view.rs',
-          'nalgebra/local-inspection/src/base/matrix.rs',
-          'nalgebra/local-inspection/src/base/alias_slice.rs',
-          'nalgebra/local-inspection/src/linalg/cholesky.rs',
-          'mySql/local-inspection/conn/mod.rs',
-          'mySql/local-inspection/opts/mod.rs',
-          'mySql/local-inspection/pool/mod.rs',
-          'mySql/local-inspection/io/mod.rs',
-          'mySql/local-inspection/src/query.rs',
-          'mySql/local-inspection/routines/helpers.rs',
-          'rustAnalyzer/local-inspection/crates/ide-db/src/generated/lints.rs',
-          'rustAnalyzer/local-inspection/crates/hir-ty/src/chalk_db.rs',
-          'solana/local-inspection/progress_map.rs',
-          'tokio/local-inspection/tokio/src/net/udp.rs',
-          'tokio/local-inspection/tokio/tests/rt_common.rs',
-          'tokio/local-inspection/tokio/src/time/interval.rs',
-        ]"
+        :projects="localInspectionCases"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Cargo Sync"
+        label="Cargo Sync (metric 'cargo_sync_execution_time')"
         measure="cargo_sync_execution_time"
         :projects="[
           'arrow-rs/local-inspection/cast',
@@ -450,7 +306,7 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const inspectionProjects = [
+const globalInspectionProjects = [
   "arrowRs",
   "arti",
   "bat",
@@ -473,5 +329,56 @@ const inspectionProjects = [
   "tokio",
   "turbo",
   "yew",
+]
+
+const localInspectionCases = [
+  "arrow-rs/local-inspection/parse",
+  "arrow-rs/local-inspection/cast",
+  "arrow-rs/local-inspection/comparison",
+  "bat/local-inspection/src/bin/bat/clap_app.rs",
+  "bat/local-inspection/src/diff.rs",
+  "bevy/local-inspection/crates/bevy_pbr/src/light.rs",
+  "bevy/local-inspection/crates/bevy_pbr/src/render/light.rs",
+  "bevy/local-inspection/crates/bevy_render/macros/src/as_bind_group.rs",
+  "fd/local-inspection/src/cli.rs",
+  "fuel/local-inspection/crates/fuel-core/src/executor.rs",
+  "cargo/local-inspection/testsuite/build.rs",
+  "cargo/local-inspection/testsuite/build_script.rs",
+  "cargo/local-inspection/testsuite/metadata.rs",
+  "cargo/local-inspection/testsuite/test.rs",
+  "cargo/local-inspection/testsuite/git.rs",
+  "cargo/local-inspection/config/mod.rs",
+  "cargo/local-inspection/fingerprint/mod.rs",
+  "cargo/local-inspection/toml/mod.rs",
+  "chrono/local-inspection/src/naive/date.rs",
+  "chrono/local-inspection/src/duration.rs",
+  "clap/local-inspection/toml/mod.rs",
+  "clap/local-inspection/derives/subcommand.rs",
+  "clap/local-inspection/parser/parser.rs",
+  "deno/local-inspection/integration/run_tests.rs",
+  "deno/local-inspection/args/flags.rs",
+  "diesel/local-inspection/src/table.rs",
+  "diesel/local-inspection/connection/mod.rs",
+  "diesel/local-inspection/macros/mod.rs",
+  "diesel/local-inspection/type_impls/tuples.rs",
+  "diesel/local-inspection/src/sql_function.rs",
+  "hyperfine/local-inspection/src/command.rs",
+  "hyperfine/local-inspection/src/export/markup.rs",
+  "lemmy/local-inspection/comment_report_view.rs",
+  "nalgebra/local-inspection/src/base/matrix.rs",
+  "nalgebra/local-inspection/src/base/alias_slice.rs",
+  "nalgebra/local-inspection/src/linalg/cholesky.rs",
+  "mySql/local-inspection/conn/mod.rs",
+  "mySql/local-inspection/opts/mod.rs",
+  "mySql/local-inspection/pool/mod.rs",
+  "mySql/local-inspection/io/mod.rs",
+  "mySql/local-inspection/src/query.rs",
+  "mySql/local-inspection/routines/helpers.rs",
+  "rustAnalyzer/local-inspection/crates/ide-db/src/generated/lints.rs",
+  "rustAnalyzer/local-inspection/crates/hir-ty/src/chalk_db.rs",
+  "solana/local-inspection/progress_map.rs",
+  "tokio/local-inspection/tokio/src/net/udp.rs",
+  "tokio/local-inspection/tokio/tests/rt_common.rs",
+  "tokio/local-inspection/tokio/src/time/interval.rs",
 ]
 </script>

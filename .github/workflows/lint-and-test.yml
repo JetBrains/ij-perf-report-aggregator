@@ -41,7 +41,7 @@ jobs:
       - name: Test build
         run: pnpm build
       - name: Run ESLint
-        run: pnpm eslint . --ext .js,.vue,.ts
+        run: ESLINT_USE_FLAT_CONFIG=false pnpm eslint . --ext .js,.vue,.ts
       - name: Run VueTSC
         run: pnpm vue-tsc --noEmit
       - name: Run Prettier

@@ -23,6 +23,7 @@ import { useSettingsStore } from "../components/settings/settingsStore"
 import { ChangePointClassification } from "../shared/changeDetector/algorithm"
 import { detectChanges } from "../shared/changeDetector/workerStarter"
 import { dbTypeStore } from "../shared/dbTypes"
+import { measureNameToLabel } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
 import { MAIN_METRICS_SET } from "../util/mainMetrics"
@@ -433,6 +434,7 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
       // we take only the one project name, there can't be more
       seriesName = seriesData[6][0] as string
     }
+    seriesName = measureNameToLabel(seriesName)
     const id = measureName === seriesName ? seriesName : `${measureName}@${seriesName}`
     if (seriesIdsToIndex.has(id)) {
       const seriesIndex = seriesIdsToIndex.get(id) as number

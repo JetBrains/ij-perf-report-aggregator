@@ -43,6 +43,7 @@ func Serve(dbUrl string, natsUrl string) error {
   }
 
   dbpool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+  dbpool.Config().MaxConns = 10
   if err != nil {
     return err
   }

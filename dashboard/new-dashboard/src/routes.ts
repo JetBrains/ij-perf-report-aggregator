@@ -297,7 +297,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJDashboardOld,
-          label: "Dashboard (old)",
+          label: "Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
@@ -305,7 +305,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboardOld,
-          label: "Find Usages Dashboard (old)",
+          label: "Find Usages Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJSEDashboard,
@@ -313,7 +313,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJSEDashboardOld,
-          label: "Search Everywhere Dashboard (old)",
+          label: "Search Everywhere Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
@@ -321,7 +321,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJIndexingDashboardOld,
-          label: "Indexing Dashboard (old)",
+          label: "Indexing Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJJBRDashboard,
@@ -439,7 +439,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJUltimateDashboardOld,
-          label: "Dashboard (old)",
+          label: "Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJUltimateTests,
@@ -1278,17 +1278,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJDashboardOld,
           component: () => import("./components/intelliJ/PerformanceDashboardOld.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard (old)" },
+          meta: { pageTitle: "IntelliJ Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJIndexingDashboard,
           component: () => import("./components/intelliJ/IndexingDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (old)" },
+          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJIndexingDashboardOld,
           component: () => import("./components/intelliJ/IndexingDashboardOld.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (old)" },
+          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJJBRDashboard,
@@ -1343,7 +1343,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJUltimateDashboardOld,
           component: () => import("./components/intelliJ/UltimateProjectsDashboardOld.vue"),
-          meta: { pageTitle: "Ultimate Projects (old)" },
+          meta: { pageTitle: "Ultimate Projects (<=241)" },
         },
         {
           path: ROUTES.IntelliJUltimateDashboard,
@@ -1383,7 +1383,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJFindUsagesDashboardOld,
           component: () => import("./components/intelliJ/PerformanceFindUsagesDashboardOld.vue"),
-          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard (old)" },
+          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJSEDashboard,
@@ -1393,7 +1393,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJSEDashboardOld,
           component: () => import("./components/intelliJ/PerformanceSEDashboardOld.vue"),
-          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard (old)" },
+          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJExperimentsMonorepoDashboard,

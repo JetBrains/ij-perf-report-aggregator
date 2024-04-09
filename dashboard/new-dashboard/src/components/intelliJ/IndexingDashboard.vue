@@ -49,7 +49,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Big projects)", "Initial Scanning (Big projects)", "Initial Number of indexed files (Big projects)"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
     projects: ["community/indexing", "intellij_commit/indexing"],
   },
   {
@@ -69,7 +69,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Indexing", "Scanning", "Number of indexed files"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
     projects: [
       "empty_project/indexing",
       "grails/indexing",
@@ -97,7 +97,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Indexing", "Scanning", "Number of indexed files"],
-    measures: [["indexingTimeWithoutPauses", "indexing"], ["scanningTimeWithoutPauses", "scanning"], "numberOfIndexedFiles"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
     projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
   },
   {

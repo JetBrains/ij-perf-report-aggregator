@@ -107,7 +107,6 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   props.chartType,
   valueUnit.value,
   {
-    symbolSize: 7,
     showSymbol: false,
   },
   accidentsConfigurator,

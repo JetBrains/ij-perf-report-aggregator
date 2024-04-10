@@ -7,6 +7,7 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
+  "github.com/jackc/pgx/v5/pgxpool"
   "go.deanishe.net/env"
   "log/slog"
   "strconv"
@@ -62,7 +63,7 @@ type InsertReportManager struct {
   TableName                        string
 }
 
-func NewInsertReportManager(ctx context.Context, db driver.Conn, config DatabaseConfiguration, tableName string, insertWorkerCount int) (*InsertReportManager, error) {
+func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool.Pool, config DatabaseConfiguration, tableName string, insertWorkerCount int) (*InsertReportManager, error) {
   var err error
 
   if config.TableName != "" {
@@ -121,8 +122,8 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, config Database
   }
 
   var metaManager *InsertMetaManager
-  if config.HasMetaDB {
-    metaManager, err = NewInsertMetaManager(ctx)
+  if config.HasMetaDB && metaDb != nil {
+    metaManager, err = NewInsertMetaManager(ctx, metaDb)
     if err != nil {
       return nil, err
     }

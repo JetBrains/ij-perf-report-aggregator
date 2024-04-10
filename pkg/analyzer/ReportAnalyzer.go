@@ -7,8 +7,10 @@ import (
   "github.com/ClickHouse/clickhouse-go/v2"
   "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+  "github.com/jackc/pgx/v5/pgxpool"
   "go.deanishe.net/env"
   "log/slog"
+  "os"
   "strconv"
   "strings"
   "sync"
@@ -32,8 +34,8 @@ type ReportAnalyzer struct {
   logger *slog.Logger
 }
 
-func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, config DatabaseConfiguration, logger *slog.Logger, ) (*ReportAnalyzer, error) {
-  insertReportManager, err := NewInsertReportManager(parentContext, db, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1))
+func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, metaDb *pgxpool.Pool, config DatabaseConfiguration, logger *slog.Logger, ) (*ReportAnalyzer, error) {
+  insertReportManager, err := NewInsertReportManager(parentContext, db, metaDb, config, "report", env.GetInt("INSERT_WORKER_COUNT", -1))
   if err != nil {
     return nil, err
   }
@@ -75,7 +77,7 @@ func (t *ReportAnalyzer) invokeInsert(report *ReportInfo, cancel context.CancelF
   }
 }
 
-func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, error) {
+func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, *pgxpool.Pool, error) {
   // well, go-faster/ch is not so easy to use for such a generic case as our code (each column should be created in advance, no API to simply pass slice of any values)
   db, err := clickhouse.Open(&clickhouse.Options{
     Addr: []string{clickHouseUrl},
@@ -91,7 +93,17 @@ func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, er
       "receive_timeout": 3000,
     },
   })
-  return db, err
+  if err != nil {
+    return nil, nil, fmt.Errorf("cannot connect to clickhouse: %w", err)
+  }
+
+  metaDb, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+  metaDb.Config().MaxConns = 5
+  if err != nil {
+    return nil, nil, fmt.Errorf("cannot create pool: %w", err)
+  }
+
+  return db, metaDb, err
 }
 
 func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {

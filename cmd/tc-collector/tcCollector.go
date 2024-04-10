@@ -10,6 +10,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
   sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+  "github.com/jackc/pgx/v5/pgxpool"
   "github.com/nats-io/nats.go"
   "go.uber.org/atomic"
   "golang.org/x/sync/errgroup"
@@ -72,12 +73,13 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
 
   config := analyzer.GetAnalyzer(projectId)
 
-  db, err := analyzer.OpenDb(clickHouseUrl, config)
+  db, metaDb, err := analyzer.OpenDb(clickHouseUrl, config)
   if err != nil {
     return fmt.Errorf("cannot open db: %w", err)
   }
 
   defer util.Close(db)
+  defer metaDb.Close()
   errGroup, loadContext := errgroup.WithContext(taskContext)
   errGroup.SetLimit(2)
   for _, buildTypeId := range buildConfigurationIds {
@@ -89,6 +91,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
         loadContext,
         httpClient,
         db,
+        metaDb,
         config,
         buildTypeId,
         serverUrl,
@@ -102,17 +105,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
   return err
 }
 
-func collectBuildConfiguration(
-  taskContext context.Context,
-  httpClient *http.Client,
-  db driver.Conn,
-  config analyzer.DatabaseConfiguration,
-  buildTypeId string,
-  serverUrl string,
-  serverHost string,
-  userSpecifiedSince time.Time,
-  logger *slog.Logger,
-) error {
+func collectBuildConfiguration(taskContext context.Context, httpClient *http.Client, db driver.Conn, metaDb *pgxpool.Pool, config analyzer.DatabaseConfiguration, buildTypeId string, serverUrl string, serverHost string, userSpecifiedSince time.Time, logger *slog.Logger, ) error {
   serverBuildUrl, err := url.Parse(serverUrl + "/builds/")
   if err != nil {
     return err
@@ -209,7 +202,7 @@ func collectBuildConfiguration(
       return fmt.Errorf("cannot parse last build start date: %w", err)
     }
 
-    reportAnalyzer, err := analyzer.CreateReportAnalyzer(taskContext, db, config, logger)
+    reportAnalyzer, err := analyzer.CreateReportAnalyzer(taskContext, db, metaDb, config, logger)
     if err != nil {
       return err
     }

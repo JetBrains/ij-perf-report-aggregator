@@ -101,7 +101,7 @@ func transform(clickHouseUrl string, idName string, tableName string) error {
   config := analyzer.GetAnalyzer(idName)
 
   config.TableName = tableName + "2"
-  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, config, tableName+"2", insertWorkerCount)
+  insertReportManager, err := analyzer.NewInsertReportManager(taskContext, db, nil, config, tableName+"2", insertWorkerCount)
   if err != nil {
     return err
   }

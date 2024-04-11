@@ -4,6 +4,7 @@
     table="phpstormWithPlugins"
     persistent-id="phpstorm_plugins_dashboard"
     initial-machine="linux-blade-hetzner"
+    branch="master"
   >
     <section>
       <GroupProjectsChart

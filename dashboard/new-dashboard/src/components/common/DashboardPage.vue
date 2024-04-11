@@ -59,6 +59,7 @@ interface PerformanceDashboardProps {
   charts?: Chart[] | null
   isBuildNumberExists?: boolean
   releaseConfigurator?: ReleaseType
+  branch?: string
 }
 
 const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
@@ -67,6 +68,7 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
   charts: null,
   initialMachine: null,
   releaseConfigurator: nightly,
+  branch: "master",
 })
 
 provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
@@ -86,7 +88,7 @@ const persistenceForDashboard = new PersistentStateManager(
   {
     machine: props.initialMachine ?? "",
     project: [],
-    branch: "master",
+    branch: props.branch,
     releaseConfigurator: props.releaseConfigurator,
   },
   router

@@ -98,7 +98,7 @@ func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, *p
   }
 
   metaDb, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
-  metaDb.Config().MaxConns = 5
+  metaDb.Config().MaxConns = 10
   if err != nil {
     return nil, nil, fmt.Errorf("cannot create pool: %w", err)
   }

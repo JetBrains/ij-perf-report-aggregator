@@ -35,6 +35,10 @@
                 :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
                 v-html="replaceToLink(accident.reason)"
               />
+              <GlobeAltIcon
+                v-if="getAffectedTests(accident) == ''"
+                class="w-4 h-4 flex-none"
+              />
             </span>
             <!-- eslint-enable -->
           </li>

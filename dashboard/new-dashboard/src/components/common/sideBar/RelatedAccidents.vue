@@ -17,7 +17,7 @@
             <span
               class="flex gap-1.5 text-sm"
               v-tooltip.left="{
-                value: getAffectedTests(accident),
+                value: getTooltipText(accident),
                 autoHide: false,
                 showDelay: 500,
               }"
@@ -60,8 +60,11 @@ const props = defineProps<{
   inDialog: boolean
 }>()
 
-function getAffectedTests(accident: AccidentSimple): string {
+function getTooltipText(accident: AccidentSimple): string {
   if (props.inDialog) return ""
+  return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident)
+}
+function getAffectedTests(accident: AccidentSimple): string {
   return accident.affectedTests.filter((value) => value !== "").join("\n")
 }
 
@@ -71,6 +74,7 @@ interface AccidentSimple {
   kind: string
   reason: string
   affectedTests: string[]
+  date: string
 }
 
 function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
@@ -82,7 +86,7 @@ function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
       const existingAccident = accidentMap.get(key) as AccidentSimple
       existingAccident.affectedTests = existingAccident.affectedTests.concat(accident.affectedTest)
     } else {
-      accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest] })
+      accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest], date: accident.date })
     }
   })
   return Array.from(accidentMap.values())

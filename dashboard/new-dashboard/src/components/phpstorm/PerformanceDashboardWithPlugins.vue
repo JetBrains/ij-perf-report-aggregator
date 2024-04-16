@@ -18,8 +18,8 @@
           'wordpress/inspection',
           'wordpress/inspectionWithOldPlugins',
           'laravel-io/inspection',
-          'laravel-io/inspectionWithOldPlugins'
-          ]"
+          'laravel-io/inspectionWithOldPlugins',
+        ]"
       />
     </section>
     <section class="flex gap-x-6">
@@ -51,8 +51,8 @@
             'wordpress/indexing',
             'wordpress/indexingWithOldPlugins',
             'mediawiki/indexing',
-            'mediawiki/indexingWithOldPlugins'
-            ]"
+            'mediawiki/indexingWithOldPlugins',
+          ]"
         />
       </div>
       <div class="flex-1 min-w-0">

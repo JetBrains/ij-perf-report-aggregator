@@ -15,12 +15,12 @@
             ref="circle"
           >
             <span
-              class="flex gap-1.5 text-sm"
               v-tooltip.left="{
                 value: getTooltipText(accident),
                 autoHide: false,
                 showDelay: 500,
               }"
+              class="flex gap-1.5 text-sm"
             >
               <span v-if="props.inDialog">
                 <DocumentDuplicateIcon
@@ -80,16 +80,16 @@ interface AccidentSimple {
 function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
   const accidentMap = new Map<string, AccidentSimple>()
 
-  accidents.forEach((accident) => {
+  for (const accident of accidents) {
     const key = `${accident.kind}|${accident.reason.trim()}`
     if (accidentMap.has(key)) {
       const existingAccident = accidentMap.get(key) as AccidentSimple
-      existingAccident.affectedTests = existingAccident.affectedTests.concat(accident.affectedTest)
+      existingAccident.affectedTests = [...existingAccident.affectedTests, accident.affectedTest]
     } else {
       accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest], date: accident.date })
     }
-  })
-  return Array.from(accidentMap.values())
+  }
+  return [...accidentMap.values()]
 }
 
 function loadEventsAroundDate() {

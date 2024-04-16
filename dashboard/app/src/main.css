@@ -10,5 +10,5 @@
 }
 
 .p-tooltip {
-  @apply text-sm;
+  @apply text-xs;
 }

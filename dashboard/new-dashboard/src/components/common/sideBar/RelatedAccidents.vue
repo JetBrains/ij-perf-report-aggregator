@@ -12,8 +12,16 @@
           <li
             v-for="accident in accidentsAroundDate"
             :key="accident?.reason + accident?.kind"
+            ref="circle"
           >
-            <span class="flex gap-1.5 text-sm">
+            <span
+              class="flex gap-1.5 text-sm"
+              v-tooltip.left="{
+                value: getAffectedTests(accident),
+                autoHide: false,
+                showDelay: 500,
+              }"
+            >
               <span v-if="props.inDialog">
                 <DocumentDuplicateIcon
                   class="w-4 h-4"
@@ -38,7 +46,7 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
 import { ref } from "vue"
-import { AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { replaceToLink } from "../../../util/linkReplacer"
 import { InfoData } from "./InfoSidebar"
 
@@ -48,27 +56,45 @@ const props = defineProps<{
   inDialog: boolean
 }>()
 
+function getAffectedTests(accident: AccidentSimple): string {
+  if (props.inDialog) return ""
+  return accident.affectedTests.filter((value) => value !== "").join("\n")
+}
+
 const accidentsAroundDate = ref<AccidentSimple[] | undefined>([])
+
 interface AccidentSimple {
   kind: string
   reason: string
+  affectedTests: string[]
 }
-function deduplicateAccidents(accidents: AccidentSimple[]): AccidentSimple[] {
-  const uniqueJson = [...new Set(accidents.map((accident) => JSON.stringify(accident)))]
-  return uniqueJson.map((json) => JSON.parse(json) as AccidentSimple)
+
+function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
+  const accidentMap = new Map<string, AccidentSimple>()
+
+  accidents.forEach((accident) => {
+    const key = `${accident.kind}|${accident.reason.trim()}`
+    if (accidentMap.has(key)) {
+      const existingAccident = accidentMap.get(key) as AccidentSimple
+      existingAccident.affectedTests = existingAccident.affectedTests.concat(accident.affectedTest)
+    } else {
+      accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest] })
+    }
+  })
+  return Array.from(accidentMap.values())
 }
 
 function loadEventsAroundDate() {
   computedAsync(async () => {
     if (props.data) {
       const accidents = (await props.accidentsConfigurator?.getAccidentsAroundDate(props.data.date)) ?? []
-      const transformedAccidents = accidents.map((accident) => ({ kind: accident.kind, reason: accident.reason.trim() }))
-      accidentsAroundDate.value = deduplicateAccidents(transformedAccidents)
+      accidentsAroundDate.value = deduplicateAccidents(accidents)
     }
   }).value
 }
 
 const emit = defineEmits(["copyAccident"])
+
 function copy(accident: AccidentSimple): void {
   emit("copyAccident", accident)
 }
@@ -77,6 +103,7 @@ function copy(accident: AccidentSimple): void {
 .p-accordion .p-accordion-header .p-accordion-header-link {
   padding: 0 0 1rem 0;
 }
+
 .p-accordion .p-accordion-content {
   padding: 0;
 }

@@ -24,6 +24,7 @@ declare module 'vue' {
     InputText: typeof import('primevue/inputtext/InputText.vue')['default']
     Message: typeof import('primevue/message/Message.vue')['default']
     MultiSelect: typeof import('primevue/multiselect/MultiSelect.vue')['default']
+    OverlayPanel: typeof import('primevue/overlaypanel/OverlayPanel.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     ScrollTop: typeof import('primevue/scrolltop/ScrollTop.vue')['default']

@@ -10,7 +10,16 @@
       <GroupProjectsChart
         label="Batch Inspections"
         measure="globalInspections"
-        :projects="['drupal8-master-with-plugin/inspection', 'magento/inspection', 'wordpress/inspection', 'laravel-io/inspection']"
+        :projects="[
+          'drupal8-master-with-plugin/inspection',
+          'drupal8-master-with-plugin/inspectionWithOldPlugins',
+          'magento/inspection',
+          'magento/inspectionWithOldPlugins',
+          'wordpress/inspection',
+          'wordpress/inspectionWithOldPlugins',
+          'laravel-io/inspection',
+          'laravel-io/inspectionWithOldPlugins'
+          ]"
       />
     </section>
     <section class="flex gap-x-6">
@@ -18,7 +27,7 @@
         <GroupProjectsChart
           label="Batch Inspections"
           measure="globalInspections"
-          :projects="['mediawiki/inspection']"
+          :projects="['mediawiki/inspection', 'mediawiki/inspectionWithOldPlugins']"
         />
       </div>
       <div class="flex-1 min-w-0">
@@ -34,14 +43,23 @@
         <GroupProjectsChart
           label="Indexing"
           measure="updatingTime"
-          :projects="['drupal8-master-with-plugin/indexing', 'laravel-io/indexing', 'wordpress/indexing', 'mediawiki/indexing']"
+          :projects="[
+            'drupal8-master-with-plugin/indexing',
+            'drupal8-master-with-plugin/indexingWithOldPlugins',
+            'laravel-io/indexing',
+            'laravel-io/indexingWithOldPlugins',
+            'wordpress/indexing',
+            'wordpress/indexingWithOldPlugins',
+            'mediawiki/indexing',
+            'mediawiki/indexingWithOldPlugins'
+            ]"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Indexing"
           measure="updatingTime"
-          :projects="['magento/indexing']"
+          :projects="['magento/indexing', 'magento/indexingWithOldPlugins']"
         />
       </div>
     </section>

@@ -67,6 +67,27 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["test#average_awt_delay", "The average time it takes to process a single empty AWT event in the queue during the whole test."],
   ["showQuickFixes", "Time to show the quick fixes after calling Alt + Enter."],
   ...GRADLE_METRICS_NEW_DASHBOARD,
+
+  // Workspace Model
+  [
+    "workspaceModel.updates.count",
+    "Total number of changes made to the project model, including modifying entities, changing configuration, and updating dependencies, among others.",
+  ],
+  [
+    "workspaceModel.updates.ms",
+    "Total time spent on processing modifications to the workspace entities including time required in calling update handlers, collecting changes, initializing bridging operations, and generating snapshots",
+  ],
+  ["workspaceModel.mutableEntityStorage.to.snapshot.ms", "The time taken to create a snapshot of the mutable entity storage"],
+  ["workspaceModel.mutableEntityStorage.replace.by.source.ms", "The time taken to replace entities in the mutable entity storage by source"],
+  ["workspaceModel.mutableEntityStorage.add.diff.ms", "The time taken to add differences to the mutable entity storage"],
+  ["workspaceModel.loading.from.cache.ms", "The time taken to load the workspace model from cache"],
+  ["workspaceModel.do.save.caches.ms", "The time taken to save caches of the workspace model"],
+  ["workspaceModel.mutableEntityStorage.collect.changes.ms", "The time taken to collect changes in the mutable entity storage"],
+  ["workspaceModel.mutableEntityStorage.add.entity.ms", "The time taken to add an entity to the mutable entity storage"],
+  ["jps.load.project.to.empty.storage.ms", "The time taken to load a project into empty storage using the JPS"],
+  ["jps.project.serializers.load.ms", "The time taken to load project serializers in the JPS"],
+  ["jps.project.serializers.save.ms", "The time taken to save project serializers in the JPS"],
+  ["jps.facet.change.listener.process.change.events.ms", "The time taken to process change events by the facet change listener in the JPS"],
 ])
 
 export interface MetricInfo {

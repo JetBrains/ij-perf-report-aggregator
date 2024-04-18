@@ -303,6 +303,22 @@ export const highlightingProjects = {
     "space_specific/highlight/SecretsTests_with_library_cache",
     "space_specific/highlight/XScrollable_with_library_cache",
   ],
+  kotlinCoroutinesQg: [
+    "kotlin_coroutines_qg/highlight/BufferedChannel_with_library_cache",
+    "kotlin_coroutines_qg/highlight/Builders_with_library_cache",
+    "kotlin_coroutines_qg/highlight/CopyOnWriteList_with_library_cache",
+    "kotlin_coroutines_qg/highlight/CoroutineExceptionHandlerImpl_with_library_cache",
+    "kotlin_coroutines_qg/highlight/CoroutineScheduler_with_library_cache",
+    "kotlin_coroutines_qg/highlight/Dispatchers_with_library_cache",
+    "kotlin_coroutines_qg/highlight/JSDispatcher_with_library_cache",
+    "kotlin_coroutines_qg/highlight/Launcher_with_library_cache",
+    "kotlin_coroutines_qg/highlight/MainDispatcherTest_with_library_cache",
+    "kotlin_coroutines_qg/highlight/MultithreadedDispatchers_with_library_cache",
+    "kotlin_coroutines_qg/highlight/Select_with_library_cache",
+    "kotlin_coroutines_qg/highlight/SharedFlow_with_library_cache",
+    "kotlin_coroutines_qg/highlight/TestBase_with_library_cache",
+    "kotlin_coroutines_qg/highlight/WorkerMain_with_library_cache",
+  ],
 }
 
 const highlightingLabelsAndProjects = [
@@ -318,12 +334,14 @@ const highlightingLabelsAndProjects = [
   { label: "'Spring framework'", projects: highlightingProjects.springFramework },
   { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
+  { label: "'Kotlin coroutines'", projects: highlightingProjects.kotlinCoroutinesQg },
 ]
 
 const mppHighlightingLabelsAndProjects = [
   { label: "'Space'", projects: highlightingProjects.space },
   { label: "'Ktor'", projects: highlightingProjects.ktor },
   { label: "'Kotlin Coroutines'", projects: highlightingProjects.kotlinCoroutines },
+  { label: "'Kotlin Coroutines QG'", projects: highlightingProjects.kotlinCoroutinesQg },
 ]
 
 export const highlightingCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))
@@ -435,11 +453,18 @@ export const findUsagesProjects = {
     "space_specific/findUsages/IntSizePx_with_library_cache",
     "space_specific/findUsages/UniqueConstraint_with_library_cache",
   ],
+  kotlinCoroutinesQg: [
+    "kotlin_coroutines_qg/findUsages/createMainDispatcher_with_library_cache",
+    "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",
+    "kotlin_coroutines_qg/findUsages/Runnable_with_library_cache",
+    "kotlin_coroutines_qg/findUsages/SynchronizedObject_with_library_cache",
+  ],
 }
 
 export const findUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'IntelliJ'", findUsagesProjects.intelliJ),
   generateFindUsagesDefinition("'Kotlin lang'", findUsagesProjects.kotlinLang),
+  generateFindUsagesDefinition("'Kotlin Coroutines QG'", findUsagesProjects.kotlinCoroutinesQg),
   generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
   generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
   generateFindUsagesDefinition("'Android anki project'", findUsagesProjects.anki),
@@ -447,6 +472,7 @@ export const findUsagesCharts: ProjectsChartDefinition[] = [
 export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Space'", findUsagesProjects.space),
   generateFindUsagesDefinition("'Kotlin Coroutines'", findUsagesProjects.kotlinCoroutines),
+  generateFindUsagesDefinition("'Kotlin Coroutines QG'", findUsagesProjects.kotlinCoroutinesQg),
   generateFindUsagesDefinition("'Ktor'", findUsagesProjects.ktor),
 ]
 

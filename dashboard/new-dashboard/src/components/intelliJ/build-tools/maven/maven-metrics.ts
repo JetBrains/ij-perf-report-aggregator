@@ -1,11 +1,10 @@
 export const MAVEN_METRICS_DASHBOARD = [
   // Main flow
-  "maven.sync.duration",
+  "maven.import.stats.sync.project.task", // Full sync
   "maven.projects.processor.resolving.task",
   "maven.projects.processor.reading.task",
   "maven.import.stats.plugins.resolving.task",
   "maven.import.stats.applying.model.task",
-  "maven.import.stats.sync.project.task",
   "maven.import.after.import.configuration",
   "maven.import.configure.post.process",
   "maven.project.importer.base.refreshing.files.task",

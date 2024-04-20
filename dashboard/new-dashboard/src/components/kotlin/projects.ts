@@ -110,6 +110,17 @@ export const completionProjects = {
     "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_typing_with_library_cache",
     "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_with_library_cache",
   ],
+  kotlinCoroutinesQG: [
+    "kotlin_coroutines_qg/completion/AwaitStressTest_test_AwaitStressTest_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/CoroutineContext_enqueue_CoroutineContext_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/CoroutineContext_isJsdom_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/Dispatchers_dispatch_async_Dispatchers_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/Future_JobNode_Future_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/Launcher_testLauncherEntryPoint_Launcher_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/SchedulerTask_afterTask_SchedulerTask_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/TestBase_finish_TestBase_typing_with_library_cache",
+    "kotlin_coroutines_qg/completion/WorkerTest_test_WorkerTest_typing_with_library_cache",
+  ],
   mppNativeAcceptance: [
     "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
     "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
@@ -136,6 +147,7 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'IntelliJ with typing suite 2'", completionProjects.intelliJTyping2),
   ...generateCompletionDefinitions("'Kotlin lang'", completionProjects.kotlinLang),
   ...generateCompletionDefinitions("'Kotlin language server'", completionProjects.kotlinLanguageServer),
+  ...generateCompletionDefinitions("'Kotlin coroutine QG'", completionProjects.kotlinCoroutinesQG),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
 ]
@@ -144,6 +156,7 @@ export const mppCompletionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Space'", completionProjects.space),
   ...generateCompletionDefinitions("'Ktor'", completionProjects.ktor),
   ...generateCompletionDefinitions("'Kotlin Coroutines'", completionProjects.kotlinCoroutines),
+  ...generateCompletionDefinitions("'Kotlin Coroutines QG'", completionProjects.kotlinCoroutinesQG),
   ...generateCompletionDefinitions("'Native-acceptance'", completionProjects.mppNativeAcceptance),
 ]
 

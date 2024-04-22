@@ -15,13 +15,13 @@
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.23",
-    "vue-router": "4.3.0"
+    "vue-router": "4.3.2"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.11.0",
     "global-jsdom": "^24.0.0",
     "jsdom": "^24.0.0",
-    "msw": "^2.2.13"
+    "msw": "^2.2.14"
   }
 }

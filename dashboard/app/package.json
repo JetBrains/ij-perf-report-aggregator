@@ -2,13 +2,13 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.0.17",
-    "@fontsource/jetbrains-mono": "5.0.19",
+    "@fontsource/inter": "5.0.18",
+    "@fontsource/jetbrains-mono": "5.0.20",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.7",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.23",
-    "vue-router": "4.3.0"
+    "vue-router": "4.3.2"
   }
 }

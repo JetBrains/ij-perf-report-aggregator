@@ -54,7 +54,7 @@
             <ChartBarIcon class="w-4 h-4" />
             <span
               v-tooltip.left="description"
-              :class="description != '' ? getURLStyle() : ''"
+              :class="description != '' ? getURLStyle() : 'break-all'"
             >
               {{ data?.projectName }}
             </span>

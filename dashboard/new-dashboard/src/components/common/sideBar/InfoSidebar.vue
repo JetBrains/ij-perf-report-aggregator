@@ -1,7 +1,7 @@
 <template>
   <div
     v-show="vm.visible.value"
-    class="infoSidebar ml-5 text-gray-500 relative overflow-y-auto overflow-x-hidden"
+    class="infoSidebar ml-5 text-gray-500 relative"
   >
     <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
       <div
@@ -125,7 +125,7 @@
         </span>
         <ul
           v-if="data?.accidents"
-          class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-60 break-all"
+          class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80"
         >
           <li
             v-for="accident in data?.accidents.value"
@@ -332,7 +332,6 @@ function getURLStyle() {
 .infoSidebar {
   min-width: 350px;
   max-width: 25%;
-  height: calc(100vh - 15em);
 }
 
 .infoSidebar_icon::after {

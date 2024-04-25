@@ -7,7 +7,7 @@
       <AccordionTab header="Events around the date">
         <ul
           v-if="accidentsAroundDate"
-          class="gap-1.5 text-sm overflow-y-auto max-h-80"
+          class="gap-1.5 text-sm break-all"
         >
           <li
             v-for="accident in accidentsAroundDate"

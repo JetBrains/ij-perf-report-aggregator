@@ -51,10 +51,10 @@ const metricsDeclaration = [
   "load.default.targets.ms",
   "load.modules.mb",
   "load.modules.ms",
-  "replaceBySource.in.apply.on.workspace.model.mb",
-  "replaceBySource.in.apply.on.workspace.model.ms",
-  "replaceProjectModel.in.apply.on.workspace.model.mb",
-  "replaceProjectModel.in.apply.on.workspace.model.ms",
+  "replacebysource.in.apply.on.workspace.model.mb",
+  "replacebysource.in.apply.on.workspace.model.ms",
+  "replaceprojectmodel.in.apply.on.workspace.model.mb",
+  "replaceprojectmodel.in.apply.on.workspace.model.ms",
 ]
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {

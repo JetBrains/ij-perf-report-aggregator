@@ -3,7 +3,7 @@
     v-show="vm.visible.value"
     class="infoSidebar ml-5 text-gray-500 relative"
   >
-    <div class="flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5">
+    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5 overflow-y-auto overflow-x-hidden">
       <div
         v-if="useScrollStore().isScrolled"
         class="sticky h-10"
@@ -332,6 +332,10 @@ function getURLStyle() {
 .infoSidebar {
   min-width: 350px;
   max-width: 25%;
+}
+
+.infoSidebarContent {
+  height: calc(100vh - 15em);
 }
 
 .infoSidebar_icon::after {

@@ -48,8 +48,14 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing (Big projects)", "Initial Scanning (Big projects)", "Initial Number of indexed files (Big projects)"],
-    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    labels: [
+      "Indexing (Big projects)",
+      "Initial Scanning (Big projects)",
+      "Initial Number of indexed files (Big projects)",
+      "Number of indexed files with writing index value (Big projects)",
+      "Number of indexed files with nothing to write (Big projects)",
+    ],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: ["community/indexing", "intellij_commit/indexing"],
   },
   {
@@ -68,8 +74,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/third-scanning", "intellij_commit/third-scanning"],
   },
   {
-    labels: ["Indexing", "Scanning", "Number of indexed files"],
-    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: [
       "empty_project/indexing",
       "grails/indexing",
@@ -96,8 +102,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Indexing", "Scanning", "Number of indexed files"],
-    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: ["keycloak_release_20/indexing", "toolbox_enterprise/indexing", "train-ticket/indexing"],
   },
   {

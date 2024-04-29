@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts } from "../../charts/DashboardCharts"
-import GroupProjectsChart from "../../charts/GroupProjectsChart.vue"
-import DashboardPage from "../../common/DashboardPage.vue"
+import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {

@@ -12,7 +12,6 @@ const enum ROUTE_PREFIX {
   IntelliJUltimate = "/intellij/ultimate",
   IntelliJPackageChecker = "/intellij/packageChecker",
   IntelliJFus = "/intellij/fus",
-  IntelliJExperiments = "/intellij/experiments",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   GoLandSharedIndices = "/goland/sharedIndexes",
@@ -57,10 +56,7 @@ enum ROUTES {
   IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJIndexingDashboardOld = `${ROUTE_PREFIX.IntelliJ}/indexingDashboardOld`,
-  IntelliJJBRDashboard = `${ROUTE_PREFIX.IntelliJ}/jbrPerformanceDashboard`,
-  IntelliJTinyDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardTiny`,
-  IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/incrementalCompilationDashboard`,
-  IntelliJScalabilityDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/scalabilityDashboard`,
+  IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJ}/incrementalCompilationDashboard`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
   IntelliJFindUsagesDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsagesOld`,
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
@@ -91,7 +87,6 @@ enum ROUTES {
   IntelliJSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
   IntelliJSharedIndicesTypingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesTypingDashboard`,
   IntelliJSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesDumbModeDashboard`,
-  IntelliJGCDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/performanceGC`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
@@ -99,8 +94,6 @@ enum ROUTES {
   IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardDev`,
   IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
   IntelliJFusStartupDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardStartup`,
-  IntelliJExperimentsGradleSyncDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardGradleSync`,
-  IntelliJExperimentsMonorepoDashboard = `${ROUTE_PREFIX.IntelliJExperiments}/dashboardMonorepo`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
@@ -324,8 +317,8 @@ const IDEA: Product = {
           label: "Indexing Dashboard (<=241)",
         },
         {
-          url: ROUTES.IntelliJJBRDashboard,
-          label: "JBR Performance tests Dashboard",
+          url: ROUTES.IntelliJIncrementalCompilationDashboard,
+          label: "Incremental Compilation",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -480,36 +473,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJFusStartupDashboard,
           label: "Dashboard Startup",
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.IntelliJExperiments,
-      label: "Experiments",
-      tabs: [
-        {
-          url: ROUTES.IntelliJExperimentsGradleSyncDashboard,
-          label: "Gradle Sync Smart/Dumb",
-        },
-        {
-          url: ROUTES.IntelliJExperimentsMonorepoDashboard,
-          label: "IntelliJ + Dotnet dashboard",
-        },
-        {
-          url: ROUTES.IntelliJTinyDashboard,
-          label: "Dashboard (Tiny Agents)",
-        },
-        {
-          url: ROUTES.IntelliJIncrementalCompilationDashboard,
-          label: "Incremental Compilation",
-        },
-        {
-          url: ROUTES.IntelliJGCDashboard,
-          label: "Garbage Collectors",
-        },
-        {
-          url: ROUTES.IntelliJScalabilityDashboard,
-          label: "Scalability",
         },
       ],
     },
@@ -1291,19 +1254,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Indexing Performance dashboard (<=241)" },
         },
         {
-          path: ROUTES.IntelliJJBRDashboard,
-          component: () => import("./components/intelliJ/Jbr21PerformanceDashboard.vue"),
-          meta: { pageTitle: "JBR Performance dashboard" },
-        },
-        {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
-          component: () => import("./components/intelliJ/experiments/IncrementalCompilationDashboard.vue"),
+          component: () => import("./components/intelliJ/IncrementalCompilationDashboard.vue"),
           meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJScalabilityDashboard,
-          component: () => import("./components/intelliJ/experiments/ScalabilityDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Scalability dashboard" },
         },
         {
           path: ROUTES.IntelliJGradleDashboardDeprecated,
@@ -1396,21 +1349,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard (<=241)" },
         },
         {
-          path: ROUTES.IntelliJExperimentsMonorepoDashboard,
-          component: () => import("./components/intelliJ/experiments/IntelliJDotnetDashboard.vue"),
-          meta: { pageTitle: "IntelliJ + Dotnet performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJExperimentsGradleSyncDashboard,
-          component: () => import("./components/intelliJ/experiments/GradleSyncDashboard.vue"),
-          meta: { pageTitle: "Performance of Gradle Sync in Smart and Dumb modes" },
-        },
-        {
-          path: ROUTES.IntelliJTinyDashboard,
-          component: () => import("./components/intelliJ/experiments/PerformanceTinyDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard (Tiny)" },
-        },
-        {
           path: ROUTES.IntelliJSharedIndicesIndexingDashboard,
           component: () => import("./components/intelliJ/sharedIndexes/IndexingDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
@@ -1454,11 +1392,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
           component: () => import("./components/intelliJ/sharedIndexes/DumbModeDashboard.vue"),
           meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
-        },
-        {
-          path: ROUTES.IntelliJGCDashboard,
-          component: () => import("./components/intelliJ/experiments/GarbageCollectorDashboard.vue"),
-          meta: { pageTitle: "IntelliJ performance tests for different Garbage Collectors" },
         },
         {
           path: ROUTES.IntelliJEmbeddingSearchDashboard,

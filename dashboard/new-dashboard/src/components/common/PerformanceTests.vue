@@ -192,14 +192,16 @@ const persistentStateManager = new PersistentStateManager(
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-if (machineConfigurator.selected.value.length === 0) {
-  machineConfigurator.selected.value = [props.initialMachine]
-}
+
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 const measureScenarioFilters = [branchConfigurator, triggeredByConfigurator, timeRangeConfigurator]
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
+
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator, scenarioConfigurator])
+if (machineConfigurator.selected.value.length === 0) {
+  machineConfigurator.selected.value = [props.initialMachine]
+}
 
 const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)

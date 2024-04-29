@@ -26,8 +26,8 @@ import DashboardPage from "../../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Elastic Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
+    labels: ["Elastic Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-java/build_incremental",
       "incremental-build-java/rebuild_initial",
@@ -36,8 +36,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["IntelliJ Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
+    labels: ["IntelliJ Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-intellij/build_incremental",
       "incremental-build-intellij/rebuild_initial",
@@ -46,8 +46,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Coroutines Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
+    labels: ["Coroutines Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-kotlin/build_incremental",
       "incremental-build-kotlin/rebuild_initial",
@@ -56,8 +56,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Youtrack JPS and Gradle Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
+    labels: ["Youtrack JPS and Gradle Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-youtrack-jps/build_incremental",
       "incremental-build-youtrack-jps/rebuild_initial",
@@ -68,8 +68,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Hub JPS and Gradle Rebuild/Build time"],
-    measures: ["build_compilation_duration"],
+    labels: ["Hub JPS and Gradle Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-hub-jps/build_incremental",
       "incremental-build-hub-jps/rebuild_initial",

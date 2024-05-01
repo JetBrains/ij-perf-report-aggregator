@@ -97,7 +97,9 @@ export const completionProjects = {
   kotlinScript: [
     "arrow/completion/build.gradle_completion_kts_with_library_cache",
     "kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache",
+    "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
     "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
+    "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache",
   ],
   kotlinLanguageServerEvaluateExpression: [
     "kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache",
@@ -258,7 +260,15 @@ export const highlightingProjects = {
   kotlinScript: [
     "arrow/highlight/build.gradle_with_library_cache",
     "kotlin_empty_kts/highlight/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/atomicfu_atomicfu-compiler/build.gradle_with_library_cache",
     "kotlin_lang/highlight/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/js_js.tests/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/kotlin-gradle-plugin/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/kotlin-gradle-plugin-integration-tests/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/libraries_kotlin.test/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/libraries_stdlib/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/prepare.compiler/build.gradle_with_library_cache",
+    "kotlin_lang/highlight/wasm_wasm.tests/build.gradle_with_library_cache",
   ],
   removedImports: [
     "toolbox_enterprise/highlight/removedImports/IdeSettingControllerTest_with_library_cache",
@@ -447,6 +457,11 @@ export const findUsagesProjects = {
     "anki-android/findUsages/Decks_with_library_cache",
     "anki-android/findUsages/load_with_library_cache",
   ],
+  kotlinLangScript: [
+    "kotlin_lang/findUsages/intellijVersionForIde_with_library_cache",
+    "kotlin_lang/findUsages/JvmTestFramework_with_library_cache",
+    "kotlin_lang/findUsages/SourceSet_with_library_cache",
+  ],
   kotlinCoroutines: [
     "kotlin_coroutines_commit/findUsages/assert_with_library_cache",
     "kotlin_coroutines_commit/findUsages/emit_with_library_cache",
@@ -530,6 +545,7 @@ const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingProje
 export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects))
 export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
 export const scriptCompletionCharts: ProjectsChartDefinition[] = [...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript)]
+export const scriptFindUsagesCharts: ProjectsChartDefinition[] = [generateFindUsagesDefinition("'Kotlin lang (kts)'", findUsagesProjects.kotlinLangScript)]
 export const KOTLIN_MAIN_METRICS = [
   "completion#mean_value",
   "completion#firstElementShown#mean_value",

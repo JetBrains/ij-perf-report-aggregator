@@ -78,6 +78,7 @@
     <DashboardGroupCharts :definitions="scriptCompletionCharts" />
     <DashboardGroupCharts :definitions="highlightingScriptCharts" />
     <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
+    <DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
   </DashboardPage>
 </template>
 
@@ -96,5 +97,6 @@ import {
   scriptCompletionCharts,
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
+  scriptFindUsagesCharts,
 } from "../projects"
 </script>

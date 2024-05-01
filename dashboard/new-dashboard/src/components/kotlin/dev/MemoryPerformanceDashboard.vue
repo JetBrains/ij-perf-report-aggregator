@@ -53,6 +53,10 @@
     />
     <MemoryDashboardGroupCharts
       :metrics="metrics"
+      :definitions="scriptFindUsagesCharts"
+    />
+    <MemoryDashboardGroupCharts
+      :metrics="metrics"
       :definitions="highlightingScriptCharts"
     />
     <MemoryDashboardGroupCharts
@@ -80,6 +84,7 @@ import {
   scriptCompletionCharts,
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
+  scriptFindUsagesCharts,
 } from "../projects"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)

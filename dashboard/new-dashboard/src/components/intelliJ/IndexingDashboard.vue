@@ -74,6 +74,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/third-scanning", "intellij_commit/third-scanning"],
   },
   {
+    labels: ["Skip Scanning (IntelliJ)", "Skip Scanning Number of indexed files (IntelliJ)"],
+    measures: ["scanningTimeWithoutPauses", "numberOfIndexedFiles"],
+    projects: ["intellij_commit/allow-skipping-full-scanning"],
+  },
+  {
     labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: [

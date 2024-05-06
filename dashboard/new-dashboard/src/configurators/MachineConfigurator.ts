@@ -376,5 +376,9 @@ function getValueToGroup() {
 
     "intellij-linux-hw-de-unit-1705": "Linux Munich i7-13700, 64 Gb",
     "intellij-linux-hw-de-unit-1716": "Linux Munich i7-13700, 64 Gb",
+    "intellij-linux-hw-de-unit-1715": "Linux Munich i7-13700, 64 Gb",
+    "intellij-linux-hw-de-unit-1702": "Windows Munich i7-13700, 64 Gb",
+    "intellij-linux-hw-de-unit-1703": "Windows Munich i7-13700, 64 Gb",
+    "intellij-linux-hw-de-unit-1704": "Windows Munich i7-13700, 64 Gb",
   }
 }

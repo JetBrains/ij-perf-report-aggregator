@@ -45,21 +45,6 @@ linters-settings:
         # Default: true
         skipRecvDeref: false
 
-  gomnd:
-    # List of function patterns to exclude from analysis.
-    # Values always ignored: `time.Date`,
-    # `strconv.FormatInt`, `strconv.FormatUint`, `strconv.FormatFloat`,
-    # `strconv.ParseInt`, `strconv.ParseUint`, `strconv.ParseFloat`.
-    # Default: []
-    ignored-functions:
-      - os.Chmod
-      - os.Mkdir
-      - os.MkdirAll
-      - os.OpenFile
-      - os.WriteFile
-      - prometheus.ExponentialBuckets
-      - prometheus.ExponentialBucketsRange
-      - prometheus.LinearBuckets
 
 
   gomodguard:
@@ -124,7 +109,6 @@ linters:
     - durationcheck # checks for two durations multiplied together
     - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
     - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
-    - execinquery # checks query string in Query function which reads your Go src files and warning it finds
     - exportloopref # checks for pointers to enclosing loop variables
     - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
     - gocritic # provides diagnostics that check for bugs, performance and style issues
@@ -155,6 +139,7 @@ linters:
     - usestdlibvars # detects the possibility to use variables/constants from the Go standard library
     - copyloopvar # checks for copying loop variables by reference
     - intrange # checks for integer ranges that can be simplified
+    - err113 # checks for errors that are unchecked and can be returned
 
 issues:
   # Maximum count of issues with the same text.
@@ -181,3 +166,5 @@ issues:
       linters: [ gocritic ]
     - text: "SA1019: \"github.com/golang/protobuf/proto\" is deprecated"
       linters: [ staticcheck ]
+    - text: "do not define dynamic errors"
+      linters: [ err113 ]

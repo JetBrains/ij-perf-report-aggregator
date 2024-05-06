@@ -10,7 +10,7 @@ import (
 func main() {
   err := server.Serve(env.Get("CLICKHOUSE", server.DefaultDbUrl), env.Get("NATS", ""))
   if err != nil {
-    slog.Error("error", err)
+    slog.Error("error on starting backend", "error", err)
     os.Exit(1)
   }
 }

@@ -23,7 +23,7 @@
     "@vue/eslint-config-typescript": "^13.0.0",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.19",
-    "eslint": "^9.1.1",
+    "eslint": "^9.2.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-vue": "^9.25.0",
@@ -56,6 +56,6 @@
     "eslint-plugin-unicorn": "^52.0.0",
     "isoworker": "^0.2.4",
     "prettier": "^3.2.5",
-    "vitest": "^1.5.3"
+    "vitest": "^1.6.0"
   }
 }

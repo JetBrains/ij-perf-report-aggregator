@@ -206,6 +206,7 @@
     </div>
   </div>
   <ReportMetricDialog
+    v-if="showDialog"
     v-model="showDialog"
     :accidents-configurator="accidentsConfigurator"
     :accident-to-edit="accidentToEdit"

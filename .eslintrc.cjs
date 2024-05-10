@@ -38,6 +38,7 @@ module.exports = {
     "@typescript-eslint/no-empty-function": ["error", { allow: ["arrowFunctions"] }],
     "unicorn/switch-case-braces": "off",
     "unicorn/no-null": "off",
+    "unicorn/no-magic-array-flat-depth": "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/consistent-function-scoping": ["error", { checkArrowFunctions: false }],
     "unicorn/no-new-array": "off",

@@ -127,7 +127,7 @@ import RelatedAccidents from "./RelatedAccidents.vue"
 
 const props = defineProps<{
   data: InfoData | null
-  accidentsConfigurator: AccidentsConfigurator
+  accidentsConfigurator: AccidentsConfigurator | null
   accidentToEdit: Accident | null
 }>()
 
@@ -154,7 +154,7 @@ function reportRegression() {
   if (value != null && build.value != null) {
     const metricName = value.series[0].metricName
     const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1 && metricName != undefined
-    props.accidentsConfigurator.writeAccidentToMetaDb(
+    props.accidentsConfigurator?.writeAccidentToMetaDb(
       value.date,
       reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
       reason.value,
@@ -167,7 +167,7 @@ function reportRegression() {
 function deleteRegression() {
   showDialog.value = false
   if (props.accidentToEdit != null) {
-    props.accidentsConfigurator.removeAccidentFromMetaDb(props.accidentToEdit.id)
+    props.accidentsConfigurator?.removeAccidentFromMetaDb(props.accidentToEdit.id)
   }
 }
 

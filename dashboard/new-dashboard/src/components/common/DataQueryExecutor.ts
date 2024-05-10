@@ -146,7 +146,7 @@ export function generateQueries(query: DataQuery, configuration: DataQueryExecut
       }
     }
 
-    serializedQuery.push(JSON.parse(JSON.stringify(query)) as DataQuery)
+    serializedQuery.push(structuredClone(query))
 
     if (item.length > 1) {
       let equal = true

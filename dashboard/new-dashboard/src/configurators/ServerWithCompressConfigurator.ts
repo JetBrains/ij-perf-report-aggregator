@@ -5,7 +5,7 @@ import { dbTypeStore } from "../shared/dbTypes"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerWithCompressConfigurator implements ServerConfigurator {
-  static readonly DEFAULT_SERVER_URL = "https://ij-perf-api.labs.jb.gg"
+  static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL

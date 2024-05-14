@@ -136,6 +136,16 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["createJavaFile", "createKotlinFile"]],
     projects: ["intellij_commit/createJavaClass", "intellij_commit/createKotlinClass"],
   },
+  {
+    labels: ["Editor Scrolling AWT Delay"],
+    measures: [["scrollEditor#max_awt_delay", "scrollEditor#average_awt_delay"]],
+    projects: ["intellij_commit/scrollEditor/java_file_ContentManagerImpl"],
+  },
+  {
+    labels: ["Editor Scrolling CPU Load"],
+    measures: [["scrollEditor#max_cpu_load", "scrollEditor#average_cpu_load"]],
+    projects: ["intellij_commit/scrollEditor/java_file_ContentManagerImpl"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

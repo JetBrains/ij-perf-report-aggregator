@@ -77,6 +77,7 @@ func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []d
           Channel:     "ij-perf-report-aggregator",
           ProductLink: "intellij",
         },
+        AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
       })
     }
 

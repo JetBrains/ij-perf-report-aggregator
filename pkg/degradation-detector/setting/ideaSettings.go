@@ -51,7 +51,10 @@ func generateIdeaOnInstallerAnalysisSettings(backendUrl string, client *http.Cli
 }
 
 func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-  tests := []string{"intellij_commit/%"}
+  tests := []string{"intellij_commit/%", "grails/%", "java/%", "spring_boot/%",
+    "spring_boot_maven/%", "spring_boot/%", "kotlin/%", "kotlin_coroutines/%",
+    "kotlin_petclinic/%", "community/%", "empty_project/%", "keycloak_release_20/%",
+    "space/%", "toolbox_enterprise/%", "train-ticket/%"}
   baseSettings := detector.PerformanceSettings{
     Db:      "perfintDev",
     Table:   "idea",
@@ -147,6 +150,9 @@ func getMetricFromTestName(test string) []string {
   }
   if strings.Contains(test, "/typing") {
     return []string{"typingCodeAnalyzing", "typing"}
+  }
+  if strings.Contains(test, "/scrollEditor") {
+    return []string{"scrollEditor#average_awt_delay", "scrollEditor#max_awt_delay", "scrollEditor#average_cpu_load", "scrollEditor#max_cpu_load"}
   }
   return []string{}
 }

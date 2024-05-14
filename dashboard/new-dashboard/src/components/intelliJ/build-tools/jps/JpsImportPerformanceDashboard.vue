@@ -77,6 +77,8 @@ const metricsDeclaration = [
   "workspaceModel.global.updates.count",
   "workspaceModel.global.updates.ms",
   "workspaceModel.init.bridges.ms",
+  "workspaceModel.on.before.changed.ms",
+  "workspaceModel.on.changed.ms",
   "workspaceModel.initializing.ms",
   "workspaceModel.load.cache.from.file.ms",
   "workspaceModel.load.cache.metadata.from.file.ms",

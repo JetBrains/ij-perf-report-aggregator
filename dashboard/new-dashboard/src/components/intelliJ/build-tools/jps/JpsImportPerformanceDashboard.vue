@@ -152,6 +152,8 @@ const metricsDeclaration = [
   "workspaceModel.cachedValue.clear.count",
   "workspaceModel.cachedValueWithParameters.clear.count",
 
+  "module.dependency.index.workspace.model.listener.on.changed.ms",
+
   "compiler.ArtifactBridge.beforeChanged.ms",
   "compiler.ArtifactManagerBridge.addArtifact.ms",
   "compiler.ArtifactManagerBridge.commit.ms",

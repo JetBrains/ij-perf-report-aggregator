@@ -26,7 +26,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Elastic Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    labels: ["Java Design Patterns Rebuild/Build time", "Mappings Dir Size in Bytes"],
     measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-java/build_incremental",
@@ -46,16 +46,6 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Coroutines Rebuild/Build time", "Mappings Dir Size in Bytes"],
-    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
-    projects: [
-      "incremental-build-kotlin/build_incremental",
-      "incremental-build-kotlin/rebuild_initial",
-      "incremental-build-kotlin-with-dep-graph/build_incremental",
-      "incremental-build-kotlin-with-dep-graph/rebuild_initial",
-    ],
-  },
-  {
     labels: ["Youtrack JPS and Gradle Rebuild/Build time", "Mappings Dir Size in Bytes"],
     measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
@@ -65,18 +55,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "incremental-build-youtrack-jps-with-dep-graph/rebuild_initial",
       "incremental-build-youtrack-gradle/build_incremental",
       "incremental-build-youtrack-gradle/rebuild_initial",
-    ],
-  },
-  {
-    labels: ["Hub JPS and Gradle Rebuild/Build time", "Mappings Dir Size in Bytes"],
-    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
-    projects: [
-      "incremental-build-hub-jps/build_incremental",
-      "incremental-build-hub-jps/rebuild_initial",
-      "incremental-build-hub-jps-with-dep-graph/build_incremental",
-      "incremental-build-hub-jps-with-dep-graph/rebuild_initial",
-      "incremental-build-hub-gradle/build_incremental",
-      "incremental-build-hub-gradle/rebuild_initial",
     ],
   },
 ]

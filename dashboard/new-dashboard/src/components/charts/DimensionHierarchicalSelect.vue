@@ -49,6 +49,7 @@ function convertItemToTreeSelectModel(item: GroupedDimensionValue): TreeNode {
     label: item.value,
     children: item.children?.map(convertItemToTreeSelectModel),
     leaf: item.children == null,
+    icon: item.icon,
   }
 }
 

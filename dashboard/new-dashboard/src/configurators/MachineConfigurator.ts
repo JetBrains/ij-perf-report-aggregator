@@ -150,6 +150,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
         item = {
           value: groupName,
           children: [],
+          icon: this.getIcons(groupName),
         }
         grouped.push(item)
         this.groupNameToItem.set(groupName, item)
@@ -160,6 +161,16 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     }
     grouped.sort((a, b) => a.value.localeCompare(b.value))
     return grouped
+  }
+
+  private getIcons(groupName: string): string {
+    if (groupName.startsWith("Linux")) {
+      return "pi pi-desktop"
+    } else if (groupName.startsWith("Mac")) {
+      return "pi pi-apple"
+    } else {
+      return "pi pi-microsoft"
+    }
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -267,6 +278,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 export interface GroupedDimensionValue {
   value: string
   children?: GroupedDimensionValue[]
+  icon?: string
 }
 
 function prefix(words: string[]): string {

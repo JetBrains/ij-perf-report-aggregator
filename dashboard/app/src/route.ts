@@ -27,6 +27,20 @@ export function createAndConfigureRouter(): Router {
   const router = createRouter({
     history: createWebHistory("/"),
     routes,
+    scrollBehavior(to) {
+      if (to.hash) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const element = document.querySelector(to.hash)
+            const yOffset = -60 // Adjust this value as needed for your fixed header or other elements
+            const y = (element?.getBoundingClientRect().top ?? 0) + window.pageYOffset + yOffset
+            window.scrollTo({ top: y, behavior: "smooth" })
+            resolve({ left: 0, top: y })
+          }, 300) // Delay to ensure the element is rendered
+        })
+      }
+      return { left: 0, top: 0 }
+    },
   })
   router.afterEach((to, _from) => {
     void nextTick(() => {

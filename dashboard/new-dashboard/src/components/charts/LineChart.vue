@@ -1,7 +1,14 @@
 <template>
-  <div class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200">
-    <h3 class="m-0 text-sm flex justify-between">
-      {{ props.title + (settingStore.scaling ? " (scaled)" : "") }}
+  <div
+    :id="anchor"
+    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
+  >
+    <h3 class="m-0 text-sm flex">
+      {{ props.title + (settingStore.scaling ? " (scaled)" : "") }}&nbsp;<a
+        :href="'#' + anchor"
+        class="text-blue-500"
+        >#</a
+      >
       <span
         v-if="props.canBeClosed"
         class="text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition"
@@ -53,6 +60,10 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   tooltipTrigger: "item",
   withMeasureName: false,
   canBeClosed: false,
+})
+
+const anchor = computed(() => {
+  return props.title.replaceAll(/[^\dA-Za-z]/g, "")
 })
 
 const valueUnit: Ref<ValueUnit> = computed(() => {

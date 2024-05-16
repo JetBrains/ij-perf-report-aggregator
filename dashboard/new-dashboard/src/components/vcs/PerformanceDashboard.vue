@@ -20,9 +20,9 @@
       :active-index="[0, 1, 2, 3, 4, 5, 6]"
     >
       <AccordionTab header="Indexing">
-        <a name="index" />
         <section>
           <GroupProjectsChart
+            id="index"
             label="Indexing"
             measure="vcs-log-indexing"
             :projects="indexingProjects"
@@ -59,9 +59,9 @@
       </AccordionTab>
 
       <AccordionTab header="Show file history">
-        <a name="history" />
         <section>
           <GroupProjectsChart
+            id="history"
             label="Show file history (test metric)"
             measure="showFileHistory"
             :projects="showFileHistoryProjects"
@@ -99,9 +99,9 @@
       </AccordionTab>
 
       <AccordionTab header="Checkout">
-        <a name="checkout" />
         <section>
           <GroupProjectsChart
+            id="checkout"
             label="Checkout time"
             measure="git-checkout"
             :projects="checkoutProjects"
@@ -124,8 +124,7 @@
       </AccordionTab>
 
       <AccordionTab header="Filter Vcs Log tab">
-        <a name="filter" />
-        <section>
+        <section id="filter">
           <GroupProjectsChart
             label="Filter Vcs Log tab by name"
             measure="vcs-log-filtering"
@@ -148,8 +147,7 @@
         </section>
       </AccordionTab>
       <AccordionTab header="Commit">
-        <a name="commit" />
-        <section>
+        <section id="commit">
           <GroupProjectsChart
             label="Commit FUS duration"
             measure="git-commit#fusCommitDuration"
@@ -193,8 +191,7 @@
         </section>
       </AccordionTab>
       <AccordionTab header="Show branch widget">
-        <a name="widget" />
-        <section>
+        <section id="widget">
           <GroupProjectsChart
             label="Duration of expanding the whole branch tree - GitBranchesTreePopup::waitTreeExpand"
             measure="gitShowBranchWidget"
@@ -210,8 +207,7 @@
         </section>
       </AccordionTab>
       <AccordionTab header="Annotate">
-        <a name="annotate" />
-        <section>
+        <section id="annotate">
           <GroupProjectsChart
             label="Duration of opening git annotation - showFileAnnotation"
             measure="showFileAnnotation"

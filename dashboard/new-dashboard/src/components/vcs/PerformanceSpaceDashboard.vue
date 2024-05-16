@@ -17,9 +17,9 @@
       :active-index="[0, 1, 2, 3]"
     >
       <AccordionTab header="Indexing">
-        <a name="index" />
         <section>
           <GroupProjectsChart
+            id="index"
             label="Indexing"
             measure="vcs-log-indexing"
             :projects="indexingProjects"
@@ -56,9 +56,9 @@
       </AccordionTab>
 
       <AccordionTab header="Commit">
-        <a name="commit" />
         <section>
           <GroupProjectsChart
+            id="commit"
             label="Commit FUS duration"
             measure="git-commit#fusCommitDuration"
             :projects="commitProjects"
@@ -95,9 +95,9 @@
       </AccordionTab>
 
       <AccordionTab header="Show file history">
-        <a name="history" />
         <section>
           <GroupProjectsChart
+            id="history"
             label="Show file history (test metric)"
             measure="showFileHistory"
             :projects="showFileHistoryProjects"
@@ -135,9 +135,9 @@
       </AccordionTab>
 
       <AccordionTab header="Annotate">
-        <a name="annotate" />
         <section>
           <GroupProjectsChart
+            id="annotate"
             label="Duration of opening git annotation - showFileAnnotation"
             measure="showFileAnnotation"
             :projects="annotateProjects"

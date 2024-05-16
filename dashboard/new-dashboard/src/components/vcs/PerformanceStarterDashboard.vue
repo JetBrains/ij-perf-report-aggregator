@@ -14,9 +14,9 @@
       :active-index="[0]"
     >
       <AccordionTab header="Indexing">
-        <a name="index" />
         <section>
           <GroupProjectsChart
+            id="index"
             label="Indexing"
             measure="vcs-log-indexing"
             :projects="indexingProjects"

@@ -15,7 +15,7 @@
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
         <template v-if="value && value.length > 0">
           <span class="flex items-center gap-1">
-            <slot name="icon" />
+            <span :class="value[0].icon" />
             {{ value[0].label }}
           </span>
         </template>

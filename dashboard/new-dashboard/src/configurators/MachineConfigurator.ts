@@ -164,9 +164,9 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   }
 
   private getIcons(groupName: string): string {
-    if (groupName.startsWith("Linux")) {
+    if (groupName.toLowerCase().startsWith("linux")) {
       return "pi pi-desktop"
-    } else if (groupName.startsWith("Mac") || groupName.startsWith("mac")) {
+    } else if (groupName.toLowerCase().startsWith("mac")) {
       return "pi pi-apple"
     } else {
       return "pi pi-microsoft"

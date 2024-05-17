@@ -13,7 +13,17 @@
     <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{ value }">
       <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-        <template v-if="value && value.length > 0">
+        <template v-if="value && value.length > 1">
+          <span class="flex items-center gap-2">
+            <div
+              v-for="item in value"
+              :key="item.key"
+            >
+              <span :class="item.icon" />
+            </div>
+          </span>
+        </template>
+        <template v-if="value && value.length === 1">
           <span class="flex items-center gap-1">
             <span :class="value[0].icon" />
             {{ value[0].label }}

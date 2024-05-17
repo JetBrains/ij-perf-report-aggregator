@@ -3,13 +3,18 @@
     :id="anchor"
     class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
   >
-    <h3 class="m-0 text-sm flex items-center">
+    <h3
+      class="m-0 text-sm flex items-center"
+      @mouseover="labelHovered = true"
+      @mouseleave="labelHovered = false"
+    >
       {{ props.title + (settingStore.scaling ? " (scaled)" : "") }}&nbsp;
       <a
+        v-show="labelHovered"
         :href="'#' + anchor"
-        class="text-blue-500"
-        >#</a
       >
+        <LinkIcon class="w-4 h-4" />
+      </a>
       <span class="ml-auto flex items-center">
         <span
           v-if="props.canBeClosed"
@@ -27,7 +32,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { computed, inject, onMounted, onUnmounted, Ref, shallowRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, Ref, shallowRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -88,6 +93,8 @@ const chartIsVisible = useElementVisibility(chartElement)
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
+
+const labelHovered = ref(false)
 
 const infoFieldsConfigurator =
   reportInfoProvider && reportInfoProvider.infoFields.length > 0

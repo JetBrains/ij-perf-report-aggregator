@@ -163,6 +163,7 @@
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getChangesUrl"
+          @click.middle="getChangesUrl"
         >
           <ArrowPathIcon class="w-4 h-4" />
           Changes
@@ -170,6 +171,7 @@
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getArtifactsUrl"
+          @click.middle="getArtifactsUrl"
         >
           <ServerStackIcon class="w-4 h-4" />
           Test Artifacts
@@ -189,6 +191,7 @@
           v-if="data?.installerId || vm.data.value?.buildId"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getSpaceUrl"
+          @click.middle="getSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />
           Changes

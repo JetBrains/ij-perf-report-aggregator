@@ -67,6 +67,7 @@ const metricsDeclaration = [
   "jps.save.changed.project.entities.ms",
   "jps.save.global.entities.ms",
   "jps.storage.jps.conf.reader.load.component.ms",
+  "jps.module.dependency.index.workspace.model.listener.on.changed.ms",
 
   "workspaceModel.check.recursive.update.ms",
   "workspaceModel.collect.changes.ms",
@@ -151,8 +152,6 @@ const metricsDeclaration = [
   "workspaceModel.cachedValueWithParameters.total.get.count",
   "workspaceModel.cachedValue.clear.count",
   "workspaceModel.cachedValueWithParameters.clear.count",
-
-  "module.dependency.index.workspace.model.listener.on.changed.ms",
 
   "compiler.ArtifactBridge.beforeChanged.ms",
   "compiler.ArtifactManagerBridge.addArtifact.ms",

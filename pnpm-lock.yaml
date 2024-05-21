@@ -102,9 +102,6 @@ importers:
       '@fontsource/jetbrains-mono':
         specifier: 5.0.20
         version: 5.0.20
-      '@fortawesome/fontawesome-free':
-        specifier: ^6.5.2
-        version: 6.5.2
       new-dashboard:
         specifier: workspace:*
         version: link:../new-dashboard
@@ -390,10 +387,6 @@ packages:
 
   '@fontsource/jetbrains-mono@5.0.20':
     resolution: {integrity: sha512-QkrihYWqftzs+04TinulIhnFqNwO6990HR07iCUae/6daOZAMy7urUPzytrRT9M8KLTTHBeHOY0CKqOs1+o2OQ==}
-
-  '@fortawesome/fontawesome-free@6.5.2':
-    resolution: {integrity: sha512-hRILoInAx8GNT5IMkrtIt9blOdrqHOnPBH+k70aWUAqPZPgopb9G5EQJFpaBx/S8zp2fC+mPW349Bziuk1o28Q==}
-    engines: {node: '>=6'}
 
   '@headlessui/vue@1.7.22':
     resolution: {integrity: sha512-Hoffjoolq1rY+LOfJ+B/OvkhuBXXBFgd8oBlN+l1TApma2dB0En0ucFZrwQtb33SmcCqd32EQd0y07oziXWNYg==}
@@ -2898,8 +2891,6 @@ snapshots:
   '@fontsource/inter@5.0.18': {}
 
   '@fontsource/jetbrains-mono@5.0.20': {}
-
-  '@fortawesome/fontawesome-free@6.5.2': {}
 
   '@headlessui/vue@1.7.22(vue@3.4.27(typescript@5.4.5))':
     dependencies:

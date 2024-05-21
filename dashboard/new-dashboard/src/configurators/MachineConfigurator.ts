@@ -165,7 +165,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private getIcons(groupName: string): string {
     if (groupName.toLowerCase().startsWith("linux")) {
-      return "fa-brands fa-linux"
+      return "icon-linux"
     } else if (groupName.toLowerCase().startsWith("mac")) {
       return "pi pi-apple"
     } else {

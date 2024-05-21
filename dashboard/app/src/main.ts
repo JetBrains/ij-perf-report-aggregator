@@ -12,7 +12,6 @@ import { createAndConfigureRouter } from "./route"
 // avoid tiff/svg/other deprecated stuff in a final build
 import "./primeicons.css"
 import "../prime-theme/themes/aura/aura-light/blue/theme.scss"
-import "@fortawesome/fontawesome-free/css/all.css"
 
 import "new-dashboard/src/primevue-theme/select.css"
 import "new-dashboard/src/primevue-theme/select-panel.css"

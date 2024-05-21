@@ -135,6 +135,11 @@ export const completionProjects = {
     "ktor_before_add_wasm_client/completion/URLBuilderJs_URLBuilderJs_typing_with_library_cache",
     "ktor_before_add_wasm_client/completion/DarwinUtils_DarwinUtils_with_library_cache",
   ],
+  sqliter: [
+    "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache",
+    "SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache",
+    "SQLiter/completion/Types_Types_typing_with_library_cache",
+  ],
   space: ["space_specific/completion/Dimensions_typealias_with_library_cache"],
 }
 
@@ -307,6 +312,15 @@ export const highlightingProjects = {
     "ktor_before_add_wasm_client/highlight/TestUtilsMacos_with_library_cache",
     "ktor_before_add_wasm_client/highlight/PrimitiveArraysJs_with_library_cache",
     "ktor_before_add_wasm_client/highlight/CharsetMingw_with_library_cache",
+  ],
+  sqliter: [
+    "SQLiter/highlight/ActualSqliteStatement_with_library_cache",
+    "SQLiter/highlight/Logger_with_library_cache",
+    "SQLiter/highlight/SQLiteException_with_library_cache",
+    "SQLiter/highlight/SqliteDatabase_with_library_cache",
+    "SQLiter/highlight/SqliteStatement_with_library_cache",
+    "SQLiter/highlight/TracingSqliteStatement_with_library_cache",
+    "SQLiter/highlight/Types_with_library_cache",
   ],
   space: [
     "space_specific/highlight/DocumentsStatsTest_with_library_cache",

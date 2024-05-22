@@ -294,7 +294,7 @@ function getValueToGroup() {
   const macMiniIntel = "macMini Intel 3.2, 16GB"
   // Mac Mini M1 Chip with 8‑Core CPU und 8‑Core GPU, SSD 256Gb, RAM 16Gb
   const macMiniM1 = "macMini M1 2020"
-  const macMiniM1_16 = "macMini M1, 16GB"
+  const macMiniM1_16 = "macMini M1, 16 Gb"
 
   // Core i7-3770 16Gb, Intel SSD 535
   const win = "Windows Space i7-3770, 16Gb"

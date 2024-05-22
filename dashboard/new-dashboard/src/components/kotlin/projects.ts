@@ -483,6 +483,7 @@ export const findUsagesProjects = {
     "ktor_before_add_wasm_client/findUsages/CharsetNative_with_library_cache",
     "ktor_before_add_wasm_client/findUsages/Memory_with_library_cache",
   ],
+  sqliter: ["SQLiter/findUsages/sqlite3_prepare16_v2_with_library_cache_with_library_cache", "SQLiter/findUsages/SQLITE_OK_with_library_cache"],
   space: [
     "space_specific/findUsages/ApiFlag_with_library_cache",
     "space_specific/findUsages/Http_with_library_cache",

@@ -62,7 +62,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       } else if (value.startsWith("intellij-windows-hw-blade-")) {
         groupName = "windows-blade"
       } else if (value.startsWith("intellij-windows-hw-munit-")) {
-        groupName = "Windows Munich i7-3770, 32Gb"
+        groupName = "Windows Munich i7-3770, 32 Gb"
       } else {
         if (
           value.startsWith("intellij-linux-aws-amd-lt") ||

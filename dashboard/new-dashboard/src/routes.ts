@@ -1441,7 +1441,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "idea",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },

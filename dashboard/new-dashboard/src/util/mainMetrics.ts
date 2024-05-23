@@ -26,4 +26,6 @@ export const MAIN_METRICS: string[] = [
   "searchEverywhere_dialog_shown",
   "showQuickFixes",
   "createJavaFile",
+  "typingCodeAnalyzing",
+  "test#max_awt_delay",
 ]

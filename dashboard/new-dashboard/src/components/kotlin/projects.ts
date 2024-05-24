@@ -153,6 +153,7 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin coroutine QG'", completionProjects.kotlinCoroutinesQG),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
+  ...generateCompletionDefinitions("'SQLiter'", completionProjects.sqliter),
 ]
 
 export const mppCompletionCharts: ProjectsChartDefinition[] = [
@@ -366,6 +367,7 @@ const highlightingLabelsAndProjects = [
   { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
   { label: "'Kotlin coroutines'", projects: highlightingProjects.kotlinCoroutinesQg },
+  { label: "'SQLiter'", projects: highlightingProjects.sqliter },
 ]
 
 const mppHighlightingLabelsAndProjects = [
@@ -505,6 +507,7 @@ export const findUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
   generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
   generateFindUsagesDefinition("'Android anki project'", findUsagesProjects.anki),
+  generateFindUsagesDefinition("'SQLiter'", findUsagesProjects.sqliter),
 ]
 export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Space'", findUsagesProjects.space),

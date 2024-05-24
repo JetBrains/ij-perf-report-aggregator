@@ -36,7 +36,7 @@ export function createAndConfigureRouter(): Router {
             const y = (element?.getBoundingClientRect().top ?? 0) + window.pageYOffset + yOffset
             window.scrollTo({ top: y, behavior: "smooth" })
             resolve({ left: 0, top: y })
-          }, 300) // Delay to ensure the element is rendered
+          }, 600) // Delay to ensure the element is rendered
         })
       }
       return { left: 0, top: 0 }

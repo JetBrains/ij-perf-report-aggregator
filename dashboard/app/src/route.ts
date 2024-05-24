@@ -34,9 +34,8 @@ export function createAndConfigureRouter(): Router {
             const element = document.querySelector(to.hash)
             const yOffset = -60 // Adjust this value as needed for your fixed header or other elements
             const y = (element?.getBoundingClientRect().top ?? 0) + window.scrollY + yOffset
-            window.scrollTo({ top: y, behavior: "smooth" })
-            resolve({ left: 0, top: y })
-          }, 600) // Delay to ensure the element is rendered
+            resolve({ top: y, behavior: "smooth" })
+          }, 600)
         })
       }
       return { left: 0, top: 0 }

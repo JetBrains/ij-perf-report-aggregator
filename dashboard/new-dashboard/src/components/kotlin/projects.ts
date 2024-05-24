@@ -550,6 +550,28 @@ function generateEvaluateExpressionDefinition(labelPrefix: string, projects: str
   }
 }
 
+const convertJavaToKotlinProjects = {
+  intellijSources: [
+    "intellij_sources/javaToKotlin/HighlightFixUtil",
+    "intellij_sources/javaToKotlin/CompilerConfigurationImpl",
+    "intellij_sources/javaToKotlin/DaemonCodeAnalyzerImpl",
+    "intellij_sources/javaToKotlin/HighlightMethodUtil",
+    "intellij_sources/javaToKotlin/EditorImpl",
+  ],
+}
+
+export const evaluateConvertJavaToKotlinProjectsChars: ProjectsChartDefinition[] = [
+  generateConvertJavaToKotlinDefinition("'Intellij Sources'", convertJavaToKotlinProjects.intellijSources),
+]
+
+function generateConvertJavaToKotlinDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+  return {
+    label: `${labelPrefix} convert java to kotlin`,
+    measure: "convertJavaToKotlin",
+    projects,
+  }
+}
+
 const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingProjects.kotlinScript }]
 export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects))
 export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))

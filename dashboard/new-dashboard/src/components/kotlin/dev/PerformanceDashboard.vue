@@ -79,6 +79,7 @@
     <DashboardGroupCharts :definitions="highlightingScriptCharts" />
     <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
+    <DashboardGroupCharts :definitions="evaluateConvertJavaToKotlinProjectsChars" />
   </DashboardPage>
 </template>
 
@@ -98,5 +99,6 @@ import {
   highlightingScriptCharts,
   codeAnalysisScriptCharts,
   scriptFindUsagesCharts,
+  evaluateConvertJavaToKotlinProjectsChars,
 } from "../projects"
 </script>

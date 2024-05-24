@@ -78,6 +78,7 @@
     <DashboardGroupCharts :definitions="highlightingScriptCharts" />
     <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
+    <Divider title="Convert Java to Kotlin" />
     <DashboardGroupCharts :definitions="evaluateConvertJavaToKotlinProjectsChars" />
   </DashboardPage>
 </template>

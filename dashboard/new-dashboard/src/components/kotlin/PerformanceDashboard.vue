@@ -6,6 +6,7 @@
     persistent-id="kotlin_dashboard"
     initial-machine="linux-blade-hetzner"
   >
+    <SlackLink></SlackLink>
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
         <AggregationChart
@@ -101,4 +102,5 @@ import {
   scriptFindUsagesCharts,
   evaluateConvertJavaToKotlinProjectsChars,
 } from "./projects"
+import SlackLink from "./SlackLink.vue"
 </script>

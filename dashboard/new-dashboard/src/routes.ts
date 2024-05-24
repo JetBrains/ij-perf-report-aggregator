@@ -104,7 +104,6 @@ enum ROUTES {
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
   KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}Dev`,
-  KotlinCodeAnalysis = `${ROUTE_PREFIX.Kotlin}/codeAnalysis`,
   KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
@@ -563,44 +562,12 @@ const KOTLIN: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.KotlinCodeAnalysis,
-          label: "Code Analysis",
-        },
-        {
           url: ROUTES.KotlinTests,
           label: TESTS_LABEL,
         },
         {
           url: ROUTES.KotlinTestsDev,
           label: "Tests (dev)",
-        },
-        {
-          url: ROUTES.KotlinCompletionDev,
-          label: "Completion (dev)",
-        },
-        {
-          url: ROUTES.KotlinCodeAnalysisDev,
-          label: "Code analysis (dev)",
-        },
-        {
-          url: ROUTES.KotlinHighlightingDev,
-          label: "Highlighting (dev)",
-        },
-        {
-          url: ROUTES.KotlinFindUsagesDev,
-          label: "FindUsages (dev)",
-        },
-        {
-          url: ROUTES.KotlinRefactoringDev,
-          label: "Refactoring (dev)",
-        },
-        {
-          url: ROUTES.KotlinDebuggerDev,
-          label: "Debugger (dev)",
-        },
-        {
-          url: ROUTES.KotlinScriptDev,
-          label: "Kts (dev)",
         },
         {
           url: ROUTES.KotlinK1VsK2Comparison,
@@ -616,7 +583,7 @@ const KOTLIN: Product = {
         },
         {
           url: ROUTES.KotlinCompareBranchesDev,
-          label: COMPARE_BRANCHES_LABEL + "(dev)",
+          label: COMPARE_BRANCHES_LABEL + " (dev)",
         },
       ],
     },
@@ -1836,11 +1803,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinDashboardDev,
           component: () => import("./components/kotlin/dev/PerformanceDashboard.vue"),
           meta: { pageTitle: "Kotlin Performance dashboard (dev)" },
-        },
-        {
-          path: ROUTES.KotlinCodeAnalysis,
-          component: () => import("./components/kotlin/KotlinCodeAnalysisDashboard.vue"),
-          meta: { pageTitle: "Code analysis" },
         },
         {
           path: ROUTES.KotlinCodeAnalysisDev,

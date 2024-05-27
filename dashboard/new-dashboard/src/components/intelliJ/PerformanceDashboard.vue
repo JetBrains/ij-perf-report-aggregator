@@ -146,6 +146,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["scrollEditor#max_cpu_load", "scrollEditor#average_cpu_load"]],
     projects: ["intellij_commit/scrollEditor/java_file_ContentManagerImpl"],
   },
+  {
+    labels: ["Project View"],
+    measures: [["projectViewInit", "projectViewInit#cachedNodesLoaded"]],
+    projects: ["intellij_commit/projectView"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

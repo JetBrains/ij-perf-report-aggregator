@@ -9,7 +9,7 @@
     "echarts": "5.5.0",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
-    "humanize-duration": "3.32.0",
+    "humanize-duration": "3.32.1",
     "p-limit": "^5.0.0",
     "pinia": "^2.1.7",
     "primevue": "3.50.0",
@@ -21,7 +21,7 @@
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.11.0",
     "global-jsdom": "^24.0.0",
-    "jsdom": "^24.0.0",
+    "jsdom": "^24.1.0",
     "msw": "^2.3.0"
   }
 }

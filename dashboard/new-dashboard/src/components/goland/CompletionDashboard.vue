@@ -9,14 +9,14 @@
       <GroupProjectsChart
         label="Auto-import completion"
         measure="completion"
-        :projects="['autoImportCompletion']"
+        :projects="['goland/autoImportCompletion/autoImportCompletion']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Smart completion"
         measure="completion"
-        :projects="['smartCompletionSpeed']"
+        :projects="['goland/smartCompletionSpeed/smartCompletionSpeed']"
       />
     </section>
   </DashboardPage>

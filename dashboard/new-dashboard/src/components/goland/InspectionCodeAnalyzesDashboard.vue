@@ -9,7 +9,7 @@
       <GroupProjectsChart
         label="Local inspection execution time"
         measure="localInspections"
-        :projects="['istio/localInspection', 'minotaur/localInspection']"
+        :projects="['goland/istio/localInspection', 'goland/minotaur/localInspection']"
       />
     </section>
     <section>

@@ -9,14 +9,14 @@
       <GroupProjectsChart
         label="Local inspection execution time"
         measure="localInspections"
-        :projects="['kubernetes/localInspection', 'GO-5422/localInspection']"
+        :projects="['istio/localInspection', 'minotaur/localInspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Global inspection execution time: light projects"
         measure="globalInspections"
-        :projects="['delve/inspection', 'flux/inspection', 'istio/inspection']"
+        :projects="['delve/inspection', 'kubernetes/inspection']"
       />
     </section>
   </DashboardPage>

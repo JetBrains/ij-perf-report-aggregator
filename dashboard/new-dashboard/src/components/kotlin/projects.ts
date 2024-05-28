@@ -153,7 +153,6 @@ export const completionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin coroutine QG'", completionProjects.kotlinCoroutinesQG),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
   ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
-  ...generateCompletionDefinitions("'SQLiter'", completionProjects.sqliter),
 ]
 
 export const mppCompletionCharts: ProjectsChartDefinition[] = [
@@ -162,6 +161,7 @@ export const mppCompletionCharts: ProjectsChartDefinition[] = [
   ...generateCompletionDefinitions("'Kotlin Coroutines'", completionProjects.kotlinCoroutines),
   ...generateCompletionDefinitions("'Kotlin Coroutines QG'", completionProjects.kotlinCoroutinesQG),
   ...generateCompletionDefinitions("'Native-acceptance'", completionProjects.mppNativeAcceptance),
+  ...generateCompletionDefinitions("'SQLiter'", completionProjects.sqliter),
 ]
 
 function generateCompletionDefinitions(labelPrefix: string, projects: string[]): ProjectsChartDefinition[] {
@@ -367,12 +367,12 @@ const highlightingLabelsAndProjects = [
   { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
   { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
   { label: "'Kotlin coroutines'", projects: highlightingProjects.kotlinCoroutinesQg },
-  { label: "'SQLiter'", projects: highlightingProjects.sqliter },
 ]
 
 const mppHighlightingLabelsAndProjects = [
   { label: "'Space'", projects: highlightingProjects.space },
   { label: "'Ktor'", projects: highlightingProjects.ktor },
+  { label: "'SQLiter'", projects: highlightingProjects.sqliter },
   { label: "'Kotlin Coroutines'", projects: highlightingProjects.kotlinCoroutines },
   { label: "'Kotlin Coroutines QG'", projects: highlightingProjects.kotlinCoroutinesQg },
 ]
@@ -507,13 +507,13 @@ export const findUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
   generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
   generateFindUsagesDefinition("'Android anki project'", findUsagesProjects.anki),
-  generateFindUsagesDefinition("'SQLiter'", findUsagesProjects.sqliter),
 ]
 export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
   generateFindUsagesDefinition("'Space'", findUsagesProjects.space),
   generateFindUsagesDefinition("'Kotlin Coroutines'", findUsagesProjects.kotlinCoroutines),
   generateFindUsagesDefinition("'Kotlin Coroutines QG'", findUsagesProjects.kotlinCoroutinesQg),
   generateFindUsagesDefinition("'Ktor'", findUsagesProjects.ktor),
+  generateFindUsagesDefinition("'SQLiter'", findUsagesProjects.sqliter),
 ]
 
 function generateFindUsagesDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {

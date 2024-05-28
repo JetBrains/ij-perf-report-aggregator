@@ -164,16 +164,21 @@ function reportRegression() {
   }
 }
 
-function deleteRegression() {
+async function deleteRegression() {
   showDialog.value = false
   if (props.accidentToEdit != null) {
-    props.accidentsConfigurator?.removeAccidentFromMetaDb(props.accidentToEdit.id)
+    await props.accidentsConfigurator?.removeAccidentFromMetaDb(props.accidentToEdit.id)
   }
 }
 
 function updateRegression() {
   deleteRegression()
-  reportRegression()
+    .then(() => {
+      reportRegression()
+    })
+    .catch(() => {
+      console.error("Failed to delete accident")
+    })
 }
 
 watch(reportMetricOnly, (newValue) => {

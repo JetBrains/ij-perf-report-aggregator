@@ -86,32 +86,27 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       })
   }
 
-  removeAccidentFromMetaDb(id: number) {
-    fetch(this.getAccidentUrl() + "accidents/", {
+  async removeAccidentFromMetaDb(id: number) {
+    const response = await fetch(this.getAccidentUrl() + "accidents/", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ id }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("The accident wasn't deleted")
-        }
-      })
-      .then((_) => {
-        const updatedMap = new Map(this.value.value)
-        for (const [key, value] of updatedMap) {
-          if (value[0].id == id) {
-            updatedMap.delete(key)
-            break
-          }
-        }
-        this.value.value = updatedMap //we need to update value in reference to trigger the change
-      })
-      .catch((error: unknown) => {
-        console.error(error)
-      })
+
+    if (!response.ok) {
+      throw new Error("The accident wasn't deleted")
+    }
+
+    const updatedMap = new Map(this.value.value)
+    for (const [key, value] of updatedMap) {
+      if (value[0].id == id) {
+        updatedMap.delete(key)
+        break
+      }
+    }
+    this.value.value = updatedMap //we need to update value in reference to trigger the change
   }
 
   public getAccidentsAroundDate(date: string): Promise<Accident[]> {
@@ -298,6 +293,7 @@ export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
         })
     })
   }
+
   protected getAccidentUrl(): string {
     return this.serverUrl + "/api/meta/"
   }

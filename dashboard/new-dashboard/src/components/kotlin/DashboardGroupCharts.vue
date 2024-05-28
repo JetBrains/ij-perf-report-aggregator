@@ -10,6 +10,7 @@
         :measure="definition.measure"
         :projects="definition.projects.map((s) => `${s}_k1`)"
         :legend-formatter="replaceKotlinName"
+        :machines="definition.machines"
       />
     </div>
     <div class="flex-1 min-w-0">
@@ -18,6 +19,7 @@
         :measure="definition.measure"
         :projects="definition.projects.map((s) => `${s}_k2`)"
         :legend-formatter="replaceKotlinName"
+        :machines="definition.machines"
       />
     </div>
   </section>

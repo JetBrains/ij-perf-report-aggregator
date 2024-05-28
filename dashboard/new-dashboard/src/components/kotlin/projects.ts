@@ -46,9 +46,40 @@ export interface ProjectsChartDefinition {
    * All project names in the chart *without* their `_k1` and `_k2` suffixes.
    */
   projects: string[]
+
+  machines: string[]
 }
 
-export const completionProjects = {
+const machines = {
+  linux: "linux-blade-hetzner",
+  mac: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
+}
+
+const labelByProject: { [key: string]: string } = {
+  kotlinEmpty: "'Kotlin empty'",
+  intelliJ: "'IntelliJ'",
+  intelliJ2: "'IntelliJ suite 2'",
+  intelliJTyping2: "'IntelliJ with typing suite 2'",
+  kotlinLang: "'Kotlin lang'",
+  kotlinLanguageServer: "'Kotlin language server'",
+  tbe: "'Toolbox Enterprise (TBE)'",
+  ktorSamples: "'Ktor samples'",
+  androidCanaryLeak: "'Android canary leak'",
+  anki: "'Android anki project'",
+  kotlinScript: "'Kotlin script'",
+  removedImports: "'Files with removed imports'",
+  springFramework: "'Spring framework'",
+  rustPlugin: "'Rust plugin'",
+  kotlinCoroutines: "'Kotlin Coroutines'",
+  space: "'Space'",
+  sqliter: "'SQLiter'",
+  ktor: "'Ktor'",
+  kotlinCoroutinesQg: "'Kotlin Coroutines QG'",
+  tbeCaseWithAssert: "'Toolbox Enterprise (TBE) different length'",
+  mppNativeAcceptance: "'Native-acceptance'",
+}
+
+export const completionLinuxProjects = {
   kotlinEmpty: ["kotlin_empty/completion/Main_empty_place_with_library_cache", "kotlin_empty/completion/Main_empty_place_typing_with_library_cache"],
   intelliJ: [
     "intellij_commit/completion/DexInlineCallStackComparisonTest_empty_place_with_library_cache",
@@ -101,17 +132,21 @@ export const completionProjects = {
     "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
     "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache",
   ],
-  kotlinLanguageServerEvaluateExpression: [
-    "kotlin_language_server/completion/Completions_emptyPlace_completions_typing_with_library_cache",
-    "kotlin_language_server/completion/Completions_emptyPlace_completions_with_library_cache",
-    "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_typing_with_library_cache",
-    "kotlin_language_server/completion/QuickFixesTest_emptyPlace_completions_with_library_cache",
-  ],
   kotlinCoroutines: [
     "kotlin_coroutines_commit/completion/CoroutineScheduler_in_constructor_typing_with_library_cache",
     "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_typing_with_library_cache",
     "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_with_library_cache",
   ],
+  mppNativeAcceptance: [
+    "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.macOS_with_library_cache",
+    "kotlin_kmp_native_acceptance/completion/Sample.mingw_with_library_cache",
+  ],
+  space: ["space_specific/completion/Dimensions_typealias_with_library_cache"],
+}
+
+export const completionMacProjects = {
   kotlinCoroutinesQG: [
     "kotlin_coroutines_qg/completion/AwaitStressTest_test_AwaitStressTest_typing_with_library_cache",
     "kotlin_coroutines_qg/completion/CoroutineContext_enqueue_CoroutineContext_typing_with_library_cache",
@@ -123,11 +158,10 @@ export const completionProjects = {
     "kotlin_coroutines_qg/completion/TestBase_finish_TestBase_typing_with_library_cache",
     "kotlin_coroutines_qg/completion/WorkerTest_test_WorkerTest_typing_with_library_cache",
   ],
-  mppNativeAcceptance: [
-    "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
-    "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
-    "kotlin_kmp_native_acceptance/completion/Sample.macOS_with_library_cache",
-    "kotlin_kmp_native_acceptance/completion/Sample.mingw_with_library_cache",
+  sqliter: [
+    "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache",
+    "SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache",
+    "SQLiter/completion/Types_Types_typing_with_library_cache",
   ],
   ktor: [
     "ktor_before_add_wasm_client/completion/CharsetLinux_encodeImpl_typing_with_library_cache",
@@ -135,46 +169,27 @@ export const completionProjects = {
     "ktor_before_add_wasm_client/completion/URLBuilderJs_URLBuilderJs_typing_with_library_cache",
     "ktor_before_add_wasm_client/completion/DarwinUtils_DarwinUtils_with_library_cache",
   ],
-  sqliter: [
-    "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache",
-    "SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache",
-    "SQLiter/completion/Types_Types_typing_with_library_cache",
-  ],
-  space: ["space_specific/completion/Dimensions_typealias_with_library_cache"],
 }
 
-export const completionCharts: ProjectsChartDefinition[] = [
-  ...generateCompletionDefinitions("'Hello-world'", completionProjects.kotlinEmpty),
-  ...generateCompletionDefinitions("'IntelliJ'", completionProjects.intelliJ),
-  ...generateCompletionDefinitions("'IntelliJ suite 2'", completionProjects.intelliJ2),
-  ...generateCompletionDefinitions("'IntelliJ with typing suite 2'", completionProjects.intelliJTyping2),
-  ...generateCompletionDefinitions("'Kotlin lang'", completionProjects.kotlinLang),
-  ...generateCompletionDefinitions("'Kotlin language server'", completionProjects.kotlinLanguageServer),
-  ...generateCompletionDefinitions("'Kotlin coroutine QG'", completionProjects.kotlinCoroutinesQG),
-  ...generateCompletionDefinitions("'Toolbox Enterprise (TBE)'", completionProjects.tbe),
-  ...generateCompletionDefinitions("'Toolbox Enterprise (TBE) different length'", completionProjects.tbeCaseWithAssert),
-]
+export const completionProjects = { ...completionMacProjects, ...completionLinuxProjects }
 
-export const mppCompletionCharts: ProjectsChartDefinition[] = [
-  ...generateCompletionDefinitions("'Space'", completionProjects.space),
-  ...generateCompletionDefinitions("'Ktor'", completionProjects.ktor),
-  ...generateCompletionDefinitions("'Kotlin Coroutines'", completionProjects.kotlinCoroutines),
-  ...generateCompletionDefinitions("'Kotlin Coroutines QG'", completionProjects.kotlinCoroutinesQG),
-  ...generateCompletionDefinitions("'Native-acceptance'", completionProjects.mppNativeAcceptance),
-  ...generateCompletionDefinitions("'SQLiter'", completionProjects.sqliter),
-]
+export const completionCharts = Object.entries(completionLinuxProjects)
+  .map(([key, value]) => generateCompletionDefinitions(labelByProject[key], value, [machines.linux]))
+  .concat(Object.entries(completionMacProjects).map(([key, value]) => generateCompletionDefinitions(labelByProject[key], value, [machines.mac])))
 
-function generateCompletionDefinitions(labelPrefix: string, projects: string[]): ProjectsChartDefinition[] {
+function generateCompletionDefinitions(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition[] {
   return [
     {
       label: `${labelPrefix} completion mean value`,
       measure: "completion#mean_value",
       projects,
+      machines,
     },
     {
       label: `${labelPrefix} firstElementShown mean value`,
       measure: "completion#firstElementShown#mean_value",
       projects,
+      machines,
     },
   ]
 }
@@ -182,7 +197,7 @@ function generateCompletionDefinitions(labelPrefix: string, projects: string[]):
 /**
  * Highlighting projects are also the projects for local inspections.
  */
-export const highlightingProjects = {
+export const highlightingLinuxProjects = {
   kotlinEmpty: ["kotlin_empty/highlight/Main_with_library_cache"],
   intelliJ: [
     "intellij_commit/highlight/KtOCSwiftChangeSignatureTest_with_library_cache",
@@ -303,26 +318,6 @@ export const highlightingProjects = {
     "kotlin_coroutines_commit/highlight/CoroutineScheduler_with_library_cache",
     "kotlin_coroutines_commit/highlight/JobSupport_with_library_cache",
   ],
-  ktor: [
-    "ktor_before_add_wasm_client/highlight/ByteBufferChannel_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/StaticContentTest_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/RoutingResolveTest_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/PrimitiveArraysNative_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/CertificatePinner_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/CharsetLinux_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/TestUtilsMacos_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/PrimitiveArraysJs_with_library_cache",
-    "ktor_before_add_wasm_client/highlight/CharsetMingw_with_library_cache",
-  ],
-  sqliter: [
-    "SQLiter/highlight/ActualSqliteStatement_with_library_cache",
-    "SQLiter/highlight/Logger_with_library_cache",
-    "SQLiter/highlight/SQLiteException_with_library_cache",
-    "SQLiter/highlight/SqliteDatabase_with_library_cache",
-    "SQLiter/highlight/SqliteStatement_with_library_cache",
-    "SQLiter/highlight/TracingSqliteStatement_with_library_cache",
-    "SQLiter/highlight/Types_with_library_cache",
-  ],
   space: [
     "space_specific/highlight/DocumentsStatsTest_with_library_cache",
     "space_specific/highlight/EventCounters_with_library_cache",
@@ -334,6 +329,18 @@ export const highlightingProjects = {
     "space_specific/highlight/SchemaMigration_with_library_cache",
     "space_specific/highlight/SecretsTests_with_library_cache",
     "space_specific/highlight/XScrollable_with_library_cache",
+  ],
+}
+
+export const highlightingMacProjects = {
+  sqliter: [
+    "SQLiter/highlight/ActualSqliteStatement_with_library_cache",
+    "SQLiter/highlight/Logger_with_library_cache",
+    "SQLiter/highlight/SQLiteException_with_library_cache",
+    "SQLiter/highlight/SqliteDatabase_with_library_cache",
+    "SQLiter/highlight/SqliteStatement_with_library_cache",
+    "SQLiter/highlight/TracingSqliteStatement_with_library_cache",
+    "SQLiter/highlight/Types_with_library_cache",
   ],
   kotlinCoroutinesQg: [
     "kotlin_coroutines_qg/highlight/BufferedChannel_with_library_cache",
@@ -351,49 +358,44 @@ export const highlightingProjects = {
     "kotlin_coroutines_qg/highlight/TestBase_with_library_cache",
     "kotlin_coroutines_qg/highlight/WorkerMain_with_library_cache",
   ],
+  ktor: [
+    "ktor_before_add_wasm_client/highlight/ByteBufferChannel_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/StaticContentTest_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/RoutingResolveTest_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/PrimitiveArraysNative_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/CertificatePinner_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/CharsetLinux_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/TestUtilsMacos_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/PrimitiveArraysJs_with_library_cache",
+    "ktor_before_add_wasm_client/highlight/CharsetMingw_with_library_cache",
+  ],
 }
 
-const highlightingLabelsAndProjects = [
-  { label: "'Kotlin empty'", projects: highlightingProjects.kotlinEmpty },
-  { label: "'IntelliJ'", projects: highlightingProjects.intelliJ },
-  { label: "'IntelliJ suite 2'", projects: highlightingProjects.intelliJ2 },
-  { label: "'Kotlin lang'", projects: highlightingProjects.kotlinLang },
-  { label: "'Kotlin language server'", projects: highlightingProjects.kotlinLanguageServer },
-  { label: "'Toolbox Enterprise (TBE)'", projects: highlightingProjects.tbe },
-  { label: "'Ktor samples'", projects: highlightingProjects.ktorSamples },
-  { label: "'Android canary leak'", projects: highlightingProjects.androidCanaryLeak },
-  { label: "'Android anki project'", projects: highlightingProjects.anki },
-  { label: "'Spring framework'", projects: highlightingProjects.springFramework },
-  { label: "'Rust plugin'", projects: highlightingProjects.rustPlugin },
-  { label: "'Files with removed imports'", projects: highlightingProjects.removedImports },
-  { label: "'Kotlin coroutines'", projects: highlightingProjects.kotlinCoroutinesQg },
-]
+export const highlightingProjects = { ...highlightingLinuxProjects, ...highlightingMacProjects }
 
-const mppHighlightingLabelsAndProjects = [
-  { label: "'Space'", projects: highlightingProjects.space },
-  { label: "'Ktor'", projects: highlightingProjects.ktor },
-  { label: "'SQLiter'", projects: highlightingProjects.sqliter },
-  { label: "'Kotlin Coroutines'", projects: highlightingProjects.kotlinCoroutines },
-  { label: "'Kotlin Coroutines QG'", projects: highlightingProjects.kotlinCoroutinesQg },
-]
+export const highlightingCharts = Object.entries(highlightingLinuxProjects)
+  .map(([key, value]) => generateHighlightingDefinition(labelByProject[key], value, [machines.linux]))
+  .concat(Object.entries(highlightingMacProjects).map(([key, value]) => generateHighlightingDefinition(labelByProject[key], value, [machines.mac])))
 
-export const highlightingCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))
-export const mppHighlightingCharts: ProjectsChartDefinition[] = mppHighlightingLabelsAndProjects.map((v) => generateHighlightingDefinition(v.label, v.projects))
-
-function generateHighlightingDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+function generateHighlightingDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} semantic highlighting mean value`,
     measure: "semanticHighlighting#mean_value",
     projects,
+    machines,
   }
 }
-export const codeAnalysisCharts: ProjectsChartDefinition[] = highlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
-export const mppCodeAnalysisCharts: ProjectsChartDefinition[] = mppHighlightingLabelsAndProjects.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
-function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+
+export const codeAnalysisCharts = Object.entries(highlightingLinuxProjects)
+  .map(([key, value]) => generateCodeAnalysisChartsDefinition(labelByProject[key], value, [machines.linux]))
+  .concat(Object.entries(highlightingMacProjects).map(([key, value]) => generateCodeAnalysisChartsDefinition(labelByProject[key], value, [machines.mac])))
+
+function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} Code Analysis mean value`,
     measure: "localInspections#mean_value",
     projects,
+    machines,
   }
 }
 
@@ -418,17 +420,17 @@ export const refactoringCharts: ProjectsChartDefinition[] = [
   generateRefactoringDefinition("PrepareForRename", "prepareForRename#mean_value", refactoringProjects),
   generateRefactoringDefinition("Optimize imports", "execute_editor_optimizeimports", optimizeImportsProjects),
 ]
-export const mppRefactoringCharts: ProjectsChartDefinition[] = []
 
 function generateRefactoringDefinition(labelPrefix: string, measure: string, projectsData: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} mean value`,
     measure,
     projects: projectsData,
+    machines: [machines.linux],
   }
 }
 
-export const findUsagesProjects = {
+export const findUsagesLinuxProjects = {
   intelliJ: [
     "intellij_commit/findUsages/loadModuleEntity_with_library_cache",
     "intellij_commit/findUsages/setUp_with_library_cache",
@@ -479,6 +481,15 @@ export const findUsagesProjects = {
     "kotlin_coroutines_commit/findUsages/FlowCollector_with_library_cache",
     "kotlin_coroutines_commit/findUsages/runBlocking_with_library_cache",
   ],
+  space: [
+    "space_specific/findUsages/ApiFlag_with_library_cache",
+    "space_specific/findUsages/Http_with_library_cache",
+    "space_specific/findUsages/IntSizePx_with_library_cache",
+    "space_specific/findUsages/UniqueConstraint_with_library_cache",
+  ],
+}
+
+export const findUsagesMacProjects = {
   ktor: [
     "ktor_before_add_wasm_client/findUsages/SelectorManager_with_library_cache",
     "ktor_before_add_wasm_client/findUsages/Encoding_with_library_cache",
@@ -486,12 +497,6 @@ export const findUsagesProjects = {
     "ktor_before_add_wasm_client/findUsages/Memory_with_library_cache",
   ],
   sqliter: ["SQLiter/findUsages/sqlite3_prepare16_v2_with_library_cache_with_library_cache", "SQLiter/findUsages/SQLITE_OK_with_library_cache"],
-  space: [
-    "space_specific/findUsages/ApiFlag_with_library_cache",
-    "space_specific/findUsages/Http_with_library_cache",
-    "space_specific/findUsages/IntSizePx_with_library_cache",
-    "space_specific/findUsages/UniqueConstraint_with_library_cache",
-  ],
   kotlinCoroutinesQg: [
     "kotlin_coroutines_qg/findUsages/createMainDispatcher_with_library_cache",
     "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",
@@ -500,27 +505,18 @@ export const findUsagesProjects = {
   ],
 }
 
-export const findUsagesCharts: ProjectsChartDefinition[] = [
-  generateFindUsagesDefinition("'IntelliJ'", findUsagesProjects.intelliJ),
-  generateFindUsagesDefinition("'Kotlin lang'", findUsagesProjects.kotlinLang),
-  generateFindUsagesDefinition("'Kotlin Coroutines QG'", findUsagesProjects.kotlinCoroutinesQg),
-  generateFindUsagesDefinition("'Toolbox Enterprise (TBE)'", findUsagesProjects.tbe),
-  generateFindUsagesDefinition("'Android canary leak'", findUsagesProjects.androidCanaryLeak),
-  generateFindUsagesDefinition("'Android anki project'", findUsagesProjects.anki),
-]
-export const mppFindUsagesCharts: ProjectsChartDefinition[] = [
-  generateFindUsagesDefinition("'Space'", findUsagesProjects.space),
-  generateFindUsagesDefinition("'Kotlin Coroutines'", findUsagesProjects.kotlinCoroutines),
-  generateFindUsagesDefinition("'Kotlin Coroutines QG'", findUsagesProjects.kotlinCoroutinesQg),
-  generateFindUsagesDefinition("'Ktor'", findUsagesProjects.ktor),
-  generateFindUsagesDefinition("'SQLiter'", findUsagesProjects.sqliter),
-]
+export const findUsagesProjects = { ...findUsagesMacProjects, ...findUsagesLinuxProjects }
 
-function generateFindUsagesDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+export const findUsagesCharts: ProjectsChartDefinition[] = Object.entries(findUsagesLinuxProjects)
+  .map(([key, value]) => generateFindUsagesDefinition(labelByProject[key], value, [machines.linux]))
+  .concat(Object.entries(findUsagesMacProjects).map(([key, value]) => generateFindUsagesDefinition(labelByProject[key], value, [machines.mac])))
+
+function generateFindUsagesDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} findUsages mean value`,
     measure: "findUsages#mean_value",
     projects,
+    machines,
   }
 }
 
@@ -541,15 +537,16 @@ export const evaluateExpressionChars: ProjectsChartDefinition[] = [
   generateEvaluateExpressionDefinition("'Kotlin language server'", evaluateExpressionProjects.kotlinLanguageServer),
   generateEvaluateExpressionDefinition("'PetClinic'", evaluateExpressionProjects.petClinic),
   generateEvaluateExpressionDefinition("'Intellij'", evaluateExpressionProjects.intellij),
-  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic),
-  ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij),
+  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic, [machines.linux]),
+  ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij, [machines.linux]),
 ]
-export const mppEvaluateExpressionChars: ProjectsChartDefinition[] = []
+
 function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} evaluate expression mean value`,
     measure: "evaluateExpression#mean_value",
     projects,
+    machines: [machines.linux],
   }
 }
 
@@ -564,22 +561,23 @@ const convertJavaToKotlinProjects = {
 }
 
 export const evaluateConvertJavaToKotlinProjectsChars: ProjectsChartDefinition[] = [
-  generateConvertJavaToKotlinDefinition("'Intellij Sources'", convertJavaToKotlinProjects.intellijSources),
+  generateConvertJavaToKotlinDefinition("'Intellij Sources'", convertJavaToKotlinProjects.intellijSources, [machines.linux]),
 ]
 
-function generateConvertJavaToKotlinDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
+function generateConvertJavaToKotlinDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
   return {
     label: `${labelPrefix} convert java to kotlin`,
     measure: "convertJavaToKotlin",
     projects,
+    machines,
   }
 }
 
-const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingProjects.kotlinScript }]
-export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects))
-export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects))
-export const scriptCompletionCharts: ProjectsChartDefinition[] = [...generateCompletionDefinitions("'Kotlin script'", completionProjects.kotlinScript)]
-export const scriptFindUsagesCharts: ProjectsChartDefinition[] = [generateFindUsagesDefinition("'Kotlin lang (kts)'", findUsagesProjects.kotlinLangScript)]
+const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingLinuxProjects.kotlinScript }]
+export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects, [machines.linux]))
+export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects, [machines.linux]))
+export const scriptCompletionCharts: ProjectsChartDefinition[] = [...generateCompletionDefinitions("'Kotlin script'", completionLinuxProjects.kotlinScript, [machines.linux])]
+export const scriptFindUsagesCharts: ProjectsChartDefinition[] = [generateFindUsagesDefinition("'Kotlin lang (kts)'", findUsagesLinuxProjects.kotlinLangScript, [machines.linux])]
 export const KOTLIN_MAIN_METRICS = [
   "completion#mean_value",
   "completion#firstElementShown#mean_value",

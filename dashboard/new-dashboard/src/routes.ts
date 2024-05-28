@@ -18,7 +18,6 @@ const enum ROUTE_PREFIX {
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
   KotlinMemory = Kotlin + "/memory",
-  KotlinKMP = Kotlin + "/kmp",
   Rust = "/rust",
   Scala = "/scala",
   JBR = "/jbr",
@@ -118,8 +117,6 @@ enum ROUTES {
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/dashboard`,
   KotlinMemoryDashboardDev = `${ROUTE_PREFIX.KotlinMemory}/dashboardDev`,
-  KotlinMPPDashboard = `${ROUTE_PREFIX.KotlinKMP}/dashboard`,
-  KotlinMPPDashboardDev = `${ROUTE_PREFIX.KotlinKMP}/dashboardDev`,
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandStartupDashboard = `${ROUTE_PREFIX.GoLand}/${STARTUP_ROUTE}`,
@@ -598,20 +595,6 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinMemoryDashboard,
           label: "Memory k1 vs k2",
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.KotlinKMP,
-      label: "Kotlin KMP",
-      tabs: [
-        {
-          url: ROUTES.KotlinMPPDashboardDev,
-          label: DASHBOARD_LABEL + " (dev)",
-        },
-        {
-          url: ROUTES.KotlinMPPDashboard,
-          label: DASHBOARD_LABEL,
         },
       ],
     },
@@ -1887,16 +1870,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinMemoryDashboardDev,
           component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
           meta: { pageTitle: "Memory (dev)" },
-        },
-        {
-          path: ROUTES.KotlinMPPDashboardDev,
-          component: () => import("./components/kotlin/dev/KmpDashboard.vue"),
-          meta: { pageTitle: "KMP projects (dev)" },
-        },
-        {
-          path: ROUTES.KotlinMPPDashboard,
-          component: () => import("./components/kotlin/mpp/Dashboard.vue"),
-          meta: { pageTitle: "KMP projects" },
         },
         {
           path: ROUTES.RustRoverDashboard,

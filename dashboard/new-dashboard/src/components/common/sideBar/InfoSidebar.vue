@@ -60,14 +60,14 @@
             </span>
           </span>
           <span
-            v-if="data?.series[0].nameToShow"
+            v-if="data?.series[0].metricName"
             class="flex gap-1.5 text-sm items-center"
           >
             <BeakerIcon class="w-4 h-4" />
             <span
               v-tooltip.left="getTooltipForMetric(data?.series[0].metricName)"
               :class="metricDescription != null ? getURLStyle() : ''"
-              >{{ data?.series[0].nameToShow }}</span
+              >{{ data?.series[0].metricName }}</span
             >
           </span>
           <span class="flex gap-1.5 text-sm items-center">
@@ -82,13 +82,13 @@
               :key="item.metricName"
             >
               <span
-                v-if="item.nameToShow"
+                v-if="item.metricName"
                 class="rounded-lg w-2.5 h-2.5"
                 :style="{ 'background-color': item.color }"
               />
-              <span v-if="item.nameToShow">{{ item.nameToShow }}</span>
+              <span v-if="item.metricName">{{ item.metricName }}</span>
               <span
-                v-if="item.nameToShow"
+                v-if="item.metricName"
                 class="font-mono place-self-end"
                 >{{ item.value }}</span
               >

@@ -4,7 +4,6 @@ import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
-import { getCommonPrefix, measureNameToLabel, removePrefix } from "../../../shared/metricsMapping"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"
 import { useSettingsStore } from "../../settings/settingsStore"
 import { ValueUnit } from "../chart"
@@ -234,12 +233,10 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
     const filteredParams = filterUniqueByName(params)
     const info = getInfo(params[0], valueUnit, accidents)
     const series: DataSeries[] = []
-    const commonPrefix = getCommonPrefix(filteredParams)
     for (const param of filteredParams) {
       const currentSeriesData = param.value as OptionDataValue[]
-      const nameToShow = measureNameToLabel(removePrefix(param.seriesName as string, commonPrefix))
       const value = getValueFormatterByMeasureName(param.seriesName as string)(currentSeriesData[1] as number)
-      series.push({ metricName: param.seriesName as string, value, color: param.color as string, nameToShow })
+      series.push({ metricName: param.seriesName as string, value, color: param.color as string })
     }
 
     return { ...info, series, deltaPrevious: undefined, deltaNext: undefined }
@@ -266,7 +263,7 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
       ...info,
       deltaNext,
       deltaPrevious,
-      series: [{ metricName: info.metricName, value: showValue, color: params.color as string, nameToShow: measureNameToLabel(info.metricName as string) }],
+      series: [{ metricName: info.metricName, value: showValue, color: params.color as string }],
     }
   }
 }

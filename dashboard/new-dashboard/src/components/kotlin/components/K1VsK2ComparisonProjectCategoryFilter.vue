@@ -1,7 +1,7 @@
 <template>
   <MultiSelect
     v-model="selectedProjectCategories"
-    :options="PROJECT_CATEGORIES"
+    :options="filteredCategories"
     title="Project"
     option-label="label"
     option-value="prefix"
@@ -51,6 +51,6 @@ const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategor
 watch(selectedProjectCategories, (newValue) => {
   emit("update:selectedProjectCategories", newValue)
 })
-
-const labelByPrefix = new Map(PROJECT_CATEGORIES.map((c) => [c.prefix, c.label]))
+const filteredCategories = Object.values(PROJECT_CATEGORIES).filter((c) => c.prefix.length !== 0)
+const labelByPrefix = new Map(filteredCategories.map((c) => [c.prefix, c.label]))
 </script>

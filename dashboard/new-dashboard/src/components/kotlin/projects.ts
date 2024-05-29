@@ -29,54 +29,41 @@ export const MACHINES = {
   mac: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
 }
 
-const PROJECT_LABELS: { [key: string]: string } = {
-  kotlinEmpty: "'Kotlin empty'",
-  intelliJ: "'IntelliJ'",
-  intelliJ2: "'IntelliJ suite 2'",
-  intelliJSources: "'Intellij Sources'",
-  intelliJTyping2: "'IntelliJ with typing suite 2'",
-  kotlinLang: "'Kotlin lang'",
-  kotlinLanguageServer: "'Kotlin language server'",
-  tbe: "'Toolbox Enterprise (TBE)'",
-  ktorSamples: "'Ktor samples'",
-  androidCanaryLeak: "'Android canary leak'",
-  anki: "'Android anki project'",
-  kotlinScript: "'Kotlin script'",
-  removedImports: "'Files with removed imports'",
-  springFramework: "'Spring framework'",
-  rustPlugin: "'Rust plugin'",
-  kotlinCoroutines: "'Kotlin Coroutines'",
-  space: "'Space'",
-  sqliter: "'SQLiter'",
-  ktor: "'Ktor'",
-  kotlinCoroutinesQG: "'Kotlin Coroutines QG'",
-  tbeCaseWithAssert: "'Toolbox Enterprise (TBE) different length'",
-  mppNativeAcceptance: "'Native-acceptance'",
-  petClinic: "'Pet Clinic",
+export const PROJECT_CATEGORIES: { [key: string]: ProjectCategory } = {
+  kotlinEmpty: buildCategory("Kotlin empty", "kotlin_empty/"),
+  intelliJ: buildCategory("IntelliJ", "intellij_commit/"),
+  // Same intelliJ. Need to avoid lot of lines on chart
+  intelliJ2: buildCategory("IntelliJ suite 2", ""),
+
+  intelliJSources: buildCategory("Intellij Sources", "intellij_sources/"),
+  intelliJTyping: buildCategory("IntelliJ with typing", ""),
+  kotlinLang: buildCategory("Kotlin lang", "kotlin_lang/"),
+  // Same kotlinLang. Need to avoid lot of lines on chart
+  kotlinScript: buildCategory("Kotlin script", ""),
+
+  kotlinLanguageServer: buildCategory("Kotlin language server", "kotlin_language_server/"),
+  tbe: buildCategory("Toolbox Enterprise (TBE)", "toolbox_enterprise/"),
+  tbeCaseWithAssert: buildCategory("Toolbox Enterprise (TBE) different length", ""),
+
+  ktorSamples: buildCategory("Ktor samples", "ktor_samples"),
+  androidCanaryLeak: buildCategory("Android canary leak", "leak-canary-android/"),
+  anki: buildCategory("Android anki project", "anki-android/"),
+  removedImports: buildCategory("Files with removed imports", ""),
+  springFramework: buildCategory("Spring framework", "spring-framework/"),
+  rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
+  kotlinCoroutines: buildCategory("Kotlin Coroutines", "kotlin_coroutines_commit/"),
+  space: buildCategory("Space", "space_specific/"),
+  sqliter: buildCategory("SQLiter", "SQLiter/"),
+  ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),
+  kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),
+
+  mppNativeAcceptance: buildCategory("Native-acceptance", "kotlin_kmp_native_acceptance/"),
+  petClinic: buildCategory("'Pet Clinic", "kotlin_petclinic/"),
+  arrow: buildCategory("Arrow", "arrow/"),
+  kotlinEmptyScript: buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
 }
 
-export const PROJECT_CATEGORIES: ProjectCategory[] = [
-  buildCategory("Hello World", "kotlin_empty/"),
-  buildCategory("IntelliJ", "intellij_commit/"),
-  buildCategory("Kotlin Compiler", "kotlin_lang/"),
-  buildCategory("Kotlin Language Server", "kotlin_language_server/"),
-  buildCategory("Toolbox Enterprise", "toolbox_enterprise/"),
-  buildCategory("Spring Framework", "spring-framework/"),
-  buildCategory("Rust Plugin", "rust_commit/"),
-  buildCategory("Kotlin PetClinic", "kotlin_petclinic/"),
-
-  // The `ktor_samples` category is open by design (hence no closing `/`).
-  buildCategory("Ktor Samples", "ktor_samples"),
-
-  buildCategory("LeakCanary", "leak-canary-android/"),
-  buildCategory("Arrow", "arrow/"),
-  buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
-  buildCategory("QG", "kotlin_coroutines_qg/"),
-  buildCategory("SQLiter", "SQLiter/"),
-  buildCategory("Ktor", "ktor_before_add_wasm_client/"),
-]
-
-function buildCategory(label: string, prefix: string) {
+function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }
 }
 
@@ -84,7 +71,7 @@ function projectsToDefinition(projects: object, measures: Measure[], machines: s
   return measures.flatMap(({ name, label }) => {
     return Object.entries(projects).flatMap(([key, value]) => {
       return {
-        label: `${PROJECT_LABELS[key]} ${label}`,
+        label: `'${PROJECT_CATEGORIES[key].label}' ${label}`,
         measure: name,
         projects: value,
         machines: machines,
@@ -106,7 +93,7 @@ export const completionLinuxProjects = {
     "intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_typing_with_library_cache",
     "intellij_commit/completion/KtOCSwiftChangeSignatureTest_emptyPlace_changeReturnType_with_library_cache",
   ],
-  intelliJTyping2: [
+  intelliJTyping: [
     "intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache",
     "intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache",
     "intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache",
@@ -139,9 +126,9 @@ export const completionLinuxProjects = {
     "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_7_typing_with_library_cache",
     "toolbox_enterprise/completion/IntelliJPluginSettingTest_assert_10_typing_with_library_cache",
   ],
+  arrow: ["arrow/completion/build.gradle_completion_kts_with_library_cache"],
+  kotlinEmptyScript: ["kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache"],
   kotlinScript: [
-    "arrow/completion/build.gradle_completion_kts_with_library_cache",
-    "kotlin_empty_kts/completion/build.gradle_completion_kts_with_library_cache",
     "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
     "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
     "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache",
@@ -272,9 +259,9 @@ export const highlightingLinuxProjects = {
     "anki-android/highlight/TokenizerTest_with_library_cache",
     "anki-android/highlight/UniqueArrayListTest_with_library_cache",
   ],
+  arrow: ["arrow/highlight/build.gradle_with_library_cache"],
+  kotlinEmptyScript: ["kotlin_empty_kts/highlight/build.gradle_with_library_cache"],
   kotlinScript: [
-    "arrow/highlight/build.gradle_with_library_cache",
-    "kotlin_empty_kts/highlight/build.gradle_with_library_cache",
     "kotlin_lang/highlight/atomicfu_atomicfu-compiler/build.gradle_with_library_cache",
     "kotlin_lang/highlight/build.gradle_with_library_cache",
     "kotlin_lang/highlight/js_js.tests/build.gradle_with_library_cache",

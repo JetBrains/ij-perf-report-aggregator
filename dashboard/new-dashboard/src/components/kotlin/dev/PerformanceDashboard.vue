@@ -80,7 +80,7 @@
     <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider title="Convert Java to Kotlin" />
-    <DashboardGroupCharts :definitions="evaluateConvertJavaToKotlinProjectsChars" />
+    <DashboardGroupCharts :definitions="convertJavaToKotlinProjectsChars" />
   </DashboardPage>
 </template>
 
@@ -92,7 +92,7 @@ import {
   codeAnalysisCharts,
   codeAnalysisScriptCharts,
   completionCharts,
-  evaluateConvertJavaToKotlinProjectsChars,
+  convertJavaToKotlinProjectsChars,
   evaluateExpressionChars,
   findUsagesCharts,
   highlightingCharts,
@@ -102,4 +102,5 @@ import {
   scriptFindUsagesCharts,
 } from "../projects"
 import SlackLink from "../SlackLink.vue"
+import AggregationChart from "../../charts/AggregationChart.vue"
 </script>

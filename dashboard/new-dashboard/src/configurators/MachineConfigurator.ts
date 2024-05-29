@@ -179,7 +179,6 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
     const selected = this.selected.value
-    console.log(selected)
     if (selected.length === 0) {
       console.debug("machine is not configured")
       return false

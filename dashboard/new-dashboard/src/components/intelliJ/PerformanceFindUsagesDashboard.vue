@@ -91,12 +91,12 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/findUsages/PropertyMapping_value_Before", "community/findUsages/PropertyMapping_value_After"],
   },
   {
-    labels: ["FindUsages Path#toString Before and After Compilation (all usages)", "FindUsages Path#toString Before and After Compilation (first usage)"],
+    labels: ["FindUsages Object#hashCode Before and After Compilation (all usages)", "FindUsages Object#hashCode Before and After Compilation (first usage)"],
     measures: [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: ["community/findUsages/Path_toString_Before", "community/findUsages/Path_toString_After"],
+    projects: ["community/findUsages/Object_hashCode_Before", "community/findUsages/Object_hashCode_After"],
   },
   {
     labels: ["FindUsages Objects#hashCode Before and After Compilation (all usages)", "FindUsages Objects#hashCode Before and After Compilation (first usage)"],

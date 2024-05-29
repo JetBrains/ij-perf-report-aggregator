@@ -26,6 +26,11 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["Search Everywhere Action (slow typing)", "SE Dialog Shown Action (slow typing)"],
+    measures: ["searchEverywhere", "searchEverywhere_dialog_shown"],
+    projects: ["community/go-to-action/Kotlin/typingLetterByLetter", "community/go-to-action/Editor/typingLetterByLetter", "community/go-to-action/Runtime/typingLetterByLetter"],
+  },
+  {
     labels: ["Search Everywhere Class (slow typing)", "SE Dialog Shown Class (slow typing)"],
     measures: ["searchEverywhere", "searchEverywhere_dialog_shown"],
     projects: ["community/go-to-class/Kotlin/typingLetterByLetter", "community/go-to-class/Editor/typingLetterByLetter", "community/go-to-class/Runtime/typingLetterByLetter"],

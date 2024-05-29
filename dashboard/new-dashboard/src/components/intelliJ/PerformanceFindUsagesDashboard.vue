@@ -39,10 +39,19 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/findUsages/PsiManager_getInstance_Before", "community/findUsages/PsiManager_getInstance_After"],
   },
   {
-    labels: ["FindUsages Library#getName Before and After Compilation (all usages)", "FindUsages Library#getName Before and After Compilation (first usage)"],
+    labels: [
+      "FindUsages Library#getName Before and After Compilation (all usages)",
+      "FindUsages Library#getName Before and After Compilation (first usage)",
+      "JVM Total Time to safepoints",
+      "Full GC Pause",
+      "JVM GC collection times",
+    ],
     measures: [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
+      ["JVM.totalTimeToSafepointsMs"],
+      ["fullGCPause"],
+      ["JVM.GC.collectionTimesMs"],
     ],
     projects: ["community/findUsages/Library_getName_Before", "community/findUsages/Library_getName_After", "intellij_commit/findUsages/Library_getName"],
   },

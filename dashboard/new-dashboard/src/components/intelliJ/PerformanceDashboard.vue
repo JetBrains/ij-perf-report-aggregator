@@ -64,8 +64,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
   },
   {
-    labels: ["Inspection"],
-    measures: ["globalInspections"],
+    labels: ["Inspection", "JVM Total Time to safepoints", "Full GC Pause", "JVM GC collection times"],
+    measures: ["globalInspections", "JVM.totalTimeToSafepointsMs", "fullGCPause", "JVM.GC.collectionTimesMs"],
     projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
   },
   {

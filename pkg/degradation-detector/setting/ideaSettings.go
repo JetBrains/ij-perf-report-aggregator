@@ -9,45 +9,8 @@ import (
 
 func GenerateIdeaSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   return slices.Concat(
-    generateIdeaOnInstallerAnalysisSettings(backendUrl, client),
     generateIdeaDevAnalysisSettings(backendUrl, client),
   )
-}
-
-func generateIdeaOnInstallerAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-  tests := []string{
-    "intellij_sources/%", "grails/%", "java/%", "spring_boot/%",
-    "spring_boot_maven/%", "spring_boot/%", "kotlin/%", "kotlin_coroutines/%",
-    "kotlin_petclinic/%", "community/%", "empty_project/%", "keycloak_release_20/%",
-    "space/%", "toolbox_enterprise/%", "train-ticket/%",
-  }
-  baseSettings := detector.PerformanceSettings{
-    Db:      "perfint",
-    Table:   "idea",
-    Branch:  "master",
-    Machine: "intellij-linux-performance-aws-%",
-  }
-  testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
-  settings := make([]detector.PerformanceSettings, 0, 100)
-  for _, test := range testsExpanded {
-    metrics := getMetricFromTestName(test)
-    for _, metric := range metrics {
-      settings = append(settings, detector.PerformanceSettings{
-        Db:      baseSettings.Db,
-        Table:   baseSettings.Table,
-        Branch:  baseSettings.Branch,
-        Machine: baseSettings.Machine,
-        Project: test,
-        Metric:  metric,
-        SlackSettings: detector.SlackSettings{
-          Channel:     "ij-perf-report-aggregator",
-          ProductLink: "intellij",
-        },
-      })
-    }
-
-  }
-  return settings
 }
 
 func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
@@ -55,6 +18,7 @@ func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []d
     "spring_boot_maven/%", "spring_boot/%", "kotlin/%", "kotlin_coroutines/%",
     "kotlin_petclinic/%", "community/%", "empty_project/%", "keycloak_release_20/%",
     "space/%", "toolbox_enterprise/%", "train-ticket/%"}
+
   baseSettings := detector.PerformanceSettings{
     Db:      "perfintDev",
     Table:   "idea",
@@ -62,27 +26,41 @@ func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []d
     Machine: "intellij-linux-performance-aws-%",
   }
   testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
+  testsWithoutIndexingScanning := filterIndexingScanningTests(testsExpanded)
   settings := make([]detector.PerformanceSettings, 0, 100)
-  for _, test := range testsExpanded {
-    metrics := getMetricFromTestName(test)
-    for _, metric := range metrics {
-      settings = append(settings, detector.PerformanceSettings{
-        Db:      baseSettings.Db,
-        Table:   baseSettings.Table,
-        Branch:  baseSettings.Branch,
-        Machine: baseSettings.Machine,
-        Project: test,
-        Metric:  metric,
-        SlackSettings: detector.SlackSettings{
-          Channel:     "ij-perf-report-aggregator",
-          ProductLink: "intellij",
-        },
-        AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-      })
-    }
+  machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-aws-%"}
+  for _, machine := range machines {
+    for _, test := range testsWithoutIndexingScanning {
+      metrics := getMetricFromTestName(test)
+      for _, metric := range metrics {
+        settings = append(settings, detector.PerformanceSettings{
+          Db:      baseSettings.Db,
+          Table:   baseSettings.Table,
+          Branch:  baseSettings.Branch,
+          Machine: machine,
+          Project: test,
+          Metric:  metric,
+          SlackSettings: detector.SlackSettings{
+            Channel:     "ij-perf-report-aggregator",
+            ProductLink: "intellij",
+          },
+          AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
+        })
+      }
 
+    }
   }
   return settings
+}
+
+func filterIndexingScanningTests(input []string) []string {
+  var result []string
+  for _, str := range input {
+    if !strings.Contains(str, "indexing") && !strings.Contains(str, "scanning") {
+      result = append(result, str)
+    }
+  }
+  return result
 }
 
 func getMetricFromTestName(test string) []string {

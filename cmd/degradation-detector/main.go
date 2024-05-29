@@ -15,7 +15,7 @@ func main() {
   backendUrl := getBackendUrl()
   client := createHttpClient()
   slog.Info("started")
-  analysisSettings := make([]detector.Settings, 0, 2000)
+  analysisSettings := make([]detector.Settings, 0, 25000)
   for _, s := range generatePerformanceSettings(backendUrl, client) {
     analysisSettings = append(analysisSettings, s)
   }
@@ -67,6 +67,7 @@ func generateFleetStartupSettings() []detector.FleetStartupSettings {
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
   return slices.Concat(
     setting.GenerateIdeaSettings(backendUrl, client),
+    setting.GenerateIdeaIndexingSettings(backendUrl, client),
     setting.GenerateWorkspaceSettings(),
     setting.GenerateKotlinSettings(),
     setting.GenerateMavenSettings(),

@@ -1,64 +1,39 @@
-/**
- * A project category is a project name prefix such as "intellij_commit/" and "kotlin_lang/" with an associated, human-readable label.
- */
-interface ProjectCategory {
-  label: string
-  prefix: string
-}
-
-export const projectCategories: ProjectCategory[] = [
-  buildCategory("Hello World", "kotlin_empty/"),
-  buildCategory("IntelliJ", "intellij_commit/"),
-  buildCategory("Kotlin Compiler", "kotlin_lang/"),
-  buildCategory("Kotlin Language Server", "kotlin_language_server/"),
-  buildCategory("Toolbox Enterprise", "toolbox_enterprise/"),
-  buildCategory("Spring Framework", "spring-framework/"),
-  buildCategory("Rust Plugin", "rust_commit/"),
-  buildCategory("Kotlin PetClinic", "kotlin_petclinic/"),
-
-  // The `ktor_samples` category is open by design (hence no closing `/`).
-  buildCategory("Ktor Samples", "ktor_samples"),
-
-  buildCategory("LeakCanary", "leak-canary-android/"),
-  buildCategory("Arrow", "arrow/"),
-  buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
+export const KOTLIN_MAIN_METRICS = [
+  "completion#mean_value",
+  "completion#firstElementShown#mean_value",
+  "localInspections#mean_value",
+  "semanticHighlighting#mean_value",
+  "findUsages#mean_value",
 ]
 
-function buildCategory(label: string, prefix: string) {
-  return { label, prefix }
+const MEASURES = {
+  completionMeasures: [
+    { name: "completion#mean_value", label: "completion mean value" },
+    { name: "completion#firstElementShown#mean_value", label: "firstElementShown mean value" },
+  ],
+  highlightingMeasures: [{ name: "semanticHighlighting#mean_value", label: "semantic highlighting mean value" }],
+  codeAnalysisMeasures: [{ name: "localInspections#mean_value", label: "Code Analysis mean value" }],
+  refactoringMeasures: [
+    { name: "performInlineRename#mean_value", label: "PerformInlineRename" },
+    { name: "startInlineRename#mean_value", label: "StartInlineRename" },
+    { name: "prepareForRename#mean_value", label: "PrepareForRename" },
+  ],
+  optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
+  findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
+  evaluateExpressionMeasures: [{ name: "evaluateExpression#mean_value", label: "evaluate expression mean value" }],
+  convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
 }
 
-/**
- * Encapsulates all data which is needed to render a chart on one of the Kotlin dev dashboards. For each chart definition, a chart for K1
- * and a chart for K2 will be rendered.
- *
- * The project data is also used by the K1 vs. K2 comparison dashboard to find out all performance test names.
- */
-export interface ProjectsChartDefinition {
-  /**
-   * The label of the chart. A "K1" or "K2" qualifier will be appended to the label.
-   */
-  label: string
-
-  measure: string
-
-  /**
-   * All project names in the chart *without* their `_k1` and `_k2` suffixes.
-   */
-  projects: string[]
-
-  machines: string[]
-}
-
-const machines = {
+export const MACHINES = {
   linux: "linux-blade-hetzner",
   mac: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
 }
 
-const labelByProject: { [key: string]: string } = {
+const PROJECT_LABELS: { [key: string]: string } = {
   kotlinEmpty: "'Kotlin empty'",
   intelliJ: "'IntelliJ'",
   intelliJ2: "'IntelliJ suite 2'",
+  intelliJSources: "'Intellij Sources'",
   intelliJTyping2: "'IntelliJ with typing suite 2'",
   kotlinLang: "'Kotlin lang'",
   kotlinLanguageServer: "'Kotlin language server'",
@@ -74,9 +49,48 @@ const labelByProject: { [key: string]: string } = {
   space: "'Space'",
   sqliter: "'SQLiter'",
   ktor: "'Ktor'",
-  kotlinCoroutinesQg: "'Kotlin Coroutines QG'",
+  kotlinCoroutinesQG: "'Kotlin Coroutines QG'",
   tbeCaseWithAssert: "'Toolbox Enterprise (TBE) different length'",
   mppNativeAcceptance: "'Native-acceptance'",
+  petClinic: "'Pet Clinic",
+}
+
+export const PROJECT_CATEGORIES: ProjectCategory[] = [
+  buildCategory("Hello World", "kotlin_empty/"),
+  buildCategory("IntelliJ", "intellij_commit/"),
+  buildCategory("Kotlin Compiler", "kotlin_lang/"),
+  buildCategory("Kotlin Language Server", "kotlin_language_server/"),
+  buildCategory("Toolbox Enterprise", "toolbox_enterprise/"),
+  buildCategory("Spring Framework", "spring-framework/"),
+  buildCategory("Rust Plugin", "rust_commit/"),
+  buildCategory("Kotlin PetClinic", "kotlin_petclinic/"),
+
+  // The `ktor_samples` category is open by design (hence no closing `/`).
+  buildCategory("Ktor Samples", "ktor_samples"),
+
+  buildCategory("LeakCanary", "leak-canary-android/"),
+  buildCategory("Arrow", "arrow/"),
+  buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
+  buildCategory("QG", "kotlin_coroutines_qg/"),
+  buildCategory("SQLiter", "SQLiter/"),
+  buildCategory("Ktor", "ktor_before_add_wasm_client/"),
+]
+
+function buildCategory(label: string, prefix: string) {
+  return { label, prefix }
+}
+
+function projectsToDefinition(projects: object, measures: Measure[], machines: string[]): ProjectsChartDefinition[] {
+  return measures.flatMap(({ name, label }) => {
+    return Object.entries(projects).flatMap(([key, value]) => {
+      return {
+        label: `${PROJECT_LABELS[key]} ${label}`,
+        measure: name,
+        projects: value,
+        machines: machines,
+      }
+    })
+  })
 }
 
 export const completionLinuxProjects = {
@@ -173,26 +187,10 @@ export const completionMacProjects = {
 
 export const completionProjects = { ...completionMacProjects, ...completionLinuxProjects }
 
-export const completionCharts = Object.entries(completionLinuxProjects)
-  .map(([key, value]) => generateCompletionDefinitions(labelByProject[key], value, [machines.linux]))
-  .concat(Object.entries(completionMacProjects).map(([key, value]) => generateCompletionDefinitions(labelByProject[key], value, [machines.mac])))
-
-function generateCompletionDefinitions(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition[] {
-  return [
-    {
-      label: `${labelPrefix} completion mean value`,
-      measure: "completion#mean_value",
-      projects,
-      machines,
-    },
-    {
-      label: `${labelPrefix} firstElementShown mean value`,
-      measure: "completion#firstElementShown#mean_value",
-      projects,
-      machines,
-    },
-  ]
-}
+export const completionCharts = [
+  ...projectsToDefinition(completionLinuxProjects, MEASURES.completionMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(completionMacProjects, MEASURES.completionMeasures, [MACHINES.mac]),
+]
 
 /**
  * Highlighting projects are also the projects for local inspections.
@@ -342,7 +340,7 @@ export const highlightingMacProjects = {
     "SQLiter/highlight/TracingSqliteStatement_with_library_cache",
     "SQLiter/highlight/Types_with_library_cache",
   ],
-  kotlinCoroutinesQg: [
+  kotlinCoroutinesQG: [
     "kotlin_coroutines_qg/highlight/BufferedChannel_with_library_cache",
     "kotlin_coroutines_qg/highlight/Builders_with_library_cache",
     "kotlin_coroutines_qg/highlight/CopyOnWriteList_with_library_cache",
@@ -373,62 +371,36 @@ export const highlightingMacProjects = {
 
 export const highlightingProjects = { ...highlightingLinuxProjects, ...highlightingMacProjects }
 
-export const highlightingCharts = Object.entries(highlightingLinuxProjects)
-  .map(([key, value]) => generateHighlightingDefinition(labelByProject[key], value, [machines.linux]))
-  .concat(Object.entries(highlightingMacProjects).map(([key, value]) => generateHighlightingDefinition(labelByProject[key], value, [machines.mac])))
-
-function generateHighlightingDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} semantic highlighting mean value`,
-    measure: "semanticHighlighting#mean_value",
-    projects,
-    machines,
-  }
-}
-
-export const codeAnalysisCharts = Object.entries(highlightingLinuxProjects)
-  .map(([key, value]) => generateCodeAnalysisChartsDefinition(labelByProject[key], value, [machines.linux]))
-  .concat(Object.entries(highlightingMacProjects).map(([key, value]) => generateCodeAnalysisChartsDefinition(labelByProject[key], value, [machines.mac])))
-
-function generateCodeAnalysisChartsDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} Code Analysis mean value`,
-    measure: "localInspections#mean_value",
-    projects,
-    machines,
-  }
-}
-
-export const refactoringProjects = [
-  "intellij_commit/rename/SqlBlock_SqlBlockRenamed",
-  "kotlin_language_server/insertCode/Rename_renameSymbol",
-  "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k",
-]
-export const optimizeImportsProjects = [
-  "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest",
-  "intellij_commit/otimizeImports/FSD",
-  "intellij_commit/otimizeImports/DiagramsModel.Generated",
-  "intellij_commit/otimizeImports/OraIntrospector",
-  "intellij_commit/otimizeImports/QuickFixRegistrar",
-  "intellij_commit/otimizeImports/SwiftTypeAssignabilityTest",
-  "intellij_commit/otimizeImports/TerraformConfigCompletionContributor",
+export const highlightingCharts = [
+  ...projectsToDefinition(highlightingLinuxProjects, MEASURES.highlightingMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(highlightingMacProjects, MEASURES.highlightingMeasures, [MACHINES.mac]),
 ]
 
-export const refactoringCharts: ProjectsChartDefinition[] = [
-  generateRefactoringDefinition("PerformInlineRename", "performInlineRename#mean_value", refactoringProjects),
-  generateRefactoringDefinition("StartInlineRename", "startInlineRename#mean_value", refactoringProjects),
-  generateRefactoringDefinition("PrepareForRename", "prepareForRename#mean_value", refactoringProjects),
-  generateRefactoringDefinition("Optimize imports", "execute_editor_optimizeimports", optimizeImportsProjects),
+export const codeAnalysisCharts = [
+  ...projectsToDefinition(highlightingLinuxProjects, MEASURES.codeAnalysisMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(highlightingMacProjects, MEASURES.codeAnalysisMeasures, [MACHINES.mac]),
 ]
 
-function generateRefactoringDefinition(labelPrefix: string, measure: string, projectsData: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} mean value`,
-    measure,
-    projects: projectsData,
-    machines: [machines.linux],
-  }
+export const refactoringProjects = {
+  intelliJ: ["intellij_commit/rename/SqlBlock_SqlBlockRenamed"],
+  kotlinLanguageServer: ["kotlin_language_server/insertCode/Rename_renameSymbol", "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k"],
 }
+export const optimizeImportsProjects = {
+  intelliJ: [
+    "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest",
+    "intellij_commit/otimizeImports/FSD",
+    "intellij_commit/otimizeImports/DiagramsModel.Generated",
+    "intellij_commit/otimizeImports/OraIntrospector",
+    "intellij_commit/otimizeImports/QuickFixRegistrar",
+    "intellij_commit/otimizeImports/SwiftTypeAssignabilityTest",
+    "intellij_commit/otimizeImports/TerraformConfigCompletionContributor",
+  ],
+}
+
+export const refactoringCharts = [
+  ...projectsToDefinition(refactoringProjects, MEASURES.refactoringMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(optimizeImportsProjects, MEASURES.optimizeImportsMeasures, [MACHINES.linux]),
+]
 
 export const findUsagesLinuxProjects = {
   intelliJ: [
@@ -469,7 +441,7 @@ export const findUsagesLinuxProjects = {
     "anki-android/findUsages/Decks_with_library_cache",
     "anki-android/findUsages/load_with_library_cache",
   ],
-  kotlinLangScript: [
+  kotlinScript: [
     "kotlin_lang/findUsages/intellijVersionForIde_with_library_cache",
     "kotlin_lang/findUsages/JvmTestFramework_with_library_cache",
     "kotlin_lang/findUsages/SourceSet_with_library_cache",
@@ -496,8 +468,8 @@ export const findUsagesMacProjects = {
     "ktor_before_add_wasm_client/findUsages/CharsetNative_with_library_cache",
     "ktor_before_add_wasm_client/findUsages/Memory_with_library_cache",
   ],
-  sqliter: ["SQLiter/findUsages/sqlite3_prepare16_v2_with_library_cache_with_library_cache", "SQLiter/findUsages/SQLITE_OK_with_library_cache"],
-  kotlinCoroutinesQg: [
+  sqliter: ["SQLiter/findUsages/sqlite3_column_type_with_library_cache", "SQLiter/findUsages/SQLITE_OK_with_library_cache"],
+  kotlinCoroutinesQG: [
     "kotlin_coroutines_qg/findUsages/createMainDispatcher_with_library_cache",
     "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",
     "kotlin_coroutines_qg/findUsages/Runnable_with_library_cache",
@@ -507,18 +479,10 @@ export const findUsagesMacProjects = {
 
 export const findUsagesProjects = { ...findUsagesMacProjects, ...findUsagesLinuxProjects }
 
-export const findUsagesCharts: ProjectsChartDefinition[] = Object.entries(findUsagesLinuxProjects)
-  .map(([key, value]) => generateFindUsagesDefinition(labelByProject[key], value, [machines.linux]))
-  .concat(Object.entries(findUsagesMacProjects).map(([key, value]) => generateFindUsagesDefinition(labelByProject[key], value, [machines.mac])))
-
-function generateFindUsagesDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} findUsages mean value`,
-    measure: "findUsages#mean_value",
-    projects,
-    machines,
-  }
-}
+export const findUsagesCharts = [
+  ...projectsToDefinition(findUsagesLinuxProjects, MEASURES.findUsagesMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(findUsagesMacProjects, MEASURES.findUsagesMeasures, [MACHINES.mac]),
+]
 
 export const evaluateExpressionProjects = {
   kotlinLanguageServer: [
@@ -527,31 +491,20 @@ export const evaluateExpressionProjects = {
     "kotlin_language_server/evaluate-expression/KotlinTextDocumentService_with_library_cache",
   ],
   petClinic: ["kotlin_petclinic/evaluate-expression/CacheConfig/sleep-1000_with_library_cache"],
-  intellij: ["intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"],
+  intelliJ: ["intellij_commit/evaluate-expression/DumbServiceStartupActivity_with_library_cache"],
 }
 export const completionInEvaluateExpressionProjects = {
-  intellij: ["intellij_commit/completion/evaluate-expression_with_library_cache"],
+  intelliJ: ["intellij_commit/completion/evaluate-expression_with_library_cache"],
   petClinic: ["kotlin_petclinic/completion/evaluate-expression/typing-it_with_library_cache", "kotlin_petclinic/completion/evaluate-expression/typing-system_with_library_cache"],
 }
-export const evaluateExpressionChars: ProjectsChartDefinition[] = [
-  generateEvaluateExpressionDefinition("'Kotlin language server'", evaluateExpressionProjects.kotlinLanguageServer),
-  generateEvaluateExpressionDefinition("'PetClinic'", evaluateExpressionProjects.petClinic),
-  generateEvaluateExpressionDefinition("'Intellij'", evaluateExpressionProjects.intellij),
-  ...generateCompletionDefinitions("'PetClinic completion in evaluate expression'", completionInEvaluateExpressionProjects.petClinic, [machines.linux]),
-  ...generateCompletionDefinitions("'Intellij completion in evaluate expression'", completionInEvaluateExpressionProjects.intellij, [machines.linux]),
+
+export const evaluateExpressionChars = [
+  ...projectsToDefinition(evaluateExpressionProjects, MEASURES.evaluateExpressionMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(completionInEvaluateExpressionProjects, MEASURES.completionMeasures, [MACHINES.linux]),
 ]
 
-function generateEvaluateExpressionDefinition(labelPrefix: string, projects: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} evaluate expression mean value`,
-    measure: "evaluateExpression#mean_value",
-    projects,
-    machines: [machines.linux],
-  }
-}
-
 const convertJavaToKotlinProjects = {
-  intellijSources: [
+  intelliJSources: [
     "intellij_sources/javaToKotlin/HighlightFixUtil",
     "intellij_sources/javaToKotlin/CompilerConfigurationImpl",
     "intellij_sources/javaToKotlin/DaemonCodeAnalyzerImpl",
@@ -560,28 +513,50 @@ const convertJavaToKotlinProjects = {
   ],
 }
 
-export const evaluateConvertJavaToKotlinProjectsChars: ProjectsChartDefinition[] = [
-  generateConvertJavaToKotlinDefinition("'Intellij Sources'", convertJavaToKotlinProjects.intellijSources, [machines.linux]),
-]
+export const convertJavaToKotlinProjectsChars = projectsToDefinition(convertJavaToKotlinProjects, MEASURES.convertJavaToKotlinProjectsMeasures, [MACHINES.linux])
 
-function generateConvertJavaToKotlinDefinition(labelPrefix: string, projects: string[], machines: string[]): ProjectsChartDefinition {
-  return {
-    label: `${labelPrefix} convert java to kotlin`,
-    measure: "convertJavaToKotlin",
-    projects,
-    machines,
-  }
+const scriptHighlight = { kotlinScript: highlightingLinuxProjects.kotlinScript }
+export const highlightingScriptCharts: ProjectsChartDefinition[] = projectsToDefinition(scriptHighlight, MEASURES.highlightingMeasures, [MACHINES.linux])
+export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = projectsToDefinition(scriptHighlight, MEASURES.codeAnalysisMeasures, [MACHINES.linux])
+export const scriptCompletionCharts: ProjectsChartDefinition[] = projectsToDefinition({ kotlinScript: completionLinuxProjects.kotlinScript }, MEASURES.completionMeasures, [
+  MACHINES.linux,
+])
+
+export const scriptFindUsagesCharts: ProjectsChartDefinition[] = projectsToDefinition({ kotlinScript: findUsagesLinuxProjects.kotlinScript }, MEASURES.findUsagesMeasures, [
+  MACHINES.linux,
+])
+
+/**
+ * Encapsulates all data which is needed to render a chart on one of the Kotlin dev dashboards. For each chart definition, a chart for K1
+ * and a chart for K2 will be rendered.
+ *
+ * The project data is also used by the K1 vs. K2 comparison dashboard to find out all performance test names.
+ */
+export interface ProjectsChartDefinition {
+  /**
+   * The label of the chart. A "K1" or "K2" qualifier will be appended to the label.
+   */
+  label: string
+
+  measure: string
+
+  /**
+   * All project names in the chart *without* their `_k1` and `_k2` suffixes.
+   */
+  projects: string[]
+
+  machines: string[]
 }
 
-const scriptHighlight = [{ label: "'Kotlin script'", projects: highlightingLinuxProjects.kotlinScript }]
-export const highlightingScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateHighlightingDefinition(v.label, v.projects, [machines.linux]))
-export const codeAnalysisScriptCharts: ProjectsChartDefinition[] = scriptHighlight.map((v) => generateCodeAnalysisChartsDefinition(v.label, v.projects, [machines.linux]))
-export const scriptCompletionCharts: ProjectsChartDefinition[] = [...generateCompletionDefinitions("'Kotlin script'", completionLinuxProjects.kotlinScript, [machines.linux])]
-export const scriptFindUsagesCharts: ProjectsChartDefinition[] = [generateFindUsagesDefinition("'Kotlin lang (kts)'", findUsagesLinuxProjects.kotlinLangScript, [machines.linux])]
-export const KOTLIN_MAIN_METRICS = [
-  "completion#mean_value",
-  "completion#firstElementShown#mean_value",
-  "localInspections#mean_value",
-  "semanticHighlighting#mean_value",
-  "findUsages#mean_value",
-]
+/**
+ * A project category is a project name prefix such as "intellij_commit/" and "kotlin_lang/" with an associated, human-readable label.
+ */
+interface ProjectCategory {
+  label: string
+  prefix: string
+}
+
+interface Measure {
+  name: string
+  label: string
+}

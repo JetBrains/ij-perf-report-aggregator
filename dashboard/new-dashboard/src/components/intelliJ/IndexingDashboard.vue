@@ -80,7 +80,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Number of indexed files with writing index value (Big projects)", "Number of indexed files with nothing to write (Big projects)"],
-    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
+    measures: ["numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
     projects: ["community/indexing", "intellij_commit/indexing"],
   },
   {

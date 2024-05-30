@@ -19,6 +19,7 @@ const MEASURES = {
     { name: "prepareForRename#mean_value", label: "PrepareForRename" },
   ],
   optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
+  insertCodeMeasures: [{ name: "execute_editor_paste", label: "Insert code" }],
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
   evaluateExpressionMeasures: [{ name: "evaluateExpression#mean_value", label: "evaluate expression mean value" }],
   convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
@@ -368,8 +369,11 @@ export const codeAnalysisCharts = [
   ...projectsToDefinition(highlightingMacProjects, MEASURES.codeAnalysisMeasures, [MACHINES.mac]),
 ]
 
-export const refactoringProjects = {
+export const refactoringRenameProjects = {
   intelliJ: ["intellij_commit/rename/SqlBlock_SqlBlockRenamed"],
+  kotlinLanguageServer: ["kotlin_language_server/rename/Compiler_createKtFileTest"],
+}
+export const refactoringInsertCodeProjects = {
   kotlinLanguageServer: ["kotlin_language_server/insertCode/Rename_renameSymbol", "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k"],
 }
 export const optimizeImportsProjects = {
@@ -385,7 +389,8 @@ export const optimizeImportsProjects = {
 }
 
 export const refactoringCharts = [
-  ...projectsToDefinition(refactoringProjects, MEASURES.refactoringMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(refactoringRenameProjects, MEASURES.refactoringMeasures, [MACHINES.linux]),
+  ...projectsToDefinition(refactoringInsertCodeProjects, MEASURES.insertCodeMeasures, [MACHINES.linux]),
   ...projectsToDefinition(optimizeImportsProjects, MEASURES.optimizeImportsMeasures, [MACHINES.linux]),
 ]
 

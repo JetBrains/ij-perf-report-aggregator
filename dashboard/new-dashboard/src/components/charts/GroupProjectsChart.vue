@@ -19,11 +19,13 @@ import { dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/k
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 import { ValueUnit } from "../common/chart"
 import LineChart from "./LineChart.vue"
+import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 
 interface Props {
   label: string
   measure: string | string[]
   projects: string[]
+  machines: string[] | null
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
   aliases?: string[] | null
@@ -35,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
   legendFormatter: (name: string) => name,
   aliases: null,
   canBeClosed: false,
+  machines: null,
 })
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
@@ -42,11 +45,17 @@ const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
+if (props.machines != null) {
+  const machineConfigurator = new MachineConfigurator(serverConfigurator, undefined, [], true, props.machines)
+  configurators.push(machineConfigurator)
+}
+
 const measureArray: Ref<string[]> = computed(() => {
   return Array.isArray(props.measure) ? props.measure : [props.measure]
 })
 
 const emit = defineEmits(["chartClosed"])
+
 function onChartClosed(): void {
   emit("chartClosed", props.projects)
 }

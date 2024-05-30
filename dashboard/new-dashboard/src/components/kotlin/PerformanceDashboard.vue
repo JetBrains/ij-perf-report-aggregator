@@ -4,7 +4,6 @@
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_dashboard"
-    initial-machine="linux-blade-hetzner"
   >
     <SlackLink></SlackLink>
     <section class="flex gap-6">
@@ -80,7 +79,7 @@
     <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider title="Convert Java to Kotlin" />
-    <DashboardGroupCharts :definitions="evaluateConvertJavaToKotlinProjectsChars" />
+    <DashboardGroupCharts :definitions="convertJavaToKotlinProjectsChars" />
   </DashboardPage>
 </template>
 
@@ -90,17 +89,17 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import DashboardGroupCharts from "./DashboardGroupCharts.vue"
 import {
+  codeAnalysisCharts,
+  codeAnalysisScriptCharts,
   completionCharts,
+  convertJavaToKotlinProjectsChars,
   evaluateExpressionChars,
   findUsagesCharts,
   highlightingCharts,
-  codeAnalysisCharts,
+  highlightingScriptCharts,
   refactoringCharts,
   scriptCompletionCharts,
-  highlightingScriptCharts,
-  codeAnalysisScriptCharts,
   scriptFindUsagesCharts,
-  evaluateConvertJavaToKotlinProjectsChars,
 } from "./projects"
 import SlackLink from "./SlackLink.vue"
 </script>

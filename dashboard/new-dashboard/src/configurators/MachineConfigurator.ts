@@ -23,12 +23,16 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   constructor(
     serverConfigurator: ServerConfigurator,
-    persistentStateManager: PersistentStateManager,
+    persistentStateManager?: PersistentStateManager,
     filters: FilterConfigurator[] = [],
-    readonly multiple: boolean = true
+    readonly multiple: boolean = true,
+    predefinedMachines?: string[]
   ) {
     const name = "machine"
-    persistentStateManager.add(name, this.selected, (it) => toArray(it as never))
+    persistentStateManager?.add(name, this.selected, (it) => toArray(it as never))
+    if (predefinedMachines) {
+      this.selected.value = predefinedMachines
+    }
     const listObservable = createFilterObservable(serverConfigurator, filters).pipe(
       switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
       updateComponentState(this.state),

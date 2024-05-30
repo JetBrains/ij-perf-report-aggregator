@@ -1,7 +1,7 @@
 <template>
   <MultiSelect
     v-model="selectedProjectCategories"
-    :options="projectCategories"
+    :options="filteredCategories"
     title="Project"
     option-label="label"
     option-value="prefix"
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { ref, watch } from "vue"
-import { projectCategories } from "../projects"
+import { PROJECT_CATEGORIES } from "../projects"
 
 interface Props {
   initialProjectCategories: string[]
@@ -51,6 +51,6 @@ const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategor
 watch(selectedProjectCategories, (newValue) => {
   emit("update:selectedProjectCategories", newValue)
 })
-
-const labelByPrefix = new Map(projectCategories.map((c) => [c.prefix, c.label]))
+const filteredCategories = Object.values(PROJECT_CATEGORIES).filter((c) => c.prefix.length > 0)
+const labelByPrefix = new Map(filteredCategories.map((c) => [c.prefix, c.label]))
 </script>

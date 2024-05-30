@@ -56,7 +56,7 @@ import BranchSelect from "../../common/BranchSelect.vue"
 import { PersistentStateManager } from "../../common/PersistentStateManager"
 import StickyToolbar from "../../common/StickyToolbar.vue"
 import TimeRangeSelect from "../../common/TimeRangeSelect.vue"
-import { completionProjects, findUsagesProjects, highlightingProjects } from "../projects"
+import { completionProjects, findUsagesProjects, highlightingProjects, MACHINES } from "../projects"
 import K1VsK2ComparisonProjectCategoryFilter from "./K1VsK2ComparisonProjectCategoryFilter.vue"
 import K1VsK2ComparisonTable from "./K1VsK2ComparisonTable.vue"
 
@@ -69,7 +69,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const dbTable = "kotlin"
-const initialMachine = "linux-blade-hetzner"
 
 const router = useRouter()
 
@@ -79,7 +78,6 @@ provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   props.persistentId,
   {
-    machine: initialMachine,
     branch: props.initialBranch,
     projectCategories: [],
   },
@@ -89,7 +87,7 @@ const persistentStateManager = new PersistentStateManager(
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator], true, [MACHINES.linux, MACHINES.mac])
 
 const configurators = [timeRangeConfigurator, branchConfigurator, triggeredByConfigurator, machineConfigurator]
 

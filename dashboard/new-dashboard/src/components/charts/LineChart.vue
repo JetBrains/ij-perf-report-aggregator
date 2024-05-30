@@ -49,6 +49,7 @@ interface LineChartProps {
   title: string
   measures: string[]
   configurators: (DataQueryConfigurator | FilterConfigurator)[]
+  machines: string[] | null
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
@@ -68,6 +69,7 @@ const props = withDefaults(defineProps<LineChartProps>(), {
   tooltipTrigger: "item",
   withMeasureName: false,
   canBeClosed: false,
+  machines: null,
 })
 
 const anchor = computed(() => {

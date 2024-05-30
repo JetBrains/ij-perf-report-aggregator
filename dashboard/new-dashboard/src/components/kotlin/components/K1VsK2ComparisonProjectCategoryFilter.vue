@@ -51,6 +51,6 @@ const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategor
 watch(selectedProjectCategories, (newValue) => {
   emit("update:selectedProjectCategories", newValue)
 })
-const filteredCategories = Object.values(PROJECT_CATEGORIES).filter((c) => c.prefix.length !== 0)
+const filteredCategories = Object.values(PROJECT_CATEGORIES).filter((c) => c.prefix.length > 0)
 const labelByPrefix = new Map(filteredCategories.map((c) => [c.prefix, c.label]))
 </script>

@@ -29,7 +29,7 @@ export const MACHINES = {
   mac: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
 }
 
-export const PROJECT_CATEGORIES: { [key: string]: ProjectCategory } = {
+export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   kotlinEmpty: buildCategory("Kotlin empty", "kotlin_empty/"),
   intelliJ: buildCategory("IntelliJ", "intellij_commit/"),
   // Same intelliJ. Need to avoid lot of lines on chart
@@ -67,14 +67,14 @@ function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }
 }
 
-function projectsToDefinition(projects: object, measures: Measure[], machines: string[]): ProjectsChartDefinition[] {
+function projectsToDefinition(projects: Projects, measures: Measure[], machines: string[]): ProjectsChartDefinition[] {
   return measures.flatMap(({ name, label }) => {
     return Object.entries(projects).flatMap(([key, value]) => {
       return {
         label: `'${PROJECT_CATEGORIES[key].label}' ${label}`,
         measure: name,
         projects: value,
-        machines: machines,
+        machines,
       }
     })
   })
@@ -512,6 +512,8 @@ export const scriptCompletionCharts: ProjectsChartDefinition[] = projectsToDefin
 export const scriptFindUsagesCharts: ProjectsChartDefinition[] = projectsToDefinition({ kotlinScript: findUsagesLinuxProjects.kotlinScript }, MEASURES.findUsagesMeasures, [
   MACHINES.linux,
 ])
+
+type Projects = Record<string, string[]>
 
 /**
  * Encapsulates all data which is needed to render a chart on one of the Kotlin dev dashboards. For each chart definition, a chart for K1

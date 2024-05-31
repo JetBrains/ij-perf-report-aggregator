@@ -2059,6 +2059,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             product: "CL",
             persistentId: "nova-startup-dashboard",
             defaultProject: "radler/cmake",
+            withInstaller: true,
           },
           meta: { pageTitle: "CLion Classic Startup dashboard" },
         },

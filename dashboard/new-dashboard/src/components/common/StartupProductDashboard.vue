@@ -141,16 +141,18 @@ interface StartupProductDashboard {
   product: string
   defaultProject: string
   persistentId?: string | null
+  withInstaller: boolean
 }
 
 const props = withDefaults(defineProps<StartupProductDashboard>(), {
   persistentId: null,
+  withInstaller: false,
 })
-provideReportUrlProvider()
+provideReportUrlProvider(props.withInstaller)
 
 const container = ref<HTMLElement>()
 
-const dbName = "ij"
+const dbName = props.withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
 
 const sidebarVm = new InfoSidebarImpl()

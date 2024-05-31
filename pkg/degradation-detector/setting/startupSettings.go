@@ -10,7 +10,7 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
   settings := make([]detector.StartupSettings, 0, 100)
   mainSettings := detector.StartupSettings{
     Branch:  "master",
-    Machine: "intellij-linux-hw-munit-%",
+    Machine: "intellij-linux-hw-de-unit-%",
     Product: "IU",
   }
   slackSettings := detector.SlackSettings{
@@ -34,7 +34,7 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
         Project: project,
         Metric:  metric,
         AnalysisSettings: detector.AnalysisSettings{
-          MinimumSegmentLength: 10,
+          MinimumSegmentLength: 12,
         },
         SlackSettings: slackSettings,
       })

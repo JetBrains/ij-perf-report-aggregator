@@ -98,7 +98,7 @@ provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   "startup-pulse",
   {
-    machine: "Linux Munich i7-3770, 32Gb",
+    machine: "Linux Munich i7-13700, 64Gb",
     branch: "master",
   },
   useRouter()

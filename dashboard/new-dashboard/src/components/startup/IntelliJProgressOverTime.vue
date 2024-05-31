@@ -28,7 +28,7 @@ const persistentStateManager = new PersistentStateManager(
   {
     product: "IU",
     project: "simple for IJ",
-    machine: "macMini M1, 16GB",
+    machine: "Mac Mini M2 Pro (10 vCPU, 32 GB)",
     branch: "master",
   },
   useRouter()

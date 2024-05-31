@@ -44,11 +44,12 @@ const COMPARE_BRANCHES_ROUTE = "compareBranches"
 
 enum ROUTES {
   StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
+  StartupPulseInstaller = `${ROUTE_PREFIX.Startup}/pulseInstaller`,
   StartupProgress = `${ROUTE_PREFIX.Startup}/progressOverTime`,
   StartupModuleLoading = `${ROUTE_PREFIX.Startup}/moduleLoading`,
   StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
-  StartupExploreDev = `${ROUTE_PREFIX.Startup}/exploreDev`,
+  StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
@@ -241,6 +242,10 @@ const IJ_STARTUP: Product = {
           label: "Pulse",
         },
         {
+          url: ROUTES.StartupPulseInstaller,
+          label: "Pulse (Installer)",
+        },
+        {
           url: ROUTES.StartupModuleLoading,
           label: "Module Loading",
         },
@@ -257,8 +262,8 @@ const IJ_STARTUP: Product = {
           label: "Explore",
         },
         {
-          url: ROUTES.StartupExploreDev,
-          label: "Explore (Dev)",
+          url: ROUTES.StartupExploreInstaller,
+          label: "Explore (Installer)",
         },
         {
           url: ROUTES.StartupReport,
@@ -1139,6 +1144,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Pulse" },
         },
         {
+          path: ROUTES.StartupPulseInstaller,
+          component: () => import("./components/startup/IntelliJPulse.vue"),
+          props: {
+            withInstaller: true,
+          },
+          meta: { pageTitle: "Pulse" },
+        },
+        {
           path: ROUTES.StartupModuleLoading,
           component: () => import("./components/startup/IntelliJModuleLoading.vue"),
           meta: { pageTitle: "Module Loading" },
@@ -1157,17 +1170,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.StartupExplore,
           component: () => import("./components/startup/IntelliJExplore.vue"),
           props: {
-            withInstaller: true,
+            withInstaller: false,
           },
           meta: { pageTitle: "Explore" },
         },
         {
-          path: ROUTES.StartupExploreDev,
+          path: ROUTES.StartupExploreInstaller,
           component: () => import("./components/startup/IntelliJExplore.vue"),
           props: {
-            withInstaller: false,
+            withInstaller: true,
           },
-          meta: { pageTitle: "Explore" },
+          meta: { pageTitle: "Explore (Installer)" },
         },
         {
           path: ROUTES.StartupReport,

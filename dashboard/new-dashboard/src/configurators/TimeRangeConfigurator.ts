@@ -31,6 +31,9 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     provide(timeRangeKey, this.value)
     persistentStateManager.add("timeRange", this.value)
     persistentStateManager.add("customRange", this.customRange)
+    if (this.customRange.value != "") {
+      this.value.value = "custom"
+    }
     watch(this.value, (customRangeValue) => {
       if (customRangeValue != "custom") {
         this.customRange.value = ""

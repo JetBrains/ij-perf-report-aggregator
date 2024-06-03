@@ -26,7 +26,7 @@ import { dbTypeStore } from "../shared/dbTypes"
 import { measureNameToLabel } from "../shared/metricsMapping"
 import { Delta } from "../util/Delta"
 import { toColor } from "../util/colors"
-import { MAIN_METRICS_SET } from "../util/mainMetrics"
+import { MAIN_METRICS, MAIN_METRICS_SET } from "../util/mainMetrics"
 import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfigurator"
 import { scaleToMedian } from "./ScalingConfigurator"
 import { exponentialSmoothingWithAlphaInference } from "./SmoothingConfigurator"
@@ -129,6 +129,8 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             !/.*_\d+(#.*)?$/.test(it)
         )
 
+        data = customSort(data, MAIN_METRICS)
+
         const selectedRef = this.selected
         this.data.value = data
         const selected = selectedRef.value
@@ -177,6 +179,15 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
       return false
     }
   }
+}
+
+function customSort(tsArray: string[], referenceArray: string[]): string[] {
+  const referenceSet = new Set(referenceArray)
+
+  const inReference = tsArray.filter((x) => referenceSet.has(x))
+  const notInReference = tsArray.filter((x) => !referenceSet.has(x))
+
+  return [...inReference, ...notInReference]
 }
 
 function getLoadMeasureListUrl(serverConfigurator: ServerConfigurator, filters: FilterConfigurator[]): string | null {

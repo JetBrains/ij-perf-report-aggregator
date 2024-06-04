@@ -14,6 +14,7 @@ export interface ChartDefinition {
   measures: string[] | string[][] | (string | string[])[]
   projects: string[]
   aliases?: string[]
+  machines?: string[]
 }
 
 export function combineCharts(charts: ChartDefinition[]): Chart[] {

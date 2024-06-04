@@ -1,13 +1,13 @@
 <template>
   <section
     v-for="definition in definitions"
-    :key="definition.label"
+    :key="definition.labels[0]"
     class="flex gap-x-6"
   >
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
-        :label="`${definition.label} K1`"
-        :measure="definition.measure"
+        :label="`${definition.labels[0]} K1`"
+        :measure="definition.measures[0]"
         :projects="definition.projects.map((s) => `${s}_k1`)"
         :legend-formatter="replaceKotlinName"
         :machines="definition.machines"
@@ -15,8 +15,8 @@
     </div>
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
-        :label="`${definition.label} K2`"
-        :measure="definition.measure"
+        :label="`${definition.labels[0]} K2`"
+        :measure="definition.measures[0]"
         :projects="definition.projects.map((s) => `${s}_k2`)"
         :legend-formatter="replaceKotlinName"
         :machines="definition.machines"
@@ -27,11 +27,11 @@
 
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import { ChartDefinition } from "../charts/DashboardCharts"
 import { replaceKotlinName } from "./label-formatter"
-import { ProjectsChartDefinition } from "./projects"
 
 interface Props {
-  definitions: ProjectsChartDefinition[]
+  definitions: ChartDefinition[]
 }
 
 defineProps<Props>()

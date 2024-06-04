@@ -1,4 +1,6 @@
 import { ChartDefinition } from "../charts/DashboardCharts"
+import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
+import { computed, ComputedRef } from "vue"
 
 export const KOTLIN_MAIN_METRICS = [
   "completion#mean_value",
@@ -61,7 +63,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),
 
   mppNativeAcceptance: buildCategory("Native-acceptance", "kotlin_kmp_native_acceptance/"),
-  petClinic: buildCategory("'Pet Clinic", "kotlin_petclinic/"),
+  petClinic: buildCategory("Pet Clinic", "kotlin_petclinic/"),
   arrow: buildCategory("Arrow", "arrow/"),
   kotlinEmptyScript: buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
 }
@@ -455,29 +457,46 @@ export const KOTLIN_PROJECTS = {
   },
 }
 
+export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)
+KOTLIN_PROJECT_CONFIGURATOR.initData(Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label))
+
 function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }
 }
 
-function projectsToDefinition(projects: Projects, measures: Measure[], machines: string[]): ChartDefinition[] {
-  return measures.flatMap(({ name, label }) => {
-    return Object.entries(projects).flatMap(([key, value]) => {
-      return {
-        labels: [`'${PROJECT_CATEGORIES[key].label}' ${label}`],
-        measures: [name],
-        projects: value,
-        machines,
-      }
-    })
-  })
+function projectsToDefinition(projectsByOS: ProjectsByOS[]): ComputedRef<ChartDefinition[]> {
+  return computed(() =>
+    projectsByOS
+      .flatMap(({ projects, measures, machines }) =>
+        measures.flatMap(({ name, label }) =>
+          Object.entries(projects).flatMap(([key, value]) => {
+            return {
+              labels: [`'${PROJECT_CATEGORIES[key].label}' ${label}`],
+              measures: [name],
+              projects: value,
+              machines,
+            }
+          })
+        )
+      )
+      .filter((chart) => KOTLIN_PROJECT_CONFIGURATOR.selected.value?.some((selected) => chart.labels[0].startsWith(`'${selected}'`)))
+  )
 }
 
 export const completionProjects = { ...KOTLIN_PROJECTS.linux.completion, ...KOTLIN_PROJECTS.mac.completion }
 
-export const completionCharts = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.completion, MEASURES.completionMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.mac.completion, MEASURES.completionMeasures, [MACHINES.mac]),
-]
+export const completionCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.completion,
+    measures: MEASURES.completionMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.mac.completion,
+    measures: MEASURES.completionMeasures,
+    machines: [MACHINES.mac],
+  },
+])
 
 /**
  * Highlighting projects are also the projects for local inspections.
@@ -485,48 +504,125 @@ export const completionCharts = [
 
 export const highlightingProjects = { ...KOTLIN_PROJECTS.linux.highlighting, ...KOTLIN_PROJECTS.mac.highlighting }
 
-export const highlightingCharts = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.highlighting, MEASURES.highlightingMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.mac.highlighting, MEASURES.highlightingMeasures, [MACHINES.mac]),
-]
+export const highlightingCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.highlighting,
+    measures: MEASURES.highlightingMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.mac.highlighting,
+    measures: MEASURES.highlightingMeasures,
+    machines: [MACHINES.mac],
+  },
+])
 
-export const codeAnalysisCharts = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.highlighting, MEASURES.codeAnalysisMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.mac.highlighting, MEASURES.codeAnalysisMeasures, [MACHINES.mac]),
-]
+export const codeAnalysisCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.highlighting,
+    measures: MEASURES.codeAnalysisMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.mac.highlighting,
+    measures: MEASURES.codeAnalysisMeasures,
+    machines: [MACHINES.mac],
+  },
+])
 
-export const refactoringCharts = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.refactoringRename, MEASURES.refactoringMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.refactoringInsertCode, MEASURES.insertCodeMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.optimizeImports, MEASURES.optimizeImportsMeasures, [MACHINES.linux]),
-]
+export const refactoringCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.refactoringRename,
+    measures: MEASURES.refactoringMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.refactoringInsertCode,
+    measures: MEASURES.insertCodeMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.optimizeImports,
+    measures: MEASURES.optimizeImportsMeasures,
+    machines: [MACHINES.linux],
+  },
+])
 
 export const findUsagesProjects = { ...KOTLIN_PROJECTS.linux.findUsages, ...KOTLIN_PROJECTS.mac.findUsages }
 
-export const findUsagesCharts = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.findUsages, MEASURES.findUsagesMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.mac.findUsages, MEASURES.findUsagesMeasures, [MACHINES.mac]),
-]
-
-export const evaluateExpressionChars = [
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.evaluateExpression, MEASURES.evaluateExpressionMeasures, [MACHINES.linux]),
-  ...projectsToDefinition(KOTLIN_PROJECTS.linux.completionInEvaluateExpression, MEASURES.completionMeasures, [MACHINES.linux]),
-]
-
-export const convertJavaToKotlinProjectsChars = projectsToDefinition(KOTLIN_PROJECTS.linux.convertJavaToKotlin, MEASURES.convertJavaToKotlinProjectsMeasures, [MACHINES.linux])
-
-const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
-export const highlightingScriptCharts: ChartDefinition[] = projectsToDefinition(scriptHighlight, MEASURES.highlightingMeasures, [MACHINES.linux])
-export const codeAnalysisScriptCharts: ChartDefinition[] = projectsToDefinition(scriptHighlight, MEASURES.codeAnalysisMeasures, [MACHINES.linux])
-export const scriptCompletionCharts: ChartDefinition[] = projectsToDefinition({ kotlinScript: KOTLIN_PROJECTS.linux.completion.kotlinScript }, MEASURES.completionMeasures, [
-  MACHINES.linux,
+export const findUsagesCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.findUsages,
+    measures: MEASURES.findUsagesMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.mac.findUsages,
+    measures: MEASURES.findUsagesMeasures,
+    machines: [MACHINES.mac],
+  },
 ])
 
-export const scriptFindUsagesCharts: ChartDefinition[] = projectsToDefinition({ kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript }, MEASURES.findUsagesMeasures, [
-  MACHINES.linux,
+export const evaluateExpressionChars = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.evaluateExpression,
+    measures: MEASURES.evaluateExpressionMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.completionInEvaluateExpression,
+    measures: MEASURES.completionMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+export const convertJavaToKotlinProjectsChars = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.convertJavaToKotlin,
+    measures: MEASURES.convertJavaToKotlinProjectsMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
+export const highlightingScriptCharts = projectsToDefinition([
+  {
+    projects: scriptHighlight,
+    measures: MEASURES.highlightingMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+export const codeAnalysisScriptCharts = projectsToDefinition([
+  {
+    projects: scriptHighlight,
+    measures: MEASURES.codeAnalysisMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+export const scriptCompletionCharts = projectsToDefinition([
+  {
+    projects: { kotlinScript: KOTLIN_PROJECTS.linux.completion.kotlinScript },
+    measures: MEASURES.completionMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+export const scriptFindUsagesCharts = projectsToDefinition([
+  {
+    projects: { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript },
+    measures: MEASURES.findUsagesMeasures,
+    machines: [MACHINES.linux],
+  },
 ])
 
 type Projects = Record<string, string[]>
+
+interface ProjectsByOS {
+  projects: Projects
+  measures: Measure[]
+  machines: string[]
+}
 
 /**
  * A project category is a project name prefix such as "intellij_commit/" and "kotlin_lang/" with an associated, human-readable label.

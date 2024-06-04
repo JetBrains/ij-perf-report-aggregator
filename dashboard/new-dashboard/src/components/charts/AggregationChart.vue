@@ -24,16 +24,17 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, shallowRef } from "vue"
 import { TimeAverageConfigurator } from "../../configurators/TimeAverageConfigurator"
-import { containerKey } from "../../shared/keys"
+import { containerKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { AggregationChartVM } from "./AggregationChartVM"
+import { injectOrError } from "../../shared/injectionKeys"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
   chartColor?: string
-  configurators: DataQueryConfigurator[]
+  configurators?: DataQueryConfigurator[]
   aggregatedMeasure: string
   aggregatedProject?: string
   isLike?: boolean
@@ -42,6 +43,7 @@ interface AggregationChartProps {
 
 const props = withDefaults(defineProps<AggregationChartProps>(), {
   valueUnit: "ms",
+  configurators: undefined,
   chartColor: "#4B84EE",
   aggregatedProject: undefined,
 })
@@ -58,8 +60,10 @@ const measuresConfigurator = {
     return null
   },
 }
-const configurators = [...props.configurators, timeAverageConfigurator, measuresConfigurator]
-const queryExecutor = new DataQueryExecutor(configurators)
+const avConfigurators = props.configurators ?? injectOrError(dashboardConfiguratorsKey)
+const allConfigurators = [...avConfigurators, injectOrError(serverConfiguratorKey), timeAverageConfigurator, measuresConfigurator]
+/* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
+const queryExecutor = new DataQueryExecutor(allConfigurators.filter((item): item is DataQueryConfigurator => item != null))
 const element = shallowRef<HTMLElement>()
 const vm = new AggregationChartVM(queryExecutor, props.chartColor, props.valueUnit)
 const container = inject(containerKey)

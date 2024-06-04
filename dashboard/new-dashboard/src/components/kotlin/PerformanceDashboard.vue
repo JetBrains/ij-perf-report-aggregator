@@ -1,15 +1,23 @@
 <template>
   <DashboardPage
-    v-slot="{ averagesConfigurators }"
     db-name="perfint"
     table="kotlin"
     persistent-id="kotlin_dashboard"
   >
+    <template #configurator>
+      <MeasureSelect
+        :configurator="KOTLIN_PROJECT_CONFIGURATOR"
+        title="Project"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4 text-gray-500" />
+        </template>
+      </MeasureSelect>
+    </template>
     <SlackLink></SlackLink>
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'completion\_%'"
           :aggregated-project="'%\_k1'"
           :is-like="true"
@@ -18,7 +26,6 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'completion\_%'"
           :aggregated-project="'%\_k2'"
           :is-like="true"
@@ -27,7 +34,6 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'semanticHighlighting\_%'"
           :aggregated-project="'%\_k1'"
           :is-like="true"
@@ -36,7 +42,6 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'semanticHighlighting\_%'"
           :aggregated-project="'%\_k2'"
           :is-like="true"
@@ -45,7 +50,6 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'findUsage\_%'"
           :aggregated-project="'%\_k1'"
           :is-like="true"
@@ -54,7 +58,6 @@
       </div>
       <div class="flex-1 min-w-0">
         <AggregationChart
-          :configurators="averagesConfigurators"
           :aggregated-measure="'findUsage\_%'"
           :aggregated-project="'%\_k2'"
           :is-like="true"
@@ -97,9 +100,11 @@ import {
   findUsagesCharts,
   highlightingCharts,
   highlightingScriptCharts,
+  KOTLIN_PROJECT_CONFIGURATOR,
   refactoringCharts,
   scriptCompletionCharts,
   scriptFindUsagesCharts,
 } from "./projects"
 import SlackLink from "./SlackLink.vue"
+import MeasureSelect from "../charts/MeasureSelect.vue"
 </script>

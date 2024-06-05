@@ -33,7 +33,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   }
 
   compressString(params: string): string {
-    // eslint-disable-next-line @typescript-eslint/no-useless-template-literals
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-template-expression
     return `${getCompressor().compress(params)}`
   }
 

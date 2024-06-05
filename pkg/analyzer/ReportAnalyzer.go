@@ -250,6 +250,9 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
     return "", fmt.Errorf("failed to parse build properties: %w", err)
   }
 
+  if projectId == "mlEvaluation" {
+    return "master", nil
+  }
   if projectId == "jbr" {
     splitId := strings.SplitN(extraData.TcBuildType, "_", 4)
     if len(splitId) == 4 {

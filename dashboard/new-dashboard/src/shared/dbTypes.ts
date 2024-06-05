@@ -12,7 +12,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     if (dbName == "jbr") {
       dbType.value = DBType.JBR
     }
-    if (dbName == "perfintDev") {
+    if (dbName == "perfintDev" || dbName == "mlEvaluation") {
       dbType.value = DBType.INTELLIJ_DEV
     }
     if (dbName == "fleet" && table == "measure") {

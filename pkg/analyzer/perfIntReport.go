@@ -2,13 +2,19 @@ package analyzer
 
 import (
   "github.com/valyala/fastjson"
+  "golang.org/x/exp/constraints"
   "log/slog"
 )
 
-func analyzePerfReport(runResult *RunResult, data *fastjson.Value) error {
+// Numeric is a constraint that permits any numeric type
+type Numeric interface {
+  constraints.Integer | constraints.Float
+}
+
+func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) error {
   measureNames := make([]string, 0)
   measureTypes := make([]string, 0)
-  measureValues := make([]int32, 0)
+  measureValues := make([]T, 0)
   for _, measure := range data.GetArray("metrics") {
     measureName := string(measure.GetStringBytes("n"))
 
@@ -19,19 +25,35 @@ func analyzePerfReport(runResult *RunResult, data *fastjson.Value) error {
       value = measure.Get("c")
       measureType = "c"
       if value == nil {
+        slog.Warn("metric doesn't contain 'd' or 'c'", "measureName", measureName, "reportURL", runResult.ReportFileName)
         return nil
       }
     }
 
     floatValue := value.GetFloat64()
-    intValue := int32(floatValue)
-    if floatValue != float64(intValue) {
-      slog.Warn("int expected, but got float, setting metric value to zero", "measureName", measureName, "intValue", intValue, "floatValue", floatValue, "reportURL", runResult.ReportFileName)
-      intValue = 0
+    var numValue T
+    var ok bool
+    switch any(numValue).(type) {
+    case int32:
+      intValue := int32(floatValue)
+      if floatValue != float64(intValue) {
+        slog.Warn("int expected, but got float, setting metric value to zero", "measureName", measureName, "intValue", intValue, "floatValue", floatValue, "reportURL", runResult.ReportFileName)
+        intValue = 0
+      }
+      numValue, ok = any(intValue).(T)
+    case float64:
+      numValue, ok = any(floatValue).(T)
+    default:
+      slog.Warn("unexpected type", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
+      return nil
+    }
+    if !ok {
+      slog.Warn("unexpected type", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
+      return nil
     }
 
     measureNames = append(measureNames, measureName)
-    measureValues = append(measureValues, intValue)
+    measureValues = append(measureValues, numValue)
     measureTypes = append(measureTypes, measureType)
   }
 

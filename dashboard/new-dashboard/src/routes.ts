@@ -34,6 +34,7 @@ const enum ROUTE_PREFIX {
   IJent = "/ijent",
   ML = "/ml",
   DataGrip = "/datagrip",
+  AIA = "/aia",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -204,6 +205,7 @@ enum ROUTES {
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
+  AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -1108,6 +1110,23 @@ const ML_TESTS: Product = {
   ],
 }
 
+const AIA: Product = {
+  url: ROUTE_PREFIX.AIA,
+  label: "AIA",
+  children: [
+    {
+      url: ROUTE_PREFIX.AIA,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.AIATests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   IDEA,
   PHPSTORM,
@@ -1128,6 +1147,7 @@ export const PRODUCTS = [
   PERF_UNIT,
   IJENT,
   ML_TESTS,
+  AIA,
 ]
 export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
@@ -2191,6 +2211,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.MetricsDescription,
           component: () => import("./components/metrics/MetricDescriptions.vue"),
           meta: { pageTitle: "Metrics description" },
+        },
+        {
+          path: ROUTES.AIATests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "mlEvaluation",
+            table: "report",
+            withInstaller: false,
+            initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
+          },
+          meta: { pageTitle: "AIA Tests" },
         },
       ],
     },

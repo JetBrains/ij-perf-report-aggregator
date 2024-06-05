@@ -78,7 +78,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     return DatabaseConfiguration{
       DbName:                      dbName,
       TableName:                   tableName,
-      ReportReader:                analyzePerfReport,
+      ReportReader:                analyzePerfReport[int32],
       HasBuildTypeField:           true,
       HasMetaDB:                   true,
       HasNoInstallerButHasChanges: true,
@@ -92,7 +92,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     return DatabaseConfiguration{
       DbName:            dbName,
       TableName:         tableName,
-      ReportReader:      analyzePerfReport,
+      ReportReader:      analyzePerfReport[int32],
       HasInstallerField: true,
       HasBuildTypeField: true,
       HasMetaDB:         true,
@@ -109,6 +109,18 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       extraFieldCount:   4,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.start, measures.thread")
+      },
+    }
+  case id == "mlEvaluation":
+    return DatabaseConfiguration{
+      DbName:            "mlEvaluation",
+      TableName:         "report",
+      ReportReader:      analyzePerfReport[float64],
+      HasBuildTypeField: true,
+      HasMetaDB:         true,
+      extraFieldCount:   3,
+      insertStatementWriter: func(sb *strings.Builder) {
+        sb.WriteString(", measures.name, measures.value, measures.type")
       },
     }
   case id == "perf_fleet":
@@ -153,7 +165,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     return DatabaseConfiguration{
       DbName:                      "perfUnitTests",
       TableName:                   "report",
-      ReportReader:                analyzePerfReport,
+      ReportReader:                analyzePerfReport[int32],
       HasBuildTypeField:           true,
       HasMetaDB:                   false,
       HasNoInstallerButHasChanges: true,

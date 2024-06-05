@@ -3,6 +3,7 @@
     <template #start>
       <TimeRangeSelect :timerange-configurator="props.timeRangeConfigurator" />
       <BranchSelect
+        v-if="props.branchConfigurator != null"
         :branch-configurator="props.branchConfigurator"
         :release-configurator="props.releaseConfigurator"
         :triggered-by-configurator="props.triggeredByConfigurator"
@@ -34,7 +35,7 @@ import TimeRangeSelect from "./TimeRangeSelect.vue"
 
 const props = defineProps<{
   timeRangeConfigurator: TimeRangeConfigurator
-  branchConfigurator: BranchConfigurator
+  branchConfigurator: BranchConfigurator | null
   releaseConfigurator?: ReleaseNightlyConfigurator
   triggeredByConfigurator: BuildConfigurator
   machineConfigurator?: MachineConfigurator

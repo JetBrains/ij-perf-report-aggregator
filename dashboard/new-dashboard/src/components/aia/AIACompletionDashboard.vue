@@ -6,6 +6,7 @@
     :initial-machine="null"
     :charts="charts"
     :with-installer="false"
+    :branch="null"
   >
     <section>
       <GroupProjectsChart

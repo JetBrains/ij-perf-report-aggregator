@@ -57,7 +57,7 @@ export const durationFormatterInOneWord: (valueInMs: number) => string = humaniz
 })
 
 export function numberAxisLabelFormatter(value: number): string {
-  return numberFormat.format(value)
+  return value.toLocaleString()
 }
 
 export function isDurationFormatterApplicable(measureName: string): boolean {

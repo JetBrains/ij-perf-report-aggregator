@@ -206,6 +206,10 @@ enum ROUTES {
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
+  AIACompletionDashboard = `${ROUTE_PREFIX.AIA}/completion`,
+  AIACodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/codeGeneration`,
+  AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
+  AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
 }
 
 export interface Tab {
@@ -1120,7 +1124,23 @@ const AIA: Product = {
       tabs: [
         {
           url: ROUTES.AIATests,
-          label: "Tests",
+          label: "All",
+        },
+        {
+          url: ROUTES.AIACompletionDashboard,
+          label: "Completion",
+        },
+        {
+          url: ROUTES.AIACodeGenerationDashboard,
+          label: "Code Generation",
+        },
+        {
+          url: ROUTES.AIANameSuggestionDashboard,
+          label: "Name Suggestion",
+        },
+        {
+          url: ROUTES.AIATestGenerationDashboard,
+          label: "Test Generation",
         },
       ],
     },
@@ -2222,6 +2242,26 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
           },
           meta: { pageTitle: "AIA Tests" },
+        },
+        {
+          path: ROUTES.AIACompletionDashboard,
+          component: () => import("./components/aia/AIACompletionDashboard.vue"),
+          meta: { pageTitle: "AIA completion dashboard" },
+        },
+        {
+          path: ROUTES.AIACodeGenerationDashboard,
+          component: () => import("./components/aia/AIACodeGeneration.vue"),
+          meta: { pageTitle: "AIA code generation dashboard" },
+        },
+        {
+          path: ROUTES.AIANameSuggestionDashboard,
+          component: () => import("./components/aia/AIANameSuggestion.vue"),
+          meta: { pageTitle: "AIA name suggestion dashboard" },
+        },
+        {
+          path: ROUTES.AIATestGenerationDashboard,
+          component: () => import("./components/aia/AIATestGeneration.vue"),
+          meta: { pageTitle: "AIA test generation dashboard" },
         },
       ],
     },

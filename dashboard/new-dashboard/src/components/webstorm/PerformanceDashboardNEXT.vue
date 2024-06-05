@@ -10,21 +10,13 @@
         label="Code Vision (JSReferencesCodeVisionProvider)"
         measure="JSReferencesCodeVisionProvider"
         :projects="[
-          'aws_cdk/localInspection/logging',
           'aws_cdk/localInspection/loggingNEXT',
-          'WEB_5976/localInspection/react_mui',
           'WEB_5976/localInspection/react_muiNEXT',
-          'toh-pt6/localInspection/hero.service.ts',
           'toh-pt6/localInspection/hero.service.tsNEXT',
-          'vue3-admin-vite/localInspection/index.vue',
           'vue3-admin-vite/localInspection/index.vueNEXT',
-          'eslint-plugin-jest/localInspection/misc.ts',
           'eslint-plugin-jest/localInspection/misc.tsNEXT',
-          'allure-js/localInspection/JasmineAllureReporter.ts',
           'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
-          'ts-codec/localInspection/codec.test.ts',
           'ts-codec/localInspection/codec.test.tsNEXT',
-          'material-ui-react-admin/localInspection/PostEdit.tsx',
           'material-ui-react-admin/localInspection/PostEdit.tsxNEXT',
         ]"
       />
@@ -37,7 +29,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['eslint-plugin-jest/completion/types', 'eslint-plugin-jest/completion/typesNEXT']"
+          :projects="['eslint-plugin-jest/completion/typesNEXT']"
         />
       </div>
 
@@ -46,13 +38,9 @@
           label="Local inspections"
           measure="localInspections"
           :projects="[
-            'aws_cdk/localInspection/logging',
             'aws_cdk/localInspection/loggingNEXT',
-            'eslint-plugin-jest/localInspection/misc.ts',
             'eslint-plugin-jest/localInspection/misc.tsNEXT',
-            'allure-js/localInspection/JasmineAllureReporter.ts',
             'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
-            'ts-codec/localInspection/codec.test.ts',
             'ts-codec/localInspection/codec.test.tsNEXT',
           ]"
         />
@@ -62,7 +50,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typing', 'eslint-plugin-jest/typingNEXT']"
+          :projects="['eslint-plugin-jest/typingNEXT']"
         />
       </div>
     </section>
@@ -74,7 +62,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['axios/completion/functions', 'axios/completion/functionsNEXT']"
+          :projects="['axios/completion/functionsNEXT']"
         />
       </div>
 
@@ -82,7 +70,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="['axios/localInspection/utils.js', 'axios/localInspection/utils.jsNEXT']"
+          :projects="['axios/localInspection/utils.jsNEXT']"
         />
       </div>
 
@@ -90,7 +78,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['axios/typing', 'axios/typingNEXT']"
+          :projects="['axios/typingNEXT']"
         />
       </div>
     </section>
@@ -102,7 +90,7 @@
         <GroupProjectsChart
           label="Completion"
           measure="completion"
-          :projects="['toh-pt6/completion/attribute', 'toh-pt6/completion/attributeNEXT', 'toh-pt6/completion/component', 'toh-pt6/completion/componentNEXT']"
+          :projects="['toh-pt6/completion/attributeNEXT', 'toh-pt6/completion/componentNEXT']"
         />
       </div>
 
@@ -110,12 +98,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="[
-            'toh-pt6/localInspection/hero.service.ts',
-            'toh-pt6/localInspection/hero.service.tsNEXT',
-            'toh-pt6/localInspection/heroes.component.html',
-            'toh-pt6/localInspection/heroes.component.htmlNEXT',
-          ]"
+          :projects="['toh-pt6/localInspection/hero.service.tsNEXT', 'toh-pt6/localInspection/heroes.component.htmlNEXT']"
         />
       </div>
 
@@ -123,7 +106,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['toh-pt6/typing/toh-pt6', 'toh-pt6/typing/toh-pt6NEXT']"
+          :projects="['toh-pt6/typing/toh-pt6NEXT']"
         />
       </div>
     </section>
@@ -136,15 +119,10 @@
           label="Completion"
           measure="completion"
           :projects="[
-            'react-todo-js/completion/attribute',
             'react-todo-js/completion/attributeNEXT',
-            'react-todo-js/completion/component',
             'react-todo-js/completion/componentNEXT',
-            'vkui/completion/component',
             'vkui/completion/componentNEXT',
-            'ring-ui/completion/component',
             'ring-ui/completion/componentNEXT',
-            'material-ui-react-admin/completion/attribute',
             'material-ui-react-admin/completion/attributeNEXT',
           ]"
         />
@@ -154,14 +132,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="[
-            'react-todo-js/localInspection/App.js',
-            'react-todo-js/localInspection/App.jsNEXT',
-            'WEB_5976/localInspection/react_mui',
-            'WEB_5976/localInspection/react_muiNEXT',
-            'material-ui-react-admin/localInspection/PostEdit.tsx',
-            'material-ui-react-admin/localInspection/PostEdit.tsxNEXT',
-          ]"
+          :projects="['react-todo-js/localInspection/App.jsNEXT', 'WEB_5976/localInspection/react_muiNEXT', 'material-ui-react-admin/localInspection/PostEdit.tsxNEXT']"
         />
       </div>
 
@@ -169,7 +140,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['react-todo-js/typing', 'react-todo-js/typingNEXT']"
+          :projects="['react-todo-js/typingNEXT']"
         />
       </div>
     </section>
@@ -182,13 +153,9 @@
           label="Completion"
           measure="completion"
           :projects="[
-            'vue-template/completion/attribute',
             'vue-template/completion/attributeNEXT',
-            'vue-template/completion/component',
             'vue-template/completion/componentNEXT',
-            'vue3-admin-vite/completion/component',
             'vue3-admin-vite/completion/componentNEXT',
-            'vue3-admin-vite/completion/attribute',
             'vue3-admin-vite/completion/attributeNEXT',
           ]"
         />
@@ -198,12 +165,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="[
-            'vue-template/localInspection/HelloWorld.vue',
-            'vue-template/localInspection/HelloWorld.vueNEXT',
-            'vue3-admin-vite/localInspection/index.vue',
-            'vue3-admin-vite/localInspection/index.vueNEXT',
-          ]"
+          :projects="['vue-template/localInspection/HelloWorld.vueNEXT', 'vue3-admin-vite/localInspection/index.vueNEXT']"
         />
       </div>
 
@@ -211,7 +173,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['vue-template/typing', 'vue-template/typingNEXT']"
+          :projects="['vue-template/typingNEXT']"
         />
       </div>
     </section>

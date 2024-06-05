@@ -3,7 +3,7 @@
     db-name="mlEvaluation"
     table="report"
     persistent-id="aiaDashboard"
-    initial-machine="Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
+    :initial-machine="null"
     :charts="charts"
     :with-installer="false"
   >
@@ -13,6 +13,7 @@
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
+        :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
         :projects="chart.projects"
       />
     </section>

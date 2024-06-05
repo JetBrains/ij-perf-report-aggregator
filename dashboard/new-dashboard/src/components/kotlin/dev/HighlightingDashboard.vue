@@ -28,13 +28,13 @@
       </div>
     </section>
 
-    <DashboardGroupCharts :definitions="highlightingCharts" />
+    <K1K2DashboardGroupCharts :definitions="highlightingCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-import DashboardGroupCharts from "../DashboardGroupCharts.vue"
+import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
 import { highlightingCharts } from "../projects"
 </script>

@@ -17,48 +17,48 @@
       </MeasureSelect>
     </template>
     <Divider title="Completion" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="completionCharts"
     />
     <Divider title="Code analysis" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="codeAnalysisCharts"
     />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="highlightingCharts"
     />
     <Divider title="Find usages" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="findUsagesCharts"
     />
     <Divider title="Debugger" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="evaluateExpressionChars"
     />
     <Divider title="Refactoring" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="refactoringCharts"
     />
     <Divider title="Script" />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="scriptCompletionCharts"
     />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="scriptFindUsagesCharts"
     />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="highlightingScriptCharts"
     />
-    <MemoryDashboardGroupCharts
+    <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="codeAnalysisScriptCharts"
     />
@@ -72,7 +72,7 @@ import { metricsSelectLabelFormat } from "../../shared/labels"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
-import MemoryDashboardGroupCharts from "./MemoryDashboardGroupCharts.vue"
+import MemoryK1K2DashboardGroupCharts from "./MemoryK1K2DashboardGroupCharts.vue"
 import {
   completionCharts,
   evaluateExpressionChars,

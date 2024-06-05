@@ -57,7 +57,6 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   springFramework: buildCategory("Spring framework", "spring-framework/"),
   rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
   kotlinCoroutines: buildCategory("Kotlin Coroutines", "kotlin_coroutines_commit/"),
-  space: buildCategory("Space", "space_specific/"),
   sqliter: buildCategory("SQLiter", "SQLiter/"),
   ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),
   kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),
@@ -377,11 +376,6 @@ export const KOTLIN_PROJECTS = {
         "ktor_before_add_wasm_client/completion/URLBuilderJs_URLBuilderJs_typing_with_library_cache",
         "ktor_before_add_wasm_client/completion/DarwinUtils_DarwinUtils_with_library_cache",
       ],
-      space: [
-        "space_specific/completion/Dimensions_typealias_typing_with_library_cache",
-        "space_specific/completion/Containers_constructor_typing_with_library_cache",
-        "space_specific/completion/Containers_constructorParam_typing_with_library_cache",
-      ],
     },
     highlighting: {
       sqliter: [
@@ -420,18 +414,6 @@ export const KOTLIN_PROJECTS = {
         "ktor_before_add_wasm_client/highlight/PrimitiveArraysJs_with_library_cache",
         "ktor_before_add_wasm_client/highlight/CharsetMingw_with_library_cache",
       ],
-      space: [
-        "space_specific/highlight/DocumentsStatsTest_with_library_cache",
-        "space_specific/highlight/EventCounters_with_library_cache",
-        "space_specific/highlight/HttpApiClientTest_with_library_cache",
-        "space_specific/highlight/M2ChannelMessageListVmV2_with_library_cache",
-        "space_specific/highlight/M2ChannelVm_with_library_cache",
-        "space_specific/highlight/MagicBarComponent_with_library_cache",
-        "space_specific/highlight/ProfilesImpl_with_library_cache",
-        "space_specific/highlight/SchemaMigration_with_library_cache",
-        "space_specific/highlight/SecretsTests_with_library_cache",
-        "space_specific/highlight/XScrollable_with_library_cache",
-      ],
     },
     findUsages: {
       ktor: [
@@ -446,12 +428,6 @@ export const KOTLIN_PROJECTS = {
         "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",
         "kotlin_coroutines_qg/findUsages/Runnable_with_library_cache",
         "kotlin_coroutines_qg/findUsages/SynchronizedObject_with_library_cache",
-      ],
-      space: [
-        "space_specific/findUsages/ApiFlag_with_library_cache",
-        "space_specific/findUsages/Http_with_library_cache",
-        "space_specific/findUsages/IntSizePx_with_library_cache",
-        "space_specific/findUsages/UniqueConstraint_with_library_cache",
       ],
     },
   },

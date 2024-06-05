@@ -6,14 +6,14 @@
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
-    <DashboardGroupCharts :definitions="scriptCompletionCharts" />
-    <DashboardGroupCharts :definitions="highlightingScriptCharts" />
-    <DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
+    <K1K2DashboardGroupCharts :definitions="scriptCompletionCharts" />
+    <K1K2DashboardGroupCharts :definitions="highlightingScriptCharts" />
+    <K1K2DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import DashboardPage from "../../common/DashboardPage.vue"
-import DashboardGroupCharts from "../DashboardGroupCharts.vue"
+import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
 import { codeAnalysisScriptCharts, highlightingScriptCharts, scriptCompletionCharts } from "../projects"
 </script>

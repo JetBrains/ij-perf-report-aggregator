@@ -65,13 +65,13 @@
       </div>
     </section>
 
-    <DashboardGroupCharts :definitions="refactoringCharts" />
+    <K1K2DashboardGroupCharts :definitions="refactoringCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-import DashboardGroupCharts from "../DashboardGroupCharts.vue"
+import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
 import { refactoringCharts } from "../projects"
 </script>

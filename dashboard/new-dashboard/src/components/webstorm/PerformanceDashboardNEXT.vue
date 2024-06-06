@@ -50,7 +50,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typingNEXT']"
+          :projects="['eslint-plugin-jest/typing/eslintPluginJestNEXT']"
         />
       </div>
     </section>
@@ -78,7 +78,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['axios/typingNEXT']"
+          :projects="['axios/typing/axiosNEXT']"
         />
       </div>
     </section>
@@ -140,7 +140,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['react-todo-js/typingNEXT']"
+          :projects="['react-todo-js/typing/typingNEXT']"
         />
       </div>
     </section>
@@ -173,7 +173,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['vue-template/typingNEXT']"
+          :projects="['vue-template/typing/vue-templateNEXT']"
         />
       </div>
     </section>

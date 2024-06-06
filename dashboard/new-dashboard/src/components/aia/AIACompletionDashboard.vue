@@ -10,6 +10,12 @@
   >
     <section>
       <GroupProjectsChart
+        measure="MatchedRatio"
+        :projects="getAllProjects('completion')"
+        :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
+        label="All Languages"
+      />
+      <GroupProjectsChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
@@ -25,7 +31,7 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import { aiaLanguages, aiaModels } from "./aia"
+import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
 
 const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
   return {

@@ -56,7 +56,6 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   removedImports: buildCategory("Files with removed imports", ""),
   springFramework: buildCategory("Spring framework", "spring-framework/"),
   rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
-  kotlinCoroutines: buildCategory("Kotlin Coroutines", "kotlin_coroutines_commit/"),
   sqliter: buildCategory("SQLiter", "SQLiter/"),
   ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),
   kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),
@@ -121,11 +120,6 @@ export const KOTLIN_PROJECTS = {
         "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
         "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
         "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache",
-      ],
-      kotlinCoroutines: [
-        "kotlin_coroutines_commit/completion/CoroutineScheduler_in_constructor_typing_with_library_cache",
-        "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_typing_with_library_cache",
-        "kotlin_coroutines_commit/completion/CoroutineScheduler_in_function_with_library_cache",
       ],
       mppNativeAcceptance: [
         "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
@@ -250,11 +244,6 @@ export const KOTLIN_PROJECTS = {
         "rust_commit/highlight/TypeInferenceWalker_with_library_cache",
         "rust_commit/highlight/TypeInference_with_library_cache",
       ],
-      kotlinCoroutines: [
-        "kotlin_coroutines_commit/highlight/BufferedChannel_with_library_cache",
-        "kotlin_coroutines_commit/highlight/CoroutineScheduler_with_library_cache",
-        "kotlin_coroutines_commit/highlight/JobSupport_with_library_cache",
-      ],
     },
     refactoringRename: {
       intelliJ: ["intellij_commit/rename/SqlBlock_SqlBlockRenamed"],
@@ -318,13 +307,6 @@ export const KOTLIN_PROJECTS = {
         "kotlin_lang/findUsages/JvmTestFramework_with_library_cache",
         "kotlin_lang/findUsages/SourceSet_with_library_cache",
       ],
-      kotlinCoroutines: [
-        "kotlin_coroutines_commit/findUsages/assert_with_library_cache",
-        "kotlin_coroutines_commit/findUsages/emit_with_library_cache",
-        "kotlin_coroutines_commit/findUsages/Flow_with_library_cache",
-        "kotlin_coroutines_commit/findUsages/FlowCollector_with_library_cache",
-        "kotlin_coroutines_commit/findUsages/runBlocking_with_library_cache",
-      ],
     },
     evaluateExpression: {
       kotlinLanguageServer: [
@@ -364,6 +346,7 @@ export const KOTLIN_PROJECTS = {
         "kotlin_coroutines_qg/completion/SchedulerTask_afterTask_SchedulerTask_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/TestBase_finish_TestBase_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/WorkerTest_test_WorkerTest_typing_with_library_cache",
+        "kotlin_coroutines_qg/completion/CoroutineScheduler_in_constructor_typing_with_library_cache",
       ],
       sqliter: [
         "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache",
@@ -402,6 +385,7 @@ export const KOTLIN_PROJECTS = {
         "kotlin_coroutines_qg/highlight/SharedFlow_with_library_cache",
         "kotlin_coroutines_qg/highlight/TestBase_with_library_cache",
         "kotlin_coroutines_qg/highlight/WorkerMain_with_library_cache",
+        "kotlin_coroutines_qg/highlight/JobSupport_with_library_cache",
       ],
       ktor: [
         "ktor_before_add_wasm_client/highlight/ByteBufferChannel_with_library_cache",
@@ -428,6 +412,11 @@ export const KOTLIN_PROJECTS = {
         "kotlin_coroutines_qg/findUsages/hexAddress_with_library_cache",
         "kotlin_coroutines_qg/findUsages/Runnable_with_library_cache",
         "kotlin_coroutines_qg/findUsages/SynchronizedObject_with_library_cache",
+        "kotlin_coroutines_qg/findUsages/assert_with_library_cache",
+        "kotlin_coroutines_qg/findUsages/emit_with_library_cache",
+        "kotlin_coroutines_qg/findUsages/runBlocking_with_library_cache",
+        "kotlin_coroutines_qg/findUsages/Flow_with_library_cache",
+        "kotlin_coroutines_qg/findUsages/InternalCoroutinesApi_with_library_cache",
       ],
     },
   },

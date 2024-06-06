@@ -28,4 +28,9 @@ export const MAIN_METRICS: string[] = [
   "createJavaFile",
   "typingCodeAnalyzing",
   "test#max_awt_delay",
+  "MatchedRatio",
+  "SyntaxErrorsSessionRatio",
+  "EditSimilarity",
+  "SyntaxErrorsSessionRatio",
+  "attempt.mean.ms",
 ]

@@ -5,13 +5,13 @@
         <CopyLink :timerange-configurator="timeRangeConfigurator" />
         <TimeRangeSelect :timerange-configurator="timeRangeConfigurator" />
         <BranchSelect
-          v-if="releaseConfigurator != null"
+          v-if="releaseConfigurator != null && branchConfigurator != null"
           :branch-configurator="branchConfigurator"
           :release-configurator="releaseConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
         <BranchSelect
-          v-else
+          v-else-if="branchConfigurator != null"
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
@@ -61,7 +61,10 @@
             </template>
           </DimensionSelect>
         </span>
-        <MachineSelect :machine-configurator="machineConfigurator" />
+        <MachineSelect
+          v-if="machineConfigurator != null"
+          :machine-configurator="machineConfigurator"
+        />
         <SelectButton
           v-model="testMetricSwitcher"
           :allow-empty="false"
@@ -149,16 +152,18 @@ import InfoSidebar from "./sideBar/InfoSidebar.vue"
 interface PerformanceTestsProps {
   dbName: string
   table: string
-  initialMachine: string
+  initialMachine: string | null
   withInstaller?: boolean
   unit?: "ns" | "ms"
   releaseConfigurator?: ReleaseType
+  branch?: string | null
 }
 
 const props = withDefaults(defineProps<PerformanceTestsProps>(), {
   withInstaller: true,
   unit: "ms",
   releaseConfigurator: nightly,
+  branch: "master",
 })
 
 enum TestMetricSwitcher {
@@ -180,8 +185,8 @@ provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${props.dbName}-${props.table}-dashboard`,
   {
-    machine: props.initialMachine,
-    branch: "master",
+    machine: props.initialMachine ?? "",
+    branch: props.branch ?? "",
     project: [],
     measure: [],
     type: TestMetricSwitcher.Tests,
@@ -190,23 +195,38 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
+const filters = []
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
+filters.push(timeRangeConfigurator)
 
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
-const measureScenarioFilters = [branchConfigurator, triggeredByConfigurator, timeRangeConfigurator]
+const branchConfigurator = props.branch == null ? null : createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
+if (branchConfigurator != null) filters.push(branchConfigurator)
+
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, filters)
+
+const measureScenarioFilters = [triggeredByConfigurator, timeRangeConfigurator]
+if (branchConfigurator != null) {
+  measureScenarioFilters.push(branchConfigurator)
+}
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
-let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
+filters.push(scenarioConfigurator)
 
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator, scenarioConfigurator])
-if (machineConfigurator.selected.value.length === 0) {
+let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
+const machineConfigurator = props.initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
+if (props.initialMachine != null && machineConfigurator != null && machineConfigurator.selected.value.length === 0) {
   machineConfigurator.selected.value = [props.initialMachine]
 }
 
 const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const configurators: DataQueryConfigurator[] = [serverConfigurator, branchConfigurator, machineConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
+const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
+if (branchConfigurator != null) {
+  configurators.push(branchConfigurator)
+}
+if (machineConfigurator != null) {
+  configurators.push(machineConfigurator)
+}
 
 const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseConfigurator != null) {

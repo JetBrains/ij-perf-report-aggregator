@@ -202,7 +202,7 @@ filters.push(timeRangeConfigurator)
 const branchConfigurator = props.branch == null ? null : createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 if (branchConfigurator != null) filters.push(branchConfigurator)
 
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, ...[filters])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, filters)
 
 const measureScenarioFilters = [triggeredByConfigurator, timeRangeConfigurator]
 if (branchConfigurator != null) {
@@ -212,7 +212,7 @@ let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, 
 filters.push(scenarioConfigurator)
 
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
-const machineConfigurator = props.initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, ...[filters])
+const machineConfigurator = props.initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
 if (props.initialMachine != null && machineConfigurator != null && machineConfigurator.selected.value.length === 0) {
   machineConfigurator.selected.value = [props.initialMachine]
 }

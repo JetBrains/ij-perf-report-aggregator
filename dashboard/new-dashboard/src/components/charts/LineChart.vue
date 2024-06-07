@@ -49,7 +49,7 @@ interface LineChartProps {
   title: string
   measures: string[]
   configurators: (DataQueryConfigurator | FilterConfigurator)[]
-  machines: string[] | null
+  machines?: string[] | null
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit

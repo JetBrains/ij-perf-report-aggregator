@@ -25,7 +25,7 @@ interface Props {
   label: string
   measure: string | string[]
   projects: string[]
-  machines: string[] | null
+  machines?: string[] | null
   valueUnit?: ValueUnit
   legendFormatter?: (name: string) => string
   aliases?: string[] | null

@@ -6,7 +6,7 @@
     <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5 overflow-y-auto overflow-x-hidden">
       <div
         v-if="useScrollStore().isScrolled"
-        class="sticky h-10"
+        class="sticky min-h-10"
       ></div>
       <span class="flex justify-between uppercase text-xs">
         {{ data?.title }}

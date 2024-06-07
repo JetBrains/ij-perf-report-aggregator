@@ -13,6 +13,7 @@ import { computed } from "vue"
 import { useRouter } from "vue-router"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { DBType, InfoData } from "./InfoSidebar"
+import { getMachineGroupName } from "../../../configurators/MachineConfigurator"
 
 const router = useRouter()
 
@@ -99,6 +100,7 @@ function handleNavigateToTest() {
     parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   }
   const branch = props.data?.branch ?? ""
+  const machineGroup = getMachineGroupName(props.data?.machineName ?? "")
   const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
 
@@ -106,6 +108,7 @@ function handleNavigateToTest() {
     ...currentRoute.query,
     project: props.data?.projectName ?? "",
     branch: majorBranch,
+    machine: machineGroup,
   }).toString()
 
   const measures =

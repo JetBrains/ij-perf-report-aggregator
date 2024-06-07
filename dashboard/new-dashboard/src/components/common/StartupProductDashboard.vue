@@ -141,7 +141,7 @@ interface StartupProductDashboard {
   product: string
   defaultProject: string
   persistentId?: string | null
-  withInstaller: boolean
+  withInstaller?: boolean
 }
 
 const props = withDefaults(defineProps<StartupProductDashboard>(), {

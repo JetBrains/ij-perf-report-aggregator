@@ -60,93 +60,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
   private groupValues(values: string[]): GroupedDimensionValue[] {
     const grouped: GroupedDimensionValue[] = []
     for (const value of values) {
-      let groupName: string | null = ""
-      if (value.startsWith("intellij-linux-hw-blade-")) {
-        groupName = "linux-blade"
-      } else if (value.startsWith("intellij-windows-hw-blade-")) {
-        groupName = "windows-blade"
-      } else if (value.startsWith("intellij-windows-hw-munit-")) {
-        groupName = "Windows Munich i7-3770, 32 Gb"
-      } else {
-        if (
-          value.startsWith("intellij-linux-aws-amd-lt") ||
-          value.startsWith("intellij-linux-aws-amd-2-lt") ||
-          value.startsWith("intellij-linux-aws-3-lt") ||
-          value.startsWith("intellij-linux-aws-lt")
-        ) {
-          groupName = "C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
-        } else if (value.startsWith("intellij-macos-unit-2200-large-")) {
-          groupName = macLarge
-        } else if (value.startsWith("intellij-linux-performance-aws-i-") || value.startsWith("intellij-linux-performance-aws-lt")) {
-          // https://aws.amazon.com/ec2/instance-types/c6i/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-        } else if (value.startsWith("intellij-linux-performance-tiny-aws-i-")) {
-          // https://aws.amazon.com/ec2/instance-types/c6i/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
-        } else if (value.startsWith("default-linux-aws-large-disk-")) {
-          // https://aws.amazon.com/ec2/instance-types/m5/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-        } else if (value.startsWith("intellij-windows-performance-aws-i-")) {
-          // https://aws.amazon.com/ec2/instance-types/c6id/
-          // noinspection SpellCheckingInspection
-          groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-        } else if (value.startsWith("intellij-linux-2004-aws-i") || value.startsWith("intellij-linux-2004-aws-c5d")) {
-          // https://aws.amazon.com/ec2/instance-types/c5/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
-        } else if (value.startsWith("intellij-linux-2004-aws-c5ad-lt") || value.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
-          // https://aws.amazon.com/ec2/instance-types/c5/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
-        } else if (value.startsWith("intellij-linux-2004-aws-m5ad-lt")) {
-          // https://aws.amazon.com/ec2/instance-types/c5/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 M5ad.xlarge (4 vCPU AMD EPYC, 8 GB)"
-        } else if (value.startsWith("intellij-linux-2004-aws-m5d-lt")) {
-          // https://aws.amazon.com/ec2/instance-types/c5/
-          // noinspection SpellCheckingInspection
-          groupName = "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)"
-        } else if (value.startsWith("intellij-linux-hw-munit-")) {
-          groupName = "Linux Munich i7-3770, 32 Gb"
-        } else if (value.startsWith("intellij-linux-hw-EXC")) {
-          // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
-          groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-        } else if (value.startsWith("intellij-linux-hw-hetzner") || value.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
-          groupName = "linux-blade-hetzner"
-        } else if (value.startsWith("intellij-windows-hw-hetzner")) {
-          groupName = "windows-blade-hetzner"
-        } else if (
-          value.startsWith("intellij-macos-munit-741-large") ||
-          value.startsWith("intellij-macos-de-unit-1219") ||
-          value.startsWith("intellij-macos-munit-739-large") ||
-          value.startsWith("intellij-macos-munit-738-large") ||
-          value.startsWith("intellij-macos-munit-676-large")
-        ) {
-          //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
-          groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
-        } else if (value.startsWith("intellij-linux-performance-huge-aws-i")) {
-          groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
-        } else if (value.startsWith("qodana-aws-cpu-x64")) {
-          groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
-        } else if (value.startsWith("qodana-linux-amd64-large")) {
-          groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
-        } else if (value.startsWith("qodana-linux-amd64-xl")) {
-          groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
-        } else if (value.startsWith("intellij-macos-perf-eqx")) {
-          groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
-        } else if (value.startsWith("intellij-windows-aws-i")) {
-          groupName = "windows aws"
-        } else {
-          groupName = MachineConfigurator.valueToGroup[value] as string | null
-        }
-
-        if (groupName == null) {
-          groupName = "Unknown"
-          console.error(`Group is unknown for machine: ${value}`)
-        }
+      let groupName: string | null = getMachineGroupName(value)
+      const machineFromMap = MachineConfigurator.valueToGroup[value] as string | null
+      if (groupName == "Unknown" && machineFromMap != null) {
+        groupName = machineFromMap
       }
 
       let item = this.groupNameToItem.get(groupName)
@@ -400,90 +317,85 @@ function getValueToGroup() {
 }
 
 export function getMachineGroupName(machine: string): string {
-  let groupName: string | null = ""
+  let groupName: string | null = "Unknown"
   if (machine.startsWith("intellij-linux-hw-blade-")) {
     groupName = "linux-blade"
   } else if (machine.startsWith("intellij-windows-hw-blade-")) {
     groupName = "windows-blade"
   } else if (machine.startsWith("intellij-windows-hw-munit-")) {
     groupName = "Windows Munich i7-3770, 32 Gb"
-  } else {
-    if (
-      machine.startsWith("intellij-linux-aws-amd-lt") ||
-      machine.startsWith("intellij-linux-aws-amd-2-lt") ||
-      machine.startsWith("intellij-linux-aws-3-lt") ||
-      machine.startsWith("intellij-linux-aws-lt")
-    ) {
-      groupName = "C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
-    } else if (machine.startsWith("intellij-macos-unit-2200-large-")) {
-      groupName = macLarge
-    } else if (machine.startsWith("intellij-linux-performance-aws-i-") || machine.startsWith("intellij-linux-performance-aws-lt")) {
-      // https://aws.amazon.com/ec2/instance-types/c6i/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-    } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-")) {
-      // https://aws.amazon.com/ec2/instance-types/c6i/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
-    } else if (machine.startsWith("default-linux-aws-large-disk-")) {
-      // https://aws.amazon.com/ec2/instance-types/m5/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-    } else if (machine.startsWith("intellij-windows-performance-aws-i-")) {
-      // https://aws.amazon.com/ec2/instance-types/c6id/
-      // noinspection SpellCheckingInspection
-      groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-    } else if (machine.startsWith("intellij-linux-2004-aws-i") || machine.startsWith("intellij-linux-2004-aws-c5d")) {
-      // https://aws.amazon.com/ec2/instance-types/c5/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
-    } else if (machine.startsWith("intellij-linux-2004-aws-c5ad-lt") || machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
-      // https://aws.amazon.com/ec2/instance-types/c5/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
-    } else if (machine.startsWith("intellij-linux-2004-aws-m5ad-lt")) {
-      // https://aws.amazon.com/ec2/instance-types/c5/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 M5ad.xlarge (4 vCPU AMD EPYC, 8 GB)"
-    } else if (machine.startsWith("intellij-linux-2004-aws-m5d-lt")) {
-      // https://aws.amazon.com/ec2/instance-types/c5/
-      // noinspection SpellCheckingInspection
-      groupName = "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)"
-    } else if (machine.startsWith("intellij-linux-hw-munit-")) {
-      groupName = "Linux Munich i7-3770, 32 Gb"
-    } else if (machine.startsWith("intellij-linux-hw-EXC")) {
-      // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
-      groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
-    } else if (machine.startsWith("intellij-linux-hw-hetzner") || machine.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
-      groupName = "linux-blade-hetzner"
-    } else if (machine.startsWith("intellij-windows-hw-hetzner")) {
-      groupName = "windows-blade-hetzner"
-    } else if (
-      machine.startsWith("intellij-macos-munit-741-large") ||
-      machine.startsWith("intellij-macos-de-unit-1219") ||
-      machine.startsWith("intellij-macos-munit-739-large") ||
-      machine.startsWith("intellij-macos-munit-738-large") ||
-      machine.startsWith("intellij-macos-munit-676-large")
-    ) {
-      //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
-      groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
-    } else if (machine.startsWith("intellij-linux-performance-huge-aws-i")) {
-      groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
-    } else if (machine.startsWith("qodana-aws-cpu-x64")) {
-      groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
-    } else if (machine.startsWith("qodana-linux-amd64-large")) {
-      groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
-    } else if (machine.startsWith("qodana-linux-amd64-xl")) {
-      groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
-    } else if (machine.startsWith("intellij-macos-perf-eqx")) {
-      groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
-    } else if (machine.startsWith("intellij-windows-aws-i")) {
-      groupName = "windows aws"
-    }
-
-    if (groupName == null) {
-      groupName = "Unknown"
-    }
+  } else if (
+    machine.startsWith("intellij-linux-aws-amd-lt") ||
+    machine.startsWith("intellij-linux-aws-amd-2-lt") ||
+    machine.startsWith("intellij-linux-aws-3-lt") ||
+    machine.startsWith("intellij-linux-aws-lt")
+  ) {
+    groupName = "C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
+  } else if (machine.startsWith("intellij-macos-unit-2200-large-")) {
+    groupName = macLarge
+  } else if (machine.startsWith("intellij-linux-performance-aws-i-") || machine.startsWith("intellij-linux-performance-aws-lt")) {
+    // https://aws.amazon.com/ec2/instance-types/c6i/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+  } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-")) {
+    // https://aws.amazon.com/ec2/instance-types/c6i/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
+  } else if (machine.startsWith("default-linux-aws-large-disk-")) {
+    // https://aws.amazon.com/ec2/instance-types/m5/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
+  } else if (machine.startsWith("intellij-windows-performance-aws-i-")) {
+    // https://aws.amazon.com/ec2/instance-types/c6id/
+    // noinspection SpellCheckingInspection
+    groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-i") || machine.startsWith("intellij-linux-2004-aws-c5d")) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-c5ad-lt") || machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-m5ad-lt")) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 M5ad.xlarge (4 vCPU AMD EPYC, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-m5d-lt")) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
+    // noinspection SpellCheckingInspection
+    groupName = "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)"
+  } else if (machine.startsWith("intellij-linux-hw-munit-")) {
+    groupName = "Linux Munich i7-3770, 32 Gb"
+  } else if (machine.startsWith("intellij-linux-hw-EXC")) {
+    // Linux, i7-9700k, 2x16GiB DDR4-3200 RAM, NVME 512GB
+    groupName = "Linux JB Expo AMS i7-3770, 32 Gb"
+  } else if (machine.startsWith("intellij-linux-hw-hetzner") || machine.startsWith("intellij-linux-agg-hw-hetzner-agent")) {
+    groupName = "linux-blade-hetzner"
+  } else if (machine.startsWith("intellij-windows-hw-hetzner")) {
+    groupName = "windows-blade-hetzner"
+  } else if (
+    machine.startsWith("intellij-macos-munit-741-large") ||
+    machine.startsWith("intellij-macos-de-unit-1219") ||
+    machine.startsWith("intellij-macos-munit-739-large") ||
+    machine.startsWith("intellij-macos-munit-738-large") ||
+    machine.startsWith("intellij-macos-munit-676-large")
+  ) {
+    //https://youtrack.jetbrains.com/issue/ADM-68723/Mac-agents-in-MYO-for-IntelliJ-and-JetBrains-Runtime
+    groupName = "Mac Pro Intel Xeon E5-2697v2 (4x2.7GHz), 24 RAM"
+  } else if (machine.startsWith("intellij-linux-performance-huge-aws-i")) {
+    groupName = "Linux EC2 C6id.metal (128 CPU Xeon, 256 GB)"
+  } else if (machine.startsWith("qodana-aws-cpu-x64")) {
+    groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
+  } else if (machine.startsWith("qodana-linux-amd64-large")) {
+    groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
+  } else if (machine.startsWith("qodana-linux-amd64-xl")) {
+    groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
+  } else if (machine.startsWith("intellij-macos-perf-eqx")) {
+    groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
+  } else if (machine.startsWith("intellij-windows-aws-i")) {
+    groupName = "windows aws"
   }
+
   return groupName
 }

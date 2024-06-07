@@ -11,7 +11,7 @@
     <section>
       <GroupProjectsChart
         measure="EditSimilarity"
-        :projects="getAllProjects('cname-suggestion')"
+        :projects="getAllProjects('name-suggestion')"
         :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
         label="All Languages"
       /><GroupProjectsChart

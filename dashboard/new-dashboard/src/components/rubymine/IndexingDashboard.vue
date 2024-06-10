@@ -24,7 +24,23 @@
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files"
-        measure="numberOfIndexedFiles"
+        measure="numberOfIndexedFilesWritingIndexValue"
+        :projects="[
+          'diaspora-project-test/indexing',
+          'gem-rbs-collection-indexing-test/indexing',
+          'gitlab-project-test/indexing',
+          'redmine-project-test/indexing',
+          'markus-project-test/indexing',
+          'mastodon-project-test/indexing',
+          'rubygems-org-project-test/indexing',
+        ]"
+        :aliases="['Diaspora', 'RBS Collection', 'Gitlab', 'Redmine', 'Markus', 'Mastodon', 'RubyGems.org']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Number Of Indexed Files (up to date)"
+        measure="numberOfIndexedFilesWithNothingToWrite"
         :projects="[
           'diaspora-project-test/indexing',
           'gem-rbs-collection-indexing-test/indexing',

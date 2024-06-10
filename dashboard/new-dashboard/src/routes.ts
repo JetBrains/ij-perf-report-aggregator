@@ -155,6 +155,7 @@ enum ROUTES {
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormDashboardNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardNext`,
+  WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
@@ -828,6 +829,10 @@ const WEBSTORM: Product = {
         {
           url: ROUTES.WebStormDashboardNEXT,
           label: "WebStorm NEXT",
+        },
+        {
+          url: ROUTES.WebStormDashboardBuiltInVsNEXT,
+          label: "Built-in vs NEXT",
         },
         {
           url: ROUTES.WebStormTests,
@@ -1728,6 +1733,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.WebStormDashboardNEXT,
           component: () => import("./components/webstorm/PerformanceDashboardNEXT.vue"),
           meta: { pageTitle: "WebStorm NEXT" },
+        },
+        {
+          path: ROUTES.WebStormDashboardBuiltInVsNEXT,
+          component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
+          meta: { pageTitle: "Built-in vs NEXT" },
         },
         {
           path: ROUTES.WebStormCompare,

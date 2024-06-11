@@ -25,7 +25,7 @@ import { SmoothingConfigurator } from "./configurators/SmoothingConfigurator"
 import DetectChangesSwitch from "./DetectChangesSwitch.vue"
 import ScalingSwitch from "./ScalingSwitch.vue"
 import SmoothingSwitch from "./SmoothingSwitch.vue"
-import FlexibleZeroOnYAxis from "./FlexibleZeroOnYAxis.vue"
+import FlexibleZeroOnYAxis from "./FlexibleYZeroSwitch.vue"
 import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
 
 const settingsPanel = shallowRef<OverlayPanel | null>(null)

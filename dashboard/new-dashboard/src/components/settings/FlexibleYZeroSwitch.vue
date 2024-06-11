@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between w-full">
     <span v-tooltip.left="'Make zero on Y axis flexible and not always equals to 0.'">Flexible zero on Y axis:</span>
     <InputSwitch
-      v-model="settingsStore.flexibleZeroOnYAxis"
+      v-model="settingsStore.flexibleYZero"
       class="ml-4"
     />
   </div>

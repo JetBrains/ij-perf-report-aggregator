@@ -7,11 +7,11 @@ import { refToObservable } from "../../../configurators/rxjs"
 
 export class FlexibleZeroOnYAxisConfigurator implements DataQueryConfigurator, FilterConfigurator {
   private settingsStore = useSettingsStore()
-  readonly value = ref(this.settingsStore.flexibleZeroOnYAxis)
+  readonly value = ref(this.settingsStore.flexibleYZero)
 
   constructor() {
     watch(
-      () => this.settingsStore.flexibleZeroOnYAxis,
+      () => this.settingsStore.flexibleYZero,
       (newValue) => {
         this.value.value = newValue
       }

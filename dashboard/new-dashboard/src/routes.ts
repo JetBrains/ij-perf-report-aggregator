@@ -197,6 +197,9 @@ enum ROUTES {
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
   VcsStarterDashboard = `${ROUTE_PREFIX.Vcs}/starter`,
+  VcsIdeaDashboardDev = `${ROUTE_PREFIX.Vcs}/ideaDev`,
+  VcsSpaceDashboardDev = `${ROUTE_PREFIX.Vcs}/spaceDev`,
+  VcsStarterDashboardDev = `${ROUTE_PREFIX.Vcs}/starterDev`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
   IJentPerfTests = `${ROUTE_PREFIX.IJent}/performance`,
@@ -499,6 +502,18 @@ const IDEA: Product = {
         {
           url: ROUTES.VcsStarterDashboard,
           label: "Performance dashboard starter project",
+        },
+        {
+          url: ROUTES.VcsIdeaDashboardDev,
+          label: "Performance dashboard idea project DevServer",
+        },
+        {
+          url: ROUTES.VcsSpaceDashboardDev,
+          label: "Performance dashboard space project DevServer",
+        },
+        {
+          url: ROUTES.VcsStarterDashboardDev,
+          label: "Performance dashboard starter project DevServer",
         },
       ],
     },
@@ -2169,6 +2184,21 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsStarterDashboard,
           component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
           meta: { pageTitle: "Vcs Starer performance dashboard" },
+        },
+        {
+          path: ROUTES.VcsIdeaDashboardDev,
+          component: () => import("./components/vcs/PerformanceDashboardDev.vue"),
+          meta: { pageTitle: "Vcs Idea performance dashboard DevServer" },
+        },
+        {
+          path: ROUTES.VcsSpaceDashboardDev,
+          component: () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"),
+          meta: { pageTitle: "Vcs Space performance dashboard DevServer" },
+        },
+        {
+          path: ROUTES.VcsStarterDashboardDev,
+          component: () => import("./components/vcs/PerformanceStarterDashboardDev.vue"),
+          meta: { pageTitle: "Vcs Starer performance dashboard DevServer" },
         },
         {
           path: ROUTES.PerfUnitTests,

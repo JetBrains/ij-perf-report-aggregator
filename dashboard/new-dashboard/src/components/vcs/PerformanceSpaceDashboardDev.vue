@@ -1,9 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="idea"
     persistent-id="vcs_idea_ultimate_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :with-installer="false"
   >
     <div>
       <Chip><a href="#index">Vcs indexing</a></Chip>

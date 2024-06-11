@@ -1,9 +1,10 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="idea"
     persistent-id="vcs_idea_ultimate_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    :with-installer="false"
   >
     <div>
       <Chip><a href="#index">Vcs indexing</a></Chip>
@@ -232,51 +233,19 @@ import Chip from "primevue/chip"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-const indexingProjects = ["intellij_clone_specific_commit/gitLogIndexing", "intellij_sources/gitLogIndexing"]
+const indexingProjects = ["intellij_clone_specific_commit/gitLogIndexing"]
 
-const showFileHistoryProjects = [
-  "intellij_clone_specific_commit/EditorImpl-phm",
-  "intellij_clone_specific_commit/EditorImpl-noindex",
-  "intellij_sources/EditorImpl-phm",
-  "intellij_sources/EditorImpl-noindex",
-  "intellij_sources/showFileHistory/EditorImpl",
-  "intellij_sources/showFileHistory/EditorImpl-instant-git",
-]
+const showFileHistoryProjects = ["intellij_clone_specific_commit/EditorImpl-phm", "intellij_clone_specific_commit/EditorImpl-noindex"]
 
-const checkoutProjects = ["intellij_clone_specific_commit/git-checkout", "intellij_sources/git-checkout"]
+const checkoutProjects = ["intellij_clone_specific_commit/git-checkout"]
 
-const filterByNameProjects = [
-  "intellij_clone_specific_commit/filterVcsLogTab-phm",
-  "intellij_clone_specific_commit/filterVcsLogTab-noindex",
-  "intellij_sources/filterVcsLogTab-phm",
-  "intellij_sources/filterVcsLogTab-noindex",
-]
-const filterByPathProjects = [
-  "intellij_clone_specific_commit/filterVcsLogTab-path-phm",
-  "intellij_clone_specific_commit/filterVcsLogTab-path-noindex",
-  "intellij_sources/filterVcsLogTab-path-phm",
-  "intellij_sources/filterVcsLogTab-path-noindex",
-]
+const filterByNameProjects = ["intellij_clone_specific_commit/filterVcsLogTab-phm", "intellij_clone_specific_commit/filterVcsLogTab-noindex"]
+const filterByPathProjects = ["intellij_clone_specific_commit/filterVcsLogTab-path-phm", "intellij_clone_specific_commit/filterVcsLogTab-path-noindex"]
 
-const filterByDateProjects = [
-  "intellij_clone_specific_commit/filterVcsLogTab-date-phm",
-  "intellij_clone_specific_commit/filterVcsLogTab-date-noindex",
-  "intellij_sources/filterVcsLogTab-date-phm",
-  "intellij_sources/filterVcsLogTab-date-noindex",
-]
+const filterByDateProjects = ["intellij_clone_specific_commit/filterVcsLogTab-date-phm", "intellij_clone_specific_commit/filterVcsLogTab-date-noindex"]
 
-const commitProjects = [
-  "intellij_clone_specific_commit/git-commit",
-  "intellij_clone_specific_commit/git-commit-smallDataPack",
-  "intellij_sources/git-commit",
-  "intellij_sources/git-commit-smallDataPack",
-]
+const commitProjects = ["intellij_clone_specific_commit/git-commit", "intellij_clone_specific_commit/git-commit-smallDataPack"]
 
-const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "intellij_sources/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
-const annotateProjects = [
-  "intellij_clone_specific_commit/vcs-annotate-instant-git",
-  "intellij_clone_specific_commit/vcs-annotate",
-  "intellij_sources/vcs-annotate-instant-git",
-  "intellij_sources/vcs-annotate",
-]
+const widgetProjects = ["intellij_clone_specific_commit/git-branch-widget", "vcs_100k_branches/git-branch-widget"]
+const annotateProjects = ["intellij_clone_specific_commit/vcs-annotate-instant-git", "intellij_clone_specific_commit/vcs-annotate"]
 </script>

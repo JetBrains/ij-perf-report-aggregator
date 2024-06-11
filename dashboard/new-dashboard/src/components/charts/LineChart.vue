@@ -8,7 +8,7 @@
       @mouseover="labelHovered = true"
       @mouseleave="labelHovered = false"
     >
-      {{ props.title + (settingStore.scaling ? " (scaled)" : "") }}&nbsp;
+      {{ props.title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <a
         v-show="labelHovered"
         :href="'#' + anchor"

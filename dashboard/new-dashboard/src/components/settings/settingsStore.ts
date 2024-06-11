@@ -7,6 +7,7 @@ export const useSettingsStore = defineStore("settingsStore", () => {
   const storedSmoothing = useStorage("smoothingEnabled", false)
   const storedDetectChanges = useStorage("detectChangesEnabled", false)
   const storedFlexibleYZero = useStorage("floatingNull", false)
+  const storedRemoveOutliers = useStorage("removeOutliers", false)
 
   const scaling = computed({
     get: () => storedScaling.value,
@@ -38,5 +39,12 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges, flexibleYZero }
+  const removeOutliers = computed({
+    get: () => storedRemoveOutliers.value,
+    set(value) {
+      storedRemoveOutliers.value = value
+    },
+  })
+
+  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers }
 })

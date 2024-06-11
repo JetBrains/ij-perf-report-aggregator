@@ -33,6 +33,7 @@ import { exponentialSmoothingWithAlphaInference } from "../components/settings/c
 import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
+import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
 
 export type TooltipTrigger = "item" | "axis" | "none"
 
@@ -483,7 +484,8 @@ async function configureChart(
   const mergeResults = mergeSeries(dataList, configuration)
 
   const settings = useSettingsStore()
-  for (const [dataIndex, seriesData] of mergeResults.data.entries()) {
+  // eslint-disable-next-line prefer-const
+  for (let [dataIndex, seriesData] of mergeResults.data.entries()) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (seriesData[1] == undefined) {
       //we need to push even empty dataset otherwise it will be out of sync with series and plot will be empty
@@ -502,6 +504,10 @@ async function configureChart(
       } else if (type === "d") {
         useDurationFormatter = true
       }
+    }
+
+    if (settings.removeOutliers) {
+      seriesData = removeOutliers(seriesData)
     }
 
     if (settings.smoothing) {

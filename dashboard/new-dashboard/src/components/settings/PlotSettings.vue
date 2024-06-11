@@ -12,7 +12,8 @@
     <SmoothingSwitch class="mb-2" />
     <ScalingSwitch class="mb-2" />
     <DetectChangesSwitch class="mb-2" />
-    <FlexibleZeroOnYAxis />
+    <FlexibleZeroOnYAxis class="mb-2" />
+    <RemoveOutliersSwitch />
   </OverlayPanel>
 </template>
 
@@ -27,6 +28,8 @@ import ScalingSwitch from "./ScalingSwitch.vue"
 import SmoothingSwitch from "./SmoothingSwitch.vue"
 import FlexibleZeroOnYAxis from "./FlexibleYZeroSwitch.vue"
 import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
+import RemoveOutliersSwitch from "./RemoveOutliersSwitch.vue"
+import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
 
 const settingsPanel = shallowRef<OverlayPanel | null>(null)
 const settingsIcon = shallowRef<HTMLElement>()
@@ -36,6 +39,7 @@ emit("update:configurators", new ScalingConfigurator())
 emit("update:configurators", new SmoothingConfigurator())
 emit("update:configurators", new DetectChangesConfigurator())
 emit("update:configurators", new FlexibleZeroOnYAxisConfigurator())
+emit("update:configurators", new RemoveOutliersConfigurator())
 
 const showSettings = function (event: Event) {
   settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first

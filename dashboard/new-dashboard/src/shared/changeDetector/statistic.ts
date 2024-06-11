@@ -7,6 +7,32 @@ export function median(arr: number[]): number {
   return sortedArr.length % 2 === 0 ? (sortedArr[mid - 1] + sortedArr[mid]) / 2 : sortedArr[mid]
 }
 
+export function calculatePercentile(arr: number[], percentile: number): number {
+  if (arr.length === 0) {
+    return 0
+  }
+  if (percentile < 0 || percentile > 100) {
+    throw new Error("Percentile must be between 0 and 100")
+  }
+
+  const sortedArr = [...arr].sort((a, b) => a - b)
+  const index = (percentile / 100) * (sortedArr.length - 1)
+  const lowerIndex = Math.floor(index)
+  const upperIndex = Math.ceil(index)
+
+  // If the index is an integer, return the value directly
+  if (lowerIndex === upperIndex) {
+    return sortedArr[lowerIndex]
+  }
+
+  // Otherwise, interpolate between the two closest values
+  const lowerValue = sortedArr[lowerIndex]
+  const upperValue = sortedArr[upperIndex]
+  const weight = index - lowerIndex
+
+  return lowerValue + weight * (upperValue - lowerValue)
+}
+
 export function hodgesLehmannEstimator(segmentA: number[], segmentB: number[]): number {
   const pairwiseDifferences: number[] = []
   for (const valueA of segmentA) {

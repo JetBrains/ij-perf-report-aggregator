@@ -4,6 +4,7 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from
 import { useSettingsStore } from "../settingsStore"
 import { FilterConfigurator } from "../../../configurators/filter"
 import { refToObservable } from "../../../configurators/rxjs"
+import { calculatePercentile } from "../../../shared/changeDetector/statistic"
 
 export class RemoveOutliersConfigurator implements DataQueryConfigurator, FilterConfigurator {
   private settingsStore = useSettingsStore()
@@ -46,13 +47,4 @@ export function removeOutliers(data: (string | number)[][]): (string | number)[]
   }
 
   return skippedIndex.length === 0 ? data : data.map((row) => row.filter((_, index) => !skippedIndex.includes(index)))
-}
-
-function calculatePercentile(arr: number[], percentile: number): number {
-  if (arr.length === 0) {
-    return 0
-  }
-  const sortedArr = [...arr].sort((a, b) => a - b)
-  const index = Math.floor((percentile / 100) * sortedArr.length)
-  return sortedArr[index]
 }

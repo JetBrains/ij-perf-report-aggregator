@@ -34,6 +34,8 @@
     <K1K2DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider title="Convert Java to Kotlin" />
     <K1K2DashboardGroupCharts :definitions="convertJavaToKotlinProjectsChars" />
+    <Divider title="Navigate to declaration" />
+    <K1K2DashboardGroupCharts :definitions="navigateToDeclarationCharts" />
   </DashboardPage>
 </template>
 
@@ -51,6 +53,7 @@ import {
   highlightingCharts,
   highlightingScriptCharts,
   KOTLIN_PROJECT_CONFIGURATOR,
+  navigateToDeclarationCharts,
   refactoringCharts,
   scriptCompletionCharts,
   scriptFindUsagesCharts,

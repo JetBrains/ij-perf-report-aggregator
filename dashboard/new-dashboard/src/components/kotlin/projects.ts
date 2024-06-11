@@ -27,6 +27,12 @@ const MEASURES = {
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
   evaluateExpressionMeasures: [{ name: "evaluateExpression#mean_value", label: "evaluate expression mean value" }],
   convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
+  navigationToDeclarationMeasures: [
+    { name: "localInspections#1", label: "Code Analysis first time" },
+    { name: "localInspections#10", label: "Code Analysis last time" },
+    { name: "execute_editor_gotodeclaration#1", label: "Navigate to declaration first time" },
+    { name: "execute_editor_gotodeclaration#10", label: "Navigate to declaration last time" },
+  ],
 }
 
 export const MACHINES = {
@@ -333,6 +339,14 @@ export const KOTLIN_PROJECTS = {
         "intellij_sources/javaToKotlin/EditorImpl",
       ],
     },
+    navigationToDeclaration: {
+      intelliJSources: [
+        "intellij_sources/navigation_from_MPPWorkspace_to_class_LLDBDriverConfiguration",
+        "intellij_sources/navigation_from_KonanRunConfigurationType_to_class_ConfigurationTypeBase",
+        "intellij_sources/navigation_from_KonanLauncher_to_val_configuration",
+        "intellij_sources/navigation_from_MPPProjectTaskRunner_to_method_isNative",
+      ],
+    },
   },
   mac: {
     completion: {
@@ -545,6 +559,14 @@ export const convertJavaToKotlinProjectsChars = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.convertJavaToKotlin,
     measures: MEASURES.convertJavaToKotlinProjectsMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+export const navigateToDeclarationCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.navigationToDeclaration,
+    measures: MEASURES.navigationToDeclarationMeasures,
     machines: [MACHINES.linux],
   },
 ])

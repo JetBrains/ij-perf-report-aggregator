@@ -1,9 +1,9 @@
 import { Observable } from "rxjs"
 import { ref, watch } from "vue"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
-import { useSettingsStore } from "../components/settings/settingsStore"
-import { FilterConfigurator } from "./filter"
-import { refToObservable } from "./rxjs"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
+import { useSettingsStore } from "../settingsStore"
+import { FilterConfigurator } from "../../../configurators/filter"
+import { refToObservable } from "../../../configurators/rxjs"
 
 export class FlexibleZeroOnYAxisConfigurator implements DataQueryConfigurator, FilterConfigurator {
   private settingsStore = useSettingsStore()

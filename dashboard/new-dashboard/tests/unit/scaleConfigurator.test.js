@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { scaleToMedian } from "../../src/configurators/ScalingConfigurator"
+import { scaleToMedian } from "../../src/components/settings/configurators/ScalingConfigurator"
 
 test("scaling of empty array", () => {
   expect(scaleToMedian([])).toEqual([])

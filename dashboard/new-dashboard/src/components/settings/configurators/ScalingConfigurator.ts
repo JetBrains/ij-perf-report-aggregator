@@ -1,10 +1,10 @@
 import { Observable } from "rxjs"
 import { ref, watch } from "vue"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
-import { useSettingsStore } from "../components/settings/settingsStore"
-import { median } from "../shared/changeDetector/statistic"
-import { FilterConfigurator } from "./filter"
-import { refToObservable } from "./rxjs"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../common/dataQuery"
+import { useSettingsStore } from "../settingsStore"
+import { median } from "../../../shared/changeDetector/statistic"
+import { FilterConfigurator } from "../../../configurators/filter"
+import { refToObservable } from "../../../configurators/rxjs"
 
 export class ScalingConfigurator implements DataQueryConfigurator, FilterConfigurator {
   private settingsStore = useSettingsStore()

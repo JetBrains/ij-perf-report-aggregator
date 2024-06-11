@@ -19,14 +19,14 @@
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
 import { onBeforeUnmount, shallowRef } from "vue"
-import { DetectChangesConfigurator } from "../../configurators/DetectChangesConfigurator"
-import { ScalingConfigurator } from "../../configurators/ScalingConfigurator"
-import { SmoothingConfigurator } from "../../configurators/SmoothingConfigurator"
+import { DetectChangesConfigurator } from "./configurators/DetectChangesConfigurator"
+import { ScalingConfigurator } from "./configurators/ScalingConfigurator"
+import { SmoothingConfigurator } from "./configurators/SmoothingConfigurator"
 import DetectChangesSwitch from "./DetectChangesSwitch.vue"
 import ScalingSwitch from "./ScalingSwitch.vue"
 import SmoothingSwitch from "./SmoothingSwitch.vue"
 import FlexibleZeroOnYAxis from "./FlexibleZeroOnYAxis.vue"
-import { FlexibleZeroOnYAxisConfigurator } from "../../configurators/FlexibleZeroOnYAxisConfigurator"
+import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
 
 const settingsPanel = shallowRef<OverlayPanel | null>(null)
 const settingsIcon = shallowRef<HTMLElement>()

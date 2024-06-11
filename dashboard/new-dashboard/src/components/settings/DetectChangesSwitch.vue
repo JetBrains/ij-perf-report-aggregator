@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between w-full">
-    <span v-tooltip.left="'Apply change detector algorithm. '">Detect Changes (Beta):</span>
+    <span v-tooltip.left="'Apply change detector algorithm. '">Detect Changes:</span>
     <InputSwitch
       v-model="settingsStore.detectChanges"
       class="ml-4"

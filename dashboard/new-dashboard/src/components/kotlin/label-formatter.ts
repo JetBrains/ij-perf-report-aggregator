@@ -28,5 +28,5 @@ function projectByName(name: string) {
 }
 
 export function projectSelectedLabel(s: string[]): string {
-  return s.length + " projects"
+  return String(s.length) + " projects"
 }

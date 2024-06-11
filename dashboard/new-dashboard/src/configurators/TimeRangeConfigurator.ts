@@ -60,11 +60,11 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
 
   configureChart(_data: (string | number)[][][], _configuration: DataQueryExecutorConfiguration): Promise<ECBasicOption> {
     const timeRange = this.value.value
-    if (this.customRange.value != "") {
+    if (this.customRange.value == "") {
+      return Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
+    } else {
       const between = this.customRange.value.split(":")
       return Promise.resolve({ xAxis: { min: between[0], max: between[1] } })
-    } else {
-      return Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
     }
   }
 

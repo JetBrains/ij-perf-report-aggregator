@@ -230,12 +230,8 @@ export class LineChartVM {
         },
       },
       yAxis: {
-        min: function (value) {
-          if (useSettingsStore().flexibleZeroOnYAxis) {
-            return value.min * 0.9
-          } else {
-            return 0
-          }
+        min (value) {
+          return useSettingsStore().flexibleZeroOnYAxis ? value.min * 0.9 : 0;
         },
         type: "value",
         splitLine: {

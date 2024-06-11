@@ -9,6 +9,6 @@
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.27",
-    "vue-router": "4.3.2"
+    "vue-router": "4.3.3"
   }
 }

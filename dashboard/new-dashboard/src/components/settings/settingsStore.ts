@@ -6,6 +6,7 @@ export const useSettingsStore = defineStore("settingsStore", () => {
   const storedScaling = useStorage("scalingEnabled", false)
   const storedSmoothing = useStorage("smoothingEnabled", false)
   const storedDetectChanges = useStorage("detectChangesEnabled", false)
+  const storedFlexibleZeronOnYAxis = useStorage("floatingNull", false)
 
   const scaling = computed({
     get: () => storedScaling.value,
@@ -30,5 +31,12 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges }
+  const flexibleZeroOnYAxis = computed({
+    get: () => storedFlexibleZeronOnYAxis.value,
+    set(value) {
+      storedFlexibleZeronOnYAxis.value = value
+    },
+  })
+
+  return { scaling, smoothing, detectChanges, flexibleZeroOnYAxis }
 })

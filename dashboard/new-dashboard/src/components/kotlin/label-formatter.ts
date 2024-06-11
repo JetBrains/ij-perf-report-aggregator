@@ -26,3 +26,7 @@ function projectByName(name: string) {
       return name
   }
 }
+
+export function projectSelectedLabel(s: string[]): string {
+  return s.length + " projects"
+}

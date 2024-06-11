@@ -9,6 +9,7 @@
       <MeasureSelect
         :configurator="KOTLIN_PROJECT_CONFIGURATOR"
         title="Project"
+        :selected-label="projectSelectedLabel"
       >
         <template #icon>
           <ChartBarIcon class="w-4 h-4 text-gray-500" />
@@ -60,4 +61,5 @@ import {
 } from "../projects"
 import SlackLink from "../SlackLink.vue"
 import MeasureSelect from "../../charts/MeasureSelect.vue"
+import { projectSelectedLabel } from "../label-formatter"
 </script>

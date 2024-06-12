@@ -1,15 +1,15 @@
 FROM buildpack-deps:curl
 
-ENV NODE_VERSION 21.7.3
-ENV GOLANG_VERSION 1.22.1
+ENV NODE_VERSION 22.2.0
+ENV GOLANG_VERSION 1.22.4
 
 RUN cd /usr/local/bin && \
-  curl -L https://github.com/google/ko/releases/download/v0.15.2/ko_0.15.2_Linux_x86_64.tar.gz | tar xvz ko && \
-  curl -L https://get.helm.sh/helm-v3.14.4-linux-amd64.tar.gz | tar xvz --strip-components=1 linux-amd64/helm
+  curl -L https://github.com/google/ko/releases/download/v0.15.4/ko_0.15.4_Linux_x86_64.tar.gz | tar xvz ko && \
+  curl -L https://get.helm.sh/helm-v3.15.1-linux-amd64.tar.gz | tar xvz --strip-components=1 linux-amd64/helm
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
-  corepack enable && corepack prepare pnpm@9.0.1 --activate
+  corepack enable && corepack prepare pnpm@9.3.0 --activate
 
 ENV GOPATH /go
 

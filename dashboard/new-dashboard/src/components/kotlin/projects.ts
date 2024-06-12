@@ -28,10 +28,10 @@ const MEASURES = {
   evaluateExpressionMeasures: [{ name: "evaluateExpression#mean_value", label: "evaluate expression mean value" }],
   convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
   navigationToDeclarationMeasures: [
-    { name: "localInspections_1", label: "Code Analysis first time" },
-    { name: "localInspections_10", label: "Code Analysis last time" },
-    { name: "execute_editor_gotodeclaration_1", label: "Navigate to declaration first time" },
-    { name: "execute_editor_gotodeclaration_10", label: "Navigate to declaration last time" },
+    { name: "localInspections_cold#mean_value", label: "Code Analysis cold cache" },
+    { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
+    { name: "execute_editor_gotodeclaration_cold#mean_value", label: "Navigate to declaration cold cache" },
+    { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
   ],
 }
 

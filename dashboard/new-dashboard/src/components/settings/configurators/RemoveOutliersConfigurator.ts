@@ -4,7 +4,7 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from
 import { useSettingsStore } from "../settingsStore"
 import { FilterConfigurator } from "../../../configurators/filter"
 import { refToObservable } from "../../../configurators/rxjs"
-import { calculatePercentile } from "../../../shared/changeDetector/statistic"
+import { rollingMad } from "../../../shared/changeDetector/statistic"
 
 export class RemoveOutliersConfigurator implements DataQueryConfigurator, FilterConfigurator {
   private settingsStore = useSettingsStore()
@@ -32,17 +32,20 @@ export class RemoveOutliersConfigurator implements DataQueryConfigurator, Filter
   }
 }
 
-export function removeOutliers(data: (string | number)[][]): (string | number)[][] {
+export function removeOutliers(data: (string | number)[][], windowSize: number = 5, threshold: number = 3): (string | number)[][] {
   if (data.length === 0) {
     return data
   }
+
   const values = data[1] as number[]
-  const p95th = calculatePercentile(values, 95)
-  const p5th = calculatePercentile(values, 5)
+
+  const { medians, mads } = rollingMad(values, windowSize)
   const skippedIndex: number[] = []
-  for (const [index, value] of values.entries()) {
-    if (value < p5th || value > p95th) {
-      skippedIndex.push(index)
+
+  for (const [i, value] of values.entries()) {
+    const madScore = Math.abs(value - medians[i]) / mads[i]
+    if (madScore > threshold) {
+      skippedIndex.push(i)
     }
   }
 

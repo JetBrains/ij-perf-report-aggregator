@@ -36,7 +36,7 @@ import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
 const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
   return {
     labels: [project],
-    measures: ["SyntaxErrorsSessionRatio"],
+    measures: ["SessionsWithoutSyntaxErrorsRatio"],
     projects: aiaModels.map((model) => "code-generation_" + project + "_" + model),
   }
 })

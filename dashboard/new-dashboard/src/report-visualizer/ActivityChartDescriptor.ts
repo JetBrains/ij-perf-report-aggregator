@@ -1,5 +1,10 @@
 import { ChartManager } from "./charts/ChartComponent"
 import { CommonItem, InputDataV20, UnitConverter } from "./data"
+import { TimeLineChartManager } from "./charts/TimeLineChartManager"
+import { TimeDistributionChartManager } from "./charts/TimeDistributionChartManager"
+import { PluginClassCountTreeMapChartManager } from "./charts/PluginClassCountTreeMapChartManager"
+import { StatsChartManager } from "./charts/StatsChartManager"
+import { ActivityBarChartManager } from "./charts/ActivityBarChartManager"
 
 export interface ActivityChartDescriptor {
   readonly label: string
@@ -13,7 +18,7 @@ export interface ActivityChartDescriptor {
   readonly groupByThread?: boolean
   readonly sourceHasPluginInformation?: boolean
 
-  readonly chartManagerProducer?: (container: HTMLElement, sourceNames: string[], descriptor: ActivityChartDescriptor) => Promise<ChartManager>
+  readonly chartManagerProducer?: (container: HTMLElement, sourceNames: string[], descriptor: ActivityChartDescriptor) => ChartManager
   readonly shortNameProducer?: (item: CommonItem) => string
 }
 
@@ -34,8 +39,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     id: "services",
     sourceNames: serviceSourceNames,
     shortNameProducer: getShortName,
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { ActivityBarChartManager: ActivityBarChartManager } = await import("./charts/ActivityBarChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new ActivityBarChartManager(container, (dataManager) => dataManager.getServiceItems(), {
         unitConverter: UnitConverter.MICROSECONDS,
       })
@@ -83,8 +87,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     label: "Timeline",
     isInfoChart: true,
     id: "timeline",
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new TimeLineChartManager(
         container,
         (dataManager) => {
@@ -114,8 +117,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     label: "Service Timelines",
     isInfoChart: true,
     id: "serviceTimeline",
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { TimeLineChartManager: TimeLineChartManager } = await import("./charts/TimeLineChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new TimeLineChartManager(
         container,
         (dataManager) => {
@@ -131,8 +133,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     label: "Time Distribution",
     isInfoChart: true,
     id: "timeDistribution",
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { TimeDistributionChartManager: TimeDistributionChartManager } = await import("./charts/TimeDistributionChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new TimeDistributionChartManager(container)
     },
   },
@@ -140,8 +141,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     label: "Plugin Classes",
     isInfoChart: true,
     id: "pluginClassCount",
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { PluginClassCountTreeMapChartManager: PluginClassCountTreeMapChartManager } = await import("./charts/PluginClassCountTreeMapChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new PluginClassCountTreeMapChartManager(container)
     },
   },
@@ -149,8 +149,7 @@ export const chartDescriptors: ActivityChartDescriptor[] = [
     label: "Stats",
     isInfoChart: true,
     id: "stats",
-    async chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): Promise<ChartManager> {
-      const { StatsChartManager: StatsChartManager } = await import("./charts/StatsChartManager")
+    chartManagerProducer(container: HTMLElement, _sourceNames: string[], _descriptor: ActivityChartDescriptor): ChartManager {
       return new StatsChartManager(container)
     },
   },

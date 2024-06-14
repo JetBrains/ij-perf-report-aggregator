@@ -1,7 +1,7 @@
 import { ChartDefinition } from "../charts/DashboardCharts"
 import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
 import { computed, ComputedRef } from "vue"
-import kotlinProjects from "./../../../../../resources/projects/kotlin_projects.json"
+import kotlinProjects from "../../../resources/projects/kotlin_projects.json"
 
 export const KOTLIN_MAIN_METRICS = [
   "completion#mean_value",

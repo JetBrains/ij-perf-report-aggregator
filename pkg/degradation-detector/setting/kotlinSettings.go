@@ -26,7 +26,7 @@ func extractStrings(data interface{}) []string {
 
 func getKotlinProjects() ([]string, error) {
 	var result interface{}
-	content, err := os.ReadFile(filepath.Join("..", "..", "..", "resources", "projects", "kotlin_projects.json"))
+	content, err := os.ReadFile(filepath.Join("..", "..", "..", "dashboard", "new-dashboard", "resources", "projects", "kotlin_projects.json"))
 	if err != nil {
 		return nil, err
 	}

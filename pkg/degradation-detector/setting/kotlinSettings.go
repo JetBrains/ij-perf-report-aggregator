@@ -26,7 +26,15 @@ func extractStrings(data interface{}) []string {
 
 func getKotlinProjects() ([]string, error) {
 	var result interface{}
-	content, err := os.ReadFile(filepath.Join("..", "..", "..", "dashboard", "new-dashboard", "resources", "projects", "kotlin_projects.json"))
+	env := os.Getenv("KO_DATA_PATH")
+	projectsFile := "projects/kotlin_projects.json"
+	var kotlinProjectsFilePath string
+	if env == "" {
+		kotlinProjectsFilePath = filepath.Join("../../../cmd/degradation-detector/kodata", projectsFile)
+	} else {
+		kotlinProjectsFilePath = filepath.Join(env, projectsFile)
+	}
+	content, err := os.ReadFile(kotlinProjectsFilePath)
 	if err != nil {
 		return nil, err
 	}

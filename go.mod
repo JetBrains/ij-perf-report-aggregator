@@ -8,18 +8,18 @@ require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.25.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
-	github.com/alitto/pond v1.8.3
+	github.com/alitto/pond v1.9.0
 	github.com/andybalholm/brotli v1.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/cenkalti/backoff/v4 v4.3.0
-	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-chi/chi/v5 v5.0.13
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/jackc/puddle/v2 v2.2.1
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.17.9
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/nats-io/nats.go v1.35.0
+	github.com/nats-io/nats.go v1.36.0
 	github.com/rs/cors v1.11.0
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/slack-go/slack v0.13.0

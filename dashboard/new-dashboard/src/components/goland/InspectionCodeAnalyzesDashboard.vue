@@ -16,7 +16,14 @@
       <GroupProjectsChart
         label="Global inspection execution time: light projects"
         measure="globalInspections"
-        :projects="['delve/inspection', 'kubernetes/inspection']"
+        :projects="['goland/delve/inspection', 'goland/kubernetes/inspection']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Single VgoDependencyUpdateAvailable inspection execution time"
+        measure="globalInspections"
+        :projects="['goland/kubernetes/VgoDependencyUpdateAvailable/VgoDependencyUpdateAvailable']"
       />
     </section>
   </DashboardPage>

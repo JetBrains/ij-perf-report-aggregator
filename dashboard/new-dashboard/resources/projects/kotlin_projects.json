@@ -59,12 +59,6 @@
         "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
         "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
         "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache"
-      ],
-      "mppNativeAcceptance": [
-        "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
-        "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
-        "kotlin_kmp_native_acceptance/completion/Sample.macOS_with_library_cache",
-        "kotlin_kmp_native_acceptance/completion/Sample.mingw_with_library_cache"
       ]
     },
     "highlighting": {
@@ -324,6 +318,12 @@
         "ktor_before_add_wasm_client/completion/CharsetMingw_findCharset_with_library_cache",
         "ktor_before_add_wasm_client/completion/URLBuilderJs_URLBuilderJs_typing_with_library_cache",
         "ktor_before_add_wasm_client/completion/DarwinUtils_DarwinUtils_with_library_cache"
+      ],
+      "mppNativeAcceptance": [
+        "kotlin_kmp_native_acceptance/completion/Sample.jvm_with_library_cache",
+        "kotlin_kmp_native_acceptance/completion/Sample.linux_with_library_cache",
+        "kotlin_kmp_native_acceptance/completion/Sample.macOS_with_library_cache",
+        "kotlin_kmp_native_acceptance/completion/Sample.mingw_with_library_cache"
       ]
     },
     "highlighting": {

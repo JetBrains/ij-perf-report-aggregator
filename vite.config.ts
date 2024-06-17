@@ -11,6 +11,7 @@ import { writeFile } from "fs/promises"
 import * as zlib from "zlib"
 import { OutputAsset, OutputChunk } from "rollup"
 import { configDefaults } from "vitest/config"
+import { viteStaticCopy } from "vite-plugin-static-copy"
 
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
@@ -49,6 +50,14 @@ export default defineConfig({
       ],
     }),
     brotli(),
+    viteStaticCopy({
+      targets: [
+        {
+          dest: "../../degradation-detector/kodata",
+          src: path.resolve(__dirname, "dashboard/new-dashboard/resources/projects"),
+        },
+      ],
+    }),
   ],
   root: "dashboard/app",
   publicDir: path.resolve(__dirname, "dashboard/app/public"),

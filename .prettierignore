@@ -1,4 +1,5 @@
 dashboard/app/prime-theme/
+dashboard/new-dashboard/resources
 testData/
 cmd/frontend/resources/
 .idea/

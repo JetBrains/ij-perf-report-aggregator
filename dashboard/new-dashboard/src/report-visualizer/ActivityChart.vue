@@ -54,7 +54,7 @@ export default defineComponent({
           }
         )
       } else {
-        return await descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)
+        return descriptor.chartManagerProducer(container, sourceNames ?? [], descriptor)
       }
     })
 

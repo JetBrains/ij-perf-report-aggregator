@@ -10,7 +10,7 @@
   >
     <section>
       <GroupProjectsChart
-        measure="SyntaxErrorsSessionRatio"
+        measure="SessionsWithoutSyntaxErrorsRatio"
         :projects="getAllProjects('code-generation')"
         :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
         label="All Languages"
@@ -36,7 +36,7 @@ import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
 const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
   return {
     labels: [project],
-    measures: ["SyntaxErrorsSessionRatio"],
+    measures: ["SessionsWithoutSyntaxErrorsRatio"],
     projects: aiaModels.map((model) => "code-generation_" + project + "_" + model),
   }
 })

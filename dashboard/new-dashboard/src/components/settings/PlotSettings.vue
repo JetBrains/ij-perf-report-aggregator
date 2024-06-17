@@ -1,7 +1,7 @@
 <template>
   <Cog8ToothIcon
     ref="settingsIcon"
-    class="w-6 h-6 text-primary"
+    :class="'w-6 h-6 ' + (removeOutliers ? 'text-red-500' : 'text-primary')"
     @click="showSettings"
   />
   <OverlayPanel
@@ -30,6 +30,8 @@ import FlexibleZeroOnYAxis from "./FlexibleYZeroSwitch.vue"
 import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
 import RemoveOutliersSwitch from "./RemoveOutliersSwitch.vue"
 import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
+import { useSettingsStore } from "./settingsStore"
+import { storeToRefs } from "pinia"
 
 const settingsPanel = shallowRef<OverlayPanel | null>(null)
 const settingsIcon = shallowRef<HTMLElement>()
@@ -40,6 +42,9 @@ emit("update:configurators", new SmoothingConfigurator())
 emit("update:configurators", new DetectChangesConfigurator())
 emit("update:configurators", new FlexibleZeroOnYAxisConfigurator())
 emit("update:configurators", new RemoveOutliersConfigurator())
+
+const settingsStore = useSettingsStore()
+const { removeOutliers } = storeToRefs(settingsStore)
 
 const showSettings = function (event: Event) {
   settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first

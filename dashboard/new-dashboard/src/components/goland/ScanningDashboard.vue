@@ -7,7 +7,7 @@
   >
     <section>
       <GroupProjectsChart
-        label="Scanning time for the first, second and third IDE runs (kubernetes project)"
+        label="Scanning time: first, second and third IDE runs"
         measure="scanningTimeWithoutPauses"
         :projects="['kubernetes/indexing', 'kubernetes/secondScanning', 'kubernetes/thirdScanning']"
       />

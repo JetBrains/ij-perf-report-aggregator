@@ -2,6 +2,7 @@
   <StartupProductDashboard
     product="GO"
     default-project="kratos"
+    initial-machine="Linux Munich i7-13700, 64 Gb"
   >
     <template #default="{ configurators }">
       <Divider label="go list" />

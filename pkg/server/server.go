@@ -87,11 +87,6 @@ func Serve(dbUrl string, natsUrl string) error {
   }).Handler)
   router.Use(middleware.Heartbeat("/health-check"))
   router.Use(middleware.Recoverer)
-  compressor := middleware.NewCompressor(5)
-  compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
-    return brotli.NewWriterV2(w, level)
-  })
-  router.Use(compressor.Handler)
 
   router.Route("/api/meta", func(r chi.Router) {
     r.Route("/accidents", func(r chi.Router) {
@@ -103,19 +98,27 @@ func Serve(dbUrl string, natsUrl string) error {
     r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
   })
 
-  router.Route("/api/", func(r chi.Router) {
-    r.Route("/v1", func(r chi.Router) {
-      r.Handle("/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
-      r.Handle("/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
+  router.Group(func(r chi.Router) {
+    compressor := middleware.NewCompressor(5)
+    compressor.SetEncoder("br", func(w io.Writer, level int) io.Writer {
+      return brotli.NewWriterV2(w, level)
     })
-    r.Handle("/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
-    r.Handle("/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
-    r.Handle("/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
-    r.Handle("/zstd-dictionary/*", &CachingHandler{
-      handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-        return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
-      },
-      manager: cacheManager,
+    r.Use(compressor.Handler)
+
+    r.Route("/api/", func(r chi.Router) {
+      r.Route("/v1", func(r chi.Router) {
+        r.Handle("/meta/measure", cacheManager.CreateHandler(statsServer.handleMetaMeasureRequest))
+        r.Handle("/load/*", cacheManager.CreateHandler(statsServer.handleLoadRequest))
+      })
+      r.Handle("/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
+      r.Handle("/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
+      r.Handle("/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
+      r.Handle("/zstd-dictionary/*", &CachingHandler{
+        handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+          return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil
+        },
+        manager: cacheManager,
+      })
     })
   })
 

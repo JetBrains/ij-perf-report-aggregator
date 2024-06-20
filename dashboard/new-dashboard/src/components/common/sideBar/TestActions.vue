@@ -101,7 +101,7 @@ function handleNavigateToTest() {
   }
   const branch = props.data?.branch ?? ""
   const machineGroup = getMachineGroupName(props.data?.machineName ?? "")
-  const majorBranch = branch.includes(".") ? branch.slice(0, branch.indexOf(".")) : branch
+  const majorBranch = branch.match(/\d+\.\d+/) ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
 
   const queryParams: string = new URLSearchParams({

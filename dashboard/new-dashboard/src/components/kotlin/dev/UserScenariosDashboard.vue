@@ -22,7 +22,7 @@
       :key="index"
     >
       <Divider :title="label" />
-      <K1K2DashboardGroupCharts :definitions="Object.values(USER_SCENARIOS).find((d) => d.label == label)?.charts?.value" />
+      <K1K2DashboardGroupCharts :definitions="Object.values(USER_SCENARIOS).find((d) => d.label == label)!!.charts.value" />
     </div>
   </DashboardPage>
 </template>

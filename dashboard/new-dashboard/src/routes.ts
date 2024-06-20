@@ -105,6 +105,7 @@ enum ROUTES {
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
   KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}Dev`,
+  KotlinUserScenariosDashboardDev = `${ROUTE_PREFIX.Kotlin}/Scenarios${DASHBOARD_ROUTE}Dev`,
   KotlinCodeAnalysisDev = `${ROUTE_PREFIX.Kotlin}/codeAnalysisDev `,
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
@@ -580,6 +581,10 @@ const KOTLIN: Product = {
         {
           url: ROUTES.KotlinDashboardDev,
           label: DASHBOARD_LABEL + " (dev)",
+        },
+        {
+          url: ROUTES.KotlinUserScenariosDashboardDev,
+          label: "User Scenarios(dev)",
         },
         {
           url: ROUTES.KotlinDashboard,
@@ -1864,6 +1869,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinDashboardDev,
           component: () => import("./components/kotlin/dev/PerformanceDashboard.vue"),
           meta: { pageTitle: "Kotlin Performance dashboard (dev)" },
+        },
+        {
+          path: ROUTES.KotlinUserScenariosDashboardDev,
+          component: () => import("./components/kotlin/dev/UserScenariosDashboard.vue"),
+          meta: { pageTitle: "User scenarios dashboard (dev)" },
         },
         {
           path: ROUTES.KotlinCodeAnalysisDev,

@@ -30,3 +30,7 @@ function projectByName(name: string) {
 export function projectSelectedLabel(s: string[]): string {
   return String(s.length) + " projects"
 }
+
+export function scenarioSelectedLabel(s: string[]): string {
+  return String(s.length) + " scenarios"
+}

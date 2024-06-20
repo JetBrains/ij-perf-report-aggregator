@@ -33,6 +33,14 @@ const MEASURES = {
     { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
     { name: "execute_editor_gotodeclaration_cold#mean_value", label: "Navigate to declaration cold cache" },
     { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
+    { name: "freedMemoryByGC", label: "Freed memory by GC" },
+  ],
+  deleteAllImportsMeasures: [
+    { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },
+    { name: "localInspections#mean_value", label: "Code Analysis" },
+    { name: "completion#mean_value", label: "Completion" },
+    { name: "completion#firstElementShown#mean_value", label: "First element shown" },
+    { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
 }
 
@@ -74,9 +82,6 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
 }
 
 export const KOTLIN_PROJECTS = kotlinProjects
-
-export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)
-KOTLIN_PROJECT_CONFIGURATOR.initData(Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label))
 
 function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }
@@ -202,10 +207,18 @@ export const convertJavaToKotlinProjectsChars = projectsToDefinition([
   },
 ])
 
-export const navigateToDeclarationCharts = projectsToDefinition([
+const navigateToDeclarationScenarioCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.navigationToDeclaration,
     measures: MEASURES.navigationToDeclarationMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+const deleteAllImportsScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.deleteAllImports,
+    measures: MEASURES.deleteAllImportsMeasures,
     machines: [MACHINES.linux],
   },
 ])
@@ -242,6 +255,17 @@ export const scriptFindUsagesCharts = projectsToDefinition([
   },
 ])
 
+export const USER_SCENARIOS: Record<string, ScenarioData> = {
+  navigateToDeclaration: { label: "Navigate to declaration", charts: navigateToDeclarationScenarioCharts },
+  deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
+}
+
+export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)
+KOTLIN_PROJECT_CONFIGURATOR.initData(Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label))
+
+export const KOTLIN_SCENARIO_CONFIGURATOR = new SimpleMeasureConfigurator("scenario", null)
+KOTLIN_SCENARIO_CONFIGURATOR.initData(Object.values(USER_SCENARIOS).map((c) => c.label))
+
 type Projects = Record<string, string[]>
 
 interface ProjectsByOS {
@@ -261,4 +285,9 @@ interface ProjectCategory {
 interface Measure {
   name: string
   label: string
+}
+
+interface ScenarioData {
+  label: string
+  charts: ComputedRef<ChartDefinition[]>
 }

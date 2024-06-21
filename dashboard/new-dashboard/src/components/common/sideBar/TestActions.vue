@@ -101,7 +101,7 @@ function handleNavigateToTest() {
   }
   const branch = props.data?.branch ?? ""
   const machineGroup = getMachineGroupName(props.data?.machineName ?? "")
-  const majorBranch = branch.match(/\d+\.\d+/) ? branch.slice(0, branch.indexOf(".")) : branch
+  const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
 
   const queryParams: string = new URLSearchParams({
@@ -115,8 +115,8 @@ function handleNavigateToTest() {
     props.data?.series
       .map((s) => s.metricName)
       .filter((m) => m != undefined)
-      .map((m) => (dbTypeStore().isIJStartup() && (m as string).includes("/") ? "metrics." + (m as string) : m))
-      .map((m) => encodeURIComponent(m as string))
+      .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
+      .map((m) => encodeURIComponent(m))
       .map((m) => "&measure=" + m)
       .join("") ?? ""
 

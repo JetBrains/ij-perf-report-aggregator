@@ -293,6 +293,11 @@
         "intellij_sources/navigation_from_MPPProjectTaskRunner_to_method_isNative"
       ]
     },
+    "sequenceNavigationToDeclaration": {
+      "intelliJSources": [
+        "intellij_sources/sequence_navigation_start_from_IndexingEventsTest.kt"
+      ]
+    },
     "deleteAllImports": {
       "arrow": [
         "arrow/user_scenario/remove_all_imports/Either.kt"

@@ -35,6 +35,15 @@ const MEASURES = {
     { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
+  sequenceNavigationToDeclarationHighlightingMeasures: Array.from({ length: 6 }, (_, i) => ({
+    name: `localInspections_${i + 2}#mean_value`,
+    label: `Code Analysis ${i + 2} file`,
+  })),
+  sequenceNavigationToDeclarationGoToMeasures: Array.from({ length: 6 }, (_, i) => ({
+    name: `execute_editor_gotodeclaration_${i + 2}#mean_value`,
+    label: `Navigate to declaration ${i + 2} file`,
+  })),
+  freedMemoryByGc: [{ name: "freedMemoryByGC", label: "Freed memory by GC" }],
   deleteAllImportsMeasures: [
     { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },
     { name: "localInspections#mean_value", label: "Code Analysis" },
@@ -103,6 +112,21 @@ function projectsToDefinition(projectsByOS: ProjectsByOS[]): ComputedRef<ChartDe
         )
       )
       .filter((chart) => KOTLIN_PROJECT_CONFIGURATOR.selected.value?.some((selected) => chart.labels[0].startsWith(`'${selected}'`)))
+  )
+}
+
+function projectsToDefinitionWithMultipleMeasures(projectsByOS: ProjectsByOS[], label: string): ComputedRef<ChartDefinition[]> {
+  return computed(() =>
+    projectsByOS.flatMap(({ projects, measures, machines }) => {
+      return Object.entries(projects).flatMap(([key, value]) => {
+        return {
+          labels: [`'${PROJECT_CATEGORIES[key].label}' ${label}`],
+          measures: measures.map((m) => m.name),
+          projects: value,
+          machines,
+        }
+      })
+    })
   )
 }
 
@@ -207,6 +231,36 @@ export const convertJavaToKotlinProjectsChars = projectsToDefinition([
   },
 ])
 
+const sequenceNavigateToDeclarationScenarioCharts = computed(() => [
+  ...projectsToDefinitionWithMultipleMeasures(
+    [
+      {
+        projects: KOTLIN_PROJECTS.linux.sequenceNavigationToDeclaration,
+        measures: MEASURES.sequenceNavigationToDeclarationHighlightingMeasures,
+        machines: [MACHINES.linux],
+      },
+    ],
+    "Code analysis"
+  ).value,
+  ...projectsToDefinitionWithMultipleMeasures(
+    [
+      {
+        projects: KOTLIN_PROJECTS.linux.sequenceNavigationToDeclaration,
+        measures: MEASURES.sequenceNavigationToDeclarationGoToMeasures,
+        machines: [MACHINES.linux],
+      },
+    ],
+    "Navigation to declaration"
+  ).value,
+  ...projectsToDefinition([
+    {
+      projects: KOTLIN_PROJECTS.linux.sequenceNavigationToDeclaration,
+      measures: MEASURES.freedMemoryByGc,
+      machines: [MACHINES.linux],
+    },
+  ]).value,
+])
+
 const navigateToDeclarationScenarioCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.navigationToDeclaration,
@@ -257,6 +311,7 @@ export const scriptFindUsagesCharts = projectsToDefinition([
 
 export const USER_SCENARIOS: Record<string, ScenarioData> = {
   navigateToDeclaration: { label: "Navigate to declaration", charts: navigateToDeclarationScenarioCharts },
+  sequenceNavigateToDeclaration: { label: "Sequence navigate to declaration", charts: sequenceNavigateToDeclarationScenarioCharts },
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
 }
 

@@ -28,7 +28,7 @@ describe("Branch configurator", () => {
     test("Valid query with default selected value", async () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1%","o":"like"}]}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"}]}]`
       assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
     })
 
@@ -36,12 +36,12 @@ describe("Branch configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
 
-      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2%","o":"like"}]}]`
+      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2"}]}]`
       branchConfigurator.selected.value = "b2"
       await awaitMockCallsCount(data.fetchMock, 3)
       assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
 
-      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1%","o":"like"}]}]`
+      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"}]}]`
       branchConfigurator.selected.value = "b1"
       await awaitMockCallsCount(data.fetchMock, 4)
       assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
@@ -77,7 +77,7 @@ describe("Branch configurator", () => {
     test("Valid query with default selected value", async () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
     })
 
@@ -85,12 +85,12 @@ describe("Branch configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
 
-      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       branchConfigurator.selected.value = "b2"
       await awaitMockCallsCount(data.fetchMock, 3)
       assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
 
-      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       branchConfigurator.selected.value = "b1"
       await awaitMockCallsCount(data.fetchMock, 4)
       assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)

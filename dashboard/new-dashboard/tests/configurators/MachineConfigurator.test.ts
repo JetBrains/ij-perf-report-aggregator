@@ -89,7 +89,7 @@ describe("Machine configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 3)
       console.log(data.fetchMock.mock.calls)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["machine"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["machine"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
     })
 
@@ -97,11 +97,11 @@ describe("Machine configurator", () => {
       branchConfigurator.selected.value = ["branch1"]
       machineConfigurator.selected.value = ["intellij-linux-hw-blade-test"]
       dataQueryExecutor.subscribe(() => {})
-      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-linux-hw-blade-test"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       await awaitMockCallsCount(data.fetchMock, 4)
       assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
 
-      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-macos-unit-2200-large-test"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+      expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["intellij-macos-unit-2200-large-test"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       machineConfigurator.selected.value = ["intellij-macos-unit-2200-large-test"]
       await awaitMockCallsCount(data.fetchMock, 5)
       assert.equal(data.fetchMock.mock.calls[4][0], expectedValue)
@@ -127,7 +127,7 @@ describe("Machine configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 4)
       for (const [index, value] of values.entries()) {
-        const expected = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["${value}"]},{"f":"branch","v":"branch1%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
+        const expected = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["${value}"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
         assert.equal(data.fetchMock.mock.calls[3 + index][0], expected)
       }
     })

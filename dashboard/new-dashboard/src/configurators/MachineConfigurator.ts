@@ -349,18 +349,16 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/c6id/
     // noinspection SpellCheckingInspection
     groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-i") || machine.startsWith("intellij-linux-2004-aws-c5d")) {
+  } else if (
+    machine.startsWith("intellij-linux-2004-aws-i") ||
+    machine.startsWith("intellij-linux-2004-aws-c5d") ||
+    machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
+    machine.startsWith("intellij-linux-2204-aws-c5ad-lt") ||
+    machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
+  ) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C5d.xlarge (4 vCPU Xeon, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-c5ad-lt") || machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)"
-  } else if (machine.startsWith("intellij-linux-2004-aws-m5ad-lt")) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 M5ad.xlarge (4 vCPU AMD EPYC, 8 GB)"
+    groupName = "Linux EC2 xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("intellij-linux-2004-aws-m5d-lt")) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection

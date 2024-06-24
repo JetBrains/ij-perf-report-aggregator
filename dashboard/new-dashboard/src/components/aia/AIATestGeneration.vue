@@ -12,14 +12,14 @@
       <GroupProjectsChart
         measure="SyntaxErrorsSessionRatio"
         :projects="getAllProjects('test-generation')"
-        :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
+        :machines="['Linux EC2 xlarge (4 vCPU, 8 GB)']"
         label="All Languages"
       /><GroupProjectsChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
-        :machines="['Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)']"
+        :machines="['Linux EC2 xlarge (4 vCPU, 8 GB)']"
         :projects="chart.projects"
       />
     </section>

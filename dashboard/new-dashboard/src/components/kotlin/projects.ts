@@ -35,14 +35,14 @@ const MEASURES = {
     { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
-  sequenceNavigationToDeclarationHighlightingMeasures: Array.from({ length: 6 }, (_, i) => ({
-    name: `localInspections_${i + 2}#mean_value`,
-    label: `Code Analysis ${i + 2} file`,
-  })),
-  sequenceNavigationToDeclarationGoToMeasures: Array.from({ length: 6 }, (_, i) => ({
-    name: `execute_editor_gotodeclaration_${i + 2}#mean_value`,
-    label: `Navigate to declaration ${i + 2} file`,
-  })),
+  sequenceNavigationToDeclarationHighlightingMeasures: [
+    { name: "localInspections_cold#mean_value", label: "Code Analysis cold cache" },
+    { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
+  ],
+  sequenceNavigationToDeclarationGoToMeasures: [
+    { name: "execute_editor_gotodeclaration_cold#mean_value", label: "Navigate to declaration cold cache" },
+    { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
+  ],
   freedMemoryByGc: [{ name: "freedMemoryByGC", label: "Freed memory by GC" }],
   deleteAllImportsMeasures: [
     { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },

@@ -8,7 +8,7 @@ import { timeRangeKey } from "../shared/injectionKeys"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
 
-export declare type TimeRange = "1w" | "1M" | "3M" | "1y" | "all" | "custom"
+export declare type TimeRange = "1w" | "2w" | "1M" | "3M" | "1y" | "all" | "custom"
 
 export interface TimeRangeItem {
   label: string
@@ -20,6 +20,7 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
   readonly customRange = ref<string>("")
   public timeRanges: Ref<TimeRangeItem[]> = ref([
     { label: "Last week", value: "1w" },
+    { label: "Last two weeks", value: "2w" },
     { label: "Last month", value: "1M" },
     { label: "Last 3 months", value: "3M" },
     { label: "Last year", value: "1y" },
@@ -190,6 +191,9 @@ function getStartTime(range: TimeRange): Date | null {
     case "1w": // Subtract 1 week
       currentDate.setDate(currentDate.getDate() - 7)
       break
+    case "2w": // Subtract 2 weeks
+      currentDate.setDate(currentDate.getDate() - 14)
+      break
     case "1M": // Subtract 1 month
       currentDate.setMonth(currentDate.getMonth() - 1)
       break
@@ -211,6 +215,7 @@ function getStartTime(range: TimeRange): Date | null {
 function getEndTime(range: TimeRange): Date | null {
   switch (range) {
     case "1w":
+    case "2w":
     case "1M":
     case "3M":
     case "1y":

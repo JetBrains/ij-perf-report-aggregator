@@ -349,16 +349,6 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/c6id/
     // noinspection SpellCheckingInspection
     groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
-  } else if (
-    machine.startsWith("intellij-linux-2004-aws-i") ||
-    machine.startsWith("intellij-linux-2004-aws-c5d") ||
-    machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-c5ad-lt") ||
-    machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
-  ) {
-    // https://aws.amazon.com/ec2/instance-types/c5/
-    // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("intellij-linux-2004-aws-m5d-lt")) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection
@@ -387,7 +377,15 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("qodana-linux-amd64-large")) {
     groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
-  } else if (machine.startsWith("qodana-linux-amd64-xl")) {
+  } else if (
+    machine.startsWith("qodana-linux-amd64-xl") ||
+    machine.startsWith("intellij-linux-2004-aws-i") ||
+    machine.startsWith("intellij-linux-2004-aws-c5d") ||
+    machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
+    machine.startsWith("intellij-linux-2204-aws-c5ad-lt") ||
+    machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
+  ) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
     groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("intellij-macos-perf-eqx")) {
     groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"

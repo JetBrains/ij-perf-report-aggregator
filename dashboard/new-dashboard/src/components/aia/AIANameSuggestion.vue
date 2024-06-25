@@ -12,14 +12,14 @@
       <GroupProjectsChart
         measure="EditSimilarity"
         :projects="getAllProjects('name-suggestion')"
-        :machines="['Linux EC2 xlarge (4 vCPU, 8 GB)']"
+        :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
         label="All Languages"
       /><GroupProjectsChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
-        :machines="['Linux EC2 xlarge (4 vCPU, 8 GB)']"
+        :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
         :projects="chart.projects"
       />
     </section>

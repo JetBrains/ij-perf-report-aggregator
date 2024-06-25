@@ -7,7 +7,7 @@
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
         :label="`${definition.labels[0]} K1`"
-        :measure="definition.measures"
+        :measure="definition.measures as string[] | string"
         :projects="definition.projects.map((s) => `${s}_k1`)"
         :legend-formatter="replaceKotlinName"
         :machines="definition.machines"
@@ -16,7 +16,7 @@
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
         :label="`${definition.labels[0]} K2`"
-        :measure="definition.measures"
+        :measure="definition.measures as string[] | string"
         :projects="definition.projects.map((s) => `${s}_k2`)"
         :legend-formatter="replaceKotlinName"
         :machines="definition.machines"

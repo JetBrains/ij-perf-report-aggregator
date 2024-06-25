@@ -61,5 +61,6 @@ module.exports = {
       },
     ],
     "vue/no-setup-props-destructure": "off",
+    "vue/no-deprecated-filter": "off",
   },
 }

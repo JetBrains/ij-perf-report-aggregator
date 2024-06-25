@@ -1576,7 +1576,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "GoLand Completion dashboard" },
         },
         {
-          path: ROUTES.GoLandCompletionDashboard,
+          path: ROUTES.GoLandDebuggerDashboard,
           component: () => import("./components/goland/DebuggerDashboard.vue"),
           meta: { pageTitle: "GoLand Debugger dashboard" },
         },

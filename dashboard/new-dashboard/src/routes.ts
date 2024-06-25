@@ -127,6 +127,7 @@ enum ROUTES {
   GoLandScanningDashboard = `${ROUTE_PREFIX.GoLand}/scanningDashboard`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
+  GoLandDebuggerDashboard = `${ROUTE_PREFIX.GoLand}/debuggerDashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
@@ -659,7 +660,11 @@ const GOLAND: Product = {
         },
         {
           url: ROUTES.GoLandInspectionDashboard,
-          label: "Inspections & Analyzes",
+          label: "Inspections",
+        },
+        {
+          url: ROUTES.GoLandDebuggerDashboard,
+          label: "Debugger",
         },
         {
           url: ROUTES.GoLandTests,
@@ -1543,7 +1548,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandInspectionDashboard,
-          component: () => import("./components/goland/InspectionCodeAnalyzesDashboard.vue"),
+          component: () => import("./components/goland/InspectionsDashboard.vue"),
           meta: { pageTitle: "GoLand Inspections dashboard" },
         },
         {
@@ -1569,6 +1574,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandCompletionDashboard,
           component: () => import("./components/goland/CompletionDashboard.vue"),
           meta: { pageTitle: "GoLand Completion dashboard" },
+        },
+        {
+          path: ROUTES.GoLandCompletionDashboard,
+          component: () => import("./components/goland/DebuggerDashboard.vue"),
+          meta: { pageTitle: "GoLand Debugger dashboard" },
         },
         {
           path: ROUTES.GoLandTests,

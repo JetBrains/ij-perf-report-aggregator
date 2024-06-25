@@ -205,6 +205,7 @@ enum ROUTES {
   IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
   IJentPerfTests = `${ROUTE_PREFIX.IJent}/performance`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
+  AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
@@ -1122,6 +1123,10 @@ const ML_TESTS: Product = {
       url: ROUTE_PREFIX.ML,
       label: "",
       tabs: [
+        {
+          url: ROUTES.AIAssistantApiTests,
+          label: "API Assistant Api Tests",
+        },
         {
           url: ROUTES.LLMDevTests,
           label: "LLM test dashboard dev-server/fast-installer",
@@ -2236,6 +2241,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IJentPerfTests,
           component: () => import("./components/ijent/IJentPerformanceTests.vue"),
           meta: { pageTitle: "IJent Performance" },
+        },
+        {
+          path: ROUTES.AIAssistantApiTests,
+          component: () => import("./components/ml/dev/AiAssistantApiTests.vue"),
+          meta: { pageTitle: "AI API Tests" },
         },
         {
           path: ROUTES.LLMDevTests,

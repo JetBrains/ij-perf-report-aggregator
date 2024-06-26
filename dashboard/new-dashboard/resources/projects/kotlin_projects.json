@@ -293,9 +293,12 @@
         "intellij_sources/navigation_from_MPPProjectTaskRunner_to_method_isNative"
       ]
     },
-    "sequenceNavigationToDeclaration": {
+    "sequenceHighlighting": {
       "intelliJSources": [
-        "intellij_sources/sequence_navigation_start_from_IndexingEventsTest.kt"
+        "intellij_sources/sequence_highlighting_start_from_FirCompletionContributorBase.kt"
+      ],
+      "kotlinLang": [
+        "kotlin_lang/sequence_highlighting_start_from_LLFirDesignatedExpectActualMatcherTransformer.kt"
       ]
     },
     "deleteAllImports": {

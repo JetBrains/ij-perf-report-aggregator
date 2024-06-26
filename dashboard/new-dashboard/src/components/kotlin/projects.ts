@@ -35,6 +35,11 @@ const MEASURES = {
     { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
+  sequenceHighlightingMeasures: [
+    { name: "localInspections_cold#mean_value", label: "Code Analysis cold cache" },
+    { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
+    { name: "freedMemoryByGC", label: "Freed memory by GC" },
+  ],
   deleteAllImportsMeasures: [
     { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },
     { name: "localInspections#mean_value", label: "Code Analysis" },
@@ -207,10 +212,10 @@ export const convertJavaToKotlinProjectsChars = projectsToDefinition([
   },
 ])
 
-const sequenceNavigateToDeclarationScenarioCharts = projectsToDefinition([
+const sequenceHighlightingScenarioCharts = projectsToDefinition([
   {
-    projects: KOTLIN_PROJECTS.linux.sequenceNavigationToDeclaration,
-    measures: MEASURES.navigationToDeclarationMeasures,
+    projects: KOTLIN_PROJECTS.linux.sequenceHighlighting,
+    measures: MEASURES.sequenceHighlightingMeasures,
     machines: [MACHINES.linux],
   },
 ])
@@ -265,7 +270,7 @@ export const scriptFindUsagesCharts = projectsToDefinition([
 
 export const USER_SCENARIOS: Record<string, ScenarioData> = {
   navigateToDeclaration: { label: "Navigate to declaration(one file per test)", charts: navigateToDeclarationScenarioCharts },
-  sequenceNavigateToDeclaration: { label: "Sequence navigate to declaration", charts: sequenceNavigateToDeclarationScenarioCharts },
+  sequenceNavigateToDeclaration: { label: "Sequence highlighting", charts: sequenceHighlightingScenarioCharts },
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
 }
 

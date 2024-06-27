@@ -128,6 +128,7 @@ enum ROUTES {
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
   GoLandDebuggerDashboard = `${ROUTE_PREFIX.GoLand}/debuggerDashboard`,
+  GoLandFindUsagesDashboard = `${ROUTE_PREFIX.GoLand}/findUsagesDashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
@@ -665,6 +666,10 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandDebuggerDashboard,
           label: "Debugger",
+        },
+        {
+          url: ROUTES.GoLandFindUsagesDashboard,
+          label: "Find Usages",
         },
         {
           url: ROUTES.GoLandTests,
@@ -1579,6 +1584,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandDebuggerDashboard,
           component: () => import("./components/goland/DebuggerDashboard.vue"),
           meta: { pageTitle: "GoLand Debugger dashboard" },
+        },
+        {
+          path: ROUTES.GoLandFindUsagesDashboard,
+          component: () => import("./components/goland/FindUsagesDashboard.vue"),
+          meta: { pageTitle: "GoLand Find Usages dashboard" },
         },
         {
           path: ROUTES.GoLandTests,

@@ -7,7 +7,7 @@
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
         :label="`stage: ${definition.labels[0]}`"
-        :measure="definition.measures"
+        :measure="definition.measures as string[] | string"
         :projects="definition.projects.map((s) => `stage: ${s}`)"
         :machines="definition.machines"
       />
@@ -15,7 +15,7 @@
     <div class="flex-1 min-w-0">
       <GroupProjectsChart
         :label="`prod: ${definition.labels[0]}`"
-        :measure="definition.measures"
+        :measure="definition.measures as string[] | string"
         :projects="definition.projects.map((s) => `prod: ${s}`)"
         :machines="definition.machines"
       />

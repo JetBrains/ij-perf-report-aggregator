@@ -657,7 +657,7 @@ const GOLAND: Product = {
         },
         {
           url: ROUTES.GoLandCompletionDashboard,
-          label: "Completion",
+          label: "Completion & Typing",
         },
         {
           url: ROUTES.GoLandInspectionDashboard,

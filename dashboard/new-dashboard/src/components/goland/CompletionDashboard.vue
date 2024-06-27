@@ -7,6 +7,11 @@
   >
     <section>
       <GroupProjectsChart
+        label="Typing Latency (mattermost)"
+        measure="typing#latency#mean_value"
+        :projects="['goland/typing/mattermost']"
+      />
+      <GroupProjectsChart
         label="Auto-import Completion"
         measure="completion"
         :projects="['goland/autoImportCompletion/autoImportCompletion']"

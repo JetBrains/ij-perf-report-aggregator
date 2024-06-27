@@ -44,7 +44,20 @@
         field="test"
         header="Test"
         :sortable="true"
-      />
+      >
+        <template #body="slotProps">
+          <div class="flex items-center">
+            <div>{{ slotProps.data.test }}</div>
+            <div class="ml-2">
+              <Button
+                icon="pi pi-external-link"
+                @click="() => handleNavigateToTest(slotProps.data.test, slotProps.data.metric)"
+                class="p-button-rounded p-button-text p-button-sm text-black"
+              />
+            </div>
+          </div>
+        </template>
+      </Column>
       <Column
         field="metric"
         header="Metric"
@@ -97,6 +110,8 @@ import BranchSelect from "../BranchSelect.vue"
 import MachineSelect from "../MachineSelect.vue"
 import { PersistentStateManager } from "../PersistentStateManager"
 import StickyToolbar from "../StickyToolbar.vue"
+import { dbTypeStore } from "../../../shared/dbTypes"
+import { DBType } from "../sideBar/InfoSidebar"
 
 interface CompareBranchesProps {
   dbName: string
@@ -238,6 +253,21 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
   }
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
+}
+
+function handleNavigateToTest(project: string, metric: string) {
+  const currentRoute = router.currentRoute.value
+  let parts = currentRoute.path.split("/")
+  parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
+  const testURL = parts.join("/")
+
+  const queryParams: string = new URLSearchParams({
+    ...currentRoute.query,
+    project: project,
+    measure: metric,
+  }).toString()
+
+  window.open(router.resolve(testURL + "?" + queryParams + `&branch=${branch1.value}` + `&branch=${branch2.value}`).href, "_blank")
 }
 </script>
 

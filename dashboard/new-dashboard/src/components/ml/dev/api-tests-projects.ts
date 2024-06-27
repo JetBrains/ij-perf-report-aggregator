@@ -2,7 +2,7 @@ import { ChartDefinition } from "../../charts/DashboardCharts"
 import { computed, ComputedRef } from "vue"
 const machine = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
 const tests = ["inEditorCodeGeneration_function", "inEditorCodeGeneration_all", "getAvailableProfiles"]
-const defaultMetrics = ["success_count", "failure_count"]
+const defaultMetrics = ["success_rate"]
 const timingMetrics = ["response_time#mean_value"]
 const nameSuggestTests = [
   "java_name_suggest_PsiAnnotation",

@@ -205,7 +205,7 @@ enum ROUTES {
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
   IJentPerfTests = `${ROUTE_PREFIX.IJent}/performance`,
-  MLDevTests = `${ROUTE_PREFIX.ML}/dev/${TEST_ROUTE}`,
+  MLDevTests = `${ROUTE_PREFIX.ML}/dev/${DEV_TEST_ROUTE}`,
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,

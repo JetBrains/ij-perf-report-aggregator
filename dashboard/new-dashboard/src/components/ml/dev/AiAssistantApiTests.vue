@@ -8,8 +8,8 @@
   >
     <section>
       <GroupProjectsChart
-        label="Token quota"
-        :measure="['current']"
+        label="Current token quota usage %"
+        :measure="['currentPercents']"
         :projects="['stage: tokenQuota', 'prod: tokenQuota']"
       />
     </section>

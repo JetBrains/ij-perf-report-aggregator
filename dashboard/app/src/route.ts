@@ -27,7 +27,7 @@ export function createAndConfigureRouter(): Router {
   const router = createRouter({
     history: createWebHistory("/"),
     routes,
-    scrollBehavior(to) {
+    scrollBehavior(to, from, savedPosition) {
       if (to.hash) {
         return new Promise((resolve) => {
           setTimeout(() => {
@@ -38,7 +38,13 @@ export function createAndConfigureRouter(): Router {
           }, 600)
         })
       }
-      return { left: 0, top: 0 }
+      if (savedPosition) {
+        return savedPosition
+      }
+      if (to.path !== from.path) {
+        return { left: 0, top: 0 }
+      }
+      return false
     },
   })
   router.afterEach((to, _from) => {

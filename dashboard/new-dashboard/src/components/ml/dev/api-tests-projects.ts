@@ -36,7 +36,7 @@ function toCombineChartDefinition(label: string, tests: string[], metric: string
   return {
     labels: [label + " (" + metric + ")"],
     machines: [machine],
-    measures: metric,
+    measures: [metric],
     projects: tests,
   }
 }

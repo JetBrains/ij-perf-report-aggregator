@@ -24,7 +24,7 @@ spec:
               image: {{ .Values.images.collector }}
               resources:
                 requests:
-                  cpu: "2"
+                  cpu: "3"
                   memory: 1Gi
                 limits:
                   cpu: "4"

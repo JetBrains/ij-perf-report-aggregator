@@ -8,6 +8,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/araddon/dateparse"
   "go.deanishe.net/env"
+  _ "go.uber.org/automaxprocs"
   "log/slog"
   "net/http"
   "os"

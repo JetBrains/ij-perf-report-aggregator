@@ -51,8 +51,8 @@
             <div class="ml-2">
               <Button
                 icon="pi pi-external-link"
-                @click="() => handleNavigateToTest(slotProps.data.test, slotProps.data.metric)"
                 class="p-button-rounded p-button-text p-button-sm text-black"
+                @click="() => handleNavigateToTest(slotProps.data.test, slotProps.data.metric)"
               />
             </div>
           </div>
@@ -257,13 +257,13 @@ function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branc
 
 function handleNavigateToTest(project: string, metric: string) {
   const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
+  const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   const testURL = parts.join("/")
 
   const queryParams: string = new URLSearchParams({
     ...currentRoute.query,
-    project: project,
+    project,
     measure: metric,
   }).toString()
 

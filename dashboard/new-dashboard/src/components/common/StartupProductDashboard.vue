@@ -35,7 +35,7 @@
         </section>
         <Accordion
           :lazy="true"
-          :activeIndex="additionalMetricsActiveIndex()"
+          :active-index="additionalMetricsActiveIndex()"
         >
           <AccordionTab header="Additional metrics">
             <Divider label="Bootstrap" />

@@ -33,10 +33,8 @@
             :configurators="configurators"
           />
         </section>
-        <Accordion
-          :lazy="true"
-          :active-index="additionalMetricsActiveIndex()"
-        >
+        <slot :configurators="configurators"></slot>
+        <Accordion :lazy="true">
           <AccordionTab header="Additional metrics">
             <Divider label="Bootstrap" />
             <section class="grid grid-cols-2 gap-x-6">
@@ -85,7 +83,6 @@
                 tooltip-trigger="axis"
               />
             </span>
-            <slot :configurators="configurators"></slot>
             <Divider label="Notifications" />
             <LineChart
               title="Notifications"
@@ -145,13 +142,11 @@ interface StartupProductDashboard {
   defaultProject: string
   persistentId?: string | null
   withInstaller?: boolean
-  hideAdditionalMetrics: boolean
 }
 
 const props = withDefaults(defineProps<StartupProductDashboard>(), {
   persistentId: null,
   withInstaller: false,
-  hideAdditionalMetrics: true,
 })
 provideReportUrlProvider(props.withInstaller)
 
@@ -229,8 +224,4 @@ const highlightingPasses = fetchHighlightingPasses()
 const showAllPasses = computed(() => {
   return projectConfigurator.selected.value == null || projectConfigurator.selected.value.length == 1 || typeof projectConfigurator.selected.value == "string"
 })
-
-function additionalMetricsActiveIndex(): number {
-  return props.hideAdditionalMetrics ? -1 : 0
-}
 </script>

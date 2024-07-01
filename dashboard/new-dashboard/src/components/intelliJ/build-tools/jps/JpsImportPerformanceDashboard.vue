@@ -119,6 +119,11 @@ const metricsDeclaration = [
   "workspaceModel.mutableEntityStorage.resolve.ms",
   "workspaceModel.mutableEntityStorage.to.snapshot.ms",
 
+  "workspaceModel.mutableEntityStorage.changeLog.addReplaceEventForNewParent.ms",
+  "workspaceModel.mutableEntityStorage.changeLog.addReplaceEventForNewChild.ms",
+  "workspaceModel.mutableEntityStorage.changeLog.addReplaceEventForRemovedParent.ms",
+  "workspaceModel.mutableEntityStorage.changeLog.addReplaceEventForRemovedChild.ms",
+
   "workspaceModel.workspaceFileIndexData.instances.count",
   "workspaceModel.workspaceFileIndexData.init.ms",
   "workspaceModel.workspaceFileIndexData.getFileInfo.ms",

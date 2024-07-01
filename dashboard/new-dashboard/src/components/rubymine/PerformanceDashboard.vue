@@ -394,6 +394,15 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="Distributive Size"
+        measure="unpackedDistributiveSize"
+        :projects="[
+          'distributive-size-RM',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="GC Pause, ms"
         measure="gcPause"
         :projects="[

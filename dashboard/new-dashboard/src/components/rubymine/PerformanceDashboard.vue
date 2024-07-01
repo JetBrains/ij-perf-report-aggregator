@@ -396,9 +396,7 @@
       <GroupProjectsChart
         label="Distributive Size"
         measure="unpackedDistributiveSize"
-        :projects="[
-          'distributive-size-RM',
-        ]"
+        :projects="['distributive-size-RM']"
       />
     </section>
     <section>

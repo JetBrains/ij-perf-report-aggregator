@@ -11,16 +11,22 @@
         measure="typing#latency#mean_value"
         :projects="['goland/typing/mattermost']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Auto-import Completion"
         measure="completion"
         :projects="['goland/autoImportCompletion/autoImportCompletion']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Basic Completion"
         measure="completion"
         :projects="['goland/basicCompletionSpeed/basicCompletionSpeed']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Smart Completion"
         measure="completion"

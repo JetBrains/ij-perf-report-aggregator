@@ -21,7 +21,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Single VgoDependencyUpdateAvailable inspection execution time"
+        label="Dependency update available inspection execution time"
         measure="globalInspections"
         :projects="['goland/kubernetes/VgoDependencyUpdateAvailable/VgoDependencyUpdateAvailable']"
       />

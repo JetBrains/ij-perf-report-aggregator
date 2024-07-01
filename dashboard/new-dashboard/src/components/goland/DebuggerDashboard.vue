@@ -11,6 +11,8 @@
         measure="debugRunConfiguration"
         :projects="['goland/runDebugConfiguration/debug']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Debug Step Into"
         measure="debugStep_into"

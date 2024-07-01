@@ -11,11 +11,15 @@
         measure="findUsages"
         :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Find Usages (vault): First Usage Time"
         measure="findUsages_firstUsage"
         :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
       />
+    </section>
+    <section>
       <GroupProjectsChart
         label="Find Usages (vault): Number of Usages"
         measure="findUsages#number"

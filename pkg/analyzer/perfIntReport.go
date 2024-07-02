@@ -4,6 +4,7 @@ import (
   "github.com/valyala/fastjson"
   "golang.org/x/exp/constraints"
   "log/slog"
+  "math"
 )
 
 // Numeric is a constraint that permits any numeric type
@@ -31,6 +32,11 @@ func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) er
     }
 
     floatValue := value.GetFloat64()
+    if math.IsNaN(floatValue) {
+      slog.Warn("invalid value", "measureName", measureName, "value", value, "reportURL", runResult.ReportFileName)
+      return nil
+    }
+
     var numValue T
     var ok bool
     switch any(numValue).(type) {

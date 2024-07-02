@@ -111,8 +111,9 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
         } else {
           if math.IsNaN(v) {
             buffer.B = strconv.AppendFloat(buffer.B, 0, 'f', -1, 64)
+          } else {
+            buffer.B = strconv.AppendFloat(buffer.B, v, 'f', -1, 64)
           }
-          buffer.B = strconv.AppendFloat(buffer.B, v, 'f', -1, 64)
         }
       }
 

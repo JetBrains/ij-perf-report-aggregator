@@ -5,6 +5,7 @@ import (
   "github.com/ClickHouse/ch-go/proto"
   "github.com/valyala/bytebufferpool"
   "github.com/valyala/quicktemplate"
+  "math"
   "strconv"
 )
 
@@ -108,6 +109,9 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
           // fast path - just int
           buffer.B = strconv.AppendInt(buffer.B, n, 10)
         } else {
+          if math.IsNaN(v) {
+            buffer.B = strconv.AppendFloat(buffer.B, 0, 'f', -1, 64)
+          }
           buffer.B = strconv.AppendFloat(buffer.B, v, 'f', -1, 64)
         }
       }

@@ -1135,7 +1135,7 @@ const ML_TESTS: Product = {
       tabs: [
         {
           url: ROUTES.AIAssistantApiTests,
-          label: "API Assistant Api Tests",
+          label: "AI Assistant Api Tests",
         },
         {
           url: ROUTES.LLMDevTests,

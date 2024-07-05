@@ -26,6 +26,7 @@ func GenerateFleetStartupSettings() []detector.FleetStartupSettings {
           MinimumSegmentLength:      7,
           MedianDifferenceThreshold: 5,
           EffectSizeThreshold:       0.5,
+          ReportType:                detector.DegradationEvent,
         },
         SlackSettings: slackSettings,
       })

@@ -2,7 +2,7 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.0.18",
+    "@fontsource/inter": "5.0.19",
     "@fontsource/jetbrains-mono": "5.0.20",
     "new-dashboard": "workspace:*",
     "pinia": "^2.1.7",

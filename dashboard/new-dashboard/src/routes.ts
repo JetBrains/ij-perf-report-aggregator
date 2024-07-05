@@ -2252,7 +2252,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfintDev",
             table: "ijent",
-            initialMachine: "windows-blade-hetzner",
+            initialMachine: "windows-azure",
             withInstaller: false,
           },
           meta: { pageTitle: "IJent Benchmarks" },

@@ -391,6 +391,8 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
   } else if (machine.startsWith("intellij-windows-aws-i")) {
     groupName = "windows aws"
+  } else if (machine.match("ij-w.*-azr.*")) {
+    groupName = "windows-azure"
   }
 
   return groupName

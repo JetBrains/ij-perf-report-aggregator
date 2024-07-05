@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="ijent"
     persistent-id="ijent_performance_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="windows-azure"
     :charts="charts"
   >
     <template #configurator>

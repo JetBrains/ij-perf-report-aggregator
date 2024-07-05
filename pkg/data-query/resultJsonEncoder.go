@@ -33,6 +33,10 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
         for i, t := range data.Values {
           rowToSplitIndex[i] = splitParameters.values[t]
         }
+      case *proto.ColStr:
+        for i, position := range data.Pos {
+          rowToSplitIndex[i] = splitParameters.values[string(data.Buf[position.Start:position.End])]
+        }
       }
     }
   }

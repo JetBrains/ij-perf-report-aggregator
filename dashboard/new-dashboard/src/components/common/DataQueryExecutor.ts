@@ -221,7 +221,7 @@ function isFilterCanBeMerged(filter1: DataQueryFilter, filter2: DataQueryFilter,
 
 export function mergeQueries(queries: DataQuery[], configuration: DataQueryExecutorConfiguration | null): DataQuery[] {
   if (queries.length === 1) return queries
-  const resultQueries: DataQuery[] = [...queries]
+  const resultQueries: DataQuery[] = structuredClone(queries)
   const mergedNames = configuration?.seriesNames.map((name) => [name])
 
   let currentFilterField: string | null = null

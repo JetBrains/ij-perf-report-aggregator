@@ -184,6 +184,13 @@
         "rust_commit/highlight/TypeInference_with_library_cache"
       ]
     },
+    "moveFiles": {
+      "intelliJ": [
+        "intellij_commit/moveFile_OptimizedImportsBuilder.kt_to_caches",
+        "intellij_commit/moveFile_ORMReferencesUtil.java_to_util",
+        "intellij_commit/moveFile_UAnnotationUtils.kt_to_analysis"
+      ]
+    },
     "refactoringRename": {
       "intelliJ": [
         "intellij_commit/rename/SqlBlock_SqlBlockRenamed"

@@ -23,6 +23,10 @@ const MEASURES = {
     { name: "startInlineRename#mean_value", label: "StartInlineRename" },
     { name: "prepareForRename#mean_value", label: "PrepareForRename" },
   ],
+  moveFilesMeasure: [
+    { name: "moveFiles#mean_value", label: "Move files" },
+    { name: "moveFiles_back#mean_value", label: "Move files back" },
+  ],
   optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
   insertCodeMeasures: [{ name: "execute_editor_paste", label: "Insert code" }],
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
@@ -172,6 +176,11 @@ export const refactoringCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.optimizeImports,
     measures: MEASURES.optimizeImportsMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.moveFiles,
+    measures: MEASURES.moveFilesMeasure,
     machines: [MACHINES.linux],
   },
 ])

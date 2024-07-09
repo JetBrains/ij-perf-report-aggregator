@@ -11,7 +11,7 @@ const nameSuggestTests = [
   "java_name_suggest_PsiField",
   "java_name_suggest_PsiMethod",
 ]
-
+const testGenerationTests = ["test_generation_add_tests: openai-gpt-4", "test_generation: default", "test_generation_add_tests: gpt-4o"]
 export function toSeparateCharts(tests: string[]): ComputedRef<ChartDefinition[]> {
   return computed(() => tests.map((value) => toChartDefinition(value)))
 }
@@ -23,6 +23,8 @@ export function toOneCharts(label: string, tests: string[], metric: string): Com
 export const testProjects = toSeparateCharts(tests)
 export const nameSuggestProjects = toOneCharts("Name suggest", nameSuggestTests, defaultMetric)
 export const timingProjects = toOneCharts("Responses", [...nameSuggestTests, ...tests], timingMetric)
+export const testGenerationPassedProjects = toOneCharts("Test generation", testGenerationTests, "Passed Rate")
+export const testGenerationCompilationProjects = toOneCharts("Test generation", testGenerationTests, "Compilation Rate")
 function toChartDefinition(test: string): ChartDefinition {
   return {
     labels: [test + " (" + defaultMetric + ")"],

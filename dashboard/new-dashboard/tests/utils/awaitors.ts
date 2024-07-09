@@ -1,4 +1,4 @@
-import { Mock, SpyInstance, vitest } from "vitest"
+import { Mock, MockInstance, vitest } from "vitest"
 
 type Test = () => boolean
 export const awaitCallbackTrue = async (callback: Test, timeoutMs: number = 1000) => {
@@ -14,7 +14,7 @@ export const awaitCallbackTrue = async (callback: Test, timeoutMs: number = 1000
   )
 }
 
-export const awaitMockCallsCount = async (mock: Mock | SpyInstance, count: number) => {
+export const awaitMockCallsCount = async (mock: Mock | MockInstance, count: number) => {
   await awaitCallbackTrue(() => {
     return mock.mock.calls.length >= count
   })

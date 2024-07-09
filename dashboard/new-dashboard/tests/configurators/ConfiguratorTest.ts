@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { SpyInstance, vitest } from "vitest"
+import { MockInstance, vitest } from "vitest"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
 import { ServerConfigurator } from "../../src/components/common/dataQuery"
@@ -11,13 +11,13 @@ export interface ConfigurationTestData {
   serverConfigurator: ServerConfigurator
   persistenceForDashboard: PersistentStateManager
   timeRangeConfigurator: TimeRangeConfigurator
-  fetchMock: SpyInstance
+  fetchMock: MockInstance
   serverUrl: string
 }
 
 export default {
   setupPreconditions(mockValue: string[]): ConfigurationTestData {
-    const fetchMock: SpyInstance = vitest.spyOn(rxjs, "fromFetchWithRetryAndErrorHandling").mockClear().mockReset()
+    const fetchMock: MockInstance = vitest.spyOn(rxjs, "fromFetchWithRetryAndErrorHandling").mockClear().mockReset()
 
     fetchMock.mockReturnValue(
       new Observable((sub) => {

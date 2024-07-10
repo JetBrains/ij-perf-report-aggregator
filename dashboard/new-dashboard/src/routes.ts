@@ -129,6 +129,7 @@ enum ROUTES {
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
   GoLandDebuggerDashboard = `${ROUTE_PREFIX.GoLand}/debuggerDashboard`,
   GoLandFindUsagesDashboard = `${ROUTE_PREFIX.GoLand}/findUsagesDashboard`,
+  GoLandDistributiveSizeDashboard = `${ROUTE_PREFIX.GoLand}/distributiveDashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
@@ -671,6 +672,10 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandFindUsagesDashboard,
           label: "Find Usages",
+        },
+        {
+          url: ROUTES.GoLandDistributiveSizeDashboard,
+          label: "Distributive Size",
         },
         {
           url: ROUTES.GoLandTests,
@@ -1594,6 +1599,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.GoLandFindUsagesDashboard,
           component: () => import("./components/goland/FindUsagesDashboard.vue"),
           meta: { pageTitle: "GoLand Find Usages dashboard" },
+        },
+        {
+          path: ROUTES.GoLandDistributiveSizeDashboard,
+          component: () => import("./components/goland/DistributionSizeDashboard.vue"),
+          meta: { pageTitle: "GoLand Distribuvite Size dashboard" },
         },
         {
           path: ROUTES.GoLandTests,

@@ -26,15 +26,15 @@ func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) er
       value = measure.Get("c")
       measureType = "c"
       if value == nil {
-        slog.Warn("metric doesn't contain 'd' or 'c'", "measureName", measureName, "reportURL", runResult.ReportFileName)
-        return nil
+        slog.Error("metric doesn't contain 'd' or 'c', skipping metric", "measureName", measureName, "reportURL", runResult.ReportFileName)
+        continue
       }
     }
 
     floatValue := value.GetFloat64()
     if math.IsNaN(floatValue) {
-      slog.Warn("invalid value", "measureName", measureName, "value", value, "reportURL", runResult.ReportFileName)
-      return nil
+      slog.Error("invalid value, skipping metric", "measureName", measureName, "value", value, "reportURL", runResult.ReportFileName)
+      continue
     }
 
     var numValue T
@@ -50,12 +50,12 @@ func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) er
     case float64:
       numValue, ok = any(floatValue).(T)
     default:
-      slog.Warn("unexpected type", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
-      return nil
+      slog.Error("unexpected type, skipping metric", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
+      continue
     }
     if !ok {
-      slog.Warn("unexpected type", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
-      return nil
+      slog.Warn("unexpected type, skipping metric", "type", any(numValue), "measureName", measureName, "reportURL", runResult.ReportFileName)
+      continue
     }
 
     measureNames = append(measureNames, measureName)

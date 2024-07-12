@@ -184,6 +184,7 @@ enum ROUTES {
   J2DBenchDashboard = `${ROUTE_PREFIX.JBR}/j2dDashboard`,
   JavaDrawDashboard = `${ROUTE_PREFIX.JBR}/javaDrawDashboard`,
   RenderDashboard = `${ROUTE_PREFIX.JBR}/renderDashboard`,
+  SpecJBRDashboard = `${ROUTE_PREFIX.JBR}/specDashboard`,
   FleetTest = `${ROUTE_PREFIX.Fleet}/${TEST_ROUTE}`,
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
@@ -955,6 +956,10 @@ const JBR: Product = {
         {
           url: ROUTES.RenderDashboard,
           label: "Render",
+        },
+        {
+          url: ROUTES.SpecJBRDashboard,
+          label: "SpecJBR",
         },
         {
           url: ROUTES.MapBenchDashboard,
@@ -2098,6 +2103,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RenderDashboard,
           component: () => import("./components/jbr/RenderDashboard.vue"),
           meta: { pageTitle: "Render Dashboard" },
+        },
+        {
+          path: ROUTES.SpecJBRDashboard,
+          component: () => import("./components/jbr/SPECjbb2015Dashboard.vue"),
+          meta: { pageTitle: "Spec Dashboard" },
         },
         {
           path: ROUTES.FleetTest,

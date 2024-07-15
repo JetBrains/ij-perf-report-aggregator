@@ -379,6 +379,7 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Linux EC2 c5.large (2 vCPU, 4 GB)"
   } else if (
     machine.startsWith("qodana-linux-amd64-xl") ||
+    machine.startsWith("qodana-linux-amd64-heavy") ||
     machine.startsWith("intellij-linux-2004-aws-i") ||
     machine.startsWith("intellij-linux-2004-aws-c5d") ||
     machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||

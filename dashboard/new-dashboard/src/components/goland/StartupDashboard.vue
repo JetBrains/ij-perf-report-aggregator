@@ -8,21 +8,22 @@
       <Divider label="go list" />
       <LineChart
         title="Updating Go modules dependencies"
-        :measures="[
-          'metrics.progressMetric/Progress: Updating Go modules dependencies',
-          'metrics.progressMetric/Progress: Updating Go modules dependencies#mean_value',
-          'metrics.progressMetric/Progress: Updating Go modules dependencies#standard_deviation',
-        ]"
+        :measures="['metrics.progressMetric/Progress: Updating Go modules dependencies', 'metrics.progressMetric/Progress: Updating Go modules dependencies#mean_value']"
+        :configurators="configurators"
+      />
+      <LineChart
+        title="go list -m -json"
+        :measures="['metrics.progressMetric/Subtask: go list -m -json']"
         :configurators="configurators"
       />
       <LineChart
         title="go list -m -json (median value)"
-        :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value', 'metrics.progressMetric/Subtask: go list -m -json#standard_deviation']"
+        :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value']"
         :configurators="configurators"
       />
       <LineChart
         title="go list -m -json (count)"
-        :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value', 'metrics.progressMetric/Subtask: go list -m -json#standard_deviation']"
+        :measures="['metrics.progressMetric/Subtask: go list -m -json#count']"
         :configurators="configurators"
       />
       <Divider label="Warm Startup" />

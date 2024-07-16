@@ -20,6 +20,17 @@
         :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value', 'metrics.progressMetric/Subtask: go list -m -json#standard_deviation']"
         :configurators="configurators"
       />
+      <LineChart
+        title="go list -m -json (count)"
+        :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value', 'metrics.progressMetric/Subtask: go list -m -json#standard_deviation']"
+        :configurators="configurators"
+      />
+      <Divider label="Warm Startup" />
+      <LineChart
+        title="Startup Completed"
+        :measures="['startUpCompleted']"
+        :configurators="configurators"
+      />
     </template>
   </StartupProductDashboard>
 </template>

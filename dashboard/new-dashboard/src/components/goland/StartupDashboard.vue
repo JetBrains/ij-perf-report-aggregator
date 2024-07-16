@@ -7,22 +7,22 @@
     <template #default="{ configurators }">
       <Divider label="go list" />
       <LineChart
-        title="Updating Go modules dependencies"
-        :measures="['metrics.progressMetric/Progress: Updating Go modules dependencies', 'metrics.progressMetric/Progress: Updating Go modules dependencies#mean_value']"
+        title="Execution time: Updating Go modules dependencies"
+        :measures="['metrics.progressMetric/Progress: Updating Go modules dependencies']"
         :configurators="configurators"
       />
       <LineChart
-        title="go list -m -json"
+        title="Execution time: go list -m -json"
         :measures="['metrics.progressMetric/Subtask: go list -m -json']"
         :configurators="configurators"
       />
       <LineChart
-        title="go list -m -json (median value)"
+        title="Median value: go list -m -json"
         :measures="['metrics.progressMetric/Subtask: go list -m -json#mean_value']"
         :configurators="configurators"
       />
       <LineChart
-        title="go list -m -json (count)"
+        title="Number of go list -m -json runs"
         :measures="['metrics.progressMetric/Subtask: go list -m -json#count']"
         :configurators="configurators"
       />
@@ -30,6 +30,11 @@
       <LineChart
         title="Startup Completed"
         :measures="['startUpCompleted']"
+        :configurators="configurators"
+      />
+      <LineChart
+        title="Time from IDE start till File Analysis Finished"
+        :measures="['metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished']"
         :configurators="configurators"
       />
     </template>

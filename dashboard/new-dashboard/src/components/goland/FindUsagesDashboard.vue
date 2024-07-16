@@ -26,6 +26,45 @@
         :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (pocketbase): Execution Time"
+        measure="findUsages"
+        :projects="[
+          'goland/findUsages/write(method)',
+          'goland/findUsages/start(method)',
+          'goland/findUsages/open(method)',
+          'goland/findUsages/close(method)',
+          'goland/findUsages/file(struct)',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (pocketbase): First Usage Time"
+        measure="findUsages_firstUsage"
+        :projects="[
+          'goland/findUsages/write(method)',
+          'goland/findUsages/start(method)',
+          'goland/findUsages/open(method)',
+          'goland/findUsages/close(method)',
+          'goland/findUsages/file(struct)',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Find Usages (pocketbase): Number of Usages"
+        measure="findUsages#number"
+        :projects="[
+          'goland/findUsages/write(method)',
+          'goland/findUsages/start(method)',
+          'goland/findUsages/open(method)',
+          'goland/findUsages/close(method)',
+          'goland/findUsages/file(struct)',
+        ]"
+      />
+    </section>
   </DashboardPage>
 </template>
 

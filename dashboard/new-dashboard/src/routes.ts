@@ -214,6 +214,7 @@ enum ROUTES {
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
+  DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
@@ -1092,6 +1093,10 @@ const DATAGRIP: Product = {
         {
           url: ROUTES.DataGripStartupDashboard,
           label: STARTUP_LABEL,
+        },
+        {
+          url: ROUTES.DataGripIndexingDashboard,
+          label: "Indexing",
         },
       ],
     },
@@ -2326,6 +2331,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "empty project",
           },
           meta: { pageTitle: "DataGrip Startup dashboard" },
+        },
+        {
+          path: ROUTES.DataGripIndexingDashboard,
+          component: () => import("./components/datagrip/IndexingDashboard.vue"),
+          meta: { pageTitle: "DataGrip Indexing dashboard" },
         },
         {
           path: ROUTES.ReportDegradations,

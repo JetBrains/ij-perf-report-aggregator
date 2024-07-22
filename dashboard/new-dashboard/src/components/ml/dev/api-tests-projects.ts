@@ -11,7 +11,13 @@ const nameSuggestTests = [
   "java_name_suggest_PsiField",
   "java_name_suggest_PsiMethod",
 ]
-const testGenerationTests = ["test_generation_add_tests: openai-gpt-4", "test_generation_new_tests: openai-gpt-4", "test_generation: default", "test_generation_add_tests: gpt-4o", "test_generation_new_tests: gpt-4o"]
+const testGenerationTests = [
+  "test_generation_add_tests: openai-gpt-4",
+  "test_generation_new_tests: openai-gpt-4",
+  "test_generation: default",
+  "test_generation_add_tests: gpt-4o",
+  "test_generation_new_tests: gpt-4o",
+]
 export function toSeparateCharts(tests: string[]): ComputedRef<ChartDefinition[]> {
   return computed(() => tests.map((value) => toChartDefinition(value)))
 }

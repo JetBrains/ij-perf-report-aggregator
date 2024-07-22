@@ -6,8 +6,8 @@
     persistent-id="test-generation"
     :with-installer="false"
   >
-    <ApiTestGenerationDashboardGroupCharts :definitions="testGenerationCompilationProjects" />
     <ApiTestGenerationDashboardGroupCharts :definitions="testGenerationPsiValidProjects" />
+    <ApiTestGenerationDashboardGroupCharts :definitions="testGenerationCompilationProjects" />
     <ApiTestGenerationDashboardGroupCharts :definitions="testGenerationPassedProjects" />
   </DashboardPage>
 </template>

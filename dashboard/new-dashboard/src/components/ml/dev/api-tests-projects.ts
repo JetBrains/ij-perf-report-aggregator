@@ -25,6 +25,7 @@ export const nameSuggestProjects = toOneCharts("Name suggest", nameSuggestTests,
 export const timingProjects = toOneCharts("Responses", [...nameSuggestTests, ...tests], timingMetric)
 export const testGenerationPassedProjects = toOneCharts("Test generation", testGenerationTests, "Passed Rate")
 export const testGenerationCompilationProjects = toOneCharts("Test generation", testGenerationTests, "Compilation Rate")
+export const testGenerationPsiValidProjects = toOneCharts("Test generation", testGenerationTests, "Psi Valid Rate")
 function toChartDefinition(test: string): ChartDefinition {
   return {
     labels: [test + " (" + defaultMetric + ")"],

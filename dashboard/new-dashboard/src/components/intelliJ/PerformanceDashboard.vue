@@ -92,6 +92,11 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["Block Terminal Completion"],
+    measures: ["terminal-completion-all_cold", "terminal-completion-all_warm"],
+    projects: ["BlockTerminalCompletionTest"],
+  },
+  {
     labels: ["Debug run configuration", "Debug step into"],
     measures: ["debugRunConfiguration", "debugStep_into"],
     projects: ["kotlin_petclinic/debug"],

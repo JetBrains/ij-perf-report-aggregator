@@ -44,6 +44,11 @@ const MEASURES = {
     { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
+  findUsagesAndHighlightingMeasures: [
+    { name: "findUsages_firstUsage_background#mean_value", label: "First usage found" },
+    { name: "highlighting_IdeResourcesUtil.kt#mean_value", label: "Code Analysis IdeResourcesUtil" },
+    { name: "freedMemoryByGC", label: "Freed memory by GC" },
+  ],
   deleteAllImportsMeasures: [
     { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },
     { name: "localInspections#mean_value", label: "Code Analysis" },
@@ -245,6 +250,14 @@ const deleteAllImportsScenarioCharts = projectsToDefinition([
   },
 ])
 
+const findUsagesAndHighlightingScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.findUsagesAndHighlighting,
+    measures: MEASURES.findUsagesAndHighlightingMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
 const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
 export const highlightingScriptCharts = projectsToDefinition([
   {
@@ -281,6 +294,7 @@ export const USER_SCENARIOS: Record<string, ScenarioData> = {
   navigateToDeclaration: { label: "Navigate to declaration(one file per test)", charts: navigateToDeclarationScenarioCharts },
   sequenceNavigateToDeclaration: { label: "Sequence highlighting", charts: sequenceHighlightingScenarioCharts },
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
+  findUsagesAndHighlighting: { label: "Find usages and Highlighting", charts: findUsagesAndHighlightingScenarioCharts },
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)

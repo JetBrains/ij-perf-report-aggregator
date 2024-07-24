@@ -312,6 +312,11 @@
       "arrow": [
         "arrow/user_scenario/remove_all_imports/Either.kt"
       ]
+    },
+    "findUsagesAndHighlighting": {
+      "intelliJSources": [
+        "intellij_sources/usage_of_getContainingDirectory_highlight_IdeResourcesUtil.kt"
+      ]
     }
   },
   "mac": {

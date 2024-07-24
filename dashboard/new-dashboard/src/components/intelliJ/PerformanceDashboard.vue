@@ -93,7 +93,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Block Terminal Completion"],
-    measures: ["terminal-completion-all_cold", "terminal-completion-all_warm"],
+    measures: [["terminal-completion-all_cold", "terminal-completion-all_warm"]],
     projects: ["BlockTerminalCompletionTest"],
   },
   {

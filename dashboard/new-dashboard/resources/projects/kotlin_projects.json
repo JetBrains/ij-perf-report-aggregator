@@ -315,7 +315,7 @@
     },
     "findUsagesAndHighlighting": {
       "intelliJSources": [
-        "intellij_sources/usage_of_getContainingDirectory_highlight_IdeResourcesUtil.kt"
+        "intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"
       ]
     }
   },

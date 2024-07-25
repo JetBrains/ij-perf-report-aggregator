@@ -2,7 +2,7 @@ const KOTLIN_TEST_REGEXP = new RegExp("_with_library_cache_k.+")
 export function replaceKotlinName(name: string) {
   if (name.indexOf("/") > 0) {
     const project = name.slice(0, name.indexOf("/"))
-    const test = name.slice(name.lastIndexOf("/") + 1, name.length).replace(KOTLIN_TEST_REGEXP, "")
+    const test = name.slice(name.lastIndexOf("/") + 1).replace(KOTLIN_TEST_REGEXP, "")
     return projectByName(project) + "/" + test
   }
   return name

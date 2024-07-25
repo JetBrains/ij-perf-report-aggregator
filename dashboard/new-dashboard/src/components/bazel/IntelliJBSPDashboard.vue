@@ -4,15 +4,14 @@
     table="report"
     persistent-id="intellij_bsp_dashboard"
     initial-machine="Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-    :charts="charts"
     :with-installer="false"
   >
     <section>
       <GroupProjectsChart
-        v-for="chart in charts"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
+        v-for="chart in chartsDeclaration"
+        :key="chart.labels.join('')"
+        :label="chart.labels[chart.labels.length - 1]"
+        :measure="chart.measures"
         :projects="chart.projects"
       />
     </section>
@@ -20,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import { ChartDefinition } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
@@ -57,5 +56,4 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metricGroup
     ],
   }
 })
-const charts = combineCharts(chartsDeclaration)
 </script>

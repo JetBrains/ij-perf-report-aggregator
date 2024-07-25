@@ -11,6 +11,7 @@ export const METRICS_MAPPING: Record<string, string> = {
   "parsingSize#": "",
   indexingTimeWithoutPauses: "indexing",
   scanningTimeWithoutPauses: "scanning",
+  "bsp.used.at.exit.mb": "bsp.used.after.sync.mb",
 }
 
 function replaceKeys(originalKey: string): string {

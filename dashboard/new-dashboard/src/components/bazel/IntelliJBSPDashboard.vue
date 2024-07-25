@@ -41,8 +41,8 @@ const metricsDeclaration = [
 
 const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metricGroup) => {
   return {
-    labels: metricGroup,
-    measures: metricGroup,
+    labels: [metricGroup],
+    measures: [metricGroup],
     projects: [
       "Bazel (ij)",
       "Bazel-BSP (ij)",

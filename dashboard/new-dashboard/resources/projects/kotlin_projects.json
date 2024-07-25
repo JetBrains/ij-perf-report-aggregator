@@ -317,6 +317,11 @@
       "intelliJSources": [
         "intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"
       ]
+    },
+    "findUsagesAndGotoImplementation": {
+      "intelliJSources": [
+        "intellij_sources/usage_of_setUp_goto_implementation_ReadActionCache.kt"
+      ]
     }
   },
   "mac": {

@@ -45,8 +45,19 @@ const MEASURES = {
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
   findUsagesAndHighlightingMeasures: [
-    { name: "findUsages_firstUsage_background#mean_value", label: "First usage found" },
-    { name: "highlighting_IdeResourcesUtil.kt#mean_value", label: "Code Analysis IdeResourcesUtil" },
+    { name: "findUsages_firstUsage_background_1", label: "First usage found first iteration" },
+    { name: "findUsages_firstUsage_background#mean_value", label: "First usage found mean value" },
+    { name: "highlighting_IdeResourcesUtil.kt_1", label: "Code Analysis IdeResourcesUtil first iteration" },
+    { name: "highlighting_IdeResourcesUtil.kt#mean_value", label: "Code Analysis IdeResourcesUtil mean value" },
+    { name: "freedMemoryByGC", label: "Freed memory by GC" },
+  ],
+  findUsagesAndGoToImplementationMeasures: [
+    { name: "findUsages_firstUsage_background_1", label: "First usage found first iteration" },
+    { name: "findUsages_firstUsage_background#mean_value", label: "First usage found mean value" },
+    { name: "execute_editor_gotoimplementation_1", label: "Go to implementation first iteration" },
+    { name: "execute_editor_gotoimplementation#mean_value", label: "Go to implementation mean value" },
+    { name: "highlighting_ReadActionCacheImpl.kt_1", label: "Code Analysis ReadActionCacheImpl first iteration" },
+    { name: "highlighting_ReadActionCacheImpl.kt#mean_value", label: "Code Analysis ReadActionCacheImpl mean value" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
   deleteAllImportsMeasures: [
@@ -258,6 +269,14 @@ const findUsagesAndHighlightingScenarioCharts = projectsToDefinition([
   },
 ])
 
+const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.findUsagesAndGotoImplementation,
+    measures: MEASURES.findUsagesAndGoToImplementationMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
 const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
 export const highlightingScriptCharts = projectsToDefinition([
   {
@@ -295,6 +314,7 @@ export const USER_SCENARIOS: Record<string, ScenarioData> = {
   sequenceNavigateToDeclaration: { label: "Sequence highlighting", charts: sequenceHighlightingScenarioCharts },
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
   findUsagesAndHighlighting: { label: "Find usages and Highlighting", charts: findUsagesAndHighlightingScenarioCharts },
+  findUsagesAndGoToImplementation: { label: "Find usages and Goto implementation", charts: findUsagesAndGoToImplementationScenarioCharts },
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)

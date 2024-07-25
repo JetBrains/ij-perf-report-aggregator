@@ -25,24 +25,24 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
-  "bsp.sync.project.ms",
-  "bsp.used.after.sync.mb",
-  "bsp.used.after.indexing.mb",
-  "bsp.max.used.memory.mb",
-  "collect.project.details.ms",
-  "apply.changes.on.workspace.model.ms",
-  "replacebysource.in.apply.on.workspace.model.ms",
-  "replaceprojectmodel.in.apply.on.workspace.model.ms",
-  "add.bsp.fetched.jdks.ms",
-  "create.target.id.to.module.entities.map.ms",
-  "load.modules.ms",
-  "calculate.all.unique.jdk.infos.ms",
+  ["bsp.sync.project.ms"],
+  ["bsp.used.at.exit.mb", "bsp.used.after.sync.mb"],
+  ["bsp.used.after.indexing.mb"],
+  ["bsp.max.used.memory.mb"],
+  ["collect.project.details.ms"],
+  ["apply.changes.on.workspace.model.ms"],
+  ["replacebysource.in.apply.on.workspace.model.ms"],
+  ["replaceprojectmodel.in.apply.on.workspace.model.ms"],
+  ["add.bsp.fetched.jdks.ms"],
+  ["create.target.id.to.module.entities.map.ms"],
+  ["load.modules.ms"],
+  ["calculate.all.unique.jdk.infos.ms"],
 ]
 
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => {
+const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metricGroup) => {
   return {
-    labels: [metric],
-    measures: [metric],
+    labels: metricGroup,
+    measures: metricGroup,
     projects: [
       "Bazel (ij)",
       "Bazel-BSP (ij)",

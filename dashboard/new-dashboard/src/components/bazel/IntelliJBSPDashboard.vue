@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
@@ -38,7 +37,13 @@ const metricsDeclaration = [
   ["calculate.all.unique.jdk.infos.ms"],
 ]
 
-const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metricGroup) => {
+interface BazelCharts {
+  labels: string[]
+  measures: string[]
+  projects: string[]
+}
+
+const chartsDeclaration: BazelCharts[] = metricsDeclaration.map((metricGroup) => {
   return {
     labels: metricGroup,
     measures: metricGroup,

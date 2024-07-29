@@ -11,7 +11,7 @@
     "fast-equals": "5.0.1",
     "humanize-duration": "3.32.1",
     "p-limit": "^6.1.0",
-    "pinia": "^2.1.7",
+    "pinia": "^2.2.0",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.34",

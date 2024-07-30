@@ -25,6 +25,15 @@
           placeholder="Search by name"
         />
       </template>
+
+      <template #body="slotProps">
+        <div
+          class="link-like-text"
+          @click="(event) => onColumnClick(event, slotProps.data)"
+        >
+          {{ slotProps.data.test }}
+        </div>
+      </template>
     </Column>
     <Column
       field="baselineValue"
@@ -70,6 +79,10 @@ import { DataQueryExecutor } from "./DataQueryExecutor"
 import { TestComparisonTableEntry } from "./TestComparisonTableEntry"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "./dataQuery"
 import { formatPercentage, getValueFormatterByMeasureName } from "./formatter"
+import { DBType } from "./sideBar/InfoSidebar"
+import { dbTypeStore } from "../../shared/dbTypes"
+import { getMachineGroupName } from "../../configurators/MachineConfigurator"
+import { useRouter } from "vue-router"
 
 /**
  * Defines that a `baseline` test should be compared against a `current` test. This represents a single row in the comparison table.
@@ -104,6 +117,13 @@ interface TestComparisonTableProps {
   formatDifference?: (difference: number) => string
 }
 
+interface Info {
+  branch: string | undefined
+  machine: string | undefined
+  measureName: string | undefined
+  measureValue: number | undefined
+}
+
 const props = withDefaults(defineProps<TestComparisonTableProps>(), {
   baselineColumnLabel: "Baseline",
   currentColumnLabel: "Current",
@@ -114,7 +134,6 @@ const props = withDefaults(defineProps<TestComparisonTableProps>(), {
 const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTableEntry[]) => void>()
 
 const resultData = ref<TestComparisonTableEntry[]>([])
-
 watch(resultData, () => {
   emit("update:resultData", resultData.value)
 })
@@ -140,6 +159,32 @@ function formatDifferenceOrFallback(value: number | null) {
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
+// const sidebarVm = injectOrError(sidebarVmKey)
+const router = useRouter()
+
+const onColumnClick = (_: Event, props: any) => {
+  handleNavigateToTest(props)
+  // const data = extractDataFromEvent(e)
+  // sidebarVm.show(data)
+}
+
+function handleNavigateToTest(props: any) {
+  const currentRoute = router.currentRoute.value
+  let parts = currentRoute.path.split("/")
+  parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
+  const branch = props.branch ?? ""
+  const machineGroup = getMachineGroupName(props.machineName ?? "")
+  const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
+  const testURL = parts.join("/")
+  const queryParams: string = new URLSearchParams({
+    branch: majorBranch,
+    machine: machineGroup,
+  }).toString()
+  const projects = ["_k1", "_k2"].map((v) => `&project=${props.test}${v}`).join("")
+  const measures = "&measure=" + encodeURIComponent(props.measureName)
+
+  window.open(router.resolve(testURL + "?" + queryParams + measures + projects).href, "_blank")
+}
 
 const projectConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(props.configurators as FilterConfigurator[])])
 
@@ -149,8 +194,9 @@ const dataQueryExecutor = new DataQueryExecutor([
   projectConfigurator,
   new (class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-      query.addField("project")
-      query.addField("generated_time")
+      const infoFields = ["project", "machine", "generated_time", "branch"]
+      infoFields.forEach((field) => query.addField(field))
+
       query.addField({ n: "measures", subName: "name" })
       query.addField({ n: "measures", subName: "value" })
 
@@ -169,34 +215,44 @@ const dataQueryExecutor = new DataQueryExecutor([
 ] as DataQueryConfigurator[])
 
 function applyData(data: (string | number)[][][]) {
-  const rawMeasuresByTestName = new Map<string, number | null>()
+  const rawMeasuresByTestName = new Map<string, Info | null>()
 
   // The `data` array consists of one result for each configured "project", i.e. one result for each test name. We can then take the last entry
   // from the value arrays of that result to get the most up-to-date measure value.
   for (const resultForSingleProject of data.filter((d) => d.length >= 4)) {
     const testNames = resultForSingleProject[0] as string[]
     if (testNames.length === 0) continue
-
-    const measureValues = resultForSingleProject[3] as number[]
-    rawMeasuresByTestName.set(testNames.at(-1) ?? "", measureValues.at(-1) ?? null)
+    const info = {
+      machine: (resultForSingleProject[1] as string[]).at(-1),
+      branch: (resultForSingleProject[3] as string[]).at(-1),
+      measureName: (resultForSingleProject[4] as string[]).at(-1),
+      measureValue: (resultForSingleProject[5] as number[]).at(-1),
+    }
+    rawMeasuresByTestName.set(testNames.at(-1) ?? "", info)
   }
 
   const tableData: TestComparisonTableEntry[] = []
 
   for (const testComparison of props.comparisons) {
-    const baselineValue = (rawMeasuresByTestName.get(testComparison.baselineTestName) as number | null) ?? null // Replace `undefined` with `null`.
-    const currentValue = (rawMeasuresByTestName.get(testComparison.currentTestName) as number | null) ?? null
+    const baselineInfo = rawMeasuresByTestName.get(testComparison.baselineTestName)
+    const currentInfo = rawMeasuresByTestName.get(testComparison.currentTestName)
 
-    let difference: number | null = null
-    if (baselineValue !== null && currentValue !== null) {
-      difference = Number.isFinite(baselineValue) && Number.isFinite(currentValue) ? (baselineValue - currentValue) / currentValue : 0
+    let difference: number | undefined = undefined
+    if (baselineInfo?.measureValue !== undefined && currentInfo?.measureValue !== undefined) {
+      difference =
+        Number.isFinite(baselineInfo.measureValue) && Number.isFinite(currentInfo.measureValue)
+          ? (baselineInfo.measureValue - currentInfo.measureValue) / currentInfo.measureValue
+          : 0
     }
 
     tableData.push({
       test: testComparison.label,
-      baselineValue,
-      currentValue,
+      baselineValue: baselineInfo?.measureValue,
+      currentValue: currentInfo?.measureValue,
       difference,
+      branch: baselineInfo?.branch,
+      machineName: baselineInfo?.machine,
+      measureName: baselineInfo?.measureName,
     })
   }
 
@@ -244,3 +300,14 @@ function initializeTable() {
   })
 }
 </script>
+
+<style scoped>
+.link-like-text {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.link-like-text:hover {
+  color: darkblue;
+}
+</style>

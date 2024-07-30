@@ -5,9 +5,12 @@
  */
 export interface TestComparisonTableEntry {
   test: string
-  baselineValue: number | null
-  currentValue: number | null
-  difference: number | null
+  baselineValue: number | undefined
+  currentValue: number | undefined
+  difference: number | undefined
+  branch: string | undefined
+  machineName: string | undefined
+  measureName: string | undefined
 }
 
 export function isValidTestComparisonTableEntry(entry: TestComparisonTableEntry) {

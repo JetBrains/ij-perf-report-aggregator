@@ -29,7 +29,7 @@
       <template #body="slotProps">
         <div
           class="link-like-text"
-          @click="(event) => onColumnClick(event, slotProps.data)"
+          @click="() => navigateToTest(slotProps.data)"
         >
           {{ slotProps.data.test }}
         </div>
@@ -162,26 +162,20 @@ const serverConfigurator = injectOrError(serverConfiguratorKey)
 // const sidebarVm = injectOrError(sidebarVmKey)
 const router = useRouter()
 
-const onColumnClick = (_: Event, props: any) => {
-  handleNavigateToTest(props)
-  // const data = extractDataFromEvent(e)
-  // sidebarVm.show(data)
-}
-
-function handleNavigateToTest(props: any) {
+function navigateToTest(propsData: any) {
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
   parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  const branch = props.branch ?? ""
-  const machineGroup = getMachineGroupName(props.machineName ?? "")
+  const branch = propsData.branch ?? ""
+  const machineGroup = getMachineGroupName(propsData.machineName ?? "")
   const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
   const testURL = parts.join("/")
   const queryParams: string = new URLSearchParams({
     branch: majorBranch,
     machine: machineGroup,
   }).toString()
-  const projects = ["_k1", "_k2"].map((v) => `&project=${props.test}${v}`).join("")
-  const measures = "&measure=" + encodeURIComponent(props.measureName)
+  const projects = ["_k1", "_k2"].map((v) => `&project=${propsData.test}${v}`).join("")
+  const measures = "&measure=" + encodeURIComponent(propsData.measureName)
 
   window.open(router.resolve(testURL + "?" + queryParams + measures + projects).href, "_blank")
 }

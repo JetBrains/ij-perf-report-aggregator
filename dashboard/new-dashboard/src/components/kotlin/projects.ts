@@ -276,7 +276,7 @@ const deleteAllImportsScenarioCharts = projectsToDefinition([
 
 const findUsagesAndHighlightingScenarioCharts = projectsToDefinition([
   {
-    projects: KOTLIN_PROJECTS.intelliJFindUsagesAndHighlighting,
+    projects: KOTLIN_PROJECTS.linux.intelliJFindUsagesAndHighlighting,
     measures: [...MEASURES.intelliJFindUsagesAndHighlightingMeasures, ...MEASURES.findUsagesScenarioMeasures],
     machines: [MACHINES.linux],
   },

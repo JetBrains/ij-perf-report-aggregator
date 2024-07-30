@@ -173,6 +173,7 @@ function navigateToTest(propsData: any) {
   const queryParams: string = new URLSearchParams({
     branch: majorBranch,
     machine: machineGroup,
+    type: "Tests",
   }).toString()
   const projects = ["_k1", "_k2"].map((v) => `&project=${propsData.test}${v}`).join("")
   const measures = "&measure=" + encodeURIComponent(propsData.measureName)

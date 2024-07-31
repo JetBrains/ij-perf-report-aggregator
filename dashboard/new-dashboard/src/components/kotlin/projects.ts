@@ -60,7 +60,7 @@ const MEASURES = {
   ],
   kotlinFindUsagesAndHighlightingMeasures: (tag: string) => [
     { name: "highlighting_RawFirBuilder.kt_1", label: `Code Analysis RawFirBuilder first iteration ${tag}` },
-    { name: "highlighting_IRawFirBuilder.kt#mean_value", label: `Code Analysis RawFirBuilder mean value ${tag}` },
+    { name: "highlighting_RawFirBuilder.kt#mean_value", label: `Code Analysis RawFirBuilder mean value ${tag}` },
     { name: "freedMemoryByGC", label: `Freed memory by GC ${tag}` },
   ],
   intelliJFindUsagesAndGoToImplementationMeasures: (tag: string) => [
@@ -315,7 +315,7 @@ const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.kotlinFindUsagesAndGotoImplementation,
     measures: [
-      ...MEASURES.kotlinFindUsagesAndHighlightingMeasures("with usages"),
+      ...MEASURES.kotlinFindUsagesAndGoToImplementationMeasures("with usages"),
       ...MEASURES.findUsagesScenarioMeasures,
       ...MEASURES.goToImplementationScenarioMeasures("with usages"),
     ],
@@ -323,7 +323,7 @@ const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
   },
   {
     projects: KOTLIN_PROJECTS.linux.kotlinFindUsagesAndGotoImplementationNoUsages,
-    measures: [...MEASURES.kotlinFindUsagesAndHighlightingMeasures("without usages"), ...MEASURES.goToImplementationScenarioMeasures("without usages")],
+    measures: [...MEASURES.kotlinFindUsagesAndGoToImplementationMeasures("without usages"), ...MEASURES.goToImplementationScenarioMeasures("without usages")],
     machines: [MACHINES.linux],
   },
 ])

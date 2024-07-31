@@ -162,9 +162,9 @@ const serverConfigurator = injectOrError(serverConfiguratorKey)
 // const sidebarVm = injectOrError(sidebarVmKey)
 const router = useRouter()
 
-function navigateToTest(propsData: any) {
+function navigateToTest(propsData: TestComparisonTableEntry) {
   const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
+  const parts = currentRoute.path.split("/")
   parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   const branch = propsData.branch ?? ""
   const machineGroup = getMachineGroupName(propsData.machineName ?? "")
@@ -176,7 +176,7 @@ function navigateToTest(propsData: any) {
     type: "Tests",
   }).toString()
   const projects = ["_k1", "_k2"].map((v) => `&project=${propsData.test}${v}`).join("")
-  const measures = "&measure=" + encodeURIComponent(propsData.measureName)
+  const measures = "&measure=" + encodeURIComponent(propsData.measureName ?? "")
 
   window.open(router.resolve(testURL + "?" + queryParams + measures + projects).href, "_blank")
 }
@@ -190,7 +190,7 @@ const dataQueryExecutor = new DataQueryExecutor([
   new (class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
       const infoFields = ["project", "machine", "generated_time", "branch"]
-      infoFields.forEach((field) => query.addField(field))
+      for (const field of infoFields) query.addField(field)
 
       query.addField({ n: "measures", subName: "name" })
       query.addField({ n: "measures", subName: "value" })
@@ -232,7 +232,7 @@ function applyData(data: (string | number)[][][]) {
     const baselineInfo = rawMeasuresByTestName.get(testComparison.baselineTestName)
     const currentInfo = rawMeasuresByTestName.get(testComparison.currentTestName)
 
-    let difference: number | undefined = undefined
+    let difference: number | undefined
     if (baselineInfo?.measureValue !== undefined && currentInfo?.measureValue !== undefined) {
       difference =
         Number.isFinite(baselineInfo.measureValue) && Number.isFinite(currentInfo.measureValue)

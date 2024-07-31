@@ -114,7 +114,7 @@ function handleNavigateToTest() {
   const measures =
     props.data?.series
       .map((s) => s.metricName)
-      .filter((m) => m != undefined)
+      .filter((m): m is string => m != undefined)
       .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
       .map((m) => encodeURIComponent(m))
       .map((m) => "&measure=" + m)

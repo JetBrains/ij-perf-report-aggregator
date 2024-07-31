@@ -14,5 +14,5 @@ export interface TestComparisonTableEntry {
 }
 
 export function isValidTestComparisonTableEntry(entry: TestComparisonTableEntry) {
-  return entry.baselineValue !== null && entry.currentValue !== null && entry.difference !== null
+  return entry.baselineValue !== undefined && entry.currentValue !== undefined && entry.difference !== undefined
 }

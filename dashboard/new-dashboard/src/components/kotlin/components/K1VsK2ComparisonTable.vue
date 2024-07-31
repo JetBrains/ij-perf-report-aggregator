@@ -77,7 +77,7 @@ const totalTimeK2 = computed(() => calculateTotalTime((entry) => entry.currentVa
 
 const totalImprovement = computed(() => (totalTimeK2.value == 0 ? 0 : (totalTimeK1.value - totalTimeK2.value) / totalTimeK2.value))
 
-function calculateTotalTime(getTime: (entry: TestComparisonTableEntry) => number | null): number {
+function calculateTotalTime(getTime: (entry: TestComparisonTableEntry) => number | undefined): number {
   return resultData.value.map((entry) => (isValidTestComparisonTableEntry(entry) ? (getTime(entry) as number) : 0)).reduce((a, b) => a + b, 0)
 }
 

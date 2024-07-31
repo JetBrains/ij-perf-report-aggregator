@@ -35,6 +35,7 @@ const enum ROUTE_PREFIX {
   ML = "/ml",
   DataGrip = "/datagrip",
   AIA = "/aia",
+  KMT = "/kmt",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -222,6 +223,7 @@ enum ROUTES {
   AIACodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/codeGeneration`,
   AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
+  KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -1207,6 +1209,23 @@ const AIA: Product = {
   ],
 }
 
+const KMT: Product = {
+  url: ROUTE_PREFIX.KMT,
+  label: "KMT",
+  children: [
+    {
+      url: ROUTE_PREFIX.KMT,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.KMTTests,
+          label: "All",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   IDEA,
   PHPSTORM,
@@ -1228,6 +1247,7 @@ export const PRODUCTS = [
   IJENT,
   ML_TESTS,
   AIA,
+  KMT,
 ]
 export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
@@ -2383,6 +2403,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.AIATestGenerationDashboard,
           component: () => import("./components/aia/AIATestGeneration.vue"),
           meta: { pageTitle: "AIA test generation dashboard" },
+        },
+        {
+          path: ROUTES.KMTTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "swift",
+            withInstaller: false,
+            branch: null,
+            initialMachine: null,
+          },
+          meta: { pageTitle: "AIA Tests" },
         },
       ],
     },

@@ -36,8 +36,15 @@ export const durationAxisPointerFormatter = (valueInMs: number, type: string = "
     return valueInMs.toLocaleString()
   }
   //humanizer doesn't handle values less than 1ms properly and just round them to either 0 or 1ms
+  if (valueInMs == 0) {
+    return "0"
+  }
   if (valueInMs < 1) {
-    return valueInMs.toFixed(2) + " ms"
+    if (valueInMs * 1000 < 1) {
+      return valueInMs * 1000000 + " ns"
+    } else {
+      return valueInMs * 1000 + " μs"
+    }
   }
   const humanizer = humanizeDuration.humanizer(durationFormatOptions)
   return humanizer(valueInMs)

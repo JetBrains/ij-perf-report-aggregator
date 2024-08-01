@@ -316,7 +316,7 @@ describe("InfoSideBar Test", () => {
     expect(result.installerId).toEqual(435755382)
     expect(result.build).toEqual("1.31.4")
     expect(result.deltaNext).toEqual("-1 s, 280 ms (-22.6%)")
-    expect(result.deltaPrevious).toEqual("0.00 ms (0.0%)")
+    expect(result.deltaPrevious).toEqual("0 (0.0%)")
     expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706075619000))
     expect(result.projectName).toEqual("fleet")
   })

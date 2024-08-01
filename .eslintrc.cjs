@@ -47,6 +47,7 @@ module.exports = {
     "object-shorthand": ["error", "always", { avoidExplicitReturnArrows: true }],
     quotes: ["error", "double", { avoidEscape: true }],
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/prefer-regexp-exec": "off",
     // "import/order": [process.env.NODE_ENV === "production" ? "error" : "warn", { alphabetize: { order: "asc" } }],
     // "import/no-unresolved": "off",
     "@typescript-eslint/restrict-template-expressions": ["error", { allowNullish: true }],

@@ -178,7 +178,11 @@ export class LineChartVM {
             onclick() {
               /* eslint-disable @typescript-eslint/no-floating-promises */
               // noinspection JSIgnoredPromiseFromCall
-              document.fullscreenElement ? document.exitFullscreen() : eChart.chartContainer.requestFullscreen()
+              if (document.fullscreenElement) {
+                document.exitFullscreen()
+              } else {
+                eChart.chartContainer.requestFullscreen()
+              }
             },
           },
         },

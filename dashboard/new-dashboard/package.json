@@ -14,8 +14,8 @@
     "pinia": "^2.2.0",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.4.34",
-    "vue-router": "4.4.0"
+    "vue": "3.4.35",
+    "vue-router": "4.4.2"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",

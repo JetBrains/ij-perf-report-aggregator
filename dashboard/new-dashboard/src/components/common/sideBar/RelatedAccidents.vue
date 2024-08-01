@@ -98,7 +98,7 @@ function loadEventsAroundDate() {
       const accidents = (await props.accidentsConfigurator?.getAccidentsAroundDate(props.data.date)) ?? []
       accidentsAroundDate.value = deduplicateAccidents(accidents)
     }
-  }).value
+  })
 }
 
 const emit = defineEmits(["copyAccident"])

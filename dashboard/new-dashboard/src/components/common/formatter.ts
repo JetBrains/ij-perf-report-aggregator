@@ -40,11 +40,7 @@ export const durationAxisPointerFormatter = (valueInMs: number, type: string = "
     return "0"
   }
   if (valueInMs < 1) {
-    if (valueInMs * 1000 < 1) {
-      return valueInMs * 1000000 + " ns"
-    } else {
-      return valueInMs * 1000 + " μs"
-    }
+    return valueInMs * 1000 < 1 ? (valueInMs * 1000000).toLocaleString() + " ns" : (valueInMs * 1000).toLocaleString() + " μs"
   }
   const humanizer = humanizeDuration.humanizer(durationFormatOptions)
   return humanizer(valueInMs)

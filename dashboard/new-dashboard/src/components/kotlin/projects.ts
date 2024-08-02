@@ -49,6 +49,12 @@ const MEASURES = {
     { name: "findUsages_firstUsage_background#mean_value", label: "First usage found mean value" },
     { name: "FindUsagesTotal#mean_value", label: "Total find usages time mean value" },
   ],
+  completionCausingModificationMeasures: [
+    { name: "open_file_highlighting_and_typing_1", label: "Open file, highlighting and typing first iteration" },
+    { name: "open_file_highlighting_and_typing#mean_value", label: "Open file, highlighting and typing mean value" },
+    { name: "completion_with_highlighting_1", label: "Completion and highlighting first iteration" },
+    { name: "completion_with_highlighting#mean_value", label: "Completion and highlighting first iteration" },
+  ],
   goToImplementationScenarioMeasures: (tag: string) => [
     { name: "execute_editor_gotoimplementation_1", label: `Go to implementation first iteration ${tag}` },
     { name: "execute_editor_gotoimplementation#mean_value", label: `Go to implementation mean value ${tag}` },
@@ -274,6 +280,14 @@ const deleteAllImportsScenarioCharts = projectsToDefinition([
   },
 ])
 
+const completionCausingModificationScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.completionCausingModification,
+    measures: MEASURES.completionCausingModificationMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
 const findUsagesAndHighlightingScenarioCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.intelliJFindUsagesAndHighlighting,
@@ -366,6 +380,7 @@ export const USER_SCENARIOS: Record<string, ScenarioData> = {
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
   findUsagesAndHighlighting: { label: "Find usages and Highlighting", charts: findUsagesAndHighlightingScenarioCharts },
   findUsagesAndGoToImplementation: { label: "Find usages and Goto implementation", charts: findUsagesAndGoToImplementationScenarioCharts },
+  completionCausingModification: { label: "Completion causing modification", charts: completionCausingModificationScenarioCharts },
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)

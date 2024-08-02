@@ -313,6 +313,16 @@
         "arrow/user_scenario/remove_all_imports/Either.kt"
       ]
     },
+    "completionCausingModification": {
+      "intelliJSources": [
+        "intellij_sources/out_of_block_completion_fileName_in_file_JdkList.kt",
+        "intellij_sources/in_block_completion_name_in_file_JdkList.kt"
+      ],
+      "kotlinLanguageServer": [
+        "kotlin_language_server/out_of_block_completion_stableName_in_file_SymbolIndex.kt",
+        "kotlin_language_server/in_block_completion_original_in_file_SymbolIndex.kt"
+      ]
+    },
     "intelliJFindUsagesAndHighlighting": {
       "intelliJSources": [
         "intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"

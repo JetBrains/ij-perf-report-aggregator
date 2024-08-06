@@ -199,6 +199,7 @@ enum ROUTES {
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
@@ -1070,6 +1071,10 @@ const CLION: Product = {
         {
           url: ROUTES.ClionDetailedPerfDashboard,
           label: "Detailed Performance",
+        },
+        {
+          url: ROUTES.ClionMemoryDashboard,
+          label: "Memory",
         },
         {
           url: ROUTES.ClionTest,
@@ -2245,6 +2250,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
           },
           meta: { pageTitle: "CLion Detailed Performance dashboard" },
+        },
+        {
+          path: ROUTES.ClionMemoryDashboard,
+          component: () => import("./components/clion/MemoryDashboard.vue"),
+          props: {
+            dbName: "perfint",
+            table: "clion",
+            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+          },
+          meta: { pageTitle: "CLion Memory dashboard" },
         },
         {
           path: ROUTES.ClionCompareBranches,

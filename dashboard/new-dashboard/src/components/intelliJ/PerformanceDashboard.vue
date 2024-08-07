@@ -156,23 +156,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["projectViewInit", "projectViewInit#cachedNodesLoaded"]],
     projects: ["intellij_commit/projectView"],
   },
-  {
-    labels: ["Popups"],
-    measures: [
-      [
-        "popupShown#EditorContextMenu",
-        "popupShown#ProjectViewContextMenu",
-        "popupShown#ProjectWidget",
-        "popupShown#RunConfigurations",
-        "popupShown#VcsLogBranchFilter",
-        "popupShown#VcsLogDateFilter",
-        "popupShown#VcsLogPathFilter",
-        "popupShown#VcsLogUserFilter",
-        "popupShown#VcsWidget",
-      ],
-    ],
-    projects: ["popups-performance-test/test-popups"],
-  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -56,6 +56,7 @@ enum ROUTES {
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
+  IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJIndexingDashboardOld = `${ROUTE_PREFIX.IntelliJ}/indexingDashboardOld`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJ}/incrementalCompilationDashboard`,
@@ -313,6 +314,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJDashboardOld,
           label: "Dashboard (<=241)",
+        },
+        {
+          url: ROUTES.IntelliJPopupsDashboard,
+          label: "Popups Dashboard",
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
@@ -1332,9 +1337,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Performance dashboard (<=241)" },
         },
         {
+          path: ROUTES.IntelliJPopupsDashboard,
+          component: () => import("./components/intelliJ/PerformancePopupsDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Popups Performance dashboard" },
+        },
+        {
           path: ROUTES.IntelliJIndexingDashboard,
           component: () => import("./components/intelliJ/IndexingDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (<=241)" },
+          meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJIndexingDashboardOld,

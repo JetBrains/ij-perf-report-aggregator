@@ -55,6 +55,17 @@ const MEASURES = {
     { name: "completion_with_highlighting_1", label: "Completion and highlighting first iteration" },
     { name: "completion_with_highlighting#mean_value", label: "Completion and highlighting first iteration" },
   ],
+  renameAndCompletionMeasures: [
+    { name: "open_and_highlighting_rename_file#mean_value", label: "Open rename file and wait for highlighting" },
+    { name: "open_and_highlighting_completion_file#mean_value", label: "Open completion file and wait for highlighting" },
+    { name: "rename_and_highlighting#mean_value", label: "Rename symbol and wait for highlighting" },
+    { name: "typing_and_completion#mean_value", label: "Typing text and do completion" },
+    { name: "choose_completion_and_highlighting#mean_value", label: "Choose completion and wait for highlighting" },
+  ],
+  errorCodeModificationMeasures: [
+    { name: "open_file_and_highlighting#mean_value", label: "Open file and wait for highlighting" },
+    { name: "typing_and_highlighting#mean_value", label: "Make/fix error and wait for highlighting" },
+  ],
   goToImplementationScenarioMeasures: (tag: string) => [
     { name: "execute_editor_gotoimplementation_1", label: `Go to implementation first iteration ${tag}` },
     { name: "execute_editor_gotoimplementation#mean_value", label: `Go to implementation mean value ${tag}` },
@@ -288,6 +299,22 @@ const completionCausingModificationScenarioCharts = projectsToDefinition([
   },
 ])
 
+const errorCodeModificationScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.errorCodeModification,
+    measures: MEASURES.errorCodeModificationMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
+const renameAndCompletionScenarioCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.renameAndCompletion,
+    measures: MEASURES.renameAndCompletionMeasures,
+    machines: [MACHINES.linux],
+  },
+])
+
 const findUsagesAndHighlightingScenarioCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.intelliJFindUsagesAndHighlighting,
@@ -381,6 +408,8 @@ export const USER_SCENARIOS: Record<string, ScenarioData> = {
   findUsagesAndHighlighting: { label: "Find usages and Highlighting", charts: findUsagesAndHighlightingScenarioCharts },
   findUsagesAndGoToImplementation: { label: "Find usages and Goto implementation", charts: findUsagesAndGoToImplementationScenarioCharts },
   completionCausingModification: { label: "Completion causing modification", charts: completionCausingModificationScenarioCharts },
+  errorCodeModification: { label: "Make/fix error and highlighting", charts: errorCodeModificationScenarioCharts },
+  renameAndCompletion: { label: "Rename symbol(file A) and use this name in completion(file B)", charts: renameAndCompletionScenarioCharts },
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)

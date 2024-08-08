@@ -323,6 +323,28 @@
         "kotlin_language_server/in_block_completion_original_in_file_SymbolIndex.kt"
       ]
     },
+    "renameAndCompletion": {
+      "intelliJSources": [
+        "intellij_sources/rename_symbol_in_JdkList.kt_completion_in_JdkRequirement.kt"
+      ],
+      "kotlinLanguageServer": [
+        "kotlin_language_server/rename_symbol_in_CompilerClassPath.kt_completion_in_KotlinProtocolExtensionService.kt"
+      ]
+    },
+    "errorCodeModification": {
+      "intelliJSources": [
+        "intellij_sources/in_block_fix_error_by_text_leName;_in_file_JdkList.kt",
+        "intellij_sources/in_block_make_error_by_text_installDir.fi_in_file_JdkList.kt",
+        "intellij_sources/out_of_block_fix_error_by_text_leName;_in_file_JdkList.kt",
+        "intellij_sources/out_of_block_make_error_by_text_file.fi_in_file_JdkList.kt"
+      ],
+      "kotlinLanguageServer": [
+        "kotlin_language_server/in_block_fix_error_by_text_iginal;_in_file_SymbolIndex.kt",
+        "kotlin_language_server/in_block_make_error_by_text_declaration.or_in_file_SymbolIndex.kt",
+        "kotlin_language_server/out_of_block_fix_error_by_text_ableName;_in_file_SymbolIndex.kt",
+        "kotlin_language_server/out_of_block_make_error_by_text_module.st_in_file_SymbolIndex.kt"
+      ]
+    },
     "intelliJFindUsagesAndHighlighting": {
       "intelliJSources": [
         "intellij_sources/usage_of_setUp_highlight_IdeResourcesUtil.kt"

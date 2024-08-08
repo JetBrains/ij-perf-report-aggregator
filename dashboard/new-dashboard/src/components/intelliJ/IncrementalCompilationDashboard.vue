@@ -26,35 +26,14 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Java Design Patterns Rebuild/Build time", "Mappings Dir Size in Bytes"],
-    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
-    projects: [
-      "incremental-build-java/build_incremental",
-      "incremental-build-java/rebuild_initial",
-      "incremental-build-java-with-dep-graph/build_incremental",
-      "incremental-build-java-with-dep-graph/rebuild_initial",
-    ],
-  },
-  {
-    labels: ["IntelliJ Rebuild/Build time", "Mappings Dir Size in Bytes"],
+    labels: ["IntelliJ Initial Build/ Incremental build", "Mappings Dir Size in Bytes 1 day"],
     measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-intellij/build_incremental",
       "incremental-build-intellij/rebuild_initial",
+      "incremental-build-intellij-2-days/build_incremental",
       "incremental-build-intellij-with-dep-graph/build_incremental",
       "incremental-build-intellij-with-dep-graph/rebuild_initial",
-    ],
-  },
-  {
-    labels: ["Youtrack JPS and Gradle Rebuild/Build time", "Mappings Dir Size in Bytes"],
-    measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
-    projects: [
-      "incremental-build-youtrack-jps/build_incremental",
-      "incremental-build-youtrack-jps/rebuild_initial",
-      "incremental-build-youtrack-jps-with-dep-graph/build_incremental",
-      "incremental-build-youtrack-jps-with-dep-graph/rebuild_initial",
-      "incremental-build-youtrack-gradle/build_incremental",
-      "incremental-build-youtrack-gradle/rebuild_initial",
     ],
   },
 ]

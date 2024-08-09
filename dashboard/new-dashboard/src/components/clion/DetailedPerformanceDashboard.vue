@@ -94,6 +94,22 @@
       />
     </section>
 
+    <Divider title="Indexing" />
+
+    <section>
+      <CLionVsRadlerIndexingChart
+        label="Index project (OpenCV)"
+        project="opencv/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerIndexingChart
+        label="Index project (curl)"
+        project="curl/indexing"
+      />
+    </section>
+
     <Divider title="Completion" />
 
     <!-- Completion: std::string (cold) -->
@@ -484,4 +500,5 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
+import CLionVsRadlerIndexingChart from "./CLionVsRadlerIndexingChart.vue"
 </script>

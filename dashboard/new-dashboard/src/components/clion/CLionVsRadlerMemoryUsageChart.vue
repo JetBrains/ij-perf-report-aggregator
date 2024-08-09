@@ -16,7 +16,7 @@
         <!-- TODO: add aliases -->
         <GroupProjectsChart
           :label="clionLabel"
-          :measure="frontendMeasure"
+          :measure="[frontendMeasure]"
           :projects="[clionProject]"
         />
       </section>

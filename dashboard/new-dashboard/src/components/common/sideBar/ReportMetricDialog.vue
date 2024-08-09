@@ -38,6 +38,21 @@
         >
       </FloatLabel>
     </div>
+    <FloatLabel
+      v-if="accidentType == AccidentKind.Exception"
+      class="w-full"
+    >
+      <Textarea
+        id="stacktrace"
+        v-model="stacktrace"
+        class="w-full"
+      />
+      <label
+        class="text-sm"
+        for="stacktrace"
+        >Stacktrace</label
+      >
+    </FloatLabel>
     <div
       v-if="props.data?.series.length == 1"
       class="flex items-center mb-4"
@@ -145,6 +160,7 @@ watch(
 )
 
 const reason = ref(props.accidentToEdit?.reason ?? "")
+const stacktrace = ref(props.accidentToEdit?.stacktrace ?? "")
 
 const build = computed(() => props.data?.build ?? props.data?.buildId.toString())
 
@@ -159,7 +175,8 @@ function reportRegression() {
       reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
       reason.value,
       build.value,
-      accidentType.value
+      accidentType.value,
+      stacktrace.value
     )
   }
 }

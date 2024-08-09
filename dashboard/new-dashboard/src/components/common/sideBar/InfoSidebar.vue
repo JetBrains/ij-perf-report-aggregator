@@ -148,6 +148,11 @@
                 class="w-4 h-4 flex-none"
                 @click="editAccident(accident)"
               />
+              <EyeIcon
+                v-if="accident.kind == AccidentKind.Exception && accident.stacktrace.length > 0"
+                class="w-4 h-4 flex-none"
+                @click="() => showStacktraceModalHandler(accident)"
+              />
             </span>
           </li>
         </ul>
@@ -215,10 +220,15 @@
     :accident-to-edit="accidentToEdit"
     :data="data"
   />
+  <StacktraceModal
+    v-if="showStacktrace"
+    v-model="showStacktrace"
+    :accident="currentAccident"
+  />
 </template>
 <script setup lang="ts">
 import { computed, Ref, ref } from "vue"
-import { Accident } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
@@ -232,10 +242,13 @@ import { tcUrl } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
 import TestActions from "./TestActions.vue"
+import StacktraceModal from "./StacktraceModal.vue"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
+const showStacktrace = ref(false)
 const accidentToEdit: Ref<Accident | null> = ref(null)
+const currentAccident: Ref<Accident | null> = ref(null)
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
@@ -243,10 +256,16 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
+const showStacktraceModalHandler = (accident: Accident) => {
+  currentAccident.value = accident
+  showStacktrace.value = true
+}
+
 function editAccident(accident: Accident) {
   showDialog.value = true
   accidentToEdit.value = accident
 }
+
 function createAccident() {
   showDialog.value = true
   accidentToEdit.value = null

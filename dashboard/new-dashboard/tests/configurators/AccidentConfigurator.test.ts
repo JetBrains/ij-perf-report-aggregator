@@ -41,6 +41,7 @@ describe("Branch configurator", () => {
               reason: "test",
               build_number: "241.120",
               kind: "Regression",
+              stacktrace: "",
             })
             resolve()
           } catch (error) {
@@ -53,6 +54,35 @@ describe("Branch configurator", () => {
 
     const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Regression)
+    return testPromise
+  })
+
+  test("Valid query to create accident with stacktrace for startup", async () => {
+    const serverUrl = "http://localhost:7474"
+    const testPromise = new Promise<void>((resolve, reject) => {
+      server.use(
+        http.post(serverUrl + "/api/meta/accidents/", async (req) => {
+          try {
+            const text = await req.request.json()
+            assert.deepEqual(text, {
+              date: "Dec 17, 2023, 5:53 AM",
+              affected_test: "RM/diaspora",
+              reason: "test",
+              build_number: "241.120",
+              kind: "Exception",
+              stacktrace: "some trace",
+            })
+            resolve()
+          } catch (error) {
+            reject(error as Error)
+          }
+          return HttpResponse.json({})
+        })
+      )
+    })
+
+    const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
+    configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Exception, "some trace")
     return testPromise
   })
 })

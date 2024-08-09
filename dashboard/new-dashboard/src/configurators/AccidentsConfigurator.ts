@@ -16,7 +16,8 @@ class AccidentFromServer {
     readonly date: string,
     readonly reason: string,
     readonly buildNumber: string,
-    readonly kind: string
+    readonly kind: string,
+    readonly stacktrace: string = ""
   ) {}
 }
 
@@ -36,7 +37,8 @@ export class Accident {
     readonly date: string,
     readonly reason: string,
     readonly buildNumber: string,
-    readonly kind: AccidentKind
+    readonly kind: AccidentKind,
+    readonly stacktrace: string = ""
   ) {}
 }
 
@@ -58,7 +60,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
 
   protected abstract getAccidentUrl(): string
 
-  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
+  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
     fetch(this.getAccidentUrl() + "accidents/", {
       method: "POST",
       headers: {
@@ -78,7 +80,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
           this.value.value = new Map<string, Accident[]>()
         }
         const updatedMap = new Map(this.value.value)
-        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind }])
+        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
         this.value.value = updatedMap //we need to update value in reference to trigger the change
       })
       .catch((error: unknown) => {
@@ -242,7 +244,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     return map
   }
 
-  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined) {
+  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
     if (this.product.value == null || Array.isArray(this.product.value)) return
     const test = `${this.product.value}/${affected_test}`
     fetch(this.getAccidentUrl() + "accidents/", {
@@ -250,7 +252,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind }),
+      body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace }),
     })
       .then((response) => {
         if (!response.ok) {
@@ -264,7 +266,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
           this.value.value = new Map<string, Accident[]>()
         }
         const updatedMap = new Map(this.value.value)
-        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind }])
+        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
         this.value.value = updatedMap //we need to update value in reference to trigger the change
       })
       .catch((error: unknown) => {

@@ -35,8 +35,8 @@ const props = defineProps<{
 
 const clionProject = `clion/${props.project}`
 const radlerProject = `radler/${props.project}`
-const clionLabel = `[CLion] ${props.label}`
-const radlerLabel = `[Radler] ${props.label}`
+const clionLabel = `[CLion] ${props.label}, Mb`
+const radlerLabel = `[Radler] ${props.label}, Mb`
 const frontendMeasure = `JVM.heapUsageMb/${props.measure}`
 const backendMeasure = `rd.memory.allocatedManagedMemoryMb/${props.measure}`
 </script>

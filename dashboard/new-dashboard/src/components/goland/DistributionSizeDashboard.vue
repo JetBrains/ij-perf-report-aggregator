@@ -3,7 +3,7 @@
     db-name="perfint"
     table="goland"
     persistent-id="goland_distribution_dashboard"
-    initial-machine="Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
+    initial-machine="linux-blade-hetzner"
   >
     <section>
       <GroupProjectsChart

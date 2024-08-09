@@ -21,9 +21,14 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Dependency update available inspection execution time"
+        label="Single inspections execution time (cockroach)"
         measure="globalInspections"
-        :projects="['goland/kubernetes/VgoDependencyUpdateAvailable/VgoDependencyUpdateAvailable']"
+        :projects="[
+          'goland/singleInspection/cockroach/VgoDependencyUpdateAvailable',
+          'goland/singleInspection/cockroach/GoUnnecessarilyExportedIdentifiers',
+          'goland/singleInspection/cockroach/GoNilness',
+          'goland/singleInspection/cockroach/GoBoolExpressions',
+        ]"
       />
     </section>
   </DashboardPage>

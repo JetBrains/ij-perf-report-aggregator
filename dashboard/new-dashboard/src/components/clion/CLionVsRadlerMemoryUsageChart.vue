@@ -2,22 +2,22 @@
   <section class="flex gap-x-6 flex-col md:flex-row">
     <div class="flex-1 min-w-0">
       <section>
-        <!-- TODO: add aliases -->
         <GroupProjectsChart
           :label="radlerLabel"
           :measure="[backendMeasure, frontendMeasure]"
           :projects="[radlerProject]"
+          :legend-formatter="legendFormatter"
         />
       </section>
     </div>
 
     <div class="flex-1 min-w-0">
       <section>
-        <!-- TODO: add aliases -->
         <GroupProjectsChart
           :label="clionLabel"
           :measure="[frontendMeasure]"
           :projects="[clionProject]"
+          :legend-formatter="legendFormatter"
         />
       </section>
     </div>
@@ -39,4 +39,22 @@ const clionLabel = `[CLion] ${props.label}, Mb`
 const radlerLabel = `[Radler] ${props.label}, Mb`
 const frontendMeasure = `JVM.heapUsageMb/${props.measure}`
 const backendMeasure = `rd.memory.allocatedManagedMemoryMb/${props.measure}`
+
+const legendFormatter = function (name: string) {
+  // There's a bug: when only one measure is specified, it uses test name as a label
+  // TODO: remove this `if` when CLion Classic gets more than one memory metric
+  if (name.startsWith("clion/")) {
+    return "JVM (Frontend)"
+  }
+
+  if (name.startsWith("JVM")) {
+    return "JVM (Frontend)"
+  }
+
+  if (name.startsWith("rd.memory")) {
+    return ".NET (Backend)"
+  }
+
+  return name
+}
 </script>

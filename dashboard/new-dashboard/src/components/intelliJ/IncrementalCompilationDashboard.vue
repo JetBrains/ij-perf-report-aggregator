@@ -29,11 +29,10 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["IntelliJ Initial Build/ Incremental build", "Mappings Dir Size in Bytes 1 day"],
     measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
-      "incremental-build-intellij/build_incremental",
       "incremental-build-intellij/rebuild_initial",
-      "incremental-build-intellij-2-days/build_incremental",
-      "incremental-build-intellij-with-dep-graph/build_incremental",
-      "incremental-build-intellij-with-dep-graph/rebuild_initial",
+      "incremental-build-intellij/build_incremental",
+      "incremental-build-intellij/build_incremental-2-days",
+      "incremental-build-intellij/build_incremental-3-days",
     ],
   },
 ]

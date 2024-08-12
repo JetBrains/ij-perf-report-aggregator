@@ -30,7 +30,7 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["build_compilation_duration", "mappingsDirSizeInBytes"],
     projects: [
       "incremental-build-intellij/rebuild_initial",
-      "incremental-build-intellij/build_incremental",
+      "incremental-build-intellij/build_incremental-1-day",
       "incremental-build-intellij/build_incremental-2-days",
       "incremental-build-intellij/build_incremental-3-days",
     ],

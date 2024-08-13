@@ -13,6 +13,7 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
+        :aliases="chart.aliases"
       />
     </section>
   </DashboardPage>
@@ -34,6 +35,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "incremental-build-intellij/build_incremental-2-days",
       "incremental-build-intellij/build_incremental-3-days",
     ],
+    aliases: ["initial rebuild", "incremental build 1 day", "incremental build 2 days", "incremental build 3 days"],
   },
 ]
 

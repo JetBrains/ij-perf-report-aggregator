@@ -74,6 +74,13 @@
     <Divider title="General" />
 
     <section>
+      <CLionVsRadlerIndexingChart
+        label="Index project (OpenCV)"
+        project="opencv/indexing"
+      />
+    </section>
+
+    <section>
       <CLionVsRadlerGroupProjectsChart
         label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
@@ -147,4 +154,5 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerGroupProjectsChart from "./CLionVsRadlerGroupProjectsChart.vue"
+import CLionVsRadlerIndexingChart from "./CLionVsRadlerIndexingChart.vue"
 </script>

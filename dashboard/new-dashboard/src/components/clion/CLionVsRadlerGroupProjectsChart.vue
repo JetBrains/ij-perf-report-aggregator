@@ -15,6 +15,6 @@ const props = defineProps<{
   project: string
 }>()
 
-const projects = ["clion/" + props.project, "radler/" + props.project]
-const label = "[CLion vs Radler] " + props.label
+const projects = [`clion/${props.project}`, `radler/${props.project}`]
+const label = `[CLion vs Radler] ${props.label}`
 </script>

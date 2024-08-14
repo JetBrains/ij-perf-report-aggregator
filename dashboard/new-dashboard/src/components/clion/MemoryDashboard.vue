@@ -5,6 +5,24 @@
     persistent-id="clion_memory_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >
+    <Divider title="Indexing" />
+
+    <section>
+      <CLionVsRadlerMemoryUsageChart
+        label="OpenCV - After Indexing"
+        measure="afterIndexing"
+        project="opencv/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerMemoryUsageChart
+        label="curl - After Indexing"
+        measure="afterIndexing"
+        project="curl/indexing"
+      />
+    </section>
+
     <Divider title="Go To Declaration" />
 
     <section>

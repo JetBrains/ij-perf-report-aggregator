@@ -30,6 +30,16 @@ spec:
               value: "nats://nats:4222"
             - name: DATABASE_URL
               value: {{ .Values.postgres.db_url | quote }}
+            - name: TEAMCITY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ij-perf-data-tc
+                  key: token
+            - name: YOUTRACK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ij-perf-data-youtrack
+                  key: token
           resources:
             requests:
               cpu: "0.5"

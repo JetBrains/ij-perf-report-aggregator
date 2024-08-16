@@ -6,7 +6,6 @@ export function detectChanges(seriesData: (string | number)[][]): Promise<Map<st
   worker.postMessage(seriesData)
   return new Promise((resolve, reject) => {
     worker.addEventListener("error", (event) => {
-      console.log(event)
       reject(event.error as Error)
       worker.terminate()
     })

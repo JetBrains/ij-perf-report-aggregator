@@ -69,28 +69,26 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
     })
 
     if (!response.ok) {
-      const errorMessage = `Cannot get accident by id ${id}. Response: ${response}`
-      console.log(errorMessage)
+      const errorMessage = `Cannot get accident by id ${id}`
+      console.error(errorMessage)
       throw new Error(errorMessage)
     }
 
-    const accident: Accident = await response.json()
+    const accident = (await response.json()) as Accident
 
-    if (accident.id != undefined) {
-      const updatedMap = new Map(this.value.value)
-      for (const [_, value] of updatedMap) {
-        const index = value.findIndex((obj) => obj.id === accident.id)
-        if (index !== -1) {
-          value.splice(index, 1, accident)
-        }
+    const updatedMap = new Map(this.value.value)
+    for (const [_, value] of updatedMap) {
+      const index = value.findIndex((obj) => obj.id === accident.id)
+      if (index !== -1) {
+        value.splice(index, 1, accident)
       }
-      this.value.value = updatedMap //we need to update value in reference to trigger the change
     }
+    this.value.value = updatedMap //we need to update value in reference to trigger the change
   }
 
   async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
     try {
-      let response = await fetch(this.getAccidentUrl() + "accidents/", {
+      const response = await fetch(this.getAccidentUrl() + "accidents/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +99,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       if (!response.ok) {
         throw new Error("The accident wasn't created")
       }
-      let idString: string = await response.text()
+      const idString: string = await response.text()
       const id = Number(idString)
       if (this.value.value == undefined) {
         this.value.value = new Map<string, Accident[]>()
@@ -112,7 +110,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       return id
     } catch (error) {
       console.error(error)
-      return undefined
+      return
     }
   }
 
@@ -273,10 +271,10 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   }
 
   async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
-    if (this.product.value == null || Array.isArray(this.product.value)) return Promise.resolve(undefined)
+    if (this.product.value == null || Array.isArray(this.product.value)) return
     const test = `${this.product.value}/${affected_test}`
     try {
-      let response = await fetch(this.getAccidentUrl() + "accidents/", {
+      const response = await fetch(this.getAccidentUrl() + "accidents/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -287,7 +285,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
       if (!response.ok) {
         throw new Error("The accident wasn't created")
       }
-      let idString: string = await response.text()
+      const idString: string = await response.text()
       const id = Number(idString)
       if (this.value.value == undefined) {
         this.value.value = new Map<string, Accident[]>()
@@ -298,7 +296,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
       return id
     } catch (error) {
       console.error(error)
-      return undefined
+      return
     }
   }
 }

@@ -24,16 +24,16 @@
       v-model="project"
       placeholder="Project"
       :options="projects"
-      optionLabel="name"
-      optionValue="id"
+      option-label="name"
+      option-value="id"
       :disabled="downloadState != DownloadState.NOT_STARTED"
     >
     </Dropdown>
     <!-- Footer buttons -->
     <template #footer>
       <div
-        class="flex justify-end space-x-2"
         v-if="downloadState == DownloadState.NOT_STARTED"
+        class="flex justify-end space-x-2"
       >
         <Button
           label="Cancel"
@@ -117,7 +117,7 @@
 <script setup lang="ts">
 import { Ref, ref } from "vue"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
-import { IssueResponse, Project } from "./YoutrackClient"
+import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
@@ -133,9 +133,9 @@ enum DownloadState {
 const router = useRouter()
 
 const props = defineProps<{
-  data: InfoData
-  accident: Accident
-  accidentConfigurator: AccidentsConfigurator
+  data: InfoData | null
+  accident: Accident | null
+  accidentConfigurator: AccidentsConfigurator | null
 }>()
 
 const youtrackClient = injectOrError(youtrackClientKey)
@@ -151,26 +151,13 @@ const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 
 async function createTicket() {
   try {
+    if (props.data == null) throw new Error("There is no info data")
+    if (props.accident == null) throw new Error("There is no accident")
+    if (props.accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
     downloadState.value = DownloadState.STARTED
-    const buildId = props.data.buildId!!
-    const prevBuildId = props.data.buildIdPrevious!!
-    const buildType = await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, buildId)
-    const chartPng =
-      props.accident.kind != AccidentKind.Exception
-        ? ((await fetch(props.data.chartDataUrl)
-            .then((res) => res.blob())
-            .then(
-              (blob) =>
-                new Promise((resolve, reject) => {
-                  const reader = new FileReader()
-                  reader.onloadend = () => resolve((reader.result as string).split(",")[1]) // Extract Base64 data
-                  reader.onerror = () => reject(new Error("Error reading blob as data URL"))
-                  reader.readAsDataURL(blob)
-                })
-            )) as string)
-        : undefined
+    const buildId = props.data.buildId
 
-    const issueInfo = {
+    const issueInfo: CreateIssueRequest = {
       accidentId: `${props.accident.id}`,
       projectId: project.value,
       buildLink: props.data.artifactsUrl,
@@ -184,47 +171,73 @@ async function createTicket() {
           },
         },
       ],
+      testMethodName: props.data.description.value?.methodName.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getNavigateToTestUrl(props.data, router)}`,
       affectedMetric: props.data.series[0].metricName ?? "",
       delta: props.data.deltaPrevious ?? "",
-      testMethodName: props.data.description.value?.methodName?.replaceAll("#", ".") ?? "",
     }
 
     let issueResponse: IssueResponse
     try {
       issueResponse = await youtrackClient.createIssue(issueInfo)
       createdTicket.value = issueResponse.issue.idReadable
-      if (issueResponse.exceptions != null) {
-        console.log(`Issue was created, but with some problems:\n ${issueResponse.exceptions.join("\n")}`)
+      if (issueResponse.exceptions) {
+        console.error(`Issue was created, but with some problems:\n ${issueResponse.exceptions.join("\n")}`)
         createException.value = true
       }
-    } catch (t: any) {
-      console.log(t)
+    } catch (error: unknown) {
+      console.error(error)
       createException.value = true
       return
     }
 
     try {
       await props.accidentConfigurator.reloadAccidentData(props.accident.id)
-    } catch (t: any) {
-      console.log(t)
+    } catch (error: unknown) {
+      console.error(error)
       createException.value = true
     }
 
     try {
-      const attachmentsInfo = {
+      const buildType = await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, buildId)
+      if (buildType == null) throw new Error("Cannot upload attachments without buildType")
+      const attachmentsInfo: UploadAttachmentsRequest = {
         issueId: issueResponse.issue.id,
         teamcityAttachmentInfo: {
-          buildTypeId: buildType!!,
+          buildTypeId: buildType,
           currentBuildId: buildId,
-          previousBuildId: prevBuildId,
+          previousBuildId: undefined,
         },
         affectedTest: props.accident.affectedTest,
-        chartPng,
+        chartPng: undefined,
+      }
+      if (props.accident.kind != AccidentKind.Exception) {
+        attachmentsInfo.teamcityAttachmentInfo.previousBuildId = props.data.buildIdPrevious
+        attachmentsInfo.chartPng = await fetch(props.data.chartDataUrl)
+          .then((res) => res.blob())
+          .then((blob) => {
+            return new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+
+              reader.addEventListener("loadend", () => {
+                if (typeof reader.result === "string") {
+                  resolve(reader.result.split(",")[1])
+                } else {
+                  reject(new Error("FileReader result is not a string"))
+                }
+              })
+
+              reader.addEventListener("error", () => {
+                reject(new Error("Error reading blob as data URL"))
+              })
+
+              reader.readAsDataURL(blob)
+            })
+          })
       }
       await youtrackClient.uploadAttachments(attachmentsInfo)
-    } catch (t: any) {
-      console.log(t)
+    } catch (error: unknown) {
+      console.error(error)
       attachmentException.value = true
       return
     }

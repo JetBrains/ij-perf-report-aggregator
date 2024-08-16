@@ -193,10 +193,8 @@ async function reportRegression() {
         stacktrace.value
       )
 
-      console.log(createIssueCheckbox.value)
       if (id != undefined && createIssueCheckbox.value) {
         accidentToEdit.value = props.data?.accidents?.value?.find((a) => a.id == id)
-        console.log(accidentToEdit.value)
         createIssue.value = true
       }
     } finally {
@@ -208,7 +206,6 @@ async function reportRegression() {
 async function deleteRegression(closeDialog: boolean) {
   showDialog.value = !closeDialog
   if (accidentToEdit.value != null) {
-    console.log(accidentToEdit.value.id)
     await props.accidentsConfigurator?.removeAccidentFromMetaDb(accidentToEdit.value.id)
   }
 }

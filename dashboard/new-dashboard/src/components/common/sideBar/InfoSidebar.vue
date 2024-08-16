@@ -149,7 +149,7 @@
                 @click="editAccident(accident)"
               />
               <EyeIcon
-                v-if="accident.kind == AccidentKind.Exception && accident.stacktrace.length != 0"
+                v-if="accident.kind == AccidentKind.Exception && accident.stacktrace.length > 0"
                 class="w-4 h-4 flex-none"
                 @click="() => showStacktraceModalHandler(accident)"
               />
@@ -265,7 +265,7 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
-const youtrackClient = new YoutrackClient(serverConfigurator!!)
+const youtrackClient = new YoutrackClient(serverConfigurator)
 provide(youtrackClientKey, youtrackClient)
 
 const showStacktraceModalHandler = (accident: Accident) => {
@@ -294,9 +294,7 @@ async function getChangesUrl() {
     const db = serverConfigurator.db
     if (db == "perfint" || db == "perfintDev") {
       const type = await getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId)
-      if (vm.data.value) {
-        window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
-      }
+      window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
     } else {
       window.open(vm.data.value.changesUrl)
     }
@@ -304,7 +302,7 @@ async function getChangesUrl() {
 }
 
 async function openArtifactsUrl(data: InfoData | null) {
-  window.open(await getArtifactsUrl(data, serverConfigurator!))
+  window.open(await getArtifactsUrl(data, serverConfigurator))
 }
 
 async function openSpaceUrl() {

@@ -85,22 +85,20 @@ export class InfoSidebarImpl implements InfoSidebar {
   }
 }
 
-export async function getArtifactsUrl(data: InfoData | null, serverConfigurator: ServerConfigurator): Promise<string> {
-  let url: string | undefined = ""
+export async function getArtifactsUrl(data: InfoData | null, serverConfigurator: ServerConfigurator | null): Promise<string> {
+  let url = ""
   if (serverConfigurator?.table == null) {
-    url = data?.artifactsUrl
+    url = data?.artifactsUrl ?? ""
   } else if (data?.installerId ?? data?.buildId) {
     const db = serverConfigurator.db
     if (db == "perfint" || db == "perfintDev") {
-      const type = await getTeamcityBuildType(db, serverConfigurator.table, data?.buildId)
-      if (data) {
-        url = `${tcUrl}buildConfiguration/${type}/${data?.buildId}?buildTab=artifacts#${replaceUnderscore("/" + data?.projectName)}`
-      }
+      const type = await getTeamcityBuildType(db, serverConfigurator.table, data.buildId)
+      url = `${tcUrl}buildConfiguration/${type}/${data.buildId}?buildTab=artifacts#${replaceUnderscore("/" + data.projectName)}`
     } else {
-      url = data?.artifactsUrl
+      url = data.artifactsUrl
     }
   }
-  return url ?? ""
+  return url
 }
 
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {

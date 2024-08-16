@@ -7,14 +7,14 @@ export class YoutrackClient {
     { name: "Kotlin", id: "22-68" },
     { name: "Kotlin Plugin", id: "22-414" },
   ]
-  private serverConfigurator: ServerConfigurator
+  private serverConfigurator: ServerConfigurator | null
 
-  constructor(serverConfigurator: ServerConfigurator) {
+  constructor(serverConfigurator: ServerConfigurator | null) {
     this.serverConfigurator = serverConfigurator
   }
 
   async createIssue(issueInfo: CreateIssueRequest): Promise<IssueResponse> {
-    const url = `${this.serverConfigurator.serverUrl}/api/meta/youtrack/createIssue`
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/youtrack/createIssue`
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -23,19 +23,19 @@ export class YoutrackClient {
       body: JSON.stringify(issueInfo),
     })
 
-    const issueResponse = await response.json()
+    const issueResponse = (await response.json()) as IssueResponse
 
-    if (issueResponse.issue?.id != undefined) {
-      return issueResponse
-    } else {
-      const error = `Failed to create issue. Errors: ${issueResponse.exceptions?.join("\n") ?? issueResponse}`
+    if (issueResponse.issue.id.length === 0) {
+      const error = `Failed to create issue. Errors: ${issueResponse.exceptions?.join("\n") ?? ""}`
       console.error(error)
       throw new Error(error)
+    } else {
+      return issueResponse
     }
   }
 
   async uploadAttachments(attachmentsInfo: UploadAttachmentsRequest) {
-    const url = `${this.serverConfigurator.serverUrl}/api/meta/youtrack/uploadAttachments`
+    const url = `${this.serverConfigurator?.serverUrl}/api/meta/youtrack/uploadAttachments`
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -44,10 +44,10 @@ export class YoutrackClient {
       body: JSON.stringify(attachmentsInfo),
     })
 
-    const attachmentsResponse = await response.json()
+    const attachmentsResponse = (await response.json()) as AttachmentsResponse
 
     if (!response.ok) {
-      throw new Error(`Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? attachmentsResponse}`)
+      throw new Error(`Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? ""}`)
     }
   }
 
@@ -57,8 +57,12 @@ export class YoutrackClient {
 }
 
 export interface IssueResponse {
-  exceptions: string[]
+  exceptions: string[] | undefined
   issue: Issue
+}
+
+export interface AttachmentsResponse {
+  exceptions: string[] | undefined
 }
 
 interface Issue {
@@ -66,18 +70,18 @@ interface Issue {
   idReadable: string
 }
 
-interface UploadAttachmentsRequest {
+export interface UploadAttachmentsRequest {
   issueId: string
   teamcityAttachmentInfo: {
     buildTypeId: string
     currentBuildId: number
-    previousBuildId: number
+    previousBuildId: number | undefined
   }
   chartPng: string | undefined
   affectedTest: string
 }
 
-interface CreateIssueRequest {
+export interface CreateIssueRequest {
   accidentId: string
   projectId: string
   buildLink: string
@@ -90,6 +94,7 @@ interface CreateIssueRequest {
   dashboardLink: string
   affectedMetric: string
   delta: string
+  testMethodName: string | undefined
 }
 
 export interface Project {

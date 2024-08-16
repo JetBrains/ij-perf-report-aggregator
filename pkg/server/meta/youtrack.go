@@ -22,7 +22,7 @@ type YoutrackCreateIssueRequest struct {
 	DashboardLink  string        `json:"dashboardLink"`
 	AffectedMetric string        `json:"affectedMetric"`
 	Delta          string        `json:"delta"`
-	TestMethodName string        `json:"testMethodName"`
+	TestMethodName *string       `json:"testMethodName"`
 }
 
 type UploadAttachmentsToIssueRequest struct {
@@ -41,7 +41,7 @@ type GenerateDescriptionData struct {
 	BuildLink      string
 	Changes        string
 	DashboardLink  string
-	TestHistoryUrl string
+	TestHistoryUrl *string
 }
 
 type CreateIssueResponse struct {
@@ -89,7 +89,10 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			affectedTest = strings.TrimSuffix(affectedTest, "/"+affectedMetric)
 		}
 
-		testHistoryUrl, err := teamCityClient.getTestHistoryUrl(params.TestMethodName)
+		var testHistoryUrl string
+		if params.TestMethodName != nil {
+			testHistoryUrl, err = teamCityClient.getTestHistoryUrl(*params.TestMethodName)
+		}
 
 		if err != nil {
 			handleError(writer, "cannot get test history link", err, response.Exceptions)
@@ -104,7 +107,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			params.BuildLink,
 			params.ChangesLink,
 			params.DashboardLink,
-			testHistoryUrl,
+			&testHistoryUrl,
 		}
 
 		issueInfo := CreateIssueInfo{
@@ -167,9 +170,11 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 		errCh := make(chan error, 10)
 
 		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
-		if params.ChartPng != nil {
-			builds = append(builds, params.TeamCityAttachmentInfo.PreviousBuildId)
+		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
+			builds = append(builds, *params.TeamCityAttachmentInfo.PreviousBuildId)
+		}
 
+		if params.ChartPng != nil {
 			err := youtrackClient.UploadAttachment(params.IssueId, bytes.NewReader(*params.ChartPng), "dashboard.png")
 			if err != nil {
 				slog.Error("Failed to upload dashboard attachment to youtrack", "error", err)
@@ -265,7 +270,12 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	dashboard := fmt.Sprintf("**Dashboard:**\n[dashboard link](%s)", generateDescriptorData.DashboardLink)
 	dashboardPng := "![](dashboard.png)"
 	stacktrace := fmt.Sprintf("**Stacktrace:**\n```%s```", generateDescriptorData.StackTrace)
-	testHistory := fmt.Sprintf("**Test history:**\n[test history link](%s)", generateDescriptorData.TestHistoryUrl)
+	var testHistory string
+	if generateDescriptorData.TestHistoryUrl != nil {
+		testHistory = fmt.Sprintf("**Test history:**\n[test history link](%s)", *generateDescriptorData.TestHistoryUrl)
+	} else {
+		testHistory = ""
+	}
 	var description string
 	if generateDescriptorData.Kind != "exception" {
 		logs += "\n Before: [logs-before.zip](logs-before.zip)"

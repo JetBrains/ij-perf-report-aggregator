@@ -98,9 +98,9 @@ class AccidentReporter extends AccidentsConfigurator {
 
 const accidentReporter = new AccidentReporter()
 const reported = ref(false)
-function reportRegression() {
+async function reportRegression() {
   for (const test of tests.value) {
-    accidentReporter.writeAccidentToMetaDb(date.value, test, reason.value, props.build, accidentType.value)
+    await accidentReporter.writeAccidentToMetaDb(date.value, test, reason.value, props.build, accidentType.value)
   }
   reported.value = true
 }

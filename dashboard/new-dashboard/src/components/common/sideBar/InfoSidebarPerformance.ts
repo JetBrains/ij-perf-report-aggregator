@@ -200,7 +200,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   const filteredAccidents = computed(() => {
     if (accidentBuild == undefined) return []
     const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
-    const metricAccident = metricName == undefined ? [] : accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? []
+    const metricAccident = metricName == undefined ? [] : (accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? [])
     const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
     return [...testAccident, ...buildAccident, ...metricAccident]
   })

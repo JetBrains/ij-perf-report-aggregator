@@ -2,6 +2,7 @@ package meta
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,9 +13,8 @@ import (
 )
 
 type YoutrackClient struct {
-	youTrackUrl       string
-	youtrackToken     string
-	availableProjects []YoutrackProject
+	youTrackUrl   string
+	youtrackToken string
 }
 
 type YoutrackProject struct {
@@ -48,16 +48,16 @@ func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {
 	}
 }
 
-func (client *YoutrackClient) fetchFromYouTrack(endpoint string, method string, body io.Reader, headers map[string]string) ([]byte, error) {
+func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint string, method string, body io.Reader, headers map[string]string) ([]byte, error) {
 	youtrackUrl := fmt.Sprintf("%s%s", client.youTrackUrl, endpoint)
 	log.Printf("Youtrack url: %s\n", youtrackUrl)
 
-	req, err := http.NewRequest(method, youtrackUrl, body)
+	req, err := http.NewRequestWithContext(ctx, method, youtrackUrl, body)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.youtrackToken))
+	req.Header.Set("Authorization", "Bearer "+client.youtrackToken)
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
@@ -75,7 +75,7 @@ func (client *YoutrackClient) fetchFromYouTrack(endpoint string, method string, 
 	return io.ReadAll(resp.Body)
 }
 
-func (client *YoutrackClient) CreateIssue(info CreateIssueInfo) (*YoutrackIssue, error) {
+func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueInfo) (*YoutrackIssue, error) {
 	body, err := json.Marshal(info)
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling info: %w", err)
@@ -85,7 +85,7 @@ func (client *YoutrackClient) CreateIssue(info CreateIssueInfo) (*YoutrackIssue,
 		"Content-Type": "application/json",
 	}
 
-	responseData, err := client.fetchFromYouTrack("/api/issues?fields=id,idReadable", "POST", bytes.NewBuffer(body), headers)
+	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?fields=id,idReadable", "POST", bytes.NewBuffer(body), headers)
 	if err != nil {
 		return nil, fmt.Errorf("error creating info: %w", err)
 	}
@@ -98,9 +98,9 @@ func (client *YoutrackClient) CreateIssue(info CreateIssueInfo) (*YoutrackIssue,
 	return &issue, nil
 }
 
-func (client *YoutrackClient) SearchIssuesByLabel(label string) ([]YoutrackIssue, error) {
+func (client *YoutrackClient) SearchIssuesByLabel(ctx context.Context, label string) ([]YoutrackIssue, error) {
 	encodedLabel := url.QueryEscape(fmt.Sprintf("{%s}", label))
-	responseData, err := client.fetchFromYouTrack(fmt.Sprintf("/api/issues?query=tag:%s", encodedLabel), "GET", nil, map[string]string{"Accept": "application/json"})
+	responseData, err := client.fetchFromYouTrack(ctx, "/api/issues?query=tag:"+encodedLabel, "GET", nil, map[string]string{"Accept": "application/json"})
 	if err != nil {
 		return nil, fmt.Errorf("error fetching issues: %w", err)
 	}
@@ -113,8 +113,8 @@ func (client *YoutrackClient) SearchIssuesByLabel(label string) ([]YoutrackIssue
 	return issues, nil
 }
 
-func (client *YoutrackClient) GetCustomFields(projectId string) ([]CustomField, error) {
-	responseData, err := client.fetchFromYouTrack(fmt.Sprintf("/api/admin/projects/%s/customFields?fields=value(name)", projectId), "GET", nil, nil)
+func (client *YoutrackClient) GetCustomFields(ctx context.Context, projectId string) ([]CustomField, error) {
+	responseData, err := client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/admin/projects/%s/customFields?fields=value(name)", projectId), "GET", nil, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching custom fields: %w", err)
 	}
@@ -127,22 +127,7 @@ func (client *YoutrackClient) GetCustomFields(projectId string) ([]CustomField, 
 	return customFields, nil
 }
 
-func (client *YoutrackClient) GetProjects() ([]YoutrackProject, error) {
-	if len(client.availableProjects) == 0 {
-		responseData, err := client.fetchFromYouTrack("/api/admin/projects?fields=id,name", "GET", nil, map[string]string{"Content-Type": "application/json"})
-		if err != nil {
-			return nil, fmt.Errorf("error fetching projects: %w", err)
-		}
-
-		if err := json.Unmarshal(responseData, &client.availableProjects); err != nil {
-			return nil, fmt.Errorf("error unmarshalling projects: %w", err)
-		}
-	}
-
-	return client.availableProjects, nil
-}
-
-func (client *YoutrackClient) UploadAttachment(issueId string, file io.Reader, fileName string) error {
+func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId string, file []byte, fileName string) error {
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 
@@ -151,14 +136,14 @@ func (client *YoutrackClient) UploadAttachment(issueId string, file io.Reader, f
 		return fmt.Errorf("error creating form file: %w", err)
 	}
 
-	_, err = io.Copy(part, file)
+	_, err = io.Copy(part, bytes.NewReader(file))
 	if err != nil {
 		return fmt.Errorf("error copying file data: %w", err)
 	}
 
 	writer.Close()
 
-	_, err = client.fetchFromYouTrack(fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", &body, map[string]string{"Content-Type": writer.FormDataContentType()})
+	_, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", &body, map[string]string{"Content-Type": writer.FormDataContentType()})
 	if err != nil {
 		return fmt.Errorf("error uploading attachment: %w", err)
 	}

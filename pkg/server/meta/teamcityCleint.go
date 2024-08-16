@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -46,16 +47,16 @@ func NewTeamCityClient(teamCityURL, authToken string) *TeamCityClient {
 	}
 }
 
-func (client *TeamCityClient) makeRequest(endpoint string, headers map[string]string) (*http.Response, error) {
-	url := fmt.Sprintf("%s%s", client.teamCityURL, endpoint)
-	fmt.Printf("Requesting URL: %s\n", url)
+func (client *TeamCityClient) makeRequest(ctx context.Context, endpoint string, headers map[string]string) (*http.Response, error) {
+	myUrl := fmt.Sprintf("%s%s", client.teamCityURL, endpoint)
+	fmt.Printf("Requesting URL: %s\n", myUrl)
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, myUrl, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.authToken))
+	req.Header.Set("Authorization", "Bearer "+client.authToken)
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
@@ -72,9 +73,9 @@ func (client *TeamCityClient) makeRequest(endpoint string, headers map[string]st
 	return resp, nil
 }
 
-func (client *TeamCityClient) getArtifactChildren(buildId int, buildType string, testName string) ([]string, error) {
+func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId int, buildType string, testName string) ([]string, error) {
 	endpoint := fmt.Sprintf("/app/rest/builds/buildType:%s,id:%d/artifacts/children/%s", buildType, buildId, testName)
-	resp, err := client.makeRequest(endpoint, nil)
+	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -83,6 +84,9 @@ func (client *TeamCityClient) getArtifactChildren(buildId int, buildType string,
 	body, _ := io.ReadAll(resp.Body)
 	var files Files
 	err = xml.Unmarshal(body, &files)
+	if err != nil {
+		return nil, err
+	}
 
 	var children []string
 	for _, child := range files.Files {
@@ -92,18 +96,25 @@ func (client *TeamCityClient) getArtifactChildren(buildId int, buildType string,
 	return children, nil
 }
 
-func (client *TeamCityClient) downloadArtifact(buildTypeId string, buildId int, filePath string) (io.Reader, error) {
+func (client *TeamCityClient) downloadArtifact(ctx context.Context, buildTypeId string, buildId int, filePath string) ([]byte, error) {
 	endpoint := fmt.Sprintf("/app/rest/builds/buildType:%s,id:%d/artifacts/content/%s", buildTypeId, buildId, filePath)
-	resp, err := client.makeRequest(endpoint, nil)
+	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
-	return resp.Body, nil
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
 }
 
-func (client *TeamCityClient) getTestHistoryUrl(testName string) (string, error) {
-	endpoint := fmt.Sprintf("/app/rest/tests?locator=name:%s", url.QueryEscape(testName))
-	resp, err := client.makeRequest(endpoint, nil)
+func (client *TeamCityClient) getTestHistoryUrl(ctx context.Context, testName string) (string, error) {
+	endpoint := "/app/rest/tests?locator=name:" + url.QueryEscape(testName)
+	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return "", err
 	}

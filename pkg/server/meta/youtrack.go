@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -59,7 +58,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		body := request.Body
 		all, err := io.ReadAll(body)
 		if err != nil {
-			handleError(writer, "cannot read body", err, response.Exceptions)
+			handleError(writer, "cannot read body", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
 		}
@@ -68,16 +67,16 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		var params YoutrackCreateIssueRequest
 		if err = json.Unmarshal(all, &params); err != nil {
-			handleError(writer, "cannot unmarshal parameters", err, response.Exceptions)
+			handleError(writer, "cannot unmarshal parameters", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
 		}
 
-		relatedAccident, err := getAccidentById(metaDb, request.Context(), params.AccidentId)
+		relatedAccident, err := getAccidentById(request.Context(), metaDb, params.AccidentId)
 		lowerKind := strings.ToLower(relatedAccident.Kind)
 
 		if err != nil {
-			handleError(writer, "cannot get accident", err, response.Exceptions)
+			handleError(writer, "cannot get accident", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
 		}
@@ -91,11 +90,11 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		var testHistoryUrl string
 		if params.TestMethodName != nil {
-			testHistoryUrl, err = teamCityClient.getTestHistoryUrl(*params.TestMethodName)
+			testHistoryUrl, err = teamCityClient.getTestHistoryUrl(request.Context(), *params.TestMethodName)
 		}
 
 		if err != nil {
-			handleError(writer, "cannot get test history link", err, response.Exceptions)
+			handleError(writer, "cannot get test history link", err, &response.Exceptions)
 		}
 
 		descriptionData := GenerateDescriptionData{
@@ -117,11 +116,11 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			CustomFields: params.CustomFields,
 		}
 
-		issue, err := youtrackClient.CreateIssue(issueInfo)
+		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
 		response.Issue = *issue
 
 		if err != nil {
-			handleError(writer, "failed to create issue", err, response.Exceptions)
+			handleError(writer, "failed to create issue", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
 		}
@@ -133,9 +132,9 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		relatedAccident.Reason = fmt.Sprintf("%s: %s", issue.IDReadable, relatedAccident.Reason)
-		err = updateAccidentReason(metaDb, request.Context(), relatedAccident)
+		err = updateAccidentReason(request.Context(), metaDb, relatedAccident)
 		if err != nil {
-			handleError(writer, "unable to update accident reason", err, response.Exceptions)
+			handleError(writer, "unable to update accident reason", err, &response.Exceptions)
 		}
 
 		writer.WriteHeader(http.StatusOK)
@@ -153,7 +152,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 		body := request.Body
 		all, err := io.ReadAll(body)
 		if err != nil {
-			handleError(writer, "cannot read body", err, exceptions.Exceptions)
+			handleError(writer, "cannot read body", err, &exceptions.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, exceptions)
 			return
 		}
@@ -162,7 +161,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 
 		var params UploadAttachmentsToIssueRequest
 		if err = json.Unmarshal(all, &params); err != nil {
-			handleError(writer, "cannot unmarshal parameters", err, exceptions.Exceptions)
+			handleError(writer, "cannot unmarshal parameters", err, &exceptions.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, exceptions)
 			return
 		}
@@ -175,7 +174,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 		}
 
 		if params.ChartPng != nil {
-			err := youtrackClient.UploadAttachment(params.IssueId, bytes.NewReader(*params.ChartPng), "dashboard.png")
+			err := youtrackClient.UploadAttachment(request.Context(), params.IssueId, *params.ChartPng, "dashboard.png")
 			if err != nil {
 				slog.Error("Failed to upload dashboard attachment to youtrack", "error", err)
 				errCh <- err
@@ -190,7 +189,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				defer wg.Done()
 
 				testArtifactPath := strings.ReplaceAll(params.AffectedTest, "_", "-")
-				children, err := teamCityClient.getArtifactChildren(buildId, params.TeamCityAttachmentInfo.BuildTypeId, testArtifactPath)
+				children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, params.TeamCityAttachmentInfo.BuildTypeId, testArtifactPath)
 				if err != nil {
 					slog.Error("Failed to get teamcity artifact children", "error", err)
 					errCh <- err
@@ -221,7 +220,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				for _, str := range filteredChildren {
 					go func(artifactName string) {
 						defer childWg.Done()
-						artifact, err := teamCityClient.downloadArtifact(params.TeamCityAttachmentInfo.BuildTypeId, buildId, testArtifactPath+"/"+artifactName)
+						artifact, err := teamCityClient.downloadArtifact(request.Context(), params.TeamCityAttachmentInfo.BuildTypeId, buildId, testArtifactPath+"/"+artifactName)
 						if err != nil {
 							slog.Error("Failed to download artefacts form teamcity", "error", err)
 							errCh <- err
@@ -229,7 +228,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 						}
 
 						attachmentName := getAttachmentName(artifactName, attachmentPostfix)
-						err = youtrackClient.UploadAttachment(params.IssueId, artifact, attachmentName)
+						err = youtrackClient.UploadAttachment(request.Context(), params.IssueId, artifact, attachmentName)
 						if err != nil {
 							slog.Error("Failed to upload attachment to youtrack", "error", err)
 							errCh <- err
@@ -261,7 +260,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 }
 
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
-	affectedTest := fmt.Sprintf("**Affected test:**\n%s", generateDescriptorData.AffectedTest)
+	affectedTest := "**Affected test:**\n" + generateDescriptorData.AffectedTest
 	affectedMetric := fmt.Sprintf("**Affected metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta)
 	build := fmt.Sprintf("**Build:**\n[build link](%s)", generateDescriptorData.BuildLink)
 	changes := fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes)
@@ -298,14 +297,14 @@ func getAttachmentName(filename, suffix string) string {
 
 	nameParts := strings.Split(nameWithoutExt, "-")
 
-	updatedName := strings.Join([]string{nameParts[0], suffix}, "-")
+	updatedName := nameParts[0] + "-" + suffix
 	return fmt.Sprintf("%s.%s", updatedName, ext)
 }
 
-func handleError(writer http.ResponseWriter, message string, err error, exceptions []string) {
+func handleError(writer http.ResponseWriter, message string, err error, exceptions *[]string) {
 	slog.Error(message, "error", err)
 	writer.WriteHeader(http.StatusInternalServerError)
-	exceptions = append(exceptions, fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
+	*exceptions = append(*exceptions, fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 }
 
 func marshalAndWriteIssueResponse(writer http.ResponseWriter, response interface{}) error {

@@ -236,7 +236,7 @@ func CreateGetAccidentByIdHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		id := request.URL.Query().Get("id")
 
-		accidentById, err := getAccidentById(metaDb, request.Context(), id)
+		accidentById, err := getAccidentById(request.Context(), metaDb, id)
 
 		if err != nil {
 			slog.Error("cannot get accident by id", "error", err, "id", id)
@@ -286,7 +286,7 @@ func getAccidentFromRow(row pgx.CollectableRow) (accident, error) {
 	}, err
 }
 
-func getAccidentById(metaDb *pgxpool.Pool, ctx context.Context, accidentId string) (*accident, error) {
+func getAccidentById(ctx context.Context, metaDb *pgxpool.Pool, accidentId string) (*accident, error) {
 	sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace FROM accidents WHERE id=$1"
 	rows, err := metaDb.Query(ctx, sql, accidentId)
 	if err != nil {
@@ -308,7 +308,7 @@ func getAccidentById(metaDb *pgxpool.Pool, ctx context.Context, accidentId strin
 	return &accidents[0], nil
 }
 
-func updateAccidentReason(metaDb *pgxpool.Pool, ctx context.Context, accident *accident) error {
+func updateAccidentReason(ctx context.Context, metaDb *pgxpool.Pool, accident *accident) error {
 	sql := `UPDATE accidents SET reason = $2 WHERE id = $1`
 	_, err := metaDb.Exec(ctx, sql,
 		accident.ID,

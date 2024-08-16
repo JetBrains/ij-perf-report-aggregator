@@ -83,6 +83,17 @@
         Report all tests in build <code>{{ build }}</code>
       </label>
     </div>
+    <div class="flex items-center mb-4">
+      <InputSwitch
+        v-model="createIssueCheckbox"
+        input-id="createIssue"
+      />
+      <label
+        for="createIssue"
+        class="text-sm ml-2"
+        >Create Issue</label
+      >
+    </div>
     <RelatedAccidents
       :data="props.data"
       :accidents-configurator="props.accidentsConfigurator"
@@ -119,7 +130,7 @@
             label="Delete"
             icon="pi pi-trash"
             severity="danger"
-            @click="deleteRegression"
+            @click="() => deleteRegression(true)"
           />
           <Button
             label="Update"
@@ -143,55 +154,69 @@ import RelatedAccidents from "./RelatedAccidents.vue"
 const props = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
-  accidentToEdit: Accident | null
 }>()
 
-const showDialog = defineModel<boolean>()
+const createIssueCheckbox = ref(false)
+
+const showDialog = defineModel<boolean>("showDialog")
+const createIssue = defineModel<boolean>("createIssue")
+const accidentToEdit = defineModel<Accident | null>("accidentToEdit")
 
 const reportMetricOnly = useStorage("reportMetricOnly", false)
 const reportAllInBuild = useStorage("reportAllInBuild", false)
-const accidentType = ref(props.accidentToEdit?.kind ?? "Regression")
+const accidentType = ref(accidentToEdit.value?.kind ?? "Regression")
 watch(
-  () => props.accidentToEdit,
+  () => accidentToEdit.value,
   (newVal) => {
     accidentType.value = newVal?.kind ?? "Regression"
     reason.value = newVal?.reason ?? ""
   }
 )
 
-const reason = ref(props.accidentToEdit?.reason ?? "")
-const stacktrace = ref(props.accidentToEdit?.stacktrace ?? "")
+const reason = ref(accidentToEdit.value?.reason ?? "")
+const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 
 const build = computed(() => props.data?.build ?? props.data?.buildId.toString())
 
-function reportRegression() {
-  showDialog.value = false
+async function reportRegression() {
   const value = props.data
   if (value != null && build.value != null) {
     const metricName = value.series[0].metricName
     const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1 && metricName != undefined
-    props.accidentsConfigurator?.writeAccidentToMetaDb(
-      value.date,
-      reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
-      reason.value,
-      build.value,
-      accidentType.value,
-      stacktrace.value
-    )
+    try {
+      const id = await props.accidentsConfigurator?.writeAccidentToMetaDb(
+        value.date,
+        reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
+        reason.value,
+        build.value,
+        accidentType.value,
+        stacktrace.value
+      )
+
+      console.log(createIssueCheckbox.value)
+      if (id != undefined && createIssueCheckbox.value) {
+        accidentToEdit.value = props.data?.accidents?.value?.find((a) => a.id == id)
+        console.log(accidentToEdit.value)
+        createIssue.value = true
+      }
+    } finally {
+      showDialog.value = false
+    }
   }
 }
 
-async function deleteRegression() {
-  showDialog.value = false
-  if (props.accidentToEdit != null) {
-    await props.accidentsConfigurator?.removeAccidentFromMetaDb(props.accidentToEdit.id)
+async function deleteRegression(closeDialog: boolean) {
+  showDialog.value = !closeDialog
+  if (accidentToEdit.value != null) {
+    console.log(accidentToEdit.value.id)
+    await props.accidentsConfigurator?.removeAccidentFromMetaDb(accidentToEdit.value.id)
   }
 }
 
-function updateRegression() {
-  deleteRegression()
-    .then(() => {
-      reportRegression()
+async function updateRegression() {
+  await deleteRegression(false)
+    .then(async () => {
+      await reportRegression()
     })
     .catch(() => {
       console.error("Failed to delete accident")

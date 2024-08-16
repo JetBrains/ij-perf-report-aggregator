@@ -515,7 +515,7 @@ async function configureChart(
       seriesData.push(smoothedData)
     }
 
-    const deltaValues = Delta.calculateDeltas(seriesData[1] as number[])
+    const deltaValues = Delta.calculateDeltas(seriesData[1] as number[], seriesData[5] as number[])
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
     seriesData.push(deltaValues)

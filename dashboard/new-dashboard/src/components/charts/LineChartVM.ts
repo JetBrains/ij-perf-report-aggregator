@@ -51,7 +51,7 @@ export class LineChartVM {
             this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
           }
         }
-        const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator)
+        const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }))
         sidebarVm.show(infoData)
       }
     }

@@ -60,32 +60,60 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
 
   protected abstract getAccidentUrl(): string
 
-  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
-    fetch(this.getAccidentUrl() + "accidents/", {
-      method: "POST",
+  async reloadAccidentData(id: number) {
+    const response = await fetch(this.getAccidentUrl() + `accidents?id=${id}`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("The accident wasn't created")
+
+    if (!response.ok) {
+      const errorMessage = `Cannot get accident by id ${id}. Response: ${response}`
+      console.log(errorMessage)
+      throw new Error(errorMessage)
+    }
+
+    const accident: Accident = await response.json()
+
+    if (accident.id != undefined) {
+      const updatedMap = new Map(this.value.value)
+      for (const [_, value] of updatedMap) {
+        const index = value.findIndex((obj) => obj.id === accident.id)
+        if (index !== -1) {
+          value.splice(index, 1, accident)
         }
-        return response.text()
+      }
+      this.value.value = updatedMap //we need to update value in reference to trigger the change
+    }
+  }
+
+  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
+    try {
+      let response = await fetch(this.getAccidentUrl() + "accidents/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind, stacktrace }),
       })
-      .then((idString) => {
-        const id = Number(idString)
-        if (this.value.value == undefined) {
-          this.value.value = new Map<string, Accident[]>()
-        }
-        const updatedMap = new Map(this.value.value)
-        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
-        this.value.value = updatedMap //we need to update value in reference to trigger the change
-      })
-      .catch((error: unknown) => {
-        console.error(error)
-      })
+
+      if (!response.ok) {
+        throw new Error("The accident wasn't created")
+      }
+      let idString: string = await response.text()
+      const id = Number(idString)
+      if (this.value.value == undefined) {
+        this.value.value = new Map<string, Accident[]>()
+      }
+      const updatedMap = new Map(this.value.value)
+      updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
+      this.value.value = updatedMap //we need to update value in reference to trigger the change
+      return id
+    } catch (error) {
+      console.error(error)
+      return undefined
+    }
   }
 
   async removeAccidentFromMetaDb(id: number) {
@@ -244,34 +272,34 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     return map
   }
 
-  writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
-    if (this.product.value == null || Array.isArray(this.product.value)) return
+  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
+    if (this.product.value == null || Array.isArray(this.product.value)) return Promise.resolve(undefined)
     const test = `${this.product.value}/${affected_test}`
-    fetch(this.getAccidentUrl() + "accidents/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("The accident wasn't created")
-        }
-        return response.text()
+    try {
+      let response = await fetch(this.getAccidentUrl() + "accidents/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace }),
       })
-      .then((idString) => {
-        const id = Number(idString)
-        if (this.value.value == undefined) {
-          this.value.value = new Map<string, Accident[]>()
-        }
-        const updatedMap = new Map(this.value.value)
-        updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
-        this.value.value = updatedMap //we need to update value in reference to trigger the change
-      })
-      .catch((error: unknown) => {
-        console.error(error)
-      })
+
+      if (!response.ok) {
+        throw new Error("The accident wasn't created")
+      }
+      let idString: string = await response.text()
+      const id = Number(idString)
+      if (this.value.value == undefined) {
+        this.value.value = new Map<string, Accident[]>()
+      }
+      const updatedMap = new Map(this.value.value)
+      updatedMap.set(`${affected_test}_${build_number}`, [{ id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace }])
+      this.value.value = updatedMap //we need to update value in reference to trigger the change
+      return id
+    } catch (error) {
+      console.error(error)
+      return undefined
+    }
   }
 }
 

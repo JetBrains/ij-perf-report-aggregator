@@ -91,6 +91,14 @@
         :projects="rustGlobalInspectionProjects.map((project) => `${project}/indexing`)"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Rust CrateDefMaps size in MB (metric 'rust_class_instances_tree_size_mb#org.rust.lang.core.resolve2.CrateDefMap')"
+        measure="rust_class_instances_tree_size_mb#org.rust.lang.core.resolve2.CrateDefMap"
+        :projects="rustGlobalInspectionProjects.map((project) => `${project}/indexing`)"
+        value-unit="counter"
+      />
+    </section>
   </DashboardPage>
 </template>
 

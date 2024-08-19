@@ -49,12 +49,7 @@ const MEASURES = {
     { name: "findUsages_firstUsage_background#mean_value", label: "First usage found mean value" },
     { name: "FindUsagesTotal#mean_value", label: "Total find usages time mean value" },
   ],
-  completionCausingModificationMeasures: [
-    { name: "open_file_highlighting_and_typing_1", label: "Open file, highlighting and typing first iteration" },
-    { name: "open_file_highlighting_and_typing#mean_value", label: "Open file, highlighting and typing mean value" },
-    { name: "completion_with_highlighting_1", label: "Completion and highlighting first iteration" },
-    { name: "completion_with_highlighting#mean_value", label: "Completion and highlighting first iteration" },
-  ],
+  completionCausingModificationMeasures: [{ name: "total_test_step#mean_value", label: "Total test time" }],
   renameAndCompletionMeasures: [
     { name: "open_and_highlighting_rename_file#mean_value", label: "Open rename file and wait for highlighting" },
     { name: "open_and_highlighting_completion_file#mean_value", label: "Open completion file and wait for highlighting" },
@@ -62,10 +57,7 @@ const MEASURES = {
     { name: "typing_and_completion#mean_value", label: "Typing text and do completion" },
     { name: "choose_completion_and_highlighting#mean_value", label: "Choose completion and wait for highlighting" },
   ],
-  errorCodeModificationMeasures: [
-    { name: "open_file_and_highlighting#mean_value", label: "Open file and wait for highlighting" },
-    { name: "typing_and_highlighting#mean_value", label: "Make/fix error and wait for highlighting" },
-  ],
+  errorCodeModificationMeasures: [{ name: "typing_and_highlighting#mean_value", label: "Make/fix error and wait for highlighting" }],
   goToImplementationScenarioMeasures: (tag: string) => [
     { name: "execute_editor_gotoimplementation_1", label: `Go to implementation first iteration ${tag}` },
     { name: "execute_editor_gotoimplementation#mean_value", label: `Go to implementation mean value ${tag}` },

@@ -315,11 +315,11 @@
     },
     "completionCausingModification": {
       "intelliJSources": [
-        "intellij_sources/out_of_block_completion_fileName_in_file_JdkList.kt",
+        "intellij_sources/out_of_block_completion_days_in_file_Utils.kt",
         "intellij_sources/in_block_completion_name_in_file_JdkList.kt"
       ],
       "kotlinLanguageServer": [
-        "kotlin_language_server/out_of_block_completion_stableName_in_file_SymbolIndex.kt",
+        "kotlin_language_server/out_of_block_completion_toMutableList_in_file_SourceFiles.kt",
         "kotlin_language_server/in_block_completion_original_in_file_SymbolIndex.kt"
       ]
     },
@@ -335,14 +335,14 @@
       "intelliJSources": [
         "intellij_sources/in_block_fix_error_by_text_leName;_in_file_JdkList.kt",
         "intellij_sources/in_block_make_error_by_text_installDir.fi_in_file_JdkList.kt",
-        "intellij_sources/out_of_block_fix_error_by_text_leName;_in_file_JdkList.kt",
-        "intellij_sources/out_of_block_make_error_by_text_file.fi_in_file_JdkList.kt"
+        "intellij_sources/out_of_block_fix_error_by_text_igDecimal()_in_file_Utils.kt",
+        "intellij_sources/out_of_block_make_error_by_text_.toB_in_file_Utils.kt"
       ],
       "kotlinLanguageServer": [
         "kotlin_language_server/in_block_fix_error_by_text_iginal;_in_file_SymbolIndex.kt",
         "kotlin_language_server/in_block_make_error_by_text_declaration.or_in_file_SymbolIndex.kt",
-        "kotlin_language_server/out_of_block_fix_error_by_text_ableName;_in_file_SymbolIndex.kt",
-        "kotlin_language_server/out_of_block_make_error_by_text_module.st_in_file_SymbolIndex.kt"
+        "kotlin_language_server/out_of_block_fix_error_by_text_ist();_in_file_SourceFiles.kt",
+        "kotlin_language_server/out_of_block_make_error_by_text_.toL_in_file_SourceFiles.kt"
       ]
     },
     "intelliJFindUsagesAndHighlighting": {

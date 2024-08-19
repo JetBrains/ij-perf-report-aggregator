@@ -206,6 +206,7 @@ function prefix(words: string[]): string {
   if (!words[0] || words.length == 1) return words[0] || ""
   let i = 0
   while (words[0][i] && words.every((w) => w[i] === words[0][i])) i++
+  console.log(words)
   return words[0].slice(0, Math.max(0, i))
 }
 
@@ -383,11 +384,13 @@ export function getMachineGroupName(machine: string): string {
     machine.startsWith("intellij-linux-2004-aws-i") ||
     machine.startsWith("intellij-linux-2004-aws-c5d") ||
     machine.startsWith("intellij-linux-2004-aws-c5ad-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-c5ad-lt") ||
     machine.startsWith("intellij-linux-2004-aws-m5ad-lt")
   ) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     groupName = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
+    // https://aws.amazon.com/ec2/instance-types/c5/
+    groupName = "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"
   } else if (machine.startsWith("intellij-macos-perf-eqx")) {
     groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
   } else if (machine.startsWith("intellij-windows-aws-i")) {

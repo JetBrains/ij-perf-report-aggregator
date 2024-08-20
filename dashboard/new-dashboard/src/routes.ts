@@ -71,11 +71,13 @@ enum ROUTES {
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJGradleDashboardDeprecated = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDeprecated`,
   IntelliJGradleDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboard`,
-  IntelliJGradleDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardFastInstallers`,
+  IntelliJGradleDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDev`,
   IntelliJMavenDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboard`,
-  IntelliJMavenDashboardFastInstallers = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardFastInstallers`,
+  IntelliJMavenDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardDev`,
   IntelliJMavenImportersConfiguratorsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboard`,
+  IntelliJMavenImportersConfiguratorsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboardDev`,
   IntelliJJpsDashboard = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboard`,
+  IntelliJJpsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboardDev`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
@@ -370,24 +372,32 @@ const IDEA: Product = {
           label: "Gradle Import",
         },
         {
-          url: ROUTES.IntelliJGradleDashboardFastInstallers,
-          label: "Gradle Import Fast Installers",
+          url: ROUTES.IntelliJGradleDashboardDev,
+          label: "Gradle Import DevServer",
         },
         {
           url: ROUTES.IntelliJMavenDashboard,
           label: "Maven Import",
         },
         {
-          url: ROUTES.IntelliJMavenDashboardFastInstallers,
-          label: "Maven Import Fast Installers",
+          url: ROUTES.IntelliJMavenDashboardDev,
+          label: "Maven Import DevServer",
         },
         {
           url: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,
           label: "Maven Importers and Configurators",
         },
         {
+          url: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
+          label: "Maven Importers and Configurators DevServer",
+        },
+        {
           url: ROUTES.IntelliJJpsDashboard,
           label: "JPS Import",
+        },
+        {
+          url: ROUTES.IntelliJJpsDashboardDev,
+          label: "JPS Import DevServer",
         },
         {
           url: ROUTES.IntelliJBuildTests,
@@ -1367,9 +1377,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Gradle Import" },
         },
         {
-          path: ROUTES.IntelliJGradleDashboardFastInstallers,
-          component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardFastInstallers.vue"),
-          meta: { pageTitle: "Gradle Import fast installers" },
+          path: ROUTES.IntelliJGradleDashboardDev,
+          component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardDevServer.vue"),
+          meta: { pageTitle: "Gradle Import DevServer" },
         },
         {
           path: ROUTES.IntelliJMavenDashboard,
@@ -1377,9 +1387,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Maven Import dashboard" },
         },
         {
-          path: ROUTES.IntelliJMavenDashboardFastInstallers,
-          component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardFastInstallers.vue"),
-          meta: { pageTitle: "Maven Import dashboard fast installers" },
+          path: ROUTES.IntelliJMavenDashboardDev,
+          component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardDevServer.vue"),
+          meta: { pageTitle: "Maven Import dashboard DevServer" },
         },
         {
           path: ROUTES.IntelliJMavenImportersConfiguratorsDashboard,
@@ -1387,9 +1397,19 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Maven Importers And Configurators dashboard" },
         },
         {
+          path: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
+          component: () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
+          meta: { pageTitle: "Maven Importers And Configurators dashboard DevServer" },
+        },
+        {
           path: ROUTES.IntelliJJpsDashboard,
           component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboard.vue"),
           meta: { pageTitle: "JPS Import dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJJpsDashboardDev,
+          component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"),
+          meta: { pageTitle: "JPS Import dashboard DevServer" },
         },
         {
           path: ROUTES.IntelliJUltimateDashboardOld,

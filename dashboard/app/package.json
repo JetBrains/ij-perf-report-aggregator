@@ -3,12 +3,12 @@
   "private": true,
   "dependencies": {
     "@fontsource/inter": "5.0.20",
-    "@fontsource/jetbrains-mono": "5.0.21",
+    "@fontsource/jetbrains-mono": "5.0.20",
     "new-dashboard": "workspace:*",
-    "pinia": "^2.2.2",
+    "pinia": "^2.2.0",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.38",
-    "vue-router": "4.4.3"
+    "vue-router": "4.4.2"
   }
 }

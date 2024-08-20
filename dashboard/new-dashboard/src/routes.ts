@@ -65,6 +65,7 @@ enum ROUTES {
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
   IntelliJSEDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhereOld`,
   IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
+  IntelliJK2Dashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardPerformanceK2`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
@@ -348,6 +349,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJIncrementalCompilationDashboard,
           label: "Incremental Compilation",
+        },
+        {
+          url: ROUTES.IntelliJK2Dashboard,
+          label: "Performance K2",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -1365,6 +1370,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
           component: () => import("./components/intelliJ/IncrementalCompilationDashboard.vue"),
           meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJK2Dashboard,
+          component: () => import("./components/intelliJ/PerformanceK2Dashboard.vue"),
+          meta: { pageTitle: "IntelliJ Performance K2 dashboard" },
         },
         {
           path: ROUTES.IntelliJGradleDashboardDeprecated,

@@ -2217,7 +2217,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "clion",
-            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion tests" },
         },
@@ -2247,7 +2247,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "clion",
-            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion dashboard" },
         },
@@ -2257,7 +2257,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "clion",
-            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion Detailed Performance dashboard" },
         },
@@ -2267,7 +2267,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfint",
             table: "clion",
-            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion Memory dashboard" },
         },

@@ -46,7 +46,7 @@ export class YoutrackClient {
 
     const attachmentsResponse = (await response.json()) as AttachmentsResponse
 
-    if (!response.ok) {
+    if (attachmentsResponse.exceptions != undefined || !response.ok) {
       throw new Error(`Failed to upload attachments. Errors: ${attachmentsResponse.exceptions?.join("\n") ?? ""}`)
     }
   }

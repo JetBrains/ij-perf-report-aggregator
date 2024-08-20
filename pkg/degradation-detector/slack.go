@@ -187,6 +187,8 @@ func getMachineGroup(pattern string) string {
     return "Linux Munich i7-3770, 32 Gb"
   case "intellij-windows-hw-munit-%":
     return "Windows Munich i7-3770, 32 Gb"
+  case "intellij-macos-perf-eqx-%":
+    return "Mac Mini M2 Pro (10 vCPU, 32 GB)"
   case "intellij-macos-hw-munit-%":
     return "macMini M1, 16 Gb"
   }

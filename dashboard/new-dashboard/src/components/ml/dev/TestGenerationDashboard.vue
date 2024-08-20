@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfintDev"
     table="ml"
-    initial-machine="Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
+    :initial-machine="null"
     persistent-id="test-generation"
     :with-installer="false"
   >

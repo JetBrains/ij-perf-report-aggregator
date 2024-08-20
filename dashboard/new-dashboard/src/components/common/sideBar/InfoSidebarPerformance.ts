@@ -293,5 +293,5 @@ class Description {
 async function getDescriptionFromMetaDb(project: string | undefined, branch: string): Promise<Description | null> {
   const description_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
   const response = await fetch(description_url + encodeRison({ project, branch }))
-  return response.ok ? response.json() : null
+  return response.ok ? ((await response.json()) as Description) : null
 }

@@ -6,7 +6,7 @@ import (
 
 func GenerateFleetStartupSettings() []detector.FleetStartupSettings {
   settings := make([]detector.FleetStartupSettings, 0, 100)
-  machines := []string{"intellij-linux-hw-munit-%", "intellij-windows-hw-munit-%", "intellij-macos-hw-munit-%"}
+  machines := []string{"intellij-linux-hw-munit-%", "intellij-windows-hw-munit-%", "intellij-macos-perf-eqx-%"}
   mainSettings := detector.FleetStartupSettings{
     Branch: "master",
   }

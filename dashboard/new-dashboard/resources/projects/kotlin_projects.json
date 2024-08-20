@@ -314,9 +314,9 @@
       ]
     },
     "completionCausingModification": {
-      "intelliJSources": [
-        "intellij_sources/out_of_block_completion_days_in_file_Utils.kt",
-        "intellij_sources/in_block_completion_name_in_file_JdkList.kt"
+      "intelliJ": [
+        "intellij_commit/out_of_block_completion_days_in_file_Utils.kt",
+        "intellij_commit/in_block_completion_name_in_file_JdkList.kt"
       ],
       "kotlinLanguageServer": [
         "kotlin_language_server/out_of_block_completion_toMutableList_in_file_SourceFiles.kt",
@@ -324,19 +324,19 @@
       ]
     },
     "renameAndCompletion": {
-      "intelliJSources": [
-        "intellij_sources/rename_symbol_in_JdkList.kt_completion_in_JdkRequirement.kt"
+      "intelliJ": [
+        "intellij_commit/rename_symbol_in_JdkList.kt_completion_in_JdkRequirement.kt"
       ],
       "kotlinLanguageServer": [
         "kotlin_language_server/rename_symbol_in_CompilerClassPath.kt_completion_in_KotlinProtocolExtensionService.kt"
       ]
     },
     "errorCodeModification": {
-      "intelliJSources": [
-        "intellij_sources/in_block_fix_error_by_text_leName;_in_file_JdkList.kt",
-        "intellij_sources/in_block_make_error_by_text_installDir.fi_in_file_JdkList.kt",
-        "intellij_sources/out_of_block_fix_error_by_text_igDecimal()_in_file_Utils.kt",
-        "intellij_sources/out_of_block_make_error_by_text_.toB_in_file_Utils.kt"
+      "intelliJ": [
+        "intellij_commit/in_block_fix_error_by_text_leName;_in_file_JdkList.kt",
+        "intellij_commit/in_block_make_error_by_text_installDir.fi_in_file_JdkList.kt",
+        "intellij_commit/out_of_block_fix_error_by_text_igDecimal()_in_file_Utils.kt",
+        "intellij_commit/out_of_block_make_error_by_text_.toB_in_file_Utils.kt"
       ],
       "kotlinLanguageServer": [
         "kotlin_language_server/in_block_fix_error_by_text_iginal;_in_file_SymbolIndex.kt",

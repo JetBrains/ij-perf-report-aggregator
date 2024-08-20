@@ -25,14 +25,16 @@ const props = defineProps<{
 const clionProject = `clion/${props.project}`
 const radlerProject = `radler/${props.project}`
 const label = `[CLion vs Radler] ${props.label}`
+const frontendMetric = `${clionProject.replace("/indexing", "")} – fus_dumb_indexing_time`
+const backendMetric = `${radlerProject.replace("/indexing", "")} – backendIndexingTimeMs`
 
 const legendFormatter = function (name: string) {
-  if (name.startsWith("clion/") && name.endsWith("fus_dumb_indexing_time")) {
-    return "CLion"
+  if (name.includes(frontendMetric)) {
+    return name.replace(frontendMetric, "CLion")
   }
 
-  if (name.startsWith("radler/") && name.endsWith("backendIndexingTimeMs")) {
-    return "Radler"
+  if (name.includes(backendMetric)) {
+    return name.replace(backendMetric, "Radler")
   }
 
   // Hack to get through formatter validation

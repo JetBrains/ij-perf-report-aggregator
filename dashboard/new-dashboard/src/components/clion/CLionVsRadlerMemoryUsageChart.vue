@@ -41,20 +41,9 @@ const frontendMeasure = `JVM.heapUsageMb/${props.measure}`
 const backendMeasure = `rd.memory.allocatedManagedMemoryMb/${props.measure}`
 
 const legendFormatter = function (name: string) {
-  // There's a bug: when only one measure is specified, it uses test name as a label
-  // TODO: remove this `if` when CLion Classic gets more than one memory metric
-  if (name.startsWith("clion/")) {
-    return "JVM (Frontend)"
-  }
-
-  if (name.startsWith("JVM")) {
-    return "JVM (Frontend)"
-  }
-
-  if (name.startsWith("rd.memory")) {
-    return ".NET (Backend)"
-  }
-
   return name
+    .replace(clionProject, "JVM (Frontend)") // HACK: remove this line when CLion Classic gets more than one memory metric
+    .replace(frontendMeasure, "JVM (Frontend)")
+    .replace(backendMeasure, ".NET (Backend)")
 }
 </script>

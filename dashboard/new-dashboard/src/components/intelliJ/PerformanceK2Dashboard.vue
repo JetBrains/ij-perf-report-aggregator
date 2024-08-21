@@ -28,22 +28,26 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FindUsages PsiManager_getInstance"],
     measures: ["findUsages"],
-    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
+    projects: ["intellij_commit-changedDefault/findUsages/PsiManager_getInstance_firstCall", "intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
+    aliases: ["findUsages-k2", "findUsages-k1"],
   },
   {
     labels: ["Local inspections .kt Kotlin Serialization"],
     measures: ["localInspections"],
-    projects: ["kotlin/localInspection"],
+    projects: ["kotlin-changedDefault/localInspection", "kotlin/localInspection"],
+    aliases: ["localInspections-k2", "localInspections-k1"],
   },
   {
     labels: ["Completion .java IntelliJ"],
     measures: ["completion"],
-    projects: ["intellij_commit/completion/java_file"],
+    projects: ["intellij_commit-changedDefault/completion/java_file", "intellij_commit/completion/java_file"],
+    aliases: ["java-completion-k2", "java-completion-k1"],
   },
   {
     labels: ["Search Everywhere Go to All"],
     measures: ["searchEverywhere"],
-    projects: ["community/go-to-all/Editor/typingLetterByLetter"],
+    projects: ["community-changedDefault/go-to-all/Editor/typingLetterByLetter", "community/go-to-all/Editor/typingLetterByLetter"],
+    aliases: ["SE-go-to-all-k2", "SE-go-to-all-k1"],
   },
 ]
 

@@ -4,18 +4,18 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.22",
     "@heroicons/vue": "2.1.5",
-    "@vueuse/core": "^10.11.0",
+    "@vueuse/core": "^11.0.1",
     "compare-versions": "6.1.1",
     "echarts": "5.5.1",
     "echarts-stat": "1.2.0",
     "fast-equals": "5.0.1",
     "humanize-duration": "3.32.1",
     "p-limit": "^6.1.0",
-    "pinia": "^2.2.0",
+    "pinia": "^2.2.2",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.4.38",
-    "vue-router": "4.4.2"
+    "vue-router": "4.4.3"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",

@@ -14,6 +14,7 @@
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
+        :aliases="chart.aliases"
       />
     </section>
   </DashboardPage>

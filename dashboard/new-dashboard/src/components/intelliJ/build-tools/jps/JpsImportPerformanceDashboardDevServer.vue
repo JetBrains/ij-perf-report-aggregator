@@ -200,21 +200,20 @@ const metricsDeclaration = [
 
 const projects = [
   // JPS projects
-  "project-import-jps-kotlin-10_000-modules/measureStartup",
-  "project-import-jps-kotlin-50_000-modules/measureStartup",
-  "project-reimport-jps-kotlin-10_000-modules/measureStartup",
-  "project-import-from-cache-jps-kotlin-10_000-modules/measureStartup",
-  "project-import-jps-java-1_000-modules/measureStartup",
-  "project-reimport-jps-java-1_000-modules/measureStartup",
-  "project-import-from-cache-jps-java-1_000-modules/measureStartup",
-  "project-import-intellij-jps/measureStartup",
-  "project-import-from-cache-intellij-jps/measureStartup",
-  "jps_10K-modules-checkout-branch-with-changes/measureStartup",
-  "jps-1K-modules-checkout-branch-with-many-dependencies/measureStartup",
-  "jps-cyclic-branches-checkout/measureStartup",
-  "jps-branches-checkout-without-libraries-dependencies/measureStartup",
-  "jps-modules-reload/measureStartup",
-  "jps-changes-in-artifacts/measureStartup",
+  "project-import-jps-kotlin-10_000-modules/fastInstaller",
+  "project-import-jps-kotlin-50_000-modules/fastInstaller",
+  "project-reimport-jps-kotlin-10_000-modules/fastInstaller",
+  "project-import-from-cache-jps-kotlin-10_000-modules/fastInstaller",
+  "project-import-jps-java-1_000-modules/fastInstaller",
+  "project-reimport-jps-java-1_000-modules/fastInstaller",
+  "project-import-intellij-jps/fastInstaller",
+  "project-import-from-cache-intellij-jps/fastInstaller",
+  "jps_10K-modules-checkout-branch-with-changes/fastInstaller",
+  "jps-1K-modules-checkout-branch-with-many-dependencies/fastInstaller",
+  "jps-cyclic-branches-checkout/fastInstaller",
+  "jps-branches-checkout-without-libraries-dependencies/fastInstaller",
+  "jps-modules-reload/fastInstaller",
+  "jps-changes-in-artifacts/fastInstaller",
 ]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)

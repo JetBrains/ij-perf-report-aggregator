@@ -227,7 +227,12 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   }
 }
 
-export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[], valueUnit: ValueUnit, accidentsConfigurator: AccidentsConfigurator | null): InfoData {
+export function getInfoDataFrom(
+  params: CallbackDataParams | CallbackDataParams[],
+  valueUnit: ValueUnit,
+  accidentsConfigurator: AccidentsConfigurator | null,
+  chartDataUrl: string
+): InfoData {
   const accidents = accidentsConfigurator?.value
   if (Array.isArray(params) && params.length > 1) {
     const filteredParams = filterUniqueByName(params)
@@ -239,7 +244,7 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
       series.push({ metricName: param.seriesName as string, value, color: param.color as string })
     }
 
-    return { ...info, series, deltaPrevious: undefined, deltaNext: undefined }
+    return { ...info, series, deltaPrevious: undefined, deltaNext: undefined, chartDataUrl, buildIdPrevious: undefined, buildIdNext: undefined }
   } else {
     if (Array.isArray(params)) {
       params = params[0]
@@ -251,12 +256,16 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
     const delta = findDeltaInData(dataSeries)
     let deltaPrevious: string | undefined
     let deltaNext: string | undefined
+    let buildIdPrevious: number | undefined
+    let buildIdNext: number | undefined
     if (delta != undefined) {
       if (delta.prev != null) {
         deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", info.type)
+        buildIdPrevious = delta.prevBuildId
       }
       if (delta.next != null) {
         deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
+        buildIdNext = delta.nextBuildId
       }
     }
     return {
@@ -264,6 +273,9 @@ export function getInfoDataFrom(params: CallbackDataParams | CallbackDataParams[
       deltaNext,
       deltaPrevious,
       series: [{ metricName: info.metricName, value: showValue, color: params.color as string }],
+      chartDataUrl,
+      buildIdPrevious,
+      buildIdNext,
     }
   }
 }

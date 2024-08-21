@@ -175,8 +175,8 @@
         </a>
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
-          @click="getArtifactsUrl"
-          @click.middle="getArtifactsUrl"
+          @click="async () => openArtifactsUrl(vm.data.value)"
+          @click.middle="async () => openArtifactsUrl(vm.data.value)"
         >
           <ServerStackIcon class="w-4 h-4" />
           Test Artifacts
@@ -195,8 +195,8 @@
         <a
           v-if="data?.installerId || vm.data.value?.buildId"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
-          @click="getSpaceUrl"
-          @click.middle="getSpaceUrl"
+          @click="openSpaceUrl"
+          @click.middle="openSpaceUrl"
         >
           <SpaceIcon class="w-4 h-4" />
           Changes
@@ -215,40 +215,49 @@
   </div>
   <ReportMetricDialog
     v-if="showDialog"
-    v-model="showDialog"
+    v-model:showDialog="showDialog"
+    v-model:createIssue="showYoutrackDialog"
+    v-model:accidentToEdit="accidentToEdit"
     :accidents-configurator="accidentsConfigurator"
-    :accident-to-edit="accidentToEdit"
     :data="data"
+  />
+  <YoutrackDialog
+    v-if="showYoutrackDialog"
+    v-model="showYoutrackDialog"
+    :accident="accidentToEdit!!"
+    :data="data!!"
+    :accident-configurator="accidentsConfigurator"
   />
   <StacktraceModal
     v-if="showStacktrace"
     v-model="showStacktrace"
-    :accident="currentAccident"
+    :accident="accidentToEdit!!"
   />
 </template>
 <script setup lang="ts">
-import { computed, Ref, ref } from "vue"
+import { computed, provide, Ref, ref } from "vue"
 import { Accident, AccidentKind } from "../../../configurators/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
-import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey } from "../../../shared/keys"
+import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
 import { getTeamcityBuildType } from "../../../util/artifacts"
-import { calculateChanges } from "../../../util/changes"
 import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"
-import { tcUrl } from "./InfoSidebar"
+import { getArtifactsUrl, getSpaceUrl, InfoData, tcUrl } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
 import TestActions from "./TestActions.vue"
+import YoutrackDialog from "../youtrack/YoutrackDialog.vue"
 import StacktraceModal from "./StacktraceModal.vue"
+import { YoutrackClient } from "../youtrack/YoutrackClient"
 
 const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
+const showYoutrackDialog = ref(false)
 const showStacktrace = ref(false)
 const accidentToEdit: Ref<Accident | null> = ref(null)
-const currentAccident: Ref<Accident | null> = ref(null)
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 
@@ -256,8 +265,11 @@ const accidentsConfigurator = injectOrNull(accidentsConfiguratorKey)
 
 const data = computed(() => vm.data.value)
 
+const youtrackClient = new YoutrackClient(serverConfigurator)
+provide(youtrackClientKey, youtrackClient)
+
 const showStacktraceModalHandler = (accident: Accident) => {
-  currentAccident.value = accident
+  accidentToEdit.value = accident
   showStacktrace.value = true
 }
 
@@ -275,56 +287,27 @@ function handleCloseClick() {
   vm.close()
 }
 
-function getChangesUrl() {
+async function getChangesUrl() {
   if (serverConfigurator?.table == null) {
     window.open(vm.data.value?.changesUrl)
   } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
     const db = serverConfigurator.db
     if (db == "perfint" || db == "perfintDev") {
-      getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId, (type: string | null) => {
-        if (vm.data.value) {
-          window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
-        }
-      })
+      const type = await getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId)
+      window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
     } else {
       window.open(vm.data.value.changesUrl)
     }
   }
 }
 
-function getArtifactsUrl() {
-  if (serverConfigurator?.table == null) {
-    window.open(vm.data.value?.artifactsUrl)
-  } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
-    const db = serverConfigurator.db
-    if (db == "perfint" || db == "perfintDev") {
-      getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId, (type: string | null) => {
-        if (vm.data.value) {
-          window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=artifacts#${encodeURIComponent(replaceUnderscore("/" + vm.data.value.projectName))}`)
-        }
-      })
-    } else {
-      window.open(vm.data.value.artifactsUrl)
-    }
-  }
+async function openArtifactsUrl(data: InfoData | null) {
+  window.open(await getArtifactsUrl(data, serverConfigurator))
 }
 
-function replaceUnderscore(project: string) {
-  return project.replaceAll("_", "-")
-}
-
-function getSpaceUrl() {
-  const db = serverConfigurator?.db
-  if (db != null && (vm.data.value?.installerId ?? vm.data.value?.buildId)) {
-    calculateChanges(db, vm.data.value.installerId ?? vm.data.value.buildId, (decodedChanges: string | null) => {
-      if (decodedChanges == null || decodedChanges.length === 0) {
-        console.log("No changes found")
-        window.open(vm.data.value?.changesUrl)
-      } else {
-        window.open(`https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`)
-      }
-    })
-  }
+async function openSpaceUrl() {
+  const url = await getSpaceUrl(vm.data.value, serverConfigurator)
+  if (url != undefined) window.open(url)
 }
 
 useScrollListeners()

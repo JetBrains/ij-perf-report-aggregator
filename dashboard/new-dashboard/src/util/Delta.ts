@@ -8,18 +8,20 @@ import { durationAxisPointerFormatter } from "../components/common/formatter"
 export class Delta {
   constructor(
     public prev: number | null,
-    public next: number | null
+    public next: number | null,
+    public prevBuildId: number | undefined,
+    public nextBuildId: number | undefined
   ) {}
 
-  public static calculateDeltas(values: number[]): Delta[] {
+  public static calculateDeltas(values: number[], buildIds: number[]): Delta[] {
     const deltas: Delta[] = []
-    deltas.push(new Delta(null, values[1]))
+    deltas.push(new Delta(null, values[1], undefined, buildIds[1]))
     for (let i = 1; i < values.length - 1; i++) {
       if (i > 0 && i < values.length + 1) {
-        deltas.push(new Delta(values[i - 1], values[i + 1]))
+        deltas.push(new Delta(values[i - 1], values[i + 1], buildIds[i - 1], buildIds[i + 1]))
       }
     }
-    deltas.push(new Delta(values.at(-2) as number, null))
+    deltas.push(new Delta(values.at(-2) as number, null, buildIds.at(-2) as number, undefined))
     return deltas
   }
 }

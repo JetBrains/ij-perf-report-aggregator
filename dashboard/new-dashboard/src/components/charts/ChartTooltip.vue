@@ -164,15 +164,14 @@ function cancelHide() {
   hide.clear()
 }
 
-function navigateToSpace() {
+async function navigateToSpace() {
   if (tooltipData.value != null) {
-    calculateChanges("ij", tooltipData.value.firstSeriesData[5], (decodedChanges: string | null) => {
-      if (decodedChanges == null) {
-        window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value?.firstSeriesData[3]}&tab=buildChangesDiv`)
-      } else {
-        window.open("https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22" + decodedChanges + "%22&tab=changes")
-      }
-    })
+    const decodedChanges = await calculateChanges("ij", tooltipData.value.firstSeriesData[5])
+    if (decodedChanges == null) {
+      window.open(`https://buildserver.labs.intellij.net/viewLog.html?buildId=${tooltipData.value.firstSeriesData[3]}&tab=buildChangesDiv`)
+    } else {
+      window.open("https://jetbrains.team/p/ij/repositories/ultimate/commits?query=%22" + decodedChanges + "%22&tab=changes")
+    }
   }
 }
 

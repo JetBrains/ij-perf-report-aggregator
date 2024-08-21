@@ -11,9 +11,7 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { useRouter } from "vue-router"
-import { dbTypeStore } from "../../../shared/dbTypes"
-import { DBType, InfoData } from "./InfoSidebar"
-import { getMachineGroupName } from "../../../configurators/MachineConfigurator"
+import { getNavigateToTestUrl, InfoData } from "./InfoSidebar"
 
 const router = useRouter()
 
@@ -90,37 +88,7 @@ function openTestInIDE(methodName: string) {
 }
 
 function handleNavigateToTest() {
-  const currentRoute = router.currentRoute.value
-  let parts = currentRoute.path.split("/")
-  if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
-    parts = ["", "ij", "explore"]
-  } else if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
-    parts = ["", "fleet", "startupExplore"]
-  } else {
-    parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
-  }
-  const branch = props.data?.branch ?? ""
-  const machineGroup = getMachineGroupName(props.data?.machineName ?? "")
-  const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
-  const testURL = parts.join("/")
-
-  const queryParams: string = new URLSearchParams({
-    ...currentRoute.query,
-    project: props.data?.projectName ?? "",
-    branch: majorBranch,
-    machine: machineGroup,
-  }).toString()
-
-  const measures =
-    props.data?.series
-      .map((s) => s.metricName)
-      .filter((m): m is string => m != undefined)
-      .map((m) => (dbTypeStore().isIJStartup() && m.includes("/") ? "metrics." + m : m))
-      .map((m) => encodeURIComponent(m))
-      .map((m) => "&measure=" + m)
-      .join("") ?? ""
-
-  window.open(router.resolve(testURL + "?" + queryParams + measures).href, "_blank")
+  window.open(getNavigateToTestUrl(props.data, router), "_blank")
 }
 </script>
 <style #scoped>

@@ -14,38 +14,40 @@ export function base64ToHex(base64: string): string {
   return hex
 }
 
-export function calculateChanges(db: string, id: number, whenDone: (decodedChanges: string | null) => void) {
-  const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))
-  const separator = ".."
-  new DataQueryExecutor([
-    new ServerWithCompressConfigurator(db, "installer", serverUrlObservable),
-    new (class implements DataQueryConfigurator {
-      configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
-        configuration.queryProducers.push(new SimpleQueryProducer())
-        query.addField({ n: "changes", sql: `arrayStringConcat(changes,'${separator}')` })
-        query.addFilter({ f: "id", v: id })
-        query.order = "changes"
-        return true
-      }
+export async function calculateChanges(db: string, id: number): Promise<string | null> {
+  return new Promise((resolve, _) => {
+    const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))
+    const separator = ".."
+    new DataQueryExecutor([
+      new ServerWithCompressConfigurator(db, "installer", serverUrlObservable),
+      new (class implements DataQueryConfigurator {
+        configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
+          configuration.queryProducers.push(new SimpleQueryProducer())
+          query.addField({ n: "changes", sql: `arrayStringConcat(changes,'${separator}')` })
+          query.addFilter({ f: "id", v: id })
+          query.order = "changes"
+          return true
+        }
 
-      createObservable(): Observable<unknown> | null {
-        return null
+        createObservable(): Observable<unknown> | null {
+          return null
+        }
+      })(),
+    ]).subscribe((data, _configuration, isLoading) => {
+      if (isLoading || data == null) {
+        return
       }
-    })(),
-  ]).subscribe((data, _configuration, isLoading) => {
-    if (isLoading || data == null) {
-      return
-    }
-    const changes = data.flat(3)[0]
-    if (typeof changes === "string") {
-      //commit has to be decoded as base64 and converted to hex
-      const changesDecoded = changes
-        .split(separator)
-        .map((it) => base64ToHex(it))
-        .join("%2C")
-      whenDone(changesDecoded)
-    } else {
-      whenDone(null)
-    }
+      const changes = data.flat(3)[0]
+      if (typeof changes === "string") {
+        //commit has to be decoded as base64 and converted to hex
+        const changesDecoded = changes
+          .split(separator)
+          .map((it) => base64ToHex(it))
+          .join("%2C")
+        resolve(changesDecoded)
+      } else {
+        resolve(null)
+      }
+    })
   })
 }

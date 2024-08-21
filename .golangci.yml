@@ -109,7 +109,6 @@ linters:
     - durationcheck # checks for two durations multiplied together
     - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
     - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
-    - exportloopref # checks for pointers to enclosing loop variables
     - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
     - gocritic # provides diagnostics that check for bugs, performance and style issues
     - gomodguard # allow and block lists linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations

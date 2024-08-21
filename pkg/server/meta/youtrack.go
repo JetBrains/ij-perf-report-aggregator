@@ -117,13 +117,14 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
-		response.Issue = *issue
 
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
 			return
 		}
+
+		response.Issue = *issue
 
 		err = marshalAndWriteIssueResponse(writer, &response)
 		if err != nil {

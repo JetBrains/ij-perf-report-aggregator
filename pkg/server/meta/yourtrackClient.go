@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -81,6 +82,7 @@ func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueI
 		return nil, fmt.Errorf("error marshaling info: %w", err)
 	}
 
+	slog.Info("Create issue data:", "info", body)
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}

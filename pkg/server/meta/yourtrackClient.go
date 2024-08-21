@@ -72,7 +72,7 @@ func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint st
 	bodyBytes, err := io.ReadAll(resp.Body)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {

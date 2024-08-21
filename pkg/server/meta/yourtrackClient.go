@@ -69,11 +69,18 @@ func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint st
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("request failed with status: %s", resp.Status)
+	bodyBytes, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %v", err)
 	}
 
-	return io.ReadAll(resp.Body)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		bodyString := string(bodyBytes)
+		return nil, fmt.Errorf("request failed with status: %s. Body: %s", resp.Status, bodyString)
+	}
+
+	return bodyBytes, nil
 }
 
 func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueInfo) (*YoutrackIssue, error) {

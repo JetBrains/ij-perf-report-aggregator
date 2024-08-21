@@ -89,7 +89,15 @@ func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueI
 		return nil, fmt.Errorf("error marshaling info: %w", err)
 	}
 
-	slog.Info("Create issue data:", "info", body)
+	slog.Info("Create issue data:", "info", string(body))
+
+	var jsonData map[string]interface{}
+	if err := json.Unmarshal(body, &jsonData); err != nil {
+		slog.Error("error unmarshalling JSON:", "error", err)
+	} else {
+		slog.Info("JSON is valid")
+	}
+
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}

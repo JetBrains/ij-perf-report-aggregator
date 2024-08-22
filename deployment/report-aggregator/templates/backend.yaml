@@ -36,10 +36,7 @@ spec:
                   name: ij-perf-data-tc
                   key: token
             - name: YOUTRACK_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: ij-perf-data-youtrack
-                  key: token
+              value: {{ .Values.youtrack.token | quote }}
           resources:
             requests:
               cpu: "0.5"

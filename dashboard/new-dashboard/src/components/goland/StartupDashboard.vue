@@ -7,8 +7,8 @@
     <template #default="{ configurators }">
       <Divider label="Warm Startup" />
       <LineChart
-        title="Updating Go modules dependencies & go list count"
-        :measures="['metrics.progressMetric/Progress: Updating Go modules dependencies', 'metrics.progressMetric/Subtask: go list -m -json#count']"
+        title="Updating Go modules dependencies"
+        :measures="['metrics.progressMetric/Progress: Updating Go modules dependencies']"
         :configurators="configurators"
         tooltip-trigger="axis"
       />

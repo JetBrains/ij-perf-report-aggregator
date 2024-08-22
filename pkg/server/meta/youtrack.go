@@ -95,7 +95,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
     }
 
     if err != nil {
-      handleError(writer, "cannot get test history link", err, &response.Exceptions)
+      logError("cannot get test history link", err, &response.Exceptions)
     }
 
     descriptionData := GenerateDescriptionData{
@@ -137,7 +137,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
     relatedAccident.Reason = fmt.Sprintf("%s: %s", issue.IDReadable, relatedAccident.Reason)
     err = updateAccidentReason(request.Context(), metaDb, relatedAccident)
     if err != nil {
-      handleError(writer, "unable to update accident reason", err, &response.Exceptions)
+      logError("unable to update accident reason", err, &response.Exceptions)
     }
 
     writer.WriteHeader(http.StatusOK)
@@ -252,13 +252,12 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
     }
 
     if len(exceptions.Exceptions) > 0 {
-      _ = marshalAndWriteIssueResponse(writer, exceptions)
       writer.WriteHeader(http.StatusInternalServerError)
+      _ = marshalAndWriteIssueResponse(writer, exceptions)
       return
     }
 
     _ = marshalAndWriteIssueResponse(writer, exceptions)
-    writer.WriteHeader(http.StatusOK)
   }
 }
 
@@ -308,6 +307,11 @@ func getAttachmentName(filename, suffix string) string {
 func handleError(writer http.ResponseWriter, message string, err error, exceptions *[]string) {
   slog.Error(message, "error", err)
   writer.WriteHeader(http.StatusInternalServerError)
+  *exceptions = append(*exceptions, fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
+}
+
+func logError(message string, err error, exceptions *[]string) {
+  slog.Error(message, "error", err)
   *exceptions = append(*exceptions, fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 }
 

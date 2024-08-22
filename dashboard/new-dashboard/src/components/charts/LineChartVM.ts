@@ -207,7 +207,7 @@ export class LineChartVM {
           const chartRect = this.eChart.chart.getDom().getBoundingClientRect()
           const isOverflowWindow = chartRect.left + pointerLeft + element.offsetWidth > chartRect.right
 
-          return [isOverflowWindow ? pointerLeft - element.offsetWidth : pointerLeft, pointerTop - element.clientHeight - 10]
+          return [isOverflowWindow ? pointerLeft - element.offsetWidth - 10 : pointerLeft + 10, pointerTop - element.clientHeight]
         },
         // Formatting
         formatter: this.getFormatter(isMs),

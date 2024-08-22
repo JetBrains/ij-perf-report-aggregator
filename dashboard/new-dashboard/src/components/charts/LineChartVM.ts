@@ -205,9 +205,30 @@ export class LineChartVM {
           const [pointerLeft, pointerTop] = pointerCoords
           const element = tooltipElement as HTMLDivElement
           const chartRect = this.eChart.chart.getDom().getBoundingClientRect()
-          const isOverflowWindow = chartRect.left + pointerLeft + element.offsetWidth > chartRect.right
 
-          return [isOverflowWindow ? pointerLeft - element.offsetWidth - 10 : pointerLeft + 10, pointerTop - element.clientHeight]
+          const tooltipWidth = element.offsetWidth
+          const tooltipHeight = element.clientHeight
+
+          // Calculate initial positions
+          let left = pointerLeft + 10
+          let top = pointerTop - tooltipHeight - 10
+
+          // Handle horizontal overflow
+          const isOverflowRight = chartRect.left + left + tooltipWidth > chartRect.right
+          if (isOverflowRight) {
+            left = pointerLeft - tooltipWidth - 10
+          }
+
+          // Handle vertical overflow
+          const isOverflowTop = chartRect.top + top < chartRect.top
+          const isOverflowBottom = chartRect.top + top + tooltipHeight > chartRect.bottom
+          if (isOverflowTop) {
+            top = pointerTop + 10 // Position below the pointer if it overflows on top
+          } else if (isOverflowBottom) {
+            top = chartRect.bottom - tooltipHeight - 10 // Adjust to stay within the bottom edge
+          }
+
+          return [left, top]
         },
         // Formatting
         formatter: this.getFormatter(isMs),

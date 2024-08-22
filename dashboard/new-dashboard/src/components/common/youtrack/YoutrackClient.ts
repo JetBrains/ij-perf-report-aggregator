@@ -1,11 +1,9 @@
 import { ServerConfigurator } from "../dataQuery"
 
 export class YoutrackClient {
-  private availableProjects: Project[] = [
+  private commonProjects: Project[] = [
+    { name: "IntelliJ Platform", id: "22-619" },
     { name: "Automation Testing", id: "22-570" },
-    { name: "IDEA", id: "22-22" },
-    { name: "Kotlin", id: "22-68" },
-    { name: "Kotlin Plugin", id: "22-414" },
   ]
   private serverConfigurator: ServerConfigurator | null
 
@@ -52,7 +50,40 @@ export class YoutrackClient {
   }
 
   getProjects(): Project[] {
-    return this.availableProjects
+    const projectMap: { [key: string]: Project[] } = {
+      webstorm: [{ name: "WebStorm", id: "22-96" }],
+      phpstorm: [{ name: "PhpStorm", id: "22-19" }],
+      pycharm: [{ name: "PyCharm", id: "22-36" }],
+      clion: [{ name: "CLion", id: "22-139" }],
+      goland: [{ name: "GoLand", id: "22-211" }],
+      ruby: [{ name: "RubyMine", id: "22-25" }],
+      rust: [{ name: "RustRover", id: "22-725" }],
+      kotlin: [
+        { name: "Kotlin", id: "22-68" },
+        { name: "Kotlin Plugin", id: "22-414" },
+      ],
+      idea: [
+        { name: "IDEA", id: "22-22" },
+        { name: "Kotlin", id: "22-68" },
+        { name: "Kotlin Plugin", id: "22-414" },
+      ],
+      bazel: [{ name: "Bazel", id: "22-541" }],
+      jbr: [{ name: "JetBrains Runtime", id: "22-202" }],
+      qodana: [{ name: "Qodana", id: "22-332" }],
+      fleet: [{ name: "Fleet", id: "22-520" }],
+    }
+
+    let id: string = ""
+    if (this.serverConfigurator) {
+      if (this.serverConfigurator.db == "perfint" || this.serverConfigurator.db == "perfintDev") {
+        id = this.serverConfigurator.table
+      } else {
+        id = this.serverConfigurator.db
+      }
+    }
+    const relatedProjects = projectMap[id] ?? []
+
+    return [...relatedProjects, ...this.commonProjects]
   }
 }
 

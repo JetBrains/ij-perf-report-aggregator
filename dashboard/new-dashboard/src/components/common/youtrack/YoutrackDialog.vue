@@ -25,9 +25,21 @@
       placeholder="Project"
       :options="projects"
       option-label="name"
-      option-value="id"
       :disabled="downloadState != DownloadState.NOT_STARTED"
     >
+      <template #value="{ value }">
+        <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+          {{ value.name }}
+          <ChevronDownIcon
+            class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+            aria-hidden="true"
+          />
+        </div>
+      </template>
+      <template #dropdownicon>
+        <!-- empty element to avoid ignoring override of slot -->
+        <span />
+      </template>
     </Dropdown>
     <!-- Footer buttons -->
     <template #footer>
@@ -123,6 +135,7 @@ import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"
 import { getTeamcityBuildType } from "../../../util/artifacts"
+import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 
 enum DownloadState {
   NOT_STARTED,
@@ -146,8 +159,8 @@ const createException = ref(false)
 const attachmentException = ref(false)
 const downloadState = ref(DownloadState.NOT_STARTED)
 const reason = ref(props.accident?.reason ?? "")
-const project = ref("")
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
+const project = ref(projects.value[0])
 
 async function createTicket() {
   try {
@@ -159,7 +172,7 @@ async function createTicket() {
 
     const issueInfo: CreateIssueRequest = {
       accidentId: `${props.accident.id}`,
-      projectId: project.value,
+      projectId: project.value.id,
       buildLink: props.data.artifactsUrl,
       changesLink: (await getSpaceUrl(props.data, serverConfigurator)) ?? props.data.changesUrl,
       customFields: [

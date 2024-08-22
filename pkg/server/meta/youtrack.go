@@ -41,6 +41,7 @@ type GenerateDescriptionData struct {
   Changes        string
   DashboardLink  string
   TestHistoryUrl *string
+  TestMethod     *string
 }
 
 type CreateIssueResponse struct {
@@ -107,6 +108,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
       params.ChangesLink,
       params.DashboardLink,
       &testHistoryUrl,
+      params.TestMethodName,
     }
 
     issueInfo := CreateIssueInfo{
@@ -262,6 +264,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
   affectedTest := "**Affected test:**\n" + generateDescriptorData.AffectedTest
+  testMethod := "**Test method:**\n" + *generateDescriptorData.TestMethod
   affectedMetric := fmt.Sprintf("**Affected metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta)
   build := fmt.Sprintf("**Build:**\n[build link](%s)", generateDescriptorData.BuildLink)
   changes := fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes)
@@ -280,9 +283,9 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
   if generateDescriptorData.Kind != "exception" {
     logs += "\n Before: [logs-before.zip](logs-before.zip)"
     snapshots += "\n Before: [snapshots-before.zip](snapshots-before.zip)"
-    description = strings.Join([]string{affectedTest, affectedMetric, build, changes, logs, snapshots, dashboard, dashboardPng}, "\n\n")
+    description = strings.Join([]string{affectedTest, testMethod, affectedMetric, build, changes, logs, snapshots, dashboard, dashboardPng}, "\n\n")
   } else {
-    description = strings.Join([]string{affectedTest, testHistory, build, changes, logs, snapshots, stacktrace}, "\n\n")
+    description = strings.Join([]string{affectedTest, testMethod, testHistory, build, changes, logs, snapshots, stacktrace}, "\n\n")
   }
   return description
 }

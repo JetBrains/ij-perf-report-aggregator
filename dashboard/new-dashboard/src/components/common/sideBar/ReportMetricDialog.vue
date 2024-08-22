@@ -229,6 +229,13 @@ watch(reportMetricOnly, (newValue) => {
 watch(reportAllInBuild, (newValue) => {
   if (newValue) {
     reportMetricOnly.value = false
+    createIssueCheckbox.value = false
+  }
+})
+
+watch(createIssueCheckbox, (newValue) => {
+  if (newValue) {
+    reportAllInBuild.value = false
   }
 })
 

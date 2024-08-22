@@ -50,7 +50,7 @@ export class YoutrackClient {
   }
 
   getProjects(): Project[] {
-    const projectMap: { [key: string]: Project[] } = {
+    const projectMap: Record<string, Project[]> = {
       webstorm: [{ name: "WebStorm", id: "22-96" }],
       phpstorm: [{ name: "PhpStorm", id: "22-19" }],
       pycharm: [{ name: "PyCharm", id: "22-36" }],
@@ -73,14 +73,11 @@ export class YoutrackClient {
       fleet: [{ name: "Fleet", id: "22-520" }],
     }
 
-    let id: string = ""
-    if (this.serverConfigurator) {
-      if (this.serverConfigurator.db == "perfint" || this.serverConfigurator.db == "perfintDev") {
-        id = this.serverConfigurator.table
-      } else {
-        id = this.serverConfigurator.db
-      }
-    }
+    const id = this.serverConfigurator
+      ? this.serverConfigurator.db == "perfint" || this.serverConfigurator.db == "perfintDev"
+        ? this.serverConfigurator.table
+        : this.serverConfigurator.db
+      : ""
     const relatedProjects = projectMap[id] ?? []
 
     return [...relatedProjects, ...this.commonProjects]

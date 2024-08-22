@@ -136,6 +136,8 @@ import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
+import { getPersistentLink } from "../../settings/CopyLink"
+import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 
 enum DownloadState {
   NOT_STARTED,
@@ -149,6 +151,7 @@ const props = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
+  timerangeConfigurator: TimeRangeConfigurator
 }>()
 
 const youtrackClient = injectOrError(youtrackClientKey)
@@ -185,7 +188,7 @@ async function createTicket() {
         },
       ],
       testMethodName: props.data.description.value?.methodName.replaceAll("#", "."),
-      dashboardLink: `${window.location.origin}${getNavigateToTestUrl(props.data, router)}`,
+      dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(props.data, router), props.timerangeConfigurator)}`,
       affectedMetric: props.data.series[0].metricName ?? "",
       delta: props.data.deltaPrevious ?? "",
     }

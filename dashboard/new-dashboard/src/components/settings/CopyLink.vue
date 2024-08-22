@@ -25,44 +25,21 @@
 
 <script setup lang="ts">
 import { ref } from "vue"
-import { parseDuration, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
+import { getPersistentLink } from "./CopyLink"
+
 const props = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
 }>()
+
 async function copyLink() {
-  let url = window.location.href
-  const now = new Date()
-  const ago = getDateAgoByDuration(props.timerangeConfigurator.value.value)
-  const dayFrom = ago.getDate() >= 2 ? ago.getDate() - 1 : ago.getDate()
-  const dayTo = now.getDate() < 31 ? now.getDate() + 1 : now.getDate()
-  const filter = `${ago.getFullYear()}-${ago.getUTCMonth() + 1}-${dayFrom}:${now.getFullYear()}-${now.getUTCMonth() + 1}-${dayTo}`
-  url = url.replace(new RegExp("&?customRange=.+&?"), "")
-  url = url.replace(new RegExp("&?timeRange=.+&?"), "")
-  await navigator.clipboard.writeText(url + "&timeRange=custom&customRange=" + filter)
+  await navigator.clipboard.writeText(getPersistentLink(window.location.href, props.timerangeConfigurator))
   isToastVisible.value = true
   setTimeout(() => {
     isToastVisible.value = false
   }, 1500)
 }
+
 const isToastVisible = ref(false)
-function getDateAgoByDuration(s: string): Date {
-  const result = parseDuration(s)
-  let days = 0
-  if (result.days != null) {
-    days += result.days
-  }
-  if (result.months != null) {
-    days += result.months * 31
-  }
-  if (result.weeks != null) {
-    days += result.weeks * 7
-  }
-  if (result.years != null) {
-    days += result.years * 365
-  }
-  const date = new Date()
-  date.setDate(date.getDate() - days)
-  return date
-}
 </script>
 <style scoped></style>

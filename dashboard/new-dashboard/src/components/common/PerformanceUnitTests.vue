@@ -51,7 +51,7 @@
           />
         </template>
       </div>
-      <InfoSidebar />
+      <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>
   </div>
 </template>

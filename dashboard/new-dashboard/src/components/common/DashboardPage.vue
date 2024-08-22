@@ -23,7 +23,7 @@
       >
         <slot :averages-configurators="averagesConfigurators" />
       </div>
-      <InfoSidebar />
+      <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>
   </div>
 </template>

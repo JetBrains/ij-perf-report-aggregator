@@ -139,8 +139,6 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
     if err != nil {
       logError("unable to update accident reason", err, &response.Exceptions)
     }
-
-    writer.WriteHeader(http.StatusOK)
   }
 }
 

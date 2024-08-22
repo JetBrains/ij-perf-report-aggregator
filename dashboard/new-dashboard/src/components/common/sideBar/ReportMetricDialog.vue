@@ -91,7 +91,7 @@
       <label
         for="createIssue"
         class="text-sm ml-2"
-        >Create Issue</label
+        >Create YouTrack Issue</label
       >
     </div>
     <RelatedAccidents

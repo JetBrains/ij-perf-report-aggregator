@@ -49,37 +49,39 @@ export class YoutrackClient {
     }
   }
 
+  private static readonly PROJECT_MAP: Record<string, Project[]> = {
+    webstorm: [{ name: "WebStorm", id: "22-96" }],
+    phpstorm: [{ name: "PhpStorm", id: "22-19" }],
+    pycharm: [{ name: "PyCharm", id: "22-36" }],
+    clion: [{ name: "CLion", id: "22-139" }],
+    goland: [{ name: "GoLand", id: "22-211" }],
+    ruby: [{ name: "RubyMine", id: "22-25" }],
+    rust: [{ name: "RustRover", id: "22-725" }],
+    kotlin: [
+      { name: "Kotlin", id: "22-68" },
+      { name: "Kotlin Plugin", id: "22-414" },
+    ],
+    idea: [
+      { name: "IDEA", id: "22-22" },
+      { name: "Kotlin", id: "22-68" },
+      { name: "Kotlin Plugin", id: "22-414" },
+    ],
+    bazel: [{ name: "Bazel", id: "22-541" }],
+    jbr: [{ name: "JetBrains Runtime", id: "22-202" }],
+    qodana: [{ name: "Qodana", id: "22-332" }],
+    fleet: [{ name: "Fleet", id: "22-520" }],
+  }
+
+  private getConfiguratorId(): string {
+    if (!this.serverConfigurator) return ""
+    return this.serverConfigurator.db === "perfint" || this.serverConfigurator.db === "perfintDev"
+      ? this.serverConfigurator.table
+      : this.serverConfigurator.db
+  }
+
   getProjects(): Project[] {
-    const projectMap: Record<string, Project[]> = {
-      webstorm: [{ name: "WebStorm", id: "22-96" }],
-      phpstorm: [{ name: "PhpStorm", id: "22-19" }],
-      pycharm: [{ name: "PyCharm", id: "22-36" }],
-      clion: [{ name: "CLion", id: "22-139" }],
-      goland: [{ name: "GoLand", id: "22-211" }],
-      ruby: [{ name: "RubyMine", id: "22-25" }],
-      rust: [{ name: "RustRover", id: "22-725" }],
-      kotlin: [
-        { name: "Kotlin", id: "22-68" },
-        { name: "Kotlin Plugin", id: "22-414" },
-      ],
-      idea: [
-        { name: "IDEA", id: "22-22" },
-        { name: "Kotlin", id: "22-68" },
-        { name: "Kotlin Plugin", id: "22-414" },
-      ],
-      bazel: [{ name: "Bazel", id: "22-541" }],
-      jbr: [{ name: "JetBrains Runtime", id: "22-202" }],
-      qodana: [{ name: "Qodana", id: "22-332" }],
-      fleet: [{ name: "Fleet", id: "22-520" }],
-    }
-
-    const id = this.serverConfigurator
-      ? this.serverConfigurator.db == "perfint" || this.serverConfigurator.db == "perfintDev"
-        ? this.serverConfigurator.table
-        : this.serverConfigurator.db
-      : ""
-    const relatedProjects = projectMap[id] ?? []
-
+    const id = this.getConfiguratorId()
+    const relatedProjects = YoutrackClient.PROJECT_MAP[id] ?? []
     return [...relatedProjects, ...this.commonProjects]
   }
 }

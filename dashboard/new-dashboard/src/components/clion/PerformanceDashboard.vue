@@ -96,6 +96,17 @@
       />
     </section>
 
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="[Radler vs clangd] Resolve All References (cmake)"
+          :measure="['clangd_light_modules_total_time_s', 'clangd_no_modules_total_time_s', 'nova_resolving_references_s']"
+          :projects="['radler/cmakeResolving/measureResolve/cmake']"
+          :value-unit="'counter'"
+        />
+      </div>
+    </section>
+
     <Divider title="Completion" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">

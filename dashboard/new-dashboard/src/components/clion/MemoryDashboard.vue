@@ -23,6 +23,18 @@
       />
     </section>
 
+    <Divider title="Resolving References" />
+
+    <section>
+      <!--TODO: value-unit doesn't work!-->
+      <GroupProjectsChart
+        label="[Radler vs clangd] Resolve All References (cmake)"
+        :measure="['clangd_light_modules_total_memory_mb', 'clangd_no_modules_total_memory_mb', 'nova_total_memory_mb']"
+        :projects="['radler/cmakeResolving/measureResolve/cmake']"
+        :value-unit="'counter'"
+      />
+    </section>
+
     <Divider title="Go To Declaration" />
 
     <section>
@@ -165,4 +177,5 @@
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import CLionVsRadlerMemoryUsageChart from "./CLionVsRadlerMemoryUsageChart.vue"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 </script>

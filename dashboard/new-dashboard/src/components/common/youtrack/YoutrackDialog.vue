@@ -9,7 +9,7 @@
       <FloatLabel class="w-full">
         <InputText
           id="label"
-          v-model="reason"
+          v-model="label"
           class="w-full"
           :disabled="downloadState != DownloadState.NOT_STARTED"
         />
@@ -161,7 +161,7 @@ const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
 const downloadState = ref(DownloadState.NOT_STARTED)
-const reason = ref(props.accident?.reason ?? "")
+const label = ref(props.accident?.reason ?? "")
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
 
@@ -175,6 +175,7 @@ async function createTicket() {
 
     const issueInfo: CreateIssueRequest = {
       accidentId: `${props.accident.id}`,
+      ticketLabel: label.value,
       projectId: project.value.id,
       buildLink: props.data.artifactsUrl,
       changesLink: (await getSpaceUrl(props.data, serverConfigurator)) ?? props.data.changesUrl,

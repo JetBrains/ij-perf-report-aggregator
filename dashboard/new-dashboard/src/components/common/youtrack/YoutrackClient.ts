@@ -111,6 +111,7 @@ export interface UploadAttachmentsRequest {
 
 export interface CreateIssueRequest {
   accidentId: string
+  ticketLabel: string
   projectId: string
   buildLink: string
   changesLink: string

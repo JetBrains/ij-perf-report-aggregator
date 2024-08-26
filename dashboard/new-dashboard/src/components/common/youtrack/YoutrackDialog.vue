@@ -172,6 +172,7 @@ async function createTicket() {
     if (props.accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
     downloadState.value = DownloadState.STARTED
     const buildId = props.data.buildId
+    const affectedMetric = props.data.series[0].metricName ?? ""
 
     const issueInfo: CreateIssueRequest = {
       accidentId: `${props.accident.id}`,
@@ -190,8 +191,8 @@ async function createTicket() {
       ],
       testMethodName: props.data.description.value?.methodName.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(props.data, router), props.timerangeConfigurator)}`,
-      affectedMetric: props.data.series[0].metricName ?? "",
-      delta: props.data.deltaPrevious ?? "",
+      affectedMetric: affectedMetric,
+      delta: props.data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
     }
 
     let issueResponse: IssueResponse
@@ -218,6 +219,12 @@ async function createTicket() {
     try {
       const buildType = await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, buildId)
       if (buildType == null) throw new Error("Cannot upload attachments without buildType")
+
+      let affectedTest = props.accident.affectedTest
+
+      if (affectedTest.endsWith(affectedMetric)) {
+        affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
+      }
       const attachmentsInfo: UploadAttachmentsRequest = {
         issueId: issueResponse.issue.id,
         teamcityAttachmentInfo: {
@@ -225,7 +232,7 @@ async function createTicket() {
           currentBuildId: buildId,
           previousBuildId: undefined,
         },
-        affectedTest: props.accident.affectedTest,
+        affectedTest: affectedTest,
         chartPng: undefined,
       }
       if (props.accident.kind != AccidentKind.Exception) {

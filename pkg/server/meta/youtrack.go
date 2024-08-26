@@ -90,8 +90,8 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			affectedTest = strings.TrimSuffix(affectedTest, "/"+affectedMetric)
 		}
 
-		var testHistoryUrl string
-		if params.TestMethodName != nil {
+		var testHistoryUrl = ""
+		if params.TestMethodName != nil && lowerKind == "exception" {
 			testHistoryUrl, err = teamCityClient.getTestHistoryUrl(request.Context(), *params.TestMethodName)
 		}
 

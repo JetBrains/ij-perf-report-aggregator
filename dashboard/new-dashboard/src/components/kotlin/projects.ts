@@ -45,8 +45,8 @@ const MEASURES = {
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
   findUsagesScenarioMeasures: [
-    { name: "findUsages_firstUsage_background_1", label: "First usage found first iteration" },
-    { name: "findUsages_firstUsage_background#mean_value", label: "First usage found mean value" },
+    { name: "findUsagesInBackground_firstUsage_1", label: "First usage found first iteration" },
+    { name: "findUsagesInBackground_firstUsage#mean_value", label: "First usage found mean value" },
     { name: "FindUsagesTotal#mean_value", label: "Total find usages time mean value" },
   ],
   completionCausingModificationMeasures: [{ name: "total_test_step#mean_value", label: "Total test time" }],

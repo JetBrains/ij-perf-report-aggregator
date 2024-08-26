@@ -20,8 +20,8 @@
           <LineChart
             v-for="metric in metricNames"
             key="metric"
-            title="editor appeared"
-            :measures="[metric]"
+            :title="metric"
+            :measures="[metric + '.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
@@ -33,8 +33,8 @@
           <LineChart
             v-for="metric in metricNames"
             :key="'shortCircuit.' + metric"
-            title="editor appeared"
-            :measures="['shortCircuit.' + metric]"
+            :title="'shortCircuit.' + metric"
+            :measures="['shortCircuit.' + metric + '.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
@@ -46,8 +46,8 @@
           <LineChart
             v-for="metric in metricNames"
             :key="'cds.shortCircuit.' + metric"
-            title="editor appeared"
-            :measures="['cds.shortCircuit.' + metric]"
+            :title="'cds.shortCircuit.' + metric"
+            :measures="['cds.shortCircuit.' + metric + '.end']"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
@@ -91,7 +91,7 @@ const sidebarVm = new InfoSidebarImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const metricNames = ["editor appeared.end", "time to edit.end", "terminal ready.end", "file tree rendered.end", "highlighting done.end", "window appeared.end"]
+const metricNames = ["editor appeared", "time to edit", "terminal ready", "file tree rendered", "highlighting done", "window appeared"]
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)

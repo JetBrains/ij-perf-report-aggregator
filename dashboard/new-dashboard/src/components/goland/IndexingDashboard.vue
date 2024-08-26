@@ -9,70 +9,56 @@
       <GroupProjectsChart
         label="Indexing Time Without Pauses: light projects"
         measure="indexingTimeWithoutPauses"
-        :projects="['goland/cockroach/indexing', 'goland/delve/indexing', 'goland/mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Indexing Time Without Pauses: heavy projects"
         measure="indexingTimeWithoutPauses"
-        :projects="['goland/kubernetes/indexing', 'goland/flux/indexing', 'goland/istio/indexing']"
+        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files: light projects"
         measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['goland/cockroach/indexing', 'goland/delve/indexing', 'goland/mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files: heavy projects"
         measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['goland/kubernetes/indexing', 'goland/flux/indexing', 'goland/istio/indexing']"
+        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Processing time for GO files: light projects"
         measure="processingTime#Go"
-        :projects="['goland/cockroach/indexing', 'goland/delve/indexing', 'goland/mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Processing time for GO files: heavy projects"
         measure="processingTime#Go"
-        :projects="['goland/kubernetes/indexing', 'goland/flux/indexing', 'goland/istio/indexing']"
+        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files - second IDE run"
         measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="[
-          'goland/kubernetes/secondScanning',
-          'goland/flux/secondScanning',
-          'goland/istio/secondScanning',
-          'goland/cockroach/secondScanning',
-          'goland/delve/secondScanning',
-          'goland/mattermost/secondScanning',
-        ]"
+        :projects="['kubernetes/secondScanning', 'flux/secondScanning', 'istio/secondScanning', 'cockroach/secondScanning', 'delve/secondScanning', 'mattermost/secondScanning']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files - third IDE run"
         measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="[
-          'goland/kubernetes/thirdScanning',
-          'goland/flux/thirdScanning',
-          'goland/istio/thirdScanning',
-          'goland/cockroach/thirdScanning',
-          'goland/delve/thirdScanning',
-          'goland/mattermost/thirdScanning',
-        ]"
+        :projects="['kubernetes/thirdScanning', 'flux/thirdScanning', 'istio/thirdScanning', 'cockroach/thirdScanning', 'delve/thirdScanning', 'mattermost/thirdScanning']"
       />
     </section>
   </DashboardPage>

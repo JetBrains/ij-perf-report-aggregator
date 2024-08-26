@@ -190,8 +190,6 @@
           <ArrowDownTrayIcon class="w-4 h-4" />
           Installer
         </a>
-      </div>
-      <div class="flex gap-4 text-primary justify-center">
         <a
           v-if="data?.installerId || vm.data.value?.buildId"
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"

@@ -9,26 +9,21 @@
       <GroupProjectsChart
         label="Local inspection execution time"
         measure="localInspections"
-        :projects="['goland/istio/localInspection', 'goland/minotaur/localInspection']"
+        :projects="['istio/localInspection', 'minotaur/localInspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Global inspection execution time: light projects"
+        label="Global inspection execution time"
         measure="globalInspections"
-        :projects="['goland/delve/inspection', 'goland/kubernetes/inspection']"
+        :projects="['delve/inspection', 'kubernetes/inspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Single inspections execution time (cockroach)"
         measure="globalInspections"
-        :projects="[
-          'goland/singleInspection/cockroach/VgoDependencyUpdateAvailable',
-          'goland/singleInspection/cockroach/GoUnnecessarilyExportedIdentifiers',
-          'goland/singleInspection/cockroach/GoNilness',
-          'goland/singleInspection/cockroach/GoBoolExpressions',
-        ]"
+        :projects="['singleInspection/cockroach/VgoDependencyUpdateAvailable']"
       />
     </section>
   </DashboardPage>

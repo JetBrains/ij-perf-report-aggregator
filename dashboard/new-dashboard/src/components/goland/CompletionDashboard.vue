@@ -9,28 +9,28 @@
       <GroupProjectsChart
         label="Typing Latency (mattermost)"
         measure="typing#latency#mean_value"
-        :projects="['goland/typing/mattermost']"
+        :projects="['typing/mattermost']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Auto-import Completion"
+        label="Auto-import Completion (kubernetes)"
         measure="completion"
-        :projects="['goland/autoImportCompletion/autoImportCompletion']"
+        :projects="['kubernetesImport/completion']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Basic Completion"
+        label="Basic Completion (caddy)"
         measure="completion"
-        :projects="['goland/basicCompletionSpeed/basicCompletionSpeed']"
+        :projects="['caddyBasic/completion']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Smart Completion"
         measure="completion"
-        :projects="['goland/smartCompletionSpeed/smartCompletionSpeed']"
+        :projects="['smartCompletion/completion']"
       />
     </section>
   </DashboardPage>

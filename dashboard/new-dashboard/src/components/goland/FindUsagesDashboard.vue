@@ -9,60 +9,42 @@
       <GroupProjectsChart
         label="Find Usages (vault): Execution Time"
         measure="findUsages"
-        :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
+        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages (vault): First Usage Time"
         measure="findUsages_firstUsage"
-        :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
+        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages (vault): Number of Usages"
         measure="findUsages#number"
-        :projects="['goland/findUsages/unmarshalJSON', 'goland/findUsages/path', 'goland/findUsages/backend', 'goland/findUsages/string', 'goland/findUsages/list']"
+        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages (pocketbase): Execution Time"
         measure="findUsages"
-        :projects="[
-          'goland/findUsages/write(method)',
-          'goland/findUsages/start(method)',
-          'goland/findUsages/open(method)',
-          'goland/findUsages/close(method)',
-          'goland/findUsages/file(struct)',
-        ]"
+        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages (pocketbase): First Usage Time"
         measure="findUsages_firstUsage"
-        :projects="[
-          'goland/findUsages/write(method)',
-          'goland/findUsages/start(method)',
-          'goland/findUsages/open(method)',
-          'goland/findUsages/close(method)',
-          'goland/findUsages/file(struct)',
-        ]"
+        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Find Usages (pocketbase): Number of Usages"
         measure="findUsages#number"
-        :projects="[
-          'goland/findUsages/write(method)',
-          'goland/findUsages/start(method)',
-          'goland/findUsages/open(method)',
-          'goland/findUsages/close(method)',
-          'goland/findUsages/file(struct)',
-        ]"
+        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
       />
     </section>
   </DashboardPage>

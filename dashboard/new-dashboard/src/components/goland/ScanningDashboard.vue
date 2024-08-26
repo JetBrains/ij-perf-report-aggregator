@@ -7,23 +7,23 @@
   >
     <section>
       <GroupProjectsChart
-        label="Scanning time: first, second and third IDE runs"
+        label="Scanning time: first, second and third IDE runs (kubernetes)"
         measure="scanningTimeWithoutPauses"
-        :projects="['goland/kubernetes/indexing', 'goland/kubernetes/secondScanning', 'goland/kubernetes/thirdScanning']"
+        :projects="['kubernetes/indexing', 'kubernetes/secondScanning', 'kubernetes/thirdScanning']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning time without pauses"
         measure="scanningTimeWithoutPauses"
-        :projects="['goland/cockroach/indexing', 'goland/delve/indexing', 'goland/flux/indexing', 'goland/istio/indexing', 'goland/mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing', 'mattermost/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Numbers of runs of scanning"
         measure="numberOfRunsOfScannning"
-        :projects="['goland/cockroach/indexing', 'goland/delve/indexing', 'goland/flux/indexing', 'goland/istio/indexing', 'goland/mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'flux/indexing', 'istio/indexing', 'mattermost/indexing']"
       />
     </section>
   </DashboardPage>

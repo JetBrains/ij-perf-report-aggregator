@@ -16,47 +16,12 @@
         class="flex flex-1 flex-col gap-6 overflow-hidden"
       >
         <Divider title="Remote Mode" />
-        <!-- :skip-zero-values="false"
-:configurators="dashboardConfigurators" because computed measures cannot be filtered -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
+            v-for="metric in metricNames"
+            key="metric"
             title="editor appeared"
-            :measures="['editor appeared.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="time to edit"
-            :measures="['time to edit.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="terminal ready"
-            :measures="['terminal ready.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="file tree rendered"
-            :measures="['file tree rendered.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="highlighting done"
-            :measures="['highlighting done.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="window appeared"
-            :measures="['window appeared.end']"
+            :measures="[metric]"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
@@ -66,43 +31,23 @@
         <Divider title="ShortCircuit" />
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
+            v-for="metric in metricNames"
+            :key="'shortCircuit.' + metric"
             title="editor appeared"
-            :measures="['shortCircuit.editor appeared.end']"
+            :measures="['shortCircuit.' + metric]"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
           />
+        </div>
+
+        <Divider title="ShortCircuit CDS" />
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
-            title="time to edit"
-            :measures="['shortCircuit.time to edit.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="terminal ready"
-            :measures="['shortCircuit.terminal ready.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="file tree rendered"
-            :measures="['shortCircuit.file tree rendered.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="highlighting done"
-            :measures="['shortCircuit.highlighting done.end']"
-            :skip-zero-values="false"
-            :configurators="dashboardConfigurators"
-            :with-measure-name="true"
-          />
-          <LineChart
-            title="window appeared"
-            :measures="['shortCircuit.window appeared.end']"
+            v-for="metric in metricNames"
+            :key="'cds.shortCircuit.' + metric"
+            title="editor appeared"
+            :measures="['cds.shortCircuit.' + metric]"
             :skip-zero-values="false"
             :configurators="dashboardConfigurators"
             :with-measure-name="true"
@@ -145,6 +90,8 @@ const sidebarVm = new InfoSidebarImpl()
 
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
+
+const metricNames = ["editor appeared.end", "time to edit.end", "terminal ready.end", "file tree rendered.end", "highlighting done.end", "window appeared.end"]
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)

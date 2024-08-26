@@ -4,7 +4,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.22",
     "@heroicons/vue": "2.1.5",
-    "@vueuse/core": "^11.0.1",
+    "@vueuse/core": "^11.0.3",
     "compare-versions": "6.1.1",
     "echarts": "5.5.1",
     "echarts-stat": "1.2.0",
@@ -21,7 +21,7 @@
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^24.0.0",
-    "jsdom": "^24.1.1",
+    "jsdom": "^25.0.0",
     "msw": "^2.3.5"
   }
 }

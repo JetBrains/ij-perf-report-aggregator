@@ -74,9 +74,7 @@ export class YoutrackClient {
 
   private getConfiguratorId(): string {
     if (!this.serverConfigurator) return ""
-    return this.serverConfigurator.db === "perfint" || this.serverConfigurator.db === "perfintDev"
-      ? this.serverConfigurator.table
-      : this.serverConfigurator.db
+    return this.serverConfigurator.db === "perfint" || this.serverConfigurator.db === "perfintDev" ? this.serverConfigurator.table : this.serverConfigurator.db
   }
 
   getProjects(): Project[] {

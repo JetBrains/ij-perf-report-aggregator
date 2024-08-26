@@ -19,7 +19,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4">
           <LineChart
             v-for="metric in metricNames"
-            key="metric"
+            :key="metric"
             :title="metric"
             :measures="[metric + '.end']"
             :skip-zero-values="false"

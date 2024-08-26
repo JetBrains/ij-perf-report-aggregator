@@ -191,7 +191,7 @@ async function createTicket() {
       ],
       testMethodName: props.data.description.value?.methodName.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(props.data, router), props.timerangeConfigurator)}`,
-      affectedMetric: affectedMetric,
+      affectedMetric,
       delta: props.data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
     }
 
@@ -232,7 +232,7 @@ async function createTicket() {
           currentBuildId: buildId,
           previousBuildId: undefined,
         },
-        affectedTest: affectedTest,
+        affectedTest,
         chartPng: undefined,
       }
       if (props.accident.kind != AccidentKind.Exception) {

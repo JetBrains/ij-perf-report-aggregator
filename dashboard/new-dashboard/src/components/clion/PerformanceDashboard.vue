@@ -75,8 +75,8 @@
 
     <section>
       <CLionVsRadlerIndexingChart
-        label="Index project (OpenCV)"
-        project="opencv/indexing"
+        label="Index project (LLVM)"
+        project="llvm/indexing"
       />
     </section>
 

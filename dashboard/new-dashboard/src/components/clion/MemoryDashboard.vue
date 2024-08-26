@@ -9,6 +9,14 @@
 
     <section>
       <CLionVsRadlerMemoryUsageChart
+        label="LLVM - After Indexing"
+        measure="afterIndexing"
+        project="llvm/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerMemoryUsageChart
         label="OpenCV - After Indexing"
         measure="afterIndexing"
         project="opencv/indexing"

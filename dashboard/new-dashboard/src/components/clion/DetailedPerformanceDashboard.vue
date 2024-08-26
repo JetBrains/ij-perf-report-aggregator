@@ -98,6 +98,13 @@
 
     <section>
       <CLionVsRadlerIndexingChart
+        label="Index project (LLVM)"
+        project="llvm/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerIndexingChart
         label="Index project (OpenCV)"
         project="opencv/indexing"
       />

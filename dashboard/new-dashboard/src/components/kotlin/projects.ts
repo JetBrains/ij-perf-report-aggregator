@@ -50,13 +50,7 @@ const MEASURES = {
     { name: "FindUsagesTotal#mean_value", label: "Total find usages time mean value" },
   ],
   completionCausingModificationMeasures: [{ name: "total_test_step#mean_value", label: "Total test time" }],
-  renameAndCompletionMeasures: [
-    { name: "open_and_highlighting_rename_file#mean_value", label: "Open rename file and wait for highlighting" },
-    { name: "open_and_highlighting_completion_file#mean_value", label: "Open completion file and wait for highlighting" },
-    { name: "rename_and_highlighting#mean_value", label: "Rename symbol and wait for highlighting" },
-    { name: "typing_and_completion#mean_value", label: "Typing text and do completion" },
-    { name: "choose_completion_and_highlighting#mean_value", label: "Choose completion and wait for highlighting" },
-  ],
+  renameAndCompletionMeasures: [{ name: "total_test_step#mean_value", label: "Total test time" }],
   errorCodeModificationMeasures: [{ name: "typing_and_highlighting#mean_value", label: "Make/fix error and wait for highlighting" }],
   goToImplementationScenarioMeasures: (tag: string) => [
     { name: "execute_editor_gotoimplementation_1", label: `Go to implementation first iteration ${tag}` },

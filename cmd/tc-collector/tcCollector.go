@@ -235,7 +235,7 @@ func buildTeamCityQuery() string {
 
 func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectTimeToSet time.Time, db driver.Conn) error {
   //goland:noinspection SqlResolve
-  batch, err := db.PrepareBatch(ctx, "insert into collector_state values")
+  batch, err := db.PrepareBatch(ctx, "insert into collector_state (build_type_id, last_time)", driver.WithReleaseConnection())
   if err != nil {
     return fmt.Errorf("cannot prepare batch: %w", err)
   }

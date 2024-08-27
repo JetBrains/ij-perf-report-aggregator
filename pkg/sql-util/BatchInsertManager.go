@@ -134,7 +134,7 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
 
   if t.batch == nil {
     var err error
-    t.batch, err = t.Db.PrepareBatch(t.InsertContext, t.insertSql)
+    t.batch, err = t.Db.PrepareBatch(t.InsertContext, t.insertSql, driver.WithReleaseConnection())
     if err != nil {
       return nil, fmt.Errorf("cannot prepare batch: %w", err)
     }

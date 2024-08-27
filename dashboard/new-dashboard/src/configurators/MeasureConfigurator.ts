@@ -437,6 +437,10 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
   const seriesIdToSeriesName = new Map<number, string>()
   const seriesIdToMeasureName = new Map<number, string>()
   for (const [dataIndex, seriesData] of dataList.entries()) {
+    if (seriesData[1].length === 0) {
+      console.log("Serie is empty and will be hidden: " + configuration.seriesNames[dataIndex])
+      continue
+    }
     const measureName = configuration.measureNames[dataIndex]
     let seriesName = configuration.seriesNames[dataIndex]
     //fleet

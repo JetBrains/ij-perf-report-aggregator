@@ -2,11 +2,11 @@
   <section class="flex gap-x-6 flex-col md:flex-row">
     <div class="flex-1 min-w-0">
       <section>
-        <!-- TODO: find better way of presenting two projects with different metrics on the same chart -->
         <GroupProjectsChart
           :label="label"
-          :measure="['fus_dumb_indexing_time', 'backendIndexingTimeMs']"
+          :measure="['ocSymbolBuildingTimeMs', 'backendIndexingTimeMs']"
           :projects="[clionProject, radlerProject]"
+          :legend-formatter="legendFormatter"
         />
       </section>
     </div>
@@ -24,4 +24,8 @@ const props = defineProps<{
 const clionProject = `clion/${props.project}`
 const radlerProject = `radler/${props.project}`
 const label = `[CLion vs Radler] ${props.label}`
+const frontendMetric = `${clionProject.replace("/indexing", "")} – ocSymbolBuildingTimeMs`
+const backendMetric = `${radlerProject.replace("/indexing", "")} – backendIndexingTimeMs`
+
+const legendFormatter = (name: string) => name.replace(frontendMetric, "CLion").replace(backendMetric, "Radler")
 </script>

@@ -86,13 +86,6 @@
         />
       </div>
     </section>-->
-    <section>
-      <CLionVsRadlerGroupProjectsChart
-        label="Inspect project (not only C/C++) (fmtlib)"
-        measure="globalInspections"
-        project="fmtlib/inspection"
-      />
-    </section>
 
     <Divider title="Indexing" />
 
@@ -114,6 +107,16 @@
       <CLionVsRadlerIndexingChart
         label="Index project (curl)"
         project="curl/indexing"
+      />
+    </section>
+
+    <Divider title="Inspection" />
+
+    <section>
+      <CLionVsRadlerGroupProjectsChart
+        label="Inspect project (not only C/C++) (fmtlib)"
+        measure="globalInspections"
+        project="fmtlib/inspection"
       />
     </section>
 

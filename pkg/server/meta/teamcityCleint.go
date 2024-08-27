@@ -67,7 +67,7 @@ func (client *TeamCityClient) makeRequest(ctx context.Context, endpoint string, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return resp, fmt.Errorf("Request failed: %s", resp.Status)
+		return resp, fmt.Errorf("request failed: %s", resp.Status)
 	}
 
 	return resp, nil

@@ -94,7 +94,8 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Block Terminal Completion"],
     measures: [["terminal-completion-all_cold", "terminal-completion-all_warm"]],
-    projects: ["BlockTerminalCompletionTest"],
+    projects: ["testCommandCompletion", "testSubcommandCompletion"],
+    aliases: ["command", "subCommand"],
   },
   {
     labels: ["Debug run configuration", "Debug step into"],

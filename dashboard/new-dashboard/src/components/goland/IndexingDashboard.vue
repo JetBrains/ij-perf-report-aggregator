@@ -7,44 +7,23 @@
   >
     <section>
       <GroupProjectsChart
-        label="Indexing Time Without Pauses: light projects"
+        label="Indexing Time"
         measure="indexingTimeWithoutPauses"
-        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Indexing Time Without Pauses: heavy projects"
-        measure="indexingTimeWithoutPauses"
-        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files: light projects"
-        measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files: heavy projects"
-        measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Processing time for GO files: light projects"
+        label="Processing time of Go files"
         measure="processingTime#Go"
-        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Processing time for GO files: heavy projects"
-        measure="processingTime#Go"
-        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+        label="Number Of Indexed Files"
+        measure="numberOfIndexedFilesWritingIndexValue"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
     <section>

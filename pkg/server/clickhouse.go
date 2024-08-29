@@ -9,6 +9,7 @@ import (
   "github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
   "github.com/valyala/bytebufferpool"
   "net/http"
+  "slices"
   "strings"
   "sync"
 )
@@ -110,13 +111,15 @@ func getMedianValues(queryResults []struct {
     wg.Add(1)
     go func() {
       defer wg.Done()
-      indexes := statistic.GetChangePointIndexes(result.MeasureValues, 1)
+      values := result.MeasureValues
+      slices.Reverse(values)
+      indexes := statistic.GetChangePointIndexes(values, 1)
       var valuesAfterLastChangePoint []int
       if len(indexes) == 0 {
-        valuesAfterLastChangePoint = result.MeasureValues
+        valuesAfterLastChangePoint = values
       } else {
         lastIndex := indexes[len(indexes)-1]
-        valuesAfterLastChangePoint = result.MeasureValues[lastIndex:]
+        valuesAfterLastChangePoint = values[lastIndex:]
       }
       median := statistic.Median(valuesAfterLastChangePoint)
 

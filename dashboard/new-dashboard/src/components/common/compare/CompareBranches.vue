@@ -261,14 +261,14 @@ function handleNavigateToTest(project: string, metric: string) {
   parts[parts.length - 1] = dbTypeStore().dbType == DBType.INTELLIJ_DEV ? "testsDev" : "tests"
   const testURL = parts.join("/")
 
-  const queryParams = new URLSearchParams(currentRoute.query)
+  const queryParams = new URLSearchParams(currentRoute.query as Record<string, string>)
   queryParams.delete("branch")
   queryParams.set("project", project)
   queryParams.set("measure", metric)
   queryParams.delete("metrics")
   queryParams.delete("tests")
 
-  window.open(router.resolve(testURL + "?" + queryParams + `&branch=${branch1.value}` + `&branch=${branch2.value}`).href, "_blank")
+  window.open(router.resolve(testURL + "?" + queryParams.toString() + `&branch=${branch1.value}` + `&branch=${branch2.value}`).href, "_blank")
 }
 </script>
 

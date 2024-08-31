@@ -55,12 +55,13 @@ const chartsDeclaration: ChartDefinition[] = metricsDeclaration.map((metric) => 
       "Bazel",
       "Bazel-BSP",
       "Datalore",
+      "gRPC-Java",
+      "Hirschgarten",
       "Synthetic 1 project",
       "Synthetic 1000 project",
       "Synthetic 10000 project",
       "Synthetic 20000 project",
       "Synthetic 5000 project",
-      "gRPC-Java",
     ],
   }
 })

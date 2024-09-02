@@ -28,7 +28,7 @@ export const timingProjects = toOneCharts("Responses", [...nameSuggestTests, ...
 export const testGenerationPassedProjects = toOneCharts("Test generation", testGenerationTests, "Passed Rate")
 export const testGenerationCompilationProjects = toOneCharts("Test generation", testGenerationTests, "Compilation Rate")
 export const testGenerationPsiValidProjects = toOneCharts("Test generation", testGenerationTests, "Psi Valid Rate")
-export const testGenerationCreditAvgProjects = toOneCharts("Test generation", testGenerationTests, "Credit Cost Avg")
+export const testGenerationCreditAvgProjects = toOneCharts("Test generation", testGenerationTests, "Credits Cost Avg")
 export const testGenerationQuotaLeftProjects = toOneCharts("Test generation", testGenerationTests, "QuotaLeft")
 
 function toChartDefinition(test: string): ChartDefinition {

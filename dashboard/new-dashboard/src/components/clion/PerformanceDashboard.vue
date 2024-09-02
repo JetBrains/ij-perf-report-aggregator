@@ -82,6 +82,14 @@
 
     <section>
       <CLionVsRadlerGroupProjectsChart
+        label="Workspace Model Update (LLVM)"
+        measure="workspaceModel.updates.ms"
+        project="llvm/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerGroupProjectsChart
         label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
         project="fmtlib/inspection"

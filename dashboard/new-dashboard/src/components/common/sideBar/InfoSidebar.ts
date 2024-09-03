@@ -52,7 +52,6 @@ export interface DataSeries {
 export enum DBType {
   FLEET = "fleet",
   JBR = "jbr",
-  DEV_FLEET = "dev_fleet",
   INTELLIJ = "intellij",
   INTELLIJ_DEV = "intellij_dev",
   QODANA = "qodana",

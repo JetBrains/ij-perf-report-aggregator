@@ -26,9 +26,6 @@ export function getBuildId(params: CallbackDataParams): number | undefined {
 
   let buildId: number | undefined
 
-  if (dbType == DBType.DEV_FLEET) {
-    buildId = dataSeries[3] as number
-  }
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
     buildId = dataSeries[5] as number
   }
@@ -63,9 +60,6 @@ export function getAccidentBuild(params: CallbackDataParams): string | undefined
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     return getFullBuildId(params)
-  }
-  if (dbType == DBType.DEV_FLEET) {
-    return getBuildId(params)?.toString()
   }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
     return getBuildId(params)?.toString()
@@ -121,11 +115,6 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   let type: ValueUnit | undefined = valueUnit
   let branch: string | undefined
   const dbType = dbTypeStore().dbType
-  if (dbType == DBType.DEV_FLEET) {
-    machineName = dataSeries[2] as string
-    projectName = dataSeries[4] as string
-    branch = dataSeries[5] as string
-  }
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {

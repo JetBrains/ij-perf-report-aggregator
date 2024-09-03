@@ -2149,10 +2149,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "fleet",
-            table: "measure",
+            table: "measure_new",
             initialMachine: "linux-blade-hetzner",
             withInstaller: false,
-            unit: "ns",
           },
           meta: { pageTitle: "Fleet Performance tests" },
         },

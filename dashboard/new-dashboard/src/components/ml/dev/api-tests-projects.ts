@@ -1,7 +1,6 @@
 import { ChartDefinition } from "../../charts/DashboardCharts"
 import { computed, ComputedRef } from "vue"
 
-const machine = "Linux EC2 c5.xlarge (4 vCPU, 8 GB)"
 const tests = ["inEditorCodeGeneration_function", "inEditorCodeGeneration_all", "getAvailableProfiles", "documentation_generation_calculator_sum"]
 const defaultMetric = "success_rate"
 const timingMetric = "response_time#mean_value"
@@ -34,7 +33,6 @@ export const testGenerationQuotaLeftProjects = toOneCharts("Test generation", te
 function toChartDefinition(test: string): ChartDefinition {
   return {
     labels: [test + " (" + defaultMetric + ")"],
-    machines: [machine],
     measures: [defaultMetric],
     projects: [test],
   }
@@ -43,7 +41,6 @@ function toChartDefinition(test: string): ChartDefinition {
 function toCombineChartDefinition(label: string, tests: string[], metric: string): ChartDefinition {
   return {
     labels: [label + " (" + metric + ")"],
-    machines: [machine],
     measures: [metric],
     projects: tests,
   }

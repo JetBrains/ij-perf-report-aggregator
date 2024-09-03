@@ -3,7 +3,6 @@ package analyzer
 import (
   "github.com/valyala/fastjson"
   "log/slog"
-  "math"
   "path/filepath"
   "strings"
   "time"
@@ -20,13 +19,28 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value) error {
 
   first := values[0]
   runResult.GeneratedTime = time.Unix(0, first.GetInt64("epochNanos"))
-  runResult.Report.Project = string(first.GetStringBytes("attributes", "test.name"))
+  runResult.Report.Project = filepath.Base(filepath.Dir(runResult.ReportFileName))
 
-  measureName := strings.TrimSuffix(filepath.Base(runResult.ReportFileName), ".json")
-  // convert float milliseconds to nanoseconds
-  value := uint64(math.Round(first.GetFloat64("value") * 1_000_000))
+  fileName := filepath.Base(runResult.ReportFileName)
+  metricNames := make([]string, 0)
+  metricValues := make([]float64, 0)
+  metricTypes := make([]string, 0)
+  if strings.Contains(fileName, "histogram") {
+    pmetrics := histogramToMetrics(data)
+    for _, pmetric := range pmetrics {
+      metricNames = append(metricNames, pmetric.Key)
+      metricValues = append(metricValues, pmetric.Value)
+      metricTypes = append(metricTypes, "d")
+    }
+  } else {
+    measureName := strings.TrimSuffix(fileName, ".json")
+    value := first.GetFloat64("value")
+    metricNames = append(metricNames, measureName)
+    metricValues = append(metricValues, value)
+    metricTypes = append(metricTypes, "d")
+  }
 
-  runResult.ExtraFieldData = []interface{}{measureName, value}
+  runResult.ExtraFieldData = []interface{}{metricNames, metricValues, metricTypes}
   return nil
 }
 

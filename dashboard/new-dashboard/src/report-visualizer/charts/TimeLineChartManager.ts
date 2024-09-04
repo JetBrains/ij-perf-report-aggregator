@@ -362,7 +362,6 @@ function renderItem(params: CustomSeriesRenderItemParams, api: CustomSeriesRende
     type: "rect",
     transition: ["shape"],
     shape: rectShape,
-    style: api.style(),
   }
 }
 

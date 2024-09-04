@@ -62,14 +62,9 @@ import CopyLink from "../settings/CopyLink.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
-const props = withDefaults(
-  defineProps<{
-    withInstaller: boolean
-  }>(),
-  {
-    withInstaller: false,
-  }
-)
+const { withInstaller = false } = defineProps<{
+  withInstaller?: boolean
+}>()
 
 const productCodeToName = new Map([
   ["DB", "DataGrip"],
@@ -82,9 +77,9 @@ const productCodeToName = new Map([
   ["CL", "CLion"],
 ])
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProvider(withInstaller)
 
-const dbName = props.withInstaller ? "ij" : "ijDev"
+const dbName = withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
 const container = ref<HTMLElement>()
 

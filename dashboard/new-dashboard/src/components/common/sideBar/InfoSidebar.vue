@@ -213,9 +213,9 @@
   </div>
   <ReportMetricDialog
     v-if="showDialog"
-    v-model:showDialog="showDialog"
-    v-model:createIssue="showYoutrackDialog"
-    v-model:accidentToEdit="accidentToEdit"
+    v-model:show-dialog="showDialog"
+    v-model:create-issue="showYoutrackDialog"
+    v-model:accident-to-edit="accidentToEdit"
     :accidents-configurator="accidentsConfigurator"
     :data="data"
   />

@@ -24,7 +24,7 @@
   </StickyToolbar>
 
   <TabView
-    v-model:activeIndex="activeTab"
+    v-model:active-index="activeTab"
     class="k1-vs-k2-comparison-tab-view"
   >
     <TabPanel

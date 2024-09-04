@@ -144,8 +144,10 @@ enum ROUTES {
   GoLandSharedIndicesTypingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesTypingDashboard`,
   GoLandSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesDumbModeDashboard`,
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
-  PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
+  PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}Dev`,
+  PyCharmOldDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
+  PyCharmDevTests = `${ROUTE_PREFIX.PyCharm}/${DEV_TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   PyCharmSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesIndexingDashboard`,
@@ -795,8 +797,16 @@ const PYCHARM: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.PyCharmTests,
+          url: ROUTES.PyCharmOldDashboard,
+          label: DASHBOARD_LABEL + " (Old)",
+        },
+        {
+          url: ROUTES.PyCharmDevTests,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.PyCharmTests,
+          label: TESTS_LABEL + " (Old)",
         },
         {
           url: ROUTES.PyCharmCompareBranches,
@@ -846,6 +856,10 @@ const PYCHARM: Product = {
         },
         {
           url: ROUTES.PyCharmTests,
+          label: TESTS_LABEL + " (Old)",
+        },
+        {
+          url: ROUTES.PyCharmDevTests,
           label: TESTS_LABEL,
         },
       ],
@@ -1733,10 +1747,25 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "PyCharm Performance dashboard" },
         },
         {
+          path: ROUTES.PyCharmOldDashboard,
+          component: () => import("./components/pycharm/PerformanceDashboardOld.vue"),
+          meta: { pageTitle: "PyCharm Performance dashboard" },
+        },
+        {
           path: ROUTES.PyCharmTests,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfint",
+            table: "pycharm",
+            initialMachine: "linux-blade-hetzner",
+          },
+          meta: { pageTitle: "PyCharm Performance tests" },
+        },
+        {
+          path: ROUTES.PyCharmDevTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
             table: "pycharm",
             initialMachine: "linux-blade-hetzner",
           },

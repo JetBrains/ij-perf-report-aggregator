@@ -1,7 +1,7 @@
 <template>
   <DashboardPage
     v-slot="{ averagesConfigurators }"
-    db-name="perfintDev"
+    db-name="perfint"
     table="pycharm"
     persistent-id="pycharm_dashboard"
     initial-machine="linux-blade-hetzner"

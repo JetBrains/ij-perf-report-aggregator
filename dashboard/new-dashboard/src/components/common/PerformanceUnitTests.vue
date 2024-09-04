@@ -57,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref } from "vue"
+import { computed, provide, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -99,7 +99,7 @@ const props = withDefaults(defineProps<PerformanceTestsProps>(), {
 
 provideReportUrlProvider(props.withInstaller)
 
-const container = ref<HTMLElement>()
+const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
 

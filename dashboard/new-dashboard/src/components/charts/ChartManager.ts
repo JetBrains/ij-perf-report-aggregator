@@ -30,10 +30,11 @@ use([
 export class ChartManager {
   readonly chart: EChartsType
   private readonly resizeObserver: ResizeObserver
+  private readonly resizeContainer: HTMLElement
 
   constructor(
     public chartContainer: HTMLElement,
-    private resizeContainer: HTMLElement = document.body
+    resizeContainer: HTMLElement | null = document.body
   ) {
     this.chart = initChart(chartContainer)
 
@@ -42,7 +43,8 @@ export class ChartManager {
         this.chart.resize()
       }, 300)
     )
-    this.resizeObserver.observe(resizeContainer)
+    this.resizeContainer = resizeContainer ?? document.body
+    this.resizeObserver.observe(this.resizeContainer)
   }
 
   updateChart(options: ECBasicOption): void {

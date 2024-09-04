@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { PropType, defineComponent, shallowRef, toRef, watch } from "vue"
+import { PropType, defineComponent, useTemplateRef, toRef, watch } from "vue"
 import { debounceSync } from "../util/debounce"
 import { ActivityChartDescriptor } from "./ActivityChartDescriptor"
 import { GroupedItems } from "./DataManager"
@@ -24,7 +24,7 @@ export default defineComponent({
   },
   setup(props) {
     const descriptorRef = toRef(props, "descriptor")
-    const chartContainer = shallowRef<HTMLElement | null>(null)
+    const chartContainer = useTemplateRef<HTMLElement>("chartContainer")
 
     const chartHelper = new ChartComponent(chartContainer, async function (container): Promise<ChartManager> {
       const descriptor = descriptorRef.value

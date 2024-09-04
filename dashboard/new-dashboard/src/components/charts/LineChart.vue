@@ -32,7 +32,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { computed, inject, onMounted, onUnmounted, ref, Ref, shallowRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, Ref, useTemplateRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -89,7 +89,7 @@ const valueUnit: Ref<ValueUnit> = computed(() => {
 const settingStore = useSettingsStore()
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
-const chartElement = shallowRef<HTMLElement>()
+const chartElement = useTemplateRef<HTMLElement>("chartElement")
 
 const chartIsVisible = useElementVisibility(chartElement)
 

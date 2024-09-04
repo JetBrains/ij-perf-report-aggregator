@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { onBeforeUnmount, shallowRef } from "vue"
+import { onBeforeUnmount, useTemplateRef } from "vue"
 import { DetectChangesConfigurator } from "./configurators/DetectChangesConfigurator"
 import { ScalingConfigurator } from "./configurators/ScalingConfigurator"
 import { SmoothingConfigurator } from "./configurators/SmoothingConfigurator"
@@ -33,8 +33,8 @@ import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfig
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
 
-const settingsPanel = shallowRef<OverlayPanel | null>(null)
-const settingsIcon = shallowRef<HTMLElement>()
+const settingsPanel = useTemplateRef<OverlayPanel>("settingsPanel")
+const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")
 
 const emit = defineEmits(["update:configurators"])
 emit("update:configurators", new ScalingConfigurator())

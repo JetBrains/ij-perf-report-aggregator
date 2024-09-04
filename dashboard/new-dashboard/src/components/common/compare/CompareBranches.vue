@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import { combineLatest, filter, Observable } from "rxjs"
-import { provide, ref, watch } from "vue"
+import { provide, ref, watch, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { createBranchConfigurator } from "../../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../../configurators/MachineConfigurator"
@@ -132,7 +132,7 @@ const props = withDefaults(defineProps<CompareBranchesProps>(), {
 })
 
 const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-const container = ref<HTMLElement>()
+const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 
 provide(containerKey, container)

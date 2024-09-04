@@ -19,7 +19,7 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value) error {
 
   first := values[0]
   runResult.GeneratedTime = time.Unix(0, first.GetInt64("epochNanos"))
-  runResult.Report.Project = strings.Replace(filepath.Base(filepath.Dir(runResult.ReportFileName)),"%20"," ",-1)
+  runResult.Report.Project = strings.ReplaceAll(filepath.Base(filepath.Dir(runResult.ReportFileName)), "%20", " ")
 
   fileName := filepath.Base(runResult.ReportFileName)
   metricNames := make([]string, 0)

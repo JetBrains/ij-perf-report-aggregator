@@ -4,7 +4,7 @@
     class="relative flex py-5 items-center"
   >
     <div class="flex-grow border-t border-gray-400" />
-    <span class="flex-shrink mx-4 text-gray-400 text-lg">{{ props.title }}</span>
+    <span class="flex-shrink mx-4 text-gray-400 text-lg">{{ title }}</span>
     <div class="flex-grow border-t border-gray-400" />
   </div>
   <!-- https://tailwindui.com/components/application-ui/layout/dividers -->
@@ -16,7 +16,7 @@
       <div class="w-full border-t border-gray-300" />
     </div>
     <div class="relative flex justify-center">
-      <span class="bg-white px-2 text-sm text-gray-500">{{ props.label }}</span>
+      <span class="bg-white px-2 text-sm text-gray-500">{{ label }}</span>
     </div>
   </div>
 </template>
@@ -27,8 +27,5 @@ export interface Props {
   label?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: undefined,
-  label: undefined,
-})
+const { title, label } = defineProps<Props>()
 </script>

@@ -6,7 +6,7 @@
     :style="{ width: '80vw' }"
   >
     <div class="flex items-center space-x-4 mb-4 mt-4">
-      {{ props.accident?.stacktrace ?? "" }}
+      {{ accident?.stacktrace ?? "" }}
     </div>
     <template #footer>
       <div class="flex justify-end space-x-2">
@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { Accident } from "../../../configurators/AccidentsConfigurator"
 
-const props = defineProps<{
+const { accident } = defineProps<{
   accident: Accident | null
 }>()
 

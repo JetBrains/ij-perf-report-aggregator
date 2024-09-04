@@ -1,7 +1,7 @@
 <template>
   <div class="px-7 flex gap-7 items-center border-b border-gray-200 border-solid">
     <router-link
-      v-for="item in props.items"
+      v-for="item in items"
       :key="item.url"
       v-slot="{ href, isActive, navigate }"
       :to="item.url"
@@ -25,7 +25,6 @@ import { Tab } from "../routes"
 
 interface Props {
   items: Tab[]
-  currentPath: string
 }
-const props = defineProps<Props>()
+const { items } = defineProps<Props>()
 </script>

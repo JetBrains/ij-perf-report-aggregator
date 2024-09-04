@@ -1,5 +1,5 @@
 <template>
-  <StartupPage :with-installer="props.withInstaller">
+  <StartupPage :with-installer="withInstaller">
     <template #default="{ configurators }">
       <Divider label="Bootstrap" />
       <section class="grid grid-cols-2 gap-x-6">
@@ -127,14 +127,9 @@ import Divider from "../common/Divider.vue"
 import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"
 
-const props = withDefaults(
-  defineProps<{
-    withInstaller: boolean
-  }>(),
-  {
-    withInstaller: false,
-  }
-)
+const { withInstaller = false } = defineProps<{
+  withInstaller: boolean
+}>()
 
 const highlightingPasses = fetchHighlightingPasses()
 </script>

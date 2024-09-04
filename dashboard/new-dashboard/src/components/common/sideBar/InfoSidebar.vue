@@ -225,7 +225,7 @@
     :accident="accidentToEdit!!"
     :data="data!!"
     :accident-configurator="accidentsConfigurator"
-    :timerange-configurator="props.timerangeConfigurator"
+    :timerange-configurator="timerangeConfigurator"
   />
   <StacktraceModal
     v-if="showStacktrace"
@@ -253,7 +253,7 @@ import StacktraceModal from "./StacktraceModal.vue"
 import { YoutrackClient } from "../youtrack/YoutrackClient"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 
-const props = defineProps<{
+const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
 }>()
 

@@ -144,15 +144,12 @@ interface StartupProductDashboard {
   withInstaller?: boolean
 }
 
-const props = withDefaults(defineProps<StartupProductDashboard>(), {
-  persistentId: null,
-  withInstaller: false,
-})
-provideReportUrlProvider(props.withInstaller)
+const { product, defaultProject, persistentId = null, withInstaller = false } = defineProps<StartupProductDashboard>()
+provideReportUrlProvider(withInstaller)
 
 const container = useTemplateRef<HTMLElement>("container")
 
-const dbName = props.withInstaller ? "ij" : "ijDev"
+const dbName = withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
 
 const sidebarVm = new InfoSidebarImpl()
@@ -163,9 +160,9 @@ provide(sidebarVmKey, sidebarVm)
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
-  props.persistentId ?? `${props.product}-startup-dashboard`,
+  persistentId ?? `${product}-startup-dashboard`,
   {
-    project: props.defaultProject,
+    project: defaultProject,
     machine: "Windows Munich i7-3770, 32Gb",
     branch: "master",
   },
@@ -176,7 +173,7 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 const productConfigurator = dimensionConfigurator("product", serverConfigurator, persistentStateManager, false, [timeRangeConfigurator, branchConfigurator])
-productConfigurator.selected.value = props.product
+productConfigurator.selected.value = product
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [
   productConfigurator,
   timeRangeConfigurator,
@@ -199,7 +196,7 @@ const metrics = ref([
   "exitMetrics/disposeProjects",
 ])
 
-const accidentsConfigurator = new AccidentsConfiguratorForStartup(serverConfigurator.serverUrl, ref(props.product), projectConfigurator.selected, metrics, timeRangeConfigurator)
+const accidentsConfigurator = new AccidentsConfiguratorForStartup(serverConfigurator.serverUrl, ref(product), projectConfigurator.selected, metrics, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const configurators = [

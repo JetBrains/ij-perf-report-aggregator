@@ -13,22 +13,13 @@ import { BarChartManager } from "../common/BarChartManager"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { chartDefaultStyle } from "../common/chart"
 
-const props = withDefaults(
-  defineProps<{
-    height?: number
-    measures: string[]
-  }>(),
-  {
-    height: 440,
-    valueUnit: "ms",
-    measures: () => [],
-  }
-)
+const { height = 440, measures = [] } = defineProps<{
+  height?: number
+  measures: string[]
+}>()
 
 const chartElement = useTemplateRef<HTMLElement>("chartElement")
 let chartManager: BarChartManager | null = null
-// eslint-disable-next-line vue/no-setup-props-destructure
-const measures = props.measures
 
 const timeRange = injectOrError(timeRangeKey)
 const aggregationOperatorConfigurator = injectOrError(aggregationOperatorConfiguratorKey)

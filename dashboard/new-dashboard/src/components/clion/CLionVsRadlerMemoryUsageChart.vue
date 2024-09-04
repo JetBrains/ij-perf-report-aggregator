@@ -35,7 +35,7 @@
             <section>
               <GroupProjectsChart
                 :key="`radler-${selectedIndex}`"
-                :label="`[Radler] ${props.label}, Mb`"
+                :label="`[Radler] ${label}, Mb`"
                 :measure="[backendMeasures[selectedIndex], frontendMeasures[selectedIndex]]"
                 :projects="[radlerProject]"
                 :legend-formatter="legendFormatter"
@@ -47,7 +47,7 @@
             <section>
               <GroupProjectsChart
                 :key="`clion-${selectedIndex}`"
-                :label="`[CLion] ${props.label}, Mb`"
+                :label="`[CLion] ${label}, Mb`"
                 :measure="[frontendMeasures[selectedIndex]]"
                 :projects="[clionProject]"
                 :legend-formatter="legendFormatter"
@@ -64,7 +64,7 @@
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/vue"
 
-const props = defineProps<{
+const { label, measure, project } = defineProps<{
   label: string
   measure: string
   project: string
@@ -72,10 +72,10 @@ const props = defineProps<{
 
 const getAllMeasures = (prefix: string) => [`${prefix}/beforeGC`, prefix, `${prefix}/idle`]
 const tabDescription = ["Before GC", "After GC", "After GC (idle)"]
-const clionProject = `clion/${props.project}`
-const radlerProject = `radler/${props.project}`
-const backendMeasurePrefix = `rd.memory.allocatedManagedMemoryMb/${props.measure}`
-const frontendMeasurePrefix = `JVM.heapUsageMb/${props.measure}`
+const clionProject = `clion/${project}`
+const radlerProject = `radler/${project}`
+const backendMeasurePrefix = `rd.memory.allocatedManagedMemoryMb/${measure}`
+const frontendMeasurePrefix = `JVM.heapUsageMb/${measure}`
 
 const backendMeasures = getAllMeasures(backendMeasurePrefix)
 const frontendMeasures = getAllMeasures(frontendMeasurePrefix)

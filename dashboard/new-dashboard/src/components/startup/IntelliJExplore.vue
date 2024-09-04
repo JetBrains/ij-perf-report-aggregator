@@ -82,7 +82,7 @@ import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 
-const props = defineProps<{
+const { withInstaller } = defineProps<{
   withInstaller: boolean
 }>()
 
@@ -97,9 +97,9 @@ const productCodeToName = new Map([
   ["CL", "CLion"],
 ])
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProvider(withInstaller)
 
-const dbName = props.withInstaller ? "ij" : "ijDev"
+const dbName = withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
 const container = useTemplateRef<HTMLElement>("container")
 

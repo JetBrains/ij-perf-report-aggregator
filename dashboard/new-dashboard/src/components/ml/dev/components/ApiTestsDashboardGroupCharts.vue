@@ -31,5 +31,5 @@ interface Props {
   definitions: ChartDefinition[]
 }
 
-defineProps<Props>()
+const { definitions } = defineProps<Props>()
 </script>

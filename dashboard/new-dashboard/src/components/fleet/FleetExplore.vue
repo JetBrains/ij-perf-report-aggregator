@@ -69,11 +69,11 @@ import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 
-const props = defineProps<{
+const { withInstaller } = defineProps<{
   withInstaller: boolean
 }>()
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProvider(withInstaller)
 
 const dbName = "fleet"
 const dbTable = "report"

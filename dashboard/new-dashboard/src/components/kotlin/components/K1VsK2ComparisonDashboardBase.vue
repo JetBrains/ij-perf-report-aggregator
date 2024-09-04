@@ -66,19 +66,19 @@ interface Props {
   initialBranch: string
 }
 
-const props = defineProps<Props>()
+const { dbName, persistentId, initialBranch } = defineProps<Props>()
 
 const dbTable = "kotlin"
 
 const router = useRouter()
 
-const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, dbTable)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistentStateManager = new PersistentStateManager(
-  props.persistentId,
+  persistentId,
   {
-    branch: props.initialBranch,
+    branch: initialBranch,
     projectCategories: [],
   },
   router

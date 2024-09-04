@@ -147,7 +147,7 @@ enum DownloadState {
 
 const router = useRouter()
 
-const props = defineProps<{
+const { data, accident, accidentConfigurator, timerangeConfigurator } = defineProps<{
   data: InfoData | null
   accident: Accident | null
   accidentConfigurator: AccidentsConfigurator | null
@@ -161,25 +161,25 @@ const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
 const downloadState = ref(DownloadState.NOT_STARTED)
-const label = ref(props.accident?.reason ?? "")
+const label = ref(accident?.reason ?? "")
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
 
 async function createTicket() {
   try {
-    if (props.data == null) throw new Error("There is no info data")
-    if (props.accident == null) throw new Error("There is no accident")
-    if (props.accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
+    if (data == null) throw new Error("There is no info data")
+    if (accident == null) throw new Error("There is no accident")
+    if (accidentConfigurator == null) throw new Error("There is no accidentConfigurator")
     downloadState.value = DownloadState.STARTED
-    const buildId = props.data.buildId
-    const affectedMetric = props.data.series[0].metricName ?? ""
+    const buildId = data.buildId
+    const affectedMetric = data.series[0].metricName ?? ""
 
     const issueInfo: CreateIssueRequest = {
-      accidentId: `${props.accident.id}`,
+      accidentId: `${accident.id}`,
       ticketLabel: label.value,
       projectId: project.value.id,
-      buildLink: props.data.artifactsUrl,
-      changesLink: (await getSpaceUrl(props.data, serverConfigurator)) ?? props.data.changesUrl,
+      buildLink: data.artifactsUrl,
+      changesLink: (await getSpaceUrl(data, serverConfigurator)) ?? data.changesUrl,
       customFields: [
         {
           name: "Type",
@@ -189,10 +189,10 @@ async function createTicket() {
           },
         },
       ],
-      testMethodName: props.data.description.value?.methodName.replaceAll("#", "."),
-      dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(props.data, router), props.timerangeConfigurator)}`,
+      testMethodName: data.description.value?.methodName.replaceAll("#", "."),
+      dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,
-      delta: props.data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
+      delta: data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
     }
 
     let issueResponse: IssueResponse
@@ -210,7 +210,7 @@ async function createTicket() {
     }
 
     try {
-      await props.accidentConfigurator.reloadAccidentData(props.accident.id)
+      await accidentConfigurator.reloadAccidentData(accident.id)
     } catch (error: unknown) {
       console.error(error)
       createException.value = true
@@ -220,7 +220,7 @@ async function createTicket() {
       const buildType = await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, buildId)
       if (buildType == null) throw new Error("Cannot upload attachments without buildType")
 
-      let affectedTest = props.accident.affectedTest
+      let affectedTest = accident.affectedTest
 
       if (affectedTest.endsWith(affectedMetric)) {
         affectedTest = affectedTest.slice(0, -affectedMetric.length - 1)
@@ -235,9 +235,9 @@ async function createTicket() {
         affectedTest,
         chartPng: undefined,
       }
-      if (props.accident.kind != AccidentKind.Exception) {
-        attachmentsInfo.teamcityAttachmentInfo.previousBuildId = props.data.buildIdPrevious
-        attachmentsInfo.chartPng = await fetch(props.data.chartDataUrl)
+      if (accident.kind != AccidentKind.Exception) {
+        attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious
+        attachmentsInfo.chartPng = await fetch(data.chartDataUrl)
           .then((res) => res.blob())
           .then((blob) => {
             return new Promise<string>((resolve, reject) => {

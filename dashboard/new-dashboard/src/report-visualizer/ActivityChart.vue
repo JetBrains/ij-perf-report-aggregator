@@ -72,7 +72,7 @@ export default defineComponent({
     )
 
     return {
-      chartContainer: chartContainer,
+      chartContainer,
     }
   },
 })

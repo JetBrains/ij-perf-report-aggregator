@@ -54,7 +54,7 @@
       >
     </FloatLabel>
     <div
-      v-if="props.data?.series.length == 1"
+      v-if="data?.series.length == 1"
       class="flex items-center mb-4"
     >
       <InputSwitch
@@ -65,11 +65,11 @@
         for="reportMetricOnly"
         class="text-sm ml-2"
       >
-        Report only metric <code>{{ props.data.series[0].metricName }}</code>
+        Report only metric <code>{{ data.series[0].metricName }}</code>
       </label>
     </div>
     <div
-      v-if="props.data?.series.length == 1"
+      v-if="data?.series.length == 1"
       class="flex items-center mb-4"
     >
       <InputSwitch
@@ -95,8 +95,8 @@
       >
     </div>
     <RelatedAccidents
-      :data="props.data"
-      :accidents-configurator="props.accidentsConfigurator"
+      :data="data"
+      :accidents-configurator="accidentsConfigurator"
       :in-dialog="true"
       @copy-accident="copy"
     />
@@ -151,7 +151,7 @@ import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configur
 import { InfoData } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 
-const props = defineProps<{
+const { data, accidentsConfigurator } = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
 }>()
@@ -176,15 +176,15 @@ watch(
 const reason = ref(accidentToEdit.value?.reason ?? "")
 const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 
-const build = computed(() => props.data?.build ?? props.data?.buildId.toString())
+const build = computed(() => data?.build ?? data?.buildId.toString())
 
 async function reportRegression() {
-  const value = props.data
+  const value = data
   if (value != null && build.value != null) {
     const metricName = value.series[0].metricName
     const reportOnlyMetric = reportMetricOnly.value && value.series.length == 1 && metricName != undefined
     try {
-      const id = await props.accidentsConfigurator?.writeAccidentToMetaDb(
+      const id = await accidentsConfigurator?.writeAccidentToMetaDb(
         value.date,
         reportAllInBuild.value ? "" : value.projectName + (reportOnlyMetric ? "/" + metricName : ""),
         reason.value,
@@ -194,7 +194,7 @@ async function reportRegression() {
       )
 
       if (id != undefined && createIssueCheckbox.value) {
-        accidentToEdit.value = props.data?.accidents?.value?.find((a) => a.id == id)
+        accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
         createIssue.value = true
       }
     } finally {
@@ -206,7 +206,7 @@ async function reportRegression() {
 async function deleteRegression(closeDialog: boolean) {
   showDialog.value = !closeDialog
   if (accidentToEdit.value != null) {
-    await props.accidentsConfigurator?.removeAccidentFromMetaDb(accidentToEdit.value.id)
+    await accidentsConfigurator?.removeAccidentFromMetaDb(accidentToEdit.value.id)
   }
 }
 

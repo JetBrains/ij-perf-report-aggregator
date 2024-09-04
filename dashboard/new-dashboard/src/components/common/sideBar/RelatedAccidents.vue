@@ -22,7 +22,7 @@
               }"
               class="flex gap-1.5 text-sm"
             >
-              <span v-if="props.inDialog">
+              <span v-if="inDialog">
                 <DocumentDuplicateIcon
                   class="w-4 h-4"
                   @click="copy(accident)"
@@ -54,14 +54,14 @@ import { Accident, AccidentsConfigurator } from "../../../configurators/Accident
 import { replaceToLink } from "../../../util/linkReplacer"
 import { InfoData } from "./InfoSidebar"
 
-const props = defineProps<{
+const { data, accidentsConfigurator, inDialog } = defineProps<{
   data: InfoData | null
   accidentsConfigurator: AccidentsConfigurator | null
   inDialog: boolean
 }>()
 
 function getTooltipText(accident: AccidentSimple): string {
-  if (props.inDialog) return ""
+  if (inDialog) return ""
   return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident)
 }
 function getAffectedTests(accident: AccidentSimple): string {
@@ -94,8 +94,8 @@ function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
 
 function loadEventsAroundDate() {
   computedAsync(async () => {
-    if (props.data) {
-      const accidents = (await props.accidentsConfigurator?.getAccidentsAroundDate(props.data.date)) ?? []
+    if (data) {
+      const accidents = (await accidentsConfigurator?.getAccidentsAroundDate(data.date)) ?? []
       accidentsAroundDate.value = deduplicateAccidents(accidents)
     }
   })

@@ -134,7 +134,7 @@ import { PersistentStateManager } from "../PersistentStateManager"
 import StickyToolbar from "../StickyToolbar.vue"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, SimpleQueryProducer } from "../dataQuery"
 
-const props = defineProps<{
+const { dbName, table } = defineProps<{
   dbName: string
   table: string
 }>()
@@ -145,9 +145,9 @@ const router = useRouter()
 
 provide(containerKey, container)
 
-const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, table)
 const persistentStateManager = new PersistentStateManager(
-  `${props.dbName}-${props.table}-dashboard`,
+  `${dbName}-${table}-dashboard`,
   {
     machine: initialMachine,
     branch: "master",

@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!props.timerangeConfigurator.customRange.value"
+    v-if="!timerangeConfigurator.customRange.value"
     class="card flex justify-content-center"
   >
     <a
@@ -28,12 +28,12 @@ import { ref } from "vue"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { getPersistentLink } from "./CopyLink"
 
-const props = defineProps<{
+const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
 }>()
 
 async function copyLink() {
-  await navigator.clipboard.writeText(getPersistentLink(window.location.href, props.timerangeConfigurator))
+  await navigator.clipboard.writeText(getPersistentLink(window.location.href, timerangeConfigurator))
   isToastVisible.value = true
   setTimeout(() => {
     isToastVisible.value = false

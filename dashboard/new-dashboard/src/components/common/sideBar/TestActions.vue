@@ -15,7 +15,7 @@ import { getNavigateToTestUrl, InfoData } from "./InfoSidebar"
 
 const router = useRouter()
 
-const props = defineProps<{
+const { data } = defineProps<{
   data: InfoData | null
 }>()
 
@@ -36,8 +36,8 @@ function getTestActions(): {
       },
     })
   }
-  if (props.data?.description != null) {
-    const methodName = props.data.description.value?.methodName
+  if (data?.description != null) {
+    const methodName = data.description.value?.methodName
     if (methodName && methodName != "") {
       actions.push(
         {
@@ -57,7 +57,7 @@ function getTestActions(): {
       )
     }
 
-    const url = props.data.description.value?.url
+    const url = data.description.value?.url
     if (url && url != "") {
       actions.push({
         label: "Download test project",
@@ -88,7 +88,7 @@ function openTestInIDE(methodName: string) {
 }
 
 function handleNavigateToTest() {
-  window.open(getNavigateToTestUrl(props.data, router), "_blank")
+  window.open(getNavigateToTestUrl(data, router), "_blank")
 }
 </script>
 <style #scoped>

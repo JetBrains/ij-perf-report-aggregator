@@ -38,7 +38,7 @@ import { computed, inject } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { aggregationOperatorConfiguratorKey } from "../../shared/injectionKeys"
 
-const props = defineProps<{
+const { configurator } = defineProps<{
   configurator?: AggregationOperatorConfigurator
 }>()
 
@@ -46,7 +46,7 @@ const providedConfigurator = inject(aggregationOperatorConfiguratorKey, null)
 
 function getConfigurator(): AggregationOperatorConfigurator {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return props.configurator ?? providedConfigurator!
+  return configurator ?? providedConfigurator!
 }
 
 const operators = ["median", "min", "max", "quantile"].map((it) => ({ label: it, value: it }))

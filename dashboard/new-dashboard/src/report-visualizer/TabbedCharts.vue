@@ -44,22 +44,17 @@ import { RouteLocationNormalizedLoaded, useRoute, useRouter } from "vue-router"
 import ActivityChart from "./ActivityChart.vue"
 import { chartDescriptors } from "./ActivityChartDescriptor"
 
-const props = withDefaults(
-  defineProps<{
-    isInfoChart: boolean
-  }>(),
-  {
-    isInfoChart: false,
-  }
-)
+const { isInfoChart = false } = defineProps<{
+  isInfoChart: boolean
+}>()
 
-const charts = chartDescriptors.filter((it) => it.isInfoChart === props.isInfoChart || (!props.isInfoChart && it.isInfoChart === undefined))
+const charts = chartDescriptors.filter((it) => it.isInfoChart === isInfoChart || (!isInfoChart && it.isInfoChart === undefined))
 
 const activeId = ref(0)
 const activeName = computed(() => {
   return charts[activeId.value].id
 })
-const queryParamName = props.isInfoChart ? "infoTab" : "tab"
+const queryParamName = isInfoChart ? "infoTab" : "tab"
 
 function updateLocation(location: RouteLocationNormalizedLoaded): void {
   const tab = location.query[queryParamName]

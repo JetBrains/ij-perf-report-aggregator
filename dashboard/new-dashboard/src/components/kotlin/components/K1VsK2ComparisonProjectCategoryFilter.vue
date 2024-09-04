@@ -42,9 +42,9 @@ interface Props {
   initialProjectCategories: string[]
 }
 
-const props = defineProps<Props>()
+const { initialProjectCategories } = defineProps<Props>()
 
-const selectedProjectCategories = ref(props.initialProjectCategories)
+const selectedProjectCategories = ref(initialProjectCategories)
 
 const emit = defineEmits<{ "update:selectedProjectCategories": [selectedCategories: string[]] }>()
 

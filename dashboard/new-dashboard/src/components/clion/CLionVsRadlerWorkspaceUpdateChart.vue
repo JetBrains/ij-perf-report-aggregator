@@ -3,7 +3,7 @@
     <div class="flex-1 min-w-0">
       <section>
         <GroupProjectsChart
-          :label="`[Radler] ${props.label}, Total Time`"
+          :label="`[Radler] ${label}, Total Time`"
           :measure="measure"
           :projects="radlerProjects"
           :legend-formatter="legendFormatter"
@@ -14,7 +14,7 @@
     <div class="flex-1 min-w-0">
       <section>
         <GroupProjectsChart
-          :label="`[CLion] ${props.label}, Total Time`"
+          :label="`[CLion] ${label}, Total Time`"
           :measure="measure"
           :projects="clionProjects"
           :legend-formatter="legendFormatter"
@@ -28,24 +28,24 @@
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import { removeCommonSegments } from "../../util/removeCommonPrefixes"
 
-const props = defineProps<{
+const { label, projects, names } = defineProps<{
   label: string
   projects: string[]
   names: string[]
 }>()
 
-console.assert(props.projects.length == props.names.length)
-const getAllProjects = (prefix: string) => props.projects.map((project) => `${prefix}/${project}`)
+console.assert(projects.length == names.length)
+const getAllProjects = (prefix: string) => projects.map((project) => `${prefix}/${project}`)
 const clionProjects = getAllProjects("clion")
 const radlerProjects = getAllProjects("radler")
 const measure = "workspaceModel.updates.ms"
 
 const projectToNameMap = new Map<string, string>()
-for (let i = 0; i < props.names.length; i++) {
+for (const [i, name] of names.entries()) {
   const clionProject = removeCommonSegments(clionProjects)[i]
   const radlerProject = removeCommonSegments(radlerProjects)[i]
-  projectToNameMap.set(clionProject, props.names[i])
-  projectToNameMap.set(radlerProject, props.names[i])
+  projectToNameMap.set(clionProject, name)
+  projectToNameMap.set(radlerProject, name)
 }
 
 const legendFormatter = (name: string) => {

@@ -2,7 +2,7 @@
   <Dropdown
     v-model="model"
     title="Time Range"
-    :options="props.timerangeConfigurator.timeRanges.value.filter((element) => element.label != '')"
+    :options="timerangeConfigurator.timeRanges.value.filter((element) => element.label != '')"
     option-label="label"
     option-value="value"
   >
@@ -50,12 +50,12 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed, ref, watch } from "vue"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 
-const props = defineProps<{
+const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
 }>()
 
-const model = props.timerangeConfigurator.value
-const currentValue = computed(() => props.timerangeConfigurator.timeRanges.value.find((item) => item.value === model.value))
+const model = timerangeConfigurator.value
+const currentValue = computed(() => timerangeConfigurator.timeRanges.value.find((item) => item.value === model.value))
 
 const date = ref()
 watch(date, (value: (Date | null)[] | null) => {
@@ -63,7 +63,7 @@ watch(date, (value: (Date | null)[] | null) => {
     const start = value[0]
     const end = value[1]
     if (start != null && end != null) {
-      props.timerangeConfigurator.setCustomRange(start, end)
+      timerangeConfigurator.setCustomRange(start, end)
     }
   }
 })

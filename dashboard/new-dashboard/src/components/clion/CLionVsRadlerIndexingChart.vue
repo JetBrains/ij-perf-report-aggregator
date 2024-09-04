@@ -3,7 +3,7 @@
     <div class="flex-1 min-w-0">
       <section>
         <GroupProjectsChart
-          :label="label"
+          :label="`[CLion vs Radler]` + label"
           :measure="['ocSymbolBuildingTimeMs', 'backendIndexingTimeMs']"
           :projects="[clionProject, radlerProject]"
           :legend-formatter="legendFormatter"
@@ -16,14 +16,13 @@
 <script setup lang="ts">
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 
-const props = defineProps<{
+const { label, project } = defineProps<{
   label: string
   project: string
 }>()
 
-const clionProject = `clion/${props.project}`
-const radlerProject = `radler/${props.project}`
-const label = `[CLion vs Radler] ${props.label}`
+const clionProject = `clion/${project}`
+const radlerProject = `radler/${project}`
 const frontendMetric = `${clionProject.replace("/indexing", "")} – ocSymbolBuildingTimeMs`
 const backendMetric = `${radlerProject.replace("/indexing", "")} – backendIndexingTimeMs`
 

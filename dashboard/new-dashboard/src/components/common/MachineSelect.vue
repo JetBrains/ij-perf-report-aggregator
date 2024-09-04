@@ -13,5 +13,5 @@ interface Props {
   machineConfigurator: MachineConfigurator
 }
 
-defineProps<Props>()
+const { machineConfigurator } = defineProps<Props>()
 </script>

@@ -89,15 +89,11 @@ interface PerformanceTestsProps {
   table: string
   initialMachine: string
   withInstaller?: boolean
-  unit?: "ns" | "ms"
 }
 
-const props = withDefaults(defineProps<PerformanceTestsProps>(), {
-  withInstaller: true,
-  unit: "ms",
-})
+const { dbName, table, initialMachine, withInstaller = true } = defineProps<PerformanceTestsProps>()
 
-provideReportUrlProvider(props.withInstaller)
+provideReportUrlProvider(withInstaller)
 
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
@@ -106,12 +102,12 @@ const sidebarVm = new InfoSidebarImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, table)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
-  `${props.dbName}-${props.table}-dashboard`,
+  `${dbName}-${table}-dashboard`,
   {
-    machine: props.initialMachine,
+    machine: initialMachine,
     branch: "master",
     project: [],
     measure: [],
@@ -123,7 +119,7 @@ const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 if (machineConfigurator.selected.value.length === 0) {
-  machineConfigurator.selected.value = [props.initialMachine]
+  machineConfigurator.selected.value = [initialMachine]
 }
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [branchConfigurator, timeRangeConfigurator])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])

@@ -67,7 +67,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["VcsWidget"],
-    measures: ["popupShown#VcsWidget"],
+    measures: [["popupShown#VcsWidget", "afterShow#GitBranchesTreePopup"]],
     projects: ["popups-performance-test/test-popups"],
   },
 ]

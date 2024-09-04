@@ -11,24 +11,20 @@ import { PredefinedGroupingMeasureConfigurator } from "../../configurators/Prede
 import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, injectOrError, timeRangeKey } from "../../shared/injectionKeys"
 import { BarChartManager } from "../common/BarChartManager"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
-import { chartDefaultStyle } from "../common/chart"
+import { chartDefaultStyle, ValueUnit } from "../common/chart"
 
-const props = withDefaults(
-  defineProps<{
-    height?: number
-    measures: string[]
-  }>(),
-  {
-    height: 440,
-    valueUnit: "ms",
-    measures: () => [],
-  }
-)
+const {
+  height = 440,
+  valueUnit = "ms",
+  measures = [],
+} = defineProps<{
+  valueUnit: ValueUnit
+  height?: number
+  measures: string[]
+}>()
 
 const chartElementRef = useTemplateRef<HTMLElement>("chartElement")
 let chartManager: BarChartManager | null = null
-// eslint-disable-next-line vue/no-setup-props-destructure
-const measures = props.measures
 
 const timeRange = injectOrError(timeRangeKey)
 const aggregationOperatorConfigurator = injectOrError(aggregationOperatorConfiguratorKey)

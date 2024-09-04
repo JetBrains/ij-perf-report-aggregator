@@ -1,12 +1,12 @@
 <template>
   <LineChart
-    :title="props.label"
-    :value-unit="props.valueUnit"
+    :title="label"
+    :value-unit="valueUnit"
     :measures="measureArray"
     :configurators="configurators"
     :skip-zero-values="false"
-    :legend-formatter="props.legendFormatter"
-    :can-be-closed="props.canBeClosed"
+    :legend-formatter="legendFormatter"
+    :can-be-closed="canBeClosed"
     @chart-closed="onChartClosed"
   />
 </template>
@@ -32,36 +32,30 @@ interface Props {
   canBeClosed?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  valueUnit: "ms",
-  legendFormatter: (name: string) => name,
-  aliases: null,
-  canBeClosed: false,
-  machines: null,
-})
+const { measure, projects, valueUnit = "ms", legendFormatter = (name: string) => name, aliases = null, canBeClosed = false, machines = null } = defineProps<Props>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 const dashboardConfigurators = injectOrError(dashboardConfiguratorsKey)
 const scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, null, true)
 const configurators = [...dashboardConfigurators, scenarioConfigurator, serverConfigurator]
 
-if (props.machines != null) {
-  const machineConfigurator = new MachineConfigurator(serverConfigurator, undefined, [], true, props.machines)
+if (machines != null) {
+  const machineConfigurator = new MachineConfigurator(serverConfigurator, undefined, [], true, machines)
   configurators.push(machineConfigurator)
 }
 
 const measureArray: Ref<string[]> = computed(() => {
-  return Array.isArray(props.measure) ? props.measure : [props.measure]
+  return Array.isArray(measure) ? measure : [measure]
 })
 
 const emit = defineEmits(["chartClosed"])
 
 function onChartClosed(): void {
-  emit("chartClosed", props.projects)
+  emit("chartClosed", projects)
 }
 
 watch(
-  () => [props.projects, props.aliases],
+  () => [projects, aliases],
   ([projects, aliases]) => {
     if (projects != null) {
       const aliasesToUse = aliases ?? removeCommonSegments(projects)

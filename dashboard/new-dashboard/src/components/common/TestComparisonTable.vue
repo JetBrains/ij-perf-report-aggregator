@@ -124,12 +124,15 @@ interface Info {
   measureValue: number | undefined
 }
 
-const props = withDefaults(defineProps<TestComparisonTableProps>(), {
-  baselineColumnLabel: "Baseline",
-  currentColumnLabel: "Current",
-  differenceColumnLabel: "Difference (%)",
-  formatDifference: formatPercentage,
-})
+const {
+  measure,
+  comparisons,
+  configurators,
+  baselineColumnLabel = "Baseline",
+  currentColumnLabel = "Current",
+  differenceColumnLabel = "Difference (%)",
+  formatDifference = formatPercentage,
+} = defineProps<TestComparisonTableProps>()
 
 const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTableEntry[]) => void>()
 
@@ -142,7 +145,7 @@ const filters = ref({
   test: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
 
-const formatMeasure = getValueFormatterByMeasureName(props.measure)
+const formatMeasure = getValueFormatterByMeasureName(measure)
 
 function formatMeasureOrFallback(value: number | null) {
   if (value === null) return "N/A"
@@ -151,7 +154,7 @@ function formatMeasureOrFallback(value: number | null) {
 
 function formatDifferenceOrFallback(value: number | null) {
   if (value === null) return "N/A"
-  return props.formatDifference(value)
+  return formatDifference(value)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,11 +184,11 @@ function navigateToTest(propsData: TestComparisonTableEntry) {
   window.open(router.resolve(testURL + "?" + queryParams + measures + projects).href, "_blank")
 }
 
-const projectConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(props.configurators as FilterConfigurator[])])
+const projectConfigurator = dimensionConfigurator("project", serverConfigurator, null, true, [...(configurators as FilterConfigurator[])])
 
 const dataQueryExecutor = new DataQueryExecutor([
   serverConfigurator,
-  ...props.configurators,
+  ...configurators,
   projectConfigurator,
   new (class implements DataQueryConfigurator {
     configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -195,8 +198,8 @@ const dataQueryExecutor = new DataQueryExecutor([
       query.addField({ n: "measures", subName: "name" })
       query.addField({ n: "measures", subName: "value" })
 
-      configuration.measures = [props.measure]
-      query.addFilter({ f: "measures.name", v: props.measure })
+      configuration.measures = [measure]
+      query.addFilter({ f: "measures.name", v: measure })
 
       query.order = ["project", "generated_time"]
 
@@ -228,7 +231,7 @@ function applyData(data: (string | number)[][][]) {
 
   const tableData: TestComparisonTableEntry[] = []
 
-  for (const testComparison of props.comparisons) {
+  for (const testComparison of comparisons) {
     const baselineInfo = rawMeasuresByTestName.get(testComparison.baselineTestName)
     const currentInfo = rawMeasuresByTestName.get(testComparison.currentTestName)
 
@@ -261,12 +264,12 @@ function applyData(data: (string | number)[][][]) {
 let unsubscribe: (() => void) | null = null
 
 onMounted(() => {
-  updateProjectConfigurator(props.comparisons)
+  updateProjectConfigurator(comparisons)
   initializeTable()
 })
 
 watch(
-  () => props.comparisons,
+  () => comparisons,
   (newValue) => {
     updateProjectConfigurator(newValue)
   }
@@ -302,6 +305,7 @@ function initializeTable() {
   text-decoration: underline;
   cursor: pointer;
 }
+
 .link-like-text:hover {
   color: darkblue;
 }

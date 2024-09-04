@@ -89,9 +89,9 @@ const valueUnit: Ref<ValueUnit> = computed(() => {
 const settingStore = useSettingsStore()
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
-const chartElementRef = useTemplateRef<HTMLElement>("chartElement")
+const chartElement = useTemplateRef<HTMLElement>("chartElement")
 
-const chartIsVisible = useElementVisibility(chartElementRef)
+const chartIsVisible = useElementVisibility(chartElement)
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
@@ -151,10 +151,10 @@ function createChart() {
   if (chartVm != null) {
     return
   }
-  if (chartElementRef.value) {
+  if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
-    chartManager = new ChartManager(chartElementRef.value, container.value)
+    chartManager = new ChartManager(chartElement.value, container.value)
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnit.value, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnit.value, accidentsConfigurator))

@@ -97,7 +97,7 @@ import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../com
 import { StartupTooltipManager, TooltipData } from "./StartupTooltipManager"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
-const panelRef = useTemplateRef<OverlayPanel>("panel")
+const panel = useTemplateRef<OverlayPanel>("panel")
 
 const linkText = computed(() => {
   const data = tooltipData.value?.firstSeriesData
@@ -118,7 +118,7 @@ let lastManager: StartupTooltipManager | null = null
 
 const hide = debounceSync(() => {
   lastManager = null
-  panelRef.value?.hide()
+  panel.value?.hide()
   tooltipData.value = null
 }, 1_000)
 
@@ -133,9 +133,9 @@ const consumer: (data: TooltipData | null, event: Event | null) => void = (data,
   }
 
   let stopHandle: WatchStopHandle | null = null
-  const panelElement = panelRef.value
+  const panelElement = panel.value
   if (panelElement == null) {
-    stopHandle = watch(panelRef, (value) => {
+    stopHandle = watch(panel, (value) => {
       value?.show(event)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       stopHandle!()

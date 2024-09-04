@@ -101,11 +101,11 @@ provideReportUrlProvider(props.withInstaller)
 
 const dbName = props.withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
-const containerRef = useTemplateRef<HTMLElement>("container")
+const container = useTemplateRef<HTMLElement>("container")
 
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, containerRef)
+provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)

@@ -73,11 +73,11 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
 
 provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
-const containerRef = useTemplateRef<HTMLElement>("container")
+const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, containerRef)
+provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)

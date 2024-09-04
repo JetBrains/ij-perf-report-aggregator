@@ -64,14 +64,14 @@ const avConfigurators = props.configurators ?? injectOrError(dashboardConfigurat
 const allConfigurators = [...avConfigurators, injectOrError(serverConfiguratorKey), timeAverageConfigurator, measuresConfigurator]
 /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
 const queryExecutor = new DataQueryExecutor(allConfigurators.filter((item): item is DataQueryConfigurator => item != null))
-const elementRef = useTemplateRef<HTMLElement>("element")
+const element = useTemplateRef<HTMLElement>("element")
 const vm = new AggregationChartVM(queryExecutor, props.chartColor, props.valueUnit)
 const container = inject(containerKey)
 
 let dispose: () => void
 onMounted(() => {
-  if (elementRef.value != null) {
-    dispose = vm.initChart(elementRef.value, container?.value)
+  if (element.value != null) {
+    dispose = vm.initChart(element.value, container?.value)
   }
 })
 

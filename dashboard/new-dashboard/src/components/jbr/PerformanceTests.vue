@@ -82,11 +82,11 @@ provideReportUrlProvider(false, true)
 const dbName = "jbr"
 const dbTable = "report"
 const initialMachine = "Linux Munich i7-3770, 32 Gb"
-const containerRef = useTemplateRef<HTMLElement>("container")
+const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, containerRef)
+provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)

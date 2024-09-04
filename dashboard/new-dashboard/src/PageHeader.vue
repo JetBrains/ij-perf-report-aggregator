@@ -62,18 +62,18 @@ import { getNavigationElement, PRODUCTS } from "./routes"
 const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject
 const items = ref(products)
-const menuRef = useTemplateRef<Menu>("menu")
+const menu = useTemplateRef<Menu>("menu")
 const product = computed(() => {
   return getNavigationElement(currentPath.value.path)
 })
 
 function toggle(event: MouseEvent) {
-  menuRef.value?.toggle(event)
+  menu.value?.toggle(event)
 }
 
 const isSubMenuExists = computed(() => product.value.children.length > 1)
 const subItems = computed(() => product.value.children.map((child) => ({ ...child, url: child.tabs[0].url })))
-const subMenuRef = useTemplateRef<Menu>("subMenu")
+const subMenu = useTemplateRef<Menu>("subMenu")
 
 const selectedSubMenu = computed(() => {
   return (
@@ -84,6 +84,6 @@ const selectedSubMenu = computed(() => {
 })
 
 function toggleSubMenu(event: MouseEvent) {
-  subMenuRef.value?.toggle(event)
+  subMenu.value?.toggle(event)
 }
 </script>

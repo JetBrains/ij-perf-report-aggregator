@@ -24,9 +24,9 @@ export default defineComponent({
   },
   setup(props) {
     const descriptorRef = toRef(props, "descriptor")
-    const chartContainerRef = useTemplateRef<HTMLElement>("chartContainer")
+    const chartContainer = useTemplateRef<HTMLElement>("chartContainer")
 
-    const chartHelper = new ChartComponent(chartContainerRef, async function (container): Promise<ChartManager> {
+    const chartHelper = new ChartComponent(chartContainer, async function (container): Promise<ChartManager> {
       const descriptor = descriptorRef.value
 
       const sourceNames = descriptor.sourceNames
@@ -59,7 +59,7 @@ export default defineComponent({
     })
 
     watch(
-      [descriptorRef, chartContainerRef],
+      [descriptorRef, chartContainer],
       debounceSync(() => {
         const oldChartManager = chartHelper.chartManager
         if (oldChartManager != null) {
@@ -72,7 +72,7 @@ export default defineComponent({
     )
 
     return {
-      chartContainer: chartContainerRef,
+      chartContainer: chartContainer,
     }
   },
 })

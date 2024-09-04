@@ -33,8 +33,8 @@ import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfig
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
 
-const settingsPanelRef = useTemplateRef<OverlayPanel>("settingsPanel")
-const settingsIconRef = useTemplateRef<HTMLElement>("settingsIcon")
+const settingsPanel = useTemplateRef<OverlayPanel>("settingsPanel")
+const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")
 
 const emit = defineEmits(["update:configurators"])
 emit("update:configurators", new ScalingConfigurator())
@@ -47,7 +47,7 @@ const settingsStore = useSettingsStore()
 const { removeOutliers } = storeToRefs(settingsStore)
 
 const showSettings = function (event: Event) {
-  settingsPanelRef.value?.toggle(event, settingsIconRef.value) // Toggle the panel first
+  settingsPanel.value?.toggle(event, settingsIcon.value) // Toggle the panel first
   setTimeout(() => {
     adjustPosition()
     window.addEventListener("scroll", adjustPosition)
@@ -56,7 +56,7 @@ const showSettings = function (event: Event) {
 
 // this is a hack since appendTo doesn't work with Icon for some reason
 function adjustPosition() {
-  const iconRect = settingsIconRef.value?.getBoundingClientRect()
+  const iconRect = settingsIcon.value?.getBoundingClientRect()
 
   // Query for the OverlayPanel's DOM element.
   const overlayElement = document.querySelector(".p-overlaypanel")

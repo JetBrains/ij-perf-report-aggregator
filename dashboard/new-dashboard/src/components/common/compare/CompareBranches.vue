@@ -132,10 +132,10 @@ const props = withDefaults(defineProps<CompareBranchesProps>(), {
 })
 
 const initialMachine = "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-const containerRef = useTemplateRef<HTMLElement>("container")
+const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 
-provide(containerKey, containerRef)
+provide(containerKey, container)
 
 const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
 const persistentStateManager = new PersistentStateManager(

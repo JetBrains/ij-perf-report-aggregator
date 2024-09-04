@@ -25,7 +25,7 @@ const props = withDefaults(
   }
 )
 
-const chartElementRef = useTemplateRef<HTMLElement>("chartElement")
+const chartElement = useTemplateRef<HTMLElement>("chartElement")
 let chartManager: BarChartManager | null = null
 // eslint-disable-next-line vue/no-setup-props-destructure
 const measures = props.measures
@@ -39,7 +39,7 @@ const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, 
 const dataQueryExecutor = new DataQueryExecutor([...injectOrError(configuratorListKey), aggregationOperatorConfigurator, measureConfigurator])
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  chartManager = new BarChartManager(chartElementRef.value!, dataQueryExecutor, chartStyle)
+  chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor, chartStyle)
 })
 onUnmounted(() => {
   const it = chartManager

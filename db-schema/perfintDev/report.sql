@@ -1,4 +1,4 @@
-create table idea2
+create table perfintDev.pycharm
 (
   `machine`               LowCardinality(String) CODEC (ZSTD(20)),
   `build_time`            DateTime CODEC (Delta(4), ZSTD(20)),

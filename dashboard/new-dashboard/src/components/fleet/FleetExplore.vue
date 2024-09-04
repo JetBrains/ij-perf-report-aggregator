@@ -43,7 +43,7 @@
   <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -77,11 +77,11 @@ provideReportUrlProvider(props.withInstaller)
 
 const dbName = "fleet"
 const dbTable = "report"
-const container = ref<HTMLElement>()
+const containerRef = useTemplateRef<HTMLElement>("container")
 
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, container)
+provide(containerKey, containerRef)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)

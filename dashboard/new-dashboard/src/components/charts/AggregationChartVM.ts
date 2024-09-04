@@ -30,7 +30,7 @@ export class AggregationChartVM {
     private valueUnit: ValueUnit = "ms"
   ) {}
 
-  initChart(element: HTMLElement, resizeContainer?: HTMLElement): () => void {
+  initChart(element: HTMLElement, resizeContainer?: HTMLElement | null): () => void {
     this.chartManager = new ChartManager(element, resizeContainer)
     const isMs = this.valueUnit === "ms"
     this.chartManager.chart.setOption({

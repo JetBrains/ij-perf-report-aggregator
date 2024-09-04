@@ -7,7 +7,7 @@ import { FilterConfigurator } from "../configurators/filter"
 import { YoutrackClient } from "../components/common/youtrack/YoutrackClient"
 
 export const sidebarVmKey: InjectionKey<InfoSidebar> = Symbol("sidebarVm")
-export const containerKey: InjectionKey<Ref<HTMLElement | undefined>> = Symbol("chartContainerKey")
+export const containerKey: InjectionKey<Ref<HTMLElement | null>> = Symbol("chartContainerKey")
 
 export const serverConfiguratorKey: InjectionKey<ServerWithCompressConfigurator> = Symbol("serverConfiguratorKey")
 export const accidentsConfiguratorKey: InjectionKey<AccidentsConfigurator> = Symbol("accidentsKey")

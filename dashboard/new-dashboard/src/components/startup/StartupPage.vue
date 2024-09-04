@@ -37,7 +37,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -81,11 +81,11 @@ provideReportUrlProvider(withInstaller)
 
 const dbName = withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
-const container = ref<HTMLElement>()
+const containerRef = useTemplateRef<HTMLElement>("container")
 
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, container)
+provide(containerKey, containerRef)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)

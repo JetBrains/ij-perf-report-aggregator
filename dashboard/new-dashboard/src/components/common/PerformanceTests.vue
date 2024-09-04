@@ -120,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, Ref, ref, watch, WatchStopHandle } from "vue"
+import { provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -173,11 +173,11 @@ enum TestMetricSwitcher {
 
 provideReportUrlProvider(props.withInstaller)
 
-const container = ref<HTMLElement>()
+const containerRef = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, container)
+provide(containerKey, containerRef)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)

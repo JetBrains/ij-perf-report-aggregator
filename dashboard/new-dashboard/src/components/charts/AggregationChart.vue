@@ -22,7 +22,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, shallowRef } from "vue"
+import { inject, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { TimeAverageConfigurator } from "../../configurators/TimeAverageConfigurator"
 import { containerKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
@@ -64,14 +64,14 @@ const avConfigurators = props.configurators ?? injectOrError(dashboardConfigurat
 const allConfigurators = [...avConfigurators, injectOrError(serverConfiguratorKey), timeAverageConfigurator, measuresConfigurator]
 /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
 const queryExecutor = new DataQueryExecutor(allConfigurators.filter((item): item is DataQueryConfigurator => item != null))
-const element = shallowRef<HTMLElement>()
+const elementRef = useTemplateRef<HTMLElement>("element")
 const vm = new AggregationChartVM(queryExecutor, props.chartColor, props.valueUnit)
 const container = inject(containerKey)
 
 let dispose: () => void
 onMounted(() => {
-  if (element.value != null) {
-    dispose = vm.initChart(element.value, container?.value)
+  if (elementRef.value != null) {
+    dispose = vm.initChart(elementRef.value, container?.value)
   }
 })
 

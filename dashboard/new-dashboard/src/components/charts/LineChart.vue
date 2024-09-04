@@ -32,7 +32,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { computed, inject, onMounted, onUnmounted, ref, Ref, shallowRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, Ref, useTemplateRef, toRef, watch } from "vue"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -89,9 +89,9 @@ const valueUnit: Ref<ValueUnit> = computed(() => {
 const settingStore = useSettingsStore()
 
 const accidentsConfigurator = inject(accidentsConfiguratorKey, null)
-const chartElement = shallowRef<HTMLElement>()
+const chartElementRef = useTemplateRef<HTMLElement>("chartElement")
 
-const chartIsVisible = useElementVisibility(chartElement)
+const chartIsVisible = useElementVisibility(chartElementRef)
 
 const skipZeroValues = toRef(props, "skipZeroValues")
 const reportInfoProvider = inject(reportInfoProviderKey, null)
@@ -151,10 +151,10 @@ function createChart() {
   if (chartVm != null) {
     return
   }
-  if (chartElement.value) {
+  if (chartElementRef.value) {
     chartManager?.dispose()
     unsubscribe?.()
-    chartManager = new ChartManager(chartElement.value, container.value)
+    chartManager = new ChartManager(chartElementRef.value, container.value)
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnit.value, accidentsConfigurator, props.legendFormatter)
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnit.value, accidentsConfigurator))

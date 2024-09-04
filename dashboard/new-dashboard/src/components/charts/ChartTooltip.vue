@@ -89,7 +89,7 @@
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"
-import { computed, nextTick, shallowRef, watch, WatchStopHandle } from "vue"
+import { computed, nextTick, shallowRef, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { calculateChanges } from "../../util/changes"
 import { debounceSync } from "../../util/debounce"
 import SpaceIcon from "../common/SpaceIcon.vue"
@@ -97,7 +97,7 @@ import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../com
 import { StartupTooltipManager, TooltipData } from "./StartupTooltipManager"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
-const panel = shallowRef<OverlayPanel | null>()
+const panelRef = useTemplateRef<OverlayPanel>("panel")
 
 const linkText = computed(() => {
   const data = tooltipData.value?.firstSeriesData
@@ -118,7 +118,7 @@ let lastManager: StartupTooltipManager | null = null
 
 const hide = debounceSync(() => {
   lastManager = null
-  panel.value?.hide()
+  panelRef.value?.hide()
   tooltipData.value = null
 }, 1_000)
 
@@ -133,9 +133,9 @@ const consumer: (data: TooltipData | null, event: Event | null) => void = (data,
   }
 
   let stopHandle: WatchStopHandle | null = null
-  const panelElement = panel.value
+  const panelElement = panelRef.value
   if (panelElement == null) {
-    stopHandle = watch(panel, (value) => {
+    stopHandle = watch(panelRef, (value) => {
       value?.show(event)
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       stopHandle!()

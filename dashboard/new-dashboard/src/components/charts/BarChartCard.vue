@@ -6,7 +6,7 @@
   />
 </template>
 <script setup lang="ts">
-import { inject, onMounted, onUnmounted, shallowRef } from "vue"
+import { inject, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { PredefinedGroupingMeasureConfigurator } from "../../configurators/PredefinedGroupingMeasureConfigurator"
 import { aggregationOperatorConfiguratorKey, chartStyleKey, configuratorListKey, injectOrError, timeRangeKey } from "../../shared/injectionKeys"
 import { BarChartManager } from "../common/BarChartManager"
@@ -25,7 +25,7 @@ const props = withDefaults(
   }
 )
 
-const chartElement = shallowRef<HTMLElement | null>(null)
+const chartElementRef = useTemplateRef<HTMLElement>("chartElement")
 let chartManager: BarChartManager | null = null
 // eslint-disable-next-line vue/no-setup-props-destructure
 const measures = props.measures
@@ -39,7 +39,7 @@ const measureConfigurator = new PredefinedGroupingMeasureConfigurator(measures, 
 const dataQueryExecutor = new DataQueryExecutor([...injectOrError(configuratorListKey), aggregationOperatorConfigurator, measureConfigurator])
 onMounted(() => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  chartManager = new BarChartManager(chartElement.value!, dataQueryExecutor, chartStyle)
+  chartManager = new BarChartManager(chartElementRef.value!, dataQueryExecutor, chartStyle)
 })
 onUnmounted(() => {
   const it = chartManager

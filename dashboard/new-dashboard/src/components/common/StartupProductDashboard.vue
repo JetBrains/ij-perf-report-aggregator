@@ -108,7 +108,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, provide, ref } from "vue"
+import { computed, provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -150,14 +150,14 @@ const props = withDefaults(defineProps<StartupProductDashboard>(), {
 })
 provideReportUrlProvider(props.withInstaller)
 
-const container = ref<HTMLElement>()
+const containerRef = useTemplateRef<HTMLElement>("container")
 
 const dbName = props.withInstaller ? "ij" : "ijDev"
 const dbTable = "report"
 
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, container)
+provide(containerKey, containerRef)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, dbTable)

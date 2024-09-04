@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { provide, ref } from "vue"
+import { provide, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { AccidentsConfiguratorForDashboard } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
@@ -73,11 +73,11 @@ const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
 
 provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
 
-const container = ref<HTMLElement>()
+const containerRef = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
 
-provide(containerKey, container)
+provide(containerKey, containerRef)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)

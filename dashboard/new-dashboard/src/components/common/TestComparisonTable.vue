@@ -131,7 +131,7 @@ const props = withDefaults(defineProps<TestComparisonTableProps>(), {
   formatDifference: formatPercentage,
 })
 
-const emit = defineEmits<(e: "update:resultData", resultData: TestComparisonTableEntry[]) => void>()
+const emit = defineEmits<{ "update:resultData": [resultData: TestComparisonTableEntry[]] }>()
 
 const resultData = ref<TestComparisonTableEntry[]>([])
 watch(resultData, () => {

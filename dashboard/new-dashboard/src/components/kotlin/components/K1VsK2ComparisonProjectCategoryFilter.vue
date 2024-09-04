@@ -46,7 +46,7 @@ const props = defineProps<Props>()
 
 const selectedProjectCategories = ref(props.initialProjectCategories)
 
-const emit = defineEmits<(e: "update:selectedProjectCategories", selectedCategories: string[]) => void>()
+const emit = defineEmits<{ "update:selectedProjectCategories": [selectedCategories: string[]] }>()
 
 watch(selectedProjectCategories, (newValue) => {
   emit("update:selectedProjectCategories", newValue)

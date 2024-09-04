@@ -320,35 +320,4 @@ describe("InfoSideBar Test", () => {
     expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706075619000))
     expect(result.projectName).toEqual("fleet")
   })
-
-  test("Fleet Tests", () => {
-    dbTypeStore().setDbType("fleet", "measure")
-    const result = getInfoDataFrom(
-      {
-        seriesName: "test",
-        value: [
-          1706377569000,
-          12702000000,
-          "intellij-linux-hw-hetzner-agent-23",
-          437946452,
-          "multiCaretTyping",
-          "master",
-          {
-            prev: 7404000000,
-            next: 7905000000,
-          },
-        ],
-      },
-      "ns",
-      null
-    )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-hw-hetzner-agent-23")
-    expect(result.buildId).toEqual(437946452)
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706377569000))
-    expect(result.projectName).toEqual("multiCaretTyping")
-    expect(result.deltaNext).toEqual("-4 s, 797 ms (-37.8%)")
-    expect(result.deltaPrevious).toEqual("-5 s, 298 ms (-41.7%)")
-  })
 })

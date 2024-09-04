@@ -1768,6 +1768,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             dbName: "perfintDev",
             table: "pycharm",
             initialMachine: "linux-blade-hetzner",
+            withInstaller: false,
           },
           meta: { pageTitle: "PyCharm Performance tests" },
         },

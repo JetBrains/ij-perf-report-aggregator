@@ -5,6 +5,7 @@
     table="pycharm"
     persistent-id="pycharm_dashboard"
     initial-machine="linux-blade-hetzner"
+    :with-installer="false"
   >
     <section class="flex gap-6">
       <div class="w-1/2">

@@ -66,7 +66,7 @@
             <span class="flex items-center gap-1 overflow-hidden">
               Triggered by
               <span
-                v-if="triggeredValueFiltered !== null && triggeredValueFiltered.length > 0"
+                v-if="triggeredValueFiltered !== null && triggeredValueFiltered !== undefined && triggeredValueFiltered.length > 0"
                 class="text-gray-500 truncate"
               >
                 {{ triggeredValueFiltered?.length < 2 ? triggeredValueFiltered[0] : `Selected ${triggeredValueFiltered?.length}` }}
@@ -162,6 +162,7 @@ const enum SubMenu {
 }
 
 const triggeredValueFiltered = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return triggeredValue.value?.filter((it) => it !== null)
 })
 

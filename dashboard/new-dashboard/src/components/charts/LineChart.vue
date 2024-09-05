@@ -8,7 +8,7 @@
       @mouseover="labelHovered = true"
       @mouseleave="labelHovered = false"
     >
-      {{ props.title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
+      {{ title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <a
         v-show="labelHovered"
         :href="'#' + anchor"
@@ -17,7 +17,7 @@
       </a>
       <span class="ml-auto flex items-center">
         <span
-          v-if="props.canBeClosed"
+          v-if="canBeClosed"
           class="text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition"
           @click="closeChart"
         />
@@ -32,7 +32,7 @@
 </template>
 <script setup lang="ts">
 import { useElementVisibility } from "@vueuse/core"
-import { computed, inject, onMounted, onUnmounted, ref, Ref, useTemplateRef, toRef, watch } from "vue"
+import { computed, inject, onMounted, onUnmounted, ref, Ref, useTemplateRef, watch } from "vue"
 import { PredefinedMeasureConfigurator, TooltipTrigger } from "../../configurators/MeasureConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
 import { injectOrError, reportInfoProviderKey } from "../../shared/injectionKeys"
@@ -49,7 +49,6 @@ interface LineChartProps {
   title: string
   measures: string[]
   configurators: (DataQueryConfigurator | FilterConfigurator)[]
-  machines?: string[] | null
   skipZeroValues?: boolean
   chartType?: ChartType
   valueUnit?: ValueUnit
@@ -59,30 +58,30 @@ interface LineChartProps {
   canBeClosed?: boolean
 }
 
-const props = withDefaults(defineProps<LineChartProps>(), {
-  skipZeroValues: true,
-  valueUnit: "ms",
-  chartType: "line",
-  legendFormatter(name: string): string {
-    return name
-  },
-  tooltipTrigger: "item",
-  withMeasureName: false,
-  canBeClosed: false,
-  machines: null,
-})
+const {
+  title,
+  measures,
+  configurators,
+  skipZeroValues = true,
+  chartType = "line",
+  valueUnit = "ms",
+  tooltipTrigger = "item",
+  legendFormatter = (name: string) => name,
+  withMeasureName = false,
+  canBeClosed = false,
+} = defineProps<LineChartProps>()
 
 const anchor = computed(() => {
-  return props.title.replaceAll(/[^\dA-Za-z]/g, "")
+  return title.replaceAll(/[^\dA-Za-z]/g, "")
 })
 
-const valueUnit: Ref<ValueUnit> = computed(() => {
-  if (props.measures.every((m) => m.endsWith(".ms"))) {
+const valueUnitFromMeasure: Ref<ValueUnit> = computed(() => {
+  if (measures.every((m) => m.endsWith(".ms"))) {
     return "ms"
-  } else if (props.measures.every((m) => m.endsWith(".ns"))) {
+  } else if (measures.every((m) => m.endsWith(".ns"))) {
     return "ns"
   } else {
-    return props.valueUnit
+    return valueUnit
   }
 })
 
@@ -93,7 +92,9 @@ const chartElement = useTemplateRef<HTMLElement>("chartElement")
 
 const chartIsVisible = useElementVisibility(chartElement)
 
-const skipZeroValues = toRef(props, "skipZeroValues")
+const skipZeroValuesRef = computed(() => {
+  return skipZeroValues
+})
 const reportInfoProvider = inject(reportInfoProviderKey, null)
 
 const labelHovered = ref(false)
@@ -120,32 +121,32 @@ let chartManager: ChartManager | null
 let chartVm: LineChartVM | null = null
 let unsubscribe: (() => void) | null = null
 
-const measures: Ref<string[]> = computed(() => {
-  return props.measures
+const measuresRef: Ref<string[]> = computed(() => {
+  return measures
 })
 
 const measureConfigurator = new PredefinedMeasureConfigurator(
-  measures,
-  skipZeroValues,
-  props.chartType,
-  valueUnit.value,
+  measuresRef,
+  skipZeroValuesRef,
+  chartType,
+  valueUnitFromMeasure.value,
   {
     showSymbol: false,
   },
   accidentsConfigurator,
-  props.tooltipTrigger
+  tooltipTrigger
 )
 
-if (measures.value.length == 1) {
-  new SeriesNameConfigurator(measures.value[0])
+if (measuresRef.value.length == 1) {
+  new SeriesNameConfigurator(measuresRef.value[0])
 }
 
-const configurators = [...props.configurators, measureConfigurator, infoFieldsConfigurator]
-if (props.withMeasureName) {
-  configurators.push(new SeriesNameConfigurator(measures.value[0]))
+const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]
+if (withMeasureName) {
+  lineConfigurators.push(new SeriesNameConfigurator(measuresRef.value[0]))
 }
 
-const dataQueryExecutor = new DataQueryExecutor([...configurators].filter((item): item is DataQueryConfigurator => item != null))
+const dataQueryExecutor = new DataQueryExecutor([...lineConfigurators].filter((item): item is DataQueryConfigurator => item != null))
 
 function createChart() {
   if (chartVm != null) {
@@ -155,16 +156,16 @@ function createChart() {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnit.value, accidentsConfigurator, props.legendFormatter)
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, accidentsConfigurator, legendFormatter)
     unsubscribe = chartVm.subscribe()
-    chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnit.value, accidentsConfigurator))
+    chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnitFromMeasure.value, accidentsConfigurator))
   }
 }
 
 const emit = defineEmits(["chartClosed"])
 
 function closeChart() {
-  emit("chartClosed", measures)
+  emit("chartClosed", measuresRef)
 }
 
 function setupChartOnVisibility() {

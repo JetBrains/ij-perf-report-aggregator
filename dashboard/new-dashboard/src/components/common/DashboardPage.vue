@@ -3,7 +3,7 @@
     <DashboardToolbar
       :branch-configurator="branchConfigurator"
       :machine-configurator="machineConfigurator"
-      :release-configurator="releaseConfigurator"
+      :release-configurator="releaseNightlyConfigurator"
       :on-change-range="onChangeRange"
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
@@ -62,16 +62,19 @@ interface PerformanceDashboardProps {
   branch?: string | null
 }
 
-const props = withDefaults(defineProps<PerformanceDashboardProps>(), {
-  withInstaller: true,
-  isBuildNumberExists: false,
-  charts: null,
-  initialMachine: null,
-  releaseConfigurator: nightly,
-  branch: "master",
-})
+const {
+  dbName,
+  table,
+  initialMachine,
+  persistentId,
+  withInstaller = true,
+  charts = null,
+  isBuildNumberExists = false,
+  releaseConfigurator = nightly,
+  branch = "master",
+} = defineProps<PerformanceDashboardProps>()
 
-provideReportUrlProvider(props.withInstaller, props.isBuildNumberExists)
+provideReportUrlProvider(withInstaller, isBuildNumberExists)
 
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
@@ -80,28 +83,28 @@ const sidebarVm = new InfoSidebarImpl()
 provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
-const serverConfigurator = new ServerWithCompressConfigurator(props.dbName, props.table)
+const serverConfigurator = new ServerWithCompressConfigurator(dbName, table)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistenceForDashboard = new PersistentStateManager(
-  props.persistentId,
+  persistentId,
   {
-    machine: props.initialMachine ?? "",
+    machine: initialMachine ?? "",
     project: [],
-    branch: props.branch,
-    releaseConfigurator: props.releaseConfigurator,
+    branch,
+    releaseConfigurator,
   },
   router
 )
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
-const scenarioConfigurator = props.charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true)
-if (scenarioConfigurator != null && props.charts != null) {
-  scenarioConfigurator.selected.value = extractUniqueProjects(props.charts)
+const scenarioConfigurator = charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true)
+if (scenarioConfigurator != null && charts != null) {
+  scenarioConfigurator.selected.value = extractUniqueProjects(charts)
 }
 
-const branchConfigurator = props.branch == null ? null : createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
+const branchConfigurator = branch == null ? null : createBranchConfigurator(serverConfigurator, persistenceForDashboard, [timeRangeConfigurator])
 const filters = []
 filters.push(timeRangeConfigurator)
 if (scenarioConfigurator != null) {
@@ -110,7 +113,7 @@ if (scenarioConfigurator != null) {
 if (branchConfigurator != null) {
   filters.push(branchConfigurator)
 }
-const machineConfigurator = props.initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, filters)
+const machineConfigurator = initialMachine == null ? undefined : new MachineConfigurator(serverConfigurator, persistenceForDashboard, filters)
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistenceForDashboard, filters)
 
 const averagesConfigurators = [serverConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
@@ -121,7 +124,7 @@ if (branchConfigurator != null) {
   averagesConfigurators.push(branchConfigurator)
 }
 
-const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, props.charts, timeRangeConfigurator)
+const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, charts, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
 const dashboardConfigurators = [timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator] as FilterConfigurator[]
@@ -132,9 +135,9 @@ if (branchConfigurator != null) {
   dashboardConfigurators.push(branchConfigurator)
 }
 
-const releaseConfigurator = props.withInstaller ? new ReleaseNightlyConfigurator(persistenceForDashboard) : undefined
-if (releaseConfigurator != null) {
-  dashboardConfigurators.push(releaseConfigurator)
+const releaseNightlyConfigurator = withInstaller ? new ReleaseNightlyConfigurator(persistenceForDashboard) : undefined
+if (releaseNightlyConfigurator != null) {
+  dashboardConfigurators.push(releaseNightlyConfigurator)
 }
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 

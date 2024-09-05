@@ -34,7 +34,7 @@
           class="flex items-center gap-1"
         >
           <slot name="icon" />
-          {{ props.selectedLabel(slotProps.value) }}
+          {{ selectedLabel(slotProps.value) }}
         </span>
         <ChevronDownIcon
           class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -110,7 +110,7 @@
         class="flex items-center gap-1"
       >
         <slot name="icon" />
-        {{ props.selectedLabel(slotProps.value) }}
+        {{ selectedLabel(slotProps.value) }}
       </span>
     </template>
     <template #dropdownicon>
@@ -124,43 +124,42 @@ import { computed } from "vue"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { usePlaceholder } from "./placeholder"
 
-const props = withDefaults(
-  defineProps<{
-    label: string
-    dimension: DimensionConfigurator
-    valueToLabel?: (v: string) => string
-    // todo not working correctly for now (if value is set to not existing value, runtime error on select)
-    valueToGroup?: ((v: string) => string) | null
-    selectedLabel?: (items: string[]) => string
-  }>(),
-  {
-    selectedLabel: (items: string[]) => `${items.length} items selected`,
-    valueToLabel: (v: string) => v,
-    valueToGroup: null,
-  }
-)
+const {
+  label,
+  dimension,
+  valueToLabel = (v: string) => v,
+  valueToGroup = null,
+  selectedLabel = (items: string[]) => `${items.length} items selected`,
+} = defineProps<{
+  label: string
+  dimension: DimensionConfigurator
+  valueToLabel?: (v: string) => string
+  // todo not working correctly for now (if value is set to not existing value, runtime error on select)
+  valueToGroup?: ((v: string) => string) | null
+  selectedLabel?: (items: string[]) => string
+}>()
 
-const multiple = computed(() => props.dimension.multiple)
+const multiple = computed(() => dimension.multiple)
 
 const placeholder = usePlaceholder(
-  props,
-  () => props.dimension.values.value,
-  () => props.dimension.selected.value
+  { label },
+  () => dimension.values.value,
+  () => dimension.selected.value
 )
 
 function optionToLabel(value: string): string {
-  return props.valueToLabel(value)
+  return valueToLabel(value)
 }
 
 const value = computed<string | string[] | null>({
   get() {
-    const values = props.dimension.values.value
+    const values = dimension.values.value
     if (values.length === 0) {
       return null
     }
 
-    const value = props.dimension.selected.value
-    if (props.dimension.multiple) {
+    const value = dimension.selected.value
+    if (dimension.multiple) {
       if (Array.isArray(value)) {
         return value
       } else {
@@ -176,7 +175,7 @@ const value = computed<string | string[] | null>({
   },
   set(value) {
     // eslint-disable-next-line vue/no-mutating-props
-    props.dimension.selected.value = value == null || value.length === 0 ? null : value
+    dimension.selected.value = value == null || value.length === 0 ? null : value
   },
 })
 
@@ -185,10 +184,9 @@ const hasManyElements = computed(() => {
 })
 
 const items = computed(() => {
-  const valueToLabel = props.valueToLabel
-  const values = props.dimension.values.value
+  const values = dimension.values.value
   // map Array<string> to Array<Item> to be able to customize how value is displayed in UI
-  if (props.valueToGroup == null) {
+  if (valueToGroup == null) {
     const result = values.map((it) => {
       return { label: valueToLabel(it.toString()), value: it }
     })
@@ -203,7 +201,7 @@ const items = computed(() => {
     }
     return result
   } else {
-    return group(values as string[], props.valueToGroup, valueToLabel)
+    return group(values as string[], valueToGroup, valueToLabel)
   }
 })
 

@@ -63,7 +63,7 @@ function convertItemToTreeSelectModel(item: GroupedDimensionValue): TreeNode {
   }
 }
 
-const props = defineProps<{
+const { label, dimension } = defineProps<{
   label: string
   dimension: MachineConfigurator
 }>()
@@ -71,27 +71,27 @@ const props = defineProps<{
 type SelectedValue = Record<string, boolean>
 
 const placeholder = usePlaceholder(
-  props,
-  () => props.dimension.values.value,
-  () => props.dimension.selected.value
+  { label },
+  () => dimension.values.value,
+  () => dimension.selected.value
 )
 
 const value = computed<SelectedValue>({
   get(): SelectedValue {
     const result: SelectedValue = {}
-    for (const k of props.dimension.selected.value) {
+    for (const k of dimension.selected.value) {
       result[k] = true
     }
     return result
   },
   set(value: SelectedValue) {
     // eslint-disable-next-line vue/no-mutating-props
-    props.dimension.selected.value = Object.entries(value)
+    dimension.selected.value = Object.entries(value)
       .filter((it) => it[1])
       .map((it) => it[0])
   },
 })
 const values = computed(() => {
-  return props.dimension.values.value.map((element) => convertItemToTreeSelectModel(element))
+  return dimension.values.value.map((element) => convertItemToTreeSelectModel(element))
 })
 </script>

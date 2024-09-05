@@ -5,10 +5,10 @@ go 1.22
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.62.0
-	github.com/ClickHouse/clickhouse-go/v2 v2.28.1
+	github.com/ClickHouse/clickhouse-go/v2 v2.28.2
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
-	github.com/alitto/pond v1.9.1
+	github.com/alitto/pond v1.9.2
 	github.com/andybalholm/brotli v1.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
@@ -20,7 +20,7 @@ require (
 	github.com/klauspost/compress v1.17.9
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
 	github.com/nats-io/nats.go v1.37.0
-	github.com/rs/cors v1.11.0
+	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/slack-go/slack v0.14.0
 	github.com/stretchr/testify v1.9.0
@@ -31,7 +31,7 @@ require (
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
 	go.uber.org/automaxprocs v1.5.3
-	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948
+	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e
 	golang.org/x/sync v0.8.0
 	golang.org/x/tools v0.24.0
 )

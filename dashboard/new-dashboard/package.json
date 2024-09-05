@@ -14,7 +14,7 @@
     "pinia": "^2.2.2",
     "primevue": "3.50.0",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.1",
+    "vue": "3.5.2",
     "vue-router": "4.4.3"
   },
   "devDependencies": {

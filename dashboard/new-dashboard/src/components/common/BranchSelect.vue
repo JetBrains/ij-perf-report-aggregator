@@ -175,7 +175,7 @@ const clearSubMenu = () => {
   activeSubMenu.value = null
 }
 
-const props = defineProps<Props>()
+const { branchConfigurator, releaseConfigurator, triggeredByConfigurator, selectionLimit } = defineProps<Props>()
 
 function createItems(configurator?: DimensionConfigurator) {
   return computed(() => {
@@ -222,18 +222,18 @@ function createValueFrom(configurator?: DimensionConfigurator) {
   })
 }
 
-const branchValue = createValueFrom(props.branchConfigurator)
-const versionValue = createValueFrom(props.releaseConfigurator)
-const triggeredValue = createValueFrom(props.triggeredByConfigurator)
+const branchValue = createValueFrom(branchConfigurator)
+const versionValue = createValueFrom(releaseConfigurator)
+const triggeredValue = createValueFrom(triggeredByConfigurator)
 
-const branchItems = createItems(props.branchConfigurator)
-const versionItems = createItems(props.releaseConfigurator)
-const triggeredItems = createItems(props.triggeredByConfigurator)
+const branchItems = createItems(branchConfigurator)
+const versionItems = createItems(releaseConfigurator)
+const triggeredItems = createItems(triggeredByConfigurator)
 
 const placeholder = usePlaceholder(
   { label: "Branch" },
-  () => props.branchConfigurator.values.value,
-  () => props.branchConfigurator.selected.value
+  () => branchConfigurator.values.value,
+  () => branchConfigurator.selected.value
 )
 
 const hasManyElements = computed(() => {

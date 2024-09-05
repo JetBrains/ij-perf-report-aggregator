@@ -9,11 +9,11 @@
         <template #content>
           <div class="flex items-center space-x-4">
             <div class="text-lg font-bold">Date:</div>
-            <div>{{ props.date }}</div>
+            <div>{{ date }}</div>
           </div>
           <div class="flex items-center space-x-4">
             <div class="text-lg font-bold">Build:</div>
-            <div>{{ props.build }}</div>
+            <div>{{ build }}</div>
           </div>
           <div class="text-lg font-bold">
             Type:
@@ -26,7 +26,7 @@
           <div class="flex flex-col space-x-4">
             <div class="text-lg font-bold">Tests:</div>
             <ul
-              v-for="test in tests"
+              v-for="test in testsArray"
               :key="test"
               class="list-disc list-inside"
             >
@@ -64,15 +64,15 @@ import { computed, ref } from "vue"
 import { AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 
-const props = defineProps<{
+const { date, tests, build } = defineProps<{
   date: string
   tests: string
   build: string
 }>()
-const tests = computed(() => props.tests.split(","))
+const testsArray = computed(() => tests.split(","))
 
-const date = computed(() => {
-  const parts = props.date.split("-")
+const dateFormatted = computed(() => {
+  const parts = date.split("-")
   const day = Number.parseInt(parts[0])
   const month = Number.parseInt(parts[1])
   const year = Number.parseInt(parts[2])
@@ -99,8 +99,8 @@ class AccidentReporter extends AccidentsConfigurator {
 const accidentReporter = new AccidentReporter()
 const reported = ref(false)
 async function reportRegression() {
-  for (const test of tests.value) {
-    await accidentReporter.writeAccidentToMetaDb(date.value, test, reason.value, props.build, accidentType.value)
+  for (const test of testsArray.value) {
+    await accidentReporter.writeAccidentToMetaDb(dateFormatted.value, test, reason.value, build, accidentType.value)
   }
   reported.value = true
 }

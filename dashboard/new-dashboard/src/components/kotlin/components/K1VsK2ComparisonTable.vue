@@ -55,14 +55,14 @@ interface Props {
   configurators: (DataQueryConfigurator | FilterConfigurator)[]
 }
 
-const props = defineProps<Props>()
+const { name, measure, projects, allowedProjectCategories, configurators } = defineProps<Props>()
 
 const filteredProjects = computed(() => {
-  if (props.allowedProjectCategories.length === 0) {
-    return props.projects
+  if (allowedProjectCategories.length === 0) {
+    return projects
   }
 
-  return props.projects.filter((project) => props.allowedProjectCategories.some((prefix) => project.startsWith(prefix)))
+  return projects.filter((project) => allowedProjectCategories.some((prefix) => project.startsWith(prefix)))
 })
 
 const testComparisons = computed(() => filteredProjects.value.map((element) => transformToTestComparison(element)))
@@ -96,7 +96,7 @@ const topStats = computed(() => [
   },
 ])
 
-const formatTime = getValueFormatterByMeasureName(props.measure)
+const formatTime = getValueFormatterByMeasureName(measure)
 
 function transformToTestComparison(projectName: string) {
   // We want to compare K1 and K2 tests against each other, and they are respectively suffixed with "_k1" and "_k2".

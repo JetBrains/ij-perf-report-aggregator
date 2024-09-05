@@ -24,7 +24,7 @@
         </span>
 
         <span v-if="slotProps.value && slotProps.value.length > 1">
-          {{ props.selectedLabel(slotProps.value) }}
+          {{ selectedLabel(slotProps.value) }}
         </span>
 
         <ChevronDownIcon
@@ -50,15 +50,11 @@ interface Props {
   title?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: "Metrics",
-  selectedLabel: (items: string[]) => `${items.length} items selected`,
-})
+const { configurator, selectedLabel = (items: string[]) => `${items.length} items selected`, title = "Metrics" } = defineProps<Props>()
 
 // const items = props.configurator.data
 // put selected values on top
 const items = computed(() => {
-  const configurator = props.configurator
   let result = configurator.data.value
 
   if (result == null) {
@@ -87,7 +83,6 @@ const items = computed(() => {
 
 const value = computed({
   get(): string[] | null {
-    const configurator = props.configurator
     const selectedValue = configurator.selected.value
     const allValues = configurator.data.value
     if (allValues == null) return null
@@ -97,7 +92,7 @@ const value = computed({
     return allValues.length === 0 ? null : selectedValue
   },
   set(value: string[] | null) {
-    props.configurator.setSelected(value)
+    configurator.setSelected(value)
   },
 })
 </script>

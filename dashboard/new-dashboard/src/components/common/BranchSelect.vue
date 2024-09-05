@@ -66,10 +66,10 @@
             <span class="flex items-center gap-1 overflow-hidden">
               Triggered by
               <span
-                v-if="triggeredValue !== null && triggeredValue.length > 0"
+                v-if="triggeredValueFiltered !== null && triggeredValueFiltered.length > 0"
                 class="text-gray-500 truncate"
               >
-                {{ triggeredValue?.length < 2 ? triggeredValue[0] : `Selected ${triggeredValue?.length}` }}
+                {{ triggeredValueFiltered?.length < 2 ? triggeredValueFiltered[0] : `Selected ${triggeredValueFiltered?.length}` }}
               </span>
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
@@ -160,6 +160,10 @@ const enum SubMenu {
   TRIGGERED_BY,
   VERSION_TYPE,
 }
+
+const triggeredValueFiltered = computed(() => {
+  return triggeredValue.value?.filter((it) => it !== null)
+})
 
 const activeSubMenu = ref<SubMenu | null>(null)
 

@@ -10,12 +10,13 @@
       <Chip><a href="#index">Vcs indexing</a></Chip>
       <Chip><a href="#commit">Commit</a></Chip>
       <Chip><a href="#history">Show file history</a></Chip>
-      <Chip><a href="#annotate">Annotate</a></Chip>
+      <Chip><a href="#checkout">Checkout</a></Chip>
+      <!--<Chip><a href="#annotate">Annotate</a></Chip>-->
     </div>
 
     <Accordion
       :multiple="true"
-      :active-index="[0, 1, 2, 3]"
+      :active-index="[0, 1, 2, 3, 4]"
     >
       <AccordionTab header="Indexing">
         <section>
@@ -135,23 +136,48 @@
         </section>
       </AccordionTab>
 
-      <AccordionTab header="Annotate">
-        <!--<section>-->
-        <!--  <GroupProjectsChart-->
-        <!--    id="annotate"-->
-        <!--    label="Duration of opening git annotation - showFileAnnotation"-->
-        <!--    measure="showFileAnnotation"-->
-        <!--    :projects="annotateProjects"-->
-        <!--  />-->
-        <!--</section>-->
+      <AccordionTab header="Checkout">
         <section>
           <GroupProjectsChart
-            label="Duration of opening git annotation - git-open-annotation"
-            measure="git-open-annotation"
-            :projects="annotateProjects"
+            id="checkout"
+            label="Checkout time"
+            measure="git-checkout"
+            :projects="checkoutProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Checkout duration(FUS)"
+            measure="git-checkout-space#fusCheckoutDuration"
+            :projects="checkoutProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Checkout VFS refresh duration(FUS)"
+            measure="git-checkout-space#fusVfsRefreshDuration"
+            :projects="checkoutProjects"
           />
         </section>
       </AccordionTab>
+
+      <!--<AccordionTab header="Annotate">-->
+      <!--<section>-->
+      <!--  <GroupProjectsChart-->
+      <!--    id="annotate"-->
+      <!--    label="Duration of opening git annotation - showFileAnnotation"-->
+      <!--    measure="showFileAnnotation"-->
+      <!--    :projects="annotateProjects"-->
+      <!--  />-->
+      <!--</section>-->
+      <!--  <section>-->
+      <!--    <GroupProjectsChart-->
+      <!--      label="Duration of opening git annotation - git-open-annotation"-->
+      <!--      measure="git-open-annotation"-->
+      <!--      :projects="annotateProjects"-->
+      <!--    />-->
+      <!--  </section>-->
+      <!--</AccordionTab>-->
     </Accordion>
   </DashboardPage>
 </template>
@@ -169,5 +195,7 @@ const commitProjects = ["space/git-commit", "space/git-commit-smallDataPack"]
 
 const showFileHistoryProjects = ["space/DmsFacadeImpl-instant-git", "space/DmsFacadeImpl"]
 
-const annotateProjects = ["space/vcs-annotate-instant-git", "space/vcs-annotate"]
+//const annotateProjects = ["space/vcs-annotate-instant-git", "space/vcs-annotate"]
+
+const checkoutProjects = ["space/git-checkout-space"]
 </script>

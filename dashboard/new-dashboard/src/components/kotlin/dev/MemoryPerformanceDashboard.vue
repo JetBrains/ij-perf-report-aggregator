@@ -88,7 +88,7 @@ import {
 } from "../projects"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)
-measureConfigurator.initData(["freedMemoryByGC"])
+measureConfigurator.initData(["freedMemory"])
 const metrics = computed(() => {
   const reference = measureConfigurator.selected
   if (reference.value === null) {

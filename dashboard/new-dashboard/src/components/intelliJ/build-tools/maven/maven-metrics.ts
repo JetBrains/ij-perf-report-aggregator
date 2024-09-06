@@ -24,12 +24,6 @@ export const MAVEN_METRICS_DASHBOARD = [
   "workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms",
   "workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms",
   "workspace_import.populate.duration_ms",
-
-  // Legacy import
-  "legacy_import.create_modules.duration_ms",
-  "legacy_import.delete_obsolete.duration_ms",
-  "legacy_import.duration_ms",
-  "legacy_import.importers.duration_ms",
 ]
 
 const importerRunMetricTypes = ["total_duration_ms", "number_of_modules"]

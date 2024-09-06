@@ -47,7 +47,6 @@
       />
     </section>
 
-
     <section>
       <GroupProjectsChart
         label="Highlighting"

@@ -6,14 +6,39 @@
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
-    <Divider title="Core" />
+    <Divider title="Typing" />
     <section>
       <GroupProjectsChart
-        label="Typing (time)"
-        measure="fleet.test"
-        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
+        label="Typing latency p99"
+        measure="p99"
+        :projects="['stressTyping', 'stressLongFileInsertion', 'javascriptRetyping']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Typing latency p50 (technical-only metric)"
+        measure="p50"
+        :projects="['stressTyping', 'stressLongFileInsertion', 'javascriptRetyping']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Typing (max delay, technical-only metric)"
+        measure="max.awt.delay"
+        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping', 'Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+      />
+    </section>
+
+    <section>
+      <GroupProjectsChart
+        label="Typing (total time)"
+        measure="fleet.test"
+        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping', 'Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+      />
+    </section>
+
+    <Divider title="Core" />
+
     <section>
       <GroupProjectsChart
         label="Open Project"
@@ -21,20 +46,8 @@
         :projects="['openGoDelveProject', 'openJeditermProject', 'openRustSimpleServerProject', 'openSpringPetClinicJavaProject', 'openSpringPetClinicKotlinProject']"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Typing (average delay)"
-        measure="awt.delay"
-        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Typing (max delay)"
-        measure="max.awt.delay"
-        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
-      />
-    </section>
+
+
     <section>
       <GroupProjectsChart
         label="Highlighting"
@@ -49,12 +62,21 @@
         :projects="['wideTree', 'deepTree']"
       />
     </section>
-    <Divider title="PHP" />
+
     <section>
       <GroupProjectsChart
-        label="Typing (time)"
+        label="Other"
         measure="fleet.test"
-        :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
+        :projects="['Open mPDF', 'Frontend Completion in mPDF']"
+      />
+    </section>
+
+    <Divider title="Deprecated / Useless" />
+    <section>
+      <GroupProjectsChart
+        label="Typing (average delay)"
+        measure="awt.delay"
+        :projects="['multiCaretTyping', 'stressEnter', 'stressTyping']"
       />
     </section>
     <section>
@@ -62,20 +84,6 @@
         label="Typing (average delay)"
         measure="awt.delay"
         :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Typing (max delay)"
-        measure="max.awt.delay"
-        :projects="['Typing in mPDF', 'Typing in mPDF With Backend', 'Pressing Enter in mPDF']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Other"
-        measure="fleet.test"
-        :projects="['Open mPDF', 'Frontend Completion in mPDF']"
       />
     </section>
   </DashboardPage>

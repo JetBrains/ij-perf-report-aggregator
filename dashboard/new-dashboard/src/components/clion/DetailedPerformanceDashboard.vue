@@ -98,6 +98,13 @@
 
     <section>
       <CLionVsRadlerIndexingChart
+        label="Index project (50k sources, 10k headers)"
+        project="big_project_50k_10k/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerIndexingChart
         label="Index project (OpenCV)"
         project="opencv/indexing"
       />

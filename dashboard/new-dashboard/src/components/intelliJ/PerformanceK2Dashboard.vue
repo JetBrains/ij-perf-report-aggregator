@@ -42,7 +42,13 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Completion .java IntelliJ"],
     measures: ["completion"],
     projects: ["intellij_commit-changedDefault/completion/java_file", "intellij_commit/completion/java_file"],
-    aliases: ["java-completion-k2", "java-completion-k1"],
+    aliases: ["intellij-completion-k2", "intellij-completion-k1"],
+  },
+  {
+    labels: ["Completion .kt Toolbox"],
+    measures: ["completion"],
+    projects: ["toolbox_enterprise-changedDefault/ultimateCase/UserRepository", "toolbox_enterprise/ultimateCase/UserRepository"],
+    aliases: ["toolbox-completion-k2", "toolbox-completion-k1"],
   },
   {
     labels: ["Search Everywhere Go to All"],

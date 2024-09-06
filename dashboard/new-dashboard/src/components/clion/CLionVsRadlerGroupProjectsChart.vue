@@ -1,6 +1,6 @@
 <template>
   <GroupProjectsChart
-    :label="'[CLion vs Radler]' + label"
+    :label="`[CLion vs Radler] ${label}`"
     :measure="measure"
     :projects="projects"
   />

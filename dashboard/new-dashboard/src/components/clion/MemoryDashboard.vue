@@ -17,6 +17,14 @@
 
     <section>
       <CLionVsRadlerMemoryUsageChart
+        label="50k sources, 10k headers - After Indexing"
+        measure="afterIndexing"
+        project="big_project_50k_10k/indexing"
+      />
+    </section>
+
+    <section>
+      <CLionVsRadlerMemoryUsageChart
         label="OpenCV - After Indexing"
         measure="afterIndexing"
         project="opencv/indexing"

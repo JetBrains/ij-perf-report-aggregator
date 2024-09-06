@@ -20,5 +20,6 @@ Directory `dashboard` contains Vue.js application built using [PrimeVue](https:/
 - `pnpm vite serve` to start a dev server with hot module replacement.
 - `pnpm build` to build for production and `pnpm vite preview` to preview the production build.
 - You can change server to the local one in `ServerConfigurator.ts`
+  - To test your changes against production server, replace the url to `https://ij-perf-api.labs.jb.gg`. Make sure you have access to the internal network.
 
 To change dashboard, edit your dashboard page in `dashboard/new-dashboard/src/components`

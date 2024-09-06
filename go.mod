@@ -1,6 +1,6 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.22
+go 1.23
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694

@@ -3,7 +3,7 @@
     <div class="flex-1 min-w-0">
       <section>
         <GroupProjectsChart
-          :label="`[CLion vs Radler]` + label"
+          :label="`[CLion vs Radler] ${label}`"
           :measure="['ocSymbolBuildingTimeMs', 'backendIndexingTimeMs']"
           :projects="[clionProject, radlerProject]"
           :legend-formatter="legendFormatter"

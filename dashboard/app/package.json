@@ -2,8 +2,8 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.0.20",
-    "@fontsource/jetbrains-mono": "5.0.21",
+    "@fontsource/inter": "5.0.21",
+    "@fontsource/jetbrains-mono": "5.0.22",
     "new-dashboard": "workspace:*",
     "pinia": "^2.2.2",
     "primevue": "3.50.0",

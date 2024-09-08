@@ -2,7 +2,7 @@
   "name": "new-dashboard",
   "private": true,
   "dependencies": {
-    "@headlessui/vue": "^1.7.22",
+    "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "2.1.5",
     "@vueuse/core": "^11.0.3",
     "compare-versions": "6.1.1",
@@ -22,6 +22,6 @@
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^24.0.0",
     "jsdom": "^25.0.0",
-    "msw": "^2.4.2"
+    "msw": "^2.4.4"
   }
 }

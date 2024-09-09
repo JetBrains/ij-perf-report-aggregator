@@ -215,7 +215,7 @@
         <!--    :projects="annotateProjects"-->
         <!--  />-->
         <!--</section>-->
-        <section>
+        <section id="annotate">
           <GroupProjectsChart
             label="Duration of opening git annotation - git-open-annotation"
             measure="git-open-annotation"

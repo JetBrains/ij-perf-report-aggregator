@@ -396,6 +396,10 @@ export function getMachineGroupName(machine: string): string {
     groupName = "windows aws"
   } else if (machine.match("ij-w.*-azr.*")) {
     groupName = "windows-azure"
+  } else if (machine.startsWith("intellij-windows-hw-de-unit")) {
+    groupName = "Windows Munich i7-13700, 64 Gb"
+  } else if (machine.startsWith("intellij-linux-hw-de-unit")) {
+    groupName = "Linux Munich i7-13700, 64 Gb"
   }
 
   return groupName

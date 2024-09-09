@@ -57,11 +57,11 @@ func GetAnalyzer(id string) DatabaseConfiguration {
       "measure.name", "measure.start", "measure.duration", "measure.thread", "metrics.name", "metrics.value",
     }
     return DatabaseConfiguration{
-      DbName:            id,
-      HasProductField:   true,
-      HasInstallerField: false,
-      extraFieldCount:   len(IjMetricDescriptors) + len(fieldNames),
-      ReportReader:      analyzeIjReport,
+      DbName:                      id,
+      HasProductField:             true,
+      HasNoInstallerButHasChanges: true,
+      extraFieldCount:             len(IjMetricDescriptors) + len(fieldNames),
+      ReportReader:                analyzeIjReport,
       insertStatementWriter: func(sb *strings.Builder) {
         for _, metric := range IjMetricDescriptors {
           sb.WriteByte(',')
@@ -125,10 +125,10 @@ func GetAnalyzer(id string) DatabaseConfiguration {
     }
   case id == "perf_fleet":
     return DatabaseConfiguration{
-      DbName:          "fleet",
-      TableName:       "measure_new",
-      ReportReader:    analyzePerfFleetReport,
-      extraFieldCount: 3,
+      DbName:            "fleet",
+      TableName:         "measure_new",
+      ReportReader:      analyzePerfFleetReport,
+      extraFieldCount:   3,
       HasBuildTypeField: true,
       insertStatementWriter: func(sb *strings.Builder) {
         sb.WriteString(", measures.name, measures.value, measures.type")

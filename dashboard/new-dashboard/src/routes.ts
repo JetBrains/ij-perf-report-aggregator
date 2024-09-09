@@ -2315,21 +2315,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
-          path: ROUTES.VcsIdeaDashboard,
-          component: () => import("./components/vcs/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Vcs Idea performance dashboard" },
-        },
-        {
-          path: ROUTES.VcsSpaceDashboard,
-          component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
-          meta: { pageTitle: "Vcs Space performance dashboard" },
-        },
-        {
-          path: ROUTES.VcsStarterDashboard,
-          component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
-          meta: { pageTitle: "Vcs Starer performance dashboard" },
-        },
-        {
           path: ROUTES.VcsIdeaDashboardDev,
           component: () => import("./components/vcs/PerformanceDashboardDev.vue"),
           meta: { pageTitle: "Vcs Idea performance dashboard DevServer" },
@@ -2343,6 +2328,21 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.VcsStarterDashboardDev,
           component: () => import("./components/vcs/PerformanceStarterDashboardDev.vue"),
           meta: { pageTitle: "Vcs Starer performance dashboard DevServer" },
+        },
+        {
+          path: ROUTES.VcsIdeaDashboard,
+          component: () => import("./components/vcs/PerformanceDashboard.vue"),
+          meta: { pageTitle: "Vcs Idea performance dashboard (obsolete)" },
+        },
+        {
+          path: ROUTES.VcsSpaceDashboard,
+          component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
+          meta: { pageTitle: "Vcs Space performance dashboard (obsolete)" },
+        },
+        {
+          path: ROUTES.VcsStarterDashboard,
+          component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
+          meta: { pageTitle: "Vcs Starer performance dashboard (obsolete)" },
         },
         {
           path: ROUTES.PerfUnitTests,

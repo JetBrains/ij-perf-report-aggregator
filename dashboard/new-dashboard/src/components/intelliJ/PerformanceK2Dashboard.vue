@@ -39,14 +39,14 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["localInspections-k2", "localInspections-k1"],
   },
   {
-    labels: ["Completion .java IntelliJ"],
-    measures: ["completion"],
+    labels: ["Completion .java IntelliJ", "Completion .java 90p IntelliJ"],
+    measures: ["completion", "fus_completion_duration_90p"],
     projects: ["intellij_commit-changedDefault/completion/java_file", "intellij_commit/completion/java_file"],
     aliases: ["intellij-completion-k2", "intellij-completion-k1"],
   },
   {
-    labels: ["Completion .kt Toolbox"],
-    measures: ["completion"],
+    labels: ["Completion .kt Toolbox", "Completion .kt 90p Toolbox"],
+    measures: ["completion", "fus_completion_duration_90p"],
     projects: ["toolbox_enterprise-changedDefault/ultimateCase/UserRepository", "toolbox_enterprise/ultimateCase/UserRepository"],
     aliases: ["toolbox-completion-k2", "toolbox-completion-k1"],
   },

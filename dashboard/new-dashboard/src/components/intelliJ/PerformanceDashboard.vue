@@ -81,8 +81,8 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Completion"],
-    measures: ["completion"],
+    labels: ["Completion", "Completion 90p"],
+    measures: ["completion", "fus_completion_duration_90p"],
     projects: [
       "community/completion/kotlin_file",
       "grails/completion/groovy_file",

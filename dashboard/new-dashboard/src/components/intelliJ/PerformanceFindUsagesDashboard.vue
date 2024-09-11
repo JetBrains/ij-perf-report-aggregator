@@ -124,6 +124,14 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After", "intellij_commit/findUsages/Path_div"],
   },
   {
+    labels: ["FindUsages String#toString Before and After Compilation (all usages)", "FindUsages String#toString Before and After Compilation (first usage)"],
+    measures: [
+      ["findUsages", "fus_find_usages_all"],
+      ["findUsages_firstUsage", "fus_find_usages_first"],
+    ],
+    projects: ["community/findUsages/String_toString_Before", "community/findUsages/String_toString_After", "intellij_commit/findUsages/String_toString"],
+  },
+  {
     labels: ["Find Usages with idea.is.internal=true Before Compilation", "First found usage"],
     measures: ["findUsages", "findUsages_firstUsage"],
     projects: [

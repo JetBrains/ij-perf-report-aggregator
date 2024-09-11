@@ -16,7 +16,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
       dbType.value = DBType.INTELLIJ_DEV
     }
     if (dbName == "fleet" && table == "measure_new") {
-      dbType.value = DBType.INTELLIJ_DEV
+      dbType.value = DBType.FLEET_PERF
     }
     if (dbName == "fleet" && table == "report") {
       dbType.value = DBType.FLEET

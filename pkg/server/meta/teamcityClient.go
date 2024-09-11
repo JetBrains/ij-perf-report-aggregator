@@ -26,8 +26,8 @@ type Tests struct {
 }
 
 type TeamCityAttachmentInfo struct {
-	CurrentBuildId  int    `json:"currentBuildId"`
-	PreviousBuildId *int   `json:"previousBuildId"`
+	CurrentBuildId  int  `json:"currentBuildId"`
+	PreviousBuildId *int `json:"previousBuildId"`
 }
 
 type Files struct {

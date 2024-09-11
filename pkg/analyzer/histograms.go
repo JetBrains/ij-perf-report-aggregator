@@ -1,49 +1,46 @@
 package analyzer
 
 import (
-  "fmt"
-  "github.com/valyala/fastjson"
+	"fmt"
+	"github.com/valyala/fastjson"
 )
 
-
-
 type PMetric struct {
-    Key   string
-    Value float64
+	Key   string
+	Value float64
 }
 
 func getPercentile(p float64, boundaries []float64, counts []int) PMetric {
-  pName := fmt.Sprintf("p%d", int(p*100))
+	pName := fmt.Sprintf("p%d", int(p*100))
 
-  sum := 0
-  for _, c := range counts {
-    sum += c
-  }
-  
-  targetCount := int(float64(sum) * p)
-  
-  b := len(boundaries)
+	sum := 0
+	for _, c := range counts {
+		sum += c
+	}
 
-  count := counts[0]
-  if count >= targetCount {
-    return PMetric{pName, boundaries[0]}
-  }
-  if sum - counts[b] < targetCount {
-    return PMetric{pName, boundaries[b- 1]}
-  }
-  
-  for i, c := range counts[1:] {
-    if (count + c) >= targetCount {
-      delta := targetCount - count
-      value := boundaries[i] + (boundaries[i + 1] - boundaries[i]) * float64(delta) / float64(c)
-      return PMetric{pName, value}
-    }
-    count += c
-  }
+	targetCount := int(float64(sum) * p)
 
-  return PMetric{}
+	b := len(boundaries)
+
+	count := counts[0]
+	if count >= targetCount {
+		return PMetric{pName, boundaries[0]}
+	}
+	if sum-counts[b] < targetCount {
+		return PMetric{pName, boundaries[b-1]}
+	}
+
+	for i, c := range counts[1:] {
+		if (count + c) >= targetCount {
+			delta := targetCount - count
+			value := boundaries[i] + (boundaries[i+1]-boundaries[i])*float64(delta)/float64(c)
+			return PMetric{pName, value}
+		}
+		count += c
+	}
+
+	return PMetric{}
 }
-
 
 /*
 [
@@ -52,25 +49,24 @@ func getPercentile(p float64, boundaries []float64, counts []int) PMetric {
 ]
 */
 func histogramToMetrics(json *fastjson.Value) []PMetric {
-  values := json.GetArray("data")
+	values := json.GetArray("data")
 
-  boundariesJson := values[0].GetArray("boundaries")
-  boundaries := make([]float64, len(boundariesJson))
-  for i, j := range boundariesJson {
-    boundaries[i] = j.GetFloat64()
-  }
-  counts := make([]int, len(boundaries) + 1)
+	boundariesJson := values[0].GetArray("boundaries")
+	boundaries := make([]float64, len(boundariesJson))
+	for i, j := range boundariesJson {
+		boundaries[i] = j.GetFloat64()
+	}
+	counts := make([]int, len(boundaries)+1)
 
-  for _, value := range values {
-    for bucket, count := range value.GetArray("counts") {
-      counts[bucket] += count.GetInt()
-    }
-  }
-  
-  return []PMetric{
-    getPercentile(0.5, boundaries, counts),
-    getPercentile(0.95, boundaries, counts),
-    getPercentile(0.99, boundaries, counts),
-  }
+	for _, value := range values {
+		for bucket, count := range value.GetArray("counts") {
+			counts[bucket] += count.GetInt()
+		}
+	}
+
+	return []PMetric{
+		getPercentile(0.5, boundaries, counts),
+		getPercentile(0.95, boundaries, counts),
+		getPercentile(0.99, boundaries, counts),
+	}
 }
-

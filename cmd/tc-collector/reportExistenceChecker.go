@@ -1,57 +1,57 @@
 package main
 
 import (
-  "context"
-  "fmt"
-  "github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-  "golang.org/x/tools/container/intsets"
-  "strconv"
-  "time"
+	"context"
+	"fmt"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"golang.org/x/tools/container/intsets"
+	"strconv"
+	"time"
 )
 
 type ReportExistenceChecker struct {
-  ids intsets.Sparse
+	ids intsets.Sparse
 }
 
 func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName string, tableName string, db driver.Conn, since time.Time) error {
-  t.ids.Clear()
+	t.ids.Clear()
 
-  var rows driver.Rows
-  var err error
-  if dbName == "ij" {
-    // don't filter by machine - product is enough to reduce set
-    query := "select tc_build_id from report where generated_time > $1 order by tc_build_id"
-    rows, err = db.Query(taskContext, query, since)
-  } else {
-    table := "report"
-    if tableName != "" {
-      table = tableName
-    }
-    query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " order by tc_build_id"
-    rows, err = db.Query(taskContext, query, since)
-  }
+	var rows driver.Rows
+	var err error
+	if dbName == "ij" {
+		// don't filter by machine - product is enough to reduce set
+		query := "select tc_build_id from report where generated_time > $1 order by tc_build_id"
+		rows, err = db.Query(taskContext, query, since)
+	} else {
+		table := "report"
+		if tableName != "" {
+			table = tableName
+		}
+		query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " order by tc_build_id"
+		rows, err = db.Query(taskContext, query, since)
+	}
 
-  if err != nil {
-    return fmt.Errorf("cannot query %s: %w", tableName, err)
-  }
+	if err != nil {
+		return fmt.Errorf("cannot query %s: %w", tableName, err)
+	}
 
-  for rows.Next() {
-    // clickhouse requires explicit type
-    var id uint32
-    err = rows.Scan(&id)
-    if err != nil {
-      return fmt.Errorf("cannot scan %s: %w", tableName, err)
-    }
+	for rows.Next() {
+		// clickhouse requires explicit type
+		var id uint32
+		err = rows.Scan(&id)
+		if err != nil {
+			return fmt.Errorf("cannot scan %s: %w", tableName, err)
+		}
 
-    t.ids.Insert(int(id))
-  }
+		t.ids.Insert(int(id))
+	}
 
-  if rows.Err() != nil {
-    return fmt.Errorf("cannot scan %s: %w", tableName, err)
-  }
-  return nil
+	if rows.Err() != nil {
+		return fmt.Errorf("cannot scan %s: %w", tableName, err)
+	}
+	return nil
 }
 
 func (t *ReportExistenceChecker) has(id int) bool {
-  return t.ids.Has(id)
+	return t.ids.Has(id)
 }

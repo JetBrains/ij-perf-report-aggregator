@@ -22,7 +22,7 @@ func GenerateVCSSettings() []detector.PerformanceSettings {
 		{test: []string{"intellij_sources/vcs-annotate-instant-git", "intellij_sources/vcs-annotate"}, metric: []string{"showFileAnnotation", "git-open-annotation"}},
 	}
 
-	machines := []string{"intellij-linux-performance-aws-%"}// uncomment latter to cover all os
+	machines := []string{"intellij-linux-performance-aws-%"} // uncomment latter to cover all os
 	// "intellij-windows-performance-aws-%",
 	// "intellij-macos-perf-eqx-%",
 

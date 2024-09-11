@@ -3,33 +3,33 @@ package util
 import "sync"
 
 type Disposer struct {
-  disposables []func()
+	disposables []func()
 
-  lock *sync.Mutex
+	lock *sync.Mutex
 }
 
 func NewDisposer() *Disposer {
-  return &Disposer{lock: &sync.Mutex{}}
+	return &Disposer{lock: &sync.Mutex{}}
 }
 
 func (t *Disposer) Dispose() {
-  t.lock.Lock()
-  defer t.lock.Unlock()
+	t.lock.Lock()
+	defer t.lock.Unlock()
 
-  disposables := t.disposables
+	disposables := t.disposables
 
-  if disposables == nil {
-    return
-  }
+	if disposables == nil {
+		return
+	}
 
-  t.disposables = nil
-  for _, closeListener := range disposables {
-    closeListener()
-  }
+	t.disposables = nil
+	for _, closeListener := range disposables {
+		closeListener()
+	}
 }
 
 func (t *Disposer) Add(disposable func()) {
-  t.lock.Lock()
-  defer t.lock.Unlock()
-  t.disposables = append(t.disposables, disposable)
+	t.lock.Lock()
+	defer t.lock.Unlock()
+	t.disposables = append(t.disposables, disposable)
 }

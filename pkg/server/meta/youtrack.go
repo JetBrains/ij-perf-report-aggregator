@@ -147,6 +147,40 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
+type IssueGenerator interface {
+	getArtifactsPath(UploadAttachmentsToIssueRequest) string
+	getArtifactsFilters(UploadAttachmentsToIssueRequest) []string
+}
+
+type FleetStartupIssueGenerator struct{}
+
+func (f FleetStartupIssueGenerator) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
+	return ""
+}
+func (f FleetStartupIssueGenerator) getArtifactsFilters(UploadAttachmentsToIssueRequest) []string {
+	return []string{"fleet.fahrplan.json"}
+}
+
+type PerfintIssueGenerator struct{}
+
+func (f PerfintIssueGenerator) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
+	return strings.ReplaceAll(params.AffectedTest, "_", "-")
+}
+func (f PerfintIssueGenerator) getArtifactsFilters(UploadAttachmentsToIssueRequest) []string {
+	return []string{"logs-", "snapshots-"}
+}
+
+func getIssueGenerator(testType string) IssueGenerator {
+	switch testType {
+	case "fleet":
+		return FleetStartupIssueGenerator{}
+	case "perfint", "perfintDev":
+		return PerfintIssueGenerator{}
+	default:
+		return nil
+	}
+}
+
 func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 
@@ -187,7 +221,9 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 			}
 		}
 
-		if params.TestType == "perfint" || params.TestType == "perfintDev" {
+		issueGenerator := getIssueGenerator(params.TestType)
+
+		if issueGenerator != nil {
 			var wg sync.WaitGroup
 			wg.Add(len(builds))
 
@@ -195,7 +231,8 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				go func(index int, buildId int) {
 					defer wg.Done()
 
-					testArtifactPath := strings.ReplaceAll(params.AffectedTest, "_", "-")
+					testArtifactPath := issueGenerator.getArtifactsPath(params)
+
 					children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
 					if err != nil {
 						slog.Error("Failed to get teamcity artifact children", "error", err)
@@ -206,24 +243,23 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 					var filteredChildren []string
 
 					for _, str := range children {
-						for _, keyword := range []string{"logs-", "snapshots-"} {
+						filters := issueGenerator.getArtifactsFilters(params)
+						for _, keyword := range filters {
 							if strings.Contains(str, keyword) {
 								filteredChildren = append(filteredChildren, str)
 							}
 						}
 					}
 
-					var childWg sync.WaitGroup
-					childWg.Add(len(filteredChildren))
-
 					var attachmentPostfix string
-
 					if index == 0 {
 						attachmentPostfix = "current"
 					} else {
 						attachmentPostfix = "before"
 					}
 
+					var childWg sync.WaitGroup
+					childWg.Add(len(filteredChildren))
 					for _, str := range filteredChildren {
 						go func(artifactName string) {
 							defer childWg.Done()

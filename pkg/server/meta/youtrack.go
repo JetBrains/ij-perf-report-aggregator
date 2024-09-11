@@ -304,8 +304,7 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 
   // Dashboard
   if generateDescriptorData.DashboardLink != "" {
-    parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink))
-    parts = append(parts, "![](dashboard.png)")
+    parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink), "![](dashboard.png)")
   }
 
   // Stacktrace or test history

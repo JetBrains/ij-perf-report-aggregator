@@ -91,7 +91,7 @@ func shamosEstimator(data []int) (float64, error) {
     return 0, errors.New("data slice must contain at least two elements")
   }
   var differences []float64
-  for i := range len(data) {
+  for i := range data {
     for j := i + 1; j < len(data); j++ {
       differences = append(differences, math.Abs(float64(data[i]-data[j])))
     }

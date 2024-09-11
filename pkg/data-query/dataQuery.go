@@ -442,7 +442,7 @@ func writeWhereClause(sb *strings.Builder, query Query) error {
       writeString(sb, v)
     case []string:
       sb.WriteString(" in (")
-      for j := range len(v) {
+      for j := range v {
         if j != 0 {
           sb.WriteByte(',')
         }
@@ -451,7 +451,7 @@ func writeWhereClause(sb *strings.Builder, query Query) error {
       sb.WriteByte(')')
     case []interface{}:
       sb.WriteString(" in (")
-      for j := range len(v) {
+      for j := range v {
         if j != 0 {
           sb.WriteByte(',')
         }

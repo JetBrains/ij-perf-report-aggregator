@@ -123,6 +123,7 @@ export interface CreateIssueRequest {
   affectedMetric: string
   delta: string
   testMethodName: string | undefined
+  testType: string
 }
 
 export interface Project {

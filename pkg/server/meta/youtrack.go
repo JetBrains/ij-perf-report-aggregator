@@ -23,6 +23,7 @@ type YoutrackCreateIssueRequest struct {
 	AffectedMetric string        `json:"affectedMetric"`
 	Delta          string        `json:"delta"`
 	TestMethodName *string       `json:"testMethodName"`
+  TestType       string        `json:"testType"`
 }
 
 type UploadAttachmentsToIssueRequest struct {
@@ -43,6 +44,7 @@ type GenerateDescriptionData struct {
 	DashboardLink  string
 	TestHistoryUrl *string
 	TestMethod     *string
+  TestType      string
 }
 
 type CreateIssueResponse struct {
@@ -110,6 +112,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			params.DashboardLink,
 			&testHistoryUrl,
 			params.TestMethodName,
+      params.TestType,
 		}
 
 		issueInfo := CreateIssueInfo{
@@ -289,13 +292,15 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
   }
 
   // Idea logs and snapshots
-  logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
-  snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
-  if generateDescriptorData.Kind != "exception" {
-    logs += "\nBefore: [logs-before.zip](logs-before.zip)"
-    snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
+  if generateDescriptorData.TestType == "perfint" || generateDescriptorData.TestType == "perfintDev" {
+    logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
+    snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
+    if generateDescriptorData.Kind != "exception" {
+      logs += "\nBefore: [logs-before.zip](logs-before.zip)"
+      snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
+    }
+    parts = append(parts, logs, snapshots)
   }
-  parts = append(parts, logs, snapshots)
 
   // Dashboard
   if generateDescriptorData.DashboardLink != "" {

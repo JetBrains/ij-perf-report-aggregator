@@ -137,6 +137,7 @@ import { useRouter } from "vue-router"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
+import { dbTypeStore } from "../../../shared/dbTypes"
 
 enum DownloadState {
   NOT_STARTED,
@@ -192,6 +193,7 @@ async function createTicket() {
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,
       delta: data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
+      testType: dbTypeStore().dbType,
     }
 
     let issueResponse: IssueResponse

@@ -34,6 +34,7 @@ import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
+import { getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
 
 export type TooltipTrigger = "item" | "axis" | "none"
 
@@ -527,7 +528,7 @@ async function configureChart(
       seriesData.push(smoothedData)
     }
 
-    const deltaValues = Delta.calculateDeltas(seriesData[1] as number[], seriesData[5] as number[])
+    const deltaValues = Delta.calculateDeltas(seriesData[1] as number[], getBuildId(seriesData) as number[])
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-expect-error
     seriesData.push(deltaValues)

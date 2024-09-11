@@ -20,9 +20,10 @@ function filterUniqueByName(objects: CallbackDataParams[] | null): CallbackDataP
   }) as CallbackDataParams[]
 }
 
-export function getBuildId(params: CallbackDataParams): number | undefined {
+export function getBuildId(dataSeries: (number | string)[][]): number[] | undefined
+export function getBuildId(dataSeries: (number | string)[]): number | undefined
+export function getBuildId(dataSeries: (number | string)[] | (number | string)[][]): number | number[] | undefined {
   const dbType = dbTypeStore().dbType
-  const dataSeries = params.value as OptionDataValue[]
 
   let buildId: number | undefined
 
@@ -56,19 +57,19 @@ export function getBuildId(params: CallbackDataParams): number | undefined {
 export function getAccidentBuild(params: CallbackDataParams): string | undefined {
   const dbType = dbTypeStore().dbType
   if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
-    return getBuildId(params)?.toString()
+    return getBuildId(params.value as number[])?.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     return getFullBuildId(params)
   }
   if (dbType == DBType.STARTUP_TESTS_DEV) {
-    return getBuildId(params)?.toString()
+    return getBuildId(params.value as number[])?.toString()
   }
   if (dbType == DBType.INTELLIJ) {
     return getFullBuildId(params)
   }
   if (dbType == DBType.BAZEL) {
-    return getBuildId(params)?.toString()
+    return getBuildId(params.value as number[])?.toString()
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
@@ -180,7 +181,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     console.error("Unknown type of DB")
   }
 
-  const buildId: number | undefined = getBuildId(params)
+  const buildId: number | undefined = getBuildId(params.value as (string | number)[])
   const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`

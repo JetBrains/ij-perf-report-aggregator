@@ -134,7 +134,6 @@ import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configur
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"
-import { getTeamcityBuildType } from "../../../util/artifacts"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
@@ -189,7 +188,7 @@ async function createTicket() {
           },
         },
       ],
-      testMethodName: data.description.value?.methodName.replaceAll("#", "."),
+      testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,
       delta: data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
@@ -217,9 +216,6 @@ async function createTicket() {
     }
 
     try {
-      const buildType = await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, buildId)
-      if (buildType == null) throw new Error("Cannot upload attachments without buildType")
-
       let affectedTest = accident.affectedTest
 
       if (affectedTest.endsWith(affectedMetric)) {
@@ -228,7 +224,6 @@ async function createTicket() {
       const attachmentsInfo: UploadAttachmentsRequest = {
         issueId: issueResponse.issue.id,
         teamcityAttachmentInfo: {
-          buildTypeId: buildType,
           currentBuildId: buildId,
           previousBuildId: undefined,
         },

@@ -38,7 +38,7 @@ class Description {
     readonly project: string,
     readonly branch: string,
     readonly url: string,
-    readonly methodName: string,
+    readonly methodName: string | null,
     readonly description: string
   ) {}
 }

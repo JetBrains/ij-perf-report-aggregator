@@ -26,7 +26,6 @@ type Tests struct {
 }
 
 type TeamCityAttachmentInfo struct {
-	BuildTypeId     string `json:"buildTypeId"`
 	CurrentBuildId  int    `json:"currentBuildId"`
 	PreviousBuildId *int   `json:"previousBuildId"`
 }
@@ -73,8 +72,8 @@ func (client *TeamCityClient) makeRequest(ctx context.Context, endpoint string, 
 	return resp, nil
 }
 
-func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId int, buildType string, testName string) ([]string, error) {
-	endpoint := fmt.Sprintf("/app/rest/builds/buildType:%s,id:%d/artifacts/children/%s", buildType, buildId, testName)
+func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId int, testName string) ([]string, error) {
+	endpoint := fmt.Sprintf("/app/rest/builds/id:%d/artifacts/children/%s", buildId, testName)
 	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err
@@ -96,8 +95,8 @@ func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId i
 	return children, nil
 }
 
-func (client *TeamCityClient) downloadArtifact(ctx context.Context, buildTypeId string, buildId int, filePath string) ([]byte, error) {
-	endpoint := fmt.Sprintf("/app/rest/builds/buildType:%s,id:%d/artifacts/content/%s", buildTypeId, buildId, filePath)
+func (client *TeamCityClient) downloadArtifact(ctx context.Context, buildId int, filePath string) ([]byte, error) {
+	endpoint := fmt.Sprintf("/app/rest/builds/id:%d/artifacts/content/%s", buildId, filePath)
 	resp, err := client.makeRequest(ctx, endpoint, nil)
 	if err != nil {
 		return nil, err

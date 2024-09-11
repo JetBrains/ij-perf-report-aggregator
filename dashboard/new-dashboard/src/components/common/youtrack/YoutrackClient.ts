@@ -101,7 +101,6 @@ interface Issue {
 export interface UploadAttachmentsRequest {
   issueId: string
   teamcityAttachmentInfo: {
-    buildTypeId: string
     currentBuildId: number
     previousBuildId: number | undefined
   }

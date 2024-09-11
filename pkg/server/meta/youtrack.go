@@ -191,7 +191,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				defer wg.Done()
 
 				testArtifactPath := strings.ReplaceAll(params.AffectedTest, "_", "-")
-				children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, params.TeamCityAttachmentInfo.BuildTypeId, testArtifactPath)
+				children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
 				if err != nil {
 					slog.Error("Failed to get teamcity artifact children", "error", err)
 					errCh <- err
@@ -222,7 +222,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				for _, str := range filteredChildren {
 					go func(artifactName string) {
 						defer childWg.Done()
-						artifact, err := teamCityClient.downloadArtifact(request.Context(), params.TeamCityAttachmentInfo.BuildTypeId, buildId, testArtifactPath+"/"+artifactName)
+						artifact, err := teamCityClient.downloadArtifact(request.Context(), buildId, testArtifactPath+"/"+artifactName)
 						if err != nil {
 							slog.Error("Failed to download artefacts form teamcity", "error", err)
 							errCh <- err
@@ -261,31 +261,61 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 }
 
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
-	affectedTest := "**Affected test:**\n" + generateDescriptorData.AffectedTest
-	testMethod := "**Test method:**\n" + *generateDescriptorData.TestMethod
-	affectedMetric := fmt.Sprintf("**Affected metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta)
-	build := fmt.Sprintf("**Build:**\n[build link](%s)", generateDescriptorData.BuildLink)
-	changes := fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes)
-	logs := "**Idea logs, screenshots, thread dumps etc:**\n Current: [logs-current.zip](logs-current.zip)"
-	snapshots := "**Snapshots:**\n Current: [snapshots-current.zip](snapshots-current.zip)"
-	dashboard := fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink)
-	dashboardPng := "![](dashboard.png)"
-	stacktrace := fmt.Sprintf("**Stacktrace:**\n```%s```", generateDescriptorData.StackTrace)
-	var testHistory string
-	if generateDescriptorData.TestHistoryUrl != nil {
-		testHistory = fmt.Sprintf("**Test history:**\n[test history link](%s)", *generateDescriptorData.TestHistoryUrl)
-	} else {
-		testHistory = ""
-	}
-	var description string
-	if generateDescriptorData.Kind != "exception" {
-		logs += "\n Before: [logs-before.zip](logs-before.zip)"
-		snapshots += "\n Before: [snapshots-before.zip](snapshots-before.zip)"
-		description = strings.Join([]string{affectedTest, testMethod, affectedMetric, build, changes, logs, snapshots, dashboard, dashboardPng}, "\n\n")
-	} else {
-		description = strings.Join([]string{affectedTest, testMethod, testHistory, build, changes, logs, snapshots, stacktrace}, "\n\n")
-	}
-	return description
+  var parts []string
+
+  // Affected test
+  if generateDescriptorData.AffectedTest != "" {
+    parts = append(parts, "**Affected test:**\n"+generateDescriptorData.AffectedTest)
+  }
+
+  // Test method
+  if generateDescriptorData.TestMethod != nil && *generateDescriptorData.TestMethod != "" {
+    parts = append(parts, "**Test method:**\n"+*generateDescriptorData.TestMethod)
+  }
+
+  // Affected metric
+  if generateDescriptorData.AffectedMetric != "" && generateDescriptorData.Delta != "" {
+    parts = append(parts, fmt.Sprintf("**Affected metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta))
+  }
+
+  // Build
+  if generateDescriptorData.BuildLink != "" {
+    parts = append(parts, fmt.Sprintf("**Build:**\n[build link](%s)", generateDescriptorData.BuildLink))
+  }
+
+  // Changes in space
+  if generateDescriptorData.Changes != "" {
+    parts = append(parts, fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes))
+  }
+
+  // Idea logs and snapshots
+  logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
+  snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
+  if generateDescriptorData.Kind != "exception" {
+    logs += "\nBefore: [logs-before.zip](logs-before.zip)"
+    snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
+  }
+  parts = append(parts, logs, snapshots)
+
+  // Dashboard
+  if generateDescriptorData.DashboardLink != "" {
+    parts = append(parts, fmt.Sprintf("**Chart:**\n[link to test chart](%s)", generateDescriptorData.DashboardLink))
+    parts = append(parts, "![](dashboard.png)")
+  }
+
+  // Stacktrace or test history
+  if generateDescriptorData.Kind == "exception" {
+    if generateDescriptorData.StackTrace != "" {
+      parts = append(parts, fmt.Sprintf("**Stacktrace:**\n```%s```", generateDescriptorData.StackTrace))
+    }
+  } else {
+    if generateDescriptorData.TestHistoryUrl != nil && *generateDescriptorData.TestHistoryUrl != "" {
+      parts = append(parts, fmt.Sprintf("**Test history:**\n[test history link](%s)", *generateDescriptorData.TestHistoryUrl))
+    }
+  }
+
+  description := strings.Join(parts, "\n\n")
+  return description
 }
 
 func getAttachmentName(filename, suffix string) string {

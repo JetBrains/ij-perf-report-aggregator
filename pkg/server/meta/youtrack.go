@@ -147,35 +147,52 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
-type IssueGenerator interface {
+type artifactCollector interface {
 	getArtifactsPath(UploadAttachmentsToIssueRequest) string
-	getArtifactsFilters(UploadAttachmentsToIssueRequest) []string
+	checkArtifact(string) bool
 }
 
-type FleetStartupIssueGenerator struct{}
+type fleetStartupCollector struct{}
 
-func (f FleetStartupIssueGenerator) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
+func (f fleetStartupCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
 	return ""
 }
-func (f FleetStartupIssueGenerator) getArtifactsFilters(UploadAttachmentsToIssueRequest) []string {
-	return []string{"fleet.fahrplan.json"}
+func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
+	return strings.HasSuffix(artifactName, "fleet.fahrplan.json")
 }
 
-type PerfintIssueGenerator struct{}
+type fleetPerfTestCollector struct{}
 
-func (f PerfintIssueGenerator) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
+func (f fleetPerfTestCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
+	return ""
+}
+func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
+	return artifactName == "logs.zip"
+}
+
+type perfintCollector struct{}
+
+func (f perfintCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
 	return strings.ReplaceAll(params.AffectedTest, "_", "-")
 }
-func (f PerfintIssueGenerator) getArtifactsFilters(UploadAttachmentsToIssueRequest) []string {
-	return []string{"logs-", "snapshots-"}
+func (f perfintCollector) checkArtifact(artifactName string) bool {
+	prefixes := []string{"logs-", "snapshots-"}
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(artifactName, prefix) {
+			return true
+		}
+	}
+	return false
 }
 
-func getIssueGenerator(testType string) IssueGenerator {
+func getArtifactCollector(testType string) artifactCollector {
 	switch testType {
 	case "fleet":
-		return FleetStartupIssueGenerator{}
+		return fleetStartupCollector{}
 	case "perfint", "perfintDev":
-		return PerfintIssueGenerator{}
+		return perfintCollector{}
+	case "fleet_perf":
+		return fleetPerfTestCollector{}
 	default:
 		return nil
 	}
@@ -221,9 +238,9 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 			}
 		}
 
-		issueGenerator := getIssueGenerator(params.TestType)
+		collector := getArtifactCollector(params.TestType)
 
-		if issueGenerator != nil {
+		if collector != nil {
 			var wg sync.WaitGroup
 			wg.Add(len(builds))
 
@@ -231,7 +248,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				go func(index int, buildId int) {
 					defer wg.Done()
 
-					testArtifactPath := issueGenerator.getArtifactsPath(params)
+					testArtifactPath := collector.getArtifactsPath(params)
 
 					children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
 					if err != nil {
@@ -243,11 +260,8 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 					var filteredChildren []string
 
 					for _, str := range children {
-						filters := issueGenerator.getArtifactsFilters(params)
-						for _, keyword := range filters {
-							if strings.Contains(str, keyword) {
-								filteredChildren = append(filteredChildren, str)
-							}
+						if collector.checkArtifact(str) {
+							filteredChildren = append(filteredChildren, str)
 						}
 					}
 

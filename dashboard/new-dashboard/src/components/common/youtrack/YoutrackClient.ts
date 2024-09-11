@@ -1,5 +1,4 @@
 import { ServerConfigurator } from "../dataQuery"
-import { dbTypeStore } from "../../../shared/dbTypes"
 
 export class YoutrackClient {
   private commonProjects: Project[] = [

@@ -231,6 +231,7 @@ async function createTicket() {
         },
         affectedTest,
         chartPng: undefined,
+        testType: dbTypeStore().dbType,
       }
       if (accident.kind != AccidentKind.Exception) {
         attachmentsInfo.teamcityAttachmentInfo.previousBuildId = data.buildIdPrevious

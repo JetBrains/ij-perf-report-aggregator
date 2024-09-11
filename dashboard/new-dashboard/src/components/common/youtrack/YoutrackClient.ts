@@ -1,4 +1,5 @@
 import { ServerConfigurator } from "../dataQuery"
+import { dbTypeStore } from "../../../shared/dbTypes"
 
 export class YoutrackClient {
   private commonProjects: Project[] = [
@@ -106,6 +107,7 @@ export interface UploadAttachmentsRequest {
   }
   chartPng: string | undefined
   affectedTest: string
+  testType: string
 }
 
 export interface CreateIssueRequest {

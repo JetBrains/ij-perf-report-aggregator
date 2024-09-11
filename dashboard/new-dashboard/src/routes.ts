@@ -507,27 +507,27 @@ const IDEA: Product = {
       tabs: [
         {
           url: ROUTES.VcsIdeaDashboardDev,
-          label: "Performance dashboard idea project DevServer (obsolete)",
+          label: "Performance dashboard idea project DevServer",
         },
         {
           url: ROUTES.VcsSpaceDashboardDev,
-          label: "Performance dashboard space project DevServer (obsolete)",
+          label: "Performance dashboard space project DevServer",
         },
         {
           url: ROUTES.VcsStarterDashboardDev,
-          label: "Performance dashboard starter project DevServer (obsolete)",
+          label: "Performance dashboard starter project DevServer",
         },
         {
           url: ROUTES.VcsIdeaDashboard,
-          label: "Performance dashboard idea project",
+          label: "Performance dashboard idea project (obsolete)",
         },
         {
           url: ROUTES.VcsSpaceDashboard,
-          label: "Performance dashboard space project",
+          label: "Performance dashboard space project (obsolete)",
         },
         {
           url: ROUTES.VcsStarterDashboard,
-          label: "Performance dashboard starter project",
+          label: "Performance dashboard starter project (obsolete)",
         },
       ],
     },

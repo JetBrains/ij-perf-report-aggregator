@@ -5,7 +5,7 @@ export class YoutrackClient {
     { name: "IntelliJ Platform", id: "22-619" },
     { name: "Automation Testing", id: "22-570" },
   ]
-  private serverConfigurator: ServerConfigurator | null
+  private readonly serverConfigurator: ServerConfigurator | null
 
   constructor(serverConfigurator: ServerConfigurator | null) {
     this.serverConfigurator = serverConfigurator

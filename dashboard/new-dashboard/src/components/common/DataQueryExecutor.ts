@@ -49,12 +49,7 @@ export class DataQueryExecutor {
           forkJoin(
             mergedQueries.map((it) => {
               const stringQuery = JSON.stringify(it)
-              const result = fromFetchWithRetryAndErrorHandling<DataQueryResult>(
-                serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`),
-                defaultBodyConsumer,
-                abortController
-              )
-              return result
+              return fromFetchWithRetryAndErrorHandling<DataQueryResult>(serverConfigurator.computeSerializedQueryUrl(`[${stringQuery}]`), defaultBodyConsumer, abortController)
             })
           ).pipe(
             // pass context along with data and flatten result

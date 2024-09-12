@@ -27,8 +27,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["FindUsages PsiManager_getInstance"],
-    measures: ["findUsages"],
+    labels: ["FindUsages PsiManager_getInstance", "Number FindUsages PsiManager_getInstance"],
+    measures: ["findUsages", "findUsages#number"],
     projects: [
       "intellij_commit-changedDefault/findUsages/PsiManager_getInstance_firstCall",
       "intellij_commit/findUsages/PsiManager_getInstance_firstCall",
@@ -38,8 +38,8 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["findUsages-getInstance-k2", "findUsages-getInstance-default", "findUsages-getInstance-k1", "findUsages-getInstance-k2"],
   },
   {
-    labels: ["FindUsages String_toString"],
-    measures: ["findUsages"],
+    labels: ["FindUsages String_toString", "Number FindUsages String_toString"],
+    measures: ["findUsages", "findUsages#number"],
     projects: [
       "intellij_commit-changedDefault/findUsages/String_toString",
       "intellij_commit/findUsages/String_toString",

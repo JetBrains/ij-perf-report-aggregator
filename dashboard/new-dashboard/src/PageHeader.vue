@@ -59,6 +59,7 @@ import { computed, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { getNavigationElement, PRODUCTS } from "./routes"
 import { ServerWithCompressConfigurator } from "./configurators/ServerWithCompressConfigurator"
+import { asyncComputed } from "@vueuse/core"
 
 const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject

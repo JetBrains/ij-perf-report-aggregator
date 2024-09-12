@@ -1,6 +1,7 @@
 package meta
 
 import (
+	"bytes"
 	"context"
 	"encoding/xml"
 	"fmt"
@@ -134,4 +135,91 @@ func (client *TeamCityClient) getTestHistoryUrl(ctx context.Context, testName st
 	}
 
 	return fmt.Sprintf("%s/test/%s/?currentProjectId=ijplatform", client.teamCityURL, tests.Test[0].ID), nil
+}
+
+// Build represents the root element of the XML structure
+type Build struct {
+	XMLName    xml.Name   `xml:"build"`
+	BuildType  BuildType  `xml:"buildType"`
+	Properties Properties `xml:"properties"`
+}
+
+// BuildType represents the buildType element
+type BuildType struct {
+	ID string `xml:"id,attr"`
+}
+
+// Properties represents the properties element
+type Properties struct {
+	Property []Property `xml:"property"`
+}
+
+// Property represents an individual property element
+type Property struct {
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
+type BuildResponse struct {
+	XMLName xml.Name `xml:"build"`
+	WebURL  string   `xml:"webUrl,attr"`
+}
+
+func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, params map[string]string) (*string, error) {
+	endpoint := "/app/rest/buildQueue"
+
+	properties := Properties{
+		Property: make([]Property, 0, len(params)),
+	}
+
+	for key, value := range params {
+		properties.Property = append(properties.Property, Property{
+			Name:  key,
+			Value: value,
+		})
+	}
+
+	build := Build{
+		BuildType:  BuildType{ID: buildId},
+		Properties: properties,
+	}
+
+	myUrl := fmt.Sprintf("%s%s", client.teamCityURL, endpoint)
+	fmt.Printf("Requesting URL: %s\n", myUrl)
+
+	buildXml, err := xml.Marshal(build)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling build %v: %w", build, err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, myUrl, bytes.NewBuffer(buildXml))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+client.authToken)
+	req.Header.Set("Content-Type", "application/xml")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request failed: %s", resp.Status)
+	}
+
+	body := resp.Body
+	all, err := io.ReadAll(body)
+	defer body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("error reading body: %w", err)
+	}
+
+	var buildResponse BuildResponse
+	err = xml.Unmarshal(all, &buildResponse)
+	if err != nil {
+		return nil, fmt.Errorf("error unmarshaling XML: %w", err)
+	}
+	return &buildResponse.WebURL, nil
 }

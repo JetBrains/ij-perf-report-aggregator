@@ -101,6 +101,9 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Post("/createIssue", meta.CreatePostCreateIssueByAccident(dbpool))
 			r.Post("/uploadAttachments", meta.CreatePostUploadAttachmentsToIssue())
 		})
+		r.Route("/teamcity", func(r chi.Router) {
+			r.Post("/startBisect", meta.CreatePostStartBisect())
+		})
 	})
 
 	router.Group(func(r chi.Router) {

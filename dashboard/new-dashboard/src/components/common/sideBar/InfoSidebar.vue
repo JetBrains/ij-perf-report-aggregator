@@ -209,6 +209,14 @@
         size="small"
         @click="createAccident()"
       />
+      <Button
+        v-if="bisectSupported && data != null"
+        class="text-sm"
+        label="Bisect"
+        text
+        size="small"
+        @click="showBisectDialog = true"
+      />
     </div>
   </div>
   <ReportMetricDialog
@@ -232,6 +240,13 @@
     v-model="showStacktrace"
     :accident="accidentToEdit!!"
   />
+  <Suspense>
+    <BisectDialog
+      v-if="showBisectDialog"
+      v-model:show-dialog="showBisectDialog"
+      :data="data!!"
+    />
+  </Suspense>
 </template>
 <script setup lang="ts">
 import { computed, provide, Ref, ref } from "vue"
@@ -244,7 +259,7 @@ import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"
-import { getArtifactsUrl, getSpaceUrl, InfoData, tcUrl } from "./InfoSidebar"
+import { DBType, getArtifactsUrl, getSpaceUrl, InfoData, tcUrl } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
 import TestActions from "./TestActions.vue"
@@ -252,6 +267,8 @@ import YoutrackDialog from "../youtrack/YoutrackDialog.vue"
 import StacktraceModal from "./StacktraceModal.vue"
 import { YoutrackClient } from "../youtrack/YoutrackClient"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
+import BisectDialog from "./BisectDialog.vue"
+import { dbTypeStore } from "../../../shared/dbTypes"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
@@ -261,6 +278,8 @@ const vm = injectOrError(sidebarVmKey)
 const showDialog = ref(false)
 const showYoutrackDialog = ref(false)
 const showStacktrace = ref(false)
+const showBisectDialog = ref(false)
+const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)

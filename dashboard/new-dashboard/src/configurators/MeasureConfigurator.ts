@@ -464,10 +464,8 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
     if (seriesIdsToIndex.has(id)) {
       const seriesIndex = seriesIdsToIndex.get(id) as number
       const values = mergedDataList[seriesIndex]
-      if (Array.isArray(values)) {
-        for (const [i, seriesDatum] of seriesData.entries()) {
-          values[i] = [...values[i], ...seriesDatum]
-        }
+      for (const [i, seriesDatum] of seriesData.entries()) {
+        values[i] = i < values.length ? [...values[i], ...seriesDatum] : [...seriesDatum]
       }
     } else {
       const newId = mergedDataList.push(seriesData) - 1

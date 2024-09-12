@@ -30,6 +30,7 @@ import { serverUrlObservableKey } from "new-dashboard/src/shared/injectionKeys"
 import { filter, shareReplay } from "rxjs"
 import { provide, shallowRef, watch } from "vue"
 import { useRoute } from "vue-router"
+import { asyncComputed } from "@vueuse/core"
 
 const serverUrl = shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL)
 // shallow ref doesn't work - items are modified by primevue
@@ -48,6 +49,10 @@ watch(
     limit.clearQueue()
   }
 )
+
+asyncComputed(async () => {
+  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/userinfo").then((response) => console.log(response))
+})
 
 const persistentStateManager = new PersistentStateManager("common", { serverUrl: ServerWithCompressConfigurator.DEFAULT_SERVER_URL })
 persistentStateManager.add("serverUrl", serverUrl)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ClickHouse/ch-go"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/andybalholm/brotli"
@@ -104,6 +105,10 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())
 		})
+	})
+
+	router.Route("/userinfo", func(r chi.Router) {
+		r.Get("/*", auth.CreateGetUserInfoHandler())
 	})
 
 	router.Group(func(r chi.Router) {

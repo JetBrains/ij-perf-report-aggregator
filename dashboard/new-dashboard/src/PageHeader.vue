@@ -43,13 +43,20 @@
         :popup="true"
       />
     </div>
-    <a
-      href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <QuestionMarkCircleIcon class="w-7 h-7 text-primary" />
-    </a>
+    <div class="flex">
+      <a
+        href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <QuestionMarkCircleIcon class="w-7 h-7 text-primary" />
+      </a>
+      <img
+        v-if="userPicture"
+        :src="userPicture"
+        class="w-7 h-7 ml-3"
+      />
+    </div>
   </div>
 </template>
 
@@ -58,8 +65,7 @@ import Menu from "primevue/menu"
 import { computed, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { getNavigationElement, PRODUCTS } from "./routes"
-import { ServerWithCompressConfigurator } from "./configurators/ServerWithCompressConfigurator"
-import { asyncComputed } from "@vueuse/core"
+import { useUserStore } from "./shared/useUserStore"
 
 const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject
@@ -85,11 +91,9 @@ const selectedSubMenu = computed(() => {
   )
 })
 
+const userPicture = computed(() => useUserStore().user?.picture)
+
 function toggleSubMenu(event: MouseEvent) {
   subMenu.value?.toggle(event)
 }
-
-asyncComputed(async () => {
-  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/auth/userinfo").then((response) => console.log(response))
-})
 </script>

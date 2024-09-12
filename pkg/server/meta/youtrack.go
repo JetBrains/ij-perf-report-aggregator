@@ -189,7 +189,7 @@ func getArtifactCollector(testType string) artifactCollector {
 	switch testType {
 	case "fleet":
 		return fleetStartupCollector{}
-	case "perfint", "perfintDev":
+	case "intellij_dev", "intellij":
 		return perfintCollector{}
 	case "fleet_perf":
 		return fleetPerfTestCollector{}
@@ -345,7 +345,7 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	}
 
 	// Idea logs and snapshots
-	if generateDescriptorData.TestType == "perfint" || generateDescriptorData.TestType == "perfintDev" {
+	if generateDescriptorData.TestType == "intellij" || generateDescriptorData.TestType == "intellij_dev" {
 		logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
 		snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
 		if generateDescriptorData.Kind != "exception" {

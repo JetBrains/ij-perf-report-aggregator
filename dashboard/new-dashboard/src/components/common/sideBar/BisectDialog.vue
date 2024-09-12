@@ -155,7 +155,8 @@ if (Array.isArray(changesUnmerged)) {
   lastCommit.value = changesUnmerged[0] ?? null
 }
 const methodName = data.description.value?.methodName ?? ""
-const className = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
+const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
+const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)
 
 const bisectClient = new BisectClient(serverConfigurator)

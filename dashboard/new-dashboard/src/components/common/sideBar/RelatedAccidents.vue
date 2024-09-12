@@ -4,7 +4,7 @@
       v-if="accidentsAroundDate?.length ?? 0 > 0"
       :active-index="0"
     >
-      <AccordionTab header="Events around the date">
+      <AccordionTab header="Events around (± 1 day)">
         <ul
           v-if="accidentsAroundDate"
           class="gap-1.5 text-sm break-all"

@@ -29,32 +29,63 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FindUsages PsiManager_getInstance"],
     measures: ["findUsages"],
-    projects: ["intellij_commit-changedDefault/findUsages/PsiManager_getInstance_firstCall", "intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
-    aliases: ["findUsages-k2", "findUsages-k1"],
+    projects: [
+      "intellij_commit-changedDefault/findUsages/PsiManager_getInstance_firstCall",
+      "intellij_commit/findUsages/PsiManager_getInstance_firstCall",
+      "intellij_commit-k1/findUsages/PsiManager_getInstance_firstCall",
+      "intellij_commit-k2/findUsages/PsiManager_getInstance_firstCall",
+    ],
+    aliases: ["findUsages-getInstance-k2", "findUsages-getInstance-default", "findUsages-getInstance-k1", "findUsages-getInstance-k2"],
+  },
+  {
+    labels: ["FindUsages String_toString"],
+    measures: ["findUsages"],
+    projects: [
+      "intellij_commit-changedDefault/findUsages/String_toString",
+      "intellij_commit/findUsages/String_toString",
+      "intellij_commit-k1/findUsages/String_toString",
+      "intellij_commit-k2/findUsages/String_toString",
+    ],
+    aliases: ["findUsages-toString-k2", "findUsages-toString-default", "findUsages-toString-k1", "findUsages-toString-k2"],
   },
   {
     labels: ["Local inspections .kt Kotlin Serialization"],
     measures: ["localInspections"],
-    projects: ["kotlin-changedDefault/localInspection", "kotlin/localInspection"],
-    aliases: ["localInspections-k2", "localInspections-k1"],
+    projects: ["kotlin-changedDefault/localInspection", "kotlin/localInspection", "kotlin-k1/localInspection", "kotlin-k2/localInspection"],
+    aliases: ["localInspections-k2", "localInspections-default", "localInspections-k1", "localInspections-k2"],
   },
   {
     labels: ["Completion .java IntelliJ", "Completion .java 90p IntelliJ"],
     measures: ["completion", "fus_completion_duration_90p"],
-    projects: ["intellij_commit-changedDefault/completion/java_file", "intellij_commit/completion/java_file"],
-    aliases: ["intellij-completion-k2", "intellij-completion-k1"],
+    projects: [
+      "intellij_commit-changedDefault/completion/java_file",
+      "intellij_commit/completion/java_file",
+      "intellij_commit-k1/completion/java_file",
+      "intellij_commit-k2/completion/java_file",
+    ],
+    aliases: ["intellij-completion-k2", "intellij-completion-default", "intellij-completion-k1", "intellij-completion-k2"],
   },
   {
     labels: ["Completion .kt Toolbox", "Completion .kt 90p Toolbox"],
     measures: ["completion", "fus_completion_duration_90p"],
-    projects: ["toolbox_enterprise-changedDefault/ultimateCase/UserRepository", "toolbox_enterprise/ultimateCase/UserRepository"],
-    aliases: ["toolbox-completion-k2", "toolbox-completion-k1"],
+    projects: [
+      "toolbox_enterprise-changedDefault/ultimateCase/UserRepository",
+      "toolbox_enterprise/ultimateCase/UserRepository",
+      "toolbox_enterprise-k1/ultimateCase/UserRepository",
+      "toolbox_enterprise-k2/ultimateCase/UserRepository",
+    ],
+    aliases: ["toolbox-completion-k2", "toolbox-completion-default", "toolbox-completion-k1", "toolbox-completion-k2"],
   },
   {
     labels: ["Search Everywhere Go to All"],
     measures: ["searchEverywhere"],
-    projects: ["community-changedDefault/go-to-all/Editor/typingLetterByLetter", "community/go-to-all/Editor/typingLetterByLetter"],
-    aliases: ["SE-go-to-all-k2", "SE-go-to-all-k1"],
+    projects: [
+      "community-changedDefault/go-to-all/Editor/typingLetterByLetter",
+      "community/go-to-all/Editor/typingLetterByLetter",
+      "community-k1/go-to-all/Editor/typingLetterByLetter",
+      "community-k2/go-to-all/Editor/typingLetterByLetter",
+    ],
+    aliases: ["SE-go-to-all-k2", "SE-go-to-all-default", "SE-go-to-all-k1", "SE-go-to-all-k2"],
   },
 ]
 

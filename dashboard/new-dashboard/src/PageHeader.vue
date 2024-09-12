@@ -90,6 +90,6 @@ function toggleSubMenu(event: MouseEvent) {
 }
 
 asyncComputed(async () => {
-  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/userinfo").then((response) => console.log(response))
+  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/auth/userinfo").then((response) => console.log(response))
 })
 </script>

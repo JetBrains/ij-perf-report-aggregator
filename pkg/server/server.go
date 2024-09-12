@@ -107,8 +107,10 @@ func Serve(dbUrl string, natsUrl string) error {
 		})
 	})
 
-	router.Route("/userinfo", func(r chi.Router) {
-		r.Get("/*", auth.CreateGetUserInfoHandler())
+	router.Route("/api/auth", func(r chi.Router) {
+		r.Route("/userinfo", func(r chi.Router) {
+			r.Get("/*", auth.CreateGetUserInfoHandler())
+		})
 	})
 
 	router.Group(func(r chi.Router) {

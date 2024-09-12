@@ -58,6 +58,7 @@ import Menu from "primevue/menu"
 import { computed, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { getNavigationElement, PRODUCTS } from "./routes"
+import { ServerWithCompressConfigurator } from "./configurators/ServerWithCompressConfigurator"
 
 const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject
@@ -86,4 +87,8 @@ const selectedSubMenu = computed(() => {
 function toggleSubMenu(event: MouseEvent) {
   subMenu.value?.toggle(event)
 }
+
+asyncComputed(async () => {
+  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/userinfo").then((response) => console.log(response))
+})
 </script>

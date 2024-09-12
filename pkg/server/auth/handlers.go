@@ -1,6 +1,7 @@
 package auth
 
 import (
+  "context"
   "encoding/json"
   "io"
   "net/http"
@@ -26,19 +27,23 @@ func CreateGetUserInfoHandler() http.HandlerFunc {
       return
     }
 
-    userInfo, err := fetchUserInfo(accessToken)
+    userInfo, err := fetchUserInfo(r.Context(), accessToken)
     if err != nil {
       http.Error(w, "Failed to fetch user info", http.StatusInternalServerError)
       return
     }
 
-    json.NewEncoder(w).Encode(userInfo)
+    err = json.NewEncoder(w).Encode(userInfo)
+    if err != nil {
+      http.Error(w, "Failed to parse user info", http.StatusInternalServerError)
+      return
+    }
   }
 }
 
-func fetchUserInfo(accessToken string) (*UserInfo, error) {
+func fetchUserInfo(ctx context.Context, accessToken string) (*UserInfo, error) {
   client := &http.Client{}
-  req, err := http.NewRequest("GET", "https://www.googleapis.com/oauth2/v2/userinfo", nil)
+  req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://www.googleapis.com/oauth2/v2/userinfo", http.NoBody)
   if err != nil {
     return nil, err
   }

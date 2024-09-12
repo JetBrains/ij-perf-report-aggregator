@@ -50,10 +50,6 @@ watch(
   }
 )
 
-asyncComputed(async () => {
-  fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/userinfo").then((response) => console.log(response))
-})
-
 const persistentStateManager = new PersistentStateManager("common", { serverUrl: ServerWithCompressConfigurator.DEFAULT_SERVER_URL })
 persistentStateManager.add("serverUrl", serverUrl)
 </script>

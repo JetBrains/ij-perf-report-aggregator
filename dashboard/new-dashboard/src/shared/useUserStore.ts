@@ -46,7 +46,7 @@ export const useUserStore = defineStore("userStore", () => {
         user.value = data
       })
       .catch((error_: unknown) => {
-        error.value = error_ instanceof Error ? error_.message : "Unknown error occurred";
+        error.value = error_ instanceof Error ? error_.message : "Unknown error occurred"
       })
       .finally(() => {
         loading.value = false

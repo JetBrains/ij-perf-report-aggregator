@@ -47,6 +47,13 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
+  const showAllMetricsRef = computed({
+    get: () => storedShowAllMetrics,
+    set(value) {
+      storedShowAllMetrics.value = value.value
+    },
+  })
+
   const showAllMetrics = computed({
     get: () => storedShowAllMetrics.value,
     set(value) {
@@ -54,5 +61,5 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, showAllMetrics }
+  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, showAllMetrics, showAllMetricsRef }
 })

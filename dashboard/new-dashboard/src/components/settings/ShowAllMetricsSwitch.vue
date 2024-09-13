@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center justify-between w-full">
-    <span v-tooltip.left="'Disable filtering of detailed metrics like completion_32. Require page reloading.'">Show all metrics:</span>
+    <span v-tooltip.left="'Disable filtering of detailed metrics like completion_32.'">Show all metrics:</span>
     <InputSwitch
       v-model="settingsStore.showAllMetrics"
       class="ml-4"

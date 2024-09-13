@@ -71,7 +71,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     const isIj = dbTypeStore().isIJStartup()
 
-    createFilterObservable(serverConfigurator, filters)
+    combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(useSettingsStore().showAllMetricsRef)])
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),

@@ -128,7 +128,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             //filter for editor menu
             !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
             //filter out _23 metrics, we need them in DB but not in UI
-            !/.*_\d+(#.*)?$/.test(it)
+            (!/.*_\d+(#.*)?$/.test(it) || useSettingsStore().showAllMetrics)
         )
 
         data = customSort(data, MAIN_METRICS)

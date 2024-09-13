@@ -8,6 +8,7 @@ export const useSettingsStore = defineStore("settingsStore", () => {
   const storedDetectChanges = useStorage("detectChangesEnabled", false)
   const storedFlexibleYZero = useStorage("floatingNull", false)
   const storedRemoveOutliers = useStorage("removeOutliers", false)
+  const storedShowAllMetrics = useStorage("showAllMetrics", false)
 
   const scaling = computed({
     get: () => storedScaling.value,
@@ -46,5 +47,12 @@ export const useSettingsStore = defineStore("settingsStore", () => {
     },
   })
 
-  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers }
+  const showAllMetrics = computed({
+    get: () => storedShowAllMetrics.value,
+    set(value) {
+      storedShowAllMetrics.value = value
+    },
+  })
+
+  return { scaling, smoothing, detectChanges, flexibleYZero, removeOutliers, showAllMetrics }
 })

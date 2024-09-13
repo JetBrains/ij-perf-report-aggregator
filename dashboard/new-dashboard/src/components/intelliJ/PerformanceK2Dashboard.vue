@@ -55,8 +55,8 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["localInspections-k2", "localInspections-default", "localInspections-k1", "localInspections-k2"],
   },
   {
-    labels: ["Completion .java IntelliJ", "Completion .java 90p IntelliJ"],
-    measures: ["completion", "fus_completion_duration_90p"],
+    labels: ["Completion .java IntelliJ", "Completion first .java IntelliJ", "Completion .java 90p IntelliJ"],
+    measures: ["completion", "completion_1", "fus_completion_duration_90p"],
     projects: [
       "intellij_commit-changedDefault/completion/java_file",
       "intellij_commit/completion/java_file",
@@ -66,8 +66,8 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["intellij-completion-k2", "intellij-completion-default", "intellij-completion-k1", "intellij-completion-k2"],
   },
   {
-    labels: ["Completion .kt Toolbox", "Completion .kt 90p Toolbox"],
-    measures: ["completion", "fus_completion_duration_90p"],
+    labels: ["Completion .kt Toolbox", "Completion first .kt Toolbox", "Completion .kt 90p Toolbox"],
+    measures: ["completion", "completion_1", "fus_completion_duration_90p"],
     projects: [
       "toolbox_enterprise-changedDefault/ultimateCase/UserRepository",
       "toolbox_enterprise/ultimateCase/UserRepository",

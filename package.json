@@ -29,12 +29,12 @@
     "eslint-plugin-vue": "^9.28.0",
     "lightningcss": "^1.27.0",
     "postcss": "^8.4.45",
-    "rollup": "^4.21.2",
+    "rollup": "^4.21.3",
     "sass": "^1.78.0",
-    "tailwindcss": "^3.4.10",
+    "tailwindcss": "^3.4.11",
     "typescript": "^5.6.2",
     "unplugin-vue-components": "^0.27.4",
-    "vite": "5.4.3",
+    "vite": "5.4.4",
     "vite-plugin-static-copy": "^1.0.6",
     "vue": "^3.5.4",
     "vue-tsc": "^2.1.6"
@@ -57,6 +57,6 @@
     "eslint-plugin-unicorn": "^55.0.0",
     "isoworker": "^0.2.4",
     "prettier": "^3.3.3",
-    "vitest": "^2.0.5"
+    "vitest": "^2.1.0"
   }
 }

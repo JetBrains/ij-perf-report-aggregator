@@ -42,6 +42,7 @@ describe("Branch configurator", () => {
               build_number: "241.120",
               kind: "Regression",
               stacktrace: "",
+              user_name: "",
             })
             resolve()
           } catch (error) {
@@ -71,6 +72,7 @@ describe("Branch configurator", () => {
               build_number: "241.120",
               kind: "Exception",
               stacktrace: "some trace",
+              user_name: "",
             })
             resolve()
           } catch (error) {

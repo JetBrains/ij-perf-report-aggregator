@@ -8,6 +8,7 @@ import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator
 import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
 import { FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
+import { useUserStore } from "../shared/useUserStore"
 
 class AccidentFromServer {
   constructor(
@@ -38,7 +39,8 @@ export class Accident {
     readonly reason: string,
     readonly buildNumber: string,
     readonly kind: AccidentKind,
-    readonly stacktrace: string = ""
+    readonly stacktrace: string = "",
+    readonly userName: string = ""
   ) {}
 }
 
@@ -93,7 +95,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind, stacktrace }),
+        body: JSON.stringify({ date, affected_test, reason, build_number: build_number.toString(), kind, stacktrace, user_name: useUserStore().user?.name ?? "" }),
       })
 
       if (!response.ok) {

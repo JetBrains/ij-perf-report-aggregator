@@ -131,7 +131,14 @@
             v-for="accident in data?.accidents.value"
             :key="accident?.id"
           >
-            <span class="flex items-start justify-between gap-1.5 text-sm">
+            <span
+              class="flex items-start justify-between gap-1.5 text-sm"
+              v-tooltip.left="{
+                value: accident.userName == '' ? null : 'Created by ' + accident.userName,
+                autoHide: false,
+                showDelay: 500,
+              }"
+            >
               &bull;
               <!-- eslint-disable vue/no-v-html -->
               <span

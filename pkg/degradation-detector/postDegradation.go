@@ -65,7 +65,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 				if !d.IsDegradation {
 					kind = "InferredImprovement"
 				}
-				insertParams := meta.AccidentInsertParams{Date: date, Test: degradation.Settings.DBTestName(), Kind: kind, Reason: medianMessage, BuildNumber: d.Build}
+				insertParams := meta.AccidentInsertParams{Date: date, Test: degradation.Settings.DBTestName(), Kind: kind, Reason: medianMessage, BuildNumber: d.Build, UserName: "R2D2"}
 				params, err := json.Marshal(insertParams)
 				if err != nil {
 					insertionResults <- InsertionResults{Error: fmt.Errorf("failed to marshal query: %w", err)}

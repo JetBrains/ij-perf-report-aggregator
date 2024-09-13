@@ -24,6 +24,7 @@ type accident struct {
 	Kind         string `json:"kind"`
 	ExternalId   string `json:"externalId,omitempty"`
 	Stacktrace   string `json:"stacktrace"`
+	UserName     string `json:"userName"`
 }
 
 type accidentRequestParams struct {
@@ -39,6 +40,7 @@ type AccidentInsertParams struct {
 	Kind        string `json:"kind,omitempty"`
 	ExternalId  string `json:"externalId,omitempty"`
 	Stacktrace  string `json:"stacktrace"`
+	UserName    string `json:"user_name,omitempty"`
 }
 
 type accidentIdParams struct {
@@ -66,7 +68,7 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 			return
 		}
 
-		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
+		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace, user_name FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
 		rows, err := metaDb.Query(request.Context(), sql)
 		if err != nil {
 			slog.Error("unable to execute the query", "query", sql, "error", err)
@@ -78,8 +80,8 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 		accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (accident, error) {
 			var id int64
 			var date pgtype.Date
-			var affectedTest, reason, buildNumber, kind, stacktrace string
-			err := row.Scan(&id, &date, &affectedTest, &reason, &buildNumber, &kind, &stacktrace)
+			var affectedTest, reason, buildNumber, kind, stacktrace, userName string
+			err := row.Scan(&id, &date, &affectedTest, &reason, &buildNumber, &kind, &stacktrace, &userName)
 			return accident{
 				ID:           id,
 				Date:         date.Time.String(),
@@ -88,6 +90,7 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 				BuildNumber:  buildNumber,
 				Kind:         kind,
 				Stacktrace:   stacktrace,
+				UserName:     userName,
 			}, err
 		})
 		if err != nil {
@@ -127,7 +130,7 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 			return
 		}
 
-		sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
+		sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name FROM accidents WHERE date >= CURRENT_DATE - INTERVAL '" + params.Interval + "'"
 		if params.Tests != nil {
 			sql += " and affected_test in (" + stringArrayToSQL(params.Tests) + ") or affected_test = ''"
 		}
@@ -185,7 +188,7 @@ func CreatePostAccidentRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		var id int
-		idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId, stacktrace) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId, params.Stacktrace)
+		idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId, params.Stacktrace, params.UserName)
 		if err = idRow.Scan(&id); err != nil {
 			if strings.Contains(err.Error(), "unique constraint") {
 				http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
@@ -271,8 +274,8 @@ func stringArrayToSQL(input []string) string {
 func getAccidentFromRow(row pgx.CollectableRow) (accident, error) {
 	var id int64
 	var date pgtype.Date
-	var affected_test, reason, build_number, kind, externalId, stacktrace string
-	err := row.Scan(&id, &date, &affected_test, &reason, &build_number, &kind, &externalId, &stacktrace)
+	var affected_test, reason, build_number, kind, externalId, stacktrace, user_name string
+	err := row.Scan(&id, &date, &affected_test, &reason, &build_number, &kind, &externalId, &stacktrace, &user_name)
 	return accident{
 		ID:           id,
 		Date:         date.Time.String(),
@@ -282,11 +285,12 @@ func getAccidentFromRow(row pgx.CollectableRow) (accident, error) {
 		Kind:         kind,
 		ExternalId:   externalId,
 		Stacktrace:   stacktrace,
+		UserName:     user_name,
 	}, err
 }
 
 func getAccidentById(ctx context.Context, metaDb *pgxpool.Pool, accidentId string) (*accident, error) {
-	sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace FROM accidents WHERE id=$1"
+	sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name FROM accidents WHERE id=$1"
 	rows, err := metaDb.Query(ctx, sql, accidentId)
 	if err != nil {
 		log.Println("unable to execute the query", "query", sql, "error", err)

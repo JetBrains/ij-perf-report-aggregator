@@ -62,7 +62,7 @@ const { data, accidentsConfigurator, inDialog } = defineProps<{
 
 function getTooltipText(accident: AccidentSimple): string {
   if (inDialog) return ""
-  return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident)
+  return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident) + "\n" + (accident.userName != "" ? "Created by " + accident.userName : "")
 }
 function getAffectedTests(accident: AccidentSimple): string {
   return accident.affectedTests.filter((value) => value !== "").join("\n")
@@ -75,6 +75,7 @@ interface AccidentSimple {
   reason: string
   affectedTests: string[]
   date: string
+  userName: string
 }
 
 function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
@@ -86,7 +87,7 @@ function deduplicateAccidents(accidents: Accident[]): AccidentSimple[] {
       const existingAccident = accidentMap.get(key) as AccidentSimple
       existingAccident.affectedTests = [...existingAccident.affectedTests, accident.affectedTest]
     } else {
-      accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest], date: accident.date })
+      accidentMap.set(key, { kind: accident.kind, reason: accident.reason.trim(), affectedTests: [accident.affectedTest], date: accident.date, userName: accident.userName })
     }
   }
   return [...accidentMap.values()]

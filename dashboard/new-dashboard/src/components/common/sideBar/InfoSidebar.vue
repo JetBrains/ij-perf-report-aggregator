@@ -132,12 +132,12 @@
             :key="accident?.id"
           >
             <span
-              class="flex items-start justify-between gap-1.5 text-sm"
               v-tooltip.left="{
                 value: accident.userName == '' ? null : 'Created by ' + accident.userName,
                 autoHide: false,
                 showDelay: 500,
               }"
+              class="flex items-start justify-between gap-1.5 text-sm"
             >
               &bull;
               <!-- eslint-disable vue/no-v-html -->

@@ -62,7 +62,7 @@ const { data, accidentsConfigurator, inDialog } = defineProps<{
 
 function getTooltipText(accident: AccidentSimple): string {
   if (inDialog) return ""
-  return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident) + "\n" + (accident.userName != "" ? "Created by " + accident.userName : "")
+  return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident) + "\n" + (accident.userName == "" ? "" : "Created by " + accident.userName)
 }
 function getAffectedTests(accident: AccidentSimple): string {
   return accident.affectedTests.filter((value) => value !== "").join("\n")

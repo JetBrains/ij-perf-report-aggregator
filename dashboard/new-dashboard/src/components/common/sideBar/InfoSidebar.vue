@@ -257,7 +257,7 @@
 </template>
 <script setup lang="ts">
 import { computed, provide, Ref, ref } from "vue"
-import { Accident, AccidentKind } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind } from "../../../configurators/accidents/AccidentsConfigurator"
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"

@@ -1,6 +1,6 @@
 import { ECElementEvent } from "echarts/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
-import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { measureNameToLabel } from "../../shared/metricsMapping"
 import { appendLineWithIcon, getDiffIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"
 import { Delta, findDeltaInData, getDifferenceString } from "../../util/Delta"

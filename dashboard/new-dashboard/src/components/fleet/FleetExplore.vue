@@ -45,7 +45,6 @@
 <script setup lang="ts">
 import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
@@ -68,6 +67,7 @@ import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
+import { AccidentsConfiguratorForTests } from "../../configurators/accidents/AccidentsConfiguratorForTests"
 
 const { withInstaller } = defineProps<{
   withInstaller: boolean

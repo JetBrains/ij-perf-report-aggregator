@@ -110,7 +110,6 @@
 <script setup lang="ts">
 import { computed, provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -136,6 +135,7 @@ import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
+import { AccidentsConfiguratorForStartup } from "../../configurators/accidents/AccidentsConfiguratorForStartup"
 
 interface StartupProductDashboard {
   product: string

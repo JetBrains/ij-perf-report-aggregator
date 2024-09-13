@@ -5,8 +5,9 @@ import { assert, beforeAll, afterAll, describe, test, afterEach } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
-import { AccidentKind, AccidentsConfiguratorForStartup } from "../../src/configurators/AccidentsConfigurator"
+import { AccidentKind } from "../../src/configurators/accidents/AccidentsConfigurator"
 import { TimeRangeConfigurator } from "../../src/configurators/TimeRangeConfigurator"
+import { AccidentsConfiguratorForStartup } from "../../src/configurators/accidents/AccidentsConfiguratorForStartup"
 
 describe("Branch configurator", () => {
   let timeRangeConfigurator: TimeRangeConfigurator

@@ -1,14 +1,12 @@
-import { combineLatest, Observable } from "rxjs"
+import { Observable } from "rxjs"
 import { Ref, ref } from "vue"
-import { Chart } from "../components/charts/DashboardCharts"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../components/common/dataQuery"
-import { DBType } from "../components/common/sideBar/InfoSidebar"
-import { dbTypeStore } from "../shared/dbTypes"
-import { ServerWithCompressConfigurator } from "./ServerWithCompressConfigurator"
-import { TimeRange, TimeRangeConfigurator } from "./TimeRangeConfigurator"
-import { FilterConfigurator } from "./filter"
-import { refToObservable } from "./rxjs"
-import { useUserStore } from "../shared/useUserStore"
+import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../components/common/dataQuery"
+import { DBType } from "../../components/common/sideBar/InfoSidebar"
+import { ServerWithCompressConfigurator } from "../ServerWithCompressConfigurator"
+import { TimeRange } from "../TimeRangeConfigurator"
+import { FilterConfigurator } from "../filter"
+import { refToObservable } from "../rxjs"
+import { useUserStore } from "../../shared/useUserStore"
 
 class AccidentFromServer {
   constructor(
@@ -203,168 +201,53 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
     }
     return null
   }
-}
 
-function combineProjectsAndMetrics(projects: string | string[] | null, measures: string | string[] | null): string[] {
-  const projectAndMetrics: string[] = []
-  if (projects != null && measures != null) {
-    if (Array.isArray(projects)) {
-      projectAndMetrics.push(...projects)
-    } else {
-      projectAndMetrics.push(projects)
-    }
-
-    if (Array.isArray(projects)) {
-      if (Array.isArray(measures)) {
-        projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+  combineProjectsAndMetrics(projects: string | string[] | null, measures: string | string[] | null): string[] {
+    const projectAndMetrics: string[] = []
+    if (projects != null && measures != null) {
+      if (Array.isArray(projects)) {
+        projectAndMetrics.push(...projects)
       } else {
-        projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
+        projectAndMetrics.push(projects)
       }
-    } else {
-      if (Array.isArray(measures)) {
-        projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+
+      if (Array.isArray(projects)) {
+        if (Array.isArray(measures)) {
+          projectAndMetrics.push(...projects.map((project) => measures.map((metric) => `${project}/${metric}`)).flat(100))
+        } else {
+          projectAndMetrics.push(...projects.map((project) => `${project}/${measures}`))
+        }
       } else {
-        projectAndMetrics.push(`${projects}/${measures}`)
+        if (Array.isArray(measures)) {
+          projectAndMetrics.push(...measures.map((metric) => `${projects}/${metric}`))
+        } else {
+          projectAndMetrics.push(`${projects}/${measures}`)
+        }
       }
     }
-  }
-  return projectAndMetrics
-}
-
-export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
-  constructor(
-    private serverUrl: string,
-    private product: Ref<string | string[] | null>,
-    projects: Ref<string | string[] | null>,
-    metrics: Ref<string[] | string | null>,
-    timeRangeConfigurator: TimeRangeConfigurator
-  ) {
-    super()
-    this.dbType = dbTypeStore().dbType
-    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable(), refToObservable(product)]).subscribe(
-      ([projects, measures, [timeRange, customRange], product]) => {
-        if (product == null) return
-        if (Array.isArray(product)) return
-        const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
-        const projectAndMetricsWithProduct = projectAndMetrics.map((it) => `${product}/${it}`)
-        getAccidentsFromMetaDb(projectAndMetricsWithProduct, timeRange, customRange)
-          .then((value) => {
-            this.value.value = this.removeProductPrefix(product, value)
-          })
-          .catch((error: unknown) => {
-            console.error(error)
-          })
-      }
-    )
+    return projectAndMetrics
   }
 
-  protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/"
-  }
-
-  private removeProductPrefix(product: string, response: Map<string, Accident[]>): Map<string, Accident[]> {
-    const map = new Map<string, Accident[]>()
-    for (const [key, value] of response) {
-      const keyWithoutProduct = key.replace(`${product}/`, "")
-      map.set(keyWithoutProduct, value)
-    }
-    return map
-  }
-
-  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
-    if (this.product.value == null || Array.isArray(this.product.value)) return
-    const test = `${this.product.value}/${affected_test}`
+  async getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, customRange: string): Promise<Map<string, Accident[]>> {
+    const interval = intervalToPostgresInterval(timeRange, customRange)
+    const params = tests.length === 0 ? { interval } : { interval, tests }
     try {
-      const userName = useUserStore().user?.name ?? ""
-      const response = await fetch(this.getAccidentUrl() + "accidents/", {
+      const response = await fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace, user_name: userName }),
+        body: JSON.stringify(params),
       })
-
-      if (!response.ok) {
-        throw new Error("The accident wasn't created")
-      }
-      const idString: string = await response.text()
-      const id = Number(idString)
-      if (this.value.value == undefined) {
-        this.value.value = new Map<string, Accident[]>()
-      }
-      const updatedMap = new Map(this.value.value)
-      updatedMap.set(`${affected_test}_${build_number}`, [
-        { id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace, userName },
-      ])
-      this.value.value = updatedMap //we need to update value in reference to trigger the change
-      return id
+      const data: AccidentFromServer[] = (await response.json()) as AccidentFromServer[]
+      const accidents = data.map((value) => {
+        return { ...value, kind: capitalizeFirstLetter(value.kind) }
+      })
+      return convertAccidentsToMap(accidents)
     } catch (error) {
       console.error(error)
-      return
+      return new Map<string, Accident[]>()
     }
-  }
-}
-
-export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
-  constructor(
-    private serverUrl: string,
-    projects: Ref<string | string[] | null>,
-    metrics: Ref<string[] | string | null>,
-    timeRangeConfigurator: TimeRangeConfigurator
-  ) {
-    super()
-    this.dbType = dbTypeStore().dbType
-    combineLatest([refToObservable(projects), refToObservable(metrics), timeRangeConfigurator.createObservable()]).subscribe(([projects, measures, [timeRange, customRange]]) => {
-      const projectAndMetrics = combineProjectsAndMetrics(projects, measures)
-      getAccidentsFromMetaDb(projectAndMetrics, timeRange, customRange)
-        .then((value) => {
-          this.value.value = value
-        })
-        .catch((error: unknown) => {
-          console.error(error)
-        })
-    })
-  }
-
-  protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/"
-  }
-}
-
-export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
-  constructor(
-    private serverUrl: string,
-    charts: Chart[] | null,
-    timeRangeConfigurator: TimeRangeConfigurator
-  ) {
-    super()
-    this.dbType = dbTypeStore().dbType
-    const tests = this.getProjectAndProjectWithMetrics(charts)
-    combineLatest([timeRangeConfigurator.createObservable()]).subscribe(([[timeRange, customRange]]) => {
-      getAccidentsFromMetaDb(tests, timeRange, customRange)
-        .then((value) => {
-          this.value.value = value
-        })
-        .catch((error: unknown) => {
-          console.error(error)
-        })
-    })
-  }
-
-  protected getAccidentUrl(): string {
-    return this.serverUrl + "/api/meta/"
-  }
-
-  private getProjectAndProjectWithMetrics(charts: Chart[] | null): string[] {
-    const projectsWithMetrics =
-      charts?.flatMap((chart) => {
-        const measures = Array.isArray(chart.definition.measure) ? chart.definition.measure : [chart.definition.measure]
-        return chart.projects.flatMap((project) => {
-          return measures.map((measure) => project + "/" + measure)
-        })
-      }) ?? []
-    const projects = new Set(charts?.map((it) => it.projects).flat(Number.POSITIVE_INFINITY) as string[])
-    return [...projectsWithMetrics, ...projects]
   }
 }
 
@@ -417,28 +300,6 @@ function convertAccidentsToMap(accidents: Accident[]): Map<string, Accident[]> {
     }
   }
   return accidentsMap
-}
-
-async function getAccidentsFromMetaDb(tests: string[], timeRange: TimeRange, customRange: string): Promise<Map<string, Accident[]>> {
-  const interval = intervalToPostgresInterval(timeRange, customRange)
-  const params = tests.length === 0 ? { interval } : { interval, tests }
-  try {
-    const response = await fetch(ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/getAccidents", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    })
-    const data: AccidentFromServer[] = (await response.json()) as AccidentFromServer[]
-    const accidents = data.map((value) => {
-      return { ...value, kind: capitalizeFirstLetter(value.kind) }
-    })
-    return convertAccidentsToMap(accidents)
-  } catch (error) {
-    console.error(error)
-    return new Map<string, Accident[]>()
-  }
 }
 
 function capitalizeString(str: string): string {

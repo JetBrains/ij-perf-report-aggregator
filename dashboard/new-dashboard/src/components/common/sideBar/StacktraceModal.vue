@@ -20,7 +20,7 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { Accident } from "../../../configurators/AccidentsConfigurator"
+import { Accident } from "../../../configurators/accidents/AccidentsConfigurator"
 
 const { accident } = defineProps<{
   accident: Accident | null

@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { computedAsync } from "@vueuse/core"
 import { ref } from "vue"
-import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { replaceToLink } from "../../../util/linkReplacer"
 import { InfoData } from "./InfoSidebar"
 

@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import { AccidentKind, AccidentsConfigurator } from "../../configurators/AccidentsConfigurator"
+import { AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 
 const { date, tests, build } = defineProps<{

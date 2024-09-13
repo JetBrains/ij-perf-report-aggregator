@@ -1,7 +1,7 @@
 import { InjectionKey, Ref } from "vue"
 import { DataQueryConfigurator } from "../components/common/dataQuery"
 import { InfoSidebar } from "../components/common/sideBar/InfoSidebar"
-import { AccidentsConfigurator } from "../configurators/AccidentsConfigurator"
+import { AccidentsConfigurator } from "../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { FilterConfigurator } from "../configurators/filter"
 import { YoutrackClient } from "../components/common/youtrack/YoutrackClient"

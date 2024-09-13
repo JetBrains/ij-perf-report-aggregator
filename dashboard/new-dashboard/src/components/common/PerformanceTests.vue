@@ -122,7 +122,6 @@
 <script setup lang="ts">
 import { provide, Ref, ref, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -148,6 +147,7 @@ import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
+import { AccidentsConfiguratorForTests } from "../../configurators/accidents/AccidentsConfiguratorForTests"
 
 interface PerformanceTestsProps {
   dbName: string

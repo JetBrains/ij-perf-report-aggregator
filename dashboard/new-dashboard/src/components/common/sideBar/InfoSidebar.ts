@@ -1,5 +1,5 @@
 import { computed, Ref, ShallowRef, shallowRef } from "vue"
-import { Accident } from "../../../configurators/AccidentsConfigurator"
+import { Accident } from "../../../configurators/accidents/AccidentsConfigurator"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { ServerConfigurator } from "../dataQuery"
 import { dbTypeStore } from "../../../shared/dbTypes"

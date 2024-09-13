@@ -31,7 +31,6 @@
 <script setup lang="ts">
 import { provide, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForDashboard } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -49,6 +48,7 @@ import { DataQueryConfigurator } from "./dataQuery"
 import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
+import { AccidentsConfiguratorForDashboard } from "../../configurators/accidents/AccidentsConfiguratorForDashboard"
 
 interface PerformanceDashboardProps {
   dbName: string

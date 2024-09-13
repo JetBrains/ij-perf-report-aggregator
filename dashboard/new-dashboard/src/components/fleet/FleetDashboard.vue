@@ -62,7 +62,6 @@
 <script setup lang="ts">
 import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForTests } from "../../configurators/AccidentsConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
@@ -78,6 +77,7 @@ import { provideReportUrlProvider } from "../common/lineChartTooltipLinkProvider
 import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
+import { AccidentsConfiguratorForTests } from "../../configurators/accidents/AccidentsConfiguratorForTests"
 
 provideReportUrlProvider()
 

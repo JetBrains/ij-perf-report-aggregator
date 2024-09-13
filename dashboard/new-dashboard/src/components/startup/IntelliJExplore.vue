@@ -55,7 +55,6 @@
 <script setup lang="ts">
 import { provide, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
-import { AccidentsConfiguratorForStartup } from "../../configurators/AccidentsConfigurator"
 import { createBranchConfigurator } from "../../configurators/BranchConfigurator"
 import { dimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { MachineConfigurator } from "../../configurators/MachineConfigurator"
@@ -81,6 +80,7 @@ import { InfoSidebarImpl } from "../common/sideBar/InfoSidebar"
 import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
+import { AccidentsConfiguratorForStartup } from "../../configurators/accidents/AccidentsConfiguratorForStartup"
 
 const { withInstaller } = defineProps<{
   withInstaller: boolean

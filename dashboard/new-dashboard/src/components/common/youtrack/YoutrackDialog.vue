@@ -130,7 +130,7 @@
 import { Ref, ref } from "vue"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
-import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { useRouter } from "vue-router"

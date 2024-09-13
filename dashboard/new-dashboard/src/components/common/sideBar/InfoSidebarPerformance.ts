@@ -1,7 +1,7 @@
 import { computedAsync } from "@vueuse/core"
 import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
 import { computed, Ref } from "vue"
-import { Accident, AccidentsConfigurator } from "../../../configurators/AccidentsConfigurator"
+import { Accident, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { findDeltaInData, getDifferenceString } from "../../../util/Delta"

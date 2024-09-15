@@ -297,7 +297,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
-          label: "Indexing Dashboard",
+          label: "Indexes Dashboard",
         },
         {
           url: ROUTES.IntelliJSharedIndicesDashboard,

@@ -8,13 +8,11 @@ const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
-  IntelliJSharedIndices = "/intellij/sharedIndexes",
   IntelliJUltimate = "/intellij/ultimate",
   IntelliJPackageChecker = "/intellij/packageChecker",
   IntelliJFus = "/intellij/fus",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
-  GoLandSharedIndices = "/goland/sharedIndexes",
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
   KotlinMemory = Kotlin + "/memory",
@@ -23,7 +21,6 @@ const enum ROUTE_PREFIX {
   JBR = "/jbr",
   Fleet = "/fleet",
   PyCharm = "/pycharm",
-  PyCharmSharedIndices = "/pycharm/sharedIndexes",
   WebStorm = "/webstorm",
   Bazel = "/bazel",
   Qodana = "/qodana",
@@ -80,16 +77,7 @@ enum ROUTES {
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateDashboardOld = `${ROUTE_PREFIX.IntelliJUltimate}/ultimateDashboardOld`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${TEST_ROUTE}`,
-  IntelliJSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexingDashboard`,
-  IntelliJSharedIndicesScanningDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesScanningDashboard`,
-  IntelliJSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesFindUsagesDashboard`,
-  IntelliJSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesCompletionDashboard`,
-  IntelliJSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
-  IntelliJSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesIndexedFilesDashboard`,
-  IntelliJSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
-  IntelliJSharedIndicesTypingDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesTypingDashboard`,
-  IntelliJSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.IntelliJSharedIndices}/sharedIndexesDumbModeDashboard`,
-  IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndices}/${TEST_ROUTE}`,
+  IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJ}/sharedIndexesDashboard`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
   IntelliJFusDashboard = `${ROUTE_PREFIX.IntelliJFus}/${DASHBOARD_ROUTE}`,
@@ -134,15 +122,6 @@ enum ROUTES {
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
-  GoLandSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexingDashboard`,
-  GoLandSharedIndicesScanningDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesScanningDashboard`,
-  GoLandSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesFindUsagesDashboard`,
-  GoLandSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesCompletionDashboard`,
-  GoLandSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
-  GoLandSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesIndexedFilesDashboard`,
-  GoLandSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
-  GoLandSharedIndicesTypingDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesTypingDashboard`,
-  GoLandSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.GoLandSharedIndices}/sharedIndexesDumbModeDashboard`,
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}Dev`,
   PyCharmOldDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
@@ -150,15 +129,6 @@ enum ROUTES {
   PyCharmDevTests = `${ROUTE_PREFIX.PyCharm}/${DEV_TEST_ROUTE}`,
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
-  PyCharmSharedIndicesIndexingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesIndexingDashboard`,
-  PyCharmSharedIndicesScanningDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesScanningDashboard`,
-  PyCharmSharedIndicesFindUsagesDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesFindUsagesDashboard`,
-  PyCharmSharedIndicesCompletionDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesCompletionDashboard`,
-  PyCharmSharedIndicesFirstCodeAnalysisDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesFirstCodeAnalysisDashboard`,
-  PyCharmSharedIndicesNumberOfIndexedFilesDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesIndexedFilesDashboard`,
-  PyCharmSharedIndicesNumberOfExtensionsDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesNumberOfExtensionsDashboard`,
-  PyCharmSharedIndicesTypingDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesTypingDashboard`,
-  PyCharmSharedIndicesDumbModeDashboard = `${ROUTE_PREFIX.PyCharmSharedIndices}/sharedIndexesDumbModeDashboard`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormDashboardNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardNext`,
@@ -314,10 +284,6 @@ const IDEA: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.IntelliJDashboardOld,
-          label: "Dashboard (<=241)",
-        },
-        {
           url: ROUTES.IntelliJPopupsDashboard,
           label: "Popups Dashboard",
         },
@@ -326,24 +292,16 @@ const IDEA: Product = {
           label: "Find Usages Dashboard",
         },
         {
-          url: ROUTES.IntelliJFindUsagesDashboardOld,
-          label: "Find Usages Dashboard (<=241)",
-        },
-        {
           url: ROUTES.IntelliJSEDashboard,
           label: "Search Everywhere Dashboard",
-        },
-        {
-          url: ROUTES.IntelliJSEDashboardOld,
-          label: "Search Everywhere Dashboard (<=241)",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
           label: "Indexing Dashboard",
         },
         {
-          url: ROUTES.IntelliJIndexingDashboardOld,
-          label: "Indexing Dashboard (<=241)",
+          url: ROUTES.IntelliJSharedIndicesDashboard,
+          label: "Shared Indexes Dashboard",
         },
         {
           url: ROUTES.IntelliJIncrementalCompilationDashboard,
@@ -398,52 +356,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJGradleDashboardDeprecated,
           label: "Gradle(deprecated)",
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.IntelliJSharedIndices,
-      label: "Shared Indexes",
-      tabs: [
-        {
-          url: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesScanningDashboard,
-          label: "Scanning",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesFindUsagesDashboard,
-          label: "FindUsages",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesCompletionDashboard,
-          label: "Completion",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesFirstCodeAnalysisDashboard,
-          label: "Code Analysis",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesNumberOfIndexedFilesDashboard,
-          label: "Indexed Files",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
-          label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.IntelliJSharedIndicesTests,
-          label: TESTS_LABEL,
         },
       ],
     },
@@ -695,52 +607,6 @@ const GOLAND: Product = {
         },
       ],
     },
-    {
-      url: ROUTE_PREFIX.GoLandSharedIndices,
-      label: "Shared Indexes",
-      tabs: [
-        {
-          url: ROUTES.GoLandSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesScanningDashboard,
-          label: "Scanning",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesFindUsagesDashboard,
-          label: "FindUsages",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesCompletionDashboard,
-          label: "Completion",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesFirstCodeAnalysisDashboard,
-          label: "Code Analysis",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesNumberOfIndexedFilesDashboard,
-          label: "Indexed Files",
-        },
-        {
-          url: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
-          label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.GoLandTests,
-          label: TESTS_LABEL,
-        },
-      ],
-    },
   ],
 }
 const RUBYMINE: Product = {
@@ -811,56 +677,6 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.PyCharmSharedIndices,
-      label: "Shared Indexes",
-      tabs: [
-        {
-          url: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
-          label: "Dumb Mode Time",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesIndexingDashboard,
-          label: "Indexing",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesScanningDashboard,
-          label: "Scanning",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesFindUsagesDashboard,
-          label: "FindUsages",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesCompletionDashboard,
-          label: "Completion",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesFirstCodeAnalysisDashboard,
-          label: "Code Analysis",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesTypingDashboard,
-          label: "Typing",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
-          label: "Indexed Files",
-        },
-        {
-          url: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
-          label: "Indexed by Extensions",
-        },
-        {
-          url: ROUTES.PyCharmTests,
-          label: TESTS_LABEL + " (Old)",
-        },
-        {
-          url: ROUTES.PyCharmDevTests,
-          label: TESTS_LABEL,
         },
       ],
     },
@@ -1346,11 +1162,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IntelliJ Performance dashboard" },
         },
         {
-          path: ROUTES.IntelliJDashboardOld,
-          component: () => import("./components/intelliJ/PerformanceDashboardOld.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard (<=241)" },
-        },
-        {
           path: ROUTES.IntelliJPopupsDashboard,
           component: () => import("./components/intelliJ/PerformancePopupsDashboard.vue"),
           meta: { pageTitle: "IntelliJ Popups Performance dashboard" },
@@ -1359,11 +1170,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJIndexingDashboard,
           component: () => import("./components/intelliJ/IndexingDashboard.vue"),
           meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJIndexingDashboardOld,
-          component: () => import("./components/intelliJ/IndexingDashboardOld.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard (<=241)" },
         },
         {
           path: ROUTES.IntelliJIncrementalCompilationDashboard,
@@ -1401,11 +1207,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "JPS Import dashboard DevServer" },
         },
         {
-          path: ROUTES.IntelliJUltimateDashboardOld,
-          component: () => import("./components/intelliJ/UltimateProjectsDashboardOld.vue"),
-          meta: { pageTitle: "Ultimate Projects (<=241)" },
-        },
-        {
           path: ROUTES.IntelliJUltimateDashboard,
           component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
           meta: { pageTitle: "Ultimate Projects" },
@@ -1441,64 +1242,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
         },
         {
-          path: ROUTES.IntelliJFindUsagesDashboardOld,
-          component: () => import("./components/intelliJ/PerformanceFindUsagesDashboardOld.vue"),
-          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard (<=241)" },
-        },
-        {
           path: ROUTES.IntelliJSEDashboard,
           component: () => import("./components/intelliJ/PerformanceSEDashboard.vue"),
           meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard" },
         },
         {
-          path: ROUTES.IntelliJSEDashboardOld,
-          component: () => import("./components/intelliJ/PerformanceSEDashboardOld.vue"),
-          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard (<=241)" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesIndexingDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/IndexingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesScanningDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/ScanningDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Scanning" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesFindUsagesDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/FindUsagesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Finding Usages" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesCompletionDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/CompletionDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Completion" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesFirstCodeAnalysisDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Code Analysis" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesNumberOfIndexedFilesDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesNumberOfExtensionsDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesTypingDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/TypingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesDumbModeDashboard,
-          component: () => import("./components/intelliJ/sharedIndexes/DumbModeDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
+          path: ROUTES.IntelliJSharedIndicesDashboard,
+          component: () => import("./components/intelliJ/SharedIndexesDashboard.vue"),
+          meta: { pageTitle: "Shared Indexes Performance Dashboard" },
         },
         {
           path: ROUTES.IntelliJEmbeddingSearchDashboard,
@@ -1524,16 +1275,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
             withInstaller: false,
           },
-          meta: { pageTitle: "IntelliJ Integration Performance Tests On Fast Installer" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "ideaSharedIndices",
-          },
-          meta: { pageTitle: "IntelliJ Integration Performance Tests For Shared Indexes" },
+          meta: { pageTitle: "IntelliJ Integration Performance Tests On DevServer" },
         },
         {
           path: ROUTES.IntelliJCompare,
@@ -1688,51 +1430,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
         },
         {
-          path: ROUTES.GoLandSharedIndicesIndexingDashboard,
-          component: () => import("./components/goland/sharedIndexes/IndexingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesScanningDashboard,
-          component: () => import("./components/goland/sharedIndexes/ScanningDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Scanning" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesFindUsagesDashboard,
-          component: () => import("./components/goland/sharedIndexes/FindUsagesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Finding Usages" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesCompletionDashboard,
-          component: () => import("./components/goland/sharedIndexes/CompletionDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Completion" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesFirstCodeAnalysisDashboard,
-          component: () => import("./components/goland/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Code Analysis" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesNumberOfIndexedFilesDashboard,
-          component: () => import("./components/goland/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesNumberOfExtensionsDashboard,
-          component: () => import("./components/goland/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesTypingDashboard,
-          component: () => import("./components/goland/sharedIndexes/TypingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
-        },
-        {
-          path: ROUTES.GoLandSharedIndicesDumbModeDashboard,
-          component: () => import("./components/goland/sharedIndexes/DumbModeDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
-        },
-        {
           path: ROUTES.PyCharmStartupDashboard,
           component: () => import("./components/common/StartupProductDashboard.vue"),
           props: {
@@ -1789,51 +1486,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "pycharm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesIndexingDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/IndexingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Indexing" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesScanningDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/ScanningDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Scanning" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesFindUsagesDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/FindUsagesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Finding Usages" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesCompletionDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/CompletionDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Completion" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesFirstCodeAnalysisDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/FirstCodeAnalysisDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Code Analysis" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesNumberOfIndexedFilesDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/NumberOfIndexedFilesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed files" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesNumberOfExtensionsDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/NumberOfSharedIndexesDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Number of indexed by shared indexes files" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesTypingDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/TypingDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Typing max awt delay" },
-        },
-        {
-          path: ROUTES.PyCharmSharedIndicesDumbModeDashboard,
-          component: () => import("./components/pycharm/sharedIndexes/DumbModeDashboard.vue"),
-          meta: { pageTitle: "Performance Tests For Shared Indexes Dashboard: Dumb Mode Time" },
         },
         {
           path: ROUTES.WebStormStartupDashboard,

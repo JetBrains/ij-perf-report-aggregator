@@ -129,7 +129,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
           data = data.map((it) => it + ".end")
         }
 
-        data = data.filter(
+        let filtered = data.filter(
           (it) =>
             //filter for editor menu
             !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
@@ -137,10 +137,10 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             (!/.*_\d+(#.*)?$/.test(it) || this.showAllMetrics.value)
         )
 
-        data = customSort(data, MAIN_METRICS)
+        filtered = customSort(filtered, MAIN_METRICS)
 
         const selectedRef = this.selected
-        this.data.value = data
+        this.data.value = filtered
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -149,7 +149,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             selectedRef.value = filtered
           }
         }
-        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...data.filter((value) => MAIN_METRICS_SET.has(value))])]
+        selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...filtered.filter((value) => MAIN_METRICS_SET.has(value))])]
       })
   }
 

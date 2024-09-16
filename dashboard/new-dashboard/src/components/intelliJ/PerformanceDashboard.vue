@@ -103,8 +103,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["kotlin_petclinic/debug"],
   },
   {
-    labels: ["Show Intentions (average awt delay)", "Show Intentions (showQuickFixes)", "Show Intentions (awt dispatch time)"],
-    measures: ["test#average_awt_delay", "showQuickFixes", "AWTEventQueue.dispatchTimeTotal"],
+    labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],
+    measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal"],
     projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
   },
   {
@@ -126,16 +126,6 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Expand Editor Menu"],
     measures: ["%expandEditorMenu"],
     projects: ["intellij_commit/expandEditorMenu"],
-  },
-  {
-    labels: ["Highlight"],
-    measures: ["highlighting"],
-    projects: ["kotlin/highlight", "kotlin_coroutines/highlight"],
-  },
-  {
-    labels: ["FileStructure"],
-    measures: ["FileStructurePopup"],
-    projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
   },
   {
     labels: ["Creating a new file"],

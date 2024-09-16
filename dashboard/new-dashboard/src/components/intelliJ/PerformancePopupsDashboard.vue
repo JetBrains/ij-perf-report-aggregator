@@ -70,6 +70,26 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["popupShown#VcsWidget", "afterShow#GitBranchesTreePopup"]],
     projects: ["popups-performance-test/test-popups"],
   },
+  {
+    labels: ["FileStructurePopup"],
+    measures: ["FileStructurePopup"],
+    projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
+  },
+  {
+    labels: ["ShowQuickFixes"],
+    measures: ["showQuickFixes"],
+    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+  },
+  {
+    labels: ["FindUsagesPopup"],
+    measures: ["findUsage_popup"],
+    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
+  },
+  {
+    labels: ["SearchEverywherePopup"],
+    measures: ["searchEverywhere_dialog_shown"],
+    projects: ["community/go-to-all/Runtime/typingLetterByLetter", "community/go-to-all-with-warmup/Runtime/typingLetterByLetter"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

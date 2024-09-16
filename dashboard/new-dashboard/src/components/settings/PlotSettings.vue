@@ -13,7 +13,6 @@
     <ScalingSwitch class="mb-2" />
     <DetectChangesSwitch class="mb-2" />
     <FlexibleZeroOnYAxis class="mb-2" />
-    <ShowAllMetricsSwitch class="mb-2" />
     <RemoveOutliersSwitch />
   </OverlayPanel>
 </template>
@@ -33,7 +32,6 @@ import RemoveOutliersSwitch from "./RemoveOutliersSwitch.vue"
 import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
-import ShowAllMetricsSwitch from "./ShowAllMetricsSwitch.vue"
 
 const settingsPanel = useTemplateRef<OverlayPanel>("settingsPanel")
 const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")

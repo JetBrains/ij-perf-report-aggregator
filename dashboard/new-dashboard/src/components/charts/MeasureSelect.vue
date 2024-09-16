@@ -36,6 +36,18 @@
     <template #dropdownicon>
       <span class="hidden" />
     </template>
+    <template #header>
+      <div class="bg-gray-100 rounded-md border border-gray-300">
+        <div class="flex items-center w-full mt-2 ml-2 mb-2">
+          <InputSwitch v-model="settingsStore.showAllMetrics" />
+          <span
+            v-tooltip.left="'Disable filtering of detailed metrics like completion_32.'"
+            class="ml-2"
+            >Show all metrics</span
+          >
+        </div>
+      </div>
+    </template>
   </MultiSelect>
 </template>
 <script setup lang="ts">
@@ -43,6 +55,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed } from "vue"
 import { MeasureConfigurator } from "../../configurators/MeasureConfigurator"
 import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
+import { useSettingsStore } from "../settings/settingsStore"
 
 interface Props {
   configurator: MeasureConfigurator | SimpleMeasureConfigurator
@@ -51,7 +64,7 @@ interface Props {
 }
 
 const { configurator, selectedLabel = (items: string[]) => `${items.length} items selected`, title = "Metrics" } = defineProps<Props>()
-
+const settingsStore = useSettingsStore()
 // const items = props.configurator.data
 // put selected values on top
 const items = computed(() => {

@@ -140,15 +140,20 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
         filtered = customSort(filtered, MAIN_METRICS)
 
         const selectedRef = this.selected
-        this.data.value = filtered
+
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const filtered = selected.filter((it) => data.includes(it))
-          if (filtered.length !== selected.length) {
-            selectedRef.value = filtered
+          const selectedInData = selected.filter((it) => data.includes(it))
+          if (selectedInData.length > 0) {
+            filtered = [...new Set([...filtered, ...selectedInData])]
+          }
+
+          if (selectedInData.length !== selected.length) {
+            selectedRef.value = selectedInData
           }
         }
+        this.data.value = filtered
         selectedRef.value = [...new Set([...(selectedRef.value as string[]), ...filtered.filter((value) => MAIN_METRICS_SET.has(value))])]
       })
   }

@@ -3,7 +3,7 @@ import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared
 import { CallbackDataParams } from "echarts/types/src/util/types"
 import { deepEqual } from "fast-equals"
 import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
-import { Ref, shallowRef } from "vue"
+import { ref, Ref, shallowRef } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { ChartConfigurator, ChartType, collator, SymbolOptions, ValueUnit } from "../components/common/chart"
@@ -43,6 +43,8 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
   private readonly _selected = shallowRef<string[] | string | null>(null)
   readonly state = createComponentState()
 
+  readonly showAllMetrics = ref(false)
+
   createObservable(): Observable<unknown> {
     return refToObservable(this.selected, true)
   }
@@ -59,6 +61,10 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     return ref as Ref<string[] | null>
   }
 
+  setShowAllMetrics(value: boolean) {
+    this.showAllMetrics.value = value
+  }
+
   constructor(
     serverConfigurator: ServerConfigurator,
     persistentStateManager: PersistentStateManager,
@@ -71,7 +77,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
     const isIj = dbTypeStore().isIJStartup()
 
-    combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(useSettingsStore().showAllMetricsRef)])
+    combineLatest([createFilterObservable(serverConfigurator, filters), refToObservable(this.showAllMetrics)])
       .pipe(
         debounceTime(100),
         distinctUntilChanged(deepEqual),
@@ -128,7 +134,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
             //filter for editor menu
             !/.*#(update|getchildren|getselection)@.*/i.test(it) &&
             //filter out _23 metrics, we need them in DB but not in UI
-            (!/.*_\d+(#.*)?$/.test(it) || useSettingsStore().showAllMetrics)
+            (!/.*_\d+(#.*)?$/.test(it) || this.showAllMetrics.value)
         )
 
         data = customSort(data, MAIN_METRICS)

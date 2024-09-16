@@ -32,11 +32,8 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
 		ProjectURL:         string(report.GetStringBytes("projectURL")),
 		ProjectDescription: string(report.GetStringBytes("projectDescription")),
 
-		Os:          string(report.GetStringBytes("os")),
 		ProductCode: string(report.GetStringBytes("productCode")),
-		Runtime:     string(report.GetStringBytes("runtime")),
-
-		MethodName: string(report.GetStringBytes("methodName")),
+		MethodName:  string(report.GetStringBytes("methodName")),
 	}
 
 	if config.HasInstallerField {

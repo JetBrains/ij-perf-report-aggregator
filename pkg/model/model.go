@@ -15,9 +15,7 @@ type Report struct {
 	Build     string `json:"build"`
 	BuildDate string `json:"buildDate"`
 
-	Os          string `json:"os"`
 	ProductCode string `json:"productCode"`
-	Runtime     string `json:"runtime"`
 
 	// not used yet
 	TraceEvents []TraceEvent `json:"traceEvents"`

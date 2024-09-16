@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Schema for general collector of performance metrics",
+  "properties": {
+    "version": {
+      "description": "Not used yet, always 1",
+      "type": "string"
+    },
+    "generated": {
+      "description": "Stored in DB but build date is used for all tests to have the same time",
+      "type": "string",
+      "pattern": "^\\w{3}, \\d{2} \\w{3} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT$"
+    },
+    "build": {
+      "description": "Required in case test is run on installers. Build number of installer",
+      "type": "string"
+    },
+    "buildDate": {
+      "description": "Required in case test is run on installers. Build date of installer",
+      "type": "string",
+      "pattern": "^\\w{3}, \\d{2} \\w{3} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT$"
+    },
+    "project": {
+      "description": "Test name",
+      "type": "string"
+    },
+    "projectURL": {
+      "description": "URL of the project in case zip is used.",
+      "type": "string"
+    },
+    "projectDescription": {
+      "description": "Description of the project to be shown on hover",
+      "type": "string"
+    },
+    "productCode": {
+      "description": "Not used yet, product code. Example, IJ, PS.",
+      "type": "string"
+    },
+    "methodName": {
+      "description": "Used to provide code navigation to the test method.",
+      "type": "string"
+    },
+    "metrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "n": {
+            "description": "Metric name",
+            "type": "string"
+          },
+          "d": {
+            "description": "Metric value - duration",
+            "type": "number"
+          },
+          "v": {
+            "description": "Metric value - duration or count. Not used.",
+            "type": "number"
+          },
+          "c": {
+            "description": "Metric value - count",
+            "type": "number"
+          }
+        },
+        "required": [
+          "n"
+        ],
+        "anyOf": [
+          { "required": ["d"] },
+          { "required": ["c"] }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "version",
+    "generated",
+    "project",
+    "metrics"
+  ],
+  "additionalProperties": true
+}

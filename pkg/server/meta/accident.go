@@ -266,7 +266,18 @@ func CreateGetAccidentByIdHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 func stringArrayToSQL(input []string) string {
 	var str strings.Builder
 	str.WriteRune('\'')
-	str.WriteString(strings.Join(input, "','"))
+
+	for i, s := range input {
+		// Escape any single quotes in the string
+		escapedStr := strings.ReplaceAll(s, "'", "''")
+		str.WriteString(escapedStr)
+
+		// Add a separator if it's not the last element
+		if i < len(input)-1 {
+			str.WriteString("','")
+		}
+	}
+
 	str.WriteRune('\'')
 	return str.String()
 }

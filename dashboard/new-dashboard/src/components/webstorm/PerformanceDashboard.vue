@@ -16,7 +16,6 @@
           'vue3-admin-vite/localInspection/index.vue',
           'eslint-plugin-jest/localInspection/misc.ts',
           'allure-js/localInspection/JasmineAllureReporter.ts',
-          'ts-codec/localInspection/codec.test.ts',
           'material-ui-react-admin/localInspection/PostEdit.tsx',
         ]"
       />
@@ -62,12 +61,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="[
-            'aws_cdk/localInspection/logging',
-            'eslint-plugin-jest/localInspection/misc.ts',
-            'allure-js/localInspection/JasmineAllureReporter.ts',
-            'ts-codec/localInspection/codec.test.ts',
-          ]"
+          :projects="['aws_cdk/localInspection/logging', 'eslint-plugin-jest/localInspection/misc.ts', 'allure-js/localInspection/JasmineAllureReporter.ts']"
         />
       </div>
 

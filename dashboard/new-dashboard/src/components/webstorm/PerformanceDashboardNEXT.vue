@@ -16,7 +16,7 @@
           'vue3-admin-vite/localInspection/index.vueNEXT',
           'eslint-plugin-jest/localInspection/misc.tsNEXT',
           'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
-          'ts-codec/localInspection/codec.test.tsNEXT',
+
           'material-ui-react-admin/localInspection/PostEdit.tsxNEXT',
         ]"
       />
@@ -37,12 +37,7 @@
         <GroupProjectsChart
           label="Local inspections"
           measure="localInspections"
-          :projects="[
-            'aws_cdk/localInspection/loggingNEXT',
-            'eslint-plugin-jest/localInspection/misc.tsNEXT',
-            'allure-js/localInspection/JasmineAllureReporter.tsNEXT',
-            'ts-codec/localInspection/codec.test.tsNEXT',
-          ]"
+          :projects="['aws_cdk/localInspection/loggingNEXT', 'eslint-plugin-jest/localInspection/misc.tsNEXT', 'allure-js/localInspection/JasmineAllureReporter.tsNEXT']"
         />
       </div>
 

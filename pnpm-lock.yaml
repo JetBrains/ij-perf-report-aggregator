@@ -108,6 +108,9 @@ importers:
       '@fontsource/jetbrains-mono':
         specifier: 5.1.0
         version: 5.1.0
+      '@primevue/themes':
+        specifier: ^4.0.7
+        version: 4.0.7
       new-dashboard:
         specifier: workspace:*
         version: link:../new-dashboard
@@ -138,6 +141,9 @@ importers:
       '@primevue/core':
         specifier: ^4.0.7
         version: 4.0.7(vue@3.5.6(typescript@5.6.2))
+      '@primevue/themes':
+        specifier: ^4.0.7
+        version: 4.0.7
       '@vueuse/core':
         specifier: ^11.1.0
         version: 11.1.0(vue@3.5.6(typescript@5.6.2))
@@ -530,6 +536,10 @@ packages:
 
   '@primevue/metadata@4.0.7':
     resolution: {integrity: sha512-xhmmbT7euA29Td6v+iIE90z0dNI/a/8lJGzhdFhJgC0VznF3KZOz0n9SIBUdA9bQjTxpjEeCDL28ARpWtwTMrA==}
+    engines: {node: '>=12.11.0'}
+
+  '@primevue/themes@4.0.7':
+    resolution: {integrity: sha512-ZbDUrpBmtuqdeegNwUaJTubaLDBBJWOc4Z6UoQM3DG2c7EAE19wQbuh+cG9zqA7sT/Xsp+ACC/Z9e4FnfqB55g==}
     engines: {node: '>=12.11.0'}
 
   '@rollup/pluginutils@5.1.0':
@@ -3202,6 +3212,10 @@ snapshots:
       - vue
 
   '@primevue/metadata@4.0.7': {}
+
+  '@primevue/themes@4.0.7':
+    dependencies:
+      '@primeuix/styled': 0.0.5
 
   '@rollup/pluginutils@5.1.0(rollup@4.21.3)':
     dependencies:

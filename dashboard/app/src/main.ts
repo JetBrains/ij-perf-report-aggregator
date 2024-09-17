@@ -12,6 +12,7 @@ import { createAndConfigureRouter } from "./route"
 // avoid tiff/svg/other deprecated stuff in a final build
 import "./primeicons.css"
 import { MyPreset } from "./theme"
+import "./main.css"
 
 async function initApp() {
   const app = createApp(App)

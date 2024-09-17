@@ -2,48 +2,51 @@
   <DeferredContent @load="loadEventsAroundDate">
     <Accordion
       v-if="accidentsAroundDate?.length ?? 0 > 0"
-      :active-index="0"
+      value="0"
     >
-      <AccordionTab header="Events around (± 1 day)">
-        <ul
-          v-if="accidentsAroundDate"
-          class="gap-1.5 text-sm break-all"
-        >
-          <li
-            v-for="accident in accidentsAroundDate"
-            :key="accident?.reason + accident?.kind"
-            ref="circle"
+      <AccordionPanel value="0">
+        <AccordionHeader>Events around (± 1 day)</AccordionHeader>
+        <AccordionContent>
+          <ul
+            v-if="accidentsAroundDate"
+            class="gap-1.5 text-sm break-all"
           >
-            <span
-              v-tooltip.left="{
-                value: getTooltipText(accident),
-                autoHide: false,
-                showDelay: 500,
-              }"
-              class="flex gap-1.5 text-sm"
+            <li
+              v-for="accident in accidentsAroundDate"
+              :key="accident?.reason + accident?.kind"
+              ref="circle"
             >
-              <span v-if="inDialog">
-                <DocumentDuplicateIcon
-                  class="w-4 h-4"
-                  @click="copy(accident)"
+              <span
+                v-tooltip.left="{
+                  value: getTooltipText(accident),
+                  autoHide: false,
+                  showDelay: 500,
+                }"
+                class="flex gap-1.5 text-sm"
+              >
+                <span v-if="inDialog">
+                  <DocumentDuplicateIcon
+                    class="w-4 h-4"
+                    @click="copy(accident)"
+                  />
+                </span>
+                &bull;
+                <!-- eslint-disable vue/no-v-html -->
+                <span
+                  class="w-full"
+                  :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
+                  v-html="replaceToLink(accident.reason)"
+                />
+                <GlobeAltIcon
+                  v-if="getAffectedTests(accident) == ''"
+                  class="w-4 h-4 flex-none"
                 />
               </span>
-              &bull;
-              <!-- eslint-disable vue/no-v-html -->
-              <span
-                class="w-full"
-                :class="accident.kind == 'Regression' ? 'text-red-500' : 'text-green-500'"
-                v-html="replaceToLink(accident.reason)"
-              />
-              <GlobeAltIcon
-                v-if="getAffectedTests(accident) == ''"
-                class="w-4 h-4 flex-none"
-              />
-            </span>
-            <!-- eslint-enable -->
-          </li>
-        </ul>
-      </AccordionTab>
+              <!-- eslint-enable -->
+            </li>
+          </ul>
+        </AccordionContent>
+      </AccordionPanel>
     </Accordion>
   </DeferredContent>
 </template>
@@ -64,6 +67,7 @@ function getTooltipText(accident: AccidentSimple): string {
   if (inDialog) return ""
   return accident.date.split(" ")[0] + "\n" + getAffectedTests(accident) + "\n" + (accident.userName == "" ? "" : "Created by " + accident.userName)
 }
+
 function getAffectedTests(accident: AccidentSimple): string {
   return accident.affectedTests.filter((value) => value !== "").join("\n")
 }
@@ -109,11 +113,11 @@ function copy(accident: AccidentSimple): void {
 }
 </script>
 <style #scoped>
-.p-accordion .p-accordion-header .p-accordion-header-link {
+.p-accordionheader {
   padding: 0 0 1rem 0;
 }
 
-.p-accordion .p-accordion-content {
+.p-accordioncontent {
   padding: 0;
 }
 </style>

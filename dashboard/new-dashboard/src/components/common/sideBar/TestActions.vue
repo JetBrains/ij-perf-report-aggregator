@@ -1,5 +1,7 @@
 <template>
   <SplitButton
+    size="small"
+    class="text-sm"
     v-if="testActions.length > 0"
     :label="testActions[0].label"
     :model="testActions.slice(1)"

@@ -5,7 +5,7 @@
   @apply rounded-md border shadow-sm border-gray-300 text-sm;
 }
 
-.p-dropdown,
+.p-select,
 .p-multiselect,
 .p-cascadeselect,
 .p-treeselect {
@@ -15,7 +15,7 @@
   /*@apply rounded-md border shadow-sm border-gray-300 text-sm;*/
 }
 
-.p-inputtext,
+.p-select-label,
 .p-multiselect .p-multiselect-label,
 .p-cascadeselect .p-cascadeselect-label,
 .p-treeselect .p-treeselect-label {
@@ -23,19 +23,19 @@
   @apply pl-3 pr-2 py-2 font-medium text-gray-700 hover:text-gray-900;
 }
 
-/*.p-dropdown .p-dropdown-trigger,*/
+/*.p-select .p-select-trigger,*/
 /*.p-multiselect .p-multiselect-trigger,*/
 /*.p-treeselect .p-treeselect-trigger {*/
 /*  @apply text-gray-400 rounded-r-md pr-2 w-5;*/
 /*}*/
 
-.p-dropdown .p-dropdown-label,
+.p-select .p-select-label,
 .p-cascadeselect .p-cascadeselect-label {
   /* shadow-none is required because label also has .p-inputtext class */
   @apply border-none shadow-none;
 }
 
-.p-dropdown .p-dropdown-label.p-placeholder,
+.p-select .p-select-label.p-placeholder,
 .p-multiselect .p-multiselect-label.p-placeholder,
 .p-cascadeselect-label .p-cascadeselect-label.p-placeholder,
 .p-treeselect .p-treeselect-label.p-placeholder {
@@ -43,10 +43,31 @@
 }
 
 .p-inputtext.p-invalid.p-component,
-.p-dropdown.p-invalid.p-component,
+.p-select.p-invalid.p-component,
 .p-cascadeselect.p-invalid.p-component,
 .p-treeselect.p-invalid.p-component,
 .p-multiselect.p-invalid.p-component,
 .p-autocomplete.p-invalid.p-component > .p-inputtext {
   border-color: var(--input-error-border-color);
+}
+
+.new-dashboard {
+  .p-select,
+  .p-multiselect,
+  .p-cascadeselect,
+  .p-treeselect {
+    /* Custom CSS Variables */
+    border-color: var(--input-border-color);
+    background-color: var(--input-bg-color);
+
+    /* Tailwind utility classes */
+    @apply rounded-md border shadow-sm border-gray-300 text-sm;
+  }
+
+  .p-select-label,
+  .p-multiselect .p-multiselect-label,
+  .p-cascadeselect .p-cascadeselect-label,
+  .p-treeselect .p-treeselect-label {
+    @apply py-1.5;
+  }
 }

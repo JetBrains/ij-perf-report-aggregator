@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode, FilterService } from "primevue/api"
+import { FilterMatchMode, FilterService } from "@primevue/core/api"
 import { ColumnFilterModelType } from "primevue/column"
 import { combineLatest, Observable } from "rxjs"
 import { provide, ref, useTemplateRef } from "vue"

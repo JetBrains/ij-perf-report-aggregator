@@ -42,7 +42,7 @@
         class="bg-gray-100 rounded-md border border-gray-300"
       >
         <div class="flex items-center w-full mt-2 ml-2 mb-2">
-          <InputSwitch v-model="showAllMetrics" />
+          <ToggleSwitch v-model="showAllMetrics" />
           <span
             v-tooltip.left="'Disable filtering of detailed metrics like completion_32.'"
             class="ml-2"

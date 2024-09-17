@@ -13,34 +13,43 @@
       />
       <span class="p-buttonset ml-4">
         <Button
-          v-for="(table, _, index) in tables"
+          v-for="table in tables"
           :key="table.name"
           :label="table.name"
-          :outlined="activeTab != index"
-          @click="setActiveTab(index)"
+          :outlined="activeTab != table.name"
+          @click="setActiveTab(table.name)"
         />
       </span>
     </template>
   </StickyToolbar>
 
-  <TabView
-    v-model:active-index="activeTab"
+  <Tabs
     class="k1-vs-k2-comparison-tab-view"
+    v-model:value="activeTab"
   >
-    <TabPanel
-      v-for="table in tables"
-      :key="table.name"
-      :header="table.name"
-    >
-      <K1VsK2ComparisonTable
-        :name="table.name"
-        :measure="table.measure"
-        :projects="table.projects"
-        :allowed-project-categories="selectedProjectCategories"
-        :configurators="configurators"
-      />
-    </TabPanel>
-  </TabView>
+    <TabPanels>
+      <TabList>
+        <Tab
+          v-for="table in tables"
+          :value="table.name"
+          >{{ table.name }}</Tab
+        >
+      </TabList>
+      <TabPanel
+        v-for="table in tables"
+        :key="table.name"
+        :value="table.name"
+      >
+        <K1VsK2ComparisonTable
+          :name="table.name"
+          :measure="table.measure"
+          :projects="table.projects"
+          :allowed-project-categories="selectedProjectCategories"
+          :configurators="configurators"
+        />
+      </TabPanel>
+    </TabPanels>
+  </Tabs>
 </template>
 
 <script setup lang="ts">
@@ -100,9 +109,9 @@ persistentStateManager.add("projectCategories", selectedProjectCategories, (exis
 // The initial selected project categories are taken from the initial state of the persistent state manager.
 const initialProjectCategories = selectedProjectCategories.value
 
-const activeTab = ref(0)
+const activeTab = ref()
 
-function setActiveTab(index: number) {
+function setActiveTab(index: string) {
   activeTab.value = index
 }
 

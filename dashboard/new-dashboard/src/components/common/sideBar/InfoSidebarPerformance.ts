@@ -196,7 +196,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   })
   const description = computedAsync(async () => {
     return await getDescriptionFromMetaDb(projectName, "master")
-  })
+  }) as Ref<Description | null>
   return {
     seriesName,
     build: getFullBuildId(params),

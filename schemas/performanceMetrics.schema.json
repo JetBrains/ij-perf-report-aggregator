@@ -63,22 +63,12 @@
             "type": "number"
           }
         },
-        "required": [
-          "n"
-        ],
-        "anyOf": [
-          { "required": ["d"] },
-          { "required": ["c"] }
-        ],
+        "required": ["n"],
+        "anyOf": [{ "required": ["d"] }, { "required": ["c"] }],
         "additionalProperties": false
       }
     }
   },
-  "required": [
-    "version",
-    "generated",
-    "project",
-    "metrics"
-  ],
+  "required": ["version", "generated", "project", "metrics"],
   "additionalProperties": true
 }

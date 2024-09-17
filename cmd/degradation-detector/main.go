@@ -77,5 +77,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GeneratePhpStormSettings(backendUrl, client),
 		setting.GenerateUnitTestsSettings(backendUrl, client),
 		setting.GenerateGolandPerfSettings(backendUrl, client),
+		setting.GenerateFleetPerformanceSettings(backendUrl, client),
 	)
 }

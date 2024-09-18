@@ -28,5 +28,10 @@ export const MyPreset = definePreset(Aura, {
         width: "0px",
       },
     },
+    treeselect: {
+      dropdown: {
+        width: "0px",
+      },
+    },
   },
 })

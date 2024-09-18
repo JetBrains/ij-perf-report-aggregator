@@ -17,6 +17,7 @@ import "./main.css"
 import "new-dashboard/src/primevue-theme/select.css"
 import "new-dashboard/src/primevue-theme/select-panel.css"
 import "new-dashboard/src/primevue-theme/misc.css"
+import "new-dashboard/src/primevue-theme/toolbar.css"
 
 async function initApp() {
   const app = createApp(App)

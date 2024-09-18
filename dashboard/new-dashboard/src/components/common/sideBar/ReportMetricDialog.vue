@@ -57,7 +57,7 @@
       v-if="data?.series.length == 1"
       class="flex items-center mb-4"
     >
-      <InputSwitch
+      <ToggleSwitch
         v-model="reportMetricOnly"
         input-id="reportMetricOnly"
       />
@@ -72,7 +72,7 @@
       v-if="data?.series.length == 1"
       class="flex items-center mb-4"
     >
-      <InputSwitch
+      <ToggleSwitch
         v-model="reportAllInBuild"
         input-id="reportAllInBuild"
       />
@@ -84,7 +84,7 @@
       </label>
     </div>
     <div class="flex items-center mb-4">
-      <InputSwitch
+      <ToggleSwitch
         v-model="createIssueCheckbox"
         input-id="createIssue"
       />

@@ -19,8 +19,5 @@
 }
 
 .p-button, .p-select-overlay, .p-multiselect-overlay, .p-treeselect-overlay, .p-inputtext, .p-tieredmenu, .p-button-label {
-  font-family: "Inter var", sans-serif;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  font-variation-settings: normal;
   font-size: .875rem;
 }

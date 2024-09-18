@@ -20,7 +20,7 @@
         >
       </FloatLabel>
     </div>
-    <Dropdown
+    <Select
       v-model="project"
       placeholder="Project"
       :options="projects"
@@ -40,7 +40,7 @@
         <!-- empty element to avoid ignoring override of slot -->
         <span />
       </template>
-    </Dropdown>
+    </Select>
     <!-- Footer buttons -->
     <template #footer>
       <div

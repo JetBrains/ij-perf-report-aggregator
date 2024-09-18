@@ -33,7 +33,7 @@
           Range
         </div>
       </ul>
-      <Calendar
+      <DatePicker
         v-if="isShowCalendar"
         v-model="date"
         class="text-sm"

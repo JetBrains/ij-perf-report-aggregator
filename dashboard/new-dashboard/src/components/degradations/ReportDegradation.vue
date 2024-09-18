@@ -17,7 +17,7 @@
           </div>
           <div class="text-lg font-bold">
             Type:
-            <Dropdown
+            <Select
               v-model="accidentType"
               placeholder="Event Type"
               :options="getAccidentTypes()"

@@ -31,7 +31,7 @@
         </FloatLabel>
       </div>
       <FloatLabel>
-        <Dropdown
+        <Select
           id="direction"
           v-model="direction"
           :options="['IMPROVEMENT', 'DEGRADATION']"
@@ -49,7 +49,7 @@
             <!-- empty element to avoid ignoring override of slot -->
             <span />
           </template>
-        </Dropdown>
+        </Select>
         <label for="direction">Direction</label>
       </FloatLabel>
       <Accordion>

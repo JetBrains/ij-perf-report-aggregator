@@ -17,4 +17,16 @@ export const MyPreset = definePreset(Aura, {
       950: "{blue.950}",
     },
   },
+  components: {
+    select: {
+      dropdown: {
+        width: "0px",
+      },
+    },
+    multiselect: {
+      dropdown: {
+        width: "0px",
+      },
+    },
+  },
 })

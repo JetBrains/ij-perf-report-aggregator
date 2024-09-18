@@ -109,7 +109,7 @@ async function reportRegression() {
 .p-inputtext {
   font-size: 1rem;
 }
-.p-dropdown-panel {
+.p-select-panel {
   font-size: 1rem;
 }
 </style>

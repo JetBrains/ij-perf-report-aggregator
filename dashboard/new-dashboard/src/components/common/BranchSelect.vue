@@ -78,7 +78,7 @@
 
         <div
           v-if="activeSubMenu === SubMenu.VERSION_TYPE && versionItems.length > 0"
-          class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
+          class="absolute p-select-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
           style="left: 100%"
         >
           <ul class="p-multiselect-items p-component">

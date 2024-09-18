@@ -17,3 +17,10 @@
   top: calc((-1 * 1.25rem) / 2);
   right: calc((-1 * 1.25rem) / 2);
 }
+
+.p-button, .p-select-overlay, .p-multiselect-overlay {
+  font-family: "Inter var", sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-variation-settings: normal;
+  font-size: .875rem;
+}

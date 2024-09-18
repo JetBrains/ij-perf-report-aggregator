@@ -15,7 +15,7 @@
   /*@apply rounded-md border shadow-sm border-gray-300 text-sm;*/
 }
 
-.p-inputtext,
+.p-select-label,
 .p-multiselect .p-multiselect-label,
 .p-cascadeselect .p-cascadeselect-label,
 .p-treeselect .p-treeselect-label {

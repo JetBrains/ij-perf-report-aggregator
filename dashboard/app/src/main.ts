@@ -14,9 +14,11 @@ import "./primeicons.css"
 import { MyPreset } from "./theme"
 import "./main.css"
 
+import "new-dashboard/src/primevue-theme/button.css"
+import "new-dashboard/src/primevue-theme/menubar.css"
+import "new-dashboard/src/primevue-theme/misc.css"
 import "new-dashboard/src/primevue-theme/select.css"
 import "new-dashboard/src/primevue-theme/select-panel.css"
-import "new-dashboard/src/primevue-theme/misc.css"
 import "new-dashboard/src/primevue-theme/toolbar.css"
 
 async function initApp() {

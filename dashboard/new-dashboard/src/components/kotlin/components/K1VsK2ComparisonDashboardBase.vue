@@ -109,7 +109,7 @@ persistentStateManager.add("projectCategories", selectedProjectCategories, (exis
 // The initial selected project categories are taken from the initial state of the persistent state manager.
 const initialProjectCategories = selectedProjectCategories.value
 
-const activeTab = ref()
+const activeTab = ref(tables[0].name)
 
 function setActiveTab(index: string) {
   activeTab.value = index

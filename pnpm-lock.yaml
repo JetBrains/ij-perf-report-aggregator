@@ -141,9 +141,6 @@ importers:
       '@primevue/core':
         specifier: ^4.0.7
         version: 4.0.7(vue@3.5.6(typescript@5.6.2))
-      '@primevue/themes':
-        specifier: ^4.0.7
-        version: 4.0.7
       '@vueuse/core':
         specifier: ^11.1.0
         version: 11.1.0(vue@3.5.6(typescript@5.6.2))

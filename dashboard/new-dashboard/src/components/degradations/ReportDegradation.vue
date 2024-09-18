@@ -106,9 +106,6 @@ async function reportRegression() {
 }
 </script>
 <style #scoped>
-.p-inputtext {
-  font-size: 1rem;
-}
 .p-select-panel {
   font-size: 1rem;
 }

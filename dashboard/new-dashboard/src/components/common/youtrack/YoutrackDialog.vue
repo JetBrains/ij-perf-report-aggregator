@@ -5,7 +5,7 @@
     header="Youtrack"
     :style="{ minWidth: '30vw', maxWidth: '50vw' }"
   >
-    <div class="flex items-center space-x-4 mb-4 mt-4">
+    <div class="flex items-center space-x-4 mb-4 mt-6">
       <FloatLabel class="w-full">
         <InputText
           id="label"

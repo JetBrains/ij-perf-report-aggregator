@@ -51,7 +51,7 @@
             <div class="ml-2">
               <Button
                 icon="pi pi-external-link"
-                class="p-button-rounded p-button-text p-button-sm text-black"
+                class="p-button-rounded p-button-text p-button-sm"
                 @click="() => handleNavigateToTest(slotProps.data.test, slotProps.data.metric)"
               />
             </div>
@@ -270,6 +270,9 @@ function handleNavigateToTest(project: string, metric: string) {
 </script>
 
 <style>
+.p-button-icon-only.p-button-rounded {
+  @apply text-black;
+}
 .lower {
   font-weight: 700;
   color: #ff5252;

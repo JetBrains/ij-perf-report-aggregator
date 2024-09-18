@@ -3,7 +3,7 @@
   @apply rounded-lg border border-gray-300 py-2 px-3 bg-gray-50 text-sm;
 }
 
-.p-toolbar .p-toolbar-group-left,
-.p-toolbar .p-toolbar-group-right {
+.p-toolbar .p-toolbar-start,
+.p-toolbar .p-toolbar-end {
   @apply gap-x-2;
 }

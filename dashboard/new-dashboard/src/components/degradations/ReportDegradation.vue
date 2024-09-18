@@ -17,7 +17,7 @@
           </div>
           <div class="text-lg font-bold">
             Type:
-            <Dropdown
+            <Select
               v-model="accidentType"
               placeholder="Event Type"
               :options="getAccidentTypes()"
@@ -106,10 +106,7 @@ async function reportRegression() {
 }
 </script>
 <style #scoped>
-.p-inputtext {
-  font-size: 1rem;
-}
-.p-dropdown-panel {
+.p-select-panel {
   font-size: 1rem;
 }
 </style>

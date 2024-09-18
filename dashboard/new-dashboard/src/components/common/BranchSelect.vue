@@ -44,7 +44,7 @@
         <ul class="p-multiselect-items p-component">
           <li
             v-if="versionItems !== undefined && versionItems.length > 0"
-            class="p-multiselect-item flex items-center gap-2"
+            class="p-multiselect-option flex items-center gap-2"
             @click="openVersionSubmenu"
           >
             <span class="flex items-center gap-1 overflow-hidden">
@@ -60,7 +60,7 @@
           </li>
           <li
             v-if="triggeredItems.length > 0"
-            class="p-multiselect-item flex items-center gap-2"
+            class="p-multiselect-option flex items-center gap-2"
             @click="openTriggeredSubmenu"
           >
             <span class="flex items-center gap-1 overflow-hidden">
@@ -78,15 +78,15 @@
 
         <div
           v-if="activeSubMenu === SubMenu.VERSION_TYPE && versionItems.length > 0"
-          class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
+          class="absolute p-multiselect-overlay p-component w-[270px] max-h-[200px] branch-select-dropdown"
           style="left: 100%"
         >
-          <ul class="p-multiselect-items p-component">
+          <ul class="p-multiselect-list">
             <li
               v-for="item in versionItems"
               :key="item.label"
             >
-              <div class="flex items-center p-multiselect-item p-component">
+              <div class="flex items-center p-multiselect-option p-component">
                 <Checkbox
                   v-model="versionValue"
                   :value="item.value"
@@ -106,7 +106,7 @@
 
         <div
           v-if="activeSubMenu === SubMenu.TRIGGERED_BY && triggeredItems.length > 0"
-          class="absolute p-dropdown-panel p-component w-[270px] max-h-[200px] branch-select-dropdown"
+          class="absolute p-multiselect-overlay p-component w-[270px] max-h-[200px] branch-select-dropdown"
           style="left: 100%"
         >
           <ul class="p-multiselect-items p-component">
@@ -115,7 +115,7 @@
               v-for="item in triggeredItems"
               :key="item.label"
             >
-              <div class="flex items-center p-multiselect-item p-component">
+              <div class="flex items-center p-multiselect-option p-component">
                 <Checkbox
                   v-model="triggeredValue"
                   :value="item.value"

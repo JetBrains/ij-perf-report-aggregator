@@ -1,5 +1,5 @@
 <template>
-  <OverlayPanel
+  <Popover
     v-if="tooltipData != null"
     ref="panel"
     :show-close-icon="true"
@@ -85,19 +85,19 @@
         <span>{{ tooltipData.firstSeriesData[2] }}</span>
       </div>
     </div>
-  </OverlayPanel>
+  </Popover>
 </template>
 <script setup lang="ts">
-import OverlayPanel from "primevue/overlaypanel"
 import { computed, nextTick, shallowRef, watch, WatchStopHandle, useTemplateRef } from "vue"
 import { calculateChanges } from "../../util/changes"
 import { debounceSync } from "../../util/debounce"
 import SpaceIcon from "../common/SpaceIcon.vue"
 import { getValueFormatterByMeasureName, timeFormatWithoutSeconds } from "../common/formatter"
 import { StartupTooltipManager, TooltipData } from "./StartupTooltipManager"
+import { PopoverMethods } from "primevue/popover"
 
 const tooltipData = shallowRef<TooltipData | null>(null)
-const panel = useTemplateRef<OverlayPanel>("panel")
+const panel = useTemplateRef<PopoverMethods>("panel")
 
 const linkText = computed(() => {
   const data = tooltipData.value?.firstSeriesData

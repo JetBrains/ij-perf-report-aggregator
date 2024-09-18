@@ -109,6 +109,8 @@ persistentStateManager.add("projectCategories", selectedProjectCategories, (exis
 // The initial selected project categories are taken from the initial state of the persistent state manager.
 const initialProjectCategories = selectedProjectCategories.value
 
+const activeTab = ref(tables[0].name)
+
 function setActiveTab(index: string) {
   activeTab.value = index
 }
@@ -144,8 +146,6 @@ const tables = {
     projects: flattenProjectCategories(findUsagesProjects),
   },
 }
-
-const activeTab = ref(tables[0].name)
 
 function flattenProjectCategories(projectsByCategory: Record<string, string[]>) {
   const result: string[] = []

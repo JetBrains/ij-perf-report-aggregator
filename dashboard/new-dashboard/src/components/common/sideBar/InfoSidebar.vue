@@ -384,4 +384,8 @@ function getURLStyle() {
 .extraMargin {
   margin-top: 7rem; /* Replace [HeightOfYourToolbar] with the actual height */
 }
+
+.p-splitbutton-button {
+  @apply w-full;
+}
 </style>

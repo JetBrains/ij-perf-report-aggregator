@@ -5,7 +5,7 @@
     header="Report Event"
     :style="{ width: '30vw' }"
   >
-    <div class="flex items-center space-x-4 mb-4 mt-4">
+    <div class="flex items-center space-x-4 mb-4 mt-6">
       <Dropdown
         v-model="accidentType"
         placeholder="Event Type"

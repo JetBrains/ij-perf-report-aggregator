@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-between w-full">
     <span v-tooltip.left="'Applies exponential smoothing to the dataset.'">Smoothing:</span>
-    <ToggleSwitch
+    <InputSwitch
       v-model="settingsStore.smoothing"
       class="ml-4"
     />

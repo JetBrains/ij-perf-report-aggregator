@@ -5,7 +5,7 @@
     header="Youtrack"
     :style="{ minWidth: '30vw', maxWidth: '50vw' }"
   >
-    <div class="flex items-center space-x-4 mb-4 mt-6">
+    <div class="flex items-center space-x-4 mb-4 mt-4">
       <FloatLabel class="w-full">
         <InputText
           id="label"
@@ -20,7 +20,7 @@
         >
       </FloatLabel>
     </div>
-    <Select
+    <Dropdown
       v-model="project"
       placeholder="Project"
       :options="projects"
@@ -40,7 +40,7 @@
         <!-- empty element to avoid ignoring override of slot -->
         <span />
       </template>
-    </Select>
+    </Dropdown>
     <!-- Footer buttons -->
     <template #footer>
       <div

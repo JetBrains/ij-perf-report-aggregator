@@ -14,47 +14,44 @@
       :multiple="true"
       :active-index="[0]"
     >
-      <AccordionPanel>
-        <AccordionHeader>Indexing</AccordionHeader>
-        <AccordionContent>
-          <section>
-            <GroupProjectsChart
-              id="index"
-              label="Indexing"
-              measure="vcs-log-indexing"
-              :projects="indexingProjects"
-            />
-          </section>
-          <section>
-            <GroupProjectsChart
-              label="Number of collected commits"
-              measure="vcs-log-indexing#numberOfCommits"
-              :projects="indexingProjects"
-            />
-          </section>
-          <section>
-            <GroupProjectsChart
-              label="Real number of collected commits through git rev-list --count --all"
-              measure="realNumberOfCommits"
-              :projects="indexingProjects"
-            />
-          </section>
-          <section>
-            <GroupProjectsChart
-              label="'vcs-log' directory size in gb"
-              measure="vcs-log-directory-size-gb"
-              :projects="indexingProjects"
-            />
-          </section>
-          <!--<section>-->
-          <!--  <GroupProjectsChart-->
-          <!--    label="Building of 'git commit-graph write &#45;&#45;reachable &#45;&#45;changed-paths' in minutes"-->
-          <!--    measure="git-build-commit-graph"-->
-          <!--    :projects="indexingProjects"-->
-          <!--  />-->
-          <!--</section>-->
-        </AccordionContent>
-      </AccordionPanel>
+      <AccordionTab header="Indexing">
+        <section>
+          <GroupProjectsChart
+            id="index"
+            label="Indexing"
+            measure="vcs-log-indexing"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Number of collected commits"
+            measure="vcs-log-indexing#numberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="Real number of collected commits through git rev-list --count --all"
+            measure="realNumberOfCommits"
+            :projects="indexingProjects"
+          />
+        </section>
+        <section>
+          <GroupProjectsChart
+            label="'vcs-log' directory size in gb"
+            measure="vcs-log-directory-size-gb"
+            :projects="indexingProjects"
+          />
+        </section>
+        <!--<section>-->
+        <!--  <GroupProjectsChart-->
+        <!--    label="Building of 'git commit-graph write &#45;&#45;reachable &#45;&#45;changed-paths' in minutes"-->
+        <!--    measure="git-build-commit-graph"-->
+        <!--    :projects="indexingProjects"-->
+        <!--  />-->
+        <!--</section>-->
+      </AccordionTab>
     </Accordion>
   </DashboardPage>
 </template>

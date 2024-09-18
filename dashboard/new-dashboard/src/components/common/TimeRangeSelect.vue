@@ -1,5 +1,5 @@
 <template>
-  <Select
+  <Dropdown
     v-model="model"
     title="Time Range"
     :options="timerangeConfigurator.timeRanges.value.filter((element) => element.label != '')"
@@ -25,15 +25,15 @@
       <span class="hidden" />
     </template>
     <template #footer>
-      <ul class="p-select-list">
+      <ul class="p-dropdown-items">
         <div
-          class="p-select-option"
+          class="p-dropdown-item"
           @click="showCalendar"
         >
           Range
         </div>
       </ul>
-      <DatePicker
+      <Calendar
         v-if="isShowCalendar"
         v-model="date"
         class="text-sm"
@@ -43,7 +43,7 @@
         @click.stop
       />
     </template>
-  </Select>
+  </Dropdown>
 </template>
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"

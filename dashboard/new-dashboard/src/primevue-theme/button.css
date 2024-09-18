@@ -12,7 +12,7 @@
 }
 
 .p-button-icon-only.p-button-rounded {
-  box-shadow: unset;
+  @apply h-5 w-5 p-1.5;
 }
 
 .p-button-text {

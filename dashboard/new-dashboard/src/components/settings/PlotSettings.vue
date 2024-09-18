@@ -4,7 +4,7 @@
     :class="'w-6 h-6 ' + (removeOutliers ? 'text-red-500' : 'text-primary')"
     @click="showSettings"
   />
-  <Popover
+  <OverlayPanel
     ref="settingsPanel"
     class="flex flex-col"
     append-to="body"
@@ -14,10 +14,11 @@
     <DetectChangesSwitch class="mb-2" />
     <FlexibleZeroOnYAxis class="mb-2" />
     <RemoveOutliersSwitch />
-  </Popover>
+  </OverlayPanel>
 </template>
 
 <script setup lang="ts">
+import OverlayPanel from "primevue/overlaypanel"
 import { onBeforeUnmount, useTemplateRef } from "vue"
 import { DetectChangesConfigurator } from "./configurators/DetectChangesConfigurator"
 import { ScalingConfigurator } from "./configurators/ScalingConfigurator"
@@ -32,7 +33,7 @@ import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfig
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
 
-const settingsPanel = useTemplateRef<Popover>("settingsPanel")
+const settingsPanel = useTemplateRef<OverlayPanel>("settingsPanel")
 const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")
 
 const emit = defineEmits(["update:configurators"])
@@ -58,7 +59,7 @@ function adjustPosition() {
   const iconRect = settingsIcon.value?.getBoundingClientRect()
 
   // Query for the OverlayPanel's DOM element.
-  const overlayElement = document.querySelector(".p-popover")
+  const overlayElement = document.querySelector(".p-overlaypanel")
 
   if (iconRect && overlayElement != null) {
     let leftPosition = iconRect.left

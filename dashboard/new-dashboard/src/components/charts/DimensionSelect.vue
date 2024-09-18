@@ -46,7 +46,7 @@
       <span />
     </template>
   </MultiSelect>
-  <Select
+  <Dropdown
     v-else-if="valueToGroup == null && !multiple"
     v-model="value"
     :title="label"
@@ -72,7 +72,7 @@
       <!-- empty element to avoid ignoring override of slot -->
       <span />
     </template>
-  </Select>
+  </Dropdown>
   <MultiSelect
     v-else
     v-model="value"

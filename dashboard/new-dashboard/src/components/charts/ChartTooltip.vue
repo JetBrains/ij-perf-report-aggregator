@@ -1,5 +1,5 @@
 <template>
-  <Popover
+  <OverlayPanel
     v-if="tooltipData != null"
     ref="panel"
     :show-close-icon="true"
@@ -85,7 +85,7 @@
         <span>{{ tooltipData.firstSeriesData[2] }}</span>
       </div>
     </div>
-  </Popover>
+  </OverlayPanel>
 </template>
 <script setup lang="ts">
 import OverlayPanel from "primevue/overlaypanel"

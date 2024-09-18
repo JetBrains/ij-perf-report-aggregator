@@ -1,5 +1,5 @@
 <template>
-  <Select
+  <Dropdown
     v-model="value"
     title="Aggregate by"
     :options="operators"
@@ -21,7 +21,7 @@
       <!-- empty element to avoid ignoring override of slot -->
       <span />
     </template>
-  </Select>
+  </Dropdown>
   <InputNumber
     v-if="value === 'quantile'"
     v-model="quantile"

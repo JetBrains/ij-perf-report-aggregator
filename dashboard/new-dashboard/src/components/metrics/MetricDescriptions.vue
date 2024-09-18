@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode } from "@primevue/core/api"
+import { FilterMatchMode } from "primevue/api"
 import { ref } from "vue"
 import { metricsDescription } from "../../shared/metricsDescription"
 

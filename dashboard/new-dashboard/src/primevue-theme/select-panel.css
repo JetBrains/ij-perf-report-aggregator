@@ -1,4 +1,4 @@
-.p-select-panel,
+.p-dropdown-panel,
 .p-treeselect-panel,
 .p-multiselect-panel,
 .p-autocomplete-panel {
@@ -12,7 +12,7 @@
   @apply py-2 px-3;
 }
 
-.p-select-panel .p-select-items,
+.p-dropdown-panel .p-dropdown-items,
 .p-multiselect .p-multiselect-items,
 .p-multiselect-panel .p-multiselect-items,
 .p-multiselect .p-multiselect-items,
@@ -20,7 +20,7 @@
   @apply py-1;
 }
 
-.p-select-panel .p-select-items .p-select-item,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
   @apply py-2 px-3;
@@ -36,21 +36,21 @@ It is not a big deal, but also TailwindUI uses checkbox on the left to indicate 
 
 Styling in Tailwind UI way requires as result a lot of efforts, but PrimeVue design language is also good, so, here we follow PrimeVue language.
 */
-.p-select-panel .p-select-items .p-select-item.p-highlight,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight,
 .p-tree .p-treenode .p-treenode-content.p-highlight,
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item.p-highlight {
   background: var(--highlight-bg);
 }
 
-.p-select-panel .p-select-items .p-select-item:not(.p-highlight):not(.p-disabled):hover,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled):hover,
 .p-tree .p-treenode .p-treenode-content.p-treenode-selectable:not(.p-highlight):hover,
 .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
   background: var(--input-list-item-hover-bg);
 }
 
-.p-select-panel .p-select-items .p-select-item .p-checkbox,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item .p-checkbox,
 .p-multiselect-panel .p-multiselect-items .p-multiselect-item .p-checkbox {
   @apply mr-2;
 }

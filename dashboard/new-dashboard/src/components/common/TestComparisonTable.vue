@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { FilterMatchMode } from "@primevue/core/api"
+import { FilterMatchMode } from "primevue/api"
 import { ColumnFilterModelType } from "primevue/column"
 
 import { Observable } from "rxjs"

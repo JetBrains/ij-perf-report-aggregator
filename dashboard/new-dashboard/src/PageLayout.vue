@@ -18,6 +18,7 @@ import { useRouter } from "vue-router"
 import PageHeader from "./PageHeader.vue"
 import NavigationTabs from "./components/NavigationTabs.vue"
 import { getNavigationElement } from "./routes"
+import "./shared/overrides.scss"
 
 const router = useRouter()
 const currentPath = computed(() => router.currentRoute.value.path)

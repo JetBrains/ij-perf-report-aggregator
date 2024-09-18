@@ -5,7 +5,7 @@
     header="Run bisect"
     :style="{ width: '40vw' }"
   >
-    <div class="flex flex-col space-y-8 mb-4 mt-6">
+    <div class="flex flex-col space-y-8 mb-4 mt-4">
       <FloatLabel>
         <InputText
           id="targetValue"
@@ -31,7 +31,7 @@
         </FloatLabel>
       </div>
       <FloatLabel>
-        <Select
+        <Dropdown
           id="direction"
           v-model="direction"
           :options="['IMPROVEMENT', 'DEGRADATION']"
@@ -49,53 +49,50 @@
             <!-- empty element to avoid ignoring override of slot -->
             <span />
           </template>
-        </Select>
+        </Dropdown>
         <label for="direction">Direction</label>
       </FloatLabel>
       <Accordion>
-        <AccordionPanel value="0">
-          <AccordionHeader>Additional parameters</AccordionHeader>
-          <AccordionContent>
-            <div class="flex flex-col space-y-8 mb-4 mt-4">
-              <FloatLabel>
-                <InputText
-                  id="test"
-                  v-model="test"
-                />
-                <label for="test">Test name</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText
-                  id="metric"
-                  v-model="metric"
-                />
-                <label for="metric">Metric name</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText
-                  id="branch"
-                  v-model="branch"
-                />
-                <label for="metric">Branch</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText
-                  id="buildType"
-                  v-model="buildType"
-                />
-                <label for="buildType">Build type</label>
-              </FloatLabel>
+        <AccordionTab header="Additional parameters">
+          <div class="flex flex-col space-y-8 mb-4 mt-4">
+            <FloatLabel>
+              <InputText
+                id="test"
+                v-model="test"
+              />
+              <label for="test">Test name</label>
+            </FloatLabel>
+            <FloatLabel>
+              <InputText
+                id="metric"
+                v-model="metric"
+              />
+              <label for="metric">Metric name</label>
+            </FloatLabel>
+            <FloatLabel>
+              <InputText
+                id="branch"
+                v-model="branch"
+              />
+              <label for="metric">Branch</label>
+            </FloatLabel>
+            <FloatLabel>
+              <InputText
+                id="buildType"
+                v-model="buildType"
+              />
+              <label for="buildType">Build type</label>
+            </FloatLabel>
 
-              <FloatLabel>
-                <InputText
-                  id="className"
-                  v-model="className"
-                />
-                <label for="className">Class name</label>
-              </FloatLabel>
-            </div>
-          </AccordionContent>
-        </AccordionPanel>
+            <FloatLabel>
+              <InputText
+                id="className"
+                v-model="className"
+              />
+              <label for="className">Class name</label>
+            </FloatLabel>
+          </div>
+        </AccordionTab>
       </Accordion>
     </div>
     <div

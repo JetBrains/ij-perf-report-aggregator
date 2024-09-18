@@ -5,7 +5,7 @@
     header="Run bisect"
     :style="{ width: '40vw' }"
   >
-    <div class="flex flex-col space-y-8 mb-4 mt-4">
+    <div class="flex flex-col space-y-8 mb-4 mt-6">
       <FloatLabel>
         <InputText
           id="targetValue"

@@ -7,7 +7,13 @@
   @apply leading-4;
 }
 
+.p-button-icon-only {
+  @apply p-2;
+}
 
+.p-button-icon-only.p-button-rounded {
+  box-shadow: unset;
+}
 
 .p-button-text {
   @apply border-transparent bg-transparent;

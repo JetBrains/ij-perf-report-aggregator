@@ -33,5 +33,18 @@ export const MyPreset = definePreset(Aura, {
         width: "0px",
       },
     },
+    accordion: {
+      header: {
+        padding: "0 0 1rem 0",
+      },
+      content: {
+        padding: "0",
+      },
+      panel: {
+        border: {
+          width: "0",
+        },
+      },
+    },
   },
 })

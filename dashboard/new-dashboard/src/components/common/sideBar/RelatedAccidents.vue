@@ -109,11 +109,11 @@ function copy(accident: AccidentSimple): void {
 }
 </script>
 <style #scoped>
-.p-accordion .p-accordion-header .p-accordion-header-link {
+.p-accordionheader {
   padding: 0 0 1rem 0;
 }
 
-.p-accordion .p-accordion-content {
+.p-accordioncontent {
   padding: 0;
 }
 </style>

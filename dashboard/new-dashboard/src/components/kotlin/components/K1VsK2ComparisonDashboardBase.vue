@@ -145,7 +145,7 @@ const tables = {
   },
 }
 
-const activeTab = ref(tables.completion.name)
+const activeTab = ref(tables[0].name)
 
 function flattenProjectCategories(projectsByCategory: Record<string, string[]>) {
   const result: string[] = []

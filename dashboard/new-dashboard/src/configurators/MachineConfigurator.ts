@@ -7,7 +7,6 @@ import { loadDimension } from "./DimensionConfigurator"
 import { createComponentState, updateComponentState } from "./componentState"
 import { createFilterObservable, FilterConfigurator } from "./filter"
 import { refToObservable } from "./rxjs"
-import { useDarkModeStore } from "../shared/useDarkModeStore"
 
 // todo what is it?
 const macLarge = "mac large"
@@ -87,7 +86,7 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private getIcons(groupName: string): string {
     if (groupName.toLowerCase().startsWith("linux")) {
-      return "pi " + (useDarkModeStore().darkMode ? "icon-linux-dark" : "icon-linux")
+      return "pi icon-linux"
     } else if (groupName.toLowerCase().startsWith("mac")) {
       return "pi pi-apple"
     } else {

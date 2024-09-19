@@ -7,9 +7,9 @@
   >
     <section>
       <GroupProjectsChart
-        label="Typing Latency (mattermost)"
+        label="Typing Latency"
         measure="typing#latency#mean_value"
-        :projects="['typing/mattermost']"
+        :projects="['typing/typing/mattermost']"
       />
     </section>
     <section>
@@ -21,9 +21,9 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Basic Completion (caddy)"
+        label="Basic Completion"
         measure="completion"
-        :projects="['caddyBasic/completion']"
+        :projects="['caddyCompletion/completion/variable', 'caddyCompletion/completion/type', 'caddyCompletion/completion/method', 'caddyCompletion/completion/interface']"
       />
     </section>
     <section>

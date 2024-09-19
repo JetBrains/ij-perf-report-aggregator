@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between pt-5 px-7 items-center">
+  <div class="flex justify-between pt-5 px-7 items-center mt-4">
     <div class="font-semibold">
       <span
         v-if="isSubMenuExists"
@@ -45,24 +45,28 @@
         :popup="true"
       />
     </div>
-    <div class="flex">
-      <Button
-        size="small"
-        :icon="'pi ' + (useDarkModeStore().darkMode ? 'pi-moon' : 'pi-sun')"
+    <div class="flex items-center">
+      <MoonIcon
+        v-if="useDarkModeStore().darkMode"
         @click="useDarkModeStore().toggle"
+        class="w-7 h-7 text-primary dark:text-primary-dark"
       />
-      <!--<Button :icon="'pi '"/>-->
+      <SunIcon
+        v-else
+        @click="useDarkModeStore().toggle"
+        class="w-8 h-8 text-primary dark:text-primary-dark"
+      />
       <a
         href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <QuestionMarkCircleIcon class="w-7 h-7 text-primary dark:text-primary-dark" />
+        <QuestionMarkCircleIcon class="w-7 h-7 text-primary dark:text-primary-dark ml-2" />
       </a>
       <img
         v-if="userPicture"
         :src="userPicture"
-        class="w-7 h-7 ml-3"
+        class="w-7 h-7 ml-2"
       />
     </div>
   </div>

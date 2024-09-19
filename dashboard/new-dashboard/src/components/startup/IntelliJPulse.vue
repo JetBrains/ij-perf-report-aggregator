@@ -88,17 +88,19 @@
 
       <span v-if="highlightingPasses">
         <Divider label="Highlighting Passes" />
-        <LineChart
-          :measures="highlightingPasses"
-          :configurators="configurators"
-          title=""
-        />
-        <LineChart
-          :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
-          :configurators="configurators"
-          title=""
-          tooltip-trigger="axis"
-        />
+        <section class="grid grid-cols-2 gap-x-6 mt-5">
+          <LineChart
+            :measures="highlightingPasses"
+            :configurators="configurators"
+            title=""
+          />
+          <LineChart
+            :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
+            :configurators="configurators"
+            title=""
+            tooltip-trigger="axis"
+          />
+        </section>
       </span>
 
       <Divider label="Notifications" />

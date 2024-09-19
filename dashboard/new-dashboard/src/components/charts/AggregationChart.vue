@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-3 pb-1 px-5 border border-solid rounded-md border-zinc-200">
+  <div class="pt-3 pb-1 px-5 border border-solid rounded-md">
     <h3 class="m-0 mb-3">
       {{ title }}
     </h3>
@@ -16,7 +16,6 @@
 
     <div
       ref="element"
-      class="bg-white"
       :style="{ height: `${55}px` }"
     />
   </div>
@@ -30,10 +29,10 @@ import { ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { AggregationChartVM } from "./AggregationChartVM"
 import { injectOrError } from "../../shared/injectionKeys"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
-  chartColor?: string
   configurators?: DataQueryConfigurator[]
   aggregatedMeasure: string
   aggregatedProject?: string
@@ -41,7 +40,7 @@ interface AggregationChartProps {
   title: string
 }
 
-const { valueUnit = "ms", chartColor = "#4B84EE", configurators, aggregatedMeasure, aggregatedProject, isLike, title } = defineProps<AggregationChartProps>()
+const { valueUnit = "ms", configurators, aggregatedMeasure, aggregatedProject, isLike, title } = defineProps<AggregationChartProps>()
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
@@ -60,10 +59,20 @@ const allConfigurators = [...avConfigurators, injectOrError(serverConfiguratorKe
 /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
 const queryExecutor = new DataQueryExecutor(allConfigurators.filter((item): item is DataQueryConfigurator => item != null))
 const element = useTemplateRef<HTMLElement>("element")
-const vm = new AggregationChartVM(queryExecutor, chartColor, valueUnit)
+const vm = new AggregationChartVM(queryExecutor, valueUnit)
 const container = inject(containerKey)
 
 let dispose: () => void
+
+useDarkModeStore().$subscribe(() => {
+  dispose()
+  const queryExecutor = new DataQueryExecutor(allConfigurators as DataQueryConfigurator[])
+  const vm = new AggregationChartVM(queryExecutor, valueUnit)
+  if (element.value != null) {
+    dispose = vm.initChart(element.value, container?.value)
+  }
+})
+
 onMounted(() => {
   if (element.value != null) {
     dispose = vm.initChart(element.value, container?.value)

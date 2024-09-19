@@ -35,6 +35,7 @@ import { configureQueryFilters, createFilterObservable, FilterConfigurator } fro
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
 import { getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
+import { useDarkModeStore } from "../shared/useDarkModeStore"
 
 export type TooltipTrigger = "item" | "axis" | "none"
 
@@ -568,7 +569,7 @@ async function configureChart(
         selectedMode: "single",
         select: {
           itemStyle: {
-            color: "black",
+            color: useDarkModeStore().darkMode ? "white" : "black",
           },
         },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)

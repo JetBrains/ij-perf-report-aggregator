@@ -1,5 +1,5 @@
 <template>
-  <div class="px-7 flex gap-7 items-center border-b border-gray-200 border-solid">
+  <div class="px-7 flex gap-7 items-center border-b border-solid">
     <router-link
       v-for="item in items"
       :key="item.url"
@@ -9,9 +9,10 @@
     >
       <a
         :href="href"
-        class="py-1 text-gray-500 relative"
+        class="py-1 text-gray-500 dark:text-gray-300 relative"
         :class="{
-          'font-medium pointer-events-none after:content-[\'\'] after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-blue-500': isActive,
+          'font-medium pointer-events-none after:content-[\'\'] after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-primary dark:after:bg-primary-dark':
+            isActive,
         }"
         @click="navigate"
       >

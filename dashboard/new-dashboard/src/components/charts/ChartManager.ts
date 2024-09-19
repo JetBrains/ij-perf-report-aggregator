@@ -12,6 +12,7 @@ import {
 import { EChartsType, init as initChart, throttle, use } from "echarts/core"
 import { CanvasRenderer } from "echarts/renderers"
 import { ECBasicOption } from "echarts/types/dist/shared"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 use([
   DatasetComponent,
@@ -36,7 +37,7 @@ export class ChartManager {
     public chartContainer: HTMLElement,
     resizeContainer: HTMLElement | null = document.body
   ) {
-    this.chart = initChart(chartContainer)
+    this.chart = initChart(chartContainer, useDarkModeStore().darkMode ? "chalk" : "")
 
     this.resizeObserver = new ResizeObserver(
       throttle(() => {

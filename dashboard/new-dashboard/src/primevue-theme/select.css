@@ -1,6 +1,5 @@
 .p-inputtext {
-  /*border-color: var(--input-border-color);*/
-  @apply rounded-md border shadow-sm border-gray-300;
+  @apply rounded-md border shadow-sm;
 }
 
 .p-select-label,
@@ -23,7 +22,7 @@
   .p-cascadeselect,
   .p-treeselect {
     /* Tailwind utility classes */
-    @apply rounded-md border shadow-sm border-gray-300;
+    @apply rounded-md border shadow-sm;
   }
 
   .p-select-label,

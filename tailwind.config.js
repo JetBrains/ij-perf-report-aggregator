@@ -1,6 +1,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme")
 
 module.exports = {
+  darkMode: ["class", ".dark-mode"],
   content: ["./index.html", "./dashboard/**/*.vue"],
   theme: {
     extend: {
@@ -10,7 +11,10 @@ module.exports = {
       },
       colors: {
         // Lara Light Blue
-        primary: "#3B82F6",
+        primary: {
+          DEFAULT: "#3B82F6", // Light mode primary
+          dark: "#6495ED", // Dark mode primary
+        },
         darker: "#1D4ED8", // Lara Dark Blue
       },
     },

@@ -13,6 +13,7 @@ import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 class ClickedValue {
   constructor(
@@ -157,7 +158,7 @@ export class LineChartVM {
     this.legendFormatter = legendFormatter
     this.accidentsConfigurator = accidentsConfigurator
     const isMs = valueUnit == "ms"
-    this.eChart.chart.showLoading("default", { showSpinner: false })
+    this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
       legend: {
         top: 0,
@@ -236,10 +237,12 @@ export class LineChartVM {
           return numberFormat.format(isMs ? (it as number) : nsToMs(it as number)) + " ms"
         },
         // Styling
-        extraCssText: "user-select: text",
-        borderColor: "#E5E7EB",
         padding: [6, 8],
+        backgroundColor: useDarkModeStore().darkMode ? "#121212" : "white",
+        borderColor: useDarkModeStore().darkMode ? "#4B5563" : "#E5E7EB",
+        borderWidth: 0.3,
         textStyle: {
+          color: useDarkModeStore().darkMode ? "#D1D5DB" : "#6B7280",
           fontSize: 12,
         },
       },
@@ -248,6 +251,7 @@ export class LineChartVM {
         axisPointer: {
           snap: false,
           label: {
+            backgroundColor: useDarkModeStore().darkMode ? "#121212" : "#6E7079",
             formatter(data) {
               return timeFormat.format(data.value as number)
             },
@@ -255,6 +259,11 @@ export class LineChartVM {
         },
       },
       yAxis: {
+        axisPointer: {
+          label: {
+            backgroundColor: useDarkModeStore().darkMode ? "#121212" : "#6E7079",
+          },
+        },
         min(value) {
           return useSettingsStore().flexibleYZero ? value.min * 0.9 : 0
         },
@@ -269,7 +278,7 @@ export class LineChartVM {
   subscribe(): () => void {
     return this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
       if (isLoading || data == null) {
-        this.eChart.chart.showLoading("default", { showSpinner: false })
+        this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
         return
       }
       this.eChart.chart.hideLoading()

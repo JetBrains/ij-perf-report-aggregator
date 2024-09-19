@@ -1,7 +1,7 @@
 <template>
   <Cog8ToothIcon
     ref="settingsIcon"
-    :class="'w-6 h-6 ' + (removeOutliers ? 'text-red-500' : 'text-primary')"
+    :class="'w-6 h-6 ' + (removeOutliers ? 'text-red-500' : 'text-primary dark:text-primary-dark')"
     @click="showSettings"
   />
   <Popover

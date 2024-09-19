@@ -8,7 +8,7 @@
         Tests on
       </span>
       <button
-        class="text-primary px-1 py-1 inline-flex text-2xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-2xl items-center dark:text-primary-dark"
         type="button"
         @click="toggle"
       >
@@ -29,7 +29,7 @@
       </span>
       <button
         v-if="isSubMenuExists"
-        class="text-primary px-1 py-1 inline-flex text-2xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-2xl items-center dark:text-primary-dark"
         type="button"
         @click="toggleSubMenu"
       >
@@ -46,12 +46,18 @@
       />
     </div>
     <div class="flex">
+      <Button
+        size="small"
+        :icon="'pi ' + (useDarkModeStore().darkMode ? 'pi-moon' : 'pi-sun')"
+        @click="useDarkModeStore().toggle"
+      />
+      <!--<Button :icon="'pi '"/>-->
       <a
         href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <QuestionMarkCircleIcon class="w-7 h-7 text-primary" />
+        <QuestionMarkCircleIcon class="w-7 h-7 text-primary dark:text-primary-dark" />
       </a>
       <img
         v-if="userPicture"
@@ -68,6 +74,7 @@ import { computed, ref, useTemplateRef } from "vue"
 import { useRouter } from "vue-router"
 import { getNavigationElement, PRODUCTS } from "./routes"
 import { useUserStore } from "./shared/useUserStore"
+import { useDarkModeStore } from "./shared/useDarkModeStore"
 
 const currentPath = useRouter().currentRoute
 const products = PRODUCTS.map((product) => ({ ...product, url: product.children[0].tabs[0].url })) //default to the first element in the first subproject

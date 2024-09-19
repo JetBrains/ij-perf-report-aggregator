@@ -1,9 +1,9 @@
 <template>
   <div
     v-show="vm.visible.value"
-    class="infoSidebar ml-5 text-gray-500 relative"
+    class="infoSidebar ml-5 text-gray-500 dark:text-gray-300 relative"
   >
-    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid rounded-md border-zinc-200 p-5 overflow-y-auto overflow-x-hidden">
+    <div class="infoSidebarContent flex flex-col gap-4 sticky top-2 border border-solid rounded-md p-5 overflow-y-auto overflow-x-hidden">
       <div
         v-if="useScrollStore().isScrolled"
         class="sticky min-h-10"
@@ -171,7 +171,7 @@
         :in-dialog="false"
       />
 
-      <div class="flex gap-4 text-primary">
+      <div class="flex gap-4 text-primary dark:text-primary-dark">
         <a
           class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
           @click="getChangesUrl"

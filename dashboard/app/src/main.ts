@@ -20,6 +20,8 @@ import "new-dashboard/src/primevue-theme/misc.css"
 import "new-dashboard/src/primevue-theme/select.css"
 import "new-dashboard/src/primevue-theme/select-panel.css"
 import "new-dashboard/src/primevue-theme/toolbar.css"
+import * as echarts from "echarts"
+import { chartTheme } from "../theme/chartTheme"
 
 async function initApp() {
   const app = createApp(App)
@@ -42,6 +44,8 @@ async function initApp() {
   app.use(ToastService)
   app.use(pinia)
   app.directive("tooltip", Tooltip)
+
+  echarts.registerTheme("chalk", chartTheme)
 
   await router.isReady().then(() => app.mount("#app"))
 }

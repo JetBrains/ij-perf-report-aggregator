@@ -3,7 +3,7 @@
     :selected-index="activeId"
     @change="navigate"
   >
-    <div class="border-b border-gray-200">
+    <div class="border-b">
       <TabList class="-mb-px flex space-x-8">
         <Tab
           v-for="item in charts"

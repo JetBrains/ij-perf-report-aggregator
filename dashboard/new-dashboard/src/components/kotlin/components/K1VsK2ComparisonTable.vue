@@ -10,7 +10,7 @@
         v-for="topStat in topStats"
         :key="topStat.label"
       >
-        <div class="py-3 px-5 border border-solid rounded-md border-zinc-200">
+        <div class="py-3 px-5 border border-solid rounded-md">
           <h3 class="m-0 mb-2">{{ topStat.label }}</h3>
           <span class="text-2xl font-bold">{{ topStat.value }}</span>
         </div>

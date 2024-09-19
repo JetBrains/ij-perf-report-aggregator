@@ -111,6 +111,9 @@ importers:
       '@primevue/themes':
         specifier: ^4.0.7
         version: 4.0.7
+      echarts:
+        specifier: 5.5.1
+        version: 5.5.1
       new-dashboard:
         specifier: workspace:*
         version: link:../new-dashboard

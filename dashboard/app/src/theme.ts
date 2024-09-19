@@ -3,6 +3,9 @@ import Aura from "@primevue/themes/aura"
 
 //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const MyPreset = definePreset(Aura, {
+  primitive: {
+    "blue.400": "#6495ED",
+  },
   semantic: {
     primary: {
       50: "{blue.50}",

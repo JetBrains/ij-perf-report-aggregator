@@ -1,7 +1,7 @@
 <template>
   <div
     :id="anchor"
-    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
+    class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md mb-2"
   >
     <h3
       class="m-0 flex items-center"
@@ -25,7 +25,6 @@
     </h3>
     <div
       ref="chartElement"
-      class="bg-white"
       :style="{ height: `${chartHeight}px` }"
     />
   </div>
@@ -44,6 +43,7 @@ import { useSettingsStore } from "../settings/settingsStore"
 import { SeriesNameConfigurator } from "../startup/SeriesNameConfigurator"
 import { ChartManager } from "./ChartManager"
 import { LineChartVM } from "./LineChartVM"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 interface LineChartProps {
   title: string
@@ -148,10 +148,11 @@ if (withMeasureName) {
 
 const dataQueryExecutor = new DataQueryExecutor([...lineConfigurators].filter((item): item is DataQueryConfigurator => item != null))
 
+useDarkModeStore().$subscribe(() => {
+  createChart()
+})
+
 function createChart() {
-  if (chartVm != null) {
-    return
-  }
   if (chartElement.value) {
     chartManager?.dispose()
     unsubscribe?.()
@@ -172,14 +173,18 @@ function setupChartOnVisibility() {
   watch(
     chartIsVisible,
     (isVisible) => {
-      if (isVisible) {
+      if (isVisible && chartVm == null) {
         createChart()
       }
     },
     { immediate: true }
   )
   // If the chart is not visible, still try to create it after a delay
-  setTimeout(createChart, 1000)
+  setTimeout(function () {
+    if (chartVm == null) {
+      createChart()
+    }
+  }, 1000)
 }
 
 onMounted(() => {

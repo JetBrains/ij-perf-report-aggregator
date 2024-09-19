@@ -5,6 +5,7 @@ import { ref } from "vue"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"
 import { ChartManager } from "./ChartManager"
+import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 // LabelFormatterParams isn't exported from lib
 interface LabelFormatterParams {
@@ -26,7 +27,6 @@ export class AggregationChartVM {
 
   constructor(
     private readonly query: DataQueryExecutor,
-    private readonly color: string = "#4B84EE",
     private valueUnit: ValueUnit = "ms"
   ) {}
 
@@ -60,13 +60,12 @@ export class AggregationChartVM {
           label: {
             formatter(params: LabelFormatterParams) {
               const series = params.seriesData[0]
+              console.log(params)
               const [date, durationMs] = series.data as OptionDataItem[]
               const dateLabel = dateFormatter.format(new Date(date as string))
               const durationLabel = `${Math.round(Number(durationMs))}` + (isMs ? " ms" : "")
               return `${dateLabel}, ${durationLabel}`
             },
-            color: "#6B7280",
-            backgroundColor: "transparent",
             padding: [5, 0, 0, 0],
           },
         },
@@ -88,7 +87,7 @@ export class AggregationChartVM {
   private dataSubscribe(): () => void {
     return this.query.subscribe((data, configuration, isLoading: boolean) => {
       if (isLoading || data == null) {
-        this.chartManager?.chart.showLoading("default", { showSpinner: false })
+        this.chartManager?.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
         return
       }
       this.chartManager?.chart.hideLoading()
@@ -120,7 +119,6 @@ export class AggregationChartVM {
       options["series"] = (options["series"] as LineSeriesOption[]).map((item) => ({
         ...item,
         showSymbol: false,
-        color: this.color,
       }))
     }
 

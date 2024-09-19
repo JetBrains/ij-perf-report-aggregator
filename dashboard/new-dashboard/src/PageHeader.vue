@@ -48,13 +48,13 @@
     <div class="flex items-center">
       <MoonIcon
         v-if="useDarkModeStore().darkMode"
-        @click="useDarkModeStore().toggle"
         class="w-7 h-7 text-primary dark:text-primary-dark"
+        @click="useDarkModeStore().toggle"
       />
       <SunIcon
         v-else
-        @click="useDarkModeStore().toggle"
         class="w-8 h-8 text-primary dark:text-primary-dark"
+        @click="useDarkModeStore().toggle"
       />
       <a
         href="https://youtrack.jetbrains.com/articles/IJPL-A-226/IJ-Perf-Manual"

@@ -3,12 +3,12 @@
     <div class="font-semibold">
       <span
         v-if="isSubMenuExists"
-        class="text-xl"
+        class="text-2xl"
       >
         Tests on
       </span>
       <button
-        class="text-primary px-1 py-1 inline-flex text-xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-2xl items-center"
         type="button"
         @click="toggle"
       >
@@ -17,18 +17,19 @@
       </button>
       <Menu
         ref="menu"
+        class="text-lg"
         :model="items"
         :popup="true"
       />
       <span
         v-if="isSubMenuExists"
-        class="text-xl"
+        class="text-2xl"
       >
         aggregated for
       </span>
       <button
         v-if="isSubMenuExists"
-        class="text-primary px-1 py-1 inline-flex text-xl items-center"
+        class="text-primary px-1 py-1 inline-flex text-2xl items-center"
         type="button"
         @click="toggleSubMenu"
       >
@@ -40,6 +41,7 @@
         v-if="isSubMenuExists"
         ref="subMenu"
         :model="subItems"
+        class="text-lg"
         :popup="true"
       />
     </div>

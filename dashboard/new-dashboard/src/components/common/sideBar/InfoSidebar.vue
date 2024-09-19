@@ -34,14 +34,14 @@
       <TestActions :data="data" />
 
       <div class="flex flex-col gap-2">
-        <span class="flex gap-1.5 text-sm items-center">
+        <span class="flex gap-1.5 items-center">
           <CalendarIcon class="w-4 h-4" />
           {{ data?.date }}
           <span v-if="data?.build">build {{ data?.build }}</span>
         </span>
         <span
           v-if="data?.branch"
-          class="flex gap-1.5 text-sm items-center"
+          class="flex gap-1.5 items-center"
         >
           <BranchIcon class="w-4 h-4" />
           <span>{{ data?.branch }}</span>
@@ -50,7 +50,7 @@
           v-if="data?.series.length == 1"
           class="flex flex-col gap-2"
         >
-          <span class="flex gap-1.5 text-sm items-center">
+          <span class="flex gap-1.5 items-center">
             <ChartBarIcon class="w-4 h-4" />
             <span
               v-tooltip.left="description"
@@ -61,7 +61,7 @@
           </span>
           <span
             v-if="data?.series[0].metricName"
-            class="flex gap-1.5 text-sm items-center"
+            class="flex gap-1.5 items-center"
           >
             <BeakerIcon class="w-4 h-4" />
             <span
@@ -70,13 +70,13 @@
               >{{ data?.series[0].metricName }}</span
             >
           </span>
-          <span class="flex gap-1.5 text-sm items-center">
+          <span class="flex gap-1.5 items-center">
             <ClockIcon class="w-4 h-4" />
             {{ data?.series[0].value }}
           </span>
         </div>
         <div v-else>
-          <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose text-sm">
+          <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose">
             <template
               v-for="item in data?.series"
               :key="item.metricName"
@@ -98,34 +98,34 @@
 
         <span
           v-if="data?.deltaPrevious"
-          class="flex gap-1.5 text-sm items-center"
+          class="flex gap-1.5 items-center"
         >
           <ArrowLeftIcon class="w-4 h-4" />
           {{ data?.deltaPrevious }}
         </span>
         <span
           v-if="data?.deltaNext"
-          class="flex gap-1.5 text-sm items-center"
+          class="flex gap-1.5 items-center"
         >
           <ArrowRightIcon class="w-4 h-4" />
           {{ data?.deltaNext }}
         </span>
 
-        <span class="flex gap-1.5 text-sm items-center">
+        <span class="flex gap-1.5 items-center">
           <ComputerDesktopIcon class="w-4 h-4" />
           {{ data?.machineName }}
         </span>
 
         <span
           v-if="data?.accidents"
-          class="flex gap-1.5 text-sm items-center"
+          class="flex gap-1.5 items-center"
         >
           <ExclamationTriangleIcon class="w-4 h-4" />
           Known events:
         </span>
         <ul
           v-if="data?.accidents"
-          class="gap-1.5 text-sm ml-5 overflow-y-auto max-h-80"
+          class="gap-1.5 ml-5 overflow-y-auto max-h-80"
         >
           <li
             v-for="accident in data?.accidents.value"
@@ -137,7 +137,7 @@
                 autoHide: false,
                 showDelay: 500,
               }"
-              class="flex items-start justify-between gap-1.5 text-sm"
+              class="flex items-start justify-between gap-1.5"
             >
               &bull;
               <!-- eslint-disable vue/no-v-html -->
@@ -210,18 +210,14 @@
 
       <Button
         v-if="accidentsConfigurator != null"
-        class="text-sm"
         label="Report Event"
         text
-        size="small"
         @click="createAccident()"
       />
       <Button
         v-if="bisectSupported && data != null"
-        class="text-sm"
         label="Bisect"
         text
-        size="small"
         @click="showBisectDialog = true"
       />
     </div>

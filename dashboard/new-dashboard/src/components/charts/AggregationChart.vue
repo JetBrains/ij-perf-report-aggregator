@@ -1,6 +1,6 @@
 <template>
   <div class="pt-3 pb-1 px-5 border border-solid rounded-md border-zinc-200">
-    <h3 class="m-0 text-sm mb-3">
+    <h3 class="m-0 mb-3">
       {{ title }}
     </h3>
 

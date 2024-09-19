@@ -4,7 +4,7 @@
 .p-autocomplete-panel {
   background: var(--input-overlay-bg);
   /* No space between element and pop-up in PrimeVue, but TailwindUI uses mt-1 and that's looks better */
-  @apply rounded-md shadow-lg mt-1 ring-1 ring-black ring-opacity-5 text-gray-900 focus:outline-none overflow-auto text-sm cursor-default select-none;
+  @apply rounded-md shadow-lg mt-1 ring-1 ring-black ring-opacity-5 text-gray-900 focus:outline-none overflow-auto cursor-default select-none;
 }
 
 /* here filter for multiselect is located */

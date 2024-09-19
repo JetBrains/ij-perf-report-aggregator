@@ -19,7 +19,7 @@
     class="flex items-center p-2 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
     role="alert"
   >
-    <div class="text-sm font-normal">Copied</div>
+    <div class="font-normal">Copied</div>
   </div>
 </template>
 

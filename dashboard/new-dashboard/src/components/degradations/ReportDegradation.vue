@@ -30,7 +30,7 @@
               :key="test"
               class="list-disc list-inside"
             >
-              <li class="text-sm">{{ test }}</li>
+              <li>{{ test }}</li>
             </ul>
           </div>
 

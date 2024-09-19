@@ -9,7 +9,7 @@
         <AccordionContent>
           <ul
             v-if="accidentsAroundDate"
-            class="gap-1.5 text-sm break-all"
+            class="gap-1.5 break-all"
           >
             <li
               v-for="accident in accidentsAroundDate"
@@ -22,7 +22,7 @@
                   autoHide: false,
                   showDelay: 500,
                 }"
-                class="flex gap-1.5 text-sm"
+                class="flex gap-1.5"
               >
                 <span v-if="inDialog">
                   <DocumentDuplicateIcon

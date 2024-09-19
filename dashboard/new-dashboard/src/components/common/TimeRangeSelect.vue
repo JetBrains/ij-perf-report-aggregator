@@ -36,7 +36,6 @@
       <DatePicker
         v-if="isShowCalendar"
         v-model="date"
-        class="text-sm"
         date-format="dd/mm/yy"
         selection-mode="range"
         :inline="true"
@@ -75,10 +74,4 @@ function showCalendar() {
 }
 </script>
 <style #scoped>
-.p-datepicker table {
-  @apply text-sm;
-}
-.p-link {
-  @apply text-sm;
-}
 </style>

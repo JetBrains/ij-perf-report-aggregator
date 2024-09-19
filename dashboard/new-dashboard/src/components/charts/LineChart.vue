@@ -4,7 +4,7 @@
     class="flex flex-col gap-y-2.5 py-3 px-5 border border-solid rounded-md border-zinc-200"
   >
     <h3
-      class="m-0 text-sm flex items-center"
+      class="m-0 flex items-center"
       @mouseover="labelHovered = true"
       @mouseleave="labelHovered = false"
     >

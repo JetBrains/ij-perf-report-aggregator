@@ -1,8 +1,6 @@
 <template>
   <SplitButton
     v-if="testActions.length > 0"
-    size="small"
-    class="text-sm"
     :label="testActions[0].label"
     :model="testActions.slice(1)"
     link
@@ -95,6 +93,6 @@ function handleNavigateToTest() {
 </script>
 <style #scoped>
 .p-tieredmenu .p-menuitem-content {
-  @apply text-sm text-gray-600 font-medium text-left relative;
+  @apply text-gray-600 font-medium text-left relative;
 }
 </style>

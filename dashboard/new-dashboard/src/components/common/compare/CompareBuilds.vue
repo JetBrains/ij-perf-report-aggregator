@@ -103,7 +103,7 @@
             class="m-3"
           />
           <div class="flex px-2">
-            <span class="text-sm">Difference ≥ {{ filterModel.value ? filterModel.value : 0 }}%</span>
+            <span>Difference ≥ {{ filterModel.value ? filterModel.value : 0 }}%</span>
           </div>
         </template>
       </Column>

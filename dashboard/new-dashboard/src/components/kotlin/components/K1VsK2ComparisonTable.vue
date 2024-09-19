@@ -3,7 +3,7 @@
     <div class="flex flex-row gap-6 mb-8">
       <div>
         <h3 class="text-2xl mb-3">{{ name }}</h3>
-        <p class="text-sm text-gray-600">Measure: {{ measure }}</p>
+        <p class="text-gray-600">Measure: {{ measure }}</p>
       </div>
       <div class="flex-grow"></div>
       <div
@@ -11,7 +11,7 @@
         :key="topStat.label"
       >
         <div class="py-3 px-5 border border-solid rounded-md border-zinc-200">
-          <h3 class="m-0 text-sm mb-2">{{ topStat.label }}</h3>
+          <h3 class="m-0 mb-2">{{ topStat.label }}</h3>
           <span class="text-2xl font-bold">{{ topStat.value }}</span>
         </div>
       </div>
@@ -27,7 +27,7 @@
       @update:result-data="(newValue: TestComparisonTableEntry[]) => (resultData = newValue)"
     />
 
-    <p class="text-sm text-gray-500 text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>
+    <p class="text-gray-500 text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>
   </section>
 </template>
 

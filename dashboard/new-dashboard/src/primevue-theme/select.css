@@ -1,19 +1,9 @@
 .p-inputtext {
   /*border-color: var(--input-border-color);*/
   background-color: var(--input-bg-color);
-  /*@apply text-sm;*/
-  @apply rounded-md border shadow-sm border-gray-300 text-sm;
+  @apply rounded-md border shadow-sm border-gray-300;
 }
 
-.p-select,
-.p-multiselect,
-.p-cascadeselect,
-.p-treeselect {
-  /*border-color: var(--input-border-color);*/
-  /*background-color: var(--input-bg-color);*/
-  @apply text-sm;
-  /*@apply rounded-md border shadow-sm border-gray-300 text-sm;*/
-}
 
 .p-select-label,
 .p-multiselect .p-multiselect-label,
@@ -23,11 +13,6 @@
   @apply pl-3 pr-2 py-2 font-medium text-gray-700 hover:text-gray-900;
 }
 
-/*.p-select .p-select-trigger,*/
-/*.p-multiselect .p-multiselect-trigger,*/
-/*.p-treeselect .p-treeselect-trigger {*/
-/*  @apply text-gray-400 rounded-r-md pr-2 w-5;*/
-/*}*/
 
 .p-select .p-select-label,
 .p-cascadeselect .p-cascadeselect-label {
@@ -61,7 +46,7 @@
     background-color: var(--input-bg-color);
 
     /* Tailwind utility classes */
-    @apply rounded-md border shadow-sm border-gray-300 text-sm;
+    @apply rounded-md border shadow-sm border-gray-300;
   }
 
   .p-select-label,

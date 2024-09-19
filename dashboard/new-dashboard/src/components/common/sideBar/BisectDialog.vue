@@ -206,7 +206,4 @@ async function startBisect() {
   @apply w-full;
 }
 
-label {
-  @apply text-sm;
-}
 </style>

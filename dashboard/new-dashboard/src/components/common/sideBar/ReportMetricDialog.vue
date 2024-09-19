@@ -12,7 +12,7 @@
         :options="getAccidentTypes()"
       >
         <template #value="{ value }">
-          <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+          <div class="group inline-flex justify-center font-medium text-gray-700 hover:text-gray-900">
             {{ value }}
             <ChevronDownIcon
               class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
@@ -31,11 +31,7 @@
           v-model="reason"
           class="w-full"
         />
-        <label
-          class="text-sm"
-          for="reason"
-          >Reason</label
-        >
+        <label for="reason">Reason</label>
       </FloatLabel>
     </div>
     <FloatLabel
@@ -47,11 +43,7 @@
         v-model="stacktrace"
         class="w-full"
       />
-      <label
-        class="text-sm"
-        for="stacktrace"
-        >Stacktrace</label
-      >
+      <label for="stacktrace">Stacktrace</label>
     </FloatLabel>
     <div
       v-if="data?.series.length == 1"
@@ -63,7 +55,7 @@
       />
       <label
         for="reportMetricOnly"
-        class="text-sm ml-2"
+        class="ml-2"
       >
         Report only metric <code>{{ data.series[0].metricName }}</code>
       </label>
@@ -78,7 +70,7 @@
       />
       <label
         for="reportAllInBuild"
-        class="text-sm ml-2"
+        class="ml-2"
       >
         Report all tests in build <code>{{ build }}</code>
       </label>
@@ -90,7 +82,7 @@
       />
       <label
         for="createIssue"
-        class="text-sm ml-2"
+        class="ml-2"
         >Create YouTrack Issue</label
       >
     </div>

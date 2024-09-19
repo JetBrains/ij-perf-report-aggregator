@@ -12,7 +12,7 @@
   >
     <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{ value }">
-      <div class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+      <div class="group inline-flex justify-center font-medium text-gray-700 hover:text-gray-900">
         <template v-if="value && value.length > 1">
           <span class="flex items-center gap-2">
             <div

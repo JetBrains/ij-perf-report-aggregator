@@ -1,5 +1,5 @@
 .p-button {
-  @apply text-sm shadow-sm px-3 py-2 leading-4;
+  @apply shadow-sm px-3 py-2 leading-4;
 }
 
 /* see InputForm - input number right after button, but for button we use different line height and it leads to a larger height */

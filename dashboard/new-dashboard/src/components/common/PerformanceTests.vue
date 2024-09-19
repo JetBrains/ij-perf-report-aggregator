@@ -23,6 +23,7 @@
             label="Tests"
             :selected-label="testsSelectLabelFormat"
             :dimension="scenarioConfigurator"
+            class="mr-2"
           >
             <template #icon>
               <ChartBarIcon class="w-4 h-4 text-gray-500" />
@@ -46,6 +47,7 @@
             title="Metrics"
             :selected-label="metricsSelectLabelFormat"
             :configurator="measureConfigurator"
+            class="mr-2"
           >
             <template #icon>
               <BeakerIcon class="w-4 h-4 text-gray-500" />

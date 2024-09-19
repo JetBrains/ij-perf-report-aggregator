@@ -26,7 +26,7 @@
             class="mr-2"
           >
             <template #icon>
-              <ChartBarIcon class="w-4 h-4 text-gray-500" />
+              <ChartBarIcon class="w-4 h-4" />
             </template>
           </DimensionSelect>
           <MeasureSelect
@@ -35,7 +35,7 @@
             :configurator="measureConfigurator"
           >
             <template #icon>
-              <BeakerIcon class="w-4 h-4 text-gray-500" />
+              <BeakerIcon class="w-4 h-4" />
             </template>
           </MeasureSelect>
         </span>
@@ -50,7 +50,7 @@
             class="mr-2"
           >
             <template #icon>
-              <BeakerIcon class="w-4 h-4 text-gray-500" />
+              <BeakerIcon class="w-4 h-4" />
             </template>
           </MeasureSelect>
           <DimensionSelect
@@ -59,7 +59,7 @@
             :dimension="scenarioConfigurator"
           >
             <template #icon>
-              <ChartBarIcon class="w-4 h-4 text-gray-500" />
+              <ChartBarIcon class="w-4 h-4" />
             </template>
           </DimensionSelect>
         </span>

@@ -18,7 +18,7 @@
       <span class="ml-auto flex items-center">
         <span
           v-if="canBeClosed"
-          class="text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition"
+          class="text-sm pi pi-plus rotate-45 cursor-pointer transition"
           @click="closeChart"
         />
       </span>

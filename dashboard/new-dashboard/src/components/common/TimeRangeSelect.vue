@@ -9,14 +9,14 @@
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
         <slot name="icon">
-          <CalendarIcon class="w-4 h-4 text-gray-500" />
+          <CalendarIcon class="w-4 h-4" />
         </slot>
 
         <span v-if="!slotProps.value">Select range</span>
         <span>{{ currentValue?.label }}</span>
 
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
           aria-hidden="true"
         />
       </div>
@@ -73,5 +73,4 @@ function showCalendar() {
   isShowCalendar.value = !isShowCalendar.value
 }
 </script>
-<style #scoped>
-</style>
+<style #scoped></style>

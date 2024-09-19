@@ -1,18 +1,15 @@
 .p-inputtext {
   /*border-color: var(--input-border-color);*/
-  background-color: var(--input-bg-color);
   @apply rounded-md border shadow-sm border-gray-300;
 }
-
 
 .p-select-label,
 .p-multiselect .p-multiselect-label,
 .p-cascadeselect .p-cascadeselect-label,
 .p-treeselect .p-treeselect-label {
   /*color: var(--input-text-color);*/
-  @apply pl-3 pr-2 py-2 font-medium text-gray-700 hover:text-gray-900;
+  @apply pl-3 pr-2 py-2 font-medium;
 }
-
 
 .p-select .p-select-label,
 .p-cascadeselect .p-cascadeselect-label {
@@ -20,31 +17,11 @@
   @apply border-none shadow-none;
 }
 
-.p-select .p-select-label.p-placeholder,
-.p-multiselect .p-multiselect-label.p-placeholder,
-.p-cascadeselect-label .p-cascadeselect-label.p-placeholder,
-.p-treeselect .p-treeselect-label.p-placeholder {
-  color: var(--input-placeholder-text-color);
-}
-
-.p-inputtext.p-invalid.p-component,
-.p-select.p-invalid.p-component,
-.p-cascadeselect.p-invalid.p-component,
-.p-treeselect.p-invalid.p-component,
-.p-multiselect.p-invalid.p-component,
-.p-autocomplete.p-invalid.p-component > .p-inputtext {
-  border-color: var(--input-error-border-color);
-}
-
 .new-dashboard {
   .p-select,
   .p-multiselect,
   .p-cascadeselect,
   .p-treeselect {
-    /* Custom CSS Variables */
-    border-color: var(--input-border-color);
-    background-color: var(--input-bg-color);
-
     /* Tailwind utility classes */
     @apply rounded-md border shadow-sm border-gray-300;
   }

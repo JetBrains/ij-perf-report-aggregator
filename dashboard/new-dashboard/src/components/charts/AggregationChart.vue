@@ -5,7 +5,7 @@
     </h3>
 
     <div class="mb-3 flex flex-col text-center">
-      <span class="text-3xl text-black font-bold">
+      <span class="text-3xl font-bold">
         {{ vm.average }}
       </span>
       <div class="text-sm text-neutral-500 font-normal">

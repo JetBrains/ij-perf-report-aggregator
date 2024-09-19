@@ -14,7 +14,7 @@
           :dimension="scenarioConfigurator"
         >
           <template #icon>
-            <ChartBarIcon class="w-4 h-4 text-gray-500" />
+            <ChartBarIcon class="w-4 h-4" />
           </template>
         </DimensionSelect>
         <MeasureSelect
@@ -23,7 +23,7 @@
           :configurator="measureConfigurator"
         >
           <template #icon>
-            <BeakerIcon class="w-4 h-4 text-gray-500" />
+            <BeakerIcon class="w-4 h-4" />
           </template>
         </MeasureSelect>
         <MachineSelect :machine-configurator="machineConfigurator" />

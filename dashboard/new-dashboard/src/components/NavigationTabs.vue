@@ -11,7 +11,7 @@
         :href="href"
         class="py-1 text-gray-500 relative"
         :class="{
-          'text-black font-medium pointer-events-none after:content-[\'\'] after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-blue-500': isActive,
+          'font-medium pointer-events-none after:content-[\'\'] after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-blue-500': isActive,
         }"
         @click="navigate"
       >

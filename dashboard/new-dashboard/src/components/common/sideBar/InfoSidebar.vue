@@ -12,7 +12,7 @@
         {{ data?.title }}
 
         <span
-          class="infoSidebar_icon text-sm pi pi-plus rotate-45 cursor-pointer hover:text-gray-800 transition duration-150 ease-out relative"
+          class="infoSidebar_icon text-sm pi pi-plus rotate-45 cursor-pointer transition duration-150 ease-out relative"
           @click="handleCloseClick"
         />
       </span>

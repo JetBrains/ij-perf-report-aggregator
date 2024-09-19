@@ -17,7 +17,7 @@
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
-        <div class="w-4 h-4 text-gray-500">
+        <div class="w-4 h-4">
           <BranchIcon />
         </div>
 
@@ -34,7 +34,7 @@
         </span>
 
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
           aria-hidden="true"
         />
       </div>
@@ -51,7 +51,7 @@
               Version type
               <span
                 v-if="versionValue !== null && versionValue.length > 0"
-                class="text-gray-500 truncate"
+                class="truncate"
               >
                 {{ versionValue?.length < 2 ? versionValue[0] : `Selected ${versionValue?.length}` }}
               </span>
@@ -67,7 +67,7 @@
               Triggered by
               <span
                 v-if="triggeredValueFiltered !== null && triggeredValueFiltered !== undefined && triggeredValueFiltered.length > 0"
-                class="text-gray-500 truncate"
+                class="truncate"
               >
                 {{ triggeredValueFiltered?.length < 2 ? triggeredValueFiltered[0] : `Selected ${triggeredValueFiltered?.length}` }}
               </span>

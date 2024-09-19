@@ -9,7 +9,7 @@
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
-        <CubeIcon class="w-4 h-4 text-gray-500" />
+        <CubeIcon class="w-4 h-4" />
 
         <span v-if="!slotProps.value || slotProps.value.length === 0">
           {{ slotProps.placeholder }}
@@ -22,7 +22,7 @@
         <span v-if="slotProps.value && slotProps.value.length > 1">{{ slotProps.value.length }} projects</span>
 
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
           aria-hidden="true"
         />
       </div>

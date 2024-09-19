@@ -16,7 +16,7 @@
   <div
     v-show="isToastVisible"
     id="toast-default"
-    class="flex items-center p-2 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800"
+    class="flex items-center p-2 bg-white rounded-lg shadow"
     role="alert"
   >
     <div class="font-normal">Copied</div>

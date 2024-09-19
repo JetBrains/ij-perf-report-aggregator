@@ -14,7 +14,7 @@
     :show-toggle-all="hasManyElements"
   >
     <template #value="slotProps">
-      <div class="group inline-flex justify-center font-medium text-gray-700 hover:text-gray-900">
+      <div class="group inline-flex justify-center font-medium">
         <span
           v-if="!slotProps.value || slotProps.value.length === 0"
           class="flex items-center gap-1"
@@ -37,7 +37,7 @@
           {{ selectedLabel(slotProps.value) }}
         </span>
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
           aria-hidden="true"
         />
       </div>
@@ -60,10 +60,10 @@
   >
     <!-- eslint-disable vue/no-template-shadow -->
     <template #value="{ value }">
-      <div class="group inline-flex justify-center font-medium text-gray-700 hover:text-gray-900">
+      <div class="group inline-flex justify-center font-medium">
         {{ value ? valueToLabel(value) : value }}
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
           aria-hidden="true"
         />
       </div>

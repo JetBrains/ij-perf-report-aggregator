@@ -93,6 +93,6 @@ function handleNavigateToTest() {
 </script>
 <style #scoped>
 .p-tieredmenu .p-menuitem-content {
-  @apply text-gray-600 font-medium text-left relative;
+  @apply font-medium text-left relative;
 }
 </style>

@@ -3,7 +3,7 @@
     <div class="flex flex-row gap-6 mb-8">
       <div>
         <h3 class="text-2xl mb-3">{{ name }}</h3>
-        <p class="text-gray-600">Measure: {{ measure }}</p>
+        <p>Measure: {{ measure }}</p>
       </div>
       <div class="flex-grow"></div>
       <div
@@ -27,7 +27,7 @@
       @update:result-data="(newValue: TestComparisonTableEntry[]) => (resultData = newValue)"
     />
 
-    <p class="text-gray-500 text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>
+    <p class="text-right mt-4">The table displays the results of the last successful run of each test from the selected branch.</p>
   </section>
 </template>
 

@@ -40,7 +40,6 @@
       <InfoSidebar :timerange-configurator="timeRangeConfigurator" />
     </main>
   </div>
-  <ChartTooltip ref="tooltip" />
 </template>
 <script setup lang="ts">
 import { provide, ref, useTemplateRef } from "vue"
@@ -54,7 +53,6 @@ import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator
 import { configuratorListKey } from "../../shared/injectionKeys"
 import { accidentsConfiguratorKey, containerKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { metricsSelectLabelFormat } from "../../shared/labels"
-import ChartTooltip from "../charts/ChartTooltip.vue"
 import LineChart from "../charts/LineChart.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import BranchSelect from "../common/BranchSelect.vue"

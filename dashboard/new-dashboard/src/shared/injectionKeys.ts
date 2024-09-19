@@ -1,10 +1,10 @@
 import { Observable } from "rxjs"
 import { inject, InjectionKey, Ref } from "vue"
-import { ReportInfoProvider } from "../components/charts/StartupTooltipManager"
 import { ChartStyle } from "../components/common/chart"
 import { DataQueryConfigurator } from "../components/common/dataQuery"
 import { AggregationOperatorConfigurator } from "../configurators/AggregationOperatorConfigurator"
 import { TimeRange } from "../configurators/TimeRangeConfigurator"
+import { ReportInfoProvider } from "../components/charts/PopupProvider"
 
 // inject is used instead of prop because on dashboard page there are a lot of chart cards and it is tedious to set property for each
 export const configuratorListKey: InjectionKey<DataQueryConfigurator[]> = Symbol("configuratorList")

@@ -48,9 +48,6 @@ importers:
       '@vue/eslint-config-typescript':
         specifier: ^13.0.0
         version: 13.0.0(eslint-plugin-vue@9.28.0(eslint@9.10.0(jiti@1.21.6)))(eslint@9.10.0(jiti@1.21.6))(typescript@5.6.2)
-      add:
-        specifier: ^2.0.6
-        version: 2.0.6
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.47)
@@ -75,9 +72,6 @@ importers:
       rollup:
         specifier: ^4.21.3
         version: 4.21.3
-      sass:
-        specifier: ^1.78.0
-        version: 1.78.0
       tailwindcss:
         specifier: ^3.4.11
         version: 3.4.11
@@ -135,9 +129,6 @@ importers:
 
   dashboard/new-dashboard:
     dependencies:
-      '@headlessui/vue':
-        specifier: ^1.7.23
-        version: 1.7.23(vue@3.5.6(typescript@5.6.2))
       '@heroicons/vue':
         specifier: 2.1.5
         version: 2.1.5(vue@3.5.6(typescript@5.6.2))
@@ -147,15 +138,9 @@ importers:
       '@vueuse/core':
         specifier: ^11.1.0
         version: 11.1.0(vue@3.5.6(typescript@5.6.2))
-      compare-versions:
-        specifier: 6.1.1
-        version: 6.1.1
       echarts:
         specifier: 5.5.1
         version: 5.5.1
-      echarts-stat:
-        specifier: 1.2.0
-        version: 1.2.0
       fast-equals:
         specifier: 5.0.1
         version: 5.0.1
@@ -418,12 +403,6 @@ packages:
   '@fontsource/jetbrains-mono@5.1.0':
     resolution: {integrity: sha512-YzWpGYY3PoqvmvwW2Hb4NwkN5C7LO0FmZugEGcFe6cNNE/cMgH9JhW5LI6hjG+1+nwgSHyJtKmblHNrUqlyhWg==}
 
-  '@headlessui/vue@1.7.23':
-    resolution: {integrity: sha512-JzdCNqurrtuu0YW6QaDtR2PIYCKPUWq28csDyMvN4zmGccmE7lz40Is6hc3LA4HFeCI7sekZ/PQMTNmn9I/4Wg==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      vue: ^3.2.0
-
   '@heroicons/vue@2.1.5':
     resolution: {integrity: sha512-IpqR72sFqFs55kyKfFS7tN+Ww6odFNeH/7UxycIOrlVYfj4WUGAdzQtLBnJspucSeqWFQsKM0g0YrgU655BEfA==}
     peerDependencies:
@@ -643,14 +622,6 @@ packages:
     resolution: {integrity: sha512-AqhlCXl+8grUz8uqExv5OTtgpjuVIwFTSXTrh8y9/pw6q2ek7fJ+Y8ZEVw7EB2DCcuCOtEjf9w3+J3rzts01uA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20'
-
-  '@tanstack/virtual-core@3.10.7':
-    resolution: {integrity: sha512-ND5dfsU0n9F4gROzwNNDJmg6y8n9pI8YWxtgbfJ5UcNn7Hx+MxEXtXcQ189tS7sh8pmCObgz2qSiyRKTZxT4dg==}
-
-  '@tanstack/vue-virtual@3.10.7':
-    resolution: {integrity: sha512-OSK1fkvz4GaBhF80KVmBsJZoMI9ncVaUU//pI8OqTdBnepw467zcuF2Y+Ia1VC0CPYfUEALyS8n4Ar0RI/7ASg==}
-    peerDependencies:
-      vue: ^2.7.0 || ^3.0.0
 
   '@types/cookie@0.6.0':
     resolution: {integrity: sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA==}
@@ -939,9 +910,6 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  add@2.0.6:
-    resolution: {integrity: sha512-j5QzrmsokwWWp6kUcJQySpbG+xfOBqqKnup3OIk1pz+kB/80SLorZ9V8zHFLO92Lcd+hbvq8bT+zOGoPkmBV0Q==}
-
   agent-base@7.1.1:
     resolution: {integrity: sha512-H0TSyFNDMomMNJQBn8wFV5YC/2eJ+VXECwOadZJT554xP6cODZHPX3H9QMQECxvrgiSOP1pHjy1sMWQVYJOUOA==}
     engines: {node: '>= 14'}
@@ -1145,9 +1113,6 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
 
-  compare-versions@6.1.1:
-    resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
-
   computeds@0.0.1:
     resolution: {integrity: sha512-7CEBgcMjVmitjYo5q8JTJVra6X5mQ20uTThdK+0kR7UEaDrAWEQcRiBtWJzga4eRpP6afNwwLsX2SET2JhVB1Q==}
 
@@ -1290,9 +1255,6 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
-
-  echarts-stat@1.2.0:
-    resolution: {integrity: sha512-zLd7Kgs+tuTSeaK0VQEMNmnMivEkhvHIk1gpBtLzpRerfcIQ+Bd5XudOMmtwpaTc1WDZbA7d1V//iiBccR46Qg==}
 
   echarts@5.5.1:
     resolution: {integrity: sha512-Fce8upazaAXUVUVsjgV6mBnGuqgO+JNDlcgF79Dksy4+wgGpQB2lmYoO4TSweFg/mZITdpGHomw/cNBJZj1icA==}
@@ -3084,11 +3046,6 @@ snapshots:
 
   '@fontsource/jetbrains-mono@5.1.0': {}
 
-  '@headlessui/vue@1.7.23(vue@3.5.6(typescript@5.6.2))':
-    dependencies:
-      '@tanstack/vue-virtual': 3.10.7(vue@3.5.6(typescript@5.6.2))
-      vue: 3.5.6(typescript@5.6.2)
-
   '@heroicons/vue@2.1.5(vue@3.5.6(typescript@5.6.2))':
     dependencies:
       vue: 3.5.6(typescript@5.6.2)
@@ -3287,13 +3244,6 @@ snapshots:
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.11
-
-  '@tanstack/virtual-core@3.10.7': {}
-
-  '@tanstack/vue-virtual@3.10.7(vue@3.5.6(typescript@5.6.2))':
-    dependencies:
-      '@tanstack/virtual-core': 3.10.7
-      vue: 3.5.6(typescript@5.6.2)
 
   '@types/cookie@0.6.0': {}
 
@@ -3679,8 +3629,6 @@ snapshots:
 
   acorn@8.12.1: {}
 
-  add@2.0.6: {}
-
   agent-base@7.1.1:
     dependencies:
       debug: 4.3.6
@@ -3909,8 +3857,6 @@ snapshots:
 
   commander@4.1.1: {}
 
-  compare-versions@6.1.1: {}
-
   computeds@0.0.1: {}
 
   concat-map@0.0.1: {}
@@ -4031,8 +3977,6 @@ snapshots:
       domhandler: 5.0.3
 
   eastasianwidth@0.2.0: {}
-
-  echarts-stat@1.2.0: {}
 
   echarts@5.5.1:
     dependencies:
@@ -4556,7 +4500,8 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  immutable@4.3.7: {}
+  immutable@4.3.7:
+    optional: true
 
   import-fresh@3.3.0:
     dependencies:
@@ -5223,6 +5168,7 @@ snapshots:
       chokidar: 3.6.0
       immutable: 4.3.7
       source-map-js: 1.2.0
+    optional: true
 
   saxes@6.0.0:
     dependencies:
@@ -5269,7 +5215,8 @@ snapshots:
 
   slash@3.0.0: {}
 
-  source-map-js@1.2.0: {}
+  source-map-js@1.2.0:
+    optional: true
 
   source-map-js@1.2.1: {}
 

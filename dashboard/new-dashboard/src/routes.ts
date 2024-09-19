@@ -49,7 +49,6 @@ enum ROUTES {
   StartupGcAndMemory = `${ROUTE_PREFIX.Startup}/gcAndMemory`,
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
-  StartupReport = `${ROUTE_PREFIX.Startup}/report`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
@@ -258,10 +257,6 @@ const IJ_STARTUP: Product = {
         {
           url: ROUTES.StartupExploreInstaller,
           label: "Explore (Installer)",
-        },
-        {
-          url: ROUTES.StartupReport,
-          label: "Report",
         },
       ],
     },
@@ -1141,11 +1136,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: true,
           },
           meta: { pageTitle: "Explore (Installer)" },
-        },
-        {
-          path: ROUTES.StartupReport,
-          component: () => import("./report-visualizer/Report.vue"),
-          meta: { pageTitle: "Startup Report" },
         },
         {
           path: ROUTES.IntelliJStartupDashboard,

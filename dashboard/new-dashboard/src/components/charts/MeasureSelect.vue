@@ -39,7 +39,7 @@
     <template #header>
       <div
         v-if="configurator instanceof MeasureConfigurator"
-        class="bg-gray-100 rounded-md border"
+        class="rounded-md border"
       >
         <div class="flex items-center w-full mt-2 ml-2 mb-2">
           <ToggleSwitch v-model="showAllMetrics" />

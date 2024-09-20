@@ -16,7 +16,7 @@
       <GroupProjectsChart
         label="Basic Completion"
         measure="completion"
-        :projects="['caddy/completion/variable', 'caddy/completion/type', 'caddy/completion/method', 'caddy/completion/interface']"
+        :projects="['caddy/completion/variable', 'caddy/completion/type', 'caddy/completion/return', 'caddy/completion/interface', 'caddy/completion/import']"
       />
     </section>
     <section>

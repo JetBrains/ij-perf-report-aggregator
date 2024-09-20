@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.13.0",
-    "global-jsdom": "^24.0.0",
+    "global-jsdom": "^25.0.0",
     "jsdom": "^25.0.0",
     "msw": "^2.4.8"
   }

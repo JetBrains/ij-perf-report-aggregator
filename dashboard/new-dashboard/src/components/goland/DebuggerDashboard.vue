@@ -7,14 +7,14 @@
   >
     <section>
       <GroupProjectsChart
-        label="Run Debug Configuration"
+        label="Launch Debugger"
         measure="debugRunConfiguration"
         :projects="['runDebugConfiguration/debug']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Debug Step Into"
+        label="Step Into"
         measure="debugStep_into"
         :projects="['runDebugConfiguration/debug']"
       />

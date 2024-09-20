@@ -14,23 +14,16 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Auto-import Completion (kubernetes)"
-        measure="completion"
-        :projects="['kubernetesImport/completion']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
         label="Basic Completion"
         measure="completion"
-        :projects="['caddyCompletion/completion/variable', 'caddyCompletion/completion/type', 'caddyCompletion/completion/method', 'caddyCompletion/completion/interface']"
+        :projects="['caddy/completion/variable', 'caddy/completion/type', 'caddy/completion/method', 'caddy/completion/interface']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Smart Completion"
         measure="completion"
-        :projects="['smartCompletion/completion']"
+        :projects="['permify/completion/method', 'permify/completion/any']"
       />
     </section>
   </DashboardPage>

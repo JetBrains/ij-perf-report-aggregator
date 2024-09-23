@@ -27,7 +27,7 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["FindUsages PsiManager_getInstance", "Number FindUsages PsiManager_getInstance"],
+    labels: ["FindUsages PsiManager#getInstance", "Number FindUsages PsiManager#getInstance"],
     measures: ["findUsages", "findUsages#number"],
     projects: [
       "intellij_commit-changedDefault/findUsages/PsiManager_getInstance_firstCall",
@@ -38,32 +38,21 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["findUsages-getInstance-k2", "findUsages-getInstance-default", "findUsages-getInstance-k1", "findUsages-getInstance-k2"],
   },
   {
-    labels: ["FindUsages String_toString", "Number FindUsages String_toString"],
+    labels: ["FindUsages Library#getName", "Number FindUsages Library#getName"],
     measures: ["findUsages", "findUsages#number"],
     projects: [
-      "intellij_commit-changedDefault/findUsages/String_toString",
-      "intellij_commit/findUsages/String_toString",
-      "intellij_commit-k1/findUsages/String_toString",
-      "intellij_commit-k2/findUsages/String_toString",
+      "intellij_commit-changedDefault/findUsages/Library_getName",
+      "intellij_commit/findUsages/Library_getName",
+      "intellij_commit-k1/findUsages/Library_getName",
+      "intellij_commit-k2/findUsages/Library_getName",
     ],
-    aliases: ["findUsages-toString-k2", "findUsages-toString-default", "findUsages-toString-k1", "findUsages-toString-k2"],
+    aliases: ["findUsages-getName-k2", "findUsages-getName-default", "findUsages-getName-k1", "findUsages-getName-k2"],
   },
   {
     labels: ["Local inspections .kt Kotlin Serialization"],
     measures: ["localInspections"],
     projects: ["kotlin-changedDefault/localInspection", "kotlin/localInspection", "kotlin-k1/localInspection", "kotlin-k2/localInspection"],
     aliases: ["localInspections-k2", "localInspections-default", "localInspections-k1", "localInspections-k2"],
-  },
-  {
-    labels: ["Completion .java IntelliJ", "Completion first .java IntelliJ", "Completion .java 90p IntelliJ"],
-    measures: ["completion", "completion_1", "fus_completion_duration_90p"],
-    projects: [
-      "intellij_commit-changedDefault/completion/java_file",
-      "intellij_commit/completion/java_file",
-      "intellij_commit-k1/completion/java_file",
-      "intellij_commit-k2/completion/java_file",
-    ],
-    aliases: ["intellij-completion-k2", "intellij-completion-default", "intellij-completion-k1", "intellij-completion-k2"],
   },
   {
     labels: ["Completion .kt Toolbox", "Completion first .kt Toolbox", "Completion .kt 90p Toolbox"],
@@ -86,6 +75,18 @@ const chartsDeclaration: ChartDefinition[] = [
       "community-k2/go-to-all/Editor/typingLetterByLetter",
     ],
     aliases: ["SE-go-to-all-k2", "SE-go-to-all-default", "SE-go-to-all-k1", "SE-go-to-all-k2"],
+  },
+  {
+    labels: ["Global Inspections on kotlin serialization", "GC CollectionTimes on kotlin serialization"],
+    measures: ["globalInspections", "JVM.GC.collectionTimesMs"],
+    projects: ["kotlin-changedDefault/inspection", "kotlin/inspection", "kotlin-k1/inspection", "kotlin-k2/inspection"],
+    aliases: ["inspections-serialization-k2", "inspections-serialization-default", "inspections-serialization-k1", "inspections-serialization-k2"],
+  },
+  {
+    labels: ["Global Inspections on kotlin coroutines", "GC CollectionTimes on kotlin coroutines"],
+    measures: ["globalInspections", "JVM.GC.collectionTimesMs"],
+    projects: ["kotlin_coroutines-changedDefault/inspection", "kotlin_coroutines/inspection", "kotlin_coroutines-k1/inspection", "kotlin_coroutines-k2/inspection"],
+    aliases: ["inspections-coroutines-k2", "inspections-coroutines-default", "inspections-coroutines-k1", "inspections-coroutines-k2"],
   },
 ]
 

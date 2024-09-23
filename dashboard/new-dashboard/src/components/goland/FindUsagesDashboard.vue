@@ -7,44 +7,56 @@
   >
     <section>
       <GroupProjectsChart
-        label="Find Usages (vault): Execution Time"
+        label="Total Execution Time"
         measure="findUsages"
-        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
+        :projects="[
+          'vault/backend(interface)',
+          'vault/list(method)',
+          'vault/path(struct)',
+          'vault/string(method)',
+          'vault/unmarshalJSON(method)',
+          'pocketbase/write(method)',
+          'pocketbase/start(method)',
+          'pocketbase/open(method)',
+          'pocketbase/file(struct)',
+          'pocketbase/close(method)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Find Usages (vault): First Usage Time"
+        label="First Usage Time"
         measure="findUsages_firstUsage"
-        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
+        :projects="[
+          'vault/backend(interface)',
+          'vault/list(method)',
+          'vault/path(struct)',
+          'vault/string(method)',
+          'vault/unmarshalJSON(method)',
+          'pocketbase/write(method)',
+          'pocketbase/start(method)',
+          'pocketbase/open(method)',
+          'pocketbase/file(struct)',
+          'pocketbase/close(method)',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Find Usages (vault): Number of Usages"
+        label="Number of Usages"
         measure="findUsages#number"
-        :projects="['findUsages/unmarshalJSON', 'findUsages/path', 'findUsages/backend', 'findUsages/string', 'findUsages/list']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Find Usages (pocketbase): Execution Time"
-        measure="findUsages"
-        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Find Usages (pocketbase): First Usage Time"
-        measure="findUsages_firstUsage"
-        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Find Usages (pocketbase): Number of Usages"
-        measure="findUsages#number"
-        :projects="['findUsages/write(method)', 'findUsages/start(method)', 'findUsages/open(method)', 'findUsages/close(method)', 'findUsages/file(struct)']"
+        :projects="[
+          'vault/backend(interface)',
+          'vault/list(method)',
+          'vault/path(struct)',
+          'vault/string(method)',
+          'vault/unmarshalJSON(method)',
+          'pocketbase/write(method)',
+          'pocketbase/start(method)',
+          'pocketbase/open(method)',
+          'pocketbase/file(struct)',
+          'pocketbase/close(method)',
+        ]"
       />
     </section>
   </DashboardPage>

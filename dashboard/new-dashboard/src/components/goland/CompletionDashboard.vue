@@ -9,7 +9,7 @@
       <GroupProjectsChart
         label="Typing Latency"
         measure="typing#latency#mean_value"
-        :projects="['typing/typing/mattermost']"
+        :projects="['mattermost/typing']"
       />
     </section>
     <section>

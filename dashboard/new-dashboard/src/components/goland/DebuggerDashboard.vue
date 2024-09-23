@@ -9,14 +9,14 @@
       <GroupProjectsChart
         label="Launch Debugger"
         measure="debugRunConfiguration"
-        :projects="['runDebugConfiguration/debug']"
+        :projects="['river/debug']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Into"
         measure="debugStep_into"
-        :projects="['runDebugConfiguration/debug']"
+        :projects="['river/debug']"
       />
     </section>
   </DashboardPage>

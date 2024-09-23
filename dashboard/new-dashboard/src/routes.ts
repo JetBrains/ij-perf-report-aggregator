@@ -38,6 +38,7 @@ const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
+const PRIMARY_METRICS_ROUTE = "primary-metrics"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
 
@@ -50,6 +51,7 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
+  IntelliJPrimaryMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRIMARY_METRICS_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
   IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
@@ -273,6 +275,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJStartupDashboard,
           label: STARTUP_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJPrimaryMetricsDashboard,
+          label: PRIMARY_METRICS_ROUTE,
         },
         {
           url: ROUTES.IntelliJDashboard,
@@ -1145,6 +1151,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "idea",
           },
           meta: { pageTitle: "IDEA Startup dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJPrimaryMetricsDashboard,
+          component: () => import("./components/intelliJ/PrimaryMetricsDashboard.vue"),
+          meta: { pageTitle: "IDEA primary metrics" },
         },
         {
           path: ROUTES.IntelliJDashboard,

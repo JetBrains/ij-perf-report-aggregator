@@ -34,7 +34,7 @@
         <Select
           id="direction"
           v-model="direction"
-          :options="['IMPROVEMENT', 'DEGRADATION']"
+          :options="['OPTIMIZATION', 'DEGRADATION']"
         >
           <template #value="{ value }">
             <div class="group inline-flex justify-center text-sm font-medium">
@@ -147,7 +147,7 @@ const metric = ref(data.series[0].metricName ?? "")
 const test = ref(data.projectName)
 const branch = ref(data.branch)
 const isDegradation = data.deltaPrevious?.includes("-") ?? false
-const direction = ref(isDegradation ? "DEGRADATION" : "IMPROVEMENT")
+const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
 const buildType = computedAsync(async () => await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId), null)
 const firstCommit = ref()
 const lastCommit = ref()

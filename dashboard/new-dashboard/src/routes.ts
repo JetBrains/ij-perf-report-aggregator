@@ -223,6 +223,7 @@ const COMPARE_BUILDS_LABEL = "Compare Builds"
 const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
+const PRIMARY_METRICS_LABEL = "Primary Metrics"
 
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
@@ -278,7 +279,7 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJPrimaryMetricsDashboard,
-          label: PRIMARY_METRICS_ROUTE,
+          label: PRIMARY_METRICS_LABEL,
         },
         {
           url: ROUTES.IntelliJDashboard,

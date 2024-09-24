@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="perfintDev"
     table="idea"
-    persistent-id="idea_primary_dashboard_dev"
+    persistent-id="idea_product_dashboard_dev"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
     :with-installer="false"

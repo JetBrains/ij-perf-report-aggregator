@@ -38,7 +38,7 @@ const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
-const PRIMARY_METRICS_ROUTE = "primary-metrics"
+const PRODUCT_METRICS_ROUTE = "product-metrics"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
 
@@ -51,7 +51,7 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
-  IntelliJPrimaryMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRIMARY_METRICS_ROUTE}`,
+  IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
   IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
@@ -223,7 +223,7 @@ const COMPARE_BUILDS_LABEL = "Compare Builds"
 const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
-const PRIMARY_METRICS_LABEL = "Primary Metrics"
+const PRODUCT_METRICS_LABEL = "Product Metrics"
 
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
@@ -278,8 +278,8 @@ const IDEA: Product = {
           label: STARTUP_LABEL,
         },
         {
-          url: ROUTES.IntelliJPrimaryMetricsDashboard,
-          label: PRIMARY_METRICS_LABEL,
+          url: ROUTES.IntelliJProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
         },
         {
           url: ROUTES.IntelliJDashboard,
@@ -1154,8 +1154,8 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IDEA Startup dashboard" },
         },
         {
-          path: ROUTES.IntelliJPrimaryMetricsDashboard,
-          component: () => import("./components/intelliJ/PrimaryMetricsDashboard.vue"),
+          path: ROUTES.IntelliJProductMetricsDashboard,
+          component: () => import("./components/intelliJ/ProductMetricsDashboard.vue"),
           meta: { pageTitle: "IDEA primary metrics" },
         },
         {

@@ -46,6 +46,9 @@
       "ignoreMissing": [
         "primeicons"
       ]
+    },
+    "patchedDependencies": {
+      "primevue@4.0.7": "patches/primevue@4.0.7.patch"
     }
   },
   "engines": {

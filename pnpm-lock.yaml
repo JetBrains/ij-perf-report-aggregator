@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  primevue@4.0.7:
+    hash: os46tvshomzwrpqnvzcq7yjk2q
+    path: patches/primevue@4.0.7.patch
+
 importers:
 
   .:
@@ -116,7 +121,7 @@ importers:
         version: 2.2.2(typescript@5.6.2)(vue@3.5.8(typescript@5.6.2))
       primevue:
         specifier: 4.0.7
-        version: 4.0.7(vue@3.5.8(typescript@5.6.2))
+        version: 4.0.7(patch_hash=os46tvshomzwrpqnvzcq7yjk2q)(vue@3.5.8(typescript@5.6.2))
       rxjs:
         specifier: 8.0.0-alpha.14
         version: 8.0.0-alpha.14
@@ -155,7 +160,7 @@ importers:
         version: 2.2.2(typescript@5.6.2)(vue@3.5.8(typescript@5.6.2))
       primevue:
         specifier: 4.0.7
-        version: 4.0.7(vue@3.5.8(typescript@5.6.2))
+        version: 4.0.7(patch_hash=os46tvshomzwrpqnvzcq7yjk2q)(vue@3.5.8(typescript@5.6.2))
       rxjs:
         specifier: 8.0.0-alpha.14
         version: 8.0.0-alpha.14
@@ -5095,7 +5100,7 @@ snapshots:
 
   prettier@3.3.3: {}
 
-  primevue@4.0.7(vue@3.5.8(typescript@5.6.2)):
+  primevue@4.0.7(patch_hash=os46tvshomzwrpqnvzcq7yjk2q)(vue@3.5.8(typescript@5.6.2)):
     dependencies:
       '@primeuix/styled': 0.0.5
       '@primeuix/utils': 0.0.5

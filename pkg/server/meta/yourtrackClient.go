@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"io"
 	"log"
 	"log/slog"
@@ -40,6 +41,7 @@ type CreateIssueInfo struct {
 	Description  string          `json:"description"`
 	Project      YoutrackProject `json:"project"`
 	CustomFields []CustomField   `json:"customFields"`
+	Reporter     *auth.YTUser    `json:"reporter,omitempty"`
 }
 
 func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {

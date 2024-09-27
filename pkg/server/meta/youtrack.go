@@ -3,6 +3,7 @@ package meta
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"log/slog"
@@ -55,6 +56,7 @@ type CreateIssueResponse struct {
 
 var teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
 var youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+var ytAuth = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
@@ -116,11 +118,23 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			params.TestType,
 		}
 
+		accessToken := request.Header.Get("X-Auth-Request-Access-Token")
+		user, err := auth.FetchUserInfo(request.Context(), accessToken)
+		if err != nil {
+			slog.Warn("cannot fetch user info", "error", err)
+		}
+
+		userId, err := ytAuth.GetUser(request.Context(), user.Email)
+		if err != nil {
+			slog.Warn("error getting user id:", "error", err)
+			userId = nil
+		}
 		issueInfo := CreateIssueInfo{
 			Summary:      fmt.Sprintf("[%s] %s", lowerKind, params.TicketLabel),
 			Description:  generateDescription(descriptionData),
 			Project:      YoutrackProject{ID: params.ProjectId},
 			CustomFields: params.CustomFields,
+			Reporter:     userId,
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)

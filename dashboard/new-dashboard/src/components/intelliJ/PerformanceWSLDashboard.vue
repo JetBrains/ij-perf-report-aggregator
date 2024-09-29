@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="idea"
     persistent-id="ideaDev_wsl_performance_dashboard"
-    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    initial-machine="Windows Munich i7-13700, 64 Gb"
     :charts="charts"
     :with-installer="false"
   >
@@ -62,7 +62,7 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["wsl-java/indexing", "wsl-spring-pet-clinic-gradle/indexing", "wsl-spring-pet-clinic-maven/indexing", "wsl-empty_project/indexing", "wsl-grails/indexing"],
   },
   {
-    labels: ["Indexing on WSL"],
+    labels: ["Scanning on WSL"],
     measures: ["scanningTimeWithoutPauses"],
     projects: ["wsl-java/indexing", "wsl-spring-pet-clinic-gradle/indexing", "wsl-spring-pet-clinic-maven/indexing", "wsl-empty_project/indexing", "wsl-grails/indexing"],
   },

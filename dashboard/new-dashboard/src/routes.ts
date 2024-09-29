@@ -58,6 +58,7 @@ enum ROUTES {
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJ}/incrementalCompilationDashboard`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
+  IntelliJWSLDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardWSL`,
   IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
   IntelliJK2Dashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardPerformanceK2`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
@@ -308,6 +309,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJSharedIndicesDashboard,
           label: "Shared Indexes Dashboard",
+        },
+        {
+          url: ROUTES.IntelliJWSLDashboard,
+          label: "WSL Dashboard",
         },
         {
           url: ROUTES.IntelliJIncrementalCompilationDashboard,
@@ -1288,6 +1293,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJSharedIndicesDashboard,
           component: () => import("./components/intelliJ/SharedIndexesDashboard.vue"),
           meta: { pageTitle: "Shared Indexes Performance Dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJWSLDashboard,
+          component: () => import("./components/intelliJ/PerformanceWSLDashboard.vue"),
+          meta: { pageTitle: "WSL Performance Dashboard" },
         },
         {
           path: ROUTES.IntelliJEmbeddingSearchDashboard,

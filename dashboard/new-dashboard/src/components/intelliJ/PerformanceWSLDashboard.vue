@@ -69,7 +69,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Rebuild on WSL"],
     measures: ["build_compilation_duration"],
-    projects: ["wsl-empty_project/rebuild"],
+    projects: ["wsl-empty_project/rebuild", "wsl-java/rebuild", "wsl-grails/rebuild"],
   },
 ]
 

@@ -53,15 +53,11 @@ enum ROUTES {
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
-  IntelliJDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardOld`,
   IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
-  IntelliJIndexingDashboardOld = `${ROUTE_PREFIX.IntelliJ}/indexingDashboardOld`,
   IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJ}/incrementalCompilationDashboard`,
   IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
-  IntelliJFindUsagesDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsagesOld`,
   IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
-  IntelliJSEDashboardOld = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhereOld`,
   IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
   IntelliJK2Dashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardPerformanceK2`,
   IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
@@ -86,6 +82,7 @@ enum ROUTES {
   IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
   IntelliJFusStartupDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardStartup`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
+  PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
@@ -113,6 +110,7 @@ enum ROUTES {
   KotlinCompareBranches = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}`,
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandStartupDashboard = `${ROUTE_PREFIX.GoLand}/${STARTUP_ROUTE}`,
+  GoLandProductMetricsDashboard = `${ROUTE_PREFIX.GoLand}/${PRODUCT_METRICS_ROUTE}`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
   GoLandScanningDashboard = `${ROUTE_PREFIX.GoLand}/scanningDashboard`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
@@ -124,6 +122,7 @@ enum ROUTES {
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
+  PyCharmProductMetricsDashboard = `${ROUTE_PREFIX.PyCharm}/${PRODUCT_METRICS_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}Dev`,
   PyCharmOldDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
@@ -131,6 +130,7 @@ enum ROUTES {
   PyCharmCompare = `${ROUTE_PREFIX.PyCharm}/${COMPARE_ROUTE}`,
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
+  WebStormProductMetricsDashboard = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
   WebStormDashboardNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardNext`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
@@ -138,6 +138,7 @@ enum ROUTES {
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
+  RubyMineProductMetricsDashboard = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
   RubyMineInspectionsDashBoard = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboard`,
@@ -145,6 +146,7 @@ enum ROUTES {
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
   RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
+  RustRoverProductMetricsDashboard = `${ROUTE_PREFIX.Rust}/${PRODUCT_METRICS_ROUTE}`,
   RustRoverFirstStartupDashboard = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboard`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
@@ -169,6 +171,7 @@ enum ROUTES {
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
   ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionNovaStartupDashboard = `${ROUTE_PREFIX.Clion}/nova_${STARTUP_ROUTE}`,
+  ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
@@ -190,6 +193,7 @@ enum ROUTES {
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
+  DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
@@ -470,6 +474,10 @@ const PHPSTORM: Product = {
           label: STARTUP_LABEL,
         },
         {
+          url: ROUTES.PhpStormProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
           url: ROUTES.PhpStormDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -572,6 +580,10 @@ const GOLAND: Product = {
           label: STARTUP_LABEL,
         },
         {
+          url: ROUTES.GoLandProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
           url: ROUTES.GoLandIndexingDashboard,
           label: "Indexing",
         },
@@ -624,6 +636,10 @@ const RUBYMINE: Product = {
           label: STARTUP_LABEL,
         },
         {
+          url: ROUTES.RubyMineProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -659,6 +675,10 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmStartupDashboard,
           label: STARTUP_LABEL,
+        },
+        {
+          url: ROUTES.PyCharmProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
         },
         {
           url: ROUTES.PyCharmDashboard,
@@ -698,6 +718,10 @@ const WEBSTORM: Product = {
           label: STARTUP_LABEL,
         },
         {
+          url: ROUTES.WebStormProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
           url: ROUTES.WebStormDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -731,12 +755,16 @@ const RUST: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.RustRoverDashboard,
-          label: "RustRover Dashboard",
-        },
-        {
           url: ROUTES.RustRoverFirstStartupDashboard,
           label: "RustRover First Startup Dashboard",
+        },
+        {
+          url: ROUTES.RustRoverProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
+          url: ROUTES.RustRoverDashboard,
+          label: "RustRover Dashboard",
         },
         {
           url: ROUTES.RustTests,
@@ -898,6 +926,10 @@ const CLION: Product = {
           label: "CLion Nova Startup",
         },
         {
+          url: ROUTES.ClionProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
+        },
+        {
           url: ROUTES.ClionPerfDashboard,
           label: "Performance",
         },
@@ -937,6 +969,10 @@ const DATAGRIP: Product = {
         {
           url: ROUTES.DataGripStartupDashboard,
           label: STARTUP_LABEL,
+        },
+        {
+          url: ROUTES.DataGripProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL,
         },
         {
           url: ROUTES.DataGripIndexingDashboard,
@@ -1156,7 +1192,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.IntelliJProductMetricsDashboard,
           component: () => import("./components/intelliJ/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "IDEA primary metrics" },
+          meta: { pageTitle: "IDEA product metrics" },
         },
         {
           path: ROUTES.IntelliJDashboard,
@@ -1307,6 +1343,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "PhpStorm Startup dashboard" },
         },
         {
+          path: ROUTES.PhpStormProductMetricsDashboard,
+          component: () => import("./components/phpstorm/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "PhpStorm product metrics" },
+        },
+        {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PhpStorm Performance dashboard" },
@@ -1372,6 +1413,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "kratos",
           },
           meta: { pageTitle: "GoLand Startup dashboard" },
+        },
+        {
+          path: ROUTES.GoLandProductMetricsDashboard,
+          component: () => import("./components/goland/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "GoLand product metrics" },
         },
         {
           path: ROUTES.GoLandIndexingDashboard,
@@ -1441,6 +1487,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "PyCharm Startup dashboard" },
         },
         {
+          path: ROUTES.PyCharmProductMetricsDashboard,
+          component: () => import("./components/pycharm/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "PyCharm product metrics" },
+        },
+        {
           path: ROUTES.PyCharmDashboard,
           component: () => import("./components/pycharm/PerformanceDashboard.vue"),
           meta: { pageTitle: "PyCharm Performance dashboard" },
@@ -1499,6 +1550,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "WebStorm Startup dashboard" },
         },
         {
+          path: ROUTES.WebStormProductMetricsDashboard,
+          component: () => import("./components/webstorm/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "WebStorm product metrics" },
+        },
+        {
           path: ROUTES.WebStormDashboard,
           component: () => import("./components/webstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "WebStorm Performance dashboard" },
@@ -1549,6 +1605,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "diaspora",
           },
           meta: { pageTitle: "Ruby Startup dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineProductMetricsDashboard,
+          component: () => import("./components/rubymine/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "RubyMine product metrics" },
         },
         {
           path: ROUTES.RubyMineDashboard,
@@ -1722,6 +1783,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.KotlinMemoryDashboardDev,
           component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
           meta: { pageTitle: "Memory (dev)" },
+        },
+        {
+          path: ROUTES.RustRoverProductMetricsDashboard,
+          component: () => import("./components/rust/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "RustRover product metrics" },
         },
         {
           path: ROUTES.RustRoverDashboard,
@@ -1920,6 +1986,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "CLion Classic Startup dashboard" },
         },
         {
+          path: ROUTES.ClionProductMetricsDashboard,
+          component: () => import("./components/clion/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "CLion product metrics" },
+        },
+        {
           path: ROUTES.ClionPerfDashboard,
           component: () => import("./components/clion/PerformanceDashboard.vue"),
           props: {
@@ -2064,6 +2135,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "empty project",
           },
           meta: { pageTitle: "DataGrip Startup dashboard" },
+        },
+        {
+          path: ROUTES.DataGripProductMetricsDashboard,
+          component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "DataGrip product metrics" },
         },
         {
           path: ROUTES.DataGripIndexingDashboard,

@@ -115,11 +115,6 @@ export interface CreateIssueRequest {
   projectId: string
   buildLink: string
   changesLink: string
-  customFields: {
-    name: string
-    $type: string
-    value: { name: string }
-  }[]
   dashboardLink: string
   affectedMetric: string
   delta: string

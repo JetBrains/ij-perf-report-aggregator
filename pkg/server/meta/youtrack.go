@@ -130,11 +130,10 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			userId = nil
 		}
 		issueInfo := CreateIssueInfo{
-			Summary:      fmt.Sprintf("[%s] %s", lowerKind, params.TicketLabel),
-			Description:  generateDescription(descriptionData),
-			Project:      YoutrackProject{ID: params.ProjectId},
-			CustomFields: params.CustomFields,
-			Reporter:     userId,
+			Summary:     fmt.Sprintf("[%s] %s", lowerKind, params.TicketLabel),
+			Description: generateDescription(descriptionData),
+			Project:     YoutrackProject{ID: params.ProjectId},
+			Reporter:    userId,
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)

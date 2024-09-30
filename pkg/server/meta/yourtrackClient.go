@@ -37,11 +37,10 @@ type CustomField struct {
 }
 
 type CreateIssueInfo struct {
-	Summary      string          `json:"summary"`
-	Description  string          `json:"description"`
-	Project      YoutrackProject `json:"project"`
-	CustomFields []CustomField   `json:"customFields"`
-	Reporter     *auth.YTUser    `json:"reporter,omitempty"`
+	Summary     string          `json:"summary"`
+	Description string          `json:"description"`
+	Project     YoutrackProject `json:"project"`
+	Reporter    *auth.YTUser    `json:"reporter,omitempty"`
 }
 
 func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {

@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.62.0
-	github.com/ClickHouse/clickhouse-go/v2 v2.28.3
+	github.com/ClickHouse/clickhouse-go/v2 v2.29.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.9.2

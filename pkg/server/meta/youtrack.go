@@ -134,6 +134,11 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			Description: generateDescription(descriptionData),
 			Project:     YoutrackProject{ID: params.ProjectId},
 			Reporter:    userId,
+			Visibility: Visibility{
+				PermittedGroups: []auth.YTUser{{ID: "10-3"}},
+				PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}},
+				Type:            "LimitedVisibility",
+			},
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)

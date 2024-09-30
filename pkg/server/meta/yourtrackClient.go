@@ -37,11 +37,18 @@ type CustomField struct {
 	} `json:"value"`
 }
 
+type Visibility struct {
+	PermittedGroups []auth.YTUser `json:"permittedGroups"`
+	PermittedUsers  []auth.YTUser `json:"permittedUsers"`
+	Type            string        `json:"$type"`
+}
+
 type CreateIssueInfo struct {
 	Summary     string          `json:"summary"`
 	Description string          `json:"description"`
 	Project     YoutrackProject `json:"project"`
 	Reporter    *auth.YTUser    `json:"reporter,omitempty"`
+	Visibility  Visibility      `json:"visibility"`
 }
 
 func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {

@@ -168,7 +168,7 @@ func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId st
 	}
 
 	if err != nil {
-		return fmt.Errorf("operation failed after 5 retries: %w", err)
+		return fmt.Errorf("checking whether the issue is created failed after 5 retries: %w", err)
 	}
 	return nil
 }
@@ -189,7 +189,10 @@ func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId stri
 
 	writer.Close()
 
-	client.waitIssueIsCreated(ctx, issueId)
+	err = client.waitIssueIsCreated(ctx, issueId)
+	if err != nil {
+		return fmt.Errorf("issue was not created: %w", err)
+	}
 
 	_, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", &body, map[string]string{"Content-Type": writer.FormDataContentType()})
 	if err != nil {

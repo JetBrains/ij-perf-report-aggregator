@@ -92,18 +92,6 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Routes Highlighting"
-        measure="highlighting"
-        :projects="[
-          'redmine-project-test/highlight/routes-highlighting',
-          'gitlab-project-test/highlight/routes-highlighting',
-          'diaspora-project-test/highlight/routes-highlighting',
-        ]"
-        :aliases="['Redmine', 'Gitlab', 'Diaspora']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
         label="File Analysis on Open"
         measure="firstCodeAnalysis"
         :projects="[
@@ -307,6 +295,18 @@
           'Erb Inspections',
           'Inspections on DataGrip files',
         ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Routes Highlighting (removed)"
+        measure="highlighting"
+        :projects="[
+          'redmine-project-test/highlight/routes-highlighting',
+          'gitlab-project-test/highlight/routes-highlighting',
+          'diaspora-project-test/highlight/routes-highlighting',
+        ]"
+        :aliases="['Redmine', 'Gitlab', 'Diaspora']"
       />
     </section>
   </DashboardPage>

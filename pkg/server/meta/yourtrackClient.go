@@ -12,6 +12,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type YoutrackClient struct {
@@ -145,6 +146,33 @@ func (client *YoutrackClient) GetCustomFields(ctx context.Context, projectId str
 	return customFields, nil
 }
 
+func (client *YoutrackClient) waitIssueIsCreated(ctx context.Context, issueId string) error {
+	var responseData []byte
+	var err error
+	var issue YoutrackIssue
+
+	for range 5 {
+		responseData, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s?fields=id,idReadable", issueId), http.MethodGet, nil, map[string]string{
+			"Content-Type": "application/json",
+		})
+
+		if err == nil {
+			if err = json.Unmarshal(responseData, &issue); err == nil {
+				break
+			}
+			err = fmt.Errorf("error unmarshalling issue: %w", err)
+		} else {
+			err = fmt.Errorf("error fetching from YouTrack: %w", err)
+		}
+		time.Sleep(3 * time.Second)
+	}
+
+	if err != nil {
+		return fmt.Errorf("operation failed after 5 retries: %w", err)
+	}
+	return nil
+}
+
 func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId string, file []byte, fileName string) error {
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
@@ -160,6 +188,8 @@ func (client *YoutrackClient) UploadAttachment(ctx context.Context, issueId stri
 	}
 
 	writer.Close()
+
+	client.waitIssueIsCreated(ctx, issueId)
 
 	_, err = client.fetchFromYouTrack(ctx, fmt.Sprintf("/api/issues/%s/attachments", issueId), "POST", &body, map[string]string{"Content-Type": writer.FormDataContentType()})
 	if err != nil {

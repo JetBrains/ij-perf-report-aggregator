@@ -18,7 +18,7 @@ lint:
 #To fix run: pnpm prettier --write . --loglevel
 	pnpm prettier --check . --log-level warn
 	ESLINT_USE_FLAT_CONFIG=false eslint . --ext .js,.vue,.ts
-	vue-tsc --noEmit
+	vue-tsc
 
 
 build-server:

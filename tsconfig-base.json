@@ -1,21 +1,28 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "target": "ESNext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "strict": true,
     "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "newLine": "LF",
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "skipLibCheck": true,
+
+    "module": "preserve",
     "jsx": "preserve",
+    "noEmit": true,
+    "moduleResolution": "node",
+
+    "newLine": "LF",
+    "sourceMap": true,
     "lib": ["esnext", "dom"],
     "types": ["vite/client"]
   }

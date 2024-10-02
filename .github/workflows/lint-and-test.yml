@@ -43,7 +43,7 @@ jobs:
       - name: Run ESLint
         run: ESLINT_USE_FLAT_CONFIG=false pnpm eslint . --ext .js,.vue,.ts
       - name: Run VueTSC
-        run: pnpm vue-tsc --noEmit
+        run: pnpm vue-tsc
       - name: Run Prettier
         run: pnpm prettier --check . --log-level warn
       - name: Run tests

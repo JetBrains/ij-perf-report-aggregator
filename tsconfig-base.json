@@ -7,23 +7,24 @@
     "resolveJsonModule": true,
     "moduleDetection": "force",
     "isolatedModules": true,
-
-
     "strict": true,
     "noUnusedLocals": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-
     "module": "preserve",
     "jsx": "preserve",
     "noEmit": true,
     "moduleResolution": "node",
-
     "newLine": "LF",
     "sourceMap": true,
-    "lib": ["esnext", "dom"],
-    "types": ["vite/client"]
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "vite/client"
+    ]
   }
 }

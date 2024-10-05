@@ -37,6 +37,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["indexing-eslint/wsl", "indexing-eslint/windows"],
   },
   {
+    labels: ["Eslint number of indexed files WSL/Windows"],
+    measures: ["numberOfIndexedFiles"],
+    projects: ["indexing-eslint/wsl", "indexing-eslint/windows"],
+  },
+  {
     labels: ["Design Patterns indexing WSL/Windows"],
     measures: ["indexingTimeWithoutPauses"],
     projects: ["indexing-java/wsl", "indexing-java/windows"],
@@ -44,6 +49,11 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Design Patterns scanning WSL/Windows"],
     measures: ["scanningTimeWithoutPauses"],
+    projects: ["indexing-java/wsl", "indexing-java/windows"],
+  },
+  {
+    labels: ["Design Patterns number of indexed files WSL/Windows"],
+    measures: ["numberOfIndexedFiles"],
     projects: ["indexing-java/wsl", "indexing-java/windows"],
   },
   {
@@ -57,6 +67,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["indexing-sources-intellij-community-master/wsl", "indexing-sources-intellij-community-master/windows"],
   },
   {
+    labels: ["Community number of indexed files WSL/Windows"],
+    measures: ["numberOfIndexedFiles"],
+    projects: ["indexing-sources-intellij-community-master/wsl", "indexing-sources-intellij-community-master/windows"],
+  },
+  {
     labels: ["Indexing on WSL"],
     measures: ["indexingTimeWithoutPauses"],
     projects: ["wsl-java/indexing", "wsl-spring-pet-clinic-gradle/indexing", "wsl-spring-pet-clinic-maven/indexing", "wsl-empty_project/indexing", "wsl-grails/indexing"],
@@ -64,6 +79,11 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Scanning on WSL"],
     measures: ["scanningTimeWithoutPauses"],
+    projects: ["wsl-java/indexing", "wsl-spring-pet-clinic-gradle/indexing", "wsl-spring-pet-clinic-maven/indexing", "wsl-empty_project/indexing", "wsl-grails/indexing"],
+  },
+  {
+    labels: ["Number of indexed files on WSL"],
+    measures: ["numberOfIndexedFiles"],
     projects: ["wsl-java/indexing", "wsl-spring-pet-clinic-gradle/indexing", "wsl-spring-pet-clinic-maven/indexing", "wsl-empty_project/indexing", "wsl-grails/indexing"],
   },
   {

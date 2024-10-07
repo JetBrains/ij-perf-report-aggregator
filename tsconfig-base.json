@@ -19,12 +19,7 @@
     "moduleResolution": "node",
     "newLine": "LF",
     "sourceMap": true,
-    "lib": [
-      "esnext",
-      "dom"
-    ],
-    "types": [
-      "vite/client"
-    ]
+    "lib": ["esnext", "dom"],
+    "types": ["vite/client"]
   }
 }

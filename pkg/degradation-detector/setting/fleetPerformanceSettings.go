@@ -45,7 +45,7 @@ func GenerateFleetPerformanceSettings(backendUrl string, client *http.Client) []
 				Project: test,
 
 				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength:      10,
+					MinimumSegmentLength:      15,
 					MedianDifferenceThreshold: 5,
 					EffectSizeThreshold:       2,
 					ReportType:                detector.AllEvent,

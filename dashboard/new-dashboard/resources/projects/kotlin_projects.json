@@ -191,6 +191,9 @@
         "intellij_commit/moveFile_UAnnotationUtils.kt_to_analysis"
       ]
     },
+    "moveDeclarations": {
+      "qaRefactorMove" : ["refactor-move/moveDeclarations_from_Referred.kt_to_Target.kt"]
+    },
     "refactoringRename": {
       "intelliJ": [
         "intellij_commit/rename/SqlBlock_SqlBlockRenamed"

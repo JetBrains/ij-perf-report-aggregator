@@ -189,8 +189,10 @@
         "intellij_commit/moveFile_OptimizedImportsBuilder.kt_to_caches",
         "intellij_commit/moveFile_ORMReferencesUtil.java_to_util",
         "intellij_commit/moveFile_UAnnotationUtils.kt_to_analysis"
-      ],
-      "qa-materials" : ["refactor-move/moveDeclarations_from_Referred.kt_to_Target.kt"]
+      ]
+    },
+    "moveDeclarations": {
+      "qaRefactorMove" : ["refactor-move/moveDeclarations_from_Referred.kt_to_Target.kt"]
     },
     "refactoringRename": {
       "intelliJ": [

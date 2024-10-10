@@ -27,6 +27,10 @@ const MEASURES = {
     { name: "moveFiles#mean_value", label: "Move files" },
     { name: "moveFiles_back#mean_value", label: "Move files back" },
   ],
+  moveDeclarationsMeasure: [
+    { name: "moveDeclarations#mean_value", label: "Move declarations" },
+    { name: "moveDeclarations_back#mean_value", label: "Move declarations back" },
+  ],
   optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
   insertCodeMeasures: [{ name: "execute_editor_paste", label: "Insert code" }],
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
@@ -120,6 +124,8 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   petClinic: buildCategory("Pet Clinic", "kotlin_petclinic/"),
   arrow: buildCategory("Arrow", "arrow/"),
   kotlinEmptyScript: buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
+
+  qaRefactorMove: buildCategory("QA Refactor / Move", "refactor-move/"),
 }
 
 export const KOTLIN_PROJECTS = kotlinProjects
@@ -213,6 +219,11 @@ export const refactoringCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.moveFiles,
     measures: MEASURES.moveFilesMeasure,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.moveDeclarations,
+    measures: MEASURES.moveDeclarationsMeasure,
     machines: [MACHINES.linux],
   },
 ])

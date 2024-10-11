@@ -12,7 +12,7 @@
     "pinia": "^2.2.4",
     "primevue": "4.0.7",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.11",
+    "vue": "3.5.12",
     "vue-router": "4.4.5"
   },
   "devDependencies": {
@@ -20,6 +20,6 @@
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^25.0.0",
     "jsdom": "^25.0.1",
-    "msw": "^2.4.9"
+    "msw": "^2.4.11"
   }
 }

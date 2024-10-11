@@ -56,7 +56,7 @@ const { label, measure, project } = defineProps<{
   project: string
 }>()
 
-const selectedIndex = ref(0)
+const selectedIndex = ref(1)
 
 const getAllMeasures = (prefix: string) => [`${prefix}/beforeGC`, prefix, `${prefix}/idle`]
 const tabDescription = ["Before GC", "After GC", "After GC (idle)"]

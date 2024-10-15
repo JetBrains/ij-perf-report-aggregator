@@ -41,7 +41,7 @@
       "description": "Used to provide code navigation to the test method.",
       "type": "string"
     },
-    "mode" : {
+    "mode": {
       "description": "Mode of the test. Example, 'split', 'customJBR', 'Kotlin K2'.",
       "type": "string"
     },

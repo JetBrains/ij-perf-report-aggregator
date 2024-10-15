@@ -8,6 +8,16 @@
         :release-configurator="releaseConfigurator"
         :triggered-by-configurator="triggeredByConfigurator"
       />
+      <DimensionSelect
+        v-if="testModeConfigurator != null && testModeConfigurator.values.value.length > 1"
+        label="Mode"
+        :dimension="testModeConfigurator"
+        :selected-label="modeSelectLabelFormat"
+      >
+        <template #icon>
+          <AdjustmentsVerticalIcon class="w-4 h-4" />
+        </template>
+      </DimensionSelect>
       <MachineSelect
         v-if="machineConfigurator != null"
         :machine-configurator="machineConfigurator"
@@ -32,12 +42,16 @@ import BranchSelect from "./BranchSelect.vue"
 import MachineSelect from "./MachineSelect.vue"
 import StickyToolbar from "./StickyToolbar.vue"
 import TimeRangeSelect from "./TimeRangeSelect.vue"
+import { modeSelectLabelFormat } from "../../shared/labels"
+import DimensionSelect from "../charts/DimensionSelect.vue"
+import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 
-const { timeRangeConfigurator, branchConfigurator, releaseConfigurator, triggeredByConfigurator, machineConfigurator } = defineProps<{
+const { timeRangeConfigurator, branchConfigurator, releaseConfigurator, triggeredByConfigurator, machineConfigurator, testModeConfigurator } = defineProps<{
   timeRangeConfigurator: TimeRangeConfigurator
   branchConfigurator: BranchConfigurator | null
   releaseConfigurator?: ReleaseNightlyConfigurator
   triggeredByConfigurator: BuildConfigurator
   machineConfigurator?: MachineConfigurator
+  testModeConfigurator?: DimensionConfigurator | null
 }>()
 </script>

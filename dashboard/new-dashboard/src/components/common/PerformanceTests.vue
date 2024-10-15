@@ -63,6 +63,16 @@
             </template>
           </DimensionSelect>
         </span>
+        <DimensionSelect
+          v-if="testModeConfigurator != null && testModeConfigurator.values.value.length > 1"
+          label="Mode"
+          :dimension="testModeConfigurator"
+          :selected-label="modeSelectLabelFormat"
+        >
+          <template #icon>
+            <AdjustmentsVerticalIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
         <MachineSelect
           v-if="machineConfigurator != null"
           :machine-configurator="machineConfigurator"
@@ -133,7 +143,7 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
-import { testsSelectLabelFormat, metricsSelectLabelFormat } from "../../shared/labels"
+import { testsSelectLabelFormat, metricsSelectLabelFormat, modeSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import LineChart from "../charts/LineChart.vue"
@@ -150,6 +160,8 @@ import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
 import { AccidentsConfiguratorForTests } from "../../configurators/accidents/AccidentsConfiguratorForTests"
+import { createTestModeConfigurator, defaultModeName } from "../../configurators/TestModeConfigurator"
+import { dbTypeStore } from "../../shared/dbTypes"
 
 interface PerformanceTestsProps {
   dbName: string
@@ -188,6 +200,7 @@ const persistentStateManager = new PersistentStateManager(
     measure: [],
     type: TestMetricSwitcher.Tests,
     releaseConfigurator,
+    mode: defaultModeName,
   },
   router
 )
@@ -208,6 +221,11 @@ if (branchConfigurator != null) {
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
 filters.push(scenarioConfigurator)
 
+const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistentStateManager, [...filters]) : null
+if (testModeConfigurator != null) {
+  filters.push(testModeConfigurator)
+}
+
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
 if (initialMachine != null && machineConfigurator != null && machineConfigurator.selected.value.length === 0) {
@@ -223,6 +241,9 @@ if (branchConfigurator != null) {
 }
 if (machineConfigurator != null) {
   configurators.push(machineConfigurator)
+}
+if (testModeConfigurator != null) {
+  configurators.push(testModeConfigurator)
 }
 
 const releaseNightlyConfigurator = withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null

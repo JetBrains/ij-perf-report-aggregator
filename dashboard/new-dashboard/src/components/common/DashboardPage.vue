@@ -7,6 +7,7 @@
       :on-change-range="onChangeRange"
       :time-range-configurator="timeRangeConfigurator"
       :triggered-by-configurator="triggeredByConfigurator"
+      :test-mode-configurator="testModeConfigurator"
     >
       <template #configurator>
         <slot name="configurator" />
@@ -49,6 +50,8 @@ import { provideReportUrlProvider } from "./lineChartTooltipLinkProvider"
 import { InfoSidebarImpl } from "./sideBar/InfoSidebar"
 import InfoSidebar from "./sideBar/InfoSidebar.vue"
 import { AccidentsConfiguratorForDashboard } from "../../configurators/accidents/AccidentsConfiguratorForDashboard"
+import { dbTypeStore } from "../../shared/dbTypes"
+import { createTestModeConfigurator, defaultModeName } from "../../configurators/TestModeConfigurator"
 
 interface PerformanceDashboardProps {
   dbName: string
@@ -93,6 +96,7 @@ const persistenceForDashboard = new PersistentStateManager(
     project: [],
     branch,
     releaseConfigurator,
+    mode: defaultModeName,
   },
   router
 )
@@ -139,6 +143,12 @@ const releaseNightlyConfigurator = withInstaller ? new ReleaseNightlyConfigurato
 if (releaseNightlyConfigurator != null) {
   dashboardConfigurators.push(releaseNightlyConfigurator)
 }
+
+const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters) : null
+if (testModeConfigurator != null) {
+  dashboardConfigurators.push(testModeConfigurator)
+}
+
 provide(dashboardConfiguratorsKey, dashboardConfigurators)
 
 function onChangeRange(value: TimeRange) {

@@ -84,7 +84,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 			HasNoInstallerButHasChanges: true,
 			extraFieldCount:             3,
 			insertStatementWriter: func(sb *strings.Builder) {
-				sb.WriteString(", measures.name, measures.value, measures.type")
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
 	case strings.HasPrefix(id, "perfint"):
@@ -98,7 +98,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 			HasMetaDB:         true,
 			extraFieldCount:   3,
 			insertStatementWriter: func(sb *strings.Builder) {
-				sb.WriteString(", measures.name, measures.value, measures.type")
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
 	case id == "fleet":
@@ -120,7 +120,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 			HasMetaDB:         true,
 			extraFieldCount:   3,
 			insertStatementWriter: func(sb *strings.Builder) {
-				sb.WriteString(", measures.name, measures.value, measures.type")
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
 	case id == "perf_fleet":
@@ -172,7 +172,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 			HasNoInstallerButHasChanges: true,
 			extraFieldCount:             3,
 			insertStatementWriter: func(sb *strings.Builder) {
-				sb.WriteString(", measures.name, measures.value, measures.type")
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
 	default:

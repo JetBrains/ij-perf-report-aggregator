@@ -63,12 +63,18 @@ func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) er
 		measureTypes = append(measureTypes, measureType)
 	}
 
+	m := data.GetStringBytes("mode")
+	mode := ""
+	if m != nil {
+		mode = string(m)
+	}
+
 	if len(measureNames) == 0 {
 		slog.Warn("invalid report - no measures, report will be skipped", "id", runResult.TcBuildId)
 		runResult.Report = nil
 		return nil
 	}
 
-	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes}
+	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes, mode}
 	return nil
 }

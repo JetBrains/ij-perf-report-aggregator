@@ -17,7 +17,8 @@ create table pycharm
   `build_c2`              UInt16 CODEC (DoubleDelta, ZSTD(20)),
   `build_c3`              UInt16 CODEC (DoubleDelta, ZSTD(20)),
 
-  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20))
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
+  `mode`                  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
 --     partitioning by month gives up to 3x performance boost

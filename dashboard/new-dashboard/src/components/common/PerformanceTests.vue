@@ -180,8 +180,6 @@ enum TestMetricSwitcher {
   Metrics = "Metrics",
 }
 
-provideReportUrlProvider(withInstaller)
-
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
@@ -190,6 +188,8 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, table)
+
+provideReportUrlProvider(withInstaller)
 provide(serverConfiguratorKey, serverConfigurator)
 const persistentStateManager = new PersistentStateManager(
   `${dbName}-${table}-dashboard`,

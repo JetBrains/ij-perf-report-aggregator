@@ -77,8 +77,6 @@ const {
   branch = "master",
 } = defineProps<PerformanceDashboardProps>()
 
-provideReportUrlProvider(withInstaller, isBuildNumberExists)
-
 const container = useTemplateRef<HTMLElement>("container")
 const router = useRouter()
 const sidebarVm = new InfoSidebarImpl()
@@ -87,6 +85,8 @@ provide(containerKey, container)
 provide(sidebarVmKey, sidebarVm)
 
 const serverConfigurator = new ServerWithCompressConfigurator(dbName, table)
+
+provideReportUrlProvider(withInstaller, isBuildNumberExists)
 provide(serverConfiguratorKey, serverConfigurator)
 
 const persistenceForDashboard = new PersistentStateManager(

@@ -115,8 +115,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   let installerId: number | undefined
   let type: ValueUnit | undefined = valueUnit
   let branch: string | undefined
+  let mode: string | undefined
   const dbType = dbTypeStore().dbType
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF) {
+  if (dbType == DBType.FLEET_PERF) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
@@ -124,6 +125,16 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     machineName = dataSeries[4] as string
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
+  }
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
+    metricName = dataSeries[2] as string
+    if (dataSeries[3] == "c") {
+      type = "counter"
+    }
+    machineName = dataSeries[4] as string
+    projectName = dataSeries[6] as string
+    branch = dataSeries[7] as string
+    mode = dataSeries[8] as string
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     metricName = dataSeries[2] as string
@@ -162,6 +173,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     projectName = dataSeries[6] as string
     installerId = dataSeries[7] as number
     branch = dataSeries[11] as string
+    mode = dataSeries[12] as string
   }
   if (dbType == DBType.BAZEL) {
     metricName = dataSeries[2] as string
@@ -214,6 +226,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     branch,
     metricName,
     type,
+    mode,
   }
 }
 

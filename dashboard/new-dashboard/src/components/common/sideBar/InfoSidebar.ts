@@ -31,6 +31,7 @@ export interface InfoData {
   chartDataUrl: string
   buildIdPrevious: number | undefined
   buildIdNext: number | undefined
+  mode: string | undefined
 }
 
 class Description {

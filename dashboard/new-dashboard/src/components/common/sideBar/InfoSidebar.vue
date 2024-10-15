@@ -97,6 +97,14 @@
         </div>
 
         <span
+          v-if="data?.mode"
+          class="flex gap-1.5 items-center"
+        >
+          <AdjustmentsVerticalIcon class="w-4 h-4" />
+          {{ data?.mode }}
+        </span>
+
+        <span
           v-if="data?.deltaPrevious"
           class="flex gap-1.5 items-center"
         >

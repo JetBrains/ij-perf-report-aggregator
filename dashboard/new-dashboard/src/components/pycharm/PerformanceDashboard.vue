@@ -8,15 +8,29 @@
     :with-installer="false"
   >
     <section class="flex gap-6">
-      <div class="w-1/2">
+      <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#Python'"
-          :title="'Indexing Python (kB/s)'"
-          :chart-color="'#219653'"
-          :value-unit="'counter'"
+          :aggregated-measure="'completion\_%'"
+          :is-like="true"
+          :title="'Completion'"
         />
       </div>
+      <div class="flex-1 min-w-0">
+        <AggregationChart
+          :configurators="[...averagesConfigurators, typingOnlyConfigurator]"
+          :aggregated-measure="'test#average_awt_delay'"
+          :title="'UI responsiveness during typing'"
+          :chart-color="'#F2994A'"
+        />
+      </div>
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Completion"
+        :measure="['fus_time_to_show_90p']"
+        :projects="['edx-platform (Django)/completion/model', 'edx-platform (Django)/completion/view']"
+      />
     </section>
     <section>
       <GroupProjectsChart
@@ -83,4 +97,15 @@
 import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+
+const typingOnlyConfigurator = {
+  configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
+    query.addFilter({ f: "project", v: "%typing", o: "like" })
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
 </script>

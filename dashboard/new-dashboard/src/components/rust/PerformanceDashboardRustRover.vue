@@ -103,6 +103,21 @@
         :projects="['find-usages/yew', 'find-usages/wasm']"
       />
     </section>
+
+    <section>
+      <GroupProjectsChart
+        label="Typing Latency (mean value)"
+        measure="typing#latency#mean_value"
+        :projects="['typing/nalgebra/typing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Typing Latency (max value)"
+        measure="typing#latency#max"
+        :projects="['typing/nalgebra/typing']"
+      />
+    </section>
   </DashboardPage>
 </template>
 

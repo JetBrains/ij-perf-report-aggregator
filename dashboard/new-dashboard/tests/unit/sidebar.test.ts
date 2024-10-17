@@ -3,6 +3,7 @@ import { expect, test, describe, beforeEach } from "vitest"
 import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebarPerformance"
 import { dbTypeStore } from "../../src/shared/dbTypes"
+import { CallbackDataParams } from "echarts/types/src/util/types"
 
 describe("InfoSideBar Test", () => {
   beforeEach(() => {
@@ -29,9 +30,10 @@ describe("InfoSideBar Test", () => {
             next: 3010,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("241")
     expect(result.seriesName).toEqual("test")
@@ -67,9 +69,10 @@ describe("InfoSideBar Test", () => {
             next: 5824,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("233")
     expect(result.seriesName).toEqual("test")
@@ -102,9 +105,10 @@ describe("InfoSideBar Test", () => {
             next: 1812,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")
@@ -138,9 +142,10 @@ describe("InfoSideBar Test", () => {
             next: 6524,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")
@@ -172,9 +177,10 @@ describe("InfoSideBar Test", () => {
             next: 1843,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")
@@ -205,9 +211,10 @@ describe("InfoSideBar Test", () => {
             next: 216,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")
@@ -236,9 +243,10 @@ describe("InfoSideBar Test", () => {
             next: 554,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("qodana-jvm:2023.2-nightly")
     expect(result.seriesName).toEqual("test")
@@ -269,9 +277,10 @@ describe("InfoSideBar Test", () => {
             next: 3,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")
@@ -305,9 +314,10 @@ describe("InfoSideBar Test", () => {
             next: 4389,
           },
         ],
-      },
+      } as CallbackDataParams,
       "ms",
-      null
+      null,
+      ""
     )
     expect(result.branch).toEqual("master")
     expect(result.seriesName).toEqual("test")

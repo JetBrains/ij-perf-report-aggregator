@@ -69,10 +69,8 @@ const testComparisons = computed(() => filteredProjects.value.map((element) => t
 
 const resultData = ref<TestComparisonTableEntry[]>([]) as Ref<TestComparisonTableEntry[]>
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
 const totalTimeK1 = computed(() => calculateTotalTime((entry) => entry.baselineValue))
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
 const totalTimeK2 = computed(() => calculateTotalTime((entry) => entry.currentValue))
 
 const totalImprovement = computed(() => (totalTimeK2.value == 0 ? 0 : (totalTimeK1.value - totalTimeK2.value) / totalTimeK2.value))

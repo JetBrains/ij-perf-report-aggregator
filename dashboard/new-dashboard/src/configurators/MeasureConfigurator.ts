@@ -144,7 +144,6 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
 
         const selected = selectedRef.value
         if (selected != null && selected.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const selectedInData = selected.filter((it) => data.includes(it))
           if (selectedInData.length > 0) {
             filtered = [...new Set([...filtered, ...selectedInData])]

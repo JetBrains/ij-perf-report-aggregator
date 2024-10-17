@@ -50,7 +50,7 @@ function doEncode(value: any) {
   // typeof for array also object
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-expect-error
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return Array.isArray(value) ? array(value) : (encoders[typeof value](value) as string)
 }
 
@@ -123,7 +123,5 @@ const encoders = {
  * rison-encode a javascript structure
  */
 export function encodeRison(v: unknown): string {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   return Array.isArray(v) ? array(v) : object(v)
 }

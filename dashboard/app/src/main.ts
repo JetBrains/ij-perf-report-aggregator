@@ -50,5 +50,4 @@ async function initApp() {
   await router.isReady().then(() => app.mount("#app"))
 }
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
 void initApp()

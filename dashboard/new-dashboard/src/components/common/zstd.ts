@@ -22,9 +22,7 @@ export function getCompressor(): CompressorUsingDictionary {
   return compressor!
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 if (import.meta.hot) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   import.meta.hot.dispose(() => {
     if (compressor !== null) {
       compressor.dispose()
@@ -78,9 +76,7 @@ export class CompressorUsingDictionary {
     // compute maximum compressed size in worst case single-pass scenario - https://zstd.docsforge.com/dev/api/ZSTD_compressBound/
     const uncompressedOffset = malloc(maxUncompressedSize)
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const sourceSize = new TextEncoder().encodeInto(s, HEAPU8.subarray(uncompressedOffset, uncompressedOffset + maxUncompressedSize)).written
-
       const maxCompressedSize = compressBound(sourceSize)
       const compressedOffset = malloc(maxCompressedSize)
       try {

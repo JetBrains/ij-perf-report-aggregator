@@ -19,7 +19,7 @@ export class DataQuery {
   // used only for grouped query
   aggregator?: string
   // cube.js term (group by)
-  private dimensions?: DataQueryDimension[]
+  public dimensions?: DataQueryDimension[]
 
   // used only for grouped query
   timeDimensionFormat?: string

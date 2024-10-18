@@ -25,7 +25,7 @@
       </div>
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Inspections"
         measure="globalInspections"
         :projects="[
@@ -55,7 +55,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Gitlab Inspections"
         measure="globalInspections"
         :projects="[
@@ -91,7 +91,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="File Analysis on Open"
         measure="firstCodeAnalysis"
         :projects="[
@@ -202,7 +202,7 @@
     </section>
 
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="GC Pause, ms"
         measure="gcPause"
         :projects="[
@@ -250,7 +250,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="GC Memory Collected, Mb"
         measure="freedMemoryByGC"
         :projects="[
@@ -298,7 +298,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Routes Highlighting (removed)"
         measure="highlighting"
         :projects="[
@@ -314,7 +314,7 @@
 
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
+import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
 

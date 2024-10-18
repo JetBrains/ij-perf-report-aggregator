@@ -25,7 +25,7 @@
       </div>
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Find Usages: Execution Time"
         measure="findUsages"
         :projects="[
@@ -81,7 +81,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Find Usages: Quantity"
         measure="findUsages#number"
         :projects="[
@@ -137,7 +137,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Completion (Diaspora)"
         measure="completion"
         :projects="[
@@ -153,7 +153,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Completion (GitLab)"
         measure="completion"
         :projects="[
@@ -169,7 +169,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Completion (Redmine)"
         measure="completion"
         :projects="[
@@ -185,7 +185,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Typing: Average AWT Delay"
         measure="test#average_awt_delay"
         :projects="[
@@ -219,7 +219,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Typing: Total Time"
         measure="typing"
         :projects="[
@@ -253,7 +253,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Enter Handling: Average AWT Delay"
         measure="test#average_awt_delay"
         :projects="[
@@ -301,7 +301,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Enter Handling: Total Time"
         measure="typing"
         :projects="[
@@ -349,7 +349,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Symbol Members: Execution Time"
         measure="getSymbolMembers"
         :projects="[
@@ -371,7 +371,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Symbol Members: Quantity"
         measure="getSymbolMembers#number"
         :projects="[
@@ -393,14 +393,14 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Distributive Size"
         measure="unpackedDistributiveSize"
         :projects="['distributive-size-RM']"
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="GC Pause, ms"
         measure="gcPause"
         :projects="[
@@ -458,7 +458,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="GC Memory Collected, Mb"
         measure="freedMemoryByGC"
         :projects="[
@@ -520,9 +520,9 @@
 
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 
 const typingOnlyConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {

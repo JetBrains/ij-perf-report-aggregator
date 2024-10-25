@@ -1545,7 +1545,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PyCharmCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "pycharm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },

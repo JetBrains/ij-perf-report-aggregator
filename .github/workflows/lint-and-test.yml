@@ -41,7 +41,7 @@ jobs:
       - name: Test build
         run: pnpm build
       - name: Run ESLint
-        run: pnpm eslint .
+        run: pnpm eslint
       - name: Run VueTSC
         run: pnpm vue-tsc
       - name: Run Prettier

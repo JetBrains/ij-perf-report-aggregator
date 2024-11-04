@@ -13,7 +13,6 @@ import { BarChartManager } from "../common/BarChartManager"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { chartDefaultStyle } from "../common/chart"
 
-// eslint-disable-next-line vue/require-valid-default-prop
 const { height = 440, measures = [] } = defineProps<{
   height?: number
   measures: string[]

@@ -4,12 +4,12 @@
   "dependencies": {
     "@heroicons/vue": "2.1.5",
     "@primevue/core": "^4.0.7",
-    "@vueuse/core": "^11.1.0",
+    "@vueuse/core": "^11.2.0",
     "echarts": "5.5.1",
     "fast-equals": "5.0.1",
     "humanize-duration": "3.32.1",
     "p-limit": "^6.1.0",
-    "pinia": "^2.2.4",
+    "pinia": "^2.2.6",
     "primevue": "4.0.7",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.12",
@@ -20,6 +20,6 @@
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^25.0.0",
     "jsdom": "^25.0.1",
-    "msw": "^2.5.0"
+    "msw": "^2.6.0"
   }
 }

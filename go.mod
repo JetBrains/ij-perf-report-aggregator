@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
-	github.com/ClickHouse/ch-go v0.62.0
+	github.com/ClickHouse/ch-go v0.63.1
 	github.com/ClickHouse/clickhouse-go/v2 v2.30.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
@@ -81,7 +81,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/djherbis/buffer v1.2.0 // indirect
 	github.com/djherbis/nio/v3 v3.0.1 // indirect
-	github.com/dmarkham/enumer v1.5.9 // indirect
+	github.com/dmarkham/enumer v1.5.10 // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/eapache/go-resiliency v1.4.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
@@ -103,7 +103,7 @@ require (
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hashicorp/go-version v1.7.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jlaffaye/ftp v0.2.0 // indirect

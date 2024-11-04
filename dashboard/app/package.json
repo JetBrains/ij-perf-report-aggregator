@@ -7,7 +7,7 @@
     "@primevue/themes": "^4.0.7",
     "echarts": "5.5.1",
     "new-dashboard": "workspace:*",
-    "pinia": "^2.2.4",
+    "pinia": "^2.2.6",
     "primevue": "4.0.7",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.12",

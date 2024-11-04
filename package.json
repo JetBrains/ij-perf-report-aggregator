@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@primevue/auto-import-resolver": "^4.0.7",
+    "@primevue/auto-import-resolver": "^4.2.1",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/typography": "^0.5.15",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
@@ -48,7 +48,7 @@
       ]
     },
     "patchedDependencies": {
-      "primevue@4.0.7": "patches/primevue@4.0.7.patch"
+      "primevue@4.2.1": "patches/primevue@4.2.1.patch"
     }
   },
   "engines": {

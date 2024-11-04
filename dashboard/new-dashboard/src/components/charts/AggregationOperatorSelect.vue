@@ -25,7 +25,6 @@
   <InputNumber
     v-if="value === 'quantile'"
     v-model="quantile"
-    size="3"
     :min="0"
     :max="100"
     :step="10"

@@ -26,6 +26,7 @@ export default tseslint.config(
   eslintConfigPrettier,
   {
     ignores: [
+      "**/tailwind.config.cjs",
       "**/components.d.ts",
       "**/auto-imports.d.ts",
       "**/vite.config.ts",

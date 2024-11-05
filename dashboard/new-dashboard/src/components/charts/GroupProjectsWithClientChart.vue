@@ -28,5 +28,5 @@ interface Props {
 const { label, measure, projects, machines = null, valueUnit = "ms", legendFormatter = (name: string) => name, aliases = null } = defineProps<Props>()
 
 const projectWithClient = [...projects, ...projects.map((project) => `${project}/embeddedClient`)]
-const aliasesWithClient = aliases != null ? [...aliases, ...aliases] : null
+const aliasesWithClient = aliases != null ? [...aliases, ...aliases.map((aliases) => `${aliases}(client)`)] : null
 </script>

@@ -141,6 +141,17 @@ linters:
     - err113 # checks for errors that are unchecked and can be returned
     - wastedassign # checks for assignments that are not used
     - canonicalheader # checks for canonical header keys
+    - decorder
+    - errchkjson
+    - fatcontext
+    - gofmt
+    - gofumpt
+    - grouper
+    - inamedparam
+    - interfacebloat
+    - rowserrcheck
+    - tagalign
+    - thelper
 
 issues:
   # Maximum count of issues with the same text.

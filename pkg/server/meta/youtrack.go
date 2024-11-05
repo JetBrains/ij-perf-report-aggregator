@@ -168,8 +168,8 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 }
 
 type artifactCollector interface {
-	getArtifactsPath(UploadAttachmentsToIssueRequest) string
-	checkArtifact(string) bool
+	getArtifactsPath(params UploadAttachmentsToIssueRequest) string
+	checkArtifact(artifactName string) bool
 }
 
 type fleetStartupCollector struct{}

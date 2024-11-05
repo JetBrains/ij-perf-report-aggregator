@@ -2,9 +2,10 @@ package degradation_detector
 
 import (
 	"context"
-	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	"net/http"
 	"time"
+
+	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 )
 
 func FetchAllProjects(backendUrl string, client *http.Client, settings StartupSettings) ([]string, error) {

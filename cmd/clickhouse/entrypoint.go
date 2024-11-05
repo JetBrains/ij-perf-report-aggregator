@@ -5,10 +5,6 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
-	"github.com/Altinity/clickhouse-backup/pkg/status"
-	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
-	"github.com/nats-io/nats.go"
-	"go.deanishe.net/env"
 	"log"
 	"os"
 	"os/exec"
@@ -16,6 +12,11 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/Altinity/clickhouse-backup/pkg/status"
+	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
+	"github.com/nats-io/nats.go"
+	"go.deanishe.net/env"
 )
 
 //go:embed config.xml

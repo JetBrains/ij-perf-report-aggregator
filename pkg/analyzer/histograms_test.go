@@ -1,9 +1,10 @@
 package analyzer
 
 import (
-	"github.com/valyala/fastjson"
 	"reflect"
 	"testing"
+
+	"github.com/valyala/fastjson"
 )
 
 func Test_getPercentile(t *testing.T) {

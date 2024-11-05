@@ -1,10 +1,11 @@
 package data_query
 
 import (
+	"testing"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestAdvancedFilter(t *testing.T) {

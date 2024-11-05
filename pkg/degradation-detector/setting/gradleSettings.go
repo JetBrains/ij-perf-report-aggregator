@@ -1,8 +1,9 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"slices"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func getGradleTests() []string {
@@ -93,7 +94,6 @@ func generateGradleSettingsOnInstaller() []detector.PerformanceSettings {
 				},
 			})
 		}
-
 	}
 	return settings
 }
@@ -124,7 +124,6 @@ func generateGradleSettingsOnFastInstaller() []detector.PerformanceSettings {
 				},
 			})
 		}
-
 	}
 	return settings
 }

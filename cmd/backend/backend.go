@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
-	"go.deanishe.net/env"
 	"log/slog"
 	"os"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
+	"go.deanishe.net/env"
 )
 
 func main() {

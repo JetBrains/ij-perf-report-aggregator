@@ -3,12 +3,13 @@ package data_query
 import (
 	"context"
 	"errors"
-	"github.com/ClickHouse/ch-go"
-	"github.com/ClickHouse/ch-go/proto"
-	"github.com/jackc/puddle/v2"
 	"io"
 	"net"
 	"time"
+
+	"github.com/ClickHouse/ch-go"
+	"github.com/ClickHouse/ch-go/proto"
+	"github.com/jackc/puddle/v2"
 )
 
 type DatabaseConnectionSupplier interface {

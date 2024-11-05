@@ -1,8 +1,9 @@
 package degradation_detector
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWithoutDegradations(t *testing.T) {
@@ -16,6 +17,7 @@ func TestWithoutDegradations(t *testing.T) {
 	degradations := detectDegradations(data, builds, times, AnalysisSettings{ReportType: DegradationEvent})
 	assert.Empty(t, degradations)
 }
+
 func TestWithoutDegradations2(t *testing.T) {
 	data := []int{2940, 2633, 2758, 2648, 2884, 2920, 3205, 2936, 2868, 3212, 2324, 2290, 2474, 3000, 2740, 2737, 2413, 2873, 3105, 3049, 2521, 3185, 2950, 2696, 2725, 3188, 3781, 2493, 2241, 2528, 2680, 3126, 3126, 2649, 2649, 2623, 2623, 2820, 2820, 2693, 2693, 2812, 2812, 2527, 2527, 3031, 3031, 2571, 2571, 3066, 3066, 2670, 2670, 2699, 2699, 3106, 2782, 2617}
 	builds := make([]string, len(data))

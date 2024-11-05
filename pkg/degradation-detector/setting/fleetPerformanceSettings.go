@@ -1,10 +1,11 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func GenerateFleetPerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

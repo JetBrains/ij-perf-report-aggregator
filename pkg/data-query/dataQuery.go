@@ -4,16 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/ClickHouse/ch-go/proto"
 	sqlutil "github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/sakura-internet/go-rison/v4"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/quicktemplate"
-	"math"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 type Query struct {
@@ -278,7 +279,7 @@ func buildSql(query Query, table string) (string, map[string]int, error) {
 			continue
 		}
 
-		var effectiveColumnName = ""
+		effectiveColumnName := ""
 
 		if query.Aggregator != "" {
 			sb.WriteString(query.Aggregator)

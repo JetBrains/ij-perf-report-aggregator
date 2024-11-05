@@ -6,7 +6,7 @@ import (
 )
 
 func SliceToSliceInt64(strings []interface{}) ([]int64, error) {
-	var result = make([]int64, 0, len(strings))
+	result := make([]int64, 0, len(strings))
 	for _, s := range strings {
 		switch v := s.(type) {
 		case string:
@@ -29,7 +29,7 @@ func SliceToSliceInt64(strings []interface{}) ([]int64, error) {
 }
 
 func SliceToSliceOfInt(strings []interface{}) ([]int, error) {
-	var result = make([]int, 0, len(strings))
+	result := make([]int, 0, len(strings))
 	for _, s := range strings {
 		switch v := s.(type) {
 		case string:
@@ -52,7 +52,7 @@ func SliceToSliceOfInt(strings []interface{}) ([]int, error) {
 }
 
 func SliceToSliceOfString(slice []interface{}) ([]string, error) {
-	var strings = make([]string, 0, len(slice))
+	strings := make([]string, 0, len(slice))
 	for _, elem := range slice {
 		switch v := elem.(type) {
 		case string:

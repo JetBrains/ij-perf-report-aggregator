@@ -1,10 +1,11 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"net/http"
 	"slices"
 	"strings"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func GenerateIdeaIndexingSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

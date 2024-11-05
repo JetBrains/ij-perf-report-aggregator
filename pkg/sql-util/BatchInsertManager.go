@@ -3,11 +3,12 @@ package sql_util
 import (
 	"context"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"golang.org/x/sync/errgroup"
 	"log/slog"
 	"runtime"
 	"sync"
+
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"golang.org/x/sync/errgroup"
 )
 
 type BatchInsertManager struct {

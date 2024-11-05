@@ -5,14 +5,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
-	"github.com/cenkalti/backoff/v4"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
 	"strconv"
 	"strings"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
+	"github.com/cenkalti/backoff/v4"
 )
 
 type ArtifactItem struct {
@@ -111,7 +112,6 @@ func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build 
 		result = data
 		return nil
 	}, bo)
-
 	if err != nil {
 		return nil, errors.New("maximum retries reached, download failed")
 	}

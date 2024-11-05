@@ -2,9 +2,10 @@ package setting
 
 import (
 	"encoding/json"
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"os"
 	"path/filepath"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func extractStrings(data interface{}) []string {
@@ -53,7 +54,8 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		"prepareForRename#mean_value", "execute_editor_optimizeimports",
 		"localInspections_cold#mean_value", "localInspections_hot#mean_value",
 		"execute_editor_gotodeclaration_cold#mean_value", "execute_editor_gotodeclaration_hot#mean_value",
-		"convertJavaToKotlin", "moveFiles#mean_value", "moveFiles_back#mean_value", "moveDeclarations#mean_value", "moveDeclarations_back#mean_value"}
+		"convertJavaToKotlin", "moveFiles#mean_value", "moveFiles_back#mean_value", "moveDeclarations#mean_value", "moveDeclarations_back#mean_value",
+	}
 	aliases := map[string]string{
 		"completion#mean_value":                          "completion",
 		"completion#firstElementShown#mean_value":        "completion",

@@ -21,7 +21,6 @@ func GenerateWorkspaceSettings() []detector.PerformanceSettings {
 				},
 			})
 		}
-
 	}
 	return settings
 }

@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.deanishe.net/env"
-	"log/slog"
-	"strconv"
-	"strings"
-	"time"
 )
 
 // use `select distinct cast(machine, 'Uint16') as id, machine as name FROM report order by id` to get current enum values

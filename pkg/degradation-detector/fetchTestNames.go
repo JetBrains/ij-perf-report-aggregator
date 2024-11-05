@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	"log/slog"
 	"net/http"
 	"strings"
 	"time"
+
+	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 )
 
 func ExpandTestsByPattern(backendUrl string, client *http.Client, tests []string, baseSettings PerformanceSettings) []string {

@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/klauspost/compress/zstd"
 	"github.com/valyala/bytebufferpool"

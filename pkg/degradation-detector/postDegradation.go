@@ -5,11 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
 	"log/slog"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
 )
 
 type InsertionResults struct {

@@ -17,7 +17,8 @@ func TestClickhouse(_ *testing.T) {
 	branches := []string{"master"}
 	oses := []string{"intellij-linux-performance-aws-%"}
 
-	projects := []string{"project-import-maven-quarkus/measureStartup",
+	projects := []string{
+		"project-import-maven-quarkus/measureStartup",
 		"project-reimport-maven-quarkus/measureStartup",
 		"project-import-from-cache-maven-quarkus/measureStartup",
 		"project-import-maven-1000-modules/measureStartup",
@@ -31,7 +32,8 @@ func TestClickhouse(_ *testing.T) {
 		"project-import-maven-azure-sdk-java/measureStartup",
 		"project-import-maven-hive/measureStartup",
 		"project-import-maven-quarkus-to-legacy-model/measureStartup",
-		"project-import-maven-1000-modules-to-legacy-model/measureStartup"}
+		"project-import-maven-1000-modules-to-legacy-model/measureStartup",
+	}
 
 	metrics := []string{
 		"maven.sync.duration",
@@ -194,11 +196,12 @@ func TestClickhouse(_ *testing.T) {
 	fmt.Println("Total errors: ", errorsCounterCH.Value())
 	elapsed := time.Since(start) // calculate the elapsed time
 	fmt.Printf("The code executed in %s\n", elapsed)
-
 }
 
-var requestCounterCH CounterCH
-var errorsCounterCH CounterCH
+var (
+	requestCounterCH CounterCH
+	errorsCounterCH  CounterCH
+)
 
 type CounterCH struct {
 	mu sync.Mutex

@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"go.deanishe.net/env"
-	"log/slog"
-	"os"
-	"strings"
-	"time"
 )
 
 /*

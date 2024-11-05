@@ -1,8 +1,9 @@
 package degradation_detector
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMergeDegradations(t *testing.T) {
@@ -127,5 +128,4 @@ func TestMetricAlias(t *testing.T) {
 		total++
 	}
 	assert.Equal(t, 1, total, "Incorrect merge")
-
 }

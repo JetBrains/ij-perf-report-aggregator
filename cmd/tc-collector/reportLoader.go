@@ -6,16 +6,17 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/json-iterator/go"
-	"golang.org/x/sync/errgroup"
 	"io"
 	"net/url"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+	"github.com/json-iterator/go"
+	"golang.org/x/sync/errgroup"
 )
 
 var networkRequestCount = runtime.NumCPU() + 1
@@ -153,7 +154,7 @@ func (t *Collector) loadChanges(builds []*Build, networkRequestCount int) error 
 	if len(notLoadedBuildIds) == 0 {
 		return nil
 	}
-	var notLoadedIds = make([]int, 0, len(notLoadedBuildIds))
+	notLoadedIds := make([]int, 0, len(notLoadedBuildIds))
 	for _, installerInfo := range notLoadedBuildIds {
 		notLoadedIds = append(notLoadedIds, installerInfo.id)
 	}
@@ -213,7 +214,7 @@ func (t *Collector) loadInstallerInfo(builds []*Build, networkRequestCount int) 
 		return nil
 	}
 
-	var notLoadedIds = make([]int, 0, len(notLoadedInstallerBuildIds))
+	notLoadedIds := make([]int, 0, len(notLoadedInstallerBuildIds))
 	for _, installerInfo := range notLoadedInstallerBuildIds {
 		notLoadedIds = append(notLoadedIds, installerInfo.id)
 	}

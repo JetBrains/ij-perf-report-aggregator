@@ -1,14 +1,15 @@
 package main
 
 import (
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
-	"github.com/alecthomas/kingpin"
 	"log/slog"
 	"os"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server"
+	"github.com/alecthomas/kingpin"
 )
 
 func main() {
-	var app = kingpin.New("report-aggregator", "report-aggregator").Version("0.0.1")
+	app := kingpin.New("report-aggregator", "report-aggregator").Version("0.0.1")
 
 	ConfigureServeCommand(app)
 

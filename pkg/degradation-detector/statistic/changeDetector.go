@@ -40,7 +40,7 @@ func GetChangePointIndexes(data []int, minDistance int) []int {
 		bestPreviousTauIndex := whichMin(costForPreviousTau)
 		bestCost[currentTau] = costForPreviousTau[bestPreviousTauIndex]
 		previousChangePointIndex[currentTau] = previousTaus[bestPreviousTauIndex]
-		var newPreviousTaus = make([]int, 0, len(previousTaus))
+		newPreviousTaus := make([]int, 0, len(previousTaus))
 		for i, cost2 := range costForPreviousTau {
 			if cost2 < bestCost[currentTau]+penalty {
 				newPreviousTaus = append(newPreviousTaus, previousTaus[i])

@@ -1,9 +1,10 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"log/slog"
 	"net/http"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func GeneratePhpStormSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

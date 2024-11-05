@@ -5,15 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
-	"github.com/alitto/pond"
 	"io"
 	"log/slog"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	dataQuery "github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+	"github.com/alitto/pond"
 )
 
 type queryResult struct {

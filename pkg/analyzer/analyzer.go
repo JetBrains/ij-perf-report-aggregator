@@ -1,12 +1,15 @@
 package analyzer
 
 import (
-	"github.com/valyala/fastjson"
 	"strings"
+
+	"github.com/valyala/fastjson"
 )
 
-type CustomReportAnalyzer func(runResult *RunResult, data *fastjson.Value) error
-type InsertStatementWriter func(sb *strings.Builder)
+type (
+	CustomReportAnalyzer  func(runResult *RunResult, data *fastjson.Value) error
+	InsertStatementWriter func(sb *strings.Builder)
+)
 
 type DatabaseConfiguration struct {
 	DbName    string

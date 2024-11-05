@@ -1,11 +1,12 @@
 package analyzer
 
 import (
+	"log/slog"
+	"testing"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"log/slog"
-	"testing"
 )
 
 func TestBranchInferenceForJBRNumber(t *testing.T) {

@@ -2,10 +2,11 @@ package analyzer
 
 import (
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/valyala/fastjson"
 	"log/slog"
 	"time"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+	"github.com/valyala/fastjson"
 )
 
 var parserPool fastjson.ParserPool

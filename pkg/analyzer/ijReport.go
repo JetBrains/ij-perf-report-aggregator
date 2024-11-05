@@ -2,10 +2,11 @@ package analyzer
 
 import (
 	"bytes"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/valyala/fastjson"
 	"log/slog"
 	"sort"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+	"github.com/valyala/fastjson"
 )
 
 type measureItem struct {

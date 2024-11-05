@@ -1,9 +1,10 @@
 package degradation_detector
 
 import (
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"log/slog"
 	"math"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 )
 
 type Degradation struct {

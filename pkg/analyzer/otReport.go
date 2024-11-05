@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"encoding/json"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/valyala/fastjson"
 )

@@ -2,10 +2,11 @@ package server
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/data-query"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/quicktemplate"
-	"net/http"
 )
 
 func (t *StatsServer) handleLoadRequestV2(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {

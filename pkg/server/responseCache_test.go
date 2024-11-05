@@ -1,9 +1,10 @@
 package server
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestCompressData(t *testing.T) {
@@ -15,5 +16,4 @@ func TestCompressData(t *testing.T) {
 	compressedData, err := rcm.compressData(testData)
 	require.NoError(t, err)
 	assert.NotEmptyf(t, compressedData, "Expected compressed data, got empty")
-
 }

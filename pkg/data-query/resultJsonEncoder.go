@@ -2,11 +2,12 @@ package data_query
 
 import (
 	"fmt"
+	"math"
+	"strconv"
+
 	"github.com/ClickHouse/ch-go/proto"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/quicktemplate"
-	"math"
-	"strconv"
 )
 
 // separate byte buffer pool - different sizes

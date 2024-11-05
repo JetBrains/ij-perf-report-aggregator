@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"go.deanishe.net/env"
 	"log/slog"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"go.deanishe.net/env"
 )
 
 type ReportAnalyzer struct {
@@ -281,7 +282,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 	if branchInt != 0 {
 		return strconv.Itoa(branchInt), nil
 	}
-	var isMaster = props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
+	isMaster := props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
 	if len(isMaster) == 0 {
 		// we check that the property doesn't exist so it is not a master
 		if runResult.BuildC3 == 0 {

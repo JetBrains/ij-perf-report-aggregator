@@ -10,10 +10,12 @@ type testMetricDef struct {
 func GenerateVCSSettings() []detector.PerformanceSettings {
 	testMetrics := []testMetricDef{
 		{test: []string{"intellij_clone_specific_commit/gitLogIndexing", "intellij_sources/gitLogIndexing"}, metric: []string{"vcs-log-indexing"}},
-		{test: []string{"intellij_sources/EditorImpl-phm",
+		{test: []string{
+			"intellij_sources/EditorImpl-phm",
 			"intellij_sources/EditorImpl-noindex",
 			"intellij_sources/showFileHistory/EditorImpl",
-			"intellij_sources/showFileHistory/EditorImpl-instant-git"}, metric: []string{"showFileHistory", "showFirstPack"}},
+			"intellij_sources/showFileHistory/EditorImpl-instant-git",
+		}, metric: []string{"showFileHistory", "showFirstPack"}},
 		{test: []string{"intellij_sources/filterVcsLogTab-phm", "intellij_sources/filterVcsLogTab-noindex"}, metric: []string{"vcs-log-filtering"}},
 		{test: []string{"intellij_sources/filterVcsLogTab-path-phm", "intellij_sources/filterVcsLogTab-path-noindex"}, metric: []string{"vcs-log-filtering"}},
 		{test: []string{"intellij_sources/filterVcsLogTab-date-phm", "intellij_sources/filterVcsLogTab-date-noindex"}, metric: []string{"vcs-log-filtering"}},
@@ -50,7 +52,6 @@ func GenerateVCSSettings() []detector.PerformanceSettings {
 				}
 			}
 		}
-
 	}
 	return settings
 }

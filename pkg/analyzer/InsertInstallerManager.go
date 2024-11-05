@@ -3,11 +3,12 @@ package analyzer
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"strconv"
+
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/sql-util"
 	"golang.org/x/tools/container/intsets"
-	"log/slog"
-	"strconv"
 )
 
 type InsertInstallerManager struct {

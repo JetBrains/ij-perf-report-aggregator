@@ -3,19 +3,22 @@ package data_query
 import (
 	"errors"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
-	"github.com/valyala/fastjson"
 	"math"
 	"regexp"
 	"strings"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
+	"github.com/valyala/fastjson"
 )
 
 // https://clickhouse.yandex/docs/en/query_language/syntax/#syntax-identifiers
 var reFieldName = regexp.MustCompile(`^[a-zA-Z_]\w*$`)
 
 // opposite to reFieldName, dot is supported for nested fields
-var reNestedFieldName = regexp.MustCompile(`^[a-zA-Z_][.\da-zA-Z_]*$`)
-var reMetricName = regexp.MustCompile(`^[a-zA-Z\d _]+$`)
+var (
+	reNestedFieldName = regexp.MustCompile(`^[a-zA-Z_][.\da-zA-Z_]*$`)
+	reMetricName      = regexp.MustCompile(`^[a-zA-Z\d _]+$`)
+)
 
 // add ().space,'*
 var reAggregator = regexp.MustCompile(`^[a-zA-Z_'(][\da-zA-Z_(). ,'*@<>\-/+]*$`)

@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"golang.org/x/tools/container/intsets"
 	"strconv"
 	"time"
+
+	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	"golang.org/x/tools/container/intsets"
 )
 
 type ReportExistenceChecker struct {

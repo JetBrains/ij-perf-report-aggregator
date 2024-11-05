@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/json-iterator/go"
 	"io"
 	"time"
+
+	"github.com/json-iterator/go"
 )
 
 type BuildList struct {

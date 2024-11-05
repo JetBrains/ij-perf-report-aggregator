@@ -1,11 +1,12 @@
 package analyzer
 
 import (
-	"github.com/valyala/fastjson"
 	"log/slog"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/valyala/fastjson"
 )
 
 func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value) error {

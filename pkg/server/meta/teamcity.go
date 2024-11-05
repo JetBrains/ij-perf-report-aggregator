@@ -37,7 +37,6 @@ func CreatePostStartBisect() http.HandlerFunc {
 			"target.git.commits":                bisectReq.Changes,
 			"target.value.before.changed.point": bisectReq.TargetValue,
 		})
-
 		if err != nil {
 			http.Error(writer, "Failed to start bisect: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -53,6 +52,5 @@ func CreatePostStartBisect() http.HandlerFunc {
 		} else {
 			http.Error(writer, "TC response doesn't have weburl", http.StatusInternalServerError)
 		}
-
 	}
 }

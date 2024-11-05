@@ -3,13 +3,14 @@ package server
 import (
 	"context"
 	"errors"
+	"log/slog"
+	"net/http"
+	"strconv"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/http-error"
 	"github.com/VictoriaMetrics/fastcache"
 	"github.com/valyala/bytebufferpool"
 	"github.com/zeebo/xxh3"
-	"log/slog"
-	"net/http"
-	"strconv"
 )
 
 var byteBufferPool bytebufferpool.Pool

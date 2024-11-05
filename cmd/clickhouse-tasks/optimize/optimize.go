@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"golang.org/x/sync/errgroup"
-	"log"
 )
 
 func main() {

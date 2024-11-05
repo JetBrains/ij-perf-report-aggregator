@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/analyzer"
 	"github.com/valyala/bytebufferpool"
 	"github.com/valyala/quicktemplate"
-	"net/http"
 )
 
 func (t *StatsServer) handleMetaMeasureRequest(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {

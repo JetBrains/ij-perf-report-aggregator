@@ -1,10 +1,11 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"net/http"
 	"slices"
 	"strings"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func GenerateIdeaSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
@@ -14,10 +15,12 @@ func GenerateIdeaSettings(backendUrl string, client *http.Client) []detector.Per
 }
 
 func generateIdeaDevAnalysisSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	tests := []string{"intellij_commit/%", "grails/%", "java/%", "spring_boot/%",
+	tests := []string{
+		"intellij_commit/%", "grails/%", "java/%", "spring_boot/%",
 		"spring_boot_maven/%", "spring_boot/%", "kotlin/%", "kotlin_coroutines/%",
 		"kotlin_petclinic/%", "community/%", "empty_project/%", "keycloak_release_20/%",
-		"space/%", "toolbox_enterprise/%", "train-ticket/%", "popups-performance-test/%", "%terminal-completion-all%"}
+		"space/%", "toolbox_enterprise/%", "train-ticket/%", "popups-performance-test/%", "%terminal-completion-all%",
+	}
 
 	baseSettings := detector.PerformanceSettings{
 		Db:      "perfintDev",

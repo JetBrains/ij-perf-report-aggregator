@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/VictoriaMetrics/fastcache"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/VictoriaMetrics/fastcache"
 )
 
 type UserInfo struct {
@@ -143,7 +144,7 @@ func (ytAuth *YTAuth) getYTUserId(ctx context.Context, hubToken string) (*YTUser
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	var userInfo = &YTUser{}
+	userInfo := &YTUser{}
 	err = json.Unmarshal(body, userInfo)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal YTUser: %w", err)

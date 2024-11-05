@@ -1,9 +1,10 @@
 package setting
 
 import (
+	"testing"
+
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestKotlinSetting(t *testing.T) {

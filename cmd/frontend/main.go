@@ -3,19 +3,18 @@ package main
 import (
 	"embed"
 	"errors"
-	"github.com/zeebo/xxh3"
 	"io/fs"
 	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/zeebo/xxh3"
 )
 
-var (
-	//go:embed all:resources
-	assetFs embed.FS
-)
+//go:embed all:resources
+var assetFs embed.FS
 
 func main() {
 	err := run()
@@ -35,7 +34,7 @@ type assetInfo struct {
 }
 
 func run() error {
-	var pathToAsset = map[string]*assetInfo{}
+	pathToAsset := map[string]*assetInfo{}
 
 	err := fs.WalkDir(assetFs, "resources", func(path string, _ fs.DirEntry, err error) error {
 		if err != nil {

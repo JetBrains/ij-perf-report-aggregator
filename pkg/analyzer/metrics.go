@@ -2,9 +2,10 @@ package analyzer
 
 import (
 	"fmt"
+	"log/slog"
+
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"github.com/mcuadros/go-version"
-	"log/slog"
 )
 
 type Metric struct {
@@ -22,8 +23,10 @@ type Metric struct {
 
 const appInitCategory = 1
 
-var metricNameToDescriptor map[string]*Metric
-var IjMetricDescriptors []*Metric
+var (
+	metricNameToDescriptor map[string]*Metric
+	IjMetricDescriptors    []*Metric
+)
 
 func init() {
 	index := 0

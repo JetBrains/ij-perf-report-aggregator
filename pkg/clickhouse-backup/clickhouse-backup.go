@@ -2,13 +2,14 @@ package clickhouse_backup
 
 import (
 	"bytes"
+	"log"
+	"os"
+	"os/exec"
+
 	"github.com/Altinity/clickhouse-backup/pkg/backup"
 	"github.com/Altinity/clickhouse-backup/pkg/config"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/fastjson"
-	"log"
-	"os"
-	"os/exec"
 )
 
 // example: if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day

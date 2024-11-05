@@ -3,15 +3,16 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"slices"
+	"strings"
+	"sync"
+
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/bytebufferpool"
-	"net/http"
-	"slices"
-	"strings"
-	"sync"
 )
 
 func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
@@ -50,7 +51,6 @@ type responseItem struct {
 }
 
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-
 	type requestParams struct {
 		Table        string   `json:"table"`
 		MeasureNames []string `json:"measure_names"`
@@ -103,8 +103,8 @@ func getMedianValues(queryResults []struct {
 	Project       string
 	MeasureName   string
 	MeasureValues []int
-}) []responseItem {
-
+},
+) []responseItem {
 	responseChan := make(chan responseItem, len(queryResults))
 	var wg sync.WaitGroup
 	for _, result := range queryResults {

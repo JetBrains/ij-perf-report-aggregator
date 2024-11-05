@@ -3,14 +3,15 @@ package meta
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type YoutrackCreateIssueRequest struct {
@@ -54,9 +55,11 @@ type CreateIssueResponse struct {
 	Exceptions []string      `json:"exceptions"`
 }
 
-var teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
-var youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-var ytAuth = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+var (
+	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
+	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+)
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
@@ -95,7 +98,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			affectedTest = strings.TrimSuffix(affectedTest, "/"+affectedMetric)
 		}
 
-		var testHistoryUrl = ""
+		testHistoryUrl := ""
 		if params.TestMethodName != nil && lowerKind == "exception" {
 			testHistoryUrl, err = teamCityClient.getTestHistoryUrl(request.Context(), *params.TestMethodName)
 		}
@@ -142,7 +145,6 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
-
 		if err != nil {
 			handleError(writer, "failed to create issue", err, &response.Exceptions)
 			_ = marshalAndWriteIssueResponse(writer, &response)
@@ -175,6 +177,7 @@ type fleetStartupCollector struct{}
 func (f fleetStartupCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
 	return ""
 }
+
 func (f fleetStartupCollector) checkArtifact(artifactName string) bool {
 	return strings.HasSuffix(artifactName, "fleet.fahrplan.json")
 }
@@ -184,6 +187,7 @@ type fleetPerfTestCollector struct{}
 func (f fleetPerfTestCollector) getArtifactsPath(UploadAttachmentsToIssueRequest) string {
 	return ""
 }
+
 func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 	return artifactName == "logs.zip"
 }
@@ -193,6 +197,7 @@ type perfintCollector struct{}
 func (f perfintCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
 	return strings.ReplaceAll(params.AffectedTest, "_", "-")
 }
+
 func (f perfintCollector) checkArtifact(artifactName string) bool {
 	prefixes := []string{"logs-", "snapshots-"}
 	for _, prefix := range prefixes {
@@ -218,7 +223,6 @@ func getArtifactCollector(testType string) artifactCollector {
 
 func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-
 		type Exceptions struct {
 			Exceptions []string `json:"exceptions"`
 		}

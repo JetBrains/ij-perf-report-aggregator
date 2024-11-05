@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
+	"time"
+
 	"github.com/Altinity/clickhouse-backup/pkg/backup"
 	"github.com/Altinity/clickhouse-backup/pkg/status"
 	clickhousebackup "github.com/JetBrains/ij-perf-report-aggregator/pkg/clickhouse-backup"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/nats-io/nats.go"
 	"go.deanishe.net/env"
-	"log/slog"
-	"os"
-	"time"
 )
 
 func main() {

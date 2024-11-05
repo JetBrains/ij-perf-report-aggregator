@@ -3,14 +3,15 @@ package meta
 import (
 	"encoding/json"
 	"errors"
-	"github.com/VictoriaMetrics/fastcache"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sakura-internet/go-rison/v4"
 	"io"
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"github.com/VictoriaMetrics/fastcache"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/sakura-internet/go-rison/v4"
 )
 
 type descriptionRequestParams struct {

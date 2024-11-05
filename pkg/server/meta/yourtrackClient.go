@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"io"
 	"log"
 	"log/slog"
@@ -13,6 +12,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 )
 
 type YoutrackClient struct {
@@ -79,7 +80,6 @@ func (client *YoutrackClient) fetchFromYouTrack(ctx context.Context, endpoint st
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}

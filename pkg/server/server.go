@@ -5,6 +5,15 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"io"
+	"log/slog"
+	"net/http"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+	"time"
+
 	"github.com/ClickHouse/ch-go"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/meta"
@@ -19,14 +28,6 @@ import (
 	"github.com/valyala/bytebufferpool"
 	"go.deanishe.net/env"
 	_ "go.uber.org/automaxprocs" // automatically set GOMAXPROCS
-	"io"
-	"log/slog"
-	"net/http"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
-	"time"
 )
 
 const DefaultDbUrl = "127.0.0.1:9000"

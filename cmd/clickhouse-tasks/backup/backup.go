@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/ClickHouse/clickhouse-go/v2"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/ClickHouse/clickhouse-go/v2"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 )
 
 func main() {

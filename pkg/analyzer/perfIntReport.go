@@ -1,10 +1,11 @@
 package analyzer
 
 import (
-	"github.com/valyala/fastjson"
-	"golang.org/x/exp/constraints"
 	"log/slog"
 	"math"
+
+	"github.com/valyala/fastjson"
+	"golang.org/x/exp/constraints"
 )
 
 // Numeric is a constraint that permits any numeric type

@@ -3,9 +3,10 @@ package analyzer
 import (
 	"bufio"
 	"bytes"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 	"strconv"
 	"strings"
+
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/model"
 )
 
 func analyzePerfBazelReport(runResult *RunResult) bool {

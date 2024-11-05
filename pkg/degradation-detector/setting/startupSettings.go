@@ -1,9 +1,10 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"log/slog"
 	"net/http"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.StartupSettings {
@@ -22,9 +23,11 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		slog.Error("error while getting projects", "error", err)
 		return settings
 	}
-	metrics := []string{"appInit_d", "app initialization.end", "bootstrap_d",
+	metrics := []string{
+		"appInit_d", "app initialization.end", "bootstrap_d",
 		"classLoadingLoadedCount", "classLoadingPreparedCount", "editorRestoring",
-		"codeAnalysisDaemon/fusExecutionTime", "runDaemon/executionTime", "startup/fusTotalDuration", "exitMetrics/application.exit"}
+		"codeAnalysisDaemon/fusExecutionTime", "runDaemon/executionTime", "startup/fusTotalDuration", "exitMetrics/application.exit",
+	}
 	for _, project := range projects {
 		for _, metric := range metrics {
 			settings = append(settings, detector.StartupSettings{

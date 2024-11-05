@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"io"
 	"log"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type accident struct {
@@ -241,7 +242,6 @@ func CreateGetAccidentByIdHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 		id := request.URL.Query().Get("id")
 
 		accidentById, err := getAccidentById(request.Context(), metaDb, id)
-
 		if err != nil {
 			slog.Error("cannot get accident by id", "error", err, "id", id)
 			writer.WriteHeader(http.StatusInternalServerError)

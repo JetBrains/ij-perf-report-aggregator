@@ -1,8 +1,9 @@
 package setting
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"slices"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
 func getMavenTests() []string {
@@ -102,7 +103,6 @@ func generateMavenSettingsOnInstaller() []detector.PerformanceSettings {
 				},
 			})
 		}
-
 	}
 	return settings
 }
@@ -133,7 +133,6 @@ func generateMavenSettingsOnFastInstaller() []detector.PerformanceSettings {
 				},
 			})
 		}
-
 	}
 	return settings
 }

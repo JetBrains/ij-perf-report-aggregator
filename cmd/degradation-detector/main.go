@@ -1,14 +1,15 @@
 package main
 
 import (
-	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/setting"
-	_ "go.uber.org/automaxprocs"
 	"log/slog"
 	"net/http"
 	"os"
 	"slices"
 	"time"
+
+	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/setting"
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {

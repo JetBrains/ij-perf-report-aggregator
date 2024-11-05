@@ -139,6 +139,8 @@ linters:
     - copyloopvar # checks for copying loop variables by reference
     - intrange # checks for integer ranges that can be simplified
     - err113 # checks for errors that are unchecked and can be returned
+    - wastedassign # checks for assignments that are not used
+    - canonicalheader # checks for canonical header keys
 
 issues:
   # Maximum count of issues with the same text.

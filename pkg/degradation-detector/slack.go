@@ -205,7 +205,7 @@ func getMessageBasedOnMedianChange(medianValues MedianValues) string {
 }
 
 func icon(v MedianValues) string {
-	icon := ""
+	var icon string
 	if v.newValue > v.previousValue {
 		icon = ":chart_with_upwards_trend:"
 	} else {

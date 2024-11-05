@@ -134,7 +134,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     machineName = dataSeries[4] as string
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
-    mode = dataSeries[8] as string
+    if (dbType == DBType.INTELLIJ_DEV) {
+      mode = dataSeries[8] as string
+    }
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
     metricName = dataSeries[2] as string

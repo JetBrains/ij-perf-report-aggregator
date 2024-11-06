@@ -8,13 +8,16 @@
   >
     <section>
       <GroupProjectsChart
-        label="LLM completion"
-        measure="inlineCompletionShow#mean_value"
-        :projects="[
-          'kotlin_language_server/llm-completion/DefinitionTest/empty-fun-longline',
-          'kotlin_language_server/llm-completion/DefinitionTest/empty-fun',
-          'kotlin_language_server/llm-completion/DefinitionTest/empty-fun-multiline',
-        ]"
+        label="Inline completion"
+        measure="callInlineCompletionOnCompletion#mean_value"
+        :projects="['gradle-calculator_SimpleInlineCompletionTest/simple inline completion']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Code generation"
+        measure="ai-generate-code#mean_value"
+        :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
       />
     </section>
   </DashboardPage>

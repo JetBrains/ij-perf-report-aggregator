@@ -192,7 +192,6 @@ enum ROUTES {
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
-  FullLineDevTests = `${ROUTE_PREFIX.ML}/dev/fullLineDashboardDev`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
@@ -1044,11 +1043,7 @@ const ML_TESTS: Product = {
         },
         {
           url: ROUTES.LLMDevTests,
-          label: "LLM test dashboard dev-server/fast-installer",
-        },
-        {
-          url: ROUTES.FullLineDevTests,
-          label: "FullLine test dashboard dev-server/fast-installer",
+          label: "AIA Dashboard",
         },
         {
           url: ROUTES.MLDevTests,
@@ -2119,12 +2114,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.LLMDevTests,
           component: () => import("./components/ml/dev/LLMDashboard.vue"),
-          meta: { pageTitle: "LLM dashboard" },
-        },
-        {
-          path: ROUTES.FullLineDevTests,
-          component: () => import("./components/ml/dev/FullLineDashboard.vue"),
-          meta: { pageTitle: "FullLine dashboard" },
+          meta: { pageTitle: "AIA dashboard" },
         },
         {
           path: ROUTES.MLDevTests,

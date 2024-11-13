@@ -425,7 +425,7 @@ func writeWhereClause(sb *strings.Builder, query Query) error {
 		switch v := filter.Value.(type) {
 		case int:
 			sb.WriteString(filter.Operator)
-			sb.WriteString(strconv.Itoa(filter.Value.(int)))
+			sb.WriteString(strconv.Itoa(filter.Value.(int))) //nolint:errcheck // we're sure that filter is int due to switch case on type
 		case float64:
 			sb.WriteString(filter.Operator)
 			if v == math.Trunc(v) {

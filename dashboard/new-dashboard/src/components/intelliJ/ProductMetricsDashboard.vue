@@ -55,16 +55,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["globalInspections"],
     projects: ["kotlin_coroutines/inspection", "spring_boot_maven/inspection"],
   },
-  {
-    labels: ["Highlighting - remove symbol"],
-    measures: ["typing_EditorBackSpace_duration"],
-    projects: ["intellij_commit/editor-highlighting"],
-  },
-  {
-    labels: ["Highlighting - type symbol"],
-    measures: ["typing_}_duration"],
-    projects: ["intellij_commit/editor-highlighting"],
-  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -81,6 +81,16 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["Highlighting - remove symbol"],
+    measures: ["typing_EditorBackSpace_duration"],
+    projects: ["intellij_commit/editor-highlighting"],
+  },
+  {
+    labels: ["Highlighting - type symbol"],
+    measures: ["typing_}_duration"],
+    projects: ["intellij_commit/editor-highlighting"],
+  },
+  {
     labels: ["Completion", "Completion 90p"],
     measures: ["completion", "fus_completion_duration_90p"],
     projects: [

@@ -179,7 +179,7 @@ async function startBisect() {
     //todo add validation on all values
     const weburl = await bisectClient.sendBisectRequest({
       targetValue: targetValue.value as string,
-      changes: (firstCommit.value as string) + ".." + (lastCommit.value as string),
+      changes: (firstCommit.value as string) + "^.." + (lastCommit.value as string),
       direction: direction.value,
       test: test.value,
       metric: metric.value,

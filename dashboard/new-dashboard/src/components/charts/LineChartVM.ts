@@ -8,7 +8,7 @@ import { DataQueryExecutor, DataQueryResult } from "../common/DataQueryExecutor"
 import { timeFormat, ValueUnit } from "../common/chart"
 import { DataQueryExecutorConfiguration } from "../common/dataQuery"
 import { LineChartOptions } from "../common/echarts"
-import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds } from "../common/formatter"
+import { durationAxisPointerFormatter, isDurationFormatterApplicable, nsToMs, numberFormat, timeFormatWithoutSeconds, typeIsCounter } from "../common/formatter"
 import { InfoSidebar } from "../common/sideBar/InfoSidebar"
 import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPerformance"
 import { useSettingsStore } from "../settings/settingsStore"
@@ -100,7 +100,7 @@ export class LineChartVM {
     const dateMs = data[0]
     const type = this.getType(data)
     const durationMs = this.settings.scaling ? data.at(-1) : data[1]
-    element.append(durationAxisPointerFormatter(isMs ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
+    element.append(durationAxisPointerFormatter(isMs || typeIsCounter(type) ? (durationMs as number) : (durationMs as number) / 1000 / 1000, type), document.createElement("br"))
     element.append(timeFormatWithoutSeconds.format(dateMs as number), document.createElement("br"))
     element.append(measureNameToLabel(params.seriesName as string))
     const buildId = getFullBuildId(params)

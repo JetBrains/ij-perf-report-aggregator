@@ -1,5 +1,5 @@
 import { OptionDataValue } from "echarts/types/src/util/types"
-import { durationAxisPointerFormatter } from "../components/common/formatter"
+import { durationAxisPointerFormatter, typeIsCounter } from "../components/common/formatter"
 
 /**
  * This class is actually just a storage.
@@ -28,7 +28,7 @@ export class Delta {
 
 export function getDifferenceString(value: number, otherValue: number, isMs: boolean, type: string): string {
   const deltaAbs = value - otherValue
-  const deltaAbsFormatted = durationAxisPointerFormatter(isMs ? Math.abs(deltaAbs) : Math.abs(deltaAbs) / 1000 / 1000, type)
+  const deltaAbsFormatted = durationAxisPointerFormatter(isMs || typeIsCounter(type) ? Math.abs(deltaAbs) : Math.abs(deltaAbs) / 1000 / 1000, type)
   let deltaPercentFormatted = ""
   const plus = deltaAbs > 0 ? "-" : deltaAbs < 0 ? "+" : ""
   if (value != 0) {

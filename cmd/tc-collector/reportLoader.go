@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/url"
 	"runtime"
 	"strconv"
@@ -65,7 +66,8 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
 
 			artifacts, err := t.downloadReports(loadContext, *build)
 			if err != nil {
-				return err
+				slog.Error("failed to download reports", "error", err)
+				return nil
 			}
 
 			if len(artifacts) == 0 {

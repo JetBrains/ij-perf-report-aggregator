@@ -11,6 +11,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/tc-properties"
 	"github.com/cenkalti/backoff/v4"
@@ -98,7 +99,7 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 }
 
 func (t *Collector) downloadStartUpReportWithRetries(ctx context.Context, build Build, artifactUrlString string) ([]byte, error) {
-	bo := backoff.NewExponentialBackOff()
+	bo := backoff.NewExponentialBackOff(backoff.WithMaxElapsedTime(15*time.Second), backoff.WithMaxInterval(5*time.Second))
 	var result []byte
 	err := backoff.Retry(func() error {
 		if err := ctx.Err(); err != nil {

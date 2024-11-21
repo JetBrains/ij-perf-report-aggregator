@@ -663,6 +663,23 @@ async function configureChart(
     tooltip: {
       trigger: tooltipTrigger == "item" ? "item" : dataset.length > 5 ? "item" : "axis",
     },
+    dataZoom: [
+      {
+        type: "slider",
+        showDataShadow: false,
+        width: 10,
+        yAxisIndex: 0,
+        filterMode: "filter",
+        brushSelect: false,
+        show: true,
+        fillerColor: useDarkModeStore().darkMode ? "rgba(90,90,90,0.25)" : "rgba(106,114,128,0.1)",
+        borderColor: useDarkModeStore().darkMode ? "#444444" : "#d2dbee",
+        handleStyle: {
+          color: useDarkModeStore().darkMode ? "#444444" : "#d2dbee",
+        }
+
+      },
+    ],
     series: series as LineSeriesOption,
   }
 }

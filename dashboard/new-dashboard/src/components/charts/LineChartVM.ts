@@ -191,7 +191,7 @@ export class LineChartVM {
       animation: false,
       grid: {
         left: 8,
-        right: 8,
+        right: 20,
         bottom: 16,
         containLabel: true,
       },
@@ -277,13 +277,15 @@ export class LineChartVM {
 
   subscribe(): () => void {
     return this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+      const chart = this.eChart.chart
       if (isLoading || data == null) {
-        this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
+        chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
         return
       }
-      this.eChart.chart.hideLoading()
+      chart.hideLoading()
+
       const formatter = this.legendFormatter
-      this.eChart.chart.setOption(
+      chart.setOption(
         {
           title: {
             show: data.flat(3).length === 0,

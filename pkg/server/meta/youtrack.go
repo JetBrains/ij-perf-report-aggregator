@@ -341,19 +341,19 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 func generateDescription(generateDescriptorData GenerateDescriptionData) string {
 	var parts []string
 
-	// Affected test
+	// Metric
+	if generateDescriptorData.AffectedMetric != "" && generateDescriptorData.Delta != "" {
+		parts = append(parts, fmt.Sprintf("**Metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta))
+	}
+
+	// Test
 	if generateDescriptorData.AffectedTest != "" {
-		parts = append(parts, "**Affected test:**\n"+generateDescriptorData.AffectedTest)
+		parts = append(parts, "**Test:**\n"+generateDescriptorData.AffectedTest)
 	}
 
 	// Test method
 	if generateDescriptorData.TestMethod != nil && *generateDescriptorData.TestMethod != "" {
-		parts = append(parts, "**Test method:**\n"+*generateDescriptorData.TestMethod)
-	}
-
-	// Affected metric
-	if generateDescriptorData.AffectedMetric != "" && generateDescriptorData.Delta != "" {
-		parts = append(parts, fmt.Sprintf("**Affected metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta))
+		parts = append(parts, "**Test method name:**\n"+*generateDescriptorData.TestMethod)
 	}
 
 	// Build

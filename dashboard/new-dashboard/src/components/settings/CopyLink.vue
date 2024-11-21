@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="!timerangeConfigurator.customRange.value"
     class="card flex justify-content-center"
   >
     <a

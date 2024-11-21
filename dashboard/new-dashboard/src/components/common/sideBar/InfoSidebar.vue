@@ -72,7 +72,15 @@
           </span>
           <span class="flex gap-1.5 items-center">
             <ClockIcon class="w-4 h-4" />
-            {{ data?.series[0].value }}
+            <span
+              v-tooltip.right="{
+                value: getRawValueIfDifferent(data?.series[0]),
+                autoHide: false,
+              }"
+              :class="getURLStyle()"
+            >
+              {{ data?.series[0].value }}
+            </span>
           </span>
         </div>
         <div v-else>
@@ -89,7 +97,12 @@
               <span v-if="item.metricName">{{ item.metricName }}</span>
               <span
                 v-if="item.metricName"
+                v-tooltip.right="{
+                  value: getRawValueIfDifferent(item),
+                  autoHide: false,
+                }"
                 class="font-mono place-self-end"
+                :class="getURLStyle()"
                 >{{ item.value }}</span
               >
             </template>
@@ -270,7 +283,7 @@ import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
 import { useScrollListeners, useScrollStore } from "../scrollStore"
-import { DBType, getArtifactsUrl, getSpaceUrl, InfoData, tcUrl } from "./InfoSidebar"
+import { DataSeries, DBType, getArtifactsUrl, getSpaceUrl, InfoData, tcUrl } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import ReportMetricDialog from "./ReportMetricDialog.vue"
 import TestActions from "./TestActions.vue"
@@ -292,6 +305,10 @@ const showStacktrace = ref(false)
 const showBisectDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
+
+function getRawValueIfDifferent(value: DataSeries): string|null {
+  return value.value != value.rawValue.toString() ? value.rawValue.toString() : null
+}
 
 const serverConfigurator = injectOrNull(serverConfiguratorKey)
 

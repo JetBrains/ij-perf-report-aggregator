@@ -245,8 +245,9 @@ export function getInfoDataFrom(
     const series: DataSeries[] = []
     for (const param of filteredParams) {
       const currentSeriesData = param.value as OptionDataValue[]
-      const value = getValueFormatterByMeasureName(param.seriesName as string)(currentSeriesData[1] as number)
-      series.push({ metricName: param.seriesName as string, value, color: param.color as string })
+      const value = currentSeriesData[1] as number
+      const showValue = getValueFormatterByMeasureName(param.seriesName as string)(value)
+      series.push({ metricName: param.seriesName as string, value: showValue, color: param.color as string, rawValue: value })
     }
 
     return { ...info, series, deltaPrevious: undefined, deltaNext: undefined, chartDataUrl, buildIdPrevious: undefined, buildIdNext: undefined }
@@ -277,7 +278,7 @@ export function getInfoDataFrom(
       ...info,
       deltaNext,
       deltaPrevious,
-      series: [{ metricName: info.metricName, value: showValue, color: params.color as string }],
+      series: [{ metricName: info.metricName, value: showValue, color: params.color as string, rawValue: value }],
       chartDataUrl,
       buildIdPrevious,
       buildIdNext,

@@ -83,8 +83,8 @@ func (t *Collector) downloadStartUpReport(ctx context.Context, build Build, arti
 			return nil, nil
 		}
 		responseBody, _ := io.ReadAll(response.Body)
-		t.logger.Error("Invalid response", "status", response.Status, "body", responseBody)
-		return nil, err
+		t.logger.Warn("invalid response on downloading artifacts, skipping", "status", response.Status, "body", responseBody)
+		return nil, nil
 	}
 
 	t.storeSessionIdCookie(response)

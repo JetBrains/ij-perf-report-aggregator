@@ -164,6 +164,7 @@ enum ROUTES {
   SPECjbb2015Dashboard = `${ROUTE_PREFIX.JBR}/specDashboard`,
   FleetTest = `${ROUTE_PREFIX.Fleet}/${TEST_ROUTE}`,
   FleetPerfDashboard = `${ROUTE_PREFIX.Fleet}/perfDashboard`,
+  FleetPerfStartupComparisonDashboard = `${ROUTE_PREFIX.Fleet}/startupComparisonDashboard`,
   FleetStartupDashboard = `${ROUTE_PREFIX.Fleet}/startupDashboard`,
   FleetStartupExplore = `${ROUTE_PREFIX.Fleet}/startupExplore`,
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
@@ -861,6 +862,10 @@ const FLEET: Product = {
         {
           url: ROUTES.FleetPerfDashboard,
           label: "Performance Dashboard",
+        },
+        {
+          url: ROUTES.FleetPerfStartupComparisonDashboard,
+          label: "Startup Comparison Dashboard",
         },
         {
           url: ROUTES.FleetTest,
@@ -1914,6 +1919,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.FleetPerfDashboard,
           component: () => import("./components/fleet/PerformanceDashboard.vue"),
           meta: { pageTitle: "Fleet Performance dashboard" },
+        },
+        {
+          path: ROUTES.FleetPerfStartupComparisonDashboard,
+          component: () => import("./components/fleet/StartupComparisonDashboard.vue"),
+          meta: { pageTitle: "Fleet Startup Comparison dashboard" },
         },
         {
           path: ROUTES.FleetStartupDashboard,

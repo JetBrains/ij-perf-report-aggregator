@@ -400,6 +400,12 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Windows Munich i7-13700, 64 Gb"
   } else if (machine.startsWith("intellij-linux-hw-de-unit")) {
     groupName = "Linux Munich i7-13700, 64 Gb"
+  } else if (machine.startsWith("fleet-linux-aws-ui")) {
+    groupName = "Linux Fleet AWS UI"
+  } else if (machine.startsWith("fleet-windows-aws-r5d")) {
+    groupName = "Windows Fleet AWS UI"
+  } else if (machine.startsWith("fleet-icri-ui-agent")) {
+    groupName = "Mac Fleet AWS UI"
   }
 
   return groupName

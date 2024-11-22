@@ -306,7 +306,7 @@ const showBisectDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
 
-function getRawValueIfDifferent(value: DataSeries): string|null {
+function getRawValueIfDifferent(value: DataSeries): string | null {
   return value.value != value.rawValue.toString() ? value.rawValue.toString() : null
 }
 

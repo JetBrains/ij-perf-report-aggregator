@@ -676,8 +676,7 @@ async function configureChart(
         borderColor: useDarkModeStore().darkMode ? "#444444" : "#d2dbee",
         handleStyle: {
           color: useDarkModeStore().darkMode ? "#444444" : "#d2dbee",
-        }
-
+        },
       },
     ],
     series: series as LineSeriesOption,

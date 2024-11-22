@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="card flex justify-content-center"
-  >
+  <div class="card flex justify-content-center">
     <a
       title="Copy link to charts"
       class="info"

@@ -191,6 +191,7 @@ export class LineChartVM {
       animation: false,
       grid: {
         left: 8,
+        top: 65,
         right: 20,
         bottom: 16,
         containLabel: true,

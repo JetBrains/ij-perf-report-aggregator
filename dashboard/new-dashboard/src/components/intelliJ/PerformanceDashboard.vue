@@ -54,12 +54,6 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["default", "1 thread", "git status"],
   },
   {
-    labels: ["VFS Refresh after Mass Changes"],
-    measures: ["vfsRefreshAfterMassCreate", "vfsRefreshAfterMassDelete"],
-    projects: ["empty-project/vfs-mass-update-txt", "empty-project/vfs-mass-update-java", "empty-project/vfs-mass-update-kt"],
-    aliases: ["txt", "java", "kotlin"],
-  },
-  {
     labels: ["Rebuild (Big projects)"],
     measures: ["build_compilation_duration"],
     projects: ["community/rebuild"],

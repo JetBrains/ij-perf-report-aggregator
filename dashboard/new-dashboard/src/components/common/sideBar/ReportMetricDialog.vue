@@ -100,7 +100,7 @@
             label="Cancel"
             icon="pi pi-times"
             severity="secondary"
-            @click="showDialog = false"
+            @click="(showDialog = false)"
           />
           <Button
             label="Report"
@@ -116,7 +116,7 @@
             label="Cancel"
             icon="pi pi-times"
             severity="secondary"
-            @click="showDialog = false"
+            @click="(showDialog = false)"
           />
           <Button
             label="Delete"

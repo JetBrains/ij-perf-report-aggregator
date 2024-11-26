@@ -3,8 +3,8 @@
   "private": true,
   "dependencies": {
     "@heroicons/vue": "2.2.0",
-    "@primevue/core": "^4.2.1",
-    "@vueuse/core": "^11.2.0",
+    "@primevue/core": "^4.2.3",
+    "@vueuse/core": "^11.3.0",
     "echarts": "5.5.1",
     "fast-equals": "5.0.1",
     "humanize-duration": "3.32.1",
@@ -13,13 +13,13 @@
     "primevue": "4.2.1",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.13",
-    "vue-router": "4.4.5"
+    "vue-router": "4.5.0"
   },
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^25.0.0",
     "jsdom": "^25.0.1",
-    "msw": "^2.6.5"
+    "msw": "^2.6.6"
   }
 }

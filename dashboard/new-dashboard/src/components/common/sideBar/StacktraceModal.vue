@@ -13,7 +13,7 @@
         <Button
           label="Close"
           icon="pi pi-times"
-          @click="showStacktrace = false"
+          @click="(showStacktrace = false)"
         />
       </div>
     </template>

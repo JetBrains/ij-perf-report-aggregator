@@ -63,7 +63,7 @@ const metricsNames = [
   "spiralTest-dash-false",
   "spiralTest-fill",
   "test_z_625k",
-]
+].map((metric) => metric + ".ser")
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "Mapbench_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "Mapbench_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "Mapbench_" + config)

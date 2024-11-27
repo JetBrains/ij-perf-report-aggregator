@@ -99,9 +99,6 @@ const metricsNames = [
   "TextNoAA_XOR",
   "FlatQuadAA",
   "TextLCD_XOR",
-  "TextWiredQuadMix",
-  "VolImageFlatBoxMix",
-  "VolImageTextNoAABat",
 ]
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "Render_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "Render_" + config)

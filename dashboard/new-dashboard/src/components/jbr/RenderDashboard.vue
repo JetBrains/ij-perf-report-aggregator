@@ -22,7 +22,7 @@
         <section>
           <GroupProjectsChart
             label="macOS"
-            :measure="metric"
+            :measure="metric+'_'+mode"
             :projects="macOSConfigurations"
           />
         </section>
@@ -30,14 +30,14 @@
           <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Ubuntu"
-              :measure="metric"
+              :measure="metric+'_'+mode"
               :projects="ubuntuConfigurations"
             />
           </div>
           <div class="flex-1 min-w-0">
             <GroupProjectsChart
               label="Windows"
-              :measure="metric"
+              :measure="metric+'_'+mode"
               :projects="windowsConfigurations"
             />
           </div>

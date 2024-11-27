@@ -68,7 +68,7 @@ const metricsNames = [
   "xalan",
   "zxing",
 ]
-const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "DaCapo_" + config)
-const macOSConfigurations = jbrMacConfigurations.map((config) => "DaCapo_" + config)
-const windowsConfigurations = jbrWindowsConfigurations.map((config) => "DaCapo_" + config)
+const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "Dacapo_" + config)
+const macOSConfigurations = jbrMacConfigurations.map((config) => "Dacapo_" + config)
+const windowsConfigurations = jbrWindowsConfigurations.map((config) => "Dacapo_" + config)
 </script>

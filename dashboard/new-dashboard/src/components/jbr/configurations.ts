@@ -1,4 +1,4 @@
-export const jbrWindowsConfigurations = ["Windows10x86_64"]
+export const jbrWindowsConfigurations = ["Windows10x86_64", "Windows11x86_64"]
 
 export const jbrMacConfigurations = [
   "macOS13aarch64",

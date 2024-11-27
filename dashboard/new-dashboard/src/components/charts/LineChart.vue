@@ -5,8 +5,8 @@
   >
     <h3
       class="m-0 flex items-center"
-      @mouseover="(labelHovered = true)"
-      @mouseleave="(labelHovered = false)"
+      @mouseover="labelHovered = true"
+      @mouseleave="labelHovered = false"
     >
       {{ title + (settingStore.scaling ? " (scaled)" : "") + (settingStore.removeOutliers ? " (outliers removed)" : "") }}&nbsp;
       <a

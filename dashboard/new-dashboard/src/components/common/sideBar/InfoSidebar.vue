@@ -239,7 +239,7 @@
         v-if="bisectSupported && data != null"
         label="Bisect"
         text
-        @click="(showBisectDialog = true)"
+        @click="showBisectDialog = true"
       />
     </div>
   </div>

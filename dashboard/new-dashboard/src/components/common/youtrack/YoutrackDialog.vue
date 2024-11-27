@@ -47,7 +47,7 @@
           label="Cancel"
           icon="pi pi-times"
           severity="secondary"
-          @click="(showYoutrackDialog = false)"
+          @click="showYoutrackDialog = false"
         />
         <Button
           label="Create"

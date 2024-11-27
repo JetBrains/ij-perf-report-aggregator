@@ -7,37 +7,42 @@
     :is-build-number-exists="true"
   >
     <div
-      v-for="metric in metricsNames"
-      :key="metric"
+      v-for="mode in renderingModes"
+      :key="mode"
     >
-      <div class="relative flex py-5 items-center">
-        <div class="flex-grow border-t" />
-        <span class="flex-shrink mx-4 text-lg">{{ metric }}</span>
-        <div class="flex-grow border-t" />
+      <div
+        v-for="metric in metricsNames"
+        :key="metric"
+      >
+        <div class="relative flex py-5 items-center">
+          <div class="flex-grow border-t" />
+          <span class="flex-shrink mx-4 text-lg">{{ metric }}_{{ mode }}</span>
+          <div class="flex-grow border-t" />
+        </div>
+        <section>
+          <GroupProjectsChart
+            label="macOS"
+            :measure="metric"
+            :projects="macOSConfigurations"
+          />
+        </section>
+        <section class="flex gap-x-6">
+          <div class="flex-1 min-w-0">
+            <GroupProjectsChart
+              label="Ubuntu"
+              :measure="metric"
+              :projects="ubuntuConfigurations"
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <GroupProjectsChart
+              label="Windows"
+              :measure="metric"
+              :projects="windowsConfigurations"
+            />
+          </div>
+        </section>
       </div>
-      <section>
-        <GroupProjectsChart
-          label="macOS"
-          :measure="metric"
-          :projects="macOSConfigurations"
-        />
-      </section>
-      <section class="flex gap-x-6">
-        <div class="flex-1 min-w-0">
-          <GroupProjectsChart
-            label="Ubuntu"
-            :measure="metric"
-            :projects="ubuntuConfigurations"
-          />
-        </div>
-        <div class="flex-1 min-w-0">
-          <GroupProjectsChart
-            label="Windows"
-            :measure="metric"
-            :projects="windowsConfigurations"
-          />
-        </div>
-      </section>
     </div>
   </DashboardPage>
 </template>
@@ -47,62 +52,28 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { jbrLinuxConfigurations, jbrMacConfigurations, jbrWindowsConfigurations } from "./configurations"
 
+const renderingModes = ["buffer", "onscreen", "volatile"]
+
 const metricsNames = [
-  "ArgbSurfaceBlitImage",
-  "LinGrad3RotatedOvalAA",
-  "LinGradRotatedOval",
-  "LinGradRotatedOvalAA",
-  "ArgbSwBlitImage",
-  "BgrSurfaceBlitImage",
-  "LinGrad3RotatedOval",
-  "RadGrad3RotatedOval",
-  "RadGrad3RotatedOvalAA",
-  "FlatBox",
-  "RotatedOval",
-  "WiredBubbles",
-  "ClipFlatOvalAA",
-  "ClipFlatBoxAA",
-  "FlatBoxAA",
-  "FlatOvalAA",
   "ClipFlatOval",
-  "RotatedOvalAA",
-  "VolImageAA",
-  "ImageAA",
-  "RotatedBox",
-  "RotatedBoxAA",
-  "WiredBox",
-  "FlatOval",
-  "WiredBoxAA",
-  "WiredBubblesAA",
-  "Lines",
+  "FlatBox",
   "Image",
-  "ClipFlatBox",
   "VolImage",
-  "LargeTextGray",
-  "LargeTextNoAA",
-  "Image_XOR",
-  "WhiteTextGray",
-  "LargeTextLCD",
-  "BgrSwBlitImage",
-  "FlatQuad",
-  "TextLCD",
-  "WhiteTextLCD",
-  "TextNoAA",
-  "FlatOval_XOR",
-  "TextGray",
-  "WhiteTextNoAA",
-  "LinesAA",
-  "WiredQuadAA",
-  "Lines_XOR",
-  "RotatedBox_XOR",
-  "WiredQuad",
-  "TextNoAA_XOR",
+  "LinGrad3RotatedOval",
+  "RadGrad3RotatedOvalAA",
+  "WiredBubbles",
   "FlatQuadAA",
-  "TextLCD_XOR",
+  "WiredQuadAA",
+  "TextNoAA",
+  "TextLCD",
+  "TextGray",
+  "LargeTextNoAA",
+  "FlatOval_XOR",
   "TextWiredQuadMix",
   "VolImageFlatBoxMix",
   "VolImageTextNoAABat",
 ]
+
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "Render_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "Render_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "Render_" + config)

@@ -7,16 +7,30 @@
   >
     <section>
       <GroupProjectsChart
-        label="Launch Debugger"
+        label="Launch Debug"
         measure="debugRunConfiguration"
-        :projects="['river/debug']"
+        :projects="['river/debug', 'trufflehog/debug']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Into"
         measure="debugStep_into"
-        :projects="['river/debug']"
+        :projects="['river/debug', 'trufflehog/debug']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Step Out"
+        measure="debugStep_into"
+        :projects="['river/debug', 'trufflehog/debug']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Step Over"
+        measure="debugStep_into"
+        :projects="['river/debug', 'trufflehog/debug']"
       />
     </section>
   </DashboardPage>

@@ -192,6 +192,16 @@ func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 	return artifactName == "logs.zip"
 }
 
+type perfUnitTestCollector struct{}
+
+func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
+	return strings.ReplaceAll(params.AffectedTest, "_", "-")
+}
+
+func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {
+	return artifactName == "log.zip"
+}
+
 type perfintCollector struct{}
 
 func (f perfintCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
@@ -216,6 +226,8 @@ func getArtifactCollector(testType string) artifactCollector {
 		return perfintCollector{}
 	case "fleet_perf":
 		return fleetPerfTestCollector{}
+	case "perfUnitTests":
+		return perfUnitTestCollector{}
 	default:
 		return nil
 	}
@@ -375,6 +387,12 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 			snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
 		}
 		parts = append(parts, logs, snapshots)
+	}
+
+	if generateDescriptorData.TestType == "perfUnitTests" {
+		snapshots := "**Snapshots:**\nCurrent: [log-current.zip](log-current.zip)"
+		snapshots += "\nBefore: [log-before.zip](log-before.zip)"
+		parts = append(parts, snapshots)
 	}
 
 	// Dashboard

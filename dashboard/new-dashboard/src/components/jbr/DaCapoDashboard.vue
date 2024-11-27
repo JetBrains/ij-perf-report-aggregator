@@ -48,7 +48,26 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { jbrLinuxConfigurations, jbrMacConfigurations, jbrWindowsConfigurations } from "./configurations"
 
-const metricsNames = ["avrora", "fop", "h2", "jython", "luindex", "lusearch", "pmd", "sunflow", "xalan"]
+const metricsNames = [
+  "avrora",
+  "batik",
+  "biojava",
+  "eclipse",
+  "fop",
+  "graphchi",
+  "h2",
+  "jme",
+  "jython",
+  "kafka",
+  "luindex",
+  "lusearch",
+  "pmd",
+  "spring",
+  "sunflow",
+  "tomcat",
+  "xalan",
+  "zxing",
+]
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "DaCapo_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "DaCapo_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "DaCapo_" + config)

@@ -48,7 +48,14 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { jbrLinuxConfigurations, jbrMacConfigurations, jbrWindowsConfigurations } from "./configurations"
 
-const metricsNames = ["Plus_200_Random_Small_Circles", "Plus_2_SweepGradient_Circles", "Plus_320_Long_Lines", "Plus_4000_Random_Small_Circles"]
+const metricsNames = [
+  "Display_PNG_Bitmap_Twice_Pass_1",
+  "Display_PNG_Bitmap_Twice_Pass_2",
+  "Plus_2_SweepGradient_Circles",
+  "Plus_200_Random_Small_Circles",
+  "Plus_320_Long_Lines",
+  "Plus_4000_Random_Small_Circles",
+]
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "JavaDraw_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "JavaDraw_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "JavaDraw_" + config)

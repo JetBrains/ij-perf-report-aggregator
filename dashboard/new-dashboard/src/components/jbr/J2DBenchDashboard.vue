@@ -48,16 +48,7 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { jbrLinuxConfigurations, jbrMacConfigurations, jbrWindowsConfigurations } from "./configurations"
 
-const metricsNames = [
-  "graphics.imaging.benchmarks.tests.drawimage",
-  "graphics.imaging.benchmarks.tests.drawimagescaleup",
-  "graphics.imaging.benchmarks.tests.drawimagetxform",
-  "graphics.render.tests.drawLine",
-  "graphics.render.tests.fillOval",
-  "graphics.render.tests.fillRect",
-  "graphics.render.tests.shape.fillCubic",
-  "text.Rendering.tests.drawString",
-]
+const metricsNames = ["poly250", "poly250-rand_col", "poly250-AA-rand_col"]
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "J2DBench_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "J2DBench_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "J2DBench_" + config)

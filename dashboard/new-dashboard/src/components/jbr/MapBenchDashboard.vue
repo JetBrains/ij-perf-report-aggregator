@@ -52,18 +52,18 @@ const metricsNames = [
   "CircleTests",
   "EllipseTests-fill-false",
   "EllipseTests-fill-true",
-  "spiralTest-dash-false",
-  "spiralTest-fill",
   "dc_boulder_2013-13-30-06-13-17",
   "dc_boulder_2013-13-30-06-13-20",
   "dc_shp_alllayers_2013-00-30-07-00-43",
   "dc_shp_alllayers_2013-00-30-07-00-47",
   "dc_spearfish_2013-11-30-06-11-15",
   "dc_spearfish_2013-11-30-06-11-19",
+  "dc_topp:states_2013-11-30-06-11-06",
+  "dc_topp:states_2013-11-30-06-11-07",
+  "spiralTest-dash-false",
+  "spiralTest-fill",
   "test_z_625k",
-].flatMap((test) => {
-  return ["ser.Pct95"].map((stat) => test + "." + stat)
-})
+]
 const ubuntuConfigurations = jbrLinuxConfigurations.map((config) => "Mapbench_" + config)
 const macOSConfigurations = jbrMacConfigurations.map((config) => "Mapbench_" + config)
 const windowsConfigurations = jbrWindowsConfigurations.map((config) => "Mapbench_" + config)

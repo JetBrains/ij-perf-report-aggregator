@@ -93,7 +93,7 @@ export async function getArtifactsUrl(data: InfoData | null, serverConfigurator:
     url = data?.artifactsUrl ?? ""
   } else if (data?.installerId ?? data?.buildId) {
     const db = serverConfigurator.db
-    if (db == "perfint" || db == "perfintDev") {
+    if (db == "perfint" || db == "perfintDev" || db == "perfUnitTests") {
       const type = await getTeamcityBuildType(db, serverConfigurator.table, data.buildId)
       url = `${tcUrl}buildConfiguration/${type}/${data.buildId}?buildTab=artifacts#${replaceUnderscore("/" + data.projectName)}`
     } else {

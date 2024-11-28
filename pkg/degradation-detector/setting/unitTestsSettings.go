@@ -17,7 +17,7 @@ func GenerateUnitTestsSettings(backendUrl string, client *http.Client) []detecto
 		Metric:  "attempt.mean.ms",
 	}
 	slackSettings := detector.SlackSettings{
-		Channel:     "ij-perf-unit-tests",
+		Channel:     "ij-perf-unit-tests-alerts",
 		ProductLink: "perfUnit",
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)

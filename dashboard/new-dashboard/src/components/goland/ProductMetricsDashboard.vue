@@ -27,7 +27,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    projects: ["cockroach/indexing", "delve/indexing", "mattermost/indexing", "kubernetes/indexing", "flux/indexing", "istio/indexing"],
   },
   {
     labels: ["FirstCodeAnalysis"],
@@ -37,7 +37,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [],
+    projects: ["caddy/completion/variable", "caddy/completion/type", "caddy/completion/return", "caddy/completion/interface", "caddy/completion/import"],
   },
   {
     labels: ["SearchEverywhere"],
@@ -52,7 +52,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: ["delve/inspection", "kubernetes/inspection"],
   },
 ]
 

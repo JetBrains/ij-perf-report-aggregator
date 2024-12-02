@@ -195,7 +195,7 @@ func (f fleetPerfTestCollector) checkArtifact(artifactName string) bool {
 type perfUnitTestCollector struct{}
 
 func (f perfUnitTestCollector) getArtifactsPath(params UploadAttachmentsToIssueRequest) string {
-	return strings.ReplaceAll(params.AffectedTest, "_", "-")
+	return strings.ReplaceAll(params.AffectedTest, "-", "_")
 }
 
 func (f perfUnitTestCollector) checkArtifact(artifactName string) bool {

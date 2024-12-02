@@ -27,7 +27,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    projects: ["laravel-io/indexing", "oro/indexing", "aggregateStitcher/indexing"],
   },
   {
     labels: ["FirstCodeAnalysis"],
@@ -37,7 +37,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [],
+    projects: ["dql/completion", "many_classes/completion/classes"],
   },
   {
     labels: ["SearchEverywhere"],
@@ -52,7 +52,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: ["laravel-io/inspection", "akaunting/inspection", "aggregateStitcher/inspection"],
   },
 ]
 

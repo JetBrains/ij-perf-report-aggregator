@@ -54,6 +54,8 @@ const groups = [
       "vue-template/completion/component",
       "vue3-admin-vite/completion/component",
       "vue3-admin-vite/completion/attribute",
+      "pancake-frontend/completion/component",
+      "pancake-frontend/completion/attribute",
     ],
   },
   {
@@ -71,6 +73,8 @@ const groups = [
       "material-ui-react-admin/localInspection/PostEdit.tsx",
       "vue-template/localInspection/HelloWorld.vue",
       "vue3-admin-vite/localInspection/index.vue",
+      "pancake-frontend/localInspection/[tokenId].tsx",
+      "kibana/localInspection/alerts_grouping.tsx",
     ],
   },
   {

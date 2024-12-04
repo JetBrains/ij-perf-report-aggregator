@@ -32,7 +32,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: ["laravel-io/localInspection/HasAuthor", "laravel-io/localInspection/Tag", "mpdf/localInspection"],
   },
   {
     labels: ["Completion"],
@@ -42,7 +42,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: ["magento2/go-to-class-with-warmup/MaAdMUser/typingLetterByLetter", "bitrix/go-to-class-with-warmup/BCCo/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],

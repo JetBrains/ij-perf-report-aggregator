@@ -70,6 +70,11 @@ export class YoutrackClient {
     jbr: [{ name: "JetBrains Runtime", id: "22-202" }],
     qodana: [{ name: "Qodana", id: "22-332" }],
     fleet: [{ name: "Fleet", id: "22-520" }],
+    perfUnitTests: [
+      { name: "IDEA", id: "22-22" },
+      { name: "Kotlin Plugin", id: "22-414" },
+      { name: "WebStorm", id: "22-96" },
+    ],
   }
 
   private getConfiguratorId(): string {

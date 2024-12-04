@@ -402,7 +402,7 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Linux Munich i7-13700, 64 Gb"
   } else if (machine.startsWith("fleet-linux-aws-ui")) {
     groupName = "Linux Fleet AWS UI"
-  } else if (machine.startsWith("fleet-windows-aws-r5d")) {
+  } else if (machine.startsWith("fleet-windows-aws-r5d") || machine.startsWith("fleet-windows-aws-m5d")) {
     groupName = "Windows Fleet AWS UI"
   } else if (machine.startsWith("fleet-icri-ui-agent")) {
     groupName = "Mac Fleet AWS UI"

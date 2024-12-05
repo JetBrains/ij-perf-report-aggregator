@@ -68,7 +68,7 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "buildTools",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "ij-build-tools-perf-tests",
 		Packages: []string{
 			"org.jetbrains.osgi.maven", "org.jetbrains.plugins.gradle",
 		},

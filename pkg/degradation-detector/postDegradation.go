@@ -19,7 +19,7 @@ type InsertionResults struct {
 }
 
 func FilterErrors(insertionResults <-chan InsertionResults) <-chan DegradationWithSettings {
-	ch := make(chan DegradationWithSettings)
+	ch := make(chan DegradationWithSettings, 100)
 	go func() {
 		for result := range insertionResults {
 			if result.Error != nil {
@@ -51,7 +51,7 @@ func (s FleetStartupSettings) DBTestName() string {
 
 func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithSettings) chan InsertionResults {
 	url := backendURL + "/api/meta/accidents"
-	insertionResults := make(chan InsertionResults)
+	insertionResults := make(chan InsertionResults, 100)
 	go func() {
 		defer close(insertionResults)
 		var wg sync.WaitGroup

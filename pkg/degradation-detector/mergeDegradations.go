@@ -81,7 +81,7 @@ func (s FleetStartupSettings) MergeAnother(settings Settings) Settings {
 }
 
 func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {
-	c := make(chan DegradationWithSettings)
+	c := make(chan DegradationWithSettings, 100)
 	go func() {
 		type degradationKey struct {
 			slackChannel string

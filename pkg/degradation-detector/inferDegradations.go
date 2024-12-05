@@ -10,7 +10,7 @@ type DegradationWithSettings struct {
 }
 
 func InferDegradations(data <-chan queryResultWithSettings) <-chan DegradationWithSettings {
-	degradationChan := make(chan DegradationWithSettings)
+	degradationChan := make(chan DegradationWithSettings, 100)
 	go func() {
 		for datum := range data {
 			for _, degradation := range detectDegradations(datum.values, datum.builds, datum.timestamps, datum.Settings) {

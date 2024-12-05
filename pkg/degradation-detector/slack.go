@@ -112,7 +112,7 @@ func (s FleetStartupSettings) slackLink() string {
 		escapedMeasurements = append(escapedMeasurements, url.QueryEscape(m))
 	}
 	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&timeRange=1M",
+	return fmt.Sprintf("[link](https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&timeRange=1M)",
 		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure)
 }
 
@@ -134,13 +134,13 @@ func (s PerformanceSettings) slackLink() string {
 	}
 	project := strings.Join(escapedProjects, "&project=")
 	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M",
+	return fmt.Sprintf("[link](https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&timeRange=1M)",
 		s.ProductLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure)
 }
 
 func (s StartupSettings) slackLink() string {
 	machineGroup := getMachineGroup(s.Machine)
-	return fmt.Sprintf("https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&timeRange=1M",
+	return fmt.Sprintf("[link](https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&timeRange=1M)",
 		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project))
 }
 

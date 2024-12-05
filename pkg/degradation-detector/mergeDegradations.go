@@ -19,14 +19,21 @@ type mergeInfoProvider interface {
 }
 
 func (s PerformanceSettings) MergeAnother(settings Settings) Settings {
-	c := s
-	if !strings.Contains(c.Project, settings.GetProject()) {
-		c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
+	if !strings.Contains(s.Project, settings.GetProject()) {
+		s.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
 	}
-	if s.MetricAlias != "" && s.Metric != settings.GetMetric() && !strings.Contains(c.Metric, settings.GetMetric()) {
-		c.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
+	if s.MetricAlias != "" && s.Metric != settings.GetMetric() && !strings.Contains(s.Metric, settings.GetMetric()) {
+		s.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
 	}
-	return c
+	return s
+}
+
+func (s BaseSettings) GetMetric() string {
+	return s.Metric
+}
+
+func (s BaseSettings) GetMetricOrAlias() string {
+	return s.Metric
 }
 
 func (s PerformanceSettings) GetMetricOrAlias() string {
@@ -36,20 +43,8 @@ func (s PerformanceSettings) GetMetricOrAlias() string {
 	return s.Metric
 }
 
-func (s PerformanceSettings) GetMetric() string {
-	return s.Metric
-}
-
 func (s PerformanceSettings) GetProject() string {
 	return s.Project
-}
-
-func (s StartupSettings) GetMetric() string {
-	return s.Metric
-}
-
-func (s StartupSettings) GetMetricOrAlias() string {
-	return s.Metric
 }
 
 func (s StartupSettings) GetProject() string {
@@ -57,17 +52,8 @@ func (s StartupSettings) GetProject() string {
 }
 
 func (s StartupSettings) MergeAnother(settings Settings) Settings {
-	c := s
-	c.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
-	return c
-}
-
-func (s FleetStartupSettings) GetMetric() string {
-	return s.Metric
-}
-
-func (s FleetStartupSettings) GetMetricOrAlias() string {
-	return s.Metric
+	s.Project = fmt.Sprintf("%s,%s", s.Project, settings.GetProject())
+	return s
 }
 
 func (s FleetStartupSettings) GetProject() string {
@@ -75,9 +61,8 @@ func (s FleetStartupSettings) GetProject() string {
 }
 
 func (s FleetStartupSettings) MergeAnother(settings Settings) Settings {
-	c := s
-	c.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
-	return c
+	s.Metric = fmt.Sprintf("%s,%s", s.Metric, settings.GetMetric())
+	return s
 }
 
 func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {

@@ -1,7 +1,9 @@
 package degradation_detector
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -28,6 +30,8 @@ func TestMergeDegradations(t *testing.T) {
 
 	outputChan := MergeDegradations(inputChan)
 	total := 0
+	now := time.Now()
+	currentDate := fmt.Sprintf("%d-%02d-%d", now.Year(), now.Month(), now.Day())
 	for r := range outputChan {
 		sM := r.Settings.CreateSlackMessage(r.Details)
 		eM := SlackMessage{
@@ -37,7 +41,7 @@ func TestMergeDegradations(t *testing.T) {
 				"Branch: \n" +
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
-				"Link: https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=1M\n" +
+				"Link: [link](https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=custom&customRange=1969-12-25:" + currentDate + ")\n" +
 				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
 			Channel: r.Settings.SlackChannel(),
 		}
@@ -111,6 +115,8 @@ func TestMetricAlias(t *testing.T) {
 
 	outputChan := MergeDegradations(inputChan)
 	total := 0
+	now := time.Now()
+	currentDate := fmt.Sprintf("%d-%02d-%d", now.Year(), now.Month(), now.Day())
 	for r := range outputChan {
 		sM := r.Settings.CreateSlackMessage(r.Details)
 		eM := SlackMessage{
@@ -120,7 +126,7 @@ func TestMetricAlias(t *testing.T) {
 				"Branch: \n" +
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
-				"Link: https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=1M\n" +
+				"Link: [link](https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=custom&customRange=1969-12-25:" + currentDate + ")\n" +
 				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
 			Channel: r.Settings.SlackChannel(),
 		}

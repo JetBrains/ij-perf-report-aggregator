@@ -10,8 +10,10 @@ import (
 func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []detector.StartupSettings {
 	settings := make([]detector.StartupSettings, 0, 100)
 	mainSettings := detector.StartupSettings{
-		Branch:  "master",
-		Machine: "intellij-linux-hw-de-unit-%",
+		BaseSettings: detector.BaseSettings{
+			Branch:  "master",
+			Machine: "intellij-linux-hw-de-unit-%",
+		},
 		Product: "GO",
 	}
 	slackSettings := detector.SlackSettings{
@@ -27,15 +29,17 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 	for _, project := range projects {
 		for _, metric := range metrics {
 			settings = append(settings, detector.StartupSettings{
-				Branch:  mainSettings.Branch,
-				Machine: mainSettings.Machine,
+				BaseSettings: detector.BaseSettings{
+					Metric: metric,
+					AnalysisSettings: detector.AnalysisSettings{
+						MinimumSegmentLength: 12,
+					},
+					SlackSettings: slackSettings,
+					Branch:        mainSettings.Branch,
+					Machine:       mainSettings.Machine,
+				},
 				Product: mainSettings.Product,
 				Project: project,
-				Metric:  metric,
-				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength: 12,
-				},
-				SlackSettings: slackSettings,
 			})
 		}
 	}
@@ -44,10 +48,12 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 
 func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:      "perfint",
-		Table:   "goland",
-		Branch:  "master",
-		Machine: "intellij-linux-hw-hetzner%",
+		Db:    "perfint",
+		Table: "goland",
+		BaseSettings: detector.BaseSettings{
+			Branch:  "master",
+			Machine: "intellij-linux-hw-hetzner%",
+		},
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -61,13 +67,15 @@ func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detect
 			settings = append(settings, detector.PerformanceSettings{
 				Db:      baseSettings.Db,
 				Table:   baseSettings.Table,
-				Branch:  baseSettings.Branch,
-				Machine: baseSettings.Machine,
 				Project: test,
-				Metric:  metric,
-				SlackSettings: detector.SlackSettings{
-					Channel:     "goland-qa-duty",
-					ProductLink: "goland",
+				BaseSettings: detector.BaseSettings{
+					Branch:  baseSettings.Branch,
+					Machine: baseSettings.Machine,
+					Metric:  metric,
+					SlackSettings: detector.SlackSettings{
+						Channel:     "goland-qa-duty",
+						ProductLink: "goland",
+					},
 				},
 			})
 		}

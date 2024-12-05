@@ -8,7 +8,9 @@ func GenerateFleetStartupSettings() []detector.FleetStartupSettings {
 	settings := make([]detector.FleetStartupSettings, 0, 100)
 	machines := []string{"intellij-linux-hw-munit-%", "intellij-windows-hw-munit-%", "intellij-macos-perf-eqx-%"}
 	mainSettings := detector.FleetStartupSettings{
-		Branch: "master",
+		BaseSettings: detector.BaseSettings{
+			Branch: "master",
+		},
 	}
 	slackSettings := detector.SlackSettings{
 		Channel:     "fleet-performance-tests-notifications",
@@ -19,16 +21,18 @@ func GenerateFleetStartupSettings() []detector.FleetStartupSettings {
 	for _, machine := range machines {
 		for _, metric := range metrics {
 			settings = append(settings, detector.FleetStartupSettings{
-				Branch:  mainSettings.Branch,
-				Machine: machine,
-				Metric:  metric + ".end",
-				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength:      7,
-					MedianDifferenceThreshold: 5,
-					EffectSizeThreshold:       0.5,
-					ReportType:                detector.DegradationEvent,
+				BaseSettings: detector.BaseSettings{
+					Branch:  mainSettings.Branch,
+					Machine: machine,
+					Metric:  metric + ".end",
+					AnalysisSettings: detector.AnalysisSettings{
+						MinimumSegmentLength:      7,
+						MedianDifferenceThreshold: 5,
+						EffectSizeThreshold:       0.5,
+						ReportType:                detector.DegradationEvent,
+					},
+					SlackSettings: slackSettings,
 				},
-				SlackSettings: slackSettings,
 			})
 		}
 	}

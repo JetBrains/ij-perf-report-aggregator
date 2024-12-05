@@ -93,13 +93,15 @@ func generateMavenSettingsOnInstaller() []detector.PerformanceSettings {
 			settings = append(settings, detector.PerformanceSettings{
 				Db:      "perfint",
 				Table:   "idea",
-				Machine: "intellij-linux-hw-hetzner%",
 				Project: test,
-				Metric:  metric,
-				Branch:  "master",
-				SlackSettings: detector.SlackSettings{
-					Channel:     "maven-perf-tests-notifications",
-					ProductLink: "intellij",
+				BaseSettings: detector.BaseSettings{
+					Machine: "intellij-linux-hw-hetzner%",
+					Metric:  metric,
+					Branch:  "master",
+					SlackSettings: detector.SlackSettings{
+						Channel:     "maven-perf-tests-notifications",
+						ProductLink: "intellij",
+					},
 				},
 			})
 		}
@@ -120,16 +122,18 @@ func generateMavenSettingsOnFastInstaller() []detector.PerformanceSettings {
 			settings = append(settings, detector.PerformanceSettings{
 				Db:      "perfintDev",
 				Table:   "idea",
-				Machine: "intellij-linux-hw-hetzner%",
 				Project: test,
-				Metric:  metric,
-				Branch:  "master",
-				SlackSettings: detector.SlackSettings{
-					Channel:     "maven-perf-tests-notifications",
-					ProductLink: "intellij",
-				},
-				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength: 10,
+				BaseSettings: detector.BaseSettings{
+					Machine: "intellij-linux-hw-hetzner%",
+					Metric:  metric,
+					Branch:  "master",
+					SlackSettings: detector.SlackSettings{
+						Channel:     "maven-perf-tests-notifications",
+						ProductLink: "intellij",
+					},
+					AnalysisSettings: detector.AnalysisSettings{
+						MinimumSegmentLength: 10,
+					},
 				},
 			})
 		}

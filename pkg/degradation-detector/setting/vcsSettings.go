@@ -36,17 +36,19 @@ func GenerateVCSSettings() []detector.PerformanceSettings {
 					settings = append(settings, detector.PerformanceSettings{
 						Db:      "perfintDev",
 						Table:   "idea",
-						Machine: machine,
 						Project: test,
-						Metric:  metric,
-						Branch:  "master",
-						SlackSettings: detector.SlackSettings{
-							Channel:     "vcs-perf-tests",
-							ProductLink: "intellij",
-						},
-						AnalysisSettings: detector.AnalysisSettings{
-							MinimumSegmentLength:      7,
-							MedianDifferenceThreshold: 10,
+						BaseSettings: detector.BaseSettings{
+							Machine: machine,
+							Metric:  metric,
+							Branch:  "master",
+							SlackSettings: detector.SlackSettings{
+								Channel:     "vcs-perf-tests",
+								ProductLink: "intellij",
+							},
+							AnalysisSettings: detector.AnalysisSettings{
+								MinimumSegmentLength:      7,
+								MedianDifferenceThreshold: 10,
+							},
 						},
 					})
 				}

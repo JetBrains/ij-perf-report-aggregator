@@ -8,32 +8,28 @@ type Settings interface {
 	slackSettings
 }
 
+type BaseSettings struct {
+	Metric  string
+	Branch  string
+	Machine string
+	SlackSettings
+	AnalysisSettings
+}
+
 type PerformanceSettings struct {
+	BaseSettings
 	Db          string
 	Table       string
 	Project     string
-	Metric      string
-	Branch      string
-	Machine     string
 	MetricAlias string
-	SlackSettings
-	AnalysisSettings
 }
 
 type StartupSettings struct {
+	BaseSettings
 	Product string
 	Project string
-	Metric  string
-	Branch  string
-	Machine string
-	SlackSettings
-	AnalysisSettings
 }
 
 type FleetStartupSettings struct {
-	Metric  string
-	Branch  string
-	Machine string
-	SlackSettings
-	AnalysisSettings
+	BaseSettings
 }

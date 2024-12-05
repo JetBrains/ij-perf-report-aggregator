@@ -10,9 +10,11 @@ import (
 func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []detector.StartupSettings {
 	settings := make([]detector.StartupSettings, 0, 100)
 	mainSettings := detector.StartupSettings{
-		Branch:  "master",
-		Machine: "intellij-linux-hw-de-unit-%",
 		Product: "IU",
+		BaseSettings: detector.BaseSettings{
+			Branch:  "master",
+			Machine: "intellij-linux-hw-de-unit-%",
+		},
 	}
 	slackSettings := detector.SlackSettings{
 		Channel:     "ij-startup-idea-reports",
@@ -31,15 +33,17 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 	for _, project := range projects {
 		for _, metric := range metrics {
 			settings = append(settings, detector.StartupSettings{
-				Branch:  mainSettings.Branch,
-				Machine: mainSettings.Machine,
 				Product: mainSettings.Product,
 				Project: project,
-				Metric:  metric,
-				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength: 12,
+				BaseSettings: detector.BaseSettings{
+					Branch:  mainSettings.Branch,
+					Machine: mainSettings.Machine,
+					Metric:  metric,
+					AnalysisSettings: detector.AnalysisSettings{
+						MinimumSegmentLength: 12,
+					},
+					SlackSettings: slackSettings,
 				},
-				SlackSettings: slackSettings,
 			})
 		}
 	}

@@ -14,14 +14,14 @@ func TestMergeDegradations(t *testing.T) {
 				previousValue: 10,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "a", Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "a", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "123", medianValues: MedianValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "b", Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "b", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		close(inputChan)
 	}()
@@ -55,21 +55,21 @@ func TestSomeDegradationsNotMerged(t *testing.T) {
 				previousValue: 10,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "a", Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "a", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "1234", medianValues: MedianValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "b", Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "b", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "123", medianValues: MedianValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "b", Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "b", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		close(inputChan)
 	}()
@@ -90,21 +90,21 @@ func TestMetricAlias(t *testing.T) {
 				previousValue: 10,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "a", Metric: "metricBetta", MetricAlias: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "a", MetricAlias: "metric", BaseSettings: BaseSettings{Metric: "metricBetta", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "123", medianValues: MedianValues{
 				previousValue: 10,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "a", Metric: "metricBetta", MetricAlias: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "a", MetricAlias: "metric", BaseSettings: BaseSettings{Metric: "metricBetta", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
 			Details: Degradation{Build: "123", medianValues: MedianValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
-			Settings: PerformanceSettings{Project: "b", Metric: "metricAlpha", MetricAlias: "metric", SlackSettings: SlackSettings{Channel: "slack"}},
+			Settings: PerformanceSettings{Project: "b", MetricAlias: "metric", BaseSettings: BaseSettings{Metric: "metricAlpha", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		close(inputChan)
 	}()

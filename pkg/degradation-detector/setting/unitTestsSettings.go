@@ -79,11 +79,13 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 
 	mainSettings := detector.PerformanceSettings{
-		Db:      "perfUnitTests",
-		Table:   "report",
-		Branch:  "master",
-		Machine: "intellij-linux-%-hetzner-%",
-		Metric:  "attempt.mean.ms",
+		Db:    "perfUnitTests",
+		Table: "report",
+		BaseSettings: detector.BaseSettings{
+			Branch:  "master",
+			Machine: "intellij-linux-%-hetzner-%",
+			Metric:  "attempt.mean.ms",
+		},
 	}
 
 	tests, err := detector.FetchAllTests(backendUrl, client, mainSettings)
@@ -112,17 +114,19 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 	defaultTests := filterTests(tests, allPackages, false)
 	for _, test := range defaultTests {
 		settings = append(settings, detector.PerformanceSettings{
-			Project:       test,
-			Db:            mainSettings.Db,
-			Table:         mainSettings.Table,
-			Branch:        mainSettings.Branch,
-			Machine:       mainSettings.Machine,
-			Metric:        mainSettings.Metric,
-			SlackSettings: defaultSlackSettings,
-			AnalysisSettings: detector.AnalysisSettings{
-				MinimumSegmentLength:      30,
-				MedianDifferenceThreshold: 20,
-				EffectSizeThreshold:       2,
+			Project: test,
+			Db:      mainSettings.Db,
+			Table:   mainSettings.Table,
+			BaseSettings: detector.BaseSettings{
+				Branch:        mainSettings.Branch,
+				Machine:       mainSettings.Machine,
+				Metric:        mainSettings.Metric,
+				SlackSettings: defaultSlackSettings,
+				AnalysisSettings: detector.AnalysisSettings{
+					MinimumSegmentLength:      30,
+					MedianDifferenceThreshold: 20,
+					EffectSizeThreshold:       2,
+				},
 			},
 		})
 	}
@@ -156,14 +160,16 @@ func generateProductTestsSettings(
 
 	for _, test := range teamTests {
 		settings = append(settings, detector.PerformanceSettings{
-			Project:          test,
-			Db:               mainSettings.Db,
-			Table:            mainSettings.Table,
-			Branch:           mainSettings.Branch,
-			Machine:          mainSettings.Machine,
-			Metric:           mainSettings.Metric,
-			SlackSettings:    slackSettings,
-			AnalysisSettings: *config.AnalysisSettings,
+			Project: test,
+			Db:      mainSettings.Db,
+			Table:   mainSettings.Table,
+			BaseSettings: detector.BaseSettings{
+				Branch:           mainSettings.Branch,
+				Machine:          mainSettings.Machine,
+				Metric:           mainSettings.Metric,
+				SlackSettings:    slackSettings,
+				AnalysisSettings: *config.AnalysisSettings,
+			},
 		})
 	}
 

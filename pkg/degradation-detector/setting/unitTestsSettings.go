@@ -37,7 +37,7 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "java",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "idea-java-alerts",
 		Packages: []string{
 			"com.intellij.java", "org.jetbrains.plugins.groovy", "org.jetbrains.uast.test.java",
 			"com.intellij.lang.properties", "com.intellij.structuralsearch", "org.jetbrains.java",

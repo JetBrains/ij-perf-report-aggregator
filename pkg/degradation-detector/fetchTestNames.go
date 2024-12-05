@@ -36,8 +36,10 @@ func fetchTestsByPattern(backendUrl string, client *http.Client, settings Perfor
 	filters := []dataQuery.QueryFilter{
 		{Field: "branch", Value: settings.Branch},
 		{Field: "generated_time", Sql: ">subtractDays(now(),30)"},
-		{Field: "machine", Value: settings.Machine, Operator: "like"},
 		{Field: "triggeredBy", Value: ""},
+	}
+	if settings.Machine != "" {
+		filters = append(filters, dataQuery.QueryFilter{Field: "machine", Value: settings.Machine, Operator: "like"})
 	}
 	if pattern != "" {
 		filters = append(filters, dataQuery.QueryFilter{Field: "project", Value: pattern, Operator: "like"})

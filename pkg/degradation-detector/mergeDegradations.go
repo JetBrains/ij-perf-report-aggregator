@@ -68,50 +68,50 @@ func (s FleetStartupSettings) MergeAnother(settings Settings) Settings {
 func MergeDegradations(degradations <-chan DegradationWithSettings) chan DegradationWithSettings {
 	c := make(chan DegradationWithSettings, 100)
 	go func() {
+		defer close(c)
+
 		type degradationKey struct {
 			slackChannel string
 			metric       string
 			build        string
 		}
 		m := make(map[degradationKey]multipleDegradationWithSettings, 100)
-		for degradation := range degradations {
+		// Collect and merge degradations
+		for d := range degradations {
 			key := degradationKey{
-				slackChannel: degradation.Settings.SlackChannel(),
-				metric:       degradation.Settings.GetMetricOrAlias(),
-				build:        degradation.Details.Build,
+				slackChannel: d.Settings.SlackChannel(),
+				metric:       d.Settings.GetMetricOrAlias(),
+				build:        d.Details.Build,
 			}
 			if existing, found := m[key]; found {
-				d := []Degradation{degradation.Details}
-				d = append(d, existing.Details...)
 				m[key] = multipleDegradationWithSettings{
-					Details:  d,
-					Settings: existing.Settings.MergeAnother(degradation.Settings),
+					Details:  append([]Degradation{d.Details}, existing.Details...),
+					Settings: existing.Settings.MergeAnother(d.Settings),
 				}
 			} else {
-				d := make([]Degradation, 0)
-				d = append(d, degradation.Details)
 				m[key] = multipleDegradationWithSettings{
-					Details:  d,
-					Settings: degradation.Settings,
+					Details:  []Degradation{d.Details},
+					Settings: d.Settings,
 				}
 			}
 		}
+		// Find the largest degradation
 		for _, v := range m {
 			slices.SortFunc(v.Details, func(a, b Degradation) int {
 				return int(b.medianValues.PercentageChange() - a.medianValues.PercentageChange())
 			})
-			d := v.Details[0]
+			highest := v.Details[0]
 			c <- DegradationWithSettings{
 				Details: Degradation{
-					Build:         d.Build,
-					timestamp:     d.timestamp,
-					medianValues:  d.medianValues,
-					IsDegradation: d.IsDegradation,
+					Build:         highest.Build,
+					timestamp:     highest.timestamp,
+					medianValues:  highest.medianValues,
+					IsDegradation: highest.IsDegradation,
 				},
 				Settings: v.Settings,
 			}
 		}
-		close(c)
 	}()
+
 	return c
 }

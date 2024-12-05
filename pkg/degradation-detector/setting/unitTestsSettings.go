@@ -30,7 +30,7 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "vcs",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "vcs-perf-tests",
 		Packages: []string{
 			"com.intellij.diff", "com.intellij.openapi.vcs",
 		},

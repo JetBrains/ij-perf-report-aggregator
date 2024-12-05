@@ -182,6 +182,10 @@
         "rust_commit/highlight/StubImplementations_with_library_cache",
         "rust_commit/highlight/TypeInferenceWalker_with_library_cache",
         "rust_commit/highlight/TypeInference_with_library_cache"
+      ],
+      "syntheticFiles": [
+        "kotlin_synthetic_files/highlight/repro1_with_library_cache",
+        "kotlin_synthetic_files/highlight/repro2_with_library_cache"
       ]
     },
     "moveFiles": {

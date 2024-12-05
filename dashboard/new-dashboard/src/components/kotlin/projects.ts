@@ -116,6 +116,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   removedImports: buildCategory("Files with removed imports", ""),
   springFramework: buildCategory("Spring framework", "spring-framework/"),
   rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
+  syntheticFiles: buildCategory("Synthetic files", "kotlin_synthetic_files/"),
   sqliter: buildCategory("SQLiter", "SQLiter/"),
   ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),
   kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),

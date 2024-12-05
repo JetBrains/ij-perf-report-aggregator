@@ -69,7 +69,7 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 			return
 		}
 
-		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace, user_name FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
+		sql := "SELECT id, date, affected_test, reason, build_number, kind, stacktrace, user_name FROM accidents WHERE (LOWER(kind)='regression' or LOWER(kind)='improvement' or LOWER(kind)='investigation') AND date BETWEEN '" + params.Date + "'::date - INTERVAL '1 days' AND '" + params.Date + "'::date + INTERVAL '1 days'"
 		rows, err := metaDb.Query(request.Context(), sql)
 		if err != nil {
 			slog.Error("unable to execute the query", "query", sql, "error", err)

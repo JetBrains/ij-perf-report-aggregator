@@ -52,14 +52,14 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "datagrip",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "datagrip",
 		Packages: []string{
 			"com.intellij.sql",
 		},
 	},
 	{
 		Team:         "webstorm",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "webstorm-test-degradations",
 		Packages: []string{
 			"com.intellij.lang.javascript", "com.intellij.html", "org.angular2.lang", "css", "org.jetbrains.vuejs",
 			"org.angularjs.performance", "com.intellij.flex.completion", "com.intellij.htmltools",

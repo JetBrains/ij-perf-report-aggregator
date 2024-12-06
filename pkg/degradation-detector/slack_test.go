@@ -16,14 +16,14 @@ func TestGetDateLink(t *testing.T) {
 		{
 			name: "One week range",
 			degradation: Degradation{
-				timestamp: mockNow.Unix(),
+				timestamp: mockNow.UnixMilli(),
 			},
 			expected: "timeRange=custom&customRange=2024-11-28:2024-12-5",
 		},
 		{
 			name: "Different timestamp",
 			degradation: Degradation{
-				timestamp: mockNow.AddDate(0, 0, -2).Unix(), // 2 days before mockNow
+				timestamp: mockNow.AddDate(0, 0, -2).UnixMilli(), // 2 days before mockNow
 			},
 			expected: "timeRange=custom&customRange=2024-11-26:2024-12-5",
 		},

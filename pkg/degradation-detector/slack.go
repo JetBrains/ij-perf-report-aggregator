@@ -141,7 +141,7 @@ func (s PerformanceSettings) slackLink(d Degradation) string {
 func getCustomDateLinkBetweenDates(d Degradation, now time.Time) string {
 	currentDate := fmt.Sprintf("%d-%02d-%d", now.Year(), now.Month(), now.Day())
 
-	t := time.Unix(d.timestamp, 0)
+	t := time.Unix(d.timestamp/1000, 0)
 	oneWeekAgo := t.AddDate(0, 0, -7)
 	startDate := fmt.Sprintf("%d-%02d-%d", oneWeekAgo.Year(), oneWeekAgo.Month(), oneWeekAgo.Day())
 

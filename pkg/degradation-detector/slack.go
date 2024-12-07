@@ -42,7 +42,7 @@ func eventLink(tests string, build string, timestamp int64) string {
 	}
 	date := time.UnixMilli(timestamp).UTC().Format("02-01-2006")
 	project := strings.Join(escapedProjects, ",")
-	return fmt.Sprintf("https://ij-perf.labs.jb.gg/degradations/report?tests=%s&build=%s&date=%s", project, build, date)
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/degradations/report?tests=%s&build=%s&date=%s|Report event>", project, build, date)
 }
 
 func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
@@ -58,7 +58,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Date: %s\n"+
 			"Reason: %s\n"+
 			"%s\n"+
-			"Report event: %s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
+			"%s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
 	return SlackMessage{
 		Text:    text,
 		Channel: s.Channel,
@@ -79,7 +79,7 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Date: %s\n"+
 			"Reason: %s\n"+
 			"%s\n"+
-			"Report event: %s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
+			"%s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
 	return SlackMessage{
 		Text:    text,
 		Channel: s.Channel,

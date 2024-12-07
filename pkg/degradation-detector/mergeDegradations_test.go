@@ -42,7 +42,7 @@ func TestMergeDegradations(t *testing.T) {
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
 				"<https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=custom&customRange=1969-12-25:" + currentDate + "|See charts>\n" +
-				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
+				"<https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970|Report event>",
 			Channel: r.Settings.SlackChannel(),
 		}
 		assert.Equal(t, eM, sM, "Incorrect slack message")
@@ -127,7 +127,7 @@ func TestMetricAlias(t *testing.T) {
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
 				"<https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=custom&customRange=1969-12-25:" + currentDate + "|See charts>\n" +
-				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
+				"<https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970|Report event>",
 			Channel: r.Settings.SlackChannel(),
 		}
 		assert.Equal(t, eM, sM, "Incorrect slack message")

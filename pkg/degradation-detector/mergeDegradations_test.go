@@ -41,7 +41,7 @@ func TestMergeDegradations(t *testing.T) {
 				"Branch: \n" +
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
-				"Link: <https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=custom&customRange=1969-12-25:" + currentDate + "|link>\n" +
+				"<https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metric&timeRange=custom&customRange=1969-12-25:" + currentDate + "|See charts>\n" +
 				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
 			Channel: r.Settings.SlackChannel(),
 		}
@@ -126,7 +126,7 @@ func TestMetricAlias(t *testing.T) {
 				"Branch: \n" +
 				"Date: 01-01-1970 00:00:00\n" +
 				"Reason: Degradation detected. Median changed by: 100.00%. Median was 10.00 and now it is 20.00.\n" +
-				"Link: <https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=custom&customRange=1969-12-25:" + currentDate + "|link>\n" +
+				"<https://ij-perf.labs.jb.gg//tests?machine=&branch=&project=a&project=b&measure=metricBetta&measure=metricAlpha&timeRange=custom&customRange=1969-12-25:" + currentDate + "|See charts>\n" +
 				"Report event: https://ij-perf.labs.jb.gg/degradations/report?tests=a,b&build=123&date=01-01-1970",
 			Channel: r.Settings.SlackChannel(),
 		}

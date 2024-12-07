@@ -57,7 +57,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Branch: %s\n"+
 			"Date: %s\n"+
 			"Reason: %s\n"+
-			"Link: %s\n"+
+			"%s\n"+
 			"Report event: %s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
 	return SlackMessage{
 		Text:    text,
@@ -78,7 +78,7 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Branch: %s\n"+
 			"Date: %s\n"+
 			"Reason: %s\n"+
-			"Link: %s\n"+
+			"%s\n"+
 			"Report event: %s", icon(d.medianValues), tests, s.Metric, d.Build, s.Branch, date, reason, link, eventLink(s.Project, d.Build, d.timestamp))
 	return SlackMessage{
 		Text:    text,
@@ -97,7 +97,7 @@ func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 			"Branch: %s\n"+
 			"Date: %s\n"+
 			"Reason: %s\n"+
-			"Link: %s\n", icon(d.medianValues), s.Metric, d.Build, s.Branch, date, reason, link)
+			"%s\n", icon(d.medianValues), s.Metric, d.Build, s.Branch, date, reason, link)
 	return SlackMessage{
 		Text:    text,
 		Channel: s.Channel,
@@ -112,7 +112,7 @@ func (s FleetStartupSettings) slackLink(d Degradation) string {
 		escapedMeasurements = append(escapedMeasurements, url.QueryEscape(m))
 	}
 	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&%s|link>",
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&%s|See charts>",
 		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure, getCustomDateLinkBetweenDates(d, time.Now()))
 }
 
@@ -134,7 +134,7 @@ func (s PerformanceSettings) slackLink(d Degradation) string {
 	}
 	project := strings.Join(escapedProjects, "&project=")
 	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&%s|link>",
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?machine=%s&branch=%s&project=%s&measure=%s&%s|See charts>",
 		s.ProductLink, testPage, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomDateLinkBetweenDates(d, time.Now()))
 }
 
@@ -150,7 +150,7 @@ func getCustomDateLinkBetweenDates(d Degradation, now time.Time) string {
 
 func (s StartupSettings) slackLink(d Degradation) string {
 	machineGroup := getMachineGroup(s.Machine)
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&%s|link>",
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&%s|See charts>",
 		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project), getCustomDateLinkBetweenDates(d, time.Now()))
 }
 

@@ -28,17 +28,23 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    projects: ['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing'],
   },
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: ['django/findUsages/ForeignKey',
+               'django/findUsages/Form',
+               'django/findUsages/Model',
+               'flask/findUsages/Flask',
+               'flask/findUsages/request',
+               'keras/findUsages/Sequential',
+               'mypy/findUsages/Errors'],
   },
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [],
+    projects: ["edx-platform (Django)/model", "edx-platform (Django)/view"],
   },
   {
     labels: ["SearchEverywhere"],
@@ -53,7 +59,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: ['django/inspection', 'flask/inspection', 'keras/inspection', 'mypy/inspection'],
   },
 ]
 

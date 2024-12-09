@@ -1,7 +1,7 @@
 <template>
   <DashboardPage
-    db-name="perfint"
-    table="pycharmDev"
+    db-name="perfintDev"
+    table="pycharm"
     persistent-id="pycharm_product_dashboard_dev"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
@@ -33,13 +33,15 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: ["django/findUsages/ForeignKey",
-               "django/findUsages/Form",
-               "django/findUsages/Model",
-               "flask/findUsages/Flask",
-               "flask/findUsages/request",
-               "keras/findUsages/Sequential",
-               "mypy/findUsages/Errors"],
+    projects: [
+      "django/findUsages/ForeignKey",
+      "django/findUsages/Form",
+      "django/findUsages/Model",
+      "flask/findUsages/Flask",
+      "flask/findUsages/request",
+      "keras/findUsages/Sequential",
+      "mypy/findUsages/Errors",
+    ],
   },
   {
     labels: ["Completion"],

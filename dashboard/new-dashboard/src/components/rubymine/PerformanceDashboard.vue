@@ -187,7 +187,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion First Element (Diaspora)"
-        measure="completion#firstElementShown"
+        measure="completion#firstElementShown#mean_value"
         :projects="[
           'diaspora-project-test/completion/routes',
           'diaspora-project-test/completion/exceptions',
@@ -203,7 +203,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion First Element (GitLab)"
-        measure="completion#firstElementShown"
+        measure="completion#firstElementShown#mean_value"
         :projects="[
           'gitlab-project-test/completion/routes',
           'gitlab-project-test/completion/exceptions',
@@ -219,7 +219,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion First Element (Redmine)"
-        measure="completion#firstElementShown"
+        measure="completion#firstElementShown#mean_value"
         :projects="[
           'redmine-project-test/completion/routes',
           'redmine-project-test/completion/exceptions',

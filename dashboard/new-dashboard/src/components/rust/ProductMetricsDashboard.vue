@@ -4,6 +4,7 @@
     table="rust"
     persistent-id="rust_product_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
+    release-configurator="EAP / Release"
     :charts="charts"
   >
     <section>
@@ -22,22 +23,23 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import { rustCompletionCases, rustGlobalInspectionProjects, rustLocalInspectionCases } from "./RustTestCases"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    projects: rustGlobalInspectionProjects.map((project) => `${project}/indexing`),
   },
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: rustLocalInspectionCases,
   },
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [],
+    projects: rustCompletionCases,
   },
   {
     labels: ["SearchEverywhere"],
@@ -47,12 +49,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: [],
+    projects: rustLocalInspectionCases.concat(rustLocalInspectionCases.map((testCase) => `${testCase}-top-level-typing`)),
   },
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`),
   },
 ]
 

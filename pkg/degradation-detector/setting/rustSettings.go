@@ -50,8 +50,8 @@ func GenerateRustPerfSettings(backendUrl string, client *http.Client) []detector
 func getRustMetricFromTestName(test string) []string {
 	if strings.Contains(test, "/indexing") {
 		return []string{
-			"rust_duration_from_start_to_work", "rust_duration_from_start_to_cargo_sync", "cargo_sync_execution_time", "rust_cargo_metadata_time", "rust_buildscript_evaluation_time",
-			"rust_stdlib_fetching_time", "rust_def_maps_execution_time", "rust_macro_expansion_execution_time", "rust_class_instances_tree_size_mb", "indexingTimeWithoutPauses", "scanningTimeWithoutPauses",
+			"rust_duration_from_start_to_work",
+			"rust_def_maps_execution_time", "rust_macro_expansion_execution_time", "rust_class_instances_tree_size_mb", "indexingTimeWithoutPauses"
 		}
 	}
 	if strings.Contains(test, "/local-inspection") {
@@ -67,7 +67,7 @@ func getRustMetricFromTestName(test string) []string {
 		return []string{"findUsages"}
 	}
 	if strings.Contains(test, "/typing") {
-		return []string{"typing#latency#mean_value", "typing#latency#max"}
+		return []string{"typing#latency#mean_value"}
 	}
 	return []string{}
 }

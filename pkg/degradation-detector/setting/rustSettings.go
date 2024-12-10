@@ -51,7 +51,7 @@ func getRustMetricFromTestName(test string) []string {
 	if strings.Contains(test, "/indexing") {
 		return []string{
 			"rust_duration_from_start_to_work",
-			"rust_def_maps_execution_time", "rust_macro_expansion_execution_time", "rust_class_instances_tree_size_mb", "indexingTimeWithoutPauses"
+			"rust_def_maps_execution_time", "rust_macro_expansion_execution_time", "rust_class_instances_tree_size_mb", "indexingTimeWithoutPauses",
 		}
 	}
 	if strings.Contains(test, "/local-inspection") {

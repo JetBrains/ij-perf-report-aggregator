@@ -67,30 +67,19 @@
             "type": "number"
           }
         },
-        "required": [
-          "n"
-        ],
+        "required": ["n"],
         "anyOf": [
           {
-            "required": [
-              "d"
-            ]
+            "required": ["d"]
           },
           {
-            "required": [
-              "c"
-            ]
+            "required": ["c"]
           }
         ],
         "additionalProperties": false
       }
     }
   },
-  "required": [
-    "version",
-    "generated",
-    "project",
-    "metrics"
-  ],
+  "required": ["version", "generated", "project", "metrics"],
   "additionalProperties": true
 }

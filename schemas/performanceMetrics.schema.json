@@ -8,7 +8,7 @@
       "type": "string"
     },
     "generated": {
-      "description": "Stored in DB but build date is used for all tests to have the same time",
+      "description": "Stored in DB but build date is used for all tests to have the same time. We also support other formats, for example: RFC1123Z, RFC1123, 'Jan 2, 2006, 3:04:05 PM MST', 'Mon, 2 Jan 2006 15:04:05 -0700', 'Mon, 2 Jan 2006 15:04:05 MST', '20060102T150405+0000'",
       "type": "string",
       "pattern": "^\\w{3}, \\d{2} \\w{3} \\d{4} \\d{2}:\\d{2}:\\d{2} GMT$"
     },
@@ -55,7 +55,7 @@
             "type": "string"
           },
           "d": {
-            "description": "Metric value - duration",
+            "description": "Metric value - duration. Should be in milliseconds or nanoseconds. Will be converted to human readable time.",
             "type": "number"
           },
           "v": {
@@ -63,16 +63,34 @@
             "type": "number"
           },
           "c": {
-            "description": "Metric value - count",
+            "description": "Metric value - count. Values are not modified on UI and show as is.",
             "type": "number"
           }
         },
-        "required": ["n"],
-        "anyOf": [{ "required": ["d"] }, { "required": ["c"] }],
+        "required": [
+          "n"
+        ],
+        "anyOf": [
+          {
+            "required": [
+              "d"
+            ]
+          },
+          {
+            "required": [
+              "c"
+            ]
+          }
+        ],
         "additionalProperties": false
       }
     }
   },
-  "required": ["version", "generated", "project", "metrics"],
+  "required": [
+    "version",
+    "generated",
+    "project",
+    "metrics"
+  ],
   "additionalProperties": true
 }

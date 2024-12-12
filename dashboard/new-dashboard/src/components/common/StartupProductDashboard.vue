@@ -166,7 +166,7 @@ const persistentStateManager = new PersistentStateManager(
   persistentId ?? `${product}-startup-dashboard`,
   {
     project: defaultProject,
-    machine: "Windows Munich i7-3770, 32Gb",
+    machine: "Windows Munich i7-13700, 64 Gb",
     branch: "master",
   },
   useRouter()

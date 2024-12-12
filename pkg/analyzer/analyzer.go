@@ -178,6 +178,18 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
+	case id == "diogen":
+		return DatabaseConfiguration{
+			DbName:            "diogen",
+			TableName:         "report",
+			ReportReader:      analyzePerfReport[int32],
+			HasBuildTypeField: true,
+			HasMetaDB:         false,
+			extraFieldCount:   3,
+			insertStatementWriter: func(sb *strings.Builder) {
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
+			},
+		}
 	default:
 		panic("unknown project: " + id)
 	}

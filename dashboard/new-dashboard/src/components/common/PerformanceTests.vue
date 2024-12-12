@@ -218,6 +218,12 @@ const measureScenarioFilters = [triggeredByConfigurator, timeRangeConfigurator]
 if (branchConfigurator != null) {
   measureScenarioFilters.push(branchConfigurator)
 }
+
+const releaseNightlyConfigurator = withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
+if (releaseNightlyConfigurator != null) {
+  measureScenarioFilters.push(releaseNightlyConfigurator)
+}
+
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
 filters.push(scenarioConfigurator)
 
@@ -246,7 +252,6 @@ if (testModeConfigurator != null) {
   configurators.push(testModeConfigurator)
 }
 
-const releaseNightlyConfigurator = withInstaller ? new ReleaseNightlyConfigurator(persistentStateManager) : null
 if (releaseNightlyConfigurator != null) {
   configurators.push(releaseNightlyConfigurator)
 }

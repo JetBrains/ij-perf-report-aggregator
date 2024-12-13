@@ -12,7 +12,8 @@ create table perfintDev.pycharm
   `measures.value`        Array(Int32) CODEC (Gorilla, ZSTD(20)),
   `measures.type`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
-  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20))
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
+    `mode`                  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))

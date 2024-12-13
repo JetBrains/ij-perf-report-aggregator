@@ -15,6 +15,16 @@
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
+        <DimensionSelect
+          v-if="testModeConfigurator != null && testModeConfigurator.values.value.length > 1"
+          label="Mode"
+          :dimension="testModeConfigurator"
+          :selected-label="modeSelectLabelFormat"
+        >
+          <template #icon>
+            <AdjustmentsVerticalIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
         <span
           v-if="testMetricSwitcher == TestMetricSwitcher.Tests"
           class="flex flex-row justify-between items-center"
@@ -63,16 +73,6 @@
             </template>
           </DimensionSelect>
         </span>
-        <DimensionSelect
-          v-if="testModeConfigurator != null && testModeConfigurator.values.value.length > 1"
-          label="Mode"
-          :dimension="testModeConfigurator"
-          :selected-label="modeSelectLabelFormat"
-        >
-          <template #icon>
-            <AdjustmentsVerticalIcon class="w-4 h-4" />
-          </template>
-        </DimensionSelect>
         <MachineSelect
           v-if="machineConfigurator != null"
           :machine-configurator="machineConfigurator"
@@ -220,14 +220,14 @@ if (releaseNightlyConfigurator != null) {
   filters.push(releaseNightlyConfigurator)
 }
 
-let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
-
 const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistentStateManager, [...filters]) : null
 if (testModeConfigurator != null) {
   filters.push(testModeConfigurator)
 }
 
+let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, filters)
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
+
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
 if (initialMachine != null && machineConfigurator != null && machineConfigurator.selected.value.length === 0) {
   machineConfigurator.selected.value = [initialMachine]

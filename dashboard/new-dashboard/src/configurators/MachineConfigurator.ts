@@ -21,10 +21,12 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
 
   private static readonly valueToGroup: Record<string, string> = getValueToGroup()
 
+  readonly filters = shallowRef<FilterConfigurator[]>([])
+
   constructor(
     serverConfigurator: ServerConfigurator,
     persistentStateManager?: PersistentStateManager,
-    filters: FilterConfigurator[] = [],
+    initialFilters: FilterConfigurator[] = [],
     readonly multiple: boolean = true,
     predefinedMachines?: string[]
   ) {
@@ -33,11 +35,23 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     if (predefinedMachines) {
       this.selected.value = predefinedMachines
     }
-    const listObservable = createFilterObservable(serverConfigurator, filters).pipe(
-      switchMap(() => loadDimension(name, serverConfigurator, filters, this.state)),
+
+    this.filters.value = initialFilters
+    const filterObservable = refToObservable(this.filters).pipe(
+      switchMap((currentFilters) => {
+        return createFilterObservable(serverConfigurator, currentFilters)
+      }),
+      shareReplay(1)
+    )
+
+    const listObservable = filterObservable.pipe(
+      switchMap(() => {
+        return loadDimension(name, serverConfigurator, this.filters.value, this.state)
+      }),
       updateComponentState(this.state),
       shareReplay(1)
     )
+
     listObservable.subscribe((data) => {
       if (data == null) {
         return
@@ -51,6 +65,10 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
     this.observable = combineLatest([refToObservable(this.selected, true), listObservable]).pipe(distinctUntilChanged(deepEqual))
     // init groupNameToItem - if actual machine list is not yet loaded, but there is stored value for filter, use it to draw chart
     this.groupValues(Object.keys(MachineConfigurator.valueToGroup))
+  }
+
+  updateFilters(newFilters: FilterConfigurator[]) {
+    this.filters.value = newFilters
   }
 
   createObservable(): Observable<unknown> {

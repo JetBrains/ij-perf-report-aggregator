@@ -162,6 +162,7 @@ import InfoSidebar from "./sideBar/InfoSidebar.vue"
 import { AccidentsConfiguratorForTests } from "../../configurators/accidents/AccidentsConfiguratorForTests"
 import { createTestModeConfigurator, defaultModeName } from "../../configurators/TestModeConfigurator"
 import { dbTypeStore } from "../../shared/dbTypes"
+import { FilterConfigurator } from "../../configurators/filter"
 
 interface PerformanceTestsProps {
   dbName: string
@@ -205,7 +206,7 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
-const filters = []
+const filters: FilterConfigurator[] = []
 const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
 filters.push(timeRangeConfigurator)
 
@@ -225,7 +226,6 @@ if (releaseNightlyConfigurator != null) {
 }
 
 let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
-filters.push(scenarioConfigurator)
 
 const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistentStateManager, [...filters]) : null
 if (testModeConfigurator != null) {
@@ -286,11 +286,13 @@ watch(
       case TestMetricSwitcher.Tests: {
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, measureScenarioFilters)
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, [scenarioConfigurator, ...measureScenarioFilters], true, "line")
+        machineConfigurator?.updateFilters([...filters, scenarioConfigurator])
         break
       }
       case TestMetricSwitcher.Metrics: {
         measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, measureScenarioFilters, true, "line")
         scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, persistentStateManager, true, [...measureScenarioFilters, measureConfigurator])
+        machineConfigurator?.updateFilters([...filters, measureConfigurator])
         if (watchStopHandle != null) watchStopHandle()
         watchStopHandle = watch(scenarioConfigurator.selected, (value) => {
           scenarios = toArray(value)

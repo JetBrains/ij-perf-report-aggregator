@@ -27,7 +27,7 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
 
   let buildId: number | undefined
 
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN) {
     buildId = dataSeries[5] as number
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
@@ -56,7 +56,7 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
 
 export function getAccidentBuild(params: CallbackDataParams): string | undefined {
   const dbType = dbTypeStore().dbType
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN) {
     return getBuildId(params.value as number[])?.toString()
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
@@ -126,7 +126,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
   }
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"

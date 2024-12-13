@@ -304,6 +304,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
     query.db === "perfintDev" ||
     query.db == "bazel" ||
     query.db == "perfUnitTests" ||
+    query.db == "diogen" ||
     query.db == "mlEvaluation" ||
     (query.db == "fleet" && query.table == "measure_new")
   ) {

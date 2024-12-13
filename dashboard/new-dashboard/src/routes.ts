@@ -33,6 +33,7 @@ const enum ROUTE_PREFIX {
   DataGrip = "/datagrip",
   AIA = "/aia",
   KMT = "/kmt",
+  Diogen = "/diogen",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -205,6 +206,7 @@ enum ROUTES {
   AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
   KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
+  DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
 }
 
 export interface Tab {
@@ -1114,6 +1116,23 @@ const KMT: Product = {
   ],
 }
 
+const DIOGEN: Product = {
+  url: ROUTE_PREFIX.Diogen,
+  label: "Diogen",
+  children: [
+    {
+      url: ROUTE_PREFIX.Diogen,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.DiogenTests,
+          label: "All",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   IDEA,
   PHPSTORM,
@@ -1136,6 +1155,7 @@ export const PRODUCTS = [
   ML_TESTS,
   AIA,
   KMT,
+  DIOGEN,
 ]
 export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
@@ -2224,6 +2244,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: null,
           },
           meta: { pageTitle: "AIA Tests" },
+        },
+        {
+          path: ROUTES.DiogenTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "diogen",
+            table: "report",
+            withInstaller: false,
+            branch: null,
+            initialMachine: null,
+          },
+          meta: { pageTitle: "Diogen" },
         },
       ],
     },

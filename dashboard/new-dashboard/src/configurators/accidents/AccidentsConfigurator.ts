@@ -184,7 +184,13 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`
       }
-      if (this.dbType == DBType.INTELLIJ_DEV || this.dbType == DBType.PERF_UNIT_TESTS || this.dbType == DBType.BAZEL || this.dbType == DBType.FLEET_PERF) {
+      if (
+        this.dbType == DBType.INTELLIJ_DEV ||
+        this.dbType == DBType.PERF_UNIT_TESTS ||
+        this.dbType == DBType.BAZEL ||
+        this.dbType == DBType.FLEET_PERF ||
+        this.dbType == DBType.DIOGEN
+      ) {
         build = `${value[5]}`
         key = `${value[6]}_${build}`
         keyWithMetric = `${value[6]}/${value[2]}_${build}`

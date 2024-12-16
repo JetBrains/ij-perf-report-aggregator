@@ -44,7 +44,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: ["searchEverywhere/cargo/go-to-all-with-warmup/Display/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],

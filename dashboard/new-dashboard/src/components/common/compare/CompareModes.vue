@@ -2,13 +2,11 @@
   <div class="flex flex-col gap-5">
     <StickyToolbar>
       <template #start>
-        <div class="flex items-center">
-          <MachineSelect :machine-configurator="machineConfigurator" />
-        </div>
         <BranchSelect
           :branch-configurator="branchConfigurator"
           :triggered-by-configurator="triggeredByConfigurator"
         />
+        <MachineSelect :machine-configurator="machineConfigurator" />
         <DimensionSelect
           label="Mode"
           :dimension="testModeConfigurator1"
@@ -124,6 +122,7 @@ import DimensionSelect from "../../charts/DimensionSelect.vue"
 import { modeSelectLabelFormat } from "../../../shared/labels"
 import { createTestModeConfigurator } from "../../../configurators/TestModeConfigurator"
 import BranchSelect from "../BranchSelect.vue"
+import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 
 interface CompareBranchesProps {
   dbName: string
@@ -158,21 +157,33 @@ const persistentStateManager = new PersistentStateManager(
   },
   router
 )
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
-const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [])
-const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [])
+
+const timeRangeConfigurator = new TimeRangeConfigurator(persistentStateManager)
+const branchConfigurator = createBranchConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator])
+const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [timeRangeConfigurator, branchConfigurator])
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", persistentStateManager)
 measureConfigurator.initData(metricsNames)
 const testConfigurator = new SimpleMeasureConfigurator("tests", persistentStateManager)
 
-
-const testModeConfigurator1 = createTestModeConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator], "mode1", false)
-const testModeConfigurator2 = createTestModeConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator], "mode2", false)
+const testModeConfigurator1 = createTestModeConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [timeRangeConfigurator, branchConfigurator, machineConfigurator, triggeredByConfigurator],
+  "mode1",
+  false
+)
+const testModeConfigurator2 = createTestModeConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [timeRangeConfigurator, branchConfigurator, machineConfigurator, triggeredByConfigurator],
+  "mode2",
+  false
+)
 
 const mode1 = ref<string | null>(null)
 const mode2 = ref<string | null>(null)
-
 
 const tableData = ref<TableRow[]>()
 const fetchedData = ref<TableRow[]>()
@@ -251,7 +262,7 @@ function getColorForBuild(build1: number, build2: number) {
 }
 
 function getAllMetricsFromMode(machineConfigurator: MachineConfigurator, mode: string | null, metricNames: string[]): Observable<Result[]> {
-  if(mode == "default") {
+  if (mode == "default") {
     mode = ""
   }
   const params = {
@@ -287,6 +298,7 @@ function handleNavigateToTest(project: string, metric: string) {
 .p-button-icon-only.p-button-rounded {
   @apply text-black;
 }
+
 .lower {
   font-weight: 700;
   color: #ff5252;

@@ -95,6 +95,7 @@ enum ROUTES {
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
+  PhpStormCompareModes = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_MODES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
   KotlinDashboardDev = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}Dev`,
   KotlinUserScenariosDashboardDev = `${ROUTE_PREFIX.Kotlin}/Scenarios${DASHBOARD_ROUTE}Dev`,
@@ -509,6 +510,10 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.PhpStormCompareModes,
+          label: COMPARE_MODES_LABEL,
         },
         {
           url: ROUTES.PhpStormWithPluginsDashboard,
@@ -1456,6 +1461,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "phpstorm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.PhpStormCompareModes,
+          component: () => import("./components/common/compare/CompareModes.vue"),
+          props: {
+            dbName: "perfint",
+            table: "phpstorm",
+          },
+          meta: { pageTitle: COMPARE_MODES_LABEL },
         },
         {
           path: ROUTES.GoLandInspectionDashboard,

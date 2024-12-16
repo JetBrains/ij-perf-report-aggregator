@@ -8,6 +8,7 @@ const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
+  IntelliJIndices = "/intellij/indices",
   IntelliJUltimate = "/intellij/ultimate",
   IntelliJPackageChecker = "/intellij/packageChecker",
   IntelliJFus = "/intellij/fus",
@@ -298,27 +299,27 @@ const IDEA: Product = {
         },
         {
           url: ROUTES.IntelliJPopupsDashboard,
-          label: "Popups Dashboard",
+          label: "Popups",
         },
         {
           url: ROUTES.IntelliJFindUsagesDashboard,
-          label: "Find Usages Dashboard",
+          label: "Find Usages",
         },
         {
           url: ROUTES.IntelliJSEDashboard,
-          label: "Search Everywhere Dashboard",
+          label: "Search Everywhere",
         },
         {
           url: ROUTES.IntelliJIndexingDashboard,
-          label: "Indexes Dashboard",
+          label: "Indexes",
         },
         {
           url: ROUTES.IntelliJSharedIndicesDashboard,
-          label: "Shared Indexes Dashboard",
+          label: "Shared Indexes",
         },
         {
           url: ROUTES.IntelliJWSLDashboard,
-          label: "WSL Dashboard",
+          label: "WSL",
         },
         {
           url: ROUTES.IntelliJIncrementalCompilationDashboard,

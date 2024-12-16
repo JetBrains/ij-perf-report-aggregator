@@ -42,6 +42,7 @@ const STARTUP_ROUTE = "startup"
 const PRODUCT_METRICS_ROUTE = "product-metrics"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
+const COMPARE_MODES_ROUTE = "compareModes"
 
 enum ROUTES {
   StartupPulse = `${ROUTE_PREFIX.Startup}/pulse`,
@@ -147,6 +148,7 @@ enum ROUTES {
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
+  RubyMineCompareModes = `${ROUTE_PREFIX.RubyMine}/${COMPARE_MODES_ROUTE}`,
   RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
   RustRoverProductMetricsDashboard = `${ROUTE_PREFIX.Rust}/${PRODUCT_METRICS_ROUTE}`,
   RustRoverFirstStartupDashboard = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboard`,
@@ -229,6 +231,7 @@ interface Product {
 const TESTS_LABEL = "Tests"
 const COMPARE_BUILDS_LABEL = "Compare Builds"
 const COMPARE_BRANCHES_LABEL = "Compare Branches"
+const COMPARE_MODES_LABEL = "Compare Modes"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
 const PRODUCT_METRICS_LABEL = "Product Metrics"
@@ -666,6 +669,10 @@ const RUBYMINE: Product = {
         {
           url: ROUTES.RubyMineCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.RubyMineCompareModes,
+          label: COMPARE_MODES_LABEL,
         },
       ],
     },
@@ -1688,6 +1695,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "ruby",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.RubyMineCompareModes,
+          component: () => import("./components/common/compare/CompareModes.vue"),
+          props: {
+            dbName: "perfint",
+            table: "ruby",
+          },
+          meta: { pageTitle: COMPARE_MODES_LABEL },
         },
         {
           path: ROUTES.RustCompareBranches,

@@ -8,8 +8,8 @@ import { createFilterObservable, FilterConfigurator } from "./filter"
 export const defaultModeName = "default"
 
 export class TestModeConfigurator extends DimensionConfigurator {
-  constructor() {
-    super("mode", true)
+  constructor(multiple: boolean) {
+    super("mode", multiple)
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {
@@ -58,11 +58,13 @@ export class TestModeConfigurator extends DimensionConfigurator {
 export function createTestModeConfigurator(
   serverConfigurator: ServerConfigurator,
   persistentStateManager: PersistentStateManager | null,
-  filters: FilterConfigurator[] = []
+  filters: FilterConfigurator[] = [],
+  persistentName: string = "mode",
+  multiple: boolean = true
 ): DimensionConfigurator {
-  const configurator = new TestModeConfigurator()
+  const configurator = new TestModeConfigurator(multiple)
   const name = "mode"
-  persistentStateManager?.add(name, configurator.selected)
+  persistentStateManager?.add(persistentName, configurator.selected)
 
   createFilterObservable(serverConfigurator, filters)
     .pipe(

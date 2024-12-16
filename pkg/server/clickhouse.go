@@ -99,6 +99,56 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 	return buffer, true, err
 }
 
+func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+	type requestParams struct {
+		Table        string   `json:"table"`
+		MeasureNames []string `json:"measure_names"`
+		Branch       string   `json:"branch"`
+		Machine      string   `json:"machine"`
+		Mode         string   `json:"mode"`
+	}
+
+	var params requestParams
+	data, err := util.DecodeQuery(request.URL.Path[len("/api/compareModes/"):])
+	if err != nil {
+		return nil, false, err
+	}
+	err = json.Unmarshal(data, &params)
+	if err != nil {
+		return nil, false, err
+	}
+
+	quotedMeasureNames := make([]string, len(params.MeasureNames))
+	for i, name := range params.MeasureNames {
+		quotedMeasureNames[i] = "'" + name + "'"
+	}
+	measureNamesString := strings.Join(quotedMeasureNames, ",")
+
+	sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE mode = '%s' AND branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Mode, params.Branch, measureNamesString, params.Machine)
+	db, err := t.openDatabaseConnection()
+	defer func(db driver.Conn) {
+		_ = db.Close()
+	}(db)
+	if err != nil {
+		return nil, false, err
+	}
+
+	var queryResults []struct {
+		Project       string
+		MeasureName   string
+		MeasureValues []int
+	}
+
+	err = db.Select(request.Context(), &queryResults, sql)
+	if err != nil {
+		return nil, false, err
+	}
+
+	response := getMedianValues(queryResults)
+	buffer, err := toJSONBuffer(response)
+	return buffer, true, err
+}
+
 func getMedianValues(queryResults []struct {
 	Project       string
 	MeasureName   string

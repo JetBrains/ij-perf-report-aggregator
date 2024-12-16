@@ -129,6 +129,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Handle("/q/*", cacheManager.CreateHandler(statsServer.handleLoadRequestV2))
 			r.Handle("/highlightingPasses*", cacheManager.CreateHandler(statsServer.getDistinctHighlightingPasses))
 			r.Handle("/compareBranches*", cacheManager.CreateHandler(statsServer.getBranchComparison))
+			r.Handle("/compareModes*", cacheManager.CreateHandler(statsServer.getModeComparison))
 			r.Handle("/zstd-dictionary/*", &CachingHandler{
 				handler: func(_ *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 					return &bytebufferpool.ByteBuffer{B: util.ZstdDictionary}, false, nil

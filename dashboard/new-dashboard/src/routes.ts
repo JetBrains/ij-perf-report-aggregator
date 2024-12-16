@@ -68,6 +68,7 @@ enum ROUTES {
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
+  IntelliJCompareModes = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_MODES_ROUTE}`,
   IntelliJGradleDashboardDeprecated = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDeprecated`,
   IntelliJGradleDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDev`,
   IntelliJMavenDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardDev`,
@@ -340,6 +341,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJCompareModes,
+          label: COMPARE_MODES_LABEL,
         },
       ],
     },
@@ -1375,6 +1380,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "idea",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+        },
+        {
+          path: ROUTES.IntelliJCompareModes,
+          component: () => import("./components/common/compare/CompareModes.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "idea",
+          },
+          meta: { pageTitle: COMPARE_MODES_LABEL },
         },
         {
           path: ROUTES.PhpStormStartupDashboard,

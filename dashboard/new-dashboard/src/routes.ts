@@ -8,8 +8,10 @@ const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
-  IntelliJIndices = "/intellij/indices",
   IntelliJUltimate = "/intellij/ultimate",
+  IntelliJSharedIndexes = "/intellij/sharedIndexes",
+  IntelliJIncrementalCompilation = "/intellij/incrementalCompilation",
+  IntelliJKotlinK2Performance = "/intellij/kotlinK2Performance",
   IntelliJPackageChecker = "/intellij/packageChecker",
   IntelliJFus = "/intellij/fus",
   PhpStorm = "/phpstorm",
@@ -316,20 +318,8 @@ const IDEA: Product = {
           label: "Indexes",
         },
         {
-          url: ROUTES.IntelliJSharedIndicesDashboard,
-          label: "Shared Indexes",
-        },
-        {
           url: ROUTES.IntelliJWSLDashboard,
           label: "WSL",
-        },
-        {
-          url: ROUTES.IntelliJIncrementalCompilationDashboard,
-          label: "Incremental Compilation",
-        },
-        {
-          url: ROUTES.IntelliJK2Dashboard,
-          label: "Performance K2",
         },
         {
           url: ROUTES.IntelliJTests,
@@ -398,6 +388,40 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJUltimateTests,
           label: TESTS_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJSharedIndexes,
+      label: "Shared Indexes",
+      tabs: [
+        {
+          url: ROUTES.IntelliJSharedIndicesDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJTests,
+          label: TESTS_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJIncrementalCompilation,
+      label: "Incremental Compilation",
+      tabs: [
+        {
+          url: ROUTES.IntelliJIncrementalCompilationDashboard,
+          label: DASHBOARD_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJKotlinK2Performance,
+      label: "Performance K2",
+      tabs: [
+        {
+          url: ROUTES.IntelliJK2Dashboard,
+          label: DASHBOARD_LABEL,
         },
       ],
     },

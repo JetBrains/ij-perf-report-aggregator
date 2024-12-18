@@ -25,7 +25,7 @@ var teamConfigs = []teamConfig{
 			"com.intellij.swagger", "com.intellij.util.xml", "com.intellij.grpc", "com.intellij.guice",
 			"com.intellij.helidon", "com.intellij.hibernate", "com.intellij.jdbi", "com.intellij.ktor",
 			"com.intellij.micronaut", "com.intellij.openRewrite", "com.intellij.quarkus", "com.intellij.frameworks.thymeleaf",
-			"com.intellij.wiremock", "com.intellij.ee", "com.intellij.jsp",
+			"com.intellij.wiremock", "com.intellij.ee", "com.intellij.jsp", "com.jetbrains.jsonSchema",
 		},
 	},
 	{
@@ -47,7 +47,7 @@ var teamConfigs = []teamConfig{
 		Team:         "cloudsAndDeployment",
 		SlackChannel: "ij-perf-unit-tests-alerts",
 		Packages: []string{
-			"com.intellij.kubernetes",
+			"com.intellij.kubernetes", "org.jetbrains.yaml",
 		},
 	},
 	{

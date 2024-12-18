@@ -55,7 +55,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["VFS Refresh after Mass Changes"],
-    measures: [["vfsRefreshAfterMassCreate", "vfsRefreshAfterMassDelete"]],
+    measures: [["vfsRefreshAfterMassCreate", "vfsRefreshAfterMassModify", "vfsRefreshAfterMassDelete"]],
     projects: ["empty_project/vfs-mass-update-txt", "empty_project/vfs-mass-update-java", "empty_project/vfs-mass-update-kt"],
     aliases: ["txt", "java", "kotlin"],
   },

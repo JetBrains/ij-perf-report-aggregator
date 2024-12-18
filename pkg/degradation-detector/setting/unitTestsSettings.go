@@ -45,7 +45,7 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "cloudsAndDeployment",
-		SlackChannel: "ij-perf-unit-tests-alerts",
+		SlackChannel: "kubernetes-ui-tests-failures",
 		Packages: []string{
 			"com.intellij.kubernetes", "org.jetbrains.yaml",
 		},

@@ -19,7 +19,8 @@
       "intelliJTyping": [
         "intellij_commit/completion/IdeMenuBar_emptyPlace_sout_typing_with_library_cache",
         "intellij_commit/completion/TestModelParser_emptyPlace_if_typing_with_library_cache",
-        "intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache"
+        "intellij_commit/completion/AndroidModuleSystem_emptyPlace_get_typing_with_library_cache",
+        "intellij_commit/completion/ToolWindowManagerImpl_newline_RuntimeE_typing_with_library_cache"
       ],
       "kotlinLang": [
         "kotlin_lang/completion/CommonParser_after_parameter_with_library_cache",
@@ -70,7 +71,8 @@
         "intellij_commit/highlight/KotlinHighLevelFunctionParameterInfoHandler_with_library_cache",
         "intellij_commit/highlight/JdkList_with_library_cache",
         "intellij_commit/highlight/ComposeCompletionContributorTest_with_library_cache",
-        "intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache"
+        "intellij_commit/highlight/AgpUpgradeRefactoringProcessor_with_library_cache",
+        "intellij_commit/highlight/ToolWindowManagerImpl_with_library_cache"
       ],
       "intelliJ2": [
         "intellij_commit/highlight/AndroidModelTest_with_library_cache",
@@ -229,7 +231,10 @@
         "intellij_commit/findUsages/setUp_with_library_cache",
         "intellij_commit/findUsages/SolutionModel_with_library_cache",
         "intellij_commit/findUsages/SqlBlock_with_library_cache",
-        "intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache"
+        "intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache",
+        "intellij_commit/findUsages/runReadAction_with_library_cache",
+        "intellij_commit/findUsages/absolutePath_with_library_cache",
+        "intellij_commit/findUsages/xy_with_library_cache"
       ],
       "kotlinLang": [
         "kotlin_lang/findUsages/CommonParser_with_library_cache",
@@ -266,6 +271,18 @@
         "kotlin_lang/findUsages/intellijVersionForIde_with_library_cache",
         "kotlin_lang/findUsages/JvmTestFramework_with_library_cache",
         "kotlin_lang/findUsages/SourceSet_with_library_cache"
+      ]
+    },
+    "findUsagesFirstUsage": {
+      "intelliJ": [
+        "intellij_commit/findUsages/loadModuleEntity_with_library_cache",
+        "intellij_commit/findUsages/setUp_with_library_cache",
+        "intellij_commit/findUsages/SolutionModel_with_library_cache",
+        "intellij_commit/findUsages/SqlBlock_with_library_cache",
+        "intellij_commit/findUsages/UIAutomationInteractionModel_with_library_cache",
+        "intellij_commit/findUsages/runReadAction_with_library_cache",
+        "intellij_commit/findUsages/absolutePath_with_library_cache",
+        "intellij_commit/findUsages/xy_with_library_cache"
       ]
     },
     "evaluateExpression": {

@@ -34,6 +34,7 @@ const MEASURES = {
   optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
   insertCodeMeasures: [{ name: "execute_editor_paste", label: "Insert code" }],
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
+  findUsagesFirstUsageMeasures: [{ name: "findUsages_firstUsage#mean_value", label: "findUsages first usage mean value" }],
   evaluateExpressionMeasures: [{ name: "evaluateExpression#mean_value", label: "evaluate expression mean value" }],
   convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
   navigationToDeclarationMeasures: [
@@ -235,6 +236,11 @@ export const findUsagesCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.findUsages,
     measures: MEASURES.findUsagesMeasures,
+    machines: [MACHINES.linux],
+  },
+  {
+    projects: KOTLIN_PROJECTS.linux.findUsagesFirstUsage,
+    measures: MEASURES.findUsagesFirstUsageMeasures,
     machines: [MACHINES.linux],
   },
   {

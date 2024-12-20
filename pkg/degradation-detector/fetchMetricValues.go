@@ -185,6 +185,7 @@ func (s PerformanceSettings) query() dataQuery.Query {
 		Fields:   fields,
 		Filters: []dataQuery.QueryFilter{
 			{Field: "branch", Value: s.Branch},
+			{Field: "mode", Value: s.Mode},
 			{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
 			{Field: "project", Value: s.Project},
 			{Field: "measures.name", Value: s.Metric},

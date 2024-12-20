@@ -22,25 +22,28 @@ func GeneratePhpStormSettings(backendUrl string, client *http.Client) []detector
 		slog.Error("error while getting tests", "error", err)
 		return settings
 	}
-	for _, test := range tests {
-		metrics := getMetricFromTestName(test)
-		for _, metric := range metrics {
-			settings = append(settings, detector.PerformanceSettings{
-				Db:      baseSettings.Db,
-				Table:   baseSettings.Table,
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Branch:  baseSettings.Branch,
-					Machine: baseSettings.Machine,
-					Metric:  metric,
-					SlackSettings: detector.SlackSettings{
-						Channel:     "phpstorm-performance-degradations",
-						ProductLink: "phpstorm",
+	modes := []string{"split", ""}
+	for _, mode := range modes {
+		for _, test := range tests {
+			metrics := getMetricFromTestName(test)
+			for _, metric := range metrics {
+				settings = append(settings, detector.PerformanceSettings{
+					Db:      baseSettings.Db,
+					Table:   baseSettings.Table,
+					Project: test,
+					Mode:    mode,
+					BaseSettings: detector.BaseSettings{
+						Branch:  baseSettings.Branch,
+						Machine: baseSettings.Machine,
+						Metric:  metric,
+						SlackSettings: detector.SlackSettings{
+							Channel:     "phpstorm-performance-degradations",
+							ProductLink: "phpstorm",
+						},
 					},
-				},
-			})
+				})
+			}
 		}
-
 	}
 	return settings
 }

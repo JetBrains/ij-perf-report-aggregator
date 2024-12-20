@@ -22,6 +22,7 @@ type PerformanceSettings struct {
 	Table       string
 	Project     string
 	MetricAlias string
+	Mode        string
 }
 
 type StartupSettings struct {

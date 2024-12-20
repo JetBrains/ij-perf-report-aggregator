@@ -152,6 +152,9 @@ linters:
     - rowserrcheck
     - tagalign
     - thelper
+    - exptostd # Detects functions from golang.org/x/exp/ that can be replaced by std functions.
+    - nilnesserr # nilnesserr = nilness + nilerr. nilnesserr is a linter for report return nil error in Go. It combines the features of nilness and nilerr, providing a concise way to detect return an unrelated/nil-values error.
+    - usetesting # Detects when some calls can be replaced by methods from the testing package.
 
 issues:
   # Maximum count of issues with the same text.

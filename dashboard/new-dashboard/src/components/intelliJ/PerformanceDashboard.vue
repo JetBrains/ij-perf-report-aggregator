@@ -79,11 +79,9 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["localInspections", "firstCodeAnalysis"],
     projects: [
       "intellij_commit/localInspection/java_file",
-      "intellij_commit/localInspection/kotlin_file",
       "kotlin/localInspection",
       "kotlin_coroutines/localInspection",
       "intellij_commit/localInspection/java_file-ContentManagerImpl",
-      "intellij_commit/localInspection/kotlin_file-DexInlineTest",
     ],
   },
   {
@@ -99,13 +97,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion", "Completion 90p"],
     measures: ["completion", "fus_completion_duration_90p"],
-    projects: [
-      "community/completion/kotlin_file",
-      "grails/completion/groovy_file",
-      "grails/completion/java_file",
-      "intellij_commit/completion/kotlin_file",
-      "intellij_commit/completion/java_file",
-    ],
+    projects: ["community/completion/kotlin_file", "grails/completion/groovy_file", "grails/completion/java_file", "intellij_commit/completion/java_file"],
   },
   {
     labels: ["Block Terminal Completion"],

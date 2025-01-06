@@ -81,7 +81,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/ActionsKt_runReadAction_After", "intellij_commit/findUsages/ActionsKt_runReadAction"],
+    projects: ["community/findUsages/ActionsKt_runReadAction_Before", "community/findUsages/ActionsKt_runReadAction_After"],
   },
   {
     labels: ["FindUsages Persistent#absolutePath Before and After Compilation (all usages)", "FindUsages Persistent#absolutePath Before and After Compilation (first usage)"],
@@ -89,7 +89,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: ["community/findUsages/Persistent_absolutePath_Before", "community/findUsages/Persistent_absolutePath_After", "intellij_commit/findUsages/Persistent_absolutePath"],
+    projects: ["community/findUsages/Persistent_absolutePath_Before", "community/findUsages/Persistent_absolutePath_After"],
   },
   {
     labels: ["FindUsages PropertyMapping#value Before and After Compilation (all usages)", "FindUsages PropertyMapping#value Before and After Compilation (first usage)"],
@@ -121,7 +121,7 @@ const chartsDeclaration: ChartDefinition[] = [
       ["findUsages", "fus_find_usages_all"],
       ["findUsages_firstUsage", "fus_find_usages_first"],
     ],
-    projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After", "intellij_commit/findUsages/Path_div"],
+    projects: ["community/findUsages/Path_div_Before", "community/findUsages/Path_div_After"],
   },
   {
     labels: ["FindUsages String#toString Before and After Compilation (all usages)", "FindUsages String#toString Before and After Compilation (first usage)"],

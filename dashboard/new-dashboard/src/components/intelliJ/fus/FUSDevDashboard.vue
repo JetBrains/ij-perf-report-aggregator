@@ -30,7 +30,7 @@ const chartsDevDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion time to show 90p", "Completion duration 90p"],
     measures: ["fus_time_to_show_90p", "fus_completion_duration_90p"],
-    projects: ["intellij_commit/completion/java_file", "intellij_commit/completion/kotlin_file"],
+    projects: ["intellij_commit/completion/java_file"],
   },
   {
     labels: ["FindUsages first usage", "FindUsages all usages"],

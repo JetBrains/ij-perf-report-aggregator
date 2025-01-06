@@ -33,12 +33,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: ["intellij_commit/localInspection/java_file", "intellij_commit/localInspection/kotlin_file", "kotlin/localInspection", "kotlin_coroutines/localInspection"],
+    projects: ["intellij_commit/localInspection/java_file", "kotlin/localInspection", "kotlin_coroutines/localInspection"],
   },
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: ["intellij_commit/completion/kotlin_file", "intellij_commit/completion/java_file"],
+    projects: ["intellij_commit/completion/java_file"],
   },
   {
     labels: ["SearchEverywhere"],

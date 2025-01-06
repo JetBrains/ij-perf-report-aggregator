@@ -156,6 +156,21 @@ const chartsDeclaration: ChartDefinition[] = [
       "train-ticket/third-scanning",
     ],
   },
+  {
+    labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
+    projects: [
+      "index-storage/default-2shards-intellij_commit/indexing",
+      "index-storage/default-intellij_commit/indexing",
+      "index-storage/default-w-coroutines-intellij_commit/indexing",
+      "index-storage/default-w-mru-cache-intellij_commit/indexing",
+      "index-storage/fake-writer-intellij_commit/indexing",
+      "index-storage/mmapped-2shards-intellij_commit/indexing",
+      "index-storage/mmapped-2shards-w-coroutines-intellij_commit/indexing",
+      "index-storage/mmapped-intellij_commit/indexing",
+      "index-storage/mmapped-w-coroutines-intellij_commit/indexing",
+    ],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

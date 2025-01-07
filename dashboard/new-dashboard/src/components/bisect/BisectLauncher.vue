@@ -76,7 +76,7 @@
               icon="pi pi-play"
               autofocus
               :loading="loading"
-              :disabled="!allFieldsNonEmpty"
+              :disabled="anyFieldIsEmpty"
               @click="startBisect"
             />
           </div>
@@ -118,15 +118,15 @@ const model = reactive({
   className: props.className,
 })
 
-const shouldExpandAccordion = computed(() => props.test !== "" || props.branch !== "" || props.buildType !== "" || props.className !== "")
-const allFieldsNonEmpty = computed(
+const shouldExpandAccordion = computed(() => props.test == "" || props.branch == "" || props.buildType == "" || props.className == "")
+const anyFieldIsEmpty = computed(
   () =>
-    model.firstCommit.trim() !== "" &&
-    model.lastCommit.trim() !== "" &&
-    model.test.trim() !== "" &&
-    model.branch.trim() !== "" &&
-    model.buildType.trim() !== "" &&
-    model.className.trim() !== ""
+    model.firstCommit.trim() == "" ||
+    model.lastCommit.trim() == "" ||
+    model.test.trim() == "" ||
+    model.branch.trim() == "" ||
+    model.buildType.trim() == "" ||
+    model.className.trim() == ""
 )
 
 const error = ref<string | null>(null)

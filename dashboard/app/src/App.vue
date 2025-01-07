@@ -1,7 +1,7 @@
 <template>
   <router-view v-slot="{ Component, route }">
     <ScrollTop />
-    <template v-if="route.path.startsWith('/degradation') || route.path.startsWith('/metrics')">
+    <template v-if="route.path.startsWith('/degradation') || route.path.startsWith('/metrics') || route.path.startsWith('/bisect')">
       <keep-alive
         :key="route.path"
         max="4"

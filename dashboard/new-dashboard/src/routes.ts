@@ -206,8 +206,6 @@ enum ROUTES {
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
-  ReportDegradations = "/degradations/report",
-  MetricsDescription = "/metrics/description",
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
   AIACompletionDashboard = `${ROUTE_PREFIX.AIA}/completion`,
   AIACodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/codeGeneration`,
@@ -215,6 +213,9 @@ enum ROUTES {
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
   KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
+  ReportDegradations = "/degradations/report",
+  MetricsDescription = "/metrics/description",
+  BisectLauncher = "/bisect/launcher",
 }
 
 export interface Tab {
@@ -2270,6 +2271,12 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.MetricsDescription,
           component: () => import("./components/metrics/MetricDescriptions.vue"),
           meta: { pageTitle: "Metrics description" },
+        },
+        {
+          path: ROUTES.BisectLauncher,
+          component: () => import("./components/bisect/BisectLauncher.vue"),
+          meta: { pageTitle: "Bisect launcher" },
+          props: (route) => ({ ...route.query }),
         },
         {
           path: ROUTES.AIATests,

@@ -1,22 +1,17 @@
 import { ServerConfigurator } from "../dataQuery"
 
-interface PerformanceBisectRequest {
-  targetValue: string
+interface BisectRequest {
   changes: string
-  direction: string
   test: string
-  metric: string
   branch: string
   buildType: string
   className: string
 }
 
-interface ErrorBisectRequest {
-  changes: string
-  test: string
-  branch: string
-  buildType: string
-  className: string
+interface PerformanceBisectRequest extends BisectRequest {
+  targetValue: string
+  direction: string
+  metric: string
 }
 
 export class BisectClient {
@@ -26,7 +21,7 @@ export class BisectClient {
     this.serverConfigurator = serverConfigurator
   }
 
-  async sendBisectRequest(request: PerformanceBisectRequest | ErrorBisectRequest): Promise<string> {
+  async sendBisectRequest(request: PerformanceBisectRequest | BisectRequest): Promise<string> {
     const url = `${this.serverConfigurator?.serverUrl}/api/meta/teamcity/startBisect`
     const response = await fetch(url, {
       method: "POST",

@@ -25,26 +25,29 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 		slog.Error("error while getting projects", "error", err)
 		return settings
 	}
+	machines := []string{"intellij-windows-hw-de-%", "intellij-linux-hw-de-unit-%", "intellij-macos-perf-eqx-%"}
 	metrics := []string{
 		"appInit_d", "app initialization.end", "bootstrap_d",
 		"classLoadingLoadedCount", "classLoadingPreparedCount", "editorRestoring",
 		"codeAnalysisDaemon/fusExecutionTime", "runDaemon/executionTime", "startup/fusTotalDuration", "exitMetrics/application.exit",
 	}
-	for _, project := range projects {
-		for _, metric := range metrics {
-			settings = append(settings, detector.StartupSettings{
-				Product: mainSettings.Product,
-				Project: project,
-				BaseSettings: detector.BaseSettings{
-					Branch:  mainSettings.Branch,
-					Machine: mainSettings.Machine,
-					Metric:  metric,
-					AnalysisSettings: detector.AnalysisSettings{
-						MinimumSegmentLength: 12,
+	for _, machine := range machines {
+		for _, project := range projects {
+			for _, metric := range metrics {
+				settings = append(settings, detector.StartupSettings{
+					Product: mainSettings.Product,
+					Project: project,
+					BaseSettings: detector.BaseSettings{
+						Branch:  mainSettings.Branch,
+						Machine: machine,
+						Metric:  metric,
+						AnalysisSettings: detector.AnalysisSettings{
+							MinimumSegmentLength: 12,
+						},
+						SlackSettings: slackSettings,
 					},
-					SlackSettings: slackSettings,
-				},
-			})
+				})
+			}
 		}
 	}
 	return settings

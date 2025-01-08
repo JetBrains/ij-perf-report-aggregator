@@ -23,6 +23,7 @@
           :selected-label="metricsSelectLabelFormat"
         />
         <MachineSelect :machine-configurator="machineConfigurator" />
+        <CopyLink :timerange-configurator="timeRangeConfigurator" />
       </template>
       <template #end>
         <PlotSettings @update:configurators="updateConfigurators" />
@@ -79,6 +80,7 @@ import InfoSidebar from "../common/sideBar/InfoSidebar.vue"
 import PlotSettings from "../settings/PlotSettings.vue"
 import { createProjectConfigurator, getProjectName } from "./projectNameMapping"
 import { AccidentsConfiguratorForStartup } from "../../configurators/accidents/AccidentsConfiguratorForStartup"
+import CopyLink from "../settings/CopyLink.vue"
 
 const { withInstaller } = defineProps<{
   withInstaller: boolean

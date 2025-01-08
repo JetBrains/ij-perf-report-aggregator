@@ -3,7 +3,6 @@ import { ServerConfigurator } from "../dataQuery"
 interface BisectRequest {
   changes: string
   test: string
-  branch: string
   buildType: string
   className: string
 }

@@ -73,13 +73,6 @@
               </FloatLabel>
               <FloatLabel>
                 <InputText
-                  id="branch"
-                  v-model="branch"
-                />
-                <label for="metric">Branch</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText
                   id="buildType"
                   v-model="buildType"
                 />
@@ -145,7 +138,6 @@ const serverConfigurator = injectOrError(serverConfiguratorKey)
 const showDialog = defineModel<boolean>("showDialog")
 const metric = ref(data.series[0].metricName ?? "")
 const test = ref(data.projectName)
-const branch = ref(data.branch)
 const isDegradation = data.deltaPrevious?.includes("-") ?? false
 const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
 const buildType = computedAsync(async () => await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId), null)
@@ -183,7 +175,6 @@ async function startBisect() {
       direction: direction.value,
       test: test.value,
       metric: metric.value,
-      branch: branch.value as string,
       buildType: buildType.value as string,
       className,
     })

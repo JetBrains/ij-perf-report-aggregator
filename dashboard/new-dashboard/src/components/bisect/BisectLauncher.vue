@@ -37,13 +37,6 @@
                     </FloatLabel>
                     <FloatLabel>
                       <InputText
-                        id="branch"
-                        v-model="model.branch"
-                      />
-                      <label for="metric">Branch</label>
-                    </FloatLabel>
-                    <FloatLabel>
-                      <InputText
                         id="buildType"
                         v-model="model.buildType"
                       />
@@ -95,7 +88,6 @@ const props = withDefaults(
     firstCommit?: string
     lastCommit?: string
     test?: string
-    branch?: string
     buildType?: string
     className?: string
   }>(),
@@ -103,7 +95,6 @@ const props = withDefaults(
     firstCommit: "",
     lastCommit: "",
     test: "",
-    branch: "",
     buildType: "",
     className: "",
   }
@@ -113,18 +104,16 @@ const model = reactive({
   firstCommit: props.firstCommit,
   lastCommit: props.lastCommit,
   test: props.test,
-  branch: props.branch,
   buildType: props.buildType,
   className: props.className,
 })
 
-const shouldExpandAccordion = computed(() => props.test == "" || props.branch == "" || props.buildType == "" || props.className == "")
+const shouldExpandAccordion = computed(() => props.test == "" || props.buildType == "" || props.className == "")
 const anyFieldIsEmpty = computed(
   () =>
     model.firstCommit.trim() == "" ||
     model.lastCommit.trim() == "" ||
     model.test.trim() == "" ||
-    model.branch.trim() == "" ||
     model.buildType.trim() == "" ||
     model.className.trim() == ""
 )
@@ -141,7 +130,6 @@ async function startBisect() {
     const weburl = await bisectClient.sendBisectRequest({
       changes: model.firstCommit + "^.." + model.lastCommit,
       test: model.test,
-      branch: model.branch,
       buildType: model.buildType,
       className: model.className,
     })

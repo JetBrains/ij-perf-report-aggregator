@@ -11,7 +11,6 @@ type BisectRequest struct {
 	Direction   string `json:"direction"`
 	Test        string `json:"test"`
 	Metric      string `json:"metric"`
-	Branch      string `json:"branch"`
 	BuildType   string `json:"buildType"`
 	ClassName   string `json:"className"`
 }
@@ -32,7 +31,6 @@ func CreatePostStartBisect() http.HandlerFunc {
 			"target.bisected.metric":            bisectReq.Metric,
 			"target.bisected.simple.class":      bisectReq.ClassName,
 			"target.bisected.test":              bisectReq.Test,
-			"target.branch":                     bisectReq.Branch,
 			"target.configuration.id":           bisectReq.BuildType,
 			"target.git.commits":                bisectReq.Changes,
 			"target.value.before.changed.point": bisectReq.TargetValue,

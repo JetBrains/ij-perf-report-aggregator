@@ -7,49 +7,63 @@
         </template>
         <template #content>
           <div class="flex flex-col space-y-8 mb-4 mt-6">
-            <div class="flex">
-              <FloatLabel>
-                <InputText
-                  id="changes"
-                  v-model="model.firstCommit"
-                />
-                <label for="changes">First commit</label>
-              </FloatLabel>
-              <FloatLabel>
-                <InputText
-                  id="changes"
-                  v-model="model.lastCommit"
-                />
-                <label for="changes">Last commit</label>
-              </FloatLabel>
+            <div class="grid grid-cols-4 gap-4">
+              <div class="col-span-4 mb-2">
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="errorMessage"
+                    v-model="model.errorMessage"
+                    class="w-full"
+                  />
+                  <label for="errorMessage">Error message to look in log</label>
+                </FloatLabel>
+              </div>
+              <div class="col-span-2">
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="firstCommit"
+                    v-model="model.firstCommit"
+                    class="w-full"
+                  />
+                  <label for="firstCommit">First commit</label>
+                </FloatLabel>
+              </div>
+              <div class="col-span-2">
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="lastCommit"
+                    v-model="model.lastCommit"
+                    class="w-full"
+                  />
+                  <label for="lastCommit">Last commit</label>
+                </FloatLabel>
+              </div>
             </div>
             <Accordion :value="shouldExpandAccordion ? 0 : -1">
               <AccordionPanel :value="0">
                 <AccordionHeader>Additional parameters</AccordionHeader>
                 <AccordionContent>
-                  <div class="flex flex-col space-y-8 mb-4 mt-4">
-                    <FloatLabel>
-                      <InputText
-                        id="test"
-                        v-model="model.test"
-                      />
-                      <label for="test">Test name</label>
-                    </FloatLabel>
-                    <FloatLabel>
-                      <InputText
-                        id="buildType"
-                        v-model="model.buildType"
-                      />
-                      <label for="buildType">Build type</label>
-                    </FloatLabel>
-
-                    <FloatLabel>
-                      <InputText
-                        id="className"
-                        v-model="model.className"
-                      />
-                      <label for="className">Class name</label>
-                    </FloatLabel>
+                  <div class="grid grid-cols-4 gap-4 mt-2">
+                    <div class="col-span-4">
+                      <FloatLabel class="w-full">
+                        <InputText
+                          id="buildType"
+                          v-model="model.buildType"
+                          class="w-full"
+                        />
+                        <label for="buildType">Build type</label>
+                      </FloatLabel>
+                    </div>
+                    <div class="col-span-4 mt-2">
+                      <FloatLabel class="w-full">
+                        <InputText
+                          id="className"
+                          v-model="model.className"
+                          class="w-full"
+                        />
+                        <label for="className">Class name</label>
+                      </FloatLabel>
+                    </div>
                   </div>
                 </AccordionContent>
               </AccordionPanel>
@@ -87,14 +101,14 @@ const props = withDefaults(
   defineProps<{
     firstCommit?: string
     lastCommit?: string
-    test?: string
+    errorMessage?: string
     buildType?: string
     className?: string
   }>(),
   {
     firstCommit: "",
     lastCommit: "",
-    test: "",
+    errorMessage: "",
     buildType: "",
     className: "",
   }
@@ -103,20 +117,13 @@ const props = withDefaults(
 const model = reactive({
   firstCommit: props.firstCommit,
   lastCommit: props.lastCommit,
-  test: props.test,
+  errorMessage: props.errorMessage,
   buildType: props.buildType,
   className: props.className,
 })
 
-const shouldExpandAccordion = computed(() => props.test == "" || props.buildType == "" || props.className == "")
-const anyFieldIsEmpty = computed(
-  () =>
-    model.firstCommit.trim() == "" ||
-    model.lastCommit.trim() == "" ||
-    model.test.trim() == "" ||
-    model.buildType.trim() == "" ||
-    model.className.trim() == ""
-)
+const shouldExpandAccordion = computed(() => props.buildType == "" || props.className == "")
+const anyFieldIsEmpty = computed(() => model.firstCommit.trim() == "" || model.lastCommit.trim() == "" || model.errorMessage.trim() == "" || model.buildType.trim() == "")
 
 const error = ref<string | null>(null)
 const loading = ref(false)
@@ -129,7 +136,7 @@ async function startBisect() {
   try {
     const weburl = await bisectClient.sendBisectRequest({
       changes: model.firstCommit + "^.." + model.lastCommit,
-      test: model.test,
+      errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
     })

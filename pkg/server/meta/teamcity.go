@@ -6,13 +6,41 @@ import (
 )
 
 type BisectRequest struct {
-	TargetValue string `json:"targetValue"`
-	Changes     string `json:"changes"`
-	Direction   string `json:"direction"`
-	Test        string `json:"test"`
-	Metric      string `json:"metric"`
-	BuildType   string `json:"buildType"`
-	ClassName   string `json:"className"`
+	TargetValue  string `json:"targetValue"`
+	Changes      string `json:"changes"`
+	Direction    string `json:"direction"`
+	Test         string `json:"test"`
+	Metric       string `json:"metric"`
+	BuildType    string `json:"buildType"`
+	ClassName    string `json:"className"`
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
+func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
+	return map[string]string{
+		"target.bisect.direction":           bisectReq.Direction,
+		"target.bisected.metric":            bisectReq.Metric,
+		"target.bisected.simple.class":      bisectReq.ClassName,
+		"target.bisected.test":              bisectReq.Test,
+		"target.configuration.id":           bisectReq.BuildType,
+		"target.git.commits":                bisectReq.Changes,
+		"target.value.before.changed.point": bisectReq.TargetValue,
+		"target.perf.messages.mode":         "yes",
+		"target.is.bisect.run":              "true",
+	}
+}
+
+// https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
+func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
+	return map[string]string{
+		"target.bisected.simple.class":          bisectReq.ClassName,
+		"target.configuration.id":               bisectReq.BuildType,
+		"target.git.commits":                    bisectReq.Changes,
+		"env.BISECT_FUNCTIONAL_FAILURE_MESSAGE": bisectReq.ErrorMessage,
+		"target.perf.messages.mode":             "no",
+		"target.is.bisect.run":                  "true",
+	}
 }
 
 func CreatePostStartBisect() http.HandlerFunc {
@@ -26,15 +54,14 @@ func CreatePostStartBisect() http.HandlerFunc {
 			return
 		}
 
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangeset", map[string]string{
-			"target.bisect.direction":           bisectReq.Direction,
-			"target.bisected.metric":            bisectReq.Metric,
-			"target.bisected.simple.class":      bisectReq.ClassName,
-			"target.bisected.test":              bisectReq.Test,
-			"target.configuration.id":           bisectReq.BuildType,
-			"target.git.commits":                bisectReq.Changes,
-			"target.value.before.changed.point": bisectReq.TargetValue,
-		})
+		var buildParams map[string]string
+		if bisectReq.ErrorMessage != "" {
+			buildParams = generateParamsForFunctionalRun(bisectReq)
+		} else {
+			buildParams = generateParamsForPerfRun(bisectReq)
+		}
+
+		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangeset", buildParams)
 		if err != nil {
 			http.Error(writer, "Failed to start bisect: "+err.Error(), http.StatusInternalServerError)
 			return

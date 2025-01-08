@@ -90,11 +90,13 @@ enum ROUTES {
   IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
   IntelliJFusStartupDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardStartup`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
+  PhpStormInstallerDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}Installer`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
+  PhpStormDevTests = `${ROUTE_PREFIX.PhpStorm}/${DEV_TEST_ROUTE}`,
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
   PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
@@ -526,12 +528,20 @@ const PHPSTORM: Product = {
           label: DASHBOARD_LABEL,
         },
         {
+          url: ROUTES.PhpStormInstallerDashboard,
+          label: DASHBOARD_LABEL + " (Installer)",
+        },
+        {
           url: ROUTES.PhpStormLLMDashboard,
           label: "LLM Dashboard",
         },
         {
-          url: ROUTES.PhpStormTests,
+          url: ROUTES.PhpStormDevTests,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.PhpStormTests,
+          label: TESTS_LABEL + " (Installer)",
         },
         {
           url: ROUTES.PhpStormCompareBranches,
@@ -1441,6 +1451,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "PhpStorm Performance dashboard" },
         },
         {
+          path: ROUTES.PhpStormInstallerDashboard,
+          component: () => import("./components/phpstorm/PerformanceInstallerDashboard.vue"),
+          meta: { pageTitle: "PhpStorm Performance dashboard" },
+        },
+        {
           path: ROUTES.PhpStormLLMDashboard,
           component: () => import("./components/phpstorm/MLDashboard.vue"),
           meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
@@ -1471,13 +1486,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "PhpStorm Performance tests" },
         },
         {
-          path: ROUTES.PhpStormCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
+          path: ROUTES.PhpStormDevTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "phpstorm",
+            initialMachine: "linux-blade-hetzner",
+            withInstaller: false,
           },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
+          meta: { pageTitle: "PhpStorm Performance tests" },
         },
         {
           path: ROUTES.PhpStormCompareBranches,
@@ -1492,7 +1509,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormCompareModes,
           component: () => import("./components/common/compare/CompareModes.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "phpstorm",
           },
           meta: { pageTitle: COMPARE_MODES_LABEL },

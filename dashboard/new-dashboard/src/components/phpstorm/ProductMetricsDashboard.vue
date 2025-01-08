@@ -1,6 +1,6 @@
 <template>
   <DashboardPage
-    db-name="perfint"
+    db-name="perfintDev"
     table="phpstorm"
     persistent-id="phpstorm_product_dashboard"
     initial-machine="linux-blade-hetzner"

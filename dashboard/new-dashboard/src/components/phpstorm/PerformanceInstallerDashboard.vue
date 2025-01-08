@@ -1,7 +1,7 @@
 <template>
   <DashboardPage
     v-slot="{ averagesConfigurators }"
-    db-name="perfintDev"
+    db-name="perfint"
     table="phpstorm"
     persistent-id="phpstorm_dashboard"
     initial-machine="linux-blade-hetzner"

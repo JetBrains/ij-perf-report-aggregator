@@ -5,6 +5,7 @@
     table="phpstorm"
     persistent-id="phpstorm_dashboard"
     initial-machine="linux-blade-hetzner"
+    :with-installer="false"
   >
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">

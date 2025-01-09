@@ -3,6 +3,7 @@ package meta
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -163,6 +164,38 @@ type Property struct {
 type BuildResponse struct {
 	XMLName xml.Name `xml:"build"`
 	WebURL  string   `xml:"webUrl,attr"`
+}
+
+type Changes struct {
+	Change []Change `json:"change"`
+}
+
+type Change struct {
+	Version string `json:"version"`
+}
+
+func (client *TeamCityClient) getTeamCityChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {
+	res, err := client.makeRequest(ctx, "/app/rest/changes?locator=build:(id:"+buildID+")&count=10000", map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var changes Changes
+	if err := json.NewDecoder(res.Body).Decode(&changes); err != nil {
+		return nil, fmt.Errorf("failed to decode changes response: %w", err)
+	}
+
+	if len(changes.Change) == 0 {
+		return nil, fmt.Errorf("no changes found for build %s", buildID)
+	}
+
+	revisions := &CommitRevisions{
+		LastCommit:  changes.Change[0].Version,
+		FirstCommit: changes.Change[len(changes.Change)-1].Version,
+	}
+
+	return revisions, nil
 }
 
 func (client *TeamCityClient) startBuild(ctx context.Context, buildId string, params map[string]string) (*string, error) {

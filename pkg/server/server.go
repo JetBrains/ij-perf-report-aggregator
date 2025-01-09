@@ -105,6 +105,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		})
 		r.Route("/teamcity", func(r chi.Router) {
 			r.Post("/startBisect", meta.CreatePostStartBisect())
+			r.Get("/changes", meta.HandleGetTeamCityChanges())
 		})
 	})
 

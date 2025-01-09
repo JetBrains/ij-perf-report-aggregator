@@ -43,6 +43,34 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 	}
 }
 
+func HandleGetTeamCityChanges() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		revisions, err := teamCityClient.getTeamCityChanges(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(revisions)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+type CommitRevisions struct {
+	FirstCommit string `json:"firstCommit"`
+	LastCommit  string `json:"lastCommit"`
+}
+
 func CreatePostStartBisect() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var bisectReq BisectRequest

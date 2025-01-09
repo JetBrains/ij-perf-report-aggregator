@@ -93,30 +93,31 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue"
+import { computed, onMounted, reactive, ref } from "vue"
 import { BisectClient } from "../common/sideBar/BisectClient"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 
 const props = withDefaults(
   defineProps<{
-    firstCommit?: string
-    lastCommit?: string
+    buildId?: string
     errorMessage?: string
     buildType?: string
     className?: string
   }>(),
   {
-    firstCommit: "",
-    lastCommit: "",
+    buildId: "",
     errorMessage: "",
     buildType: "",
     className: "",
   }
 )
 
+const serverConfigurator = new ServerWithCompressConfigurator("", "")
+const bisectClient = new BisectClient(serverConfigurator)
+
 const model = reactive({
-  firstCommit: props.firstCommit,
-  lastCommit: props.lastCommit,
+  firstCommit: "",
+  lastCommit: "",
   errorMessage: props.errorMessage,
   buildType: props.buildType,
   className: props.className,
@@ -127,8 +128,6 @@ const anyFieldIsEmpty = computed(() => model.firstCommit.trim() == "" || model.l
 
 const error = ref<string | null>(null)
 const loading = ref(false)
-const serverConfigurator = new ServerWithCompressConfigurator("", "")
-const bisectClient = new BisectClient(serverConfigurator)
 
 async function startBisect() {
   error.value = null
@@ -147,4 +146,16 @@ async function startBisect() {
     loading.value = false
   }
 }
+
+onMounted(async () => {
+  try {
+    const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
+    model.firstCommit = changes.firstCommit
+    model.lastCommit = changes.lastCommit
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : "Failed to fetch changes"
+  } finally {
+    loading.value = false
+  }
+})
 </script>

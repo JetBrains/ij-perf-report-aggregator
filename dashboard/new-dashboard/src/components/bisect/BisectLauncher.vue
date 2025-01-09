@@ -15,7 +15,7 @@
                     v-model="model.errorMessage"
                     class="w-full"
                   />
-                  <label for="errorMessage">Error message to look in log</label>
+                  <label for="errorMessage">Error message to look in the build log</label>
                 </FloatLabel>
               </div>
               <div class="col-span-2">
@@ -39,21 +39,21 @@
                 </FloatLabel>
               </div>
             </div>
-            <Accordion :value="shouldExpandAccordion ? 0 : -1">
+            <div class="col-span-4 mb-2">
+              <FloatLabel class="w-full">
+                <InputText
+                  id="buildType"
+                  v-model="model.buildType"
+                  class="w-full"
+                />
+                <label for="buildType">Build type</label>
+              </FloatLabel>
+            </div>
+            <Accordion :value="-1">
               <AccordionPanel :value="0">
                 <AccordionHeader>Additional parameters</AccordionHeader>
                 <AccordionContent>
                   <div class="grid grid-cols-4 gap-4 mt-2">
-                    <div class="col-span-4">
-                      <FloatLabel class="w-full">
-                        <InputText
-                          id="buildType"
-                          v-model="model.buildType"
-                          class="w-full"
-                        />
-                        <label for="buildType">Build type</label>
-                      </FloatLabel>
-                    </div>
                     <div class="col-span-4 mt-2">
                       <FloatLabel class="w-full">
                         <InputText
@@ -83,7 +83,7 @@
               icon="pi pi-play"
               autofocus
               :loading="loading"
-              :disabled="anyFieldIsEmpty"
+              :disabled="isRequiredFieldEmpty"
               @click="startBisect"
             />
           </div>
@@ -123,8 +123,7 @@ const model = reactive({
   className: props.className,
 })
 
-const shouldExpandAccordion = computed(() => props.buildType == "" || props.className == "")
-const anyFieldIsEmpty = computed(() => model.firstCommit.trim() == "" || model.lastCommit.trim() == "" || model.errorMessage.trim() == "" || model.buildType.trim() == "")
+const isRequiredFieldEmpty = computed(() => model.firstCommit.trim() == "" || model.lastCommit.trim() == "" || model.errorMessage.trim() == "" || model.buildType.trim() == "")
 
 const error = ref<string | null>(null)
 const loading = ref(false)

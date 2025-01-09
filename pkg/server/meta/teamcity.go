@@ -51,7 +51,30 @@ func HandleGetTeamCityChanges() http.HandlerFunc {
 			return
 		}
 
-		revisions, err := teamCityClient.getTeamCityChanges(r.Context(), buildID)
+		revisions, err := teamCityClient.getChanges(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(revisions)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func HandleGetTeamCityBuildType() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		revisions, err := teamCityClient.getBuildType(r.Context(), buildID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

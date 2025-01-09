@@ -166,15 +166,34 @@ type BuildResponse struct {
 	WebURL  string   `xml:"webUrl,attr"`
 }
 
-type Changes struct {
-	Change []Change `json:"change"`
+type BuildInfo struct {
+	BuildTypeId string `json:"buildTypeId"`
 }
 
 type Change struct {
 	Version string `json:"version"`
 }
 
-func (client *TeamCityClient) getTeamCityChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {
+type Changes struct {
+	Change []Change `json:"change"`
+}
+
+func (client *TeamCityClient) getBuildType(ctx context.Context, buildID string) (string, error) {
+	res, err := client.makeRequest(ctx, "/app/rest/builds/id:"+buildID, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	var build BuildInfo
+	if err := json.NewDecoder(res.Body).Decode(&build); err != nil {
+		return "", fmt.Errorf("failed to decode changes response: %w", err)
+	}
+
+	return build.BuildTypeId, nil
+}
+
+func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {
 	res, err := client.makeRequest(ctx, "/app/rest/changes?locator=build:(id:"+buildID+")&count=10000", map[string]string{"Accept": "application/json"})
 	if err != nil {
 		return nil, err

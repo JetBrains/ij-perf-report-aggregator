@@ -101,13 +101,11 @@ const props = withDefaults(
   defineProps<{
     buildId?: string
     errorMessage?: string
-    buildType?: string
     className?: string
   }>(),
   {
     buildId: "",
     errorMessage: "",
-    buildType: "",
     className: "",
   }
 )
@@ -119,7 +117,7 @@ const model = reactive({
   firstCommit: "",
   lastCommit: "",
   errorMessage: props.errorMessage,
-  buildType: props.buildType,
+  buildType: "",
   className: props.className,
 })
 
@@ -151,8 +149,9 @@ onMounted(async () => {
     const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
+    model.buildType = await bisectClient.fetchBuildType(props.buildId)
   } catch (e) {
-    error.value = e instanceof Error ? e.message : "Failed to fetch changes"
+    error.value = e instanceof Error ? e.message : "Failed to fetch TC info"
   } finally {
     loading.value = false
   }

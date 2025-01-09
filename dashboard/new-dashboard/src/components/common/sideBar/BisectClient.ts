@@ -60,4 +60,19 @@ export class BisectClient {
       return { firstCommit: "", lastCommit: "" }
     }
   }
+
+  async fetchBuildType(buildId: string): Promise<string> {
+    try {
+      const response = await fetch(`${this.serverConfigurator?.serverUrl}/api/meta/teamcity/buildType?buildId=${encodeURIComponent(buildId)}`)
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.log(`Failed to fetch changes: ${response.status} - ${errorText}`)
+        return ""
+      }
+      return await response.json() as string
+    } catch (error) {
+      console.log("Error fetching TeamCity changes:", error)
+      return ""
+    }
+  }
 }

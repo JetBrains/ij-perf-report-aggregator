@@ -5,6 +5,7 @@
     persistent-id="phpstorm_product_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="charts"
+    :with-installer="false"
   >
     <section>
       <GroupProjectsChart
@@ -47,7 +48,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: [],
+    projects: ["blade_in_blade_fragment_laravel/typing", "blade_in_php_fragment_laravel/typing"],
   },
   {
     labels: ["Inspections"],

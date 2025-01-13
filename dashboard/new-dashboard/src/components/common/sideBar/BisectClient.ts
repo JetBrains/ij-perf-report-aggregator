@@ -69,7 +69,7 @@ export class BisectClient {
         console.log(`Failed to fetch changes: ${response.status} - ${errorText}`)
         return ""
       }
-      return await response.json() as string
+      return (await response.json()) as string
     } catch (error) {
       console.log("Error fetching TeamCity changes:", error)
       return ""

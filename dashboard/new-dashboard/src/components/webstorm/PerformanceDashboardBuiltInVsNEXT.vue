@@ -75,6 +75,7 @@ const groups = [
       "vue3-admin-vite/localInspection/index.vue",
       "pancake-frontend/localInspection/[tokenId].tsx",
       "kibana/localInspection/alerts_grouping.tsx",
+      "kibana/localInspection/project_navigation.ts",
     ],
   },
   {

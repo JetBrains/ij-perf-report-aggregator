@@ -210,7 +210,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['react-todo-js/typing']"
+          :projects="['react-todo-js/typing/typing']"
         />
       </div>
     </section>

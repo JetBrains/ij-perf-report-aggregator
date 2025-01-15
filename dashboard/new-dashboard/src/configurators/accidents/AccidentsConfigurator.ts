@@ -247,7 +247,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       })
       const data: AccidentFromServer[] = (await response.json()) as AccidentFromServer[]
       const accidents = data.map((value) => {
-        return { ...value, kind: capitalizeFirstLetter(value.kind) }
+        return new Accident(value.id, value.affectedTest, value.date, value.reason, value.buildNumber, capitalizeFirstLetter(value.kind), value.stacktrace, value.userName)
       })
       return convertAccidentsToMap(accidents)
     } catch (error) {

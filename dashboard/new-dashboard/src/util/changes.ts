@@ -6,7 +6,7 @@ import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompr
 import { refToObservable } from "../configurators/rxjs"
 
 export function base64ToHex(base64: string): string {
-  const decodedArray = new Uint8Array([...atob(base64)].map((c) => c.codePointAt(0) ?? 0))
+  const decodedArray = new Uint8Array(Array.from(atob(base64), (c) => c.codePointAt(0) ?? 0))
   let hex = ""
   for (const byte of decodedArray) {
     hex += byte.toString(16).padStart(2, "0")

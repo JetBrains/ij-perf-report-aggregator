@@ -27,17 +27,17 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    projects: ["ring-ui/indexing", "axios/indexing", "dxos/indexing"],
   },
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: ["allure-js/localInspection/JasmineAllureReporter.ts", "axios/localInspection/utils.js", "material-ui-react-admin/localInspection/PostEdit.tsx"],
   },
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: [],
+    projects: ["axios/completion/functions", "eslint-plugin-jest/completion/types", "pancake-frontend/completion/component", "vue3-admin-vite/completion/component"],
   },
   {
     labels: ["SearchEverywhere"],
@@ -47,12 +47,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: [],
+    projects: ["axios/typing", "eslint-plugin-jest/typing"],
   },
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: ["axios/inspection", "gitlab/inspection-app", "ring-ui/globalInspection/src"],
   },
 ]
 

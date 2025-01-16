@@ -32,7 +32,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: ["istio/localInspection/adsc.go", "minotaur/localInspection/server.go"],
   },
   {
     labels: ["Completion"],
@@ -47,7 +47,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: [],
+    projects: ["act/typing"],
   },
   {
     labels: ["Inspections"],

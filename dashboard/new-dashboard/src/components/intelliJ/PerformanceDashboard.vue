@@ -70,8 +70,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
   },
   {
-    labels: ["Inspection", "JVM Total Time to safepoints", "Full GC Pause", "JVM GC collection times"],
-    measures: ["globalInspections", "JVM.totalTimeToSafepointsMs", "fullGCPause", "JVM.GC.collectionTimesMs"],
+    labels: ["Inspection"],
+    measures: ["globalInspections"],
     projects: [
       "java/inspection",
       "grails/inspection",
@@ -81,6 +81,11 @@ const chartsDeclaration: ChartDefinition[] = [
       "kotlin_coroutines/inspection",
       "intellij_commit/jvm-inspection",
     ],
+  },
+  {
+    labels: ["JVM Total Time to safepoints", "Full GC Pause", "JVM GC collection times"],
+    measures: ["JVM.totalTimeToSafepointsMs", "fullGCPause", "JVM.GC.collectionTimesMs"],
+    projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
   },
   {
     labels: ["Local Inspection", "First Code Analysis"],

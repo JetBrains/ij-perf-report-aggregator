@@ -40,7 +40,7 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
 			strings.HasSuffix(name, "-ijperf.json") ||
 			t.config.DbName == "jbr" && strings.HasSuffix(name, ".txt") ||
 			t.config.DbName == "bazel" && name == "metrics.txt" ||
-			t.config.DbName == "qodana" && name == "open-telemetry.json" {
+			t.config.DbName == "qodana" && (name == "open-telemetry.json" || name == "metrics.json") {
 			artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
 			report, err := t.downloadStartUpReportWithRetries(ctx, build, artifactUrlString)
 			if err != nil {

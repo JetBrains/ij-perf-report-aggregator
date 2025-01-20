@@ -424,6 +424,8 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Windows Fleet AWS UI"
   } else if (machine.startsWith("fleet-icri-ui-agent")) {
     groupName = "Mac Fleet AWS UI"
+  } else if(machine.startsWith("qodana-linux-arm64-memory-optimised")){
+    groupName = "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"
   }
 
   return groupName

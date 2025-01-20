@@ -142,11 +142,18 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 			return nil
 		}
 	case "qodana":
-		ignore := analyzeQodanaReport(runResult, extraData)
-		if ignore {
-			// ignore empty report
-			return nil
+		reportURL := runResult.ReportFileName
+		fileName := reportURL[strings.LastIndex(reportURL, "/")+1:]
+		if fileName == "open-telemetry.json" {
+			ignore := analyzeQodanaReport(runResult, extraData)
+			if ignore {
+				return nil
+			}
 		}
+		if fileName == "metrics.json" {
+			err = ReadReport(runResult, t.config)
+		}
+
 	default:
 		err = ReadReport(runResult, t.config)
 
@@ -283,7 +290,7 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 		return strconv.Itoa(branchInt), nil
 	}
 	isMaster := props.GetStringBytes("vcsroot.ijplatform_master_IntelliJMonorepo.branch")
-	if len(isMaster) == 0 {
+	if len(isMaster) == 0 && runResult.BuildC1 != 0 {
 		// we check that the property doesn't exist so it is not a master
 		if runResult.BuildC3 == 0 {
 			return strconv.Itoa(runResult.BuildC1), nil

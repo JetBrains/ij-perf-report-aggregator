@@ -10,7 +10,8 @@ create table report
   `measures.value`        Array(Int32) CODEC (ZSTD(20)),
   `measures.type`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
-  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20))
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
+  `mode`                  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
 --     partitioning by month gives up to 3x performance boost

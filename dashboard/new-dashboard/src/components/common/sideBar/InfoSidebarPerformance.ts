@@ -27,7 +27,7 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
 
   let buildId: number | undefined
 
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.FLEET_PERF || dbType == DBType.DIOGEN || dbType == DBType.QODANA) {
     buildId = dataSeries[5] as number
   }
   if (dbType == DBType.FLEET || dbType == DBType.STARTUP_TESTS) {
@@ -44,9 +44,6 @@ export function getBuildId(dataSeries: (number | string)[] | (number | string)[]
   }
   if (dbType == DBType.BAZEL) {
     buildId = dataSeries[5] as number
-  }
-  if (dbType == DBType.QODANA) {
-    buildId = dataSeries[3] as number
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
@@ -126,7 +123,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
   }
-  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN) {
+  if (dbType == DBType.INTELLIJ_DEV || dbType == DBType.PERF_UNIT_TESTS || dbType == DBType.DIOGEN || dbType == DBType.QODANA) {
     metricName = dataSeries[2] as string
     if (dataSeries[3] == "c") {
       type = "counter"
@@ -185,11 +182,6 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     machineName = dataSeries[4] as string
     projectName = dataSeries[6] as string
     branch = dataSeries[7] as string
-  }
-  if (dbType == DBType.QODANA) {
-    machineName = dataSeries[2] as string
-    branch = dataSeries[5] as string
-    projectName = dataSeries[4] as string
   }
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")

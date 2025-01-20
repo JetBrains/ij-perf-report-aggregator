@@ -298,16 +298,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
   const field: DataQueryDimension = { n: "" }
   query.insertField(field, 1)
 
-  if (
-    query.db === "perfint" ||
-    query.db === "jbr" ||
-    query.db === "perfintDev" ||
-    query.db == "bazel" ||
-    query.db == "perfUnitTests" ||
-    query.db == "diogen" ||
-    query.db == "mlEvaluation" ||
-    (query.db == "fleet" && query.table == "measure_new")
-  ) {
+  if (query.db !== "ij" && query.db !== "ijDev" && !(query.db === "fleet" && query.table === "report")) {
     query.addField({ n: "measures", subName: "name" })
     query.addField({ n: "measures", subName: "type" })
   }

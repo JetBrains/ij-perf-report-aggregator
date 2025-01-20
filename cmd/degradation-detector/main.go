@@ -80,5 +80,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateGolandPerfSettings(backendUrl, client),
 		setting.GenerateRustPerfSettings(backendUrl, client),
 		setting.GenerateFleetPerformanceSettings(backendUrl, client),
+		setting.GenerateRubyPerfSettings(backendUrl, client),
 	)
 }

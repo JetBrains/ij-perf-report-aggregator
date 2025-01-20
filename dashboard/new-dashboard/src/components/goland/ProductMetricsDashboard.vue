@@ -42,7 +42,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: ["localAi/go-to-all-with-warmup/version.go/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],

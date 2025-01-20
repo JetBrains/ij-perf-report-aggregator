@@ -39,7 +39,7 @@ describe("Release Nightly configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
       assert.equal(data.fetchMock.mock.calls.length, 2)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"}],"filters":[{"f":"build_c3","v":0,"o":"="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"build_c3","v":0,"o":"="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
     })
 
@@ -51,7 +51,7 @@ describe("Release Nightly configurator", () => {
       configurator.selected.value = "EAP / Release"
       await awaitMockCallsCount(data.fetchMock, 2)
       assert.equal(data.fetchMock.mock.calls.length, 2)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"}],"filters":[{"f":"build_c3","v":0,"o":"!="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"build_c3","v":0,"o":"!="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
       configurator.selected.value = "Nightly"
     })

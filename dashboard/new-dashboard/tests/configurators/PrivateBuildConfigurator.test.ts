@@ -38,7 +38,7 @@ describe("Private build configurator", () => {
           resolve()
         })
       })
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
+      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
     })
 
@@ -51,11 +51,11 @@ describe("Private build configurator", () => {
       })
       assert.equal(
         data.fetchMock.mock.calls[2][0],
-        `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
+        `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       )
       assert.equal(
         data.fetchMock.mock.calls[3][0],
-        `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"}],"filters":[{"f":"triggeredBy","v":"b2"},{"f":"measures.name","v":"b1"}],"order":"t"}]`
+        `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":"b2"},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       )
     })
   })

@@ -42,12 +42,6 @@ export default tseslint.config(
   {
     rules: {
       "no-debugger": "off",
-      "max-len": [
-        "error",
-        {
-          code: 300,
-        },
-      ],
       "object-shorthand": [
         "error",
         "always",

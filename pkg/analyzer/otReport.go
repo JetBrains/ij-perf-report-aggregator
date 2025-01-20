@@ -57,7 +57,7 @@ func analyzeQodanaReport(runResult *RunResult, data model.ExtraData) bool {
 			measureTypes = append(measureTypes, "d")
 		}
 	}
-	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes, /*mode*/ ""}
+	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes /*mode*/, ""}
 	return false
 }
 

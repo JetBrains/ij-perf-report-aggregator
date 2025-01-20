@@ -78,6 +78,6 @@ func getRubyMetricFromTestName(test string) []string {
 	if strings.Contains(test, "/getSymbolMembers") {
 		return []string{"getSymbolMembers", "getSymbolMembers#number"}
 	}
-	//very likely find usages
+	// very likely find usages
 	return []string{"findUsages", "findUsages#number", "gcPause", "freedMemoryByGC"}
 }

@@ -234,6 +234,8 @@ describe("InfoSideBar Test", () => {
         value: [
           1710484278000,
           650,
+          "metric_name",
+          "d",
           "qodana-linux-amd64-xl1-A-i-0147baff0a791a4ea",
           466545404,
           "Byte_Buddy",

@@ -9,7 +9,7 @@
     "fast-equals": "5.2.2",
     "humanize-duration": "3.32.1",
     "p-limit": "^6.2.0",
-    "pinia": "^2.3.0",
+    "pinia": "^2.3.1",
     "primevue": "4.2.5",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.13",

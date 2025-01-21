@@ -9,7 +9,7 @@ import (
 
 func GeneratePhpStormSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfint",
+		Db:    "perfintDev",
 		Table: "phpstorm",
 		BaseSettings: detector.BaseSettings{
 			Branch:  "master",

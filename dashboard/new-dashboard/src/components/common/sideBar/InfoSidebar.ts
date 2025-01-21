@@ -117,6 +117,7 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const branch = data?.branch ?? ""
   const machineGroup = getMachineGroupName(data?.machineName ?? "")
   const majorBranch = /\d+\.\d+/.test(branch) ? branch.slice(0, branch.indexOf(".")) : branch
+  const mode = data?.mode ?? ""
   const testURL = parts.join("/")
 
   const queryParams: string = new URLSearchParams({
@@ -124,6 +125,7 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
     project: data?.projectName ?? "",
     branch: majorBranch,
     machine: machineGroup,
+    mode: mode !== "" ? mode : "default",
   }).toString()
 
   const measures =

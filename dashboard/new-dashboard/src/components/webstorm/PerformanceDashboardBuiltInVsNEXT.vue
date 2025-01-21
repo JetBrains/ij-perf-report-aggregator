@@ -101,6 +101,17 @@ const groups = [
       "material-ui-react-admin/localInspection/PostEdit.tsx",
     ],
   },
+  {
+    label: "Completion_1",
+    measure: "completion_1",
+    projects: [
+      "material-ui-react-admin/completion/attribute",
+      "pancake-frontend/completion/component",
+      "pancake-frontend/completion/attribute",
+      "eslint-plugin-jest/completion/types",
+      "axios/completion/functions",
+    ],
+  },
 ]
 
 function groupBy3<T>(array: T[]): T[][] {

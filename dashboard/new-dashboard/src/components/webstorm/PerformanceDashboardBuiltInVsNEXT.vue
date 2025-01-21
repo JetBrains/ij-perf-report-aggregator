@@ -102,8 +102,8 @@ const groups = [
     ],
   },
   {
-    label: "Completion_1",
-    measure: "completion_1",
+    label: "Completion First Element",
+    measure: "completion#firstElementShown#mean_value",
     projects: [
       "material-ui-react-admin/completion/attribute",
       "pancake-frontend/completion/component",

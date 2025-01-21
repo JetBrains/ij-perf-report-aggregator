@@ -4,7 +4,7 @@ import { usePreferredDark, useStorage } from "@vueuse/core"
 
 export const useDarkModeStore = defineStore("darkModeStore", () => {
   // State
-  const darkMode = useStorage("darkMode", usePreferredDark())
+  const darkMode = useStorage("darkMode", usePreferredDark().value)
 
   watch(
     darkMode,

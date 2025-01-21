@@ -7,9 +7,9 @@
   >
     <section>
       <GroupProjectsChart
-        label="Typing Latency"
-        measure="typing#latency#mean_value"
-        :projects="['mattermost/typing']"
+        label="Typing Code Analysis"
+        measure="typingCodeAnalyzing"
+        :projects="['act/typing']"
       />
     </section>
     <section>

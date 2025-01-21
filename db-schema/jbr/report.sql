@@ -12,7 +12,8 @@ create table jbr.report
   `measures.value`        Array(Float64) CODEC (Gorilla, ZSTD(20)),
   `measures.type`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
-  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20))
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
+  `tc_build_type`  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (toYear(generated_time))

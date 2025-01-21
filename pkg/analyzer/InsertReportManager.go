@@ -72,10 +72,7 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 	}
 
 	metaFields := make([]string, 0, 16)
-	metaFields = append(metaFields, "machine", "generated_time", "project", "tc_build_id", "branch")
-	if config.HasBuildTypeField {
-		metaFields = append(metaFields, "tc_build_type")
-	}
+	metaFields = append(metaFields, "machine", "generated_time", "project", "tc_build_id", "branch", "tc_build_type")
 	if config.HasProductField {
 		metaFields = append(metaFields, "product")
 	}
@@ -236,10 +233,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 	}
 
 	args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
-	args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch)
-	if t.config.HasBuildTypeField {
-		args = append(args, row.TcBuildType)
-	}
+	args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch, row.TcBuildType)
 
 	if t.config.HasProductField {
 		args = append(args, product)

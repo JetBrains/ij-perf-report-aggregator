@@ -13,7 +13,7 @@ create table fleet.measure_new
   `measures.value`        Array(Float64) CODEC (Gorilla, ZSTD(20)),
   `measures.type`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
-  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20))
+  `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))

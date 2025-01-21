@@ -18,7 +18,8 @@ create table report2
   `measures.name` Array(LowCardinality(String)) CODEC(ZSTD(20)),
   `measures.start` Array(Int32) CODEC(Gorilla, ZSTD(20)),
   `measures.value` Array(Int32) CODEC(Gorilla, ZSTD(20)),
-  `measures.thread` Array(LowCardinality(String)) CODEC(ZSTD(20))
+  `measures.thread` Array(LowCardinality(String)) CODEC(ZSTD(20)),
+  `tc_build_type`  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))

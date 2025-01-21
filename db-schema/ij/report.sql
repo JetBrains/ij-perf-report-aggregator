@@ -61,7 +61,8 @@ create table ij.report2
 
 
   `classLoadingPreparedCount` Int32 CODEC (Gorilla, ZSTD(20)),
-  `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20))
+  `classLoadingLoadedCount`   Int32 CODEC (Gorilla, ZSTD(20)),
+  `tc_build_type`  LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (product, toYear(generated_time))

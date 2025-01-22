@@ -6,6 +6,7 @@ type Settings interface {
 	accidentWriter
 	mergeInfoProvider
 	slackSettings
+	metricsMerger
 }
 
 type BaseSettings struct {

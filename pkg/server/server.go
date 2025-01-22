@@ -99,6 +99,7 @@ func Serve(dbUrl string, natsUrl string) error {
 		r.Post("/getAccidents*", meta.CreateGetManyAccidentsRequestHandler(dbpool))
 		r.Get("/description*", meta.CreateGetDescriptionRequestHandler(dbpool))
 		r.Post("/accidentsAroundDate*", meta.CreateGetAccidentsAroundDateRequestHandler(dbpool))
+		r.Post("/missingData", meta.CreatePostMissingDataRequestHandler(dbpool))
 		r.Route("/youtrack", func(r chi.Router) {
 			r.Post("/createIssue", meta.CreatePostCreateIssueByAccident(dbpool))
 			r.Post("/uploadAttachments", meta.CreatePostUploadAttachmentsToIssue())

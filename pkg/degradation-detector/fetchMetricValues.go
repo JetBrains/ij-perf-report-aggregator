@@ -21,9 +21,10 @@ type queryResult struct {
 	timestamps []int64
 	values     []int
 	builds     []string
+	buildTypes []string
 }
 
-type queryResultWithSettings struct {
+type QueryResultWithSettings struct {
 	queryResult
 	Settings
 }
@@ -32,8 +33,8 @@ type queryProducer interface {
 	query() dataQuery.Query
 }
 
-func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backendUrl string) chan queryResultWithSettings {
-	dataChan := make(chan queryResultWithSettings, 5)
+func FetchMetricsFromClickhouse(settings []Settings, client *http.Client, backendUrl string) chan QueryResultWithSettings {
+	dataChan := make(chan QueryResultWithSettings, 5)
 	go func() {
 		defer close(dataChan)
 		var wg sync.WaitGroup
@@ -50,7 +51,7 @@ func fetchMetricsFromClickhouse(settings []Settings, client *http.Client, backen
 					return
 				}
 				slog.Debug("fetched from clickhouse", "settings", setting)
-				dataChan <- queryResultWithSettings{
+				dataChan <- QueryResultWithSettings{
 					queryResult: data,
 					Settings:    setting,
 				}
@@ -120,7 +121,7 @@ func (s FleetStartupSettings) query() dataQuery.Query {
 		filters = append(filters, dataQuery.QueryFilter{Field: "measures.name", Value: metricName})
 		fields = append(fields, dataQuery.QueryDimension{Name: "measures", SubName: "end", Sql: "(measures.start+measures.value)"})
 	}
-	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))"})
+	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2),'.',toString(build_c3))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
 		Database: "fleet",
@@ -156,7 +157,7 @@ func (s StartupSettings) query() dataQuery.Query {
 	if !strings.HasSuffix(s.Metric, ".end") && !strings.Contains(s.Metric, "/") {
 		fields = append(fields, dataQuery.QueryDimension{Name: s.Metric})
 	}
-	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"})
+	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
 		Database: "ij",
@@ -178,6 +179,7 @@ func (s PerformanceSettings) query() dataQuery.Query {
 	} else {
 		fields = append(fields, dataQuery.QueryDimension{Name: "tc_build_id"})
 	}
+	fields = append(fields, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
 		Database: s.Db,
@@ -222,9 +224,14 @@ func extractDataFromRequest(response []byte) (queryResult, error) {
 	if err != nil {
 		return queryResult{}, fmt.Errorf("failed to convert values: %w", err)
 	}
+	buildTypes, err := SliceToSliceOfString(data[0][3])
+	if err != nil {
+		return queryResult{}, fmt.Errorf("failed to convert values: %w", err)
+	}
 	return queryResult{
 		timestamps: timestamps,
 		values:     values,
 		builds:     builds,
+		buildTypes: buildTypes,
 	}, err
 }

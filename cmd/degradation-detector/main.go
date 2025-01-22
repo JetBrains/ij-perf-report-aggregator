@@ -7,6 +7,8 @@ import (
 	"slices"
 	"time"
 
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
+
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/setting"
 	_ "go.uber.org/automaxprocs"
@@ -26,11 +28,21 @@ func main() {
 	for _, s := range generateFleetStartupSettings() {
 		analysisSettings = append(analysisSettings, s)
 	}
-	degradations := detector.GetDegradations(analysisSettings, client, backendUrl)
+	metrics := detector.FetchMetricsFromClickhouse(analysisSettings, client, backendUrl)
+	metricsForDegradation := make(chan detector.QueryResultWithSettings, 5)
+	metricsForMissingMetrics := make(chan detector.QueryResultWithSettings, 5)
+	util.Broadcast(metrics, metricsForDegradation, metricsForMissingMetrics)
+
+	degradations := detector.InferDegradations(metricsForDegradation)
 	insertionResults := detector.PostDegradations(client, backendUrl, degradations)
 	filteredResults := detector.FilterErrors(insertionResults)
 	mergedResults := detector.MergeDegradations(filteredResults)
 	detector.SendDegradationsToSlack(mergedResults, client)
+
+	missingData := detector.InferMissingData(metricsForMissingMetrics)
+	missingData = detector.PostMissingData(client, backendUrl, missingData)
+	mergedMissingData := detector.MergeMissingData(missingData)
+	detector.SendMissingDataMessages(mergedMissingData, client)
 	slog.Info("finished")
 }
 

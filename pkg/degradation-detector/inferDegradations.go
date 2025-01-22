@@ -1,15 +1,11 @@
 package degradation_detector
 
-import (
-	"net/http"
-)
-
 type DegradationWithSettings struct {
 	Details  Degradation
 	Settings Settings
 }
 
-func InferDegradations(data <-chan queryResultWithSettings) <-chan DegradationWithSettings {
+func InferDegradations(data <-chan QueryResultWithSettings) <-chan DegradationWithSettings {
 	degradationChan := make(chan DegradationWithSettings, 100)
 	go func() {
 		for datum := range data {
@@ -20,8 +16,4 @@ func InferDegradations(data <-chan queryResultWithSettings) <-chan DegradationWi
 		close(degradationChan)
 	}()
 	return degradationChan
-}
-
-func GetDegradations(settings []Settings, client *http.Client, backendUrl string) <-chan DegradationWithSettings {
-	return InferDegradations(fetchMetricsFromClickhouse(settings, client, backendUrl))
 }

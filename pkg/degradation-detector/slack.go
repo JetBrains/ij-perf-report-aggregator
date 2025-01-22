@@ -172,7 +172,7 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
 			ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 			defer cancel()
 			message := result.Settings.CreateSlackMessage(result.Details)
-			err := sendSlackMessage(ctx, client, message)
+			err := SendSlackMessage(ctx, client, message)
 			if err != nil {
 				slog.Error("error while sending slack message", "error", err, "message", message)
 				return
@@ -183,7 +183,7 @@ func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, cl
 	wg.Wait()
 }
 
-func sendSlackMessage(ctx context.Context, client *http.Client, slackMessage SlackMessage) error {
+func SendSlackMessage(ctx context.Context, client *http.Client, slackMessage SlackMessage) error {
 	slackToken := os.Getenv("SLACK_TOKEN")
 	if slackToken == "" {
 		return errors.New("SLACK_TOKEN is not set")

@@ -62,13 +62,13 @@ type metricsMerger interface {
 func mergeMetricsHelper(settings Settings, newSettings Settings) Settings {
 	switch s := settings.(type) {
 	case FleetStartupSettings:
-		s.Metric = fmt.Sprintf("%s,%s", s.Metric, newSettings.GetMetric())
+		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
 		return s
 	case PerformanceSettings:
-		s.Metric = fmt.Sprintf("%s,%s", s.Metric, newSettings.GetMetric())
+		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
 		return s
 	case StartupSettings:
-		s.Metric = fmt.Sprintf("%s,%s", s.Metric, newSettings.GetMetric())
+		s.Metric = fmt.Sprintf("%s, %s", s.Metric, newSettings.GetMetric())
 		return s
 	default:
 		return settings
@@ -87,68 +87,69 @@ func (s StartupSettings) MergeMetrics(settings Settings) Settings {
 	return mergeMetricsHelper(s, settings)
 }
 
-type MissingDataByBuildType map[string]map[string]MissingData
+// slack channel => tc_build_type => project => missingData
+type MissingDataMerged map[string]map[string]map[string]MissingData
 
-func MergeMissingData(missingData <-chan MissingData) MissingDataByBuildType {
+func MergeMissingData(missingData <-chan MissingData) MissingDataMerged {
 	// map of tc_build_type to project to missingData
-	missingDataByBuildType := make(map[string]map[string][]MissingData)
+	missingDataMerged := make(map[string]map[string]map[string][]MissingData)
 
 	for datum := range missingData {
-		if missingDataByBuildType[datum.TCBuildType] == nil {
-			missingDataByBuildType[datum.TCBuildType] = make(map[string][]MissingData)
+		slackChannel := datum.Settings.SlackChannel()
+		if missingDataMerged[slackChannel] == nil {
+			missingDataMerged[slackChannel] = make(map[string]map[string][]MissingData)
+		}
+		buildType := datum.TCBuildType
+		if missingDataMerged[slackChannel][buildType] == nil {
+			missingDataMerged[slackChannel][buildType] = make(map[string][]MissingData)
 		}
 		project := datum.Settings.GetProject()
-		missingDataByBuildType[datum.TCBuildType][project] = append(
-			missingDataByBuildType[datum.TCBuildType][project],
+		missingDataMerged[slackChannel][buildType][project] = append(
+			missingDataMerged[slackChannel][buildType][project],
 			datum,
 		)
 	}
 
-	result := make(map[string]map[string]MissingData)
-	for buildType, buildMissingData := range missingDataByBuildType {
-		result[buildType] = make(map[string]MissingData)
+	result := make(MissingDataMerged)
+	for slackChannel, slackMissingData := range missingDataMerged {
+		result[slackChannel] = make(map[string]map[string]MissingData)
+		for buildType, buildMissingData := range slackMissingData {
+			result[slackChannel][buildType] = make(map[string]MissingData)
 
-		for project, projectMissingData := range buildMissingData {
-			if len(projectMissingData) == 0 {
-				continue
+			for project, projectMissingData := range buildMissingData {
+				if len(projectMissingData) == 0 {
+					continue
+				}
+
+				// Merge metrics within this project
+				baseData := projectMissingData[0]
+				for i := 1; i < len(projectMissingData); i++ {
+					baseData.Settings = baseData.Settings.MergeMetrics(projectMissingData[i].Settings)
+				}
+
+				result[slackChannel][buildType][project] = baseData
 			}
-
-			// Merge metrics within this project
-			baseData := projectMissingData[0]
-			for i := 1; i < len(projectMissingData); i++ {
-				baseData.Settings = baseData.Settings.MergeMetrics(projectMissingData[i].Settings)
-			}
-
-			result[buildType][project] = baseData
 		}
 	}
 
 	return result
 }
 
-func SendMissingDataMessages(data MissingDataByBuildType, client *http.Client) {
+func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 	// Messages grouped by Slack channel
 	channelMessages := make(map[string][]string)
 
 	// First, group all messages by Slack channel
-	for _, projects := range data {
-		for project, missingData := range projects {
-			channel := missingData.Settings.SlackChannel()
-			if channel == "" {
-				continue // Skip if no channel is specified
+	for slackChannel, buildTypeMap := range data {
+		message := ""
+		for buildType, projectMap := range buildTypeMap {
+			for project, missingData := range projectMap {
+				readableDate := time.UnixMilli(missingData.LastTimestamp).Format("02-01-2006")
+				message += fmt.Sprintf("*Project:* %s\nMetrics: %s\nLast Recorded: %s\n", project, missingData.Settings.GetMetric(), readableDate)
 			}
-
-			// Format message for this entry
-			readableDate := time.UnixMilli(missingData.LastTimestamp).Format("02-01-2006 15:04:05")
-			message := fmt.Sprintf("Project: %s (%s)\nLast Date: %s\n<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n",
-				project,
-				missingData.Settings.GetMetric(),
-				readableDate,
-				missingData.TCBuildType)
-
-			// Add to channel's message list
-			channelMessages[channel] = append(channelMessages[channel], message)
+			message += fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n\n", buildType)
 		}
+		channelMessages[slackChannel] = append(channelMessages[slackChannel], message)
 	}
 
 	// Combine messages for each channel

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 )
@@ -135,21 +136,61 @@ func MergeMissingData(missingData <-chan MissingData) MissingDataMerged {
 	return result
 }
 
+type GroupKey struct {
+	Metrics       string
+	LastTimestamp int64
+}
+
+func normalizeMetrics(metrics string) string {
+	parts := strings.Split(metrics, ", ")
+	sort.Strings(parts)
+	return strings.Join(parts, ", ")
+}
+
 func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 	// Messages grouped by Slack channel
 	channelMessages := make(map[string][]string)
 
 	// First, group all messages by Slack channel
 	for slackChannel, buildTypeMap := range data {
-		message := ""
+		// Group projects by metrics and timestamp within each build type
 		for buildType, projectMap := range buildTypeMap {
+			// Create groups for this build type
+			groups := make(map[GroupKey][]string)
+
+			// Group projects by metrics and timestamp
 			for project, missingData := range projectMap {
-				readableDate := time.UnixMilli(missingData.LastTimestamp).Format("02-01-2006")
-				message += fmt.Sprintf("*Project:* %s\nMetrics: %s\nLast Recorded: %s\n", project, missingData.Settings.GetMetric(), readableDate)
+				key := GroupKey{
+					Metrics:       normalizeMetrics(missingData.Settings.GetMetric()),
+					LastTimestamp: missingData.LastTimestamp,
+				}
+				groups[key] = append(groups[key], project)
 			}
-			message += fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n\n", buildType)
+
+			// Build message for this build type with grouped projects
+			var message strings.Builder
+
+			// Create messages for each group
+			for key, projects := range groups {
+				readableDate := time.UnixMilli(key.LastTimestamp).Format("02-01-2006")
+
+				// Sort projects for consistent output
+				sort.Strings(projects)
+
+				message.WriteString("*Projects:* ")
+				message.WriteString(strings.Join(projects, ", "))
+				message.WriteString("\nMetrics: ")
+				message.WriteString(key.Metrics)
+				message.WriteString("\nLast Recorded: ")
+				message.WriteString(readableDate)
+				message.WriteString("\n\n")
+			}
+
+			// Add build configuration link
+			message.WriteString(fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n\n", buildType))
+
+			channelMessages[slackChannel] = append(channelMessages[slackChannel], message.String())
 		}
-		channelMessages[slackChannel] = append(channelMessages[slackChannel], message)
 	}
 
 	// Combine messages for each channel

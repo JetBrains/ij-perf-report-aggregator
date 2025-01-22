@@ -154,7 +154,7 @@ func SendMissingDataMessages(data MissingDataByBuildType, client *http.Client) {
 	// Combine messages for each channel
 	result := make(map[string]string)
 	for channel, messages := range channelMessages {
-		result[channel] = strings.Join(messages, "\n")
+		result[channel] = "Data is missing for more than 3 days:\n" + strings.Join(messages, "\n")
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)

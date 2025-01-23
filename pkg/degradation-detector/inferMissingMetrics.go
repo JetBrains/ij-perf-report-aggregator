@@ -26,6 +26,7 @@ func InferMissingData(data <-chan QueryResultWithSettings) <-chan MissingData {
 	output := make(chan MissingData, 100)
 	go func() {
 		for datum := range data {
+			slog.Info("infer missing data", "settings", datum.Settings)
 			for _, missingData := range inferMissingData(datum.builds, datum.timestamps, datum.buildTypes, datum.Settings) {
 				output <- missingData
 			}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"sync"
 	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -33,16 +34,27 @@ func main() {
 	metricsForMissingMetrics := make(chan detector.QueryResultWithSettings, 5)
 	util.Broadcast(metrics, metricsForDegradation, metricsForMissingMetrics)
 
-	degradations := detector.InferDegradations(metricsForDegradation)
-	insertionResults := detector.PostDegradations(client, backendUrl, degradations)
-	filteredResults := detector.FilterErrors(insertionResults)
-	mergedResults := detector.MergeDegradations(filteredResults)
-	detector.SendDegradationsToSlack(mergedResults, client)
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	missingData := detector.InferMissingData(metricsForMissingMetrics)
-	missingData = detector.PostMissingData(client, backendUrl, missingData)
-	mergedMissingData := detector.MergeMissingData(missingData)
-	detector.SendMissingDataMessages(mergedMissingData, client)
+	go func() {
+		defer wg.Done()
+		degradations := detector.InferDegradations(metricsForDegradation)
+		insertionResults := detector.PostDegradations(client, backendUrl, degradations)
+		filteredResults := detector.FilterErrors(insertionResults)
+		mergedResults := detector.MergeDegradations(filteredResults)
+		detector.SendDegradationsToSlack(mergedResults, client)
+	}()
+
+	go func() {
+		defer wg.Done()
+		missingData := detector.InferMissingData(metricsForMissingMetrics)
+		missingData = detector.PostMissingData(client, backendUrl, missingData)
+		mergedMissingData := detector.MergeMissingData(missingData)
+		detector.SendMissingDataMessages(mergedMissingData, client)
+	}()
+
+	wg.Wait()
 	slog.Info("finished")
 }
 

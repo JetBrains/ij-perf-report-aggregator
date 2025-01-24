@@ -42,6 +42,22 @@
         :projects="rustGlobalInspectionProjects.map((project) => `${project}/indexing`)"
       />
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Warm Duration from Start to Work (first run)"
+          :measure="['rust_duration_from_start_to_work_warm_run_1']"
+          :projects="rustGlobalInspectionProjects.map((project) => `${project}/indexing`)"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Warm Duration from Start to Work (second run)"
+          :measure="['rust_duration_from_start_to_work_warm_run_2']"
+          :projects="rustGlobalInspectionProjects.map((project) => `${project}/indexing`)"
+        />
+      </div>
+    </section>
     <section>
       <GroupProjectsChart
         label="Duration from Start to Cargo Sync (metric 'rust_duration_from_start_to_cargo_sync')"

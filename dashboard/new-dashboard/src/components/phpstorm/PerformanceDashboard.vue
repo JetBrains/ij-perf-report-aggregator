@@ -124,6 +124,7 @@
             'dql/indexing',
             'tcpdf/indexing',
             'WI_51645/indexing',
+            'WI_66279-10x/indexing',
           ]"
         />
       </div>
@@ -131,7 +132,7 @@
         <GroupProjectsChart
           label="Indexing"
           measure="indexingTimeWithoutPauses"
-          :projects="['empty_project/indexing', 'complex_meta/indexing', 'WI_53502-10x/indexing', 'many_array_access/indexing-10x', 'WI_66279-10x/indexing']"
+          :projects="['empty_project/indexing', 'complex_meta/indexing', 'WI_53502-10x/indexing', 'many_array_access/indexing-10x']"
         />
       </div>
     </section>

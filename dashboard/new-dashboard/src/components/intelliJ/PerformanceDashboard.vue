@@ -28,7 +28,7 @@
       </div>
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
@@ -43,8 +43,8 @@
 <script setup lang="ts">
 import AggregationChart from "../charts/AggregationChart.vue"
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {

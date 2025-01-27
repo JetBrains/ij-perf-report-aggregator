@@ -8,7 +8,7 @@
     :with-installer="false"
   >
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
@@ -21,8 +21,8 @@
 
 <script setup lang="ts">
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
-import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {

@@ -5,7 +5,7 @@
         <h3 class="text-2xl mb-3">{{ name }}</h3>
         <p>Measure: {{ measure }}</p>
       </div>
-      <div class="flex-grow"></div>
+      <div class="grow"></div>
       <div
         v-for="topStat in topStats"
         :key="topStat.label"

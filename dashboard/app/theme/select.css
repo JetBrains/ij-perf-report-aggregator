@@ -1,3 +1,5 @@
+@reference "../src/main.css";
+
 .p-inputtext {
   @apply rounded-md border shadow-sm;
 }

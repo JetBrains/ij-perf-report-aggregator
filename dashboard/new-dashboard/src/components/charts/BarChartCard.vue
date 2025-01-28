@@ -1,7 +1,7 @@
 <template>
   <div
     ref="chartElement"
-    class="bg-white overflow-hidden shadow rounded-lg w-full"
+    class="bg-white overflow-hidden shadow-sm rounded-lg w-full"
     :style="{ height: `${height}px` }"
   />
 </template>

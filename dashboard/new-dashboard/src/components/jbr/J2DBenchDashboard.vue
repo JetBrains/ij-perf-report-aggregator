@@ -11,9 +11,9 @@
       :key="metric"
     >
       <div class="relative flex py-5 items-center">
-        <div class="flex-grow border-t" />
-        <span class="flex-shrink mx-4 text-lg">{{ metric }}</span>
-        <div class="flex-grow border-t" />
+        <div class="grow border-t" />
+        <span class="shrink mx-4 text-lg">{{ metric }}</span>
+        <div class="grow border-t" />
       </div>
       <section>
         <GroupProjectsChart

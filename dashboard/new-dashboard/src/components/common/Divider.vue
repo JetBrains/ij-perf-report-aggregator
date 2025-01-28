@@ -3,9 +3,9 @@
     v-if="label == null"
     class="relative flex py-5 items-center"
   >
-    <div class="flex-grow border-t" />
-    <span class="flex-shrink mx-4 text-lg">{{ title }}</span>
-    <div class="flex-grow border-t" />
+    <div class="grow border-t" />
+    <span class="shrink mx-4 text-lg">{{ title }}</span>
+    <div class="grow border-t" />
   </div>
   <!-- https://tailwindui.com/components/application-ui/layout/dividers -->
   <div class="v-else relative">

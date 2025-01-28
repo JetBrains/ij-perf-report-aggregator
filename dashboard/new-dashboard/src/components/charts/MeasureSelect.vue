@@ -28,7 +28,7 @@
         </span>
 
         <ChevronDownIcon
-          class="-mr-1 ml-1 h-5 w-5 flex-shrink-0"
+          class="-mr-1 ml-1 h-5 w-5 shrink-0"
           aria-hidden="true"
         />
       </div>

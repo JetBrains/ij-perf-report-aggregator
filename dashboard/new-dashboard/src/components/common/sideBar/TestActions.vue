@@ -91,8 +91,3 @@ function handleNavigateToTest() {
   window.open(getNavigateToTestUrl(data, router), "_blank")
 }
 </script>
-<style #scoped>
-.p-tieredmenu .p-menuitem-content {
-  @apply font-medium text-left relative;
-}
-</style>

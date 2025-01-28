@@ -1,10 +1,12 @@
+@reference "../src/main.css";
+
 .p-toast-detail {
   @apply line-clamp-6 overflow-hidden max-w-sm w-full break-words text-sm;
 }
 
 /* https://tailwindui.com/components/marketing/elements/flyout-menus Simple */
 .p-popover {
-  @apply rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-white;
+  @apply rounded-lg shadow-lg ring-1 ring-black ring-black/50 bg-white;
 }
 
 .p-popover .p-popover-content {

@@ -84,7 +84,7 @@
           </span>
         </div>
         <div v-else>
-          <div class="grid grid-cols-[repeat(3,_max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose">
+          <div class="grid grid-cols-[repeat(3,max-content)] whitespace-nowrap gap-x-2 items-baseline leading-loose">
             <template
               v-for="item in data?.series"
               :key="item.metricName"

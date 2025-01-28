@@ -1,13 +1,16 @@
-@layer tailwind-base, primevue, tailwind-utilities;
+@import "tailwindcss";
 
-@layer tailwind-base {
-  @tailwind base;
+@layer theme, tailwind-base, primevue, tailwind-utilities;
+
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+
+@theme {
+  --font-mono: "JetBrains MonoVariable";
+  --font-sans: "InterVariable";
+  --color-primary: #3B82F6;
+  --color-darker: #1D4ED8
 }
 
-@layer tailwind-utilities {
-  @tailwind components;
-  @tailwind utilities;
-}
 
 .p-tooltip {
   @apply text-xs;
@@ -34,8 +37,20 @@ html {
 
 @layer base {
   *,
+  ::after,
   ::before,
-  ::after {
-    @apply dark:border-gray-600;
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
+}
+
+.dark-mode *,
+.dark-mode ::after,
+.dark-mode ::before,
+.dark-mode ::backdrop,
+.dark-mode ::file-selector-button {
+  /*need to also setup primary color to 6495ED*/
+  border-color: var(--color-gray-600, currentColor);
+  --color-primary: #6495ED;
 }

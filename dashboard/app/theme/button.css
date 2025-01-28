@@ -1,3 +1,5 @@
+@reference "../src/main.css";
+
 .p-button {
   @apply shadow-sm px-3 py-2 leading-4;
 }

@@ -13,6 +13,7 @@ import { OutputAsset, OutputChunk } from "rollup"
 import { configDefaults } from "vitest/config"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import { PrimeVueResolver } from "@primevue/auto-import-resolver"
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable
@@ -26,6 +27,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    tailwindcss(),
     // visualizer({template: "sunburst"}),
     Components({
       directoryAsNamespace: true,
@@ -74,7 +76,6 @@ export default defineConfig({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     outDir: path.resolve(__dirname, "cmd/frontend/resources"),
-    cssMinify: "lightningcss",
   },
   css: {
     preprocessorMaxWorkers: true,

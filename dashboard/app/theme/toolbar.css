@@ -1,3 +1,5 @@
+@reference "../src/main.css";
+
 .p-toolbar {
   /*background: var(--panel-header-bg);*/
   @apply rounded-lg border py-2 px-3 bg-gray-50;

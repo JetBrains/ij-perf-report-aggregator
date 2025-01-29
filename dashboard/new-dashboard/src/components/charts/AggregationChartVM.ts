@@ -60,7 +60,6 @@ export class AggregationChartVM {
           label: {
             formatter(params: LabelFormatterParams) {
               const series = params.seriesData[0]
-              console.log(params)
               const [date, durationMs] = series.data as OptionDataItem[]
               const dateLabel = dateFormatter.format(new Date(date as string))
               const durationLabel = `${Math.round(Number(durationMs))}` + (isMs ? " ms" : "")

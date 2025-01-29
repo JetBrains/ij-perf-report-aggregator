@@ -7,10 +7,9 @@
 @theme {
   --font-mono: "JetBrains MonoVariable";
   --font-sans: "InterVariable";
-  --color-primary: #3B82F6;
-  --color-darker: #1D4ED8
+  --color-primary: #3b82f6;
+  --color-darker: #1d4ed8;
 }
-
 
 .p-tooltip {
   @apply text-xs;
@@ -52,5 +51,5 @@ html {
 .dark-mode ::file-selector-button {
   /*need to also setup primary color to 6495ED*/
   border-color: var(--color-gray-600, currentColor);
-  --color-primary: #6495ED;
+  --color-primary: #6495ed;
 }

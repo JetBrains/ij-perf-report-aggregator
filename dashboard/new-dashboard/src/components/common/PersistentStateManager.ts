@@ -26,8 +26,7 @@ export class PersistentStateManager {
     if (storedState == null) {
       this.state = defaultState ?? {}
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      this.state = this.stateWithKnownKeys(JSON.parse(storedState))
+      this.state = this.filterStateByKnownKeys(JSON.parse(storedState) as State)
       if (defaultState != null) {
         this.state = {
           ...defaultState,
@@ -52,7 +51,7 @@ export class PersistentStateManager {
     }
 
     this.saveSubject.pipe(debounceTime(300)).subscribe(() => {
-      localStorage.setItem(this.getKey(), JSON.stringify(this.stateWithKnownKeys(this.state)))
+      localStorage.setItem(this.getKey(), JSON.stringify(this.filterStateByKnownKeys(this.state)))
 
       this.updateUrlQuery()
     })
@@ -62,11 +61,8 @@ export class PersistentStateManager {
     })
   }
 
-  stateWithKnownKeys = (state: State): State => {
-    const filteredByKnownKeys = Object.fromEntries(Object.entries(state).filter(([key]) => this.knownKeys.includes(key)))
-    console.log("known keys", Array.from(new Set(this.knownKeys)))
-    console.log("state filteredByKnownKeys", filteredByKnownKeys)
-    return filteredByKnownKeys
+  filterStateByKnownKeys = (state: State): State => {
+    return Object.fromEntries(Object.entries(state).filter(([key]) => this.knownKeys.includes(key)))
   }
 
   private getKey(): string {

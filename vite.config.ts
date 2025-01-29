@@ -13,7 +13,7 @@ import { OutputAsset, OutputChunk } from "rollup"
 import { configDefaults } from "vitest/config"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import { PrimeVueResolver } from "@primevue/auto-import-resolver"
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from "@tailwindcss/vite"
 
 // https://vitejs.dev/config/
 // noinspection SpellCheckingInspection,TypeScriptUnresolvedVariable

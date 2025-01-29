@@ -7,6 +7,7 @@ type State = Record<string, number | string | string[] | unknown>
 
 export class PersistentStateManager {
   private readonly state: State
+  private readonly knownKeys: string[]
 
   private readonly saveSubject = new Subject<null>()
   private readonly updateUrlSubject = new Subject<null>()
@@ -20,15 +21,16 @@ export class PersistentStateManager {
     defaultState: State | null = null,
     private readonly router: Router | null = null
   ) {
+    this.knownKeys = defaultState ? Object.keys(defaultState) : []
     const storedState = localStorage.getItem(this.getKey())
     if (storedState == null) {
       this.state = defaultState ?? {}
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      this.state = JSON.parse(storedState)
+      this.state = this.stateWithKnownKeys(JSON.parse(storedState))
       if (defaultState != null) {
         this.state = {
-          defaultState,
+          ...defaultState,
           ...this.state,
         }
       }
@@ -50,7 +52,7 @@ export class PersistentStateManager {
     }
 
     this.saveSubject.pipe(debounceTime(300)).subscribe(() => {
-      localStorage.setItem(this.getKey(), JSON.stringify(this.state))
+      localStorage.setItem(this.getKey(), JSON.stringify(this.stateWithKnownKeys(this.state)))
 
       this.updateUrlQuery()
     })
@@ -58,6 +60,13 @@ export class PersistentStateManager {
     this.updateUrlSubject.pipe(debounceTime(300)).subscribe(() => {
       this.updateUrlQuery()
     })
+  }
+
+  stateWithKnownKeys = (state: State): State => {
+    const filteredByKnownKeys = Object.fromEntries(Object.entries(state).filter(([key]) => this.knownKeys.includes(key)))
+    console.log("known keys", Array.from(new Set(this.knownKeys)))
+    console.log("state filteredByKnownKeys", filteredByKnownKeys)
+    return filteredByKnownKeys
   }
 
   private getKey(): string {
@@ -71,7 +80,7 @@ export class PersistentStateManager {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const currentRoute = this.route!
-    const query: LocationQueryRaw = { ...currentRoute.query }
+    let query: LocationQueryRaw = { ...currentRoute.query }
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
@@ -80,10 +89,11 @@ export class PersistentStateManager {
         isChanged = true
       }
     }
+    const filteredQuery = Object.fromEntries(Object.entries(query).filter(([key]) => this.knownKeys.includes(key)))
 
     if (isChanged) {
       // noinspection JSIgnoredPromiseFromCall
-      void this.router.push({ query })
+      void this.router.push({ query: filteredQuery })
     }
   }
 
@@ -98,6 +108,7 @@ export class PersistentStateManager {
         this.saveSubject.next(null)
       }
     })
+    this.knownKeys.push(name)
 
     const existingValue = this.state[name]
     if (existingValue != null && (typeof existingValue !== "string" || existingValue.length > 0)) {

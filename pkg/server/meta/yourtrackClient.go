@@ -45,11 +45,12 @@ type Visibility struct {
 }
 
 type CreateIssueInfo struct {
-	Summary     string          `json:"summary"`
-	Description string          `json:"description"`
-	Project     YoutrackProject `json:"project"`
-	Reporter    *auth.YTUser    `json:"reporter,omitempty"`
-	Visibility  Visibility      `json:"visibility"`
+	Summary      string          `json:"summary"`
+	Description  string          `json:"description"`
+	Project      YoutrackProject `json:"project"`
+	Reporter     *auth.YTUser    `json:"reporter,omitempty"`
+	Visibility   Visibility      `json:"visibility"`
+	CustomFields []CustomField   `json:"customFields"`
 }
 
 func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {

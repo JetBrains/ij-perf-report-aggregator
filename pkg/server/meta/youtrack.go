@@ -142,6 +142,17 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 				PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}},
 				Type:            "LimitedVisibility",
 			},
+			CustomFields: []CustomField{
+				{
+					Name: "Type",
+					Type: "SingleEnumIssueCustomField",
+					Value: struct {
+						Name string `json:"name"`
+					}{
+						Name: "Performance Problem",
+					},
+				},
+			},
 		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)

@@ -76,7 +76,7 @@ export class PersistentStateManager {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const currentRoute = this.route!
-    let query: LocationQueryRaw = { ...currentRoute.query }
+    const query: LocationQueryRaw = { ...currentRoute.query }
     let isChanged = false
     for (const [name, value] of Object.entries(this.state)) {
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {

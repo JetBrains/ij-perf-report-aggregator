@@ -27,6 +27,26 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["Indexing"],
+    measures: ["indexingTimeWithoutPauses"],
+    projects: ["community/indexing", "spring-pet-clinic-gradle/indexing", "spring-pet-clinic-maven/indexing"],
+  },
+  {
+    labels: ["Scanning"],
+    measures: ["scanningTimeWithoutPauses"],
+    projects: ["community/indexing", "spring-pet-clinic-gradle/indexing", "spring-pet-clinic-maven/indexing"],
+  },
+  {
+    labels: ["Number of indexed files"],
+    measures: ["numberOfIndexedFiles"],
+    projects: ["community/indexing", "spring-pet-clinic-gradle/indexing", "spring-pet-clinic-maven/indexing"],
+  },
+  {
+    labels: ["Rebuild of Community"],
+    measures: ["build_compilation_duration"],
+    projects: ["community/rebuild"],
+  },
+  {
     labels: ["Eslint indexing WSL/Windows"],
     measures: ["indexingTimeWithoutPauses"],
     projects: ["indexing-eslint/wsl", "indexing-eslint/windows"],

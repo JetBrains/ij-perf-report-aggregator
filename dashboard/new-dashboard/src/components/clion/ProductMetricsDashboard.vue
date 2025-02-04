@@ -27,18 +27,24 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["backendIndexingTimeMs"],
-    projects: ["llvm/indexing", "opencv/indexing", "curl/indexing"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing"],
     aliases: ["LLVM", "OpenCV", "cURL"],
   },
   {
     labels: ["FirstCodeAnalysis"],
     measures: ["firstCodeAnalysis"],
-    projects: [],
+    projects: ["radler/fmtlib/typing/simple (4 lines)"],
+    aliases: ["{fmt}"],
   },
   {
     labels: ["Completion"],
-    measures: ["completion"],
-    projects: [],
+    measures: ["fus_time_to_show_90p"],
+    projects: [
+      "radler/fmtlib/completion/std.string (cold)",
+      "radler/fmtlib/completion/std.string (hot)",
+      "radler/fmtlib/completion/std.shared_ptr (dep) (hot)",
+      "radler/fmtlib/completion/fmt.join_view (dep) (hot)",
+    ],
   },
   {
     labels: ["SearchEverywhere"],
@@ -46,14 +52,16 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: [],
   },
   {
-    labels: ["TypingCodeAnalysis"],
-    measures: ["typingCodeAnalyzing"],
-    projects: [],
+    labels: ["Typing AWT Delay"],
+    measures: ["test#max_awt_delay"],
+    projects: ["radler/fmtlib/typing/simple (4 lines)"],
+    aliases: ["{fmt}"],
   },
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: [],
+    projects: ["radler/fmtlib/inspection"],
+    aliases: ["{fmt}"],
   },
 ]
 

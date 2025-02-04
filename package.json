@@ -47,6 +47,7 @@
       "primevue@4.2.5": "patches/primevue@4.2.5.patch"
     }
   },
+  "packageManager": "pnpm@9.14.4",
   "engines": {
     "pnpm": ">=9"
   },

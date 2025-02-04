@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   primevue@4.2.5:
-    hash: fc46e198a962fa15dced7e2dea2ee6371629a6b588da98e4dc473ffbfff59fac
+    hash: dct25ftk4arxyo3dj3zto6v2ma
     path: patches/primevue@4.2.5.patch
 
 importers:
@@ -109,7 +109,7 @@ importers:
         version: 2.3.1(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
       primevue:
         specifier: 4.2.5
-        version: 4.2.5(patch_hash=fc46e198a962fa15dced7e2dea2ee6371629a6b588da98e4dc473ffbfff59fac)(vue@3.5.13(typescript@5.7.3))
+        version: 4.2.5(patch_hash=dct25ftk4arxyo3dj3zto6v2ma)(vue@3.5.13(typescript@5.7.3))
       rxjs:
         specifier: 8.0.0-alpha.14
         version: 8.0.0-alpha.14
@@ -148,7 +148,7 @@ importers:
         version: 2.3.1(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
       primevue:
         specifier: 4.2.5
-        version: 4.2.5(patch_hash=fc46e198a962fa15dced7e2dea2ee6371629a6b588da98e4dc473ffbfff59fac)(vue@3.5.13(typescript@5.7.3))
+        version: 4.2.5(patch_hash=dct25ftk4arxyo3dj3zto6v2ma)(vue@3.5.13(typescript@5.7.3))
       rxjs:
         specifier: 8.0.0-alpha.14
         version: 8.0.0-alpha.14
@@ -4947,7 +4947,7 @@ snapshots:
 
   prettier@3.4.2: {}
 
-  primevue@4.2.5(patch_hash=fc46e198a962fa15dced7e2dea2ee6371629a6b588da98e4dc473ffbfff59fac)(vue@3.5.13(typescript@5.7.3)):
+  primevue@4.2.5(patch_hash=dct25ftk4arxyo3dj3zto6v2ma)(vue@3.5.13(typescript@5.7.3)):
     dependencies:
       '@primeuix/styled': 0.3.2
       '@primeuix/utils': 0.3.2

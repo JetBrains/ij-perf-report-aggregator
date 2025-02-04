@@ -26,8 +26,9 @@ import DashboardPage from "../common/DashboardPage.vue"
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
-    measures: ["indexingTimeWithoutPauses"],
-    projects: [],
+    measures: ["backendIndexingTimeMs"],
+    projects: ["llvm/indexing", "opencv/indexing", "curl/indexing"],
+    aliases: ["LLVM", "OpenCV", "cURL"],
   },
   {
     labels: ["FirstCodeAnalysis"],

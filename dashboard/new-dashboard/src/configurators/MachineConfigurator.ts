@@ -426,6 +426,8 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Mac Fleet AWS UI"
   } else if (machine.startsWith("qodana-linux-arm64-memory-optimised")) {
     groupName = "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"
+  } else if (machine.startsWith("cidr.performance.")) {
+    groupName = "Mac Cidr Performance"
   }
 
   return groupName

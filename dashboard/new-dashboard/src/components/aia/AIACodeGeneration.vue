@@ -10,18 +10,28 @@
   >
     <section>
       <GroupProjectsChart
-        measure="SessionsWithoutSyntaxErrorsRatio"
+        measure="Precision"
         :projects="getAllProjects('code-generation')"
         :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
-        label="All Languages"
+        label="Precision"
       />
       <GroupProjectsChart
-        v-for="chart in charts"
-        :key="chart.definition.label"
-        :label="chart.definition.label"
-        :measure="chart.definition.measure"
+        measure="FileValidationSuccess"
+        :projects="getAllProjects('code-generation')"
         :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
-        :projects="chart.projects"
+        label="FileValidationSuccess"
+      />
+      <GroupProjectsChart
+        measure="MeanContextSize"
+        :projects="getAllProjects('code-generation')"
+        :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
+        label="MeanContextSize"
+      />
+      <GroupProjectsChart
+        measure="MeanLatency"
+        :projects="getAllProjects('code-generation')"
+        :machines="['Linux EC2 c5.xlarge (4 vCPU, 8 GB)']"
+        label="MeanLatency"
       />
     </section>
   </DashboardPage>
@@ -36,7 +46,7 @@ import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
 const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
   return {
     labels: [project],
-    measures: ["SessionsWithoutSyntaxErrorsRatio"],
+    measures: ["Precision"],
     projects: aiaModels.map((model) => "code-generation_" + project + "_" + model),
   }
 })

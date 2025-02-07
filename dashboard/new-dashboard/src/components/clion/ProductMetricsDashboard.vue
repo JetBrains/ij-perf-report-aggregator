@@ -49,7 +49,14 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: [
+      "radler/luau/go-to-all-with-warmup/CompileOptions/typingLetterByLetter",
+      "radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter",
+      "radler/luau/go-to-file-with-warmup/TableShape.cpp/typingLetterByLetter",
+      "radler/luau/go-to-symbol-with-warmup/CompileOptions/typingLetterByLetter",
+      "radler/luau/go-to-action-with-warmup/CompileOptions/typingLetterByLetter",
+      "radler/luau/go-to-text-with-warmup/CompileOptions/typingLetterByLetter",
+    ],
   },
   {
     labels: ["Typing AWT Delay"],

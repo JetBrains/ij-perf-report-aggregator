@@ -2335,7 +2335,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             table: "swift",
             withInstaller: false,
             branch: null,
-            initialMachine: "Mac Cidr Performance"
+            initialMachine: "Mac Cidr Performance",
           },
           meta: { pageTitle: "AIA Tests" },
         },

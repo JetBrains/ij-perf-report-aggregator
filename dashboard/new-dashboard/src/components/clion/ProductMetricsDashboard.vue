@@ -67,7 +67,8 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: ["radler/fmtlib/inspection"],
+    // TODO: remove radler/fmtlib/inspection
+    projects: ["radler/fmtlib/inspection", "radler/fmtlib/globalInspection"],
     aliases: ["{fmt}"],
   },
 ]

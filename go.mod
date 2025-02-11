@@ -5,7 +5,7 @@ go 1.23
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.64.1
-	github.com/ClickHouse/clickhouse-go/v2 v2.30.3
+	github.com/ClickHouse/clickhouse-go/v2 v2.31.0
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.9.2
@@ -13,16 +13,16 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/cenkalti/backoff/v4 v4.3.0
-	github.com/go-chi/chi/v5 v5.2.0
+	github.com/go-chi/chi/v5 v5.2.1
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/jackc/puddle/v2 v2.2.2
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.17.11
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/nats-io/nats.go v1.38.0
+	github.com/nats-io/nats.go v1.39.0
 	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/slack-go/slack v0.15.0
+	github.com/slack-go/slack v0.16.0
 	github.com/stretchr/testify v1.10.0
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
@@ -31,9 +31,9 @@ require (
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
 	go.uber.org/automaxprocs v1.6.0
-	golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c
-	golang.org/x/sync v0.10.0
-	golang.org/x/tools v0.29.0
+	golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac
+	golang.org/x/sync v0.11.0
+	golang.org/x/tools v0.30.0
 )
 
 require (
@@ -124,7 +124,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mozillazg/go-httpheader v0.4.0 // indirect
-	github.com/nats-io/nkeys v0.4.9 // indirect
+	github.com/nats-io/nkeys v0.4.10 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/nwaples/rardecode/v2 v2.0.0-beta.2 // indirect
 	github.com/otiai10/copy v1.14.0 // indirect
@@ -158,12 +158,12 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go4.org v0.0.0-20230225012048-214862532bf5 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.155.0 // indirect

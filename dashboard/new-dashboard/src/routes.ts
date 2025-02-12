@@ -211,6 +211,7 @@ enum ROUTES {
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
   AIACompletionDashboard = `${ROUTE_PREFIX.AIA}/completion`,
   AIACodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/codeGeneration`,
+  AIAChatCodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/chatCodeGeneration`,
   AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
   KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
@@ -1139,6 +1140,10 @@ const AIA: Product = {
         {
           url: ROUTES.AIACodeGenerationDashboard,
           label: "Code Generation",
+        },
+        {
+          url: ROUTES.AIAChatCodeGenerationDashboard,
+          label: "Chat Code Generation",
         },
         {
           url: ROUTES.AIANameSuggestionDashboard,
@@ -2316,6 +2321,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.AIACodeGenerationDashboard,
           component: () => import("./components/aia/AIACodeGeneration.vue"),
           meta: { pageTitle: "AIA code generation dashboard" },
+        },
+        {
+          path: ROUTES.AIAChatCodeGenerationDashboard,
+          component: () => import("./components/aia/ChatCodeGeneration.vue"),
+          meta: { pageTitle: "AIA chat code generation dashboard" },
         },
         {
           path: ROUTES.AIANameSuggestionDashboard,

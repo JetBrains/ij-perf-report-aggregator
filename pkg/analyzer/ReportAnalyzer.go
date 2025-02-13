@@ -259,6 +259,10 @@ func getBranch(runResult *RunResult, extraData model.ExtraData, projectId string
 	}
 
 	if projectId == "mlEvaluation" {
+		branch := props.GetStringBytes("teamcity.build.branch")
+		if branch != nil {
+			return string(branch), nil
+		}
 		return "master", nil
 	}
 	if projectId == "jbr" {

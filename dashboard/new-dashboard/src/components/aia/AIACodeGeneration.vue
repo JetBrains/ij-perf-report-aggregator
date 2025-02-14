@@ -4,7 +4,6 @@
     table="report"
     persistent-id="aiaDashboard"
     :initial-machine="null"
-    :charts="charts"
     :with-installer="false"
     :branch="null"
   >
@@ -38,17 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
-
-const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
-  return {
-    labels: [project],
-    measures: ["Precision"],
-    projects: aiaModels.map((model) => "code-generation_" + project + "_" + model),
-  }
-})
-const charts = combineCharts(chartsDeclaration)
+import { getAllProjects } from "./aia"
 </script>

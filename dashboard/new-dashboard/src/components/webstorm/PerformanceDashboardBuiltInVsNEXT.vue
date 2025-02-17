@@ -50,6 +50,7 @@ const groups = [
       "vkui/completion/component",
       "ring-ui/completion/component",
       "material-ui-react-admin/completion/attribute",
+      "material-ui-react-admin/completion/component",
       "vue-template/completion/attribute",
       "vue-template/completion/component",
       "vue3-admin-vite/completion/component",

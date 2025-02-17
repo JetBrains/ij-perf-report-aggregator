@@ -123,7 +123,7 @@
       <CLionVsRadlerGroupProjectsChart
         label="Inspect project (not only C/C++) (fmtlib)"
         measure="globalInspections"
-        project="fmtlib/inspection"
+        project="fmtlib/globalInspection"
       />
     </section>
 

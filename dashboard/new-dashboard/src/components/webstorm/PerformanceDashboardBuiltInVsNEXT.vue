@@ -87,13 +87,7 @@ const groups = [
   {
     label: "Typing",
     measure: "typing",
-    projects: [
-      "eslint-plugin-jest/typing/eslintPluginJest",
-      "axios/typing/axios",
-      "toh-pt6/typing/toh-pt6",
-      "react-todo-js/typing/react-todo-js",
-      "vue-template/typing/vue-template",
-    ],
+    projects: ["eslint-plugin-jest/typing/eslintPluginJest", "axios/typing/axios", "toh-pt6/typing/toh-pt6", "react-todo-js/typing/react-todo", "vue-template/typing/vue-template"],
   },
   {
     label: "Code Vision",

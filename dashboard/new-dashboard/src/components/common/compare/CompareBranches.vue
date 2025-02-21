@@ -17,6 +17,15 @@
           :triggered-by-configurator="triggeredByConfigurator2"
           :selection-limit="1"
         />
+        <DimensionSelect
+          label="Mode"
+          :dimension="testModeConfigurator"
+          :selected-label="modeSelectLabelFormat"
+        >
+          <template #icon>
+            <AdjustmentsVerticalIcon class="w-4 h-4" />
+          </template>
+        </DimensionSelect>
         <MeasureSelect
           :configurator="testConfigurator"
           title="Test"
@@ -112,6 +121,10 @@ import { PersistentStateManager } from "../PersistentStateManager"
 import StickyToolbar from "../StickyToolbar.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
 import { DBType } from "../sideBar/InfoSidebar"
+import { modeSelectLabelFormat } from "../../../shared/labels"
+import DimensionSelect from "../../charts/DimensionSelect.vue"
+import { createTestModeConfigurator } from "../../../configurators/TestModeConfigurator"
+import { DimensionConfigurator } from "../../../configurators/DimensionConfigurator"
 
 interface CompareBranchesProps {
   dbName: string
@@ -165,9 +178,17 @@ const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, pe
 const releaseConfigurator1 = new ReleaseNightlyConfigurator(persistentStateManager)
 const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManager)
 
+const testModeConfigurator = createTestModeConfigurator(
+  serverConfigurator,
+  persistentStateManager,
+  [branchConfigurator1, machineConfigurator, triggeredByConfigurator1, triggeredByConfigurator2],
+  "mode",
+  false
+)
+
 const tableData = ref<TableRow[]>()
 const fetchedData = ref<TableRow[]>()
-combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable()])
+combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable(), testModeConfigurator.createObservable()])
   .pipe(
     filter(() => {
       const branch1SelectedValue = branchConfigurator1.selected.value
@@ -182,7 +203,7 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
     branch1.value = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
     branch2.value = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
 
-    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1.value, metricsNames), getAllMetricsFromBranch(machineConfigurator, branch2.value, metricsNames)]).subscribe(
+    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1.value, metricsNames, testModeConfigurator), getAllMetricsFromBranch(machineConfigurator, branch2.value, metricsNames, testModeConfigurator)]).subscribe(
       (data: Result[][]) => {
         const firstBranchResults = data[0]
         const secondBranchResults = data[1]
@@ -241,12 +262,13 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branch: string | null, metricNames: string[]): Observable<Result[]> {
+function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branch: string | null, metricNames: string[], testModeConfigurator: DimensionConfigurator): Observable<Result[]> {
   const params = {
     branch,
     table: dbName + "." + table,
     measure_names: metricNames,
     machine: machineConfigurator.getMergedValue(),
+    mode: testModeConfigurator.selected.value,
   }
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
   return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)

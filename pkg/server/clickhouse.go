@@ -56,6 +56,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		MeasureNames []string `json:"measure_names"`
 		Branch       string   `json:"branch"`
 		Machine      string   `json:"machine"`
+		Mode         string   `json:"mode"`
 	}
 
 	var params requestParams
@@ -74,7 +75,12 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 	}
 	measureNamesString := strings.Join(quotedMeasureNames, ",")
 
-	sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Branch, measureNamesString, params.Machine)
+	mode := params.Mode
+	if params.Mode == "default" {
+		mode = ""
+	}
+
+	sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' and mode = '%s' ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Branch, measureNamesString, params.Machine, mode)
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()

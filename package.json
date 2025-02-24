@@ -16,8 +16,8 @@
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.2.5",
     "@tailwindcss/vite": "^4.0.7",
-    "@typescript-eslint/eslint-plugin": "^8.24.1",
-    "@typescript-eslint/parser": "^8.24.1",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/compiler-sfc": "^3.5.13",
     "@vue/eslint-config-typescript": "^14.4.0",
@@ -56,6 +56,6 @@
     "eslint-plugin-unicorn": "^57.0.0",
     "isoworker": "^0.2.4",
     "prettier": "^3.5.2",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.7"
   }
 }

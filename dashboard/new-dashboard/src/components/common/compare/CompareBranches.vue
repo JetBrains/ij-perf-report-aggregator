@@ -188,7 +188,13 @@ const testModeConfigurator = createTestModeConfigurator(
 
 const tableData = ref<TableRow[]>()
 const fetchedData = ref<TableRow[]>()
-combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.createObservable(), serverConfigurator.createObservable(), machineConfigurator.createObservable(), testModeConfigurator.createObservable()])
+combineLatest([
+  branchConfigurator1.createObservable(),
+  branchConfigurator2.createObservable(),
+  serverConfigurator.createObservable(),
+  machineConfigurator.createObservable(),
+  testModeConfigurator.createObservable(),
+])
   .pipe(
     filter(() => {
       const branch1SelectedValue = branchConfigurator1.selected.value
@@ -203,31 +209,32 @@ combineLatest([branchConfigurator1.createObservable(), branchConfigurator2.creat
     branch1.value = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
     branch2.value = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
 
-    combineLatest([getAllMetricsFromBranch(machineConfigurator, branch1.value, metricsNames, testModeConfigurator), getAllMetricsFromBranch(machineConfigurator, branch2.value, metricsNames, testModeConfigurator)]).subscribe(
-      (data: Result[][]) => {
-        const firstBranchResults = data[0]
-        const secondBranchResults = data[1]
-        const tests = new Set<string>()
-        const table: TableRow[] = []
-        for (const r1 of firstBranchResults) {
-          const r2 = secondBranchResults.find((value) => {
-            return value.Project == r1.Project && value.MeasureName == r1.MeasureName
-          })
-          if (
-            r2 != undefined &&
-            (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
-            !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
-          ) {
-            const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
-            tests.add(r1.Project)
-            table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
-          }
+    combineLatest([
+      getAllMetricsFromBranch(machineConfigurator, branch1.value, metricsNames, testModeConfigurator),
+      getAllMetricsFromBranch(machineConfigurator, branch2.value, metricsNames, testModeConfigurator),
+    ]).subscribe((data: Result[][]) => {
+      const firstBranchResults = data[0]
+      const secondBranchResults = data[1]
+      const tests = new Set<string>()
+      const table: TableRow[] = []
+      for (const r1 of firstBranchResults) {
+        const r2 = secondBranchResults.find((value) => {
+          return value.Project == r1.Project && value.MeasureName == r1.MeasureName
+        })
+        if (
+          r2 != undefined &&
+          (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
+          !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
+        ) {
+          const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
+          tests.add(r1.Project)
+          table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
         }
-        testConfigurator.initData([...tests])
-        fetchedData.value = table
-        tableData.value = table
       }
-    )
+      testConfigurator.initData([...tests])
+      fetchedData.value = table
+      tableData.value = table
+    })
   })
 
 watch(
@@ -262,7 +269,12 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBranch(machineConfigurator: MachineConfigurator, branch: string | null, metricNames: string[], testModeConfigurator: DimensionConfigurator): Observable<Result[]> {
+function getAllMetricsFromBranch(
+  machineConfigurator: MachineConfigurator,
+  branch: string | null,
+  metricNames: string[],
+  testModeConfigurator: DimensionConfigurator
+): Observable<Result[]> {
   const params = {
     branch,
     table: dbName + "." + table,

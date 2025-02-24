@@ -21,7 +21,7 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/compiler-sfc": "^3.5.13",
     "@vue/eslint-config-typescript": "^14.4.0",
-    "eslint": "^9.20.1",
+    "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-vue": "^9.32.0",
@@ -32,7 +32,7 @@
     "vite": "6.1.1",
     "vite-plugin-static-copy": "^2.2.0",
     "vue": "^3.5.13",
-    "vue-tsc": "^2.2.2"
+    "vue-tsc": "^2.2.4"
   },
   "pnpm": {
     "peerDependencyRules": {
@@ -55,7 +55,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-unicorn": "^57.0.0",
     "isoworker": "^0.2.4",
-    "prettier": "^3.5.1",
+    "prettier": "^3.5.2",
     "vitest": "^3.0.6"
   }
 }

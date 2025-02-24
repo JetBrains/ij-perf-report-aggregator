@@ -20,6 +20,6 @@
     "@types/sanitize-html": "^2.13.0",
     "global-jsdom": "^26.0.0",
     "jsdom": "^26.0.0",
-    "msw": "^2.7.0"
+    "msw": "^2.7.1"
   }
 }

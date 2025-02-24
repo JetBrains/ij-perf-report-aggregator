@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@primevue/auto-import-resolver": "^4.2.5",
+    "@primevue/auto-import-resolver": "^4.3.0",
     "@tailwindcss/vite": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
@@ -42,9 +42,6 @@
       "ignoreMissing": [
         "primeicons"
       ]
-    },
-    "patchedDependencies": {
-      "primevue@4.2.5": "patches/primevue@4.2.5.patch"
     }
   },
   "packageManager": "pnpm@9.14.4",

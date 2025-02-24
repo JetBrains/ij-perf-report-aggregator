@@ -30,7 +30,6 @@ async function initApp() {
   app.use(router)
   app.use(PrimeVue, {
     theme: {
-      //eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       preset: MyPreset,
       cssLayer: {
         name: "primevue",

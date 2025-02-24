@@ -1,7 +1,6 @@
-import { definePreset } from "@primevue/themes"
-import Aura from "@primevue/themes/aura"
+import { definePreset } from "@primeuix/themes"
+import Aura from "@primeuix/themes/aura"
 
-//eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const MyPreset = definePreset(Aura, {
   primitive: {
     "blue.400": "#6495ED",
@@ -43,11 +42,6 @@ export const MyPreset = definePreset(Aura, {
       },
       content: {
         padding: "0",
-      },
-      panel: {
-        border: {
-          width: "0",
-        },
       },
     },
   },

@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@primevue/auto-import-resolver": "^4.3.0",
+    "@primevue/auto-import-resolver": "^4.3.1",
     "@tailwindcss/vite": "^4.0.7",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
@@ -29,7 +29,7 @@
     "tailwindcss": "^4.0.7",
     "typescript": "^5.7.3",
     "unplugin-vue-components": "^28.4.0",
-    "vite": "6.1.1",
+    "vite": "6.2.0",
     "vite-plugin-static-copy": "^2.2.0",
     "vue": "^3.5.13",
     "vue-tsc": "^2.2.4"

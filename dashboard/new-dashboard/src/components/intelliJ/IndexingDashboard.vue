@@ -53,6 +53,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/indexing", "intellij_commit/indexing", "community/indexingWithHighlighting", "indexing-community/indexingWithHighlighting"],
   },
   {
+    labels: ["Indexing (after checkout)", "Scanning (after checkout)"],
+    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"],
+    projects: ["intellij_sources/checkout/243"],
+  },
+  {
     labels: ["Scanning (Big projects)"],
     measures: ["scanningTimeWithoutPauses"],
     projects: [

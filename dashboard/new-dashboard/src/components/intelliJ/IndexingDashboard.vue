@@ -108,6 +108,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "keycloak_release_20/indexing",
       "toolbox_enterprise/indexing",
       "train-ticket/indexing",
+      "space/indexing",
     ],
   },
   {
@@ -125,6 +126,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "keycloak_release_20/indexing",
       "toolbox_enterprise/indexing",
       "train-ticket/indexing",
+      "space/indexing",
     ],
   },
   {
@@ -142,6 +144,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "keycloak_release_20/second-scanning",
       "toolbox_enterprise/second-scanning",
       "train-ticket/second-scanning",
+      "space/second-scanning",
     ],
   },
   {
@@ -159,6 +162,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "keycloak_release_20/third-scanning",
       "toolbox_enterprise/third-scanning",
       "train-ticket/third-scanning",
+      "space/third-scanning",
     ],
   },
   {

@@ -34,14 +34,26 @@
         <GroupProjectsChart
           label="Typing Average Responsiveness"
           measure="test#average_awt_delay"
-          :projects="['axios/typing', 'vue-template/typing', 'react-todo-js/typing', 'toh-pt6/typing/toh-pt6', 'eslint-plugin-jest/typing']"
+          :projects="[
+            'axios/typing/axios',
+            'vue-template/typing/vue-template',
+            'react-todo-js/typing/react-todo',
+            'toh-pt6/typing/toh-pt6',
+            'eslint-plugin-jest/typing/eslintPluginJest',
+          ]"
         />
       </div>
       <div class="flex-1 min-w-0">
         <GroupProjectsChart
           label="Typing Responsiveness"
           measure="test#max_awt_delay"
-          :projects="['axios/typing', 'vue-template/typing', 'react-todo-js/typing', 'toh-pt6/typing/toh-pt6', 'eslint-plugin-jest/typing']"
+          :projects="[
+            'axios/typing/axios',
+            'vue-template/typing/vue-template',
+            'react-todo-js/typing/react-todo',
+            'toh-pt6/typing/toh-pt6',
+            'eslint-plugin-jest/typing/eslintPluginJest',
+          ]"
         />
       </div>
     </section>
@@ -69,7 +81,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['eslint-plugin-jest/typing']"
+          :projects="['eslint-plugin-jest/typing/eslintPluginJest']"
         />
       </div>
     </section>
@@ -114,7 +126,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['axios/typing']"
+          :projects="['axios/typing/axios']"
         />
       </div>
     </section>
@@ -210,7 +222,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['react-todo-js/typing/typing']"
+          :projects="['react-todo-js/typing/react-todo']"
         />
       </div>
     </section>
@@ -255,7 +267,7 @@
         <GroupProjectsChart
           label="Typing"
           measure="typing"
-          :projects="['vue-template/typing']"
+          :projects="['vue-template/typing/vue-template']"
         />
       </div>
     </section>

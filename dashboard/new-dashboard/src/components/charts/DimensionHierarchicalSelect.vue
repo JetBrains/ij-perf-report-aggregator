@@ -80,8 +80,11 @@ const value = computed<SelectedValue>({
   get(): SelectedValue {
     const result: SelectedValue = {}
     for (const k of dimension.selected.value) {
-      result[k] = true
+      if (dimension.values.value.some((element) => element.value === k)) {
+        result[k] = true
+      }
     }
+
     return result
   },
   set(value: SelectedValue) {

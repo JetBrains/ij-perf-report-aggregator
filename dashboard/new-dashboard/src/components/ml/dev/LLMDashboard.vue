@@ -20,6 +20,13 @@
         :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Do generate"
+        measure="doGenerate#mean_value"
+        :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
+      ></GroupProjectsChart>
+    </section>
   </DashboardPage>
 </template>
 <script setup lang="ts">

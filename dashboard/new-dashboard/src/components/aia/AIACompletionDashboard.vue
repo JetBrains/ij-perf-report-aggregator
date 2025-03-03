@@ -33,12 +33,19 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { aiaLanguages, aiaModels, getAllProjects } from "./aia"
 
-const chartsDeclaration: ChartDefinition[] = aiaLanguages.map((project) => {
-  return {
-    labels: [project],
-    measures: ["MatchedRatio"],
-    projects: aiaModels.map((model) => "completion_" + project + "_" + model),
+const chartsDeclaration: ChartDefinition[] = [
+  ...aiaLanguages.map((project) => {
+    return {
+      labels: [project],
+      measures: ["MatchedRatio"],
+      projects: aiaModels.map((model) => "completion_" + project + "_" + model),
+    }
+  }),
+  {
+    labels: ["Code Generation Performance"],
+    measures: ["doGenerate#mean_value"],
+    projects: getAllProjects("codeGeneration")
   }
-})
+]
 const charts = combineCharts(chartsDeclaration)
 </script>

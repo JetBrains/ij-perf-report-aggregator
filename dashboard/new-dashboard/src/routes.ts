@@ -9,6 +9,7 @@ const enum ROUTE_PREFIX {
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
   IntelliJUltimate = "/intellij/ultimate",
+  IntelliJJava = "/intellij/java",
   IntelliJSharedIndexes = "/intellij/sharedIndexes",
   IntelliJIncrementalCompilation = "/intellij/incrementalCompilation",
   IntelliJKotlinK2Performance = "/intellij/kotlinK2Performance",
@@ -80,6 +81,7 @@ enum ROUTES {
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
   IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateDashboardOld = `${ROUTE_PREFIX.IntelliJUltimate}/ultimateDashboardOld`,
+  IntelliJJavaDashboard = `${ROUTE_PREFIX.IntelliJJava}/${DASHBOARD_ROUTE}`,
   IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${DEV_TEST_ROUTE}`,
   IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${DASHBOARD_ROUTE}`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
@@ -393,6 +395,16 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJUltimateTests,
           label: TESTS_LABEL,
+        },
+      ],
+    },
+    {
+      url: ROUTE_PREFIX.IntelliJJava,
+      label: "Java",
+      tabs: [
+        {
+          url: ROUTES.IntelliJJavaDashboard,
+          label: DASHBOARD_LABEL,
         },
       ],
     },
@@ -1337,6 +1349,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJUltimateDashboard,
           component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
           meta: { pageTitle: "Ultimate Projects" },
+        },
+        {
+          path: ROUTES.IntelliJJavaDashboard,
+          component: () => import("./components/intelliJ/JavaProjectsDashboard.vue"),
+          meta: { pageTitle: "Java Projects" },
         },
         {
           path: ROUTES.IntelliJPackageCheckerDashboard,

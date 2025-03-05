@@ -30,12 +30,14 @@ type YoutrackIssue struct {
 	IDReadable string `json:"idReadable"`
 }
 
+type CustomFieldValue struct {
+	Name string `json:"name"`
+}
+
 type CustomField struct {
-	Name  string `json:"name"`
-	Type  string `json:"$type"`
-	Value struct {
-		Name string `json:"name"`
-	} `json:"value"`
+	Name  string      `json:"name"`
+	Type  string      `json:"$type"`
+	Value interface{} `json:"value"`
 }
 
 type Visibility struct {

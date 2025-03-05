@@ -154,6 +154,16 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 				},
 			},
 		}
+		if params.ProjectId == "22-414" { // If project ID is KTIJ set subsystem as they require it
+			subsystemsCustomField := CustomField{
+				Name: "Subsystems",
+				Type: "MultiOwnedIssueCustomField",
+				Value: []CustomFieldValue{
+					{Name: "IDE"},
+				},
+			}
+			issueInfo.CustomFields = append(issueInfo.CustomFields, subsystemsCustomField)
+		}
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
 		if err != nil {

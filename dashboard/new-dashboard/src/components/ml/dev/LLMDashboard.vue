@@ -10,21 +10,21 @@
       <GroupProjectsChart
         label="Inline completion"
         measure="callInlineCompletionOnCompletion#mean_value"
-        :projects="['gradle-calculator_SimpleInlineCompletionTest/simple inline completion']"
+        :projects="['SimpleInlineCompletionTest_gradle-calculator/simple inline completion']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Code generation"
         measure="ai-generate-code#mean_value"
-        :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
+        :projects="['CodeGenerationPerformanceTest_gradle-calculator/generate code']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Do generate"
         measure="doGenerate#mean_value"
-        :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
+        :projects="['CodeGenerationPerformanceTest_gradle-calculator/generate code']"
       ></GroupProjectsChart>
     </section>
     <section>

@@ -89,6 +89,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/indexing", "intellij_commit/indexing"],
   },
   {
+    labels: ["Parsing/lexing time Java (Big projects)"],
+    measures: [["parsingTime#JAVA", "lexingTime#JAVA"]],
+    projects: ["intellij_commit/indexing", "community/indexing"],
+  },
+  {
     labels: ["Processing Time Java (Big projects)", "Processing Time Kotlin (Big projects)"],
     measures: ["processingTime#JAVA", "processingTime#Kotlin"],
     projects: ["community/indexing", "intellij_commit/indexing"],

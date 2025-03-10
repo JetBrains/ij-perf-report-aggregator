@@ -105,5 +105,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateRustPerfSettings(backendUrl, client),
 		setting.GenerateFleetPerformanceSettings(backendUrl, client),
 		setting.GenerateRubyPerfSettings(backendUrl, client),
+		setting.GenerateJavaSettings(backendUrl, client),
 	)
 }

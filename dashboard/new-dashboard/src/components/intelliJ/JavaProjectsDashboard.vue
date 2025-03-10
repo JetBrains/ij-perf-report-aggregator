@@ -26,11 +26,6 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing", "Scanning", "Number of indexed files", "Number of indexed files with writing index value", "Number of indexed files with nothing to write"],
-    measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles", "numberOfIndexedFilesWritingIndexValue", "numberOfIndexedFilesWithNothingToWrite"],
-    projects: ["empty_project/indexing", "grails/indexing", "java/indexing", "spring_boot/indexing", "spring_boot_maven/indexing"],
-  },
-  {
     labels: ["Rebuild"],
     measures: ["build_compilation_duration"],
     projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
@@ -41,8 +36,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection"],
   },
   {
-    labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],
-    measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal"],
+    labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)", "Show quick fixes"],
+    measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal", "showQuickFixes"],
     projects: ["grails/showIntentions/Find cause", "spring_boot/showIntentions"],
   },
   {
@@ -51,8 +46,13 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["grails/completion/groovy_file", "grails/completion/java_file", "intellij_commit/completion/java_file"],
   },
   {
+    labels: ["Creating a new JAVA file"],
+    measures: ["createJavaFile"],
+    projects: ["intellij_commit/createJavaClass"],
+  },
+  {
     labels: ["Rename method, rename class, change signature, move"],
-    measures: [["performInlineRename", "performInlineRename", "changeJavaSignature: add parameter", "moveClassToPackage"]],
+    measures: [["performInlineRename", "changeJavaSignature: add parameter", "moveClassToPackage"]],
     projects: ["hadoop_commit/rename-method", "hadoop_commit/rename-class", "hadoop_commit/change-signature", "hadoop_commit/move-class"],
   },
   {

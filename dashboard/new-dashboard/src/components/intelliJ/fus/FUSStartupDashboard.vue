@@ -29,7 +29,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Code analysis execution time", "Startup total duration"],
     measures: ["fus_code_analysis_execution_time", "fus_startup_totalDuration"],
-    projects: ["intellij-on-intellij_1/measureStartup"],
+    projects: ["idea/measureStartup"],
   },
 ]
 

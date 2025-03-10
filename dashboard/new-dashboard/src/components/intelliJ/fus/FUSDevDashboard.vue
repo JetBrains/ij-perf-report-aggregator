@@ -28,9 +28,14 @@ import DashboardPage from "../../common/DashboardPage.vue"
 
 const chartsDevDeclaration: ChartDefinition[] = [
   {
+    labels: ["Indexing time", "Scanning time"],
+    measures: ["fus_dumb_indexing_time", "fus_scanning_time"],
+    projects: ["intellij_commit/indexing"],
+  },
+  {
     labels: ["Completion time to show 90p", "Completion duration 90p"],
     measures: ["fus_time_to_show_90p", "fus_completion_duration_90p"],
-    projects: ["intellij_commit/completion/java_file"],
+    projects: ["intellij_commit/completion/java_file", "grails/completion/groovy_file", "keycloak_release_20/completion/QuarkusRuntimePomXml"],
   },
   {
     labels: ["FindUsages first usage", "FindUsages all usages"],

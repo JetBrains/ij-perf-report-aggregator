@@ -29,12 +29,12 @@ const chartsImportDeclaration: ChartDefinition[] = [
   {
     labels: ["Maven Sync"],
     measures: ["maven.import.stats.sync.project.task"],
-    projects: ["project-import-maven-flink/measureStartup"],
+    projects: ["project-import-maven-flink/fastInstaller"],
   },
   {
     labels: ["Gradle Sync"],
     measures: ["fus_gradle.sync"],
-    projects: ["project-import-gradle-android-extra-large/measureStartup"],
+    projects: ["project-import-gradle-android-extra-large/fastInstaller"],
   },
 ]
 

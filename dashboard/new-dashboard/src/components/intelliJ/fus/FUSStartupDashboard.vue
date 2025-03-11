@@ -3,7 +3,7 @@
     db-name="perfint"
     table="idea"
     persistent-id="fus_startup_dashboard"
-    initial-machine="Linux Munich i7-3770, 32 Gb"
+    initial-machine="Linux Munich i7-13700, 64 Gb"
     :charts="charts"
   >
     <section>
@@ -28,7 +28,7 @@ import DashboardPage from "../../common/DashboardPage.vue"
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Code analysis execution time", "Startup total duration"],
-    measures: ["fus_code_analysis_execution_time", "fus_startup_totalDuration"],
+    measures: ["fusExecutionTime", "fusTotalDuration", "fusCodeVisibleInEditorDurationMs"],
     projects: ["idea/measureStartup"],
   },
 ]

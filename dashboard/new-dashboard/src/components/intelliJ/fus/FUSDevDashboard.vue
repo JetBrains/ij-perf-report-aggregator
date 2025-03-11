@@ -40,7 +40,7 @@ const chartsDevDeclaration: ChartDefinition[] = [
   {
     labels: ["FindUsages first usage", "FindUsages all usages"],
     measures: ["fus_find_usages_first", "fus_find_usages_all"],
-    projects: ["intellij_commit/findUsages/PsiManager_getInstance"],
+    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
   },
 ]
 

@@ -27,9 +27,9 @@ import DashboardPage from "../../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Code analysis execution time", "Startup total duration"],
-    measures: ["fusExecutionTime", "fusTotalDuration", "fusCodeVisibleInEditorDurationMs"],
-    projects: ["idea/measureStartup"],
+    labels: ["Startup total duration", "Code analysis execution time", "Reopen project code visible in Editor"],
+    measures: ["startup/fusTotalDuration", "codeAnalysisDaemon/fusExecutionTime", "reopenProjectPerformance/fusCodeVisibleInEditorDurationMs\n"],
+    projects: ["idea"],
   },
 ]
 

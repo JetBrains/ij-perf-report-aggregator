@@ -5,6 +5,7 @@
     persistent-id="fus_import_dashboard"
     initial-machine="linux-blade-hetzner"
     :charts="chartsImport"
+    :with-installer="false"
   >
     <section>
       <div>

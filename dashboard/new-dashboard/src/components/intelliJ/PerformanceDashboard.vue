@@ -65,27 +65,14 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["community/rebuild"],
   },
   {
-    labels: ["Rebuild"],
-    measures: ["build_compilation_duration"],
-    projects: ["grails/rebuild", "java/rebuild", "spring_boot/rebuild"],
-  },
-  {
     labels: ["Inspection"],
     measures: ["globalInspections"],
-    projects: [
-      "java/inspection",
-      "grails/inspection",
-      "spring_boot_maven/inspection",
-      "spring_boot/inspection",
-      "kotlin/inspection",
-      "kotlin_coroutines/inspection",
-      "intellij_commit/jvm-inspection",
-    ],
+    projects: ["kotlin/inspection", "kotlin_coroutines/inspection", "intellij_commit/jvm-inspection"],
   },
   {
     labels: ["JVM Total Time to safepoints", "Full GC Pause", "JVM GC collection times"],
     measures: ["JVM.totalTimeToSafepointsMs", "fullGCPause", "JVM.GC.collectionTimesMs"],
-    projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "kotlin/inspection", "kotlin_coroutines/inspection"],
+    projects: ["kotlin/inspection", "kotlin_coroutines/inspection"],
   },
   {
     labels: ["Local Inspection", "First Code Analysis"],
@@ -108,11 +95,6 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/editor-highlighting", "intellij_commit/editor-kotlin-highlighting"],
   },
   {
-    labels: ["Completion", "Completion 90p"],
-    measures: ["completion", "fus_completion_duration_90p"],
-    projects: ["community/completion/kotlin_file", "grails/completion/groovy_file", "grails/completion/java_file", "intellij_commit/completion/java_file"],
-  },
-  {
     labels: ["Block Terminal Completion"],
     measures: [["terminal-completion-all_cold", "terminal-completion-all_warm"]],
     projects: ["BlockTerminalCompletionTest", "testCommandCompletion", "testSubcommandCompletion"],
@@ -126,7 +108,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],
     measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal"],
-    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+    projects: ["kotlin/showIntention/Import"],
   },
   {
     labels: ["Show File History"],
@@ -150,8 +132,8 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Creating a new file"],
-    measures: [["createJavaFile", "createKotlinFile"]],
-    projects: ["intellij_commit/createJavaClass", "intellij_commit/createKotlinClass"],
+    measures: ["createKotlinFile"],
+    projects: ["intellij_commit/createKotlinClass"],
   },
   {
     labels: ["Editor Scrolling AWT Delay"],

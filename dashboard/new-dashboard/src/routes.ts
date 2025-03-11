@@ -87,9 +87,6 @@ enum ROUTES {
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
-  IntelliJFusDevDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardDev`,
-  IntelliJFusHetznerDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardImport`,
-  IntelliJFusStartupDashboard = `${ROUTE_PREFIX.IntelliJFus}/dashboardStartup`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormInstallerDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}Installer`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
@@ -452,24 +449,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJPackageCheckerTests,
           label: TESTS_LABEL,
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.IntelliJFus,
-      label: "FUS",
-      tabs: [
-        {
-          url: ROUTES.IntelliJFusDevDashboard,
-          label: "Dashboard Primary Functionality",
-        },
-        {
-          url: ROUTES.IntelliJFusHetznerDashboard,
-          label: "Dashboard Import",
-        },
-        {
-          url: ROUTES.IntelliJFusStartupDashboard,
-          label: "Dashboard Startup",
         },
       ],
     },
@@ -1354,21 +1333,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJPackageCheckerDashboard,
           component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
           meta: { pageTitle: "Package Checker" },
-        },
-        {
-          path: ROUTES.IntelliJFusDevDashboard,
-          component: () => import("./components/intelliJ/fus/FUSDevDashboard.vue"),
-          meta: { pageTitle: "FUS Primary functionality dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJFusHetznerDashboard,
-          component: () => import("./components/intelliJ/fus/FUSHetznerDashboard.vue"),
-          meta: { pageTitle: "FUS Import dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJFusStartupDashboard,
-          component: () => import("./components/intelliJ/fus/FUSStartupDashboard.vue"),
-          meta: { pageTitle: "FUS Startup dashboard" },
         },
         {
           path: ROUTES.IntelliJFindUsagesDashboard,

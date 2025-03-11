@@ -41,8 +41,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["grails/showIntentions/Find cause", "spring_boot/showIntentions"],
   },
   {
-    labels: ["Completion", "Completion 90p"],
-    measures: ["completion", "fus_completion_duration_90p"],
+    labels: ["Completion", "Completion 90p", "Completion time to show 90p"],
+    measures: ["completion", "fus_completion_duration_90p", "fus_time_to_show_90p"],
     projects: ["grails/completion/groovy_file", "grails/completion/java_file", "intellij_commit/completion/java_file"],
   },
   {

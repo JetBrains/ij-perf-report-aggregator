@@ -48,8 +48,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["Indexing (Big projects)"],
-    measures: ["indexingTimeWithoutPauses"],
+    labels: ["Indexing (Big projects)", "FUS Indexing time"],
+    measures: ["indexingTimeWithoutPauses", "fus_dumb_indexing_time"],
     projects: ["community/indexing", "intellij_commit/indexing", "community/indexingWithHighlighting", "indexing-community/indexingWithHighlighting"],
   },
   {
@@ -58,8 +58,8 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_sources/checkout/243"],
   },
   {
-    labels: ["Scanning (Big projects)"],
-    measures: ["scanningTimeWithoutPauses"],
+    labels: ["Scanning (Big projects)", "FUS Scanning time"],
+    measures: ["scanningTimeWithoutPauses", "fus_scanning_time"],
     projects: [
       "community/indexing",
       "intellij_commit/indexing",

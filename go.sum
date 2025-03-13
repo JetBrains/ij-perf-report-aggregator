@@ -74,6 +74,8 @@ github.com/ClickHouse/clickhouse-go/v2 v2.32.1 h1:RLhkxA6iH/bLTXeDtEj/u4yUx9Q03Y
 github.com/ClickHouse/clickhouse-go/v2 v2.32.1/go.mod h1:YtaiIFlHCGNPbOpAvFGYobtcVnmgYvD/WmzitixxWYc=
 github.com/ClickHouse/clickhouse-go/v2 v2.33.0 h1:MOvrVAVzINf7uqsuEp3jMToiAGDnQ3NeJRfq6z9u0Dg=
 github.com/ClickHouse/clickhouse-go/v2 v2.33.0/go.mod h1:cb1Ss8Sz8PZNdfvEBwkMAdRhoyB6/HiB6o3We5ZIcE4=
+github.com/ClickHouse/clickhouse-go/v2 v2.33.1 h1:Z5nO/AnmUywcw0AvhAD0M1C2EaMspnXRK9vEOLxgmI0=
+github.com/ClickHouse/clickhouse-go/v2 v2.33.1/go.mod h1:cb1Ss8Sz8PZNdfvEBwkMAdRhoyB6/HiB6o3We5ZIcE4=
 github.com/QcloudApi/qcloud_sign_golang v0.0.0-20141224014652-e4130a326409/go.mod h1:1pk82RBxDY/JZnPQrtqHlUFfCctgdorsd9M06fMynOM=
 github.com/VictoriaMetrics/fastcache v1.12.2 h1:N0y9ASrJ0F6h0QaC3o6uJb3NIZ9VKLjCM7NQbSmF7WI=
 github.com/VictoriaMetrics/fastcache v1.12.2/go.mod h1:AmC+Nzz1+3G2eCPapF6UcsnkThDcMsQicp4xDukwJYI=

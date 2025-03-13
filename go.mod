@@ -1,13 +1,11 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.23.0
-
-toolchain go1.24.0
+go 1.24.0
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
 	github.com/ClickHouse/ch-go v0.65.1
-	github.com/ClickHouse/clickhouse-go/v2 v2.33.0
+	github.com/ClickHouse/clickhouse-go/v2 v2.33.1
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.9.2

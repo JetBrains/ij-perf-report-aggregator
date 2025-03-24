@@ -8,6 +8,7 @@ import (
 )
 
 func TestCompressData(t *testing.T) {
+	t.Parallel()
 	rcm, err := NewResponseCacheManager()
 	require.NoError(t, err)
 

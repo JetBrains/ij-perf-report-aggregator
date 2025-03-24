@@ -27,6 +27,7 @@ func TestFilter(t *testing.T) {
 }
 
 func TestReadProperties(t *testing.T) {
+	t.Parallel()
 	data, err := os.ReadFile("../../testData/build.finish.properties")
 	require.NoError(t, err)
 	properties, _ := LoadBytes(data, nil)

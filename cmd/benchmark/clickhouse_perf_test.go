@@ -10,7 +10,8 @@ import (
 	"time"
 )
 
-func TestClickhouse(_ *testing.T) {
+func TestClickhouse(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://localhost:8123/"
 
 	// List of branches to iterate over

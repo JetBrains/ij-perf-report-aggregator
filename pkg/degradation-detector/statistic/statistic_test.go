@@ -8,18 +8,22 @@ import (
 )
 
 func TestShamosCoefficient10(t *testing.T) {
+	t.Parallel()
 	assert.InDelta(t, 1.000643, shamosBias(10), 0.00001)
 }
 
 func TestShamosCoefficient100(t *testing.T) {
+	t.Parallel()
 	assert.InDelta(t, 1.043987, shamosBias(100), 0.00001)
 }
 
 func TestShamosCoefficient200(t *testing.T) {
+	t.Parallel()
 	assert.InDelta(t, 1.046203, shamosBias(200), 0.001)
 }
 
 func TestShamosEstimator(t *testing.T) {
+	t.Parallel()
 	data := []int{
 		5691, 5855, 5720, 6339, 5829, 5496, 5427, 5586, 5859, 5603, 5868, 5761, 5440, 5590, 5870, 5781, 5632, 6092, 5636, 5849, 5730, 5639, 5678, 5857, 5655, 5486, 5877, 5639, 5668,
 		5864, 5602, 5855, 6049, 5741, 5794, 5822, 5704, 5707, 6167, 5923, 5765, 5648, 5775, 5578, 5541, 5919, 5498, 5436, 5857, 5508, 5739, 5820, 5662, 5582, 5565, 5708, 5587, 5813,

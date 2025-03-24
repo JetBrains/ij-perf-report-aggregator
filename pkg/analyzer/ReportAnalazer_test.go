@@ -10,6 +10,7 @@ import (
 )
 
 func TestBranchInferenceForJBRNumber(t *testing.T) {
+	t.Parallel()
 	r := &RunResult{}
 	d := model.ExtraData{
 		TcBuildProperties: []byte("{}"),
@@ -21,6 +22,7 @@ func TestBranchInferenceForJBRNumber(t *testing.T) {
 }
 
 func TestBranchInferenceForJBRMaster(t *testing.T) {
+	t.Parallel()
 	r := &RunResult{}
 	d := model.ExtraData{
 		TcBuildProperties: []byte("{}"),
@@ -32,6 +34,7 @@ func TestBranchInferenceForJBRMaster(t *testing.T) {
 }
 
 func TestBranchInferenceForDevMain(t *testing.T) {
+	t.Parallel()
 	r := &RunResult{}
 	d := model.ExtraData{
 		TcBuildProperties: []byte("{}"),

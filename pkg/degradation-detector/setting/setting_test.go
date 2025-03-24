@@ -8,6 +8,7 @@ import (
 )
 
 func TestKotlinSetting(t *testing.T) {
+	t.Parallel()
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 	settings = append(settings, GenerateKotlinSettings()...)
 	for _, setting := range settings {
@@ -16,6 +17,7 @@ func TestKotlinSetting(t *testing.T) {
 }
 
 func TestMavenSetting(t *testing.T) {
+	t.Parallel()
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 	settings = append(settings, GenerateMavenSettings()...)
 	for _, setting := range settings {

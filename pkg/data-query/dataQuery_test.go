@@ -9,6 +9,7 @@ import (
 )
 
 func TestAdvancedFilter(t *testing.T) {
+	t.Parallel()
 	queries, err := readQuery([]byte(`
 {
   "filters": [
@@ -26,6 +27,7 @@ func TestAdvancedFilter(t *testing.T) {
 }
 
 func TestQueryWithManyFields(t *testing.T) {
+	t.Parallel()
 	queries, err := readQuery([]byte(`
 {"fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"},"machine","tc_build_id","project","tc_installer_build_id","build_c1","build_c2","build_c3","branch"],"filters":[{"f":"project","v":"intellij_sources/vfsRefresh/with-1-thread(s)"},{"f":"branch","v":"akoehler/vfs-degradation-before-vk-ffd635a390d3%","o":"like"},{"f":"machine","v":"intellij-linux-performance-aws-%","o":"like"},{"f":"generated_time","q":">subtractMonths(now(),3)"},{"f":"triggeredBy","v":""},{"f":"build_c3","v":0,"o":"="},{"f":"measures.name","v":"vfs_initial_refresh"}],"order":"t"}
 `))
@@ -38,6 +40,7 @@ func TestQueryWithManyFields(t *testing.T) {
 }
 
 func TestOrInFilterQuery(t *testing.T) {
+	t.Parallel()
 	queries, err := readQuery([]byte(`
 {
   "filters": [
@@ -56,6 +59,7 @@ func TestOrInFilterQuery(t *testing.T) {
 }
 
 func TestAverageAggregate(t *testing.T) {
+	t.Parallel()
 	queries, err := readQuery([]byte(`{
   "db": "perfint",
   "table": "phpstorm",
@@ -102,6 +106,7 @@ func TestAverageAggregate(t *testing.T) {
 }
 
 func TestDecode(t *testing.T) {
+	t.Parallel()
 	query, err := util.DecodeQuery("KLUv_SAMYQAASGVsbG8genN0ZCEh")
 
 	require.NoError(t, err)
@@ -109,6 +114,7 @@ func TestDecode(t *testing.T) {
 }
 
 func TestSpecialSymbolInSQL(t *testing.T) {
+	t.Parallel()
 	queries, err := readQuery([]byte(`
 [
     {

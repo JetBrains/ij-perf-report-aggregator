@@ -9,6 +9,7 @@ import (
 )
 
 func TestMergeDegradations(t *testing.T) {
+	t.Parallel()
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{
@@ -53,6 +54,7 @@ func TestMergeDegradations(t *testing.T) {
 }
 
 func TestSomeDegradationsNotMerged(t *testing.T) {
+	t.Parallel()
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{
@@ -88,6 +90,7 @@ func TestSomeDegradationsNotMerged(t *testing.T) {
 }
 
 func TestMetricAlias(t *testing.T) {
+	t.Parallel()
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{

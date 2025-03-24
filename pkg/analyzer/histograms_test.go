@@ -8,6 +8,7 @@ import (
 )
 
 func Test_getPercentile(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		p          float64
 		boundaries []float64
@@ -48,6 +49,7 @@ func Test_getPercentile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			if got := getPercentile(tt.args.p, tt.args.boundaries, tt.args.counts); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getPercentile() = %v, want %v", got, tt.want)
 			}
@@ -56,6 +58,7 @@ func Test_getPercentile(t *testing.T) {
 }
 
 func Test_histogramToMetrics(t *testing.T) {
+	t.Parallel()
 	rawJSON := `{
 		"data": [
 			{
@@ -85,6 +88,7 @@ func Test_histogramToMetrics(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			// Compare the two slices in an order-agnostic way.
 			if got := histogramToMetrics(tt.args); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("histogramToMetrics() = %v, want %v", got, tt.want)

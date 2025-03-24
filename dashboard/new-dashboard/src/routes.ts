@@ -2327,7 +2327,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             dbName: "diogen",
             table: "report",
             withInstaller: false,
-            branch: null,
+            branch: "refs/heads/main",
             initialMachine: null,
           },
           meta: { pageTitle: "Diogen" },

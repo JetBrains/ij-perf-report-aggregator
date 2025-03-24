@@ -33,7 +33,7 @@ func main() {
 	}
 	err := transform("localhost:9000", db, table)
 	if err != nil {
-		slog.Error("trasnform failed", "error", err)
+		slog.Error("transform failed", "error", err)
 	}
 }
 

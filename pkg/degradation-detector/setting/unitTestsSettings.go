@@ -140,8 +140,6 @@ func generateProductTestsSettings(
 	mainSettings detector.PerformanceSettings,
 	config teamConfig,
 ) []detector.PerformanceSettings {
-	var settings []detector.PerformanceSettings
-
 	// Filter tests for the team
 	teamTests := filterTests(allTests, config.Packages, true)
 
@@ -159,6 +157,7 @@ func generateProductTestsSettings(
 		ProductLink: "perfUnit",
 	}
 
+	settings := make([]detector.PerformanceSettings, 0, len(teamTests))
 	for _, test := range teamTests {
 		settings = append(settings, detector.PerformanceSettings{
 			Project: test,

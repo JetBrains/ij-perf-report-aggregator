@@ -89,7 +89,7 @@ func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId i
 		return nil, err
 	}
 
-	var children []string
+	children := make([]string, 0, len(files.Files))
 	for _, child := range files.Files {
 		children = append(children, child.Name)
 	}

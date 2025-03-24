@@ -105,7 +105,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 }
 
 func getSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
-	var segments [][]int
+	segments := make([][]int, 0, len(changePoints)+1)
 	prevChangePoint := 0
 	for _, changePoint := range changePoints {
 		segment := values[prevChangePoint:changePoint]

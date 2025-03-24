@@ -52,7 +52,6 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
 				path: artifactUrlString,
 			})
 			continue
-
 		}
 
 		err := t.findAndDownloadStartUpReports(ctx, build, artifact.Children.File, result)

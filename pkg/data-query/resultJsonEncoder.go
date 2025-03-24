@@ -151,7 +151,6 @@ func writeResult(result *proto.Results, columnNameToIndex map[string]int, column
 		default:
 			return fmt.Errorf("unsupported column type %T", data)
 		}
-
 	}
 	return nil
 }

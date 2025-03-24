@@ -187,7 +187,6 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
       where generated_time >= $1 and generated_time < $2
       order by machine, branch, project, `+buildFields+` build_time, generated_time
     `, startTime, endTime)
-
 	}
 	if err != nil {
 		return fmt.Errorf("cannot query: %w", err)

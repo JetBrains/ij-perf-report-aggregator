@@ -79,7 +79,6 @@ func GenerateGolandPerfSettings(backendUrl string, client *http.Client) []detect
 				},
 			})
 		}
-
 	}
 	return settings
 }

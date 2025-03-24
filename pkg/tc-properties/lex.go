@@ -209,7 +209,6 @@ func lexKey(l *lexer) stateFn {
 Loop:
 	for {
 		switch r = l.next(); {
-
 		case isEscape(r):
 			err := l.scanEscapeSequence()
 			if err != nil {
@@ -286,7 +285,6 @@ func lexValue(l *lexer) stateFn {
 // or a unicode literal. We expect to be after the escape character.
 func (l *lexer) scanEscapeSequence() error {
 	switch r := l.next(); {
-
 	case isEscapedCharacter(r):
 		l.appendRune(decodeEscapedCharacter(r))
 		return nil

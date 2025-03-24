@@ -156,7 +156,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 
 	default:
 		err = ReadReport(runResult, t.config)
-
 	}
 	projectId := t.config.DbName
 	if err != nil {

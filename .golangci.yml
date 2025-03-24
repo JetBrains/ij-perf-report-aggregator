@@ -1,177 +1,121 @@
-# This code is licensed under the terms of the MIT license.
-
-## Golden config for golangci-lint v1.51.1
-#
-# This is the best config for golangci-lint based on my experience and opinion.
-# It is very strict, but not extremely strict.
-# Feel free to adopt and change it for your needs.
-
-run:
-  # Timeout for analysis, e.g. 30s, 5m.
-  # Default: 1m
-  timeout: 3m
-
-
-# This file contains only configs which differ from defaults.
-# All possible options can be found here https://github.com/golangci/golangci-lint/blob/master/.golangci.reference.yml
-linters-settings:
-  stylecheck:
-    checks: ["-ST1003"]
-
-  errcheck:
-    # Report about not checking of errors in type assertions: `a := b.(MyStruct)`.
-    # Such cases aren't reported by default.
-    # Default: false
-    check-type-assertions: true
-
-  gocritic:
-    # Settings passed to gocritic.
-    # The settings key is the name of a supported gocritic checker.
-    # The list of supported checkers can be find in https://go-critic.github.io/overview.
-    enable-all: true
-    disabled-checks:
-      - paramTypeCombine
-      - commentedOutCode
-      - unnamedResult
-      - hugeParam
-      - rangeValCopy
-    settings:
-      captLocal:
-        # Whether to restrict checker to params only.
-        # Default: true
-        paramsOnly: false
-      underef:
-        # Whether to skip (*x).method() calls where x is a pointer receiver.
-        # Default: true
-        skipRecvDeref: false
-
-
-
-  gomodguard:
-    blocked:
-      # List of blocked modules.
-      # Default: []
-      modules:
-        - github.com/satori/go.uuid:
-            recommendations:
-              - github.com/google/uuid
-            reason: "satori's package is not maintained"
-        - github.com/gofrs/uuid:
-            recommendations:
-              - github.com/google/uuid
-            reason: "gofrs' package is not go module"
-
-  govet:
-    # Enable all analyzers.
-    # Default: false
-    enable-all: true
-    # Disable analyzers by name.
-    # Run `go tool vet help` to see all analyzers.
-    # Default: []
-    disable:
-      - fieldalignment # too strict
-    # Settings per analyzer.
-    settings:
-      shadow:
-        # Whether to be strict about shadowing; can be noisy.
-        # Default: false
-        strict: true
-
-  nakedret:
-    # Make an issue if func has more lines of code than this setting, and it has naked returns.
-    # Default: 30
-    max-func-lines: 0
-
+version: "2"
 linters:
-  disable-all: true
+  default: all
+  disable:
+    - depguard
+    - varnamelen
+    - cyclop
+    - exhaustruct
+    - gochecknoglobals
+    - mnd
+    - nlreturn
+    - wrapcheck
+    - gocognit
+    - funlen
+    - wsl
+    - containedctx
+    - godot
+    - tagliatelle
+    - nestif
+    - lll
+    - ireturn
+    - gosec
+    - gocyclo
+    - testpackage
+    - forbidigo
+    - exhaustive
+    - forcetypeassert
+    - dogsled
+    - nilerr
+    - musttag
+    - goconst
+    - gochecknoinits
+    - contextcheck
+  settings:
+    errcheck:
+      check-type-assertions: true
+    gocritic:
+      enable-all: true
+      disabled-checks:
+        - paramTypeCombine
+        - commentedOutCode
+        - unnamedResult
+        - hugeParam
+        - rangeValCopy
+      settings:
+        captLocal:
+          paramsOnly: false
+        underef:
+          skipRecvDeref: false
+    gomodguard:
+      blocked:
+        modules:
+          - github.com/satori/go.uuid:
+              recommendations:
+                - github.com/google/uuid
+              reason: satori's package is not maintained
+          - github.com/gofrs/uuid:
+              recommendations:
+                - github.com/google/uuid
+              reason: gofrs' package is not go module
+    govet:
+      disable:
+        - fieldalignment
+      enable-all: true
+      settings:
+        shadow:
+          strict: true
+    staticcheck:
+      checks:
+        - -ST1003
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
+          - gocritic
+        source: //noinspection
+      - linters:
+          - errorlint
+        source: ^\s+if _, ok := err\.\([^.]+\.InternalError\); ok {
+      - linters:
+          - bodyclose
+          - dupl
+          - noctx
+          - wrapcheck
+        path: _test\.go
+      - linters:
+          - govet
+        text: 'shadow: declaration of "(err|ctx)" shadows declaration at'
+      - linters:
+          - revive
+        text: 'var-naming:'
+      - linters:
+          - gocritic
+        text: 'exitAfterDefer:'
+      - linters:
+          - staticcheck
+        text: 'SA1019: "github.com/golang/protobuf/proto" is deprecated'
+      - linters:
+          - err113
+        text: do not define dynamic errors
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+issues:
+  max-same-issues: 50
+formatters:
   enable:
-    ## enabled by default
-    - errcheck # checking for unchecked errors, these unchecked errors can be critical bugs in some cases
-    - gosimple # specializes in simplifying a code
-    - govet # reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
-    - ineffassign # detects when assignments to existing variables are not used
-    - staticcheck # is a go vet on steroids, applying a ton of static analysis checks
-    - typecheck # like the front-end of a Go compiler, parses and type-checks Go code
-    - unused # checks for unused constants, variables, functions and types
-    ## disabled by default
-    - asasalint # checks for pass []any as any in variadic func(...any)
-    - asciicheck # checks that your code does not contain non-ASCII identifiers
-    - bidichk # checks for dangerous unicode character sequences
-    - bodyclose # checks whether HTTP response body is closed successfully
-    - dupl # tool for code clone detection
-    - durationcheck # checks for two durations multiplied together
-    - errname # checks that sentinel errors are prefixed with the Err and error types are suffixed with the Error
-    - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
-    - gocheckcompilerdirectives # validates go compiler directive comments (//go:)
-    - gocritic # provides diagnostics that check for bugs, performance and style issues
-    - gomodguard # allow and block lists linter for direct Go module dependencies. This is different from depguard where there are different block types for example version constraints and module recommendations
-    - goprintffuncname # checks that printf-like functions are named with f at the end
-    - loggercheck # checks key value pairs for common logger libraries (kitlog,klog,logr,zap)
-    - makezero # finds slice declarations with non-zero initial length
-    - nakedret # finds naked returns in functions greater than a specified function length
-    - nilnil # checks that there is no simultaneous return of nil error and an invalid value
-    - noctx # finds sending http request without context.Context
-    - nonamedreturns # reports all named returns
-    - nosprintfhostport # checks for misuse of Sprintf to construct a host with port in a URL
-    - predeclared # finds code that shadows one of Go's predeclared identifiers
-    - promlinter # checks Prometheus metrics naming via promlint
-    - perfsprint # check usages of fmt.Sprintf which have faster alternatives.
-    - sloglint # ensures consistent code style when using log/slog
-    - testifylint # Checks usage of github.com/stretchr/testify.
-    - mirror #suggests use of alternative functions/methods in order to gain performance boosts by avoiding unnecessary []byte/string conversion calls
-    - reassign # checks that package variables are not reassigned
-    - revive # fast, configurable, extensible, flexible, and beautiful linter for Go, drop-in replacement of golint
-    - sqlclosecheck # checks that sql.Rows and sql.Stmt are closed
-    - stylecheck # is a replacement for golint
-    - testableexamples # checks if examples are testable (have an expected output)
-    - tparallel # detects inappropriate usage of t.Parallel() method in your Go test codes
-    - unconvert # removes unnecessary type conversions
-    - unparam # reports unused function parameters
-    - usestdlibvars # detects the possibility to use variables/constants from the Go standard library
-    - copyloopvar # checks for copying loop variables by reference
-    - intrange # checks for integer ranges that can be simplified
-    - err113 # checks for errors that are unchecked and can be returned
-    - wastedassign # checks for assignments that are not used
-    - canonicalheader # checks for canonical header keys
-    - decorder
-    - errchkjson
-    - fatcontext
     - gofmt
     - gofumpt
-    - grouper
-    - inamedparam
-    - interfacebloat
-    - rowserrcheck
-    - tagalign
-    - thelper
-    - exptostd # Detects functions from golang.org/x/exp/ that can be replaced by std functions.
-    - nilnesserr # nilnesserr = nilness + nilerr. nilnesserr is a linter for report return nil error in Go. It combines the features of nilness and nilerr, providing a concise way to detect return an unrelated/nil-values error.
-    - usetesting # Detects when some calls can be replaced by methods from the testing package.
-
-issues:
-  # Maximum count of issues with the same text.
-  # Set to 0 to disable.
-  # Default: 3
-  max-same-issues: 50
-
-  exclude-rules:
-    - source: "//noinspection"
-      linters: [ gocritic ]
-    - source: "^\\s+if _, ok := err\\.\\([^.]+\\.InternalError\\); ok {"
-      linters: [ errorlint ]
-    - path: "_test\\.go"
-      linters:
-        - bodyclose
-        - dupl
-        - noctx
-        - wrapcheck
-    - text: 'shadow: declaration of "(err|ctx)" shadows declaration at'
-      linters: [ govet ]
-    - text: 'var-naming:'
-      linters: [ revive ]
-    - text: 'exitAfterDefer:'
-      linters: [ gocritic ]
-    - text: "SA1019: \"github.com/golang/protobuf/proto\" is deprecated"
-      linters: [ staticcheck ]
-    - text: "do not define dynamic errors"
-      linters: [ err113 ]
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

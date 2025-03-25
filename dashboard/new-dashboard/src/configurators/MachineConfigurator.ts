@@ -363,10 +363,10 @@ export function getMachineGroupName(machine: string): string {
     // https://aws.amazon.com/ec2/instance-types/m5/
     // noinspection SpellCheckingInspection
     groupName = "Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-windows-performance-aws-i-")) {
+  } else if (machine.startsWith("intellij-windows-performance-aws-i-") || machine.startsWith("intellij-windows-performance-mem-aws-i")) {
     // https://aws.amazon.com/ec2/instance-types/c6id/
     // noinspection SpellCheckingInspection
-    groupName = "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)"
+    groupName = "Windows EC2 C6id.4xlarge or i4i.4xlarge (16 vCPU Xeon, 32 or 128 GB)"
   } else if (machine.startsWith("intellij-linux-2004-aws-m5d-lt")) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection

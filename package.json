@@ -14,7 +14,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@eslint/js" : "^9.23.0",
+    "@eslint/js": "^9.23.0",
     "@primevue/auto-import-resolver": "^4.3.2",
     "@tailwindcss/vite": "^4.0.15",
     "@vitejs/plugin-vue": "^5.2.3",
@@ -30,7 +30,7 @@
     "rollup": "^4.37.0",
     "tailwindcss": "^4.0.15",
     "typescript": "^5.8.2",
-    "typescript-eslint" : "^8.28.0",
+    "typescript-eslint": "^8.28.0",
     "unplugin-vue-components": "^28.4.1",
     "vite": "^6.2.2",
     "vite-plugin-static-copy": "^2.3.0",

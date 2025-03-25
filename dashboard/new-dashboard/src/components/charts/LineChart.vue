@@ -166,7 +166,7 @@ function createChart() {
 const emit = defineEmits(["chartClosed"])
 
 function closeChart() {
-  emit("chartClosed", measuresRef)
+  emit("chartClosed", measuresRef.value)
 }
 
 function setupChartOnVisibility() {

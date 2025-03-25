@@ -103,9 +103,7 @@ export abstract class AccidentsConfigurator implements DataQueryConfigurator, Fi
       }
       const idString: string = await response.text()
       const id = Number(idString)
-      if (this.value.value == undefined) {
-        this.value.value = new Map<string, Accident[]>()
-      }
+      this.value.value ??= new Map<string, Accident[]>()
       const updatedMap = new Map(this.value.value)
       updatedMap.set(`${affected_test}_${build_number}`, [
         { id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace, userName },

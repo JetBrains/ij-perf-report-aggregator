@@ -16,9 +16,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
     serverUrlObservable: Observable<string> | null = null
   ) {
     dbTypeStore().setDbType(db, table)
-    if (serverUrlObservable == null) {
-      serverUrlObservable = injectOrError(serverUrlObservableKey)
-    }
+    serverUrlObservable ??= injectOrError(serverUrlObservableKey)
     this.observable = combineLatest([serverUrlObservable, getZstdObservable()]).pipe(
       map(([url, _]) => {
         this._serverUrl = url

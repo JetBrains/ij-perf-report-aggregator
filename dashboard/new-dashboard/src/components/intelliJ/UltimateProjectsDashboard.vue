@@ -98,6 +98,11 @@ const chartsDeclaration: ChartDefinition[] = [
       "toolbox_enterprise/ultimateCase/UserRepository",
     ],
   },
+  {
+    labels: ["Alfio project - Total duration of code analysis (firstCodeAnalysis)"],
+    measures: ["firstCodeAnalysis#totalDuration"],
+    projects: ["multiple-files-highlighting-integration-test/test-multiple-files-highlighting"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

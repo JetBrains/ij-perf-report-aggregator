@@ -16,7 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type accident struct {
+type accidentResponse struct {
 	ID           int64  `json:"id"`
 	Date         string `json:"date"`
 	AffectedTest string `json:"affectedTest"`
@@ -78,12 +78,12 @@ func CreateGetAccidentsAroundDateRequestHandler(metaDb *pgxpool.Pool) http.Handl
 		}
 		defer rows.Close()
 
-		accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (accident, error) {
+		accidents, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (accidentResponse, error) {
 			var id int64
 			var date pgtype.Date
 			var affectedTest, reason, buildNumber, kind, stacktrace, userName string
 			err := row.Scan(&id, &date, &affectedTest, &reason, &buildNumber, &kind, &stacktrace, &userName)
-			return accident{
+			return accidentResponse{
 				ID:           id,
 				Date:         date.Time.String(),
 				AffectedTest: affectedTest,
@@ -143,22 +143,59 @@ func CreateGetManyAccidentsRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc
 		}
 		defer rows.Close()
 
-		accidents, err := pgx.CollectRows(rows, getAccidentFromRow)
-		if err != nil {
-			slog.Error("unable to collect rows", "error", err)
-			writer.WriteHeader(http.StatusInternalServerError)
+		if _, err := writer.Write([]byte("[")); err != nil {
+			slog.Error("Failed to write JSON array start", "error", err)
 			return
 		}
-		jsonBytes, err := json.Marshal(accidents)
-		if err != nil {
-			slog.Error("unable to marshal accidents", "accidents", accidents, "error", err)
-			writer.WriteHeader(http.StatusInternalServerError)
+
+		firstItem := true
+		for rows.Next() {
+			accident, err := getAccidentFromRow(rows)
+			if err != nil {
+				slog.Error("unable to scan row", "error", err)
+				// We've already started sending the response, so we can't change the status code
+				// Best we can do is log the error and stop
+				return
+			}
+
+			// Add comma separator between items (but not before the first item)
+			if !firstItem {
+				if _, err := writer.Write([]byte(",")); err != nil {
+					slog.Error("Failed to write comma separator", "error", err)
+					return
+				}
+			} else {
+				firstItem = false
+			}
+
+			// Marshal and write this individual item
+			itemBytes, err := json.Marshal(accident)
+			if err != nil {
+				slog.Error("unable to marshal accident", "error", err)
+				return
+			}
+
+			if _, err := writer.Write(itemBytes); err != nil {
+				slog.Error("Failed to write item", "error", err)
+				return
+			}
+
+			// Flush the response writer if it supports flushing
+			if flusher, ok := writer.(http.Flusher); ok {
+				flusher.Flush()
+			}
+		}
+
+		// Check for errors from iterating over rows
+		if err := rows.Err(); err != nil {
+			slog.Error("Error iterating over rows", "error", err)
 			return
 		}
-		_, err = writer.Write(jsonBytes)
-		if err != nil {
-			slog.Error("unable to write response", "error", err)
-			writer.WriteHeader(http.StatusInternalServerError)
+
+		// Close the JSON array
+		if _, err := writer.Write([]byte("]")); err != nil {
+			slog.Error("Failed to write JSON array end", "error", err)
+			return
 		}
 	}
 }
@@ -282,12 +319,12 @@ func stringArrayToSQL(input []string) string {
 	return str.String()
 }
 
-func getAccidentFromRow(row pgx.CollectableRow) (accident, error) {
+func getAccidentFromRow(row pgx.CollectableRow) (accidentResponse, error) {
 	var id int64
 	var date pgtype.Date
 	var affected_test, reason, build_number, kind, externalId, stacktrace, user_name string
 	err := row.Scan(&id, &date, &affected_test, &reason, &build_number, &kind, &externalId, &stacktrace, &user_name)
-	return accident{
+	return accidentResponse{
 		ID:           id,
 		Date:         date.Time.String(),
 		AffectedTest: affected_test,
@@ -300,7 +337,7 @@ func getAccidentFromRow(row pgx.CollectableRow) (accident, error) {
 	}, err
 }
 
-func getAccidentById(ctx context.Context, metaDb *pgxpool.Pool, accidentId string) (*accident, error) {
+func getAccidentById(ctx context.Context, metaDb *pgxpool.Pool, accidentId string) (*accidentResponse, error) {
 	sql := "SELECT id, date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name FROM accidents WHERE id=$1"
 	rows, err := metaDb.Query(ctx, sql, accidentId)
 	if err != nil {
@@ -322,7 +359,7 @@ func getAccidentById(ctx context.Context, metaDb *pgxpool.Pool, accidentId strin
 	return &accidents[0], nil
 }
 
-func updateAccidentReason(ctx context.Context, metaDb *pgxpool.Pool, accident *accident) error {
+func updateAccidentReason(ctx context.Context, metaDb *pgxpool.Pool, accident *accidentResponse) error {
 	sql := `UPDATE accidents SET reason = $2 WHERE id = $1`
 	_, err := metaDb.Exec(ctx, sql,
 		accident.ID,

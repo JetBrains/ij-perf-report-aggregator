@@ -60,6 +60,9 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 			func() {
 				defer wg.Done()
 				d := degradation.Details
+				if d.timestamp < time.Now().Add(-672*time.Hour).UnixMilli() { // Do not post degradations older than 28 days
+					return
+				}
 				date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
 				medianMessage := getMessageBasedOnMedianChange(d.medianValues)
 				kind := "InferredRegression"

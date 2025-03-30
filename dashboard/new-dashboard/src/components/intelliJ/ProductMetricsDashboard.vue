@@ -43,7 +43,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: ["community/go-to-all/Editor/typingLetterByLetter", "community/go-to-all-with-warmup/Editor/typingLetterByLetter"],
+    projects: [
+      "community/go-to-all/Editor/typingLetterByLetter",
+      "community/go-to-all-with-warmup/Editor/typingLetterByLetter",
+      "community/go-to-all/Editor/typingLetterByLetter/embeddedClient",
+      "community/go-to-all-with-warmup/Editor/typingLetterByLetter/embeddedClient",
+    ],
   },
   {
     labels: ["TypingCodeAnalysis"],

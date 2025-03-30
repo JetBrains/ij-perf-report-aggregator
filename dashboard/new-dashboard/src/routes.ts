@@ -88,7 +88,6 @@ enum ROUTES {
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
-  PhpStormInstallerDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}Installer`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
@@ -515,20 +514,12 @@ const PHPSTORM: Product = {
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.PhpStormInstallerDashboard,
-          label: DASHBOARD_LABEL + " (Installer)",
-        },
-        {
           url: ROUTES.PhpStormLLMDashboard,
           label: "LLM Dashboard",
         },
         {
           url: ROUTES.PhpStormDevTests,
           label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormTests,
-          label: TESTS_LABEL + " (Installer)",
         },
         {
           url: ROUTES.PhpStormCompareBranches,
@@ -1424,11 +1415,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.PhpStormDashboard,
           component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
-          meta: { pageTitle: "PhpStorm Performance dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormInstallerDashboard,
-          component: () => import("./components/phpstorm/PerformanceInstallerDashboard.vue"),
           meta: { pageTitle: "PhpStorm Performance dashboard" },
         },
         {

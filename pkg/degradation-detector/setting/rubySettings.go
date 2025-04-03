@@ -44,6 +44,7 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 							Metric:  metric,
 							AnalysisSettings: detector.AnalysisSettings{
 								MedianDifferenceThreshold: medianThreshold,
+								ReportType:                detector.DegradationEvent,
 							},
 							SlackSettings: detector.SlackSettings{
 								Channel:     "rubymine-performance-alerts",

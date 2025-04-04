@@ -195,14 +195,14 @@ func SendSlackMessage(ctx context.Context, client *http.Client, slackMessage Sla
 
 func getMachineGroup(pattern string) string {
 	machineGroupMap := map[string]string{
-		"intellij-linux-performance-aws-%":   "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-		"intellij-windows-performance-aws-%": "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)",
-		"intellij-linux-hw-hetzner%":         "linux-blade-hetzner",
-		"intellij-linux-%-hetzner-%":         "linux-blade-hetzner",
-		"intellij-linux-hw-munit-%":          "Linux Munich i7-3770, 32 Gb",
-		"intellij-windows-hw-munit-%":        "Windows Munich i7-3770, 32 Gb",
-		"intellij-macos-perf-eqx-%":          "Mac Mini M2 Pro (10 vCPU, 32 GB)",
-		"intellij-macos-hw-munit-%":          "macMini M1, 16 Gb",
+		"intellij-linux-performance-aws-%": "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+		"intellij-windows-performance-%":   "Windows EC2 C6id.4xlarge (16 vCPU Xeon, 32 GB)",
+		"intellij-linux-hw-hetzner%":       "linux-blade-hetzner",
+		"intellij-linux-%-hetzner-%":       "linux-blade-hetzner",
+		"intellij-linux-hw-munit-%":        "Linux Munich i7-3770, 32 Gb",
+		"intellij-windows-hw-munit-%":      "Windows Munich i7-3770, 32 Gb",
+		"intellij-macos-perf-eqx-%":        "Mac Mini M2 Pro (10 vCPU, 32 GB)",
+		"intellij-macos-hw-munit-%":        "macMini M1, 16 Gb",
 	}
 	return machineGroupMap[pattern]
 }

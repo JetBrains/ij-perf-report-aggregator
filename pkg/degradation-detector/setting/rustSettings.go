@@ -9,7 +9,7 @@ import (
 )
 
 func GenerateRustPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-aws-%"}
+	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
 	baseSettings := detector.PerformanceSettings{
 		Db:    "perfint",
 		Table: "rust",

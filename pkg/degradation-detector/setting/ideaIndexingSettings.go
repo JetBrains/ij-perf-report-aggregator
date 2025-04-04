@@ -26,7 +26,7 @@ func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []dete
 	}
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
-	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-aws-%"}
+	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
 	for _, machine := range machines {
 		for _, test := range testsExpanded {
 			metrics := getIndexingMetricFromTestNameForIDEA(test)

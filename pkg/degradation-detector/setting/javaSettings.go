@@ -30,7 +30,7 @@ func generateJavaDevAnalysisSettings(backendUrl string, client *http.Client) []d
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	testsWithoutIndexingScanning := filterIndexingScanningTests(testsExpanded)
 	settings := make([]detector.PerformanceSettings, 0, 100)
-	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-aws-%"}
+	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
 	for _, machine := range machines {
 		for _, test := range testsWithoutIndexingScanning {
 			metrics := getJavaMetricsFromTestsNames(test)

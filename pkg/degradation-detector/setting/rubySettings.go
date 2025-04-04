@@ -43,6 +43,7 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 							Machine: machine,
 							Metric:  metric,
 							AnalysisSettings: detector.AnalysisSettings{
+								MinimumSegmentLength:      14,
 								MedianDifferenceThreshold: medianThreshold,
 								ReportType:                detector.DegradationEvent,
 							},

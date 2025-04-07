@@ -42,25 +42,8 @@ func getGradleMetrics() []string {
 		"ProjectDataServices",
 		// project resolve
 		"GradleProjectResolverDataProcessing",
-		// apply ws model
-		"WorkspaceModelApply",
 		// total sync time from fus
 		"fus_gradle.sync",
-
-		"AWTEventQueue.dispatchTimeTotal",
-		"CPU | Load |Total % 95th pctl",
-		"Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-		"Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-		"gcPause",
-		"gcPauseCount",
-		"fullGCPause",
-		"freedMemoryByGC",
-		"totalHeapUsedMax",
-		"JVM.GC.collectionTimesMs",
-		"JVM.GC.collections",
-		"JVM.maxHeapMegabytes",
-		"JVM.maxThreadCount",
-		"JVM.totalCpuTimeMs",
 	}
 }
 

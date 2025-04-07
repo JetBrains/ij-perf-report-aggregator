@@ -54,22 +54,6 @@ func getMavenMetrics() []string {
 		"workspace_import.legacy_importers.stats.duration_of_bridges_creation_ms",
 		"workspace_import.legacy_importers.stats.duration_of_bridges_commit_ms",
 		"workspace_import.populate.duration_ms",
-
-		// IDE/Java common metrics
-		"AWTEventQueue.dispatchTimeTotal",
-		"CPU | Load |Total % 95th pctl",
-		"Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
-		"Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
-		"gcPause",
-		"gcPauseCount",
-		"fullGCPause",
-		"freedMemoryByGC",
-		"totalHeapUsedMax",
-		"JVM.GC.collectionTimesMs",
-		"JVM.GC.collections",
-		"JVM.maxHeapMegabytes",
-		"JVM.maxThreadCount",
-		"JVM.totalCpuTimeMs",
 	}
 }
 

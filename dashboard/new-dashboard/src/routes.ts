@@ -147,10 +147,14 @@ enum ROUTES {
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
   RubyMineProductMetricsDashboard = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}`,
-  RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
-  RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
-  RubyMineInspectionsDashBoard = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboard`,
+  RubyMineDashboardOld = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
+  RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}Dev`,
+  RubyMineIndexingDashBoardOld = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
+  RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboardDev`,
+  RubyMineInspectionsDashBoardOld = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboard`,
+  RubyMineInspectionsDashBoard = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboardDev`,
   RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
+  RubyMineTestsDev = `${ROUTE_PREFIX.RubyMine}/${DEV_TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
   RubyMineCompareModes = `${ROUTE_PREFIX.RubyMine}/${COMPARE_MODES_ROUTE}`,
@@ -676,6 +680,10 @@ const RUBYMINE: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
+          url: ROUTES.RubyMineDashboardOld,
+          label: DASHBOARD_LABEL + " (Old)",
+        },
+        {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -684,11 +692,23 @@ const RUBYMINE: Product = {
           label: "Inspections",
         },
         {
+          url: ROUTES.RubyMineInspectionsDashBoardOld,
+          label: "Inspections (Old)",
+        },
+        {
           url: ROUTES.RubyMineIndexingDashBoard,
           label: "Indexing",
         },
         {
+          url: ROUTES.RubyMineIndexingDashBoardOld,
+          label: "Indexing (Old)",
+        },
+        {
           url: ROUTES.RubyMineTests,
+          label: TESTS_LABEL + " (Old)",
+        },
+        {
+          url: ROUTES.RubyMineTestsDev,
           label: TESTS_LABEL,
         },
         {
@@ -1689,16 +1709,31 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RubyMineDashboard,
+          component: () => import("./components/rubymine/PerformanceDevDashboard.vue"),
+          meta: { pageTitle: "RubyMine Performance Dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineDashboardOld,
           component: () => import("./components/rubymine/PerformanceDashboard.vue"),
           meta: { pageTitle: "RubyMine Performance Dashboard" },
         },
         {
           path: ROUTES.RubyMineInspectionsDashBoard,
+          component: () => import("./components/rubymine/InspectionsDevDashboard.vue"),
+          meta: { pageTitle: "RubyMine Inspections Dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineInspectionsDashBoardOld,
           component: () => import("./components/rubymine/InspectionsDashboard.vue"),
           meta: { pageTitle: "RubyMine Inspections Dashboard" },
         },
         {
           path: ROUTES.RubyMineIndexingDashBoard,
+          component: () => import("./components/rubymine/IndexingDevDashboard.vue"),
+          meta: { pageTitle: "RubyMine Indexing Dashboard" },
+        },
+        {
+          path: ROUTES.RubyMineIndexingDashBoardOld,
           component: () => import("./components/rubymine/IndexingDashboard.vue"),
           meta: { pageTitle: "RubyMine Indexing Dashboard" },
         },
@@ -1709,6 +1744,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             dbName: "perfint",
             table: "ruby",
             initialMachine: "Linux Munich i7-3770, 32 Gb",
+          },
+          meta: { pageTitle: "RubyMine Performance tests" },
+        },
+        {
+          path: ROUTES.RubyMineTestsDev,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "ruby",
+            initialMachine: "Linux Munich i7-3770, 32 Gb",
+            withInstaller: false,
           },
           meta: { pageTitle: "RubyMine Performance tests" },
         },
@@ -1725,7 +1771,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RubyMineCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "ruby",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },
@@ -1734,7 +1780,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.RubyMineCompareModes,
           component: () => import("./components/common/compare/CompareModes.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "ruby",
           },
           meta: { pageTitle: COMPARE_MODES_LABEL },

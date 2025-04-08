@@ -443,13 +443,6 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
-        label="Distributive Size"
-        measure="unpackedDistributiveSize"
-        :projects="['distributive-size-RM']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
         label="GC Pause, ms"
         measure="gcPause"
         :projects="[

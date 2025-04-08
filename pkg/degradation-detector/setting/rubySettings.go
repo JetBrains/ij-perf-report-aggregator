@@ -11,7 +11,7 @@ import (
 func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	machines := []string{"intellij-linux-performance-aws-%"}
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfint",
+		Db:    "perfintDev",
 		Table: "ruby",
 		BaseSettings: detector.BaseSettings{
 			Branch: "master",

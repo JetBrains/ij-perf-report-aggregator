@@ -43,6 +43,7 @@ const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
+const STARTUP_METRICS_ROUTE = "startup-metrics"
 const PRODUCT_METRICS_ROUTE = "product-metrics"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
@@ -57,6 +58,7 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
+  IntelliJNewStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_METRICS_ROUTE}`,
   IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
@@ -245,6 +247,7 @@ const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const COMPARE_MODES_LABEL = "Compare Modes"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
+const STARTUP_NEW_LABEL = "Startup NEW"
 const PRODUCT_METRICS_LABEL = "Product Metrics"
 
 const IJ_STARTUP: Product = {
@@ -298,6 +301,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJStartupDashboard,
           label: STARTUP_LABEL,
+        },
+        {
+          url: ROUTES.IntelliJNewStartupDashboard,
+          label: STARTUP_NEW_LABEL,
         },
         {
           url: ROUTES.IntelliJProductMetricsDashboard,
@@ -1274,6 +1281,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             defaultProject: "idea",
           },
           meta: { pageTitle: "IDEA Startup dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJNewStartupDashboard,
+          component: () => import("./components/intelliJ/StartupMetricsDashboard.vue"),
+          meta: { pageTitle: "IDEA NEW Startup dashboard" },
         },
         {
           path: ROUTES.IntelliJProductMetricsDashboard,

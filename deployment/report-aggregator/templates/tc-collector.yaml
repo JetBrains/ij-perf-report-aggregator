@@ -28,7 +28,7 @@ spec:
                   memory: 2Gi
                 limits:
                   cpu: "4"
-                  memory: 8Gi
+                  memory: 16Gi
               env:
                 - name: TC_TOKEN
                   valueFrom:

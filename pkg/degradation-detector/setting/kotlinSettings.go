@@ -101,51 +101,6 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 	}
 	for _, test := range tests {
 		for _, metric := range metrics {
-			settings = append(settings, detector.PerformanceSettings{
-				Db:          "perfintDev",
-				Table:       "kotlin",
-				Project:     test,
-				MetricAlias: "perf",
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kotlin-plugin-perf-test-merged",
-						ProductLink: "kotlin",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType: detector.DegradationEvent,
-					},
-				},
-			})
-		}
-	}
-	for _, test := range tests {
-		for _, metric := range metrics {
-			alias := getAlias(metric, aliases)
-			settings = append(settings, detector.PerformanceSettings{
-				Db:          "perfintDev",
-				Table:       "kotlin",
-				Project:     test,
-				MetricAlias: alias,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "kotlin-plugin-perf-tests-optimization",
-						ProductLink: "kotlin",
-					},
-					AnalysisSettings: detector.AnalysisSettings{
-						ReportType: detector.ImprovementEvent,
-					},
-				},
-			})
-		}
-	}
-	for _, test := range tests {
-		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
 				Db:          "perfintDev",

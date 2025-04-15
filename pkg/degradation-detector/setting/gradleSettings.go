@@ -49,38 +49,8 @@ func getGradleMetrics() []string {
 
 func GenerateGradleSettings() []detector.PerformanceSettings {
 	return slices.Concat(
-		generateGradleSettingsOnInstaller(),
 		generateGradleSettingsOnFastInstaller(),
 	)
-}
-
-func generateGradleSettingsOnInstaller() []detector.PerformanceSettings {
-	tests := make([]string, 0, len(getGradleTests()))
-	for _, test := range getGradleTests() {
-		tests = append(tests, test+"measureStartup")
-	}
-	metrics := getGradleMetrics()
-
-	settings := make([]detector.PerformanceSettings, 0, 200)
-	for _, test := range tests {
-		for _, metric := range metrics {
-			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfint",
-				Table:   "idea",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "gradle-perf-tests-notifications",
-						ProductLink: "intellij",
-					},
-				},
-			})
-		}
-	}
-	return settings
 }
 
 func generateGradleSettingsOnFastInstaller() []detector.PerformanceSettings {
@@ -107,6 +77,7 @@ func generateGradleSettingsOnFastInstaller() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						MinimumSegmentLength: 10,
+						ReportType:           detector.DegradationEvent,
 					},
 				},
 			})

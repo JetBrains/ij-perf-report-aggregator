@@ -16,6 +16,4 @@ const PROJECT_NAMES = [
   "project-import-maven-1000-modules-to-legacy-model/",
 ]
 
-export const MAVEN_PROJECTS = PROJECT_NAMES.map((name) => name + "measureStartup")
-
 export const MAVEN_PROJECTS_FAST_INSTALLERS = PROJECT_NAMES.map((name) => name + "fastInstaller")

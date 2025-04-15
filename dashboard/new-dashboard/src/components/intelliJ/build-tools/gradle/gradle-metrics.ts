@@ -1,7 +1,5 @@
 import { MetricInfo } from "../../../../shared/metricsDescription"
 
-export const GRADLE_METRICS = ["gradle.sync.duration", "GRADLE_CALL", "DATA_SERVICES", "PROJECT_RESOLVERS", "WORKSPACE_MODEL_APPLY"]
-
 export const GRADLE_METRICS_NEW_DASHBOARD: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
   ["ExternalSystemSyncProjectTask", "Total gradle sync time"],
   ["GradleExecution", "Full time of the sink operation, with all our overhead for preparation"],

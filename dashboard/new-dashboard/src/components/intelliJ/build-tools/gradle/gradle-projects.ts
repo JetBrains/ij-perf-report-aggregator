@@ -16,6 +16,4 @@ const PROJECT_NAMES = [
   "project-import-open-telemetry/",
 ]
 
-export const GRADLE_PROJECTS = PROJECT_NAMES.map((name) => name + "measureStartup")
-
 export const GRADLE_PROJECTS_FAST_INSTALLERS = PROJECT_NAMES.map((name) => name + "fastInstaller")

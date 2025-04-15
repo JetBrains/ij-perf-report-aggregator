@@ -59,38 +59,8 @@ func getMavenMetrics() []string {
 
 func GenerateMavenSettings() []detector.PerformanceSettings {
 	return slices.Concat(
-		generateMavenSettingsOnInstaller(),
 		generateMavenSettingsOnFastInstaller(),
 	)
-}
-
-func generateMavenSettingsOnInstaller() []detector.PerformanceSettings {
-	tests := make([]string, 0, len(getMavenTests()))
-	for _, test := range getMavenTests() {
-		tests = append(tests, test+"/measureStartup")
-	}
-	metrics := getMavenMetrics()
-
-	settings := make([]detector.PerformanceSettings, 0, 200)
-	for _, test := range tests {
-		for _, metric := range metrics {
-			settings = append(settings, detector.PerformanceSettings{
-				Db:      "perfint",
-				Table:   "idea",
-				Project: test,
-				BaseSettings: detector.BaseSettings{
-					Machine: "intellij-linux-hw-hetzner%",
-					Metric:  metric,
-					Branch:  "master",
-					SlackSettings: detector.SlackSettings{
-						Channel:     "maven-perf-tests-notifications",
-						ProductLink: "intellij",
-					},
-				},
-			})
-		}
-	}
-	return settings
 }
 
 func generateMavenSettingsOnFastInstaller() []detector.PerformanceSettings {
@@ -117,6 +87,7 @@ func generateMavenSettingsOnFastInstaller() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						MinimumSegmentLength: 10,
+						ReportType:           detector.DegradationEvent,
 					},
 				},
 			})

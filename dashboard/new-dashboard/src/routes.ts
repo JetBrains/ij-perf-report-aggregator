@@ -74,7 +74,6 @@ enum ROUTES {
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
   IntelliJCompareModes = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_MODES_ROUTE}`,
-  IntelliJGradleDashboardDeprecated = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDeprecated`,
   IntelliJGradleDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/gradleDashboardDev`,
   IntelliJMavenDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenDashboardDev`,
   IntelliJMavenImportersConfiguratorsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/mavenImportersConfiguratorsDashboardDev`,
@@ -379,10 +378,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJBuildTestsDev,
           label: "Tests (DevServer)",
-        },
-        {
-          url: ROUTES.IntelliJGradleDashboardDeprecated,
-          label: "Gradle(deprecated)",
         },
       ],
     },
@@ -1316,11 +1311,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.IntelliJK2Dashboard,
           component: () => import("./components/intelliJ/PerformanceK2Dashboard.vue"),
           meta: { pageTitle: "IntelliJ Performance K2 dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJGradleDashboardDeprecated,
-          component: () => import("./components/intelliJ/build-tools/gradle/DeprecatedGradleImportPerformanceDashboard.vue"),
-          meta: { pageTitle: "Gradle(deprecated)" },
         },
         {
           path: ROUTES.IntelliJGradleDashboardDev,

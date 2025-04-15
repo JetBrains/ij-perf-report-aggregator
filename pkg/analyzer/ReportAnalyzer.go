@@ -67,17 +67,6 @@ func CreateReportAnalyzer(parentContext context.Context, db driver.Conn, metaDb 
 	return analyzer, nil
 }
 
-func (t *ReportAnalyzer) invokeInsert(report *ReportInfo, cancel context.CancelFunc) {
-	defer t.waitGroup.Done()
-	err := t.insert(report)
-	if err != nil {
-		t.errOnce.Do(func() {
-			t.err = err
-			cancel()
-		})
-	}
-}
-
 func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, *pgxpool.Pool, error) {
 	// well, go-faster/ch is not so easy to use for such a generic case as our code (each column should be created in advance, no API to simply pass slice of any values)
 	db, err := clickhouse.Open(&clickhouse.Options{
@@ -341,6 +330,17 @@ func (t *ReportAnalyzer) WaitAnalyzeAndInsert() error {
 	}
 
 	return nil
+}
+
+func (t *ReportAnalyzer) invokeInsert(report *ReportInfo, cancel context.CancelFunc) {
+	defer t.waitGroup.Done()
+	err := t.insert(report)
+	if err != nil {
+		t.errOnce.Do(func() {
+			t.err = err
+			cancel()
+		})
+	}
 }
 
 func (t *ReportAnalyzer) insert(report *ReportInfo) error {

@@ -43,6 +43,33 @@ func (rcm *ResponseCacheManager) CreateHandler(handler func(request *http.Reques
 	}
 }
 
+func generateCacheKey(request *http.Request) []byte {
+	buffer := bytebufferpool.Get()
+	defer bytebufferpool.Put(buffer)
+	// if json requested, it means that handler can return data in several formats
+	if request.Header.Get("Accept") == "application/json" {
+		_, _ = buffer.WriteString("j:")
+	}
+	u := request.URL
+	_, _ = buffer.WriteString(u.Path)
+	// do not complicate, use RawQuery as is without sorting
+	if u.RawQuery != "" {
+		_, _ = buffer.WriteString(u.RawQuery)
+	}
+	return CopyBuffer(buffer)
+}
+
+// we don't add here salt like "when server was started" to reflect changes in a new server logic,
+// because if no data in cache (server restarted), in any case data will be recomputed
+func computeEtag(result []byte) string {
+	hash := xxh3.Hash128(result)
+	return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36)
+}
+
+func (rcm *ResponseCacheManager) Clear() {
+	rcm.cache.Reset()
+}
+
 func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Request, handler func(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error)) {
 	w.Header().Set("Vary", "Accept-Encoding")
 
@@ -95,22 +122,6 @@ func (rcm *ResponseCacheManager) handle(w http.ResponseWriter, request *http.Req
 	}
 }
 
-func generateCacheKey(request *http.Request) []byte {
-	buffer := bytebufferpool.Get()
-	defer bytebufferpool.Put(buffer)
-	// if json requested, it means that handler can return data in several formats
-	if request.Header.Get("Accept") == "application/json" {
-		_, _ = buffer.WriteString("j:")
-	}
-	u := request.URL
-	_, _ = buffer.WriteString(u.Path)
-	// do not complicate, use RawQuery as is without sorting
-	if u.RawQuery != "" {
-		_, _ = buffer.WriteString(u.RawQuery)
-	}
-	return CopyBuffer(buffer)
-}
-
 func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 	var httpError *http_error.HttpError
 	if errors.As(err, &httpError) {
@@ -124,17 +135,6 @@ func (rcm *ResponseCacheManager) handleError(err error, w http.ResponseWriter) {
 			http.Error(w, err.Error(), http.StatusServiceUnavailable)
 		}
 	}
-}
-
-// we don't add here salt like "when server was started" to reflect changes in a new server logic,
-// because if no data in cache (server restarted), in any case data will be recomputed
-func computeEtag(result []byte) string {
-	hash := xxh3.Hash128(result)
-	return strconv.FormatUint(hash.Hi, 36) + "-" + strconv.FormatUint(hash.Lo, 36)
-}
-
-func (rcm *ResponseCacheManager) Clear() {
-	rcm.cache.Reset()
 }
 
 func CopyBuffer(buffer *bytebufferpool.ByteBuffer) []byte {

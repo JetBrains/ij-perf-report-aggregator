@@ -87,38 +87,20 @@ func (t *BatchInsertManager) SendBatchNow() error {
 	return nil
 }
 
-func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
-	for _, dependency := range t.dependencies {
-		err := dependency.SendBatchNow()
-		if err != nil {
-			t.logger.Error("cannot commit dependency", "error", err)
-			return err
+func (t *BatchInsertManager) Close() error {
+	// flush
+	t.ScheduleSendBatch()
+	err := t.group.Wait()
+
+	if t.batch != nil {
+		t.logger.Error("abort batch; was not sent, but close is called")
+		abortErr := t.batch.Abort()
+		t.batch = nil
+		if err == nil {
+			err = abortErr
 		}
 	}
-
-	t.logger.Info("send batch")
-	err := batch.Send()
-	if err != nil {
-		t.logger.Error("cannot send batch", "error", err)
-		return err
-	}
-	return nil
-}
-
-func (t *BatchInsertManager) prepareForFlush() driver.Batch {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-
-	batch := t.batch
-	if batch == nil {
-		return nil
-	}
-
-	t.batch = nil
-	queuedItems := t.queuedItems
-	t.queuedItems = 0
-	t.logger.Info("items scheduled to be sent", "count", queuedItems)
-	return batch
+	return err
 }
 
 func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
@@ -143,18 +125,36 @@ func (t *BatchInsertManager) PrepareForAppend() (driver.Batch, error) {
 	return t.batch, nil
 }
 
-func (t *BatchInsertManager) Close() error {
-	// flush
-	t.ScheduleSendBatch()
-	err := t.group.Wait()
+func (t *BatchInsertManager) prepareForFlush() driver.Batch {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
 
-	if t.batch != nil {
-		t.logger.Error("abort batch; was not sent, but close is called")
-		abortErr := t.batch.Abort()
-		t.batch = nil
-		if err == nil {
-			err = abortErr
+	batch := t.batch
+	if batch == nil {
+		return nil
+	}
+
+	t.batch = nil
+	queuedItems := t.queuedItems
+	t.queuedItems = 0
+	t.logger.Info("items scheduled to be sent", "count", queuedItems)
+	return batch
+}
+
+func (t *BatchInsertManager) sendBatch(batch driver.Batch) error {
+	for _, dependency := range t.dependencies {
+		err := dependency.SendBatchNow()
+		if err != nil {
+			t.logger.Error("cannot commit dependency", "error", err)
+			return err
 		}
 	}
-	return err
+
+	t.logger.Info("send batch")
+	err := batch.Send()
+	if err != nil {
+		t.logger.Error("cannot send batch", "error", err)
+		return err
+	}
+	return nil
 }

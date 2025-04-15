@@ -147,7 +147,8 @@ enum ROUTES {
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
-  RubyMineProductMetricsDashboard = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}`,
+  RubyMineProductMetricsDashboard = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}Dev`,
+  RubyMineProductMetricsDashboardOld = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}`,
   RubyMineDashboardOld = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}Dev`,
   RubyMineIndexingDashBoardOld = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
@@ -680,6 +681,10 @@ const RUBYMINE: Product = {
         {
           url: ROUTES.RubyMineProductMetricsDashboard,
           label: PRODUCT_METRICS_LABEL,
+        },
+        {
+          url: ROUTES.RubyMineProductMetricsDashboardOld,
+          label: PRODUCT_METRICS_LABEL + " (Old)",
         },
         {
           url: ROUTES.RubyMineDashboardOld,
@@ -1706,6 +1711,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RubyMineProductMetricsDashboard,
+          component: () => import("./components/rubymine/ProductMetricsDevDashboard.vue"),
+          meta: { pageTitle: "RubyMine product metrics" },
+        },
+        {
+          path: ROUTES.RubyMineProductMetricsDashboardOld,
           component: () => import("./components/rubymine/ProductMetricsDashboard.vue"),
           meta: { pageTitle: "RubyMine product metrics" },
         },

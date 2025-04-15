@@ -21,6 +21,6 @@ func TestMavenSetting(t *testing.T) {
 	settings := make([]detector.PerformanceSettings, 0, 1000)
 	settings = append(settings, GenerateMavenSettings()...)
 	for _, setting := range settings {
-		assert.Equal(t, detector.AllEvent, setting.AnalysisSettings.ReportType)
+		assert.Equal(t, detector.DegradationEvent, setting.AnalysisSettings.ReportType)
 	}
 }

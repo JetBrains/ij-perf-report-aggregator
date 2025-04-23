@@ -21,6 +21,9 @@ type AnalysisSettings struct {
 	// The setting affects how noise affects the analysis. The larger the value the more noise is ignored.
 	// The default value is 2.
 	EffectSizeThreshold float64
+	// Number of days to check for missing data.
+	// The default value is -3 (3 days ago).
+	DaysToCheckMissing int
 }
 
 func (s AnalysisSettings) GetReportType() ReportType {
@@ -37,4 +40,11 @@ func (s AnalysisSettings) GetMedianDifferenceThreshold() float64 {
 
 func (s AnalysisSettings) GetEffectSizeThreshold() float64 {
 	return s.EffectSizeThreshold
+}
+
+func (s AnalysisSettings) GetDaysToCheckMissing() int {
+	if s.DaysToCheckMissing == 0 {
+		return -3
+	}
+	return s.DaysToCheckMissing
 }

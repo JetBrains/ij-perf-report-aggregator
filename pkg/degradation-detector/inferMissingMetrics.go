@@ -39,13 +39,13 @@ func InferMissingData(data <-chan QueryResultWithSettings) <-chan MissingData {
 func inferMissingData(builds []string, timestamps []int64, buildTypes []string, analysisSettings Settings) []MissingData {
 	result := make([]MissingData, 0)
 
-	threeDaysAgo := time.Now().AddDate(0, 0, DaysToCheckMissing).UnixMilli()
+	daysAgo := time.Now().AddDate(0, 0, analysisSettings.GetDaysToCheckMissing()).UnixMilli()
 
 	monthAgo := time.Now().AddDate(0, 0, StaleDataThresholdDays).UnixMilli()
 
 	lastTimestamp := timestamps[len(timestamps)-1]
-	// if there the data is missing for the last 3 days but existed a month ago - report it
-	if lastTimestamp < threeDaysAgo && lastTimestamp > monthAgo {
+	// if there the data is missing for the specified number of days but existed a month ago - report it
+	if lastTimestamp < daysAgo && lastTimestamp > monthAgo {
 		result = append(result, MissingData{
 			LastBuild:     builds[len(builds)-1],
 			LastTimestamp: lastTimestamp,
@@ -152,6 +152,9 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 	// Messages grouped by Slack channel
 	channelMessages := make(map[string][]string)
 
+	// Default to 3 if no settings provided is available
+	daysToCheckMissing := 3
+
 	// First, group all messages by Slack channel
 	for slackChannel, buildTypeMap := range data {
 		// Group projects by metrics and timestamp within each build type
@@ -161,6 +164,11 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 
 			// Group projects by metrics and timestamp
 			for project, missingData := range projectMap {
+				daysValue := missingData.Settings.GetDaysToCheckMissing()
+				if daysValue < 0 {
+					daysToCheckMissing = -daysValue
+				}
+
 				key := GroupKey{
 					Metrics:       normalizeMetrics(missingData.Settings.GetMetric()),
 					LastTimestamp: missingData.LastTimestamp,
@@ -197,7 +205,7 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 	// Combine messages for each channel
 	result := make(map[string]string)
 	for channel, messages := range channelMessages {
-		result[channel] = "Data is missing for more than 3 days:\n" + strings.Join(messages, "\n")
+		result[channel] = fmt.Sprintf("Data is missing for more than %d days:\n%s", daysToCheckMissing, strings.Join(messages, "\n"))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)

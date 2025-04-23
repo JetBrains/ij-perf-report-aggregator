@@ -24,6 +24,7 @@ type analysisSettings interface {
 	GetMinimumSegmentLength() int
 	GetMedianDifferenceThreshold() float64
 	GetEffectSizeThreshold() float64
+	GetDaysToCheckMissing() int
 }
 
 func (v MedianValues) PercentageChange() float64 {

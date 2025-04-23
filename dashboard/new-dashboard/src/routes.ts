@@ -2373,6 +2373,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
             branch: "refs/heads/main",
             initialMachine: null,
+            withoutAccidents: true,
           },
           meta: { pageTitle: "Diogen" },
         },

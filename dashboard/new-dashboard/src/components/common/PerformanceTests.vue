@@ -172,9 +172,19 @@ interface PerformanceTestsProps {
   unit?: "ns" | "ms"
   releaseConfigurator?: ReleaseType
   branch?: string | null
+  withoutAccidents?: boolean
 }
 
-const { dbName, table, initialMachine, withInstaller = true, unit = "ms", releaseConfigurator = nightly, branch = "master" } = defineProps<PerformanceTestsProps>()
+const {
+  dbName,
+  table,
+  initialMachine,
+  withInstaller = true,
+  unit = "ms",
+  releaseConfigurator = nightly,
+  branch = "master",
+  withoutAccidents = false,
+} = defineProps<PerformanceTestsProps>()
 
 enum TestMetricSwitcher {
   Tests = "Tests",
@@ -233,10 +243,13 @@ if (initialMachine != null && machineConfigurator != null && machineConfigurator
   machineConfigurator.selected.value = [initialMachine]
 }
 
-const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
-provide(accidentsConfiguratorKey, accidentsConfigurator)
+const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeConfigurator, triggeredByConfigurator]
+if (!withoutAccidents) {
+  const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
+  provide(accidentsConfiguratorKey, accidentsConfigurator)
+  configurators.push(accidentsConfigurator)
+}
 
-const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator]
 if (branchConfigurator != null) {
   configurators.push(branchConfigurator)
 }

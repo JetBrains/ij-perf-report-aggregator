@@ -138,7 +138,7 @@
         </span>
 
         <span
-          v-if="data?.accidents"
+          v-if="data?.accidents && data.accidents.value && data.accidents.value.length > 0"
           class="flex gap-1.5 items-center"
         >
           <ExclamationTriangleIcon class="w-4 h-4" />

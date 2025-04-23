@@ -148,7 +148,11 @@ export async function getSpaceUrl(data: InfoData | null, serverConfigurator: Ser
       console.log("No changes found")
       return data.changesUrl
     } else {
-      return `https://code.jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`
+      if (db === "diogen") {
+        return `https://code.jetbrains.team/p/diogen/repositories/diogen/commits?query=%22${decodedChanges}%22&tab=changes`
+      } else {
+        return `https://code.jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`
+      }
     }
   }
   return undefined

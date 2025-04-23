@@ -27,30 +27,6 @@
         :projects="['gradle-calculator_CodeGenerationPerformanceTest/generate code']"
       ></GroupProjectsChart>
     </section>
-    <section>
-      <GroupProjectsChart
-        label="AI Ignore Sum"
-        :measure="['ai-ignore.sum.ms', 'ai-ignore-accumulative-x100.sum.ms']"
-        :projects="[
-          'kotlinx_coroutines_k2_dev_AiIgnoreCoroutinesTest/test aiignore performance',
-          'kotlinx_coroutines_k2_dev_AiIgnoreCoroutinesAccumulativeTest/test aiignore performance with repetitions on each file',
-        ]"
-      ></GroupProjectsChart>
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="AI Ignore Single"
-        :measure="['ai-ignore.mean.ns', 'ai-ignore.median.ns', 'ai-ignore.95.percentile.ns']"
-        :projects="['kotlinx_coroutines_k2_dev_AiIgnoreCoroutinesTest/test aiignore performance']"
-      ></GroupProjectsChart>
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="AI Ignore Multiple X100"
-        :measure="['ai-ignore-accumulative-x100.mean.ns', 'ai-ignore-accumulative-x100.median.ns', 'ai-ignore-accumulative-x100.95.percentile.ns']"
-        :projects="['kotlinx_coroutines_k2_dev_AiIgnoreCoroutinesAccumulativeTest/test aiignore performance with repetitions on each file']"
-      ></GroupProjectsChart>
-    </section>
   </DashboardPage>
 </template>
 <script setup lang="ts">

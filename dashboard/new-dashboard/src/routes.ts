@@ -208,7 +208,7 @@ enum ROUTES {
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
-  AIAPrivacyDashboard = `${ROUTE_PREFIX.ML}/dev/aiaPrivacyDashBoard`,
+  AIAPrivacyDashboard = `${ROUTE_PREFIX.ML}/dev/aiaPrivacyDashboard`,
   DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,

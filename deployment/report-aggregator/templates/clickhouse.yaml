@@ -58,11 +58,11 @@ spec:
           resources:
             requests:
               cpu: "0.1"
-              memory: 128Mi
+              memory: 256Mi
             limits:
               # should be at least 512 because MinIO uploads in chunks (128MB by default) plus some internal buffers
               cpu: "0.2"
-              memory: 512Mi
+              memory: 1024Mi
           env:
             - name: CLICKHOUSE
               value: "127.0.0.1:9000"

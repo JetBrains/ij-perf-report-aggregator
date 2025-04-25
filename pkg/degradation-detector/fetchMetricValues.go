@@ -160,7 +160,7 @@ func (s StartupSettings) query() dataQuery.Query {
 	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
-		Database: "ij",
+		Database: "ijDev",
 		Table:    "report",
 		Fields:   fields,
 		Filters:  filters,

@@ -12,7 +12,7 @@ func FetchAllProjects(backendUrl string, client *http.Client, settings StartupSe
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	query := dataQuery.Query{
-		Database: "ij",
+		Database: "ijDev",
 		Table:    "report",
 		Fields:   []dataQuery.QueryDimension{{Name: "project", Sql: "distinct project"}},
 		Flat:     true,

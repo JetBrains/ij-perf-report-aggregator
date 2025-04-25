@@ -174,6 +174,18 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
+	case id == "toolbox":
+		return DatabaseConfiguration{
+			DbName:                      "toolbox",
+			TableName:                   "report",
+			ReportReader:                analyzePerfReport[int32],
+			HasMetaDB:                   false,
+			HasNoInstallerButHasChanges: true,
+			extraFieldCount:             4,
+			insertStatementWriter: func(sb *strings.Builder) {
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
+			},
+		}
 	case id == "diogen":
 		return DatabaseConfiguration{
 			DbName:                      "diogen",

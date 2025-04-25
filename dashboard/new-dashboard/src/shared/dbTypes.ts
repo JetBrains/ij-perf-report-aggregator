@@ -39,6 +39,9 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
     if (dbName == "diogen") {
       dbType.value = DBType.DIOGEN
     }
+    if (dbName == "toolbox") {
+      dbType.value = DBType.TOOLBOX
+    }
   }
 
   function isStartup(): boolean {
@@ -50,7 +53,7 @@ export const dbTypeStore = defineStore("dbTypeStore", () => {
   }
 
   function isModeSupported(): boolean {
-    return dbType.value == DBType.INTELLIJ || dbType.value == DBType.INTELLIJ_DEV || dbType.value == DBType.PERF_UNIT_TESTS || dbType.value == DBType.DIOGEN
+    return dbType.value == DBType.INTELLIJ || dbType.value == DBType.INTELLIJ_DEV || dbType.value == DBType.PERF_UNIT_TESTS || dbType.value == DBType.DIOGEN || dbType.value == DBType.TOOLBOX
   }
 
   return { dbType, setDbType, isStartup, isIJStartup, isModeSupported }

@@ -63,6 +63,7 @@ export enum DBType {
   STARTUP_TESTS = "startupTests",
   STARTUP_TESTS_DEV = "startupTests_dev",
   DIOGEN = "diogen",
+  TOOLBOX = "toolbox",
   UNKNOWN = "unknown",
 }
 

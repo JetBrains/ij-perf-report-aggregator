@@ -38,6 +38,7 @@ const enum ROUTE_PREFIX {
   AIA = "/aia",
   KMT = "/kmt",
   Diogen = "/diogen",
+  Toolbox = "/toolbox",
 }
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
@@ -220,6 +221,7 @@ enum ROUTES {
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
   KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
+  ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -1201,6 +1203,23 @@ const DIOGEN: Product = {
   ],
 }
 
+const TOOLBOX: Product = {
+  url: ROUTE_PREFIX.Toolbox,
+  label: "Toolbox",
+  children: [
+    {
+      url: ROUTE_PREFIX.Toolbox,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.ToolboxTests,
+          label: "All",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
   BAZEL,
@@ -1223,6 +1242,7 @@ export const PRODUCTS = [
   RUBYMINE,
   RUST,
   SCALA,
+  TOOLBOX,
   WEBSTORM,
 ]
 export function getNavigationElement(path: string): Product {
@@ -2386,6 +2406,19 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withoutAccidents: true,
           },
           meta: { pageTitle: "Diogen" },
+        },
+        {
+          path: ROUTES.ToolboxTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "toolbox",
+            table: "report",
+            withInstaller: false,
+            branch: "refs/heads/main",
+            initialMachine: "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)",
+            withoutAccidents: true,
+          },
+          meta: { pageTitle: "Toolbox" },
         },
       ],
     },

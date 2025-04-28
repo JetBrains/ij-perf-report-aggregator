@@ -36,7 +36,7 @@ func GenerateRustPerfSettings(backendUrl string, client *http.Client) []detector
 						Machine: machine,
 						Metric:  metric,
 						SlackSettings: detector.SlackSettings{
-							Channel:     "rust-alerts",
+							Channel:     "rust-perf-alerts",
 							ProductLink: "rust",
 						},
 					},

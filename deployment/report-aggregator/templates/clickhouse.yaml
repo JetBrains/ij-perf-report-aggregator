@@ -59,10 +59,12 @@ spec:
             requests:
               cpu: "0.1"
               memory: 256Mi
+              ephemeral-storage: "10Gi"
             limits:
               # should be at least 512 because MinIO uploads in chunks (128MB by default) plus some internal buffers
               cpu: "0.2"
               memory: 1024Mi
+              ephemeral-storage: "20Gi"
           env:
             - name: CLICKHOUSE
               value: "127.0.0.1:9000"

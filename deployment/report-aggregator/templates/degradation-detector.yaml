@@ -29,7 +29,7 @@ spec:
                   memory: 512Mi
                 limits:
                   cpu: "3"
-                  memory: 1Gi
+                  memory: 4Gi
               env:
                 - name: SLACK_TOKEN
                   value: {{ .Values.slack.token | quote }}

@@ -46,11 +46,9 @@ spec:
             requests:
               cpu: "3"
               memory: "8Gi"
-              ephemeral-storage: "20Gi"
             limits:
               cpu: "4"
               memory: "16Gi"
-              ephemeral-storage: "20Gi"
           volumeMounts: *clickhouseVolumeMounts
         # backup requires access to volume, so, it cannot be done using k8s cron job
         - name: clickhouse-backup
@@ -73,7 +71,14 @@ spec:
         - name: ghcr
       volumes:
         - name: clickhouse-data
-          emptyDir: {}
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 20Gi  # Set this to match your ephemeral-storage requirement
         - name: s3
           secret:
             secretName: ij-perf-data-s3-rw

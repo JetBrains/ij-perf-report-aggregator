@@ -46,7 +46,14 @@ import { modeSelectLabelFormat } from "../../shared/labels"
 import DimensionSelect from "../charts/DimensionSelect.vue"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 
-const { timeRangeConfigurator, branchConfigurator, releaseConfigurator, triggeredByConfigurator, machineConfigurator, testModeConfigurator } = defineProps<{
+const {
+  timeRangeConfigurator,
+  branchConfigurator,
+  releaseConfigurator = undefined,
+  triggeredByConfigurator,
+  machineConfigurator = undefined,
+  testModeConfigurator = undefined,
+} = defineProps<{
   timeRangeConfigurator: TimeRangeConfigurator
   branchConfigurator: BranchConfigurator | null
   releaseConfigurator?: ReleaseNightlyConfigurator

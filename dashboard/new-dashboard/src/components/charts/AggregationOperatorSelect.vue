@@ -37,7 +37,7 @@ import { computed, inject } from "vue"
 import { AggregationOperatorConfigurator } from "../../configurators/AggregationOperatorConfigurator"
 import { aggregationOperatorConfiguratorKey } from "../../shared/injectionKeys"
 
-const { configurator } = defineProps<{
+const { configurator = undefined } = defineProps<{
   configurator?: AggregationOperatorConfigurator
 }>()
 

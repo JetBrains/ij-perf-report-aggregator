@@ -180,7 +180,7 @@ const clearSubMenu = () => {
   activeSubMenu.value = null
 }
 
-const { branchConfigurator, releaseConfigurator, triggeredByConfigurator, selectionLimit } = defineProps<Props>()
+const { branchConfigurator, releaseConfigurator = undefined, triggeredByConfigurator = undefined, selectionLimit = undefined } = defineProps<Props>()
 
 function createItems(configurator?: DimensionConfigurator) {
   return computed(() => {

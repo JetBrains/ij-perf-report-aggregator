@@ -15,7 +15,7 @@ import { chartDefaultStyle } from "../common/chart"
 
 const { height = 440, measures = [] } = defineProps<{
   height?: number
-  measures: string[]
+  measures?: string[]
 }>()
 
 const chartElement = useTemplateRef<HTMLElement>("chartElement")

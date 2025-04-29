@@ -27,5 +27,5 @@ export interface Props {
   label?: string
 }
 
-const { title, label } = defineProps<Props>()
+const { title = null, label = null } = defineProps<Props>()
 </script>

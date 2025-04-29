@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { inject, onMounted, onUnmounted, useTemplateRef } from "vue"
 import { TimeAverageConfigurator } from "../../configurators/TimeAverageConfigurator"
-import { containerKey, dashboardConfiguratorsKey, serverConfiguratorKey } from "../../shared/keys"
+import { containerKey, serverConfiguratorKey } from "../../shared/keys"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"
 import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../common/dataQuery"
@@ -33,14 +33,14 @@ import { useDarkModeStore } from "../../shared/useDarkModeStore"
 
 interface AggregationChartProps {
   valueUnit?: ValueUnit
-  configurators?: DataQueryConfigurator[]
+  configurators: DataQueryConfigurator[]
   aggregatedMeasure: string
   aggregatedProject?: string
   isLike?: boolean
   title: string
 }
 
-const { valueUnit = "ms", configurators, aggregatedMeasure, aggregatedProject, isLike, title } = defineProps<AggregationChartProps>()
+const { valueUnit = "ms", configurators, aggregatedMeasure, aggregatedProject = undefined, isLike, title } = defineProps<AggregationChartProps>()
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
@@ -54,8 +54,7 @@ const measuresConfigurator = {
     return null
   },
 }
-const avConfigurators = configurators ?? injectOrError(dashboardConfiguratorsKey)
-const allConfigurators = [...avConfigurators, injectOrError(serverConfiguratorKey), timeAverageConfigurator, measuresConfigurator]
+const allConfigurators = [...configurators, injectOrError(serverConfiguratorKey), timeAverageConfigurator, measuresConfigurator]
 /* eslint-disable-next-line @typescript-eslint/no-unnecessary-condition */
 const queryExecutor = new DataQueryExecutor(allConfigurators.filter((item): item is DataQueryConfigurator => item != null))
 const element = useTemplateRef<HTMLElement>("element")

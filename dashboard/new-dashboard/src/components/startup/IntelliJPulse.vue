@@ -130,7 +130,7 @@ import StartupPage from "./StartupPage.vue"
 import { fetchHighlightingPasses } from "./utils"
 
 const { withInstaller = false } = defineProps<{
-  withInstaller: boolean
+  withInstaller?: boolean
 }>()
 
 const highlightingPasses = fetchHighlightingPasses()

@@ -68,7 +68,7 @@ interface PerformanceDashboardProps {
 const {
   dbName,
   table,
-  initialMachine,
+  initialMachine = null,
   persistentId,
   withInstaller = true,
   charts = null,

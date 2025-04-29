@@ -3,6 +3,7 @@ import tseslint from "typescript-eslint"
 import pluginVue from "eslint-plugin-vue"
 import eslintConfigPrettier from "eslint-config-prettier"
 import eslintPluginUnicorn from "eslint-plugin-unicorn"
+import globals from "globals"
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -15,6 +16,9 @@ export default tseslint.config(
       unicorn: eslintPluginUnicorn,
     },
     languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
       parserOptions: {
         parser: tseslint.parser,
         project: "./tsconfig.json",

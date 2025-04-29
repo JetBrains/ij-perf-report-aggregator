@@ -42,12 +42,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: ["ring-ui/go-to-class-with-warmup/Button/typingLetterByLetter"],
   },
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: ["axios/typing", "eslint-plugin-jest/typing"],
+    projects: ["axios/typing/axios", "eslint-plugin-jest/typing/eslintPluginJest"],
   },
   {
     labels: ["Inspections"],

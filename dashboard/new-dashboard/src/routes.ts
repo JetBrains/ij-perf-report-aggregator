@@ -219,7 +219,9 @@ enum ROUTES {
   AIAChatCodeGenerationDashboard = `${ROUTE_PREFIX.AIA}/chatCodeGeneration`,
   AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
-  KMTTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
+  KMTTests = `${ROUTE_PREFIX.KMT}/unitTests`,
+  KMTIntegrationTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
+  KMTDashboard = `${ROUTE_PREFIX.KMT}/${DASHBOARD_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   ReportDegradations = "/degradations/report",
@@ -1178,8 +1180,16 @@ const KMT: Product = {
       label: "",
       tabs: [
         {
+          url: ROUTES.KMTDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.KMTIntegrationTests,
+          label: "Integration Tests",
+        },
+        {
           url: ROUTES.KMTTests,
-          label: "All",
+          label: "Unit Tests",
         },
       ],
     },
@@ -2392,7 +2402,24 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             branch: null,
             initialMachine: "Mac Cidr Performance",
           },
-          meta: { pageTitle: "AIA Tests" },
+          meta: { pageTitle: "KMT Unit Tests" },
+        },
+        {
+          path: ROUTES.KMTIntegrationTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kmt",
+            withInstaller: false,
+            branch: "master",
+            initialMachine: "Mac Cidr Performance",
+          },
+          meta: { pageTitle: "KMT Integration Tests" },
+        },
+        {
+          path: ROUTES.KMTDashboard,
+          component: () => import("./components/kmt/PerformanceDashboard.vue"),
+          meta: { pageTitle: "KMT Dashboard" },
         },
         {
           path: ROUTES.DiogenTests,

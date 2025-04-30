@@ -6,10 +6,9 @@ import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerWithCompressConfigurator implements ServerConfigurator {
   static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
-  static readonly INTRANET_SERVER_URL = "https://ij-perf-api.labs.jb.gg"
 
   private readonly observable: Observable<null>
-  private _serverUrl: string = this.determineServerUrl()
+  private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL
 
   constructor(
     readonly db: string,
@@ -29,15 +28,6 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
 
   get serverUrl(): string {
     return this._serverUrl
-  }
-
-  private determineServerUrl(): string {
-    console.log(window.location.hostname)
-    if (window.location.hostname === "ij-perf-api.labs.jb.gg") {
-      return ServerWithCompressConfigurator.INTRANET_SERVER_URL
-    } else {
-      return ServerWithCompressConfigurator.DEFAULT_SERVER_URL
-    }
   }
 
   compressString(params: string): string {

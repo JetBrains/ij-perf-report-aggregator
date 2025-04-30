@@ -5,7 +5,15 @@ import { dbTypeStore } from "../shared/dbTypes"
 import { injectOrError, serverUrlObservableKey } from "../shared/injectionKeys"
 
 export class ServerWithCompressConfigurator implements ServerConfigurator {
-  static readonly DEFAULT_SERVER_URL = "https://ij-perf.labs.jb.gg"
+  static getDefaultServerUrl(): string {
+    const hostname = window.location.hostname
+    if (hostname === "ij-perf-api.labs.jb.gg" || hostname === "localhost") {
+      return "https://ij-perf-api.labs.jb.gg"
+    }
+    return "https://ij-perf.labs.jb.gg"
+  }
+
+  static readonly DEFAULT_SERVER_URL = ServerWithCompressConfigurator.getDefaultServerUrl()
 
   private readonly observable: Observable<null>
   private _serverUrl: string = ServerWithCompressConfigurator.DEFAULT_SERVER_URL

@@ -413,6 +413,9 @@ export function getMachineGroupName(machine: string): string {
   } else if (machine.startsWith("intellij-linux-2204-aws-c5ad-lt")) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     groupName = "Linux EC2 (2204) c5.xlarge (4 vCPU, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-r5dn")) {
+    // https://aws.amazon.com/ec2/instance-types/r5/
+    groupName = "Linux EC2 r5dn.xlarge (4 vCPU, 32 GB)"
   } else if (machine.startsWith("intellij-macos-perf-eqx")) {
     groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
   } else if (machine.startsWith("intellij-windows-aws-i")) {

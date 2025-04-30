@@ -92,6 +92,7 @@ enum ROUTES {
   PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
+  PhpStormIndexingDashboard = `${ROUTE_PREFIX.PhpStorm}/indexingDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -528,6 +529,10 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormLLMDashboard,
           label: "LLM Dashboard",
+        },
+        {
+          url: ROUTES.PhpStormIndexingDashboard,
+          label: "Indexing Dashboard",
         },
         {
           url: ROUTES.PhpStormDevTests,
@@ -1483,6 +1488,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormLLMDashboard,
           component: () => import("./components/phpstorm/MLDashboard.vue"),
           meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
+        },
+        {
+          path: ROUTES.PhpStormIndexingDashboard,
+          component: () => import("./components/phpstorm/IndexingDashboard.vue"),
+          meta: { pageTitle: "PhpStorm Indexing Dashboard" },
         },
         {
           path: ROUTES.PhpStormWithPluginsDashboard,

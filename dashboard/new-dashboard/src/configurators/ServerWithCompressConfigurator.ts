@@ -32,6 +32,7 @@ export class ServerWithCompressConfigurator implements ServerConfigurator {
   }
 
   private determineServerUrl(): string {
+    console.log(window.location.hostname)
     if (window.location.hostname === "ij-perf-api.labs.jb.gg") {
       return ServerWithCompressConfigurator.INTRANET_SERVER_URL
     } else {

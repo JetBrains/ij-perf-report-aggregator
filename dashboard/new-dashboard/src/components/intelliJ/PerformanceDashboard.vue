@@ -95,12 +95,6 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/editor-highlighting", "intellij_commit/editor-kotlin-highlighting"],
   },
   {
-    labels: ["Block Terminal Completion"],
-    measures: [["terminal-completion-all_cold", "terminal-completion-all_warm"]],
-    projects: ["BlockTerminalCompletionTest", "testCommandCompletion", "testSubcommandCompletion"],
-    aliases: ["subCommandName", "commandName", "subCommandName"],
-  },
-  {
     labels: ["Debug run configuration", "Debug step into"],
     measures: ["debugRunConfiguration", "debugStep_into"],
     projects: ["kotlin_petclinic/debug"],

@@ -83,7 +83,7 @@ func Serve(dbUrl string, natsUrl string) error {
 	router.Use(middleware.AllowContentType("application/octet-stream", "application/json"))
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "DELETE"},
+		AllowedMethods: []string{"GET", "POST", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"*"},
 		MaxAge:         50,
 	}).Handler)

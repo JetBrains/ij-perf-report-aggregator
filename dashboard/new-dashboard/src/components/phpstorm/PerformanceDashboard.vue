@@ -11,7 +11,7 @@
       <div class="flex-1 min-w-0">
         <AggregationChart
           :configurators="averagesConfigurators"
-          :aggregated-measure="'processingSpeed#PHP'"
+          :aggregated-measure="'processingSpeedAvg#PHP'"
           :title="'Indexing PHP (kB/s)'"
           :chart-color="'#219653'"
           :value-unit="'counter'"

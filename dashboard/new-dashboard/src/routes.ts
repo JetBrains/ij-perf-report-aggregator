@@ -93,6 +93,7 @@ enum ROUTES {
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormIndexingDashboard = `${ROUTE_PREFIX.PhpStorm}/indexingDashboard`,
+  PhpStormCodeEditingDashboard = `${ROUTE_PREFIX.PhpStorm}/codeEditingDashboard`,
   PhpStormStartupDashboard = `${ROUTE_PREFIX.PhpStorm}/${STARTUP_ROUTE}`,
   PhpStormWithPluginsDashboard = `${ROUTE_PREFIX.PhpStorm}/pluginsDashboard`,
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
@@ -533,6 +534,10 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormIndexingDashboard,
           label: "Indexing Dashboard",
+        },
+        {
+          url: ROUTES.PhpStormCodeEditingDashboard,
+          label: "Code Editing Dashboard",
         },
         {
           url: ROUTES.PhpStormDevTests,
@@ -1493,6 +1498,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormIndexingDashboard,
           component: () => import("./components/phpstorm/IndexingDashboard.vue"),
           meta: { pageTitle: "PhpStorm Indexing Dashboard" },
+        },
+        {
+          path: ROUTES.PhpStormCodeEditingDashboard,
+          component: () => import("./components/phpstorm/CodeEditingDashboard.vue"),
+          meta: { pageTitle: "PhpStorm Code Editing Dashboard" },
         },
         {
           path: ROUTES.PhpStormWithPluginsDashboard,

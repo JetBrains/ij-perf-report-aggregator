@@ -61,7 +61,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="First Code Analysis"
         measure="firstCodeAnalysis"
         :projects="[
@@ -76,7 +76,7 @@
       />
     </section>
     <section>
-      <GroupProjectsChart
+      <GroupProjectsWithClientChart
         label="Find Usages"
         measure="findUsages"
         :projects="[
@@ -98,6 +98,7 @@ import AggregationChart from "../charts/AggregationChart.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import { DataQuery, DataQueryExecutorConfiguration } from "../common/dataQuery"
+import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 
 const typingOnlyConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {

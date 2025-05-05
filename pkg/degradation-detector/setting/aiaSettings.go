@@ -7,9 +7,9 @@ func GenerateAIASettings() []detector.PerformanceSettings {
 		"gradle-calculator_SimpleInlineCompletionTest/simple inline completion": {"callInlineCompletionOnCompletion#mean_value"},
 		"gradle-calculator_CodeGenerationPerformanceTest/generate code":         {"ai-generate-code#mean_value", "doGenerate#mean_value"},
 		"kotlinx_coroutines_k2_dev_ContextPrivacyFiltersTest/coroutinesProject-context-privacy-filters-all-files": {
-			"contextPrivacyFilter.AiIgnoreContextPrivacyFilter.sum.ns",
-			"contextPrivacyFilter.VcsUnversionedContextPrivacyFilter.sum.ns",
-			"contextPrivacyFilter.VcsIgnoredContextPrivacyFilter.sum.ns",
+			"contextPrivacyFilter.AiIgnoreContextPrivacyFilter.sum.ms",
+			"contextPrivacyFilter.VcsUnversionedContextPrivacyFilter.sum.ms",
+			"contextPrivacyFilter.VcsIgnoredContextPrivacyFilter.sum.ms",
 			"ai-ignore.sum.ms",
 		},
 	}

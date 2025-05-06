@@ -31,17 +31,6 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Context Privacy Filters ignored count"
-        :measure="[
-          'contextPrivacyFilter.AiIgnoreContextPrivacyFilter.ignored.count',
-          'contextPrivacyFilter.VcsIgnoredContextPrivacyFilter.ignored.count',
-          'contextPrivacyFilter.VcsUnversionedContextPrivacyFilter.ignored.count',
-        ]"
-        :projects="['kotlinx_coroutines_k2_dev_ContextPrivacyFiltersTest/coroutinesProject-context-privacy-filters-all-files']"
-      ></GroupProjectsChart>
-    </section>
-    <section>
-      <GroupProjectsChart
         label="AI Ignore Single"
         :measure="['ai-ignore.mean.ns', 'ai-ignore.median.ns', 'ai-ignore.95.percentile.ns']"
         :projects="['kotlinx_coroutines_k2_dev_ContextPrivacyFiltersTest/coroutinesProject-context-privacy-filters-all-files']"

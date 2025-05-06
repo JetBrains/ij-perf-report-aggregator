@@ -89,7 +89,6 @@ enum ROUTES {
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
   IntelliJPackageCheckerTests = `${ROUTE_PREFIX.IntelliJPackageChecker}/${TEST_ROUTE}`,
-  PhpStormDashboard = `${ROUTE_PREFIX.PhpStorm}/${DASHBOARD_ROUTE}`,
   PhpStormProductMetricsDashboard = `${ROUTE_PREFIX.PhpStorm}/${PRODUCT_METRICS_ROUTE}`,
   PhpStormLLMDashboard = `${ROUTE_PREFIX.PhpStorm}/llmDashboard`,
   PhpStormIndexingDashboard = `${ROUTE_PREFIX.PhpStorm}/indexingDashboard`,
@@ -523,10 +522,6 @@ const PHPSTORM: Product = {
         {
           url: ROUTES.PhpStormProductMetricsDashboard,
           label: PRODUCT_METRICS_LABEL,
-        },
-        {
-          url: ROUTES.PhpStormDashboard,
-          label: DASHBOARD_LABEL,
         },
         {
           url: ROUTES.PhpStormLLMDashboard,
@@ -1488,11 +1483,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.PhpStormProductMetricsDashboard,
           component: () => import("./components/phpstorm/ProductMetricsDashboard.vue"),
           meta: { pageTitle: "PhpStorm product metrics" },
-        },
-        {
-          path: ROUTES.PhpStormDashboard,
-          component: () => import("./components/phpstorm/PerformanceDashboard.vue"),
-          meta: { pageTitle: "PhpStorm Performance dashboard" },
         },
         {
           path: ROUTES.PhpStormLLMDashboard,

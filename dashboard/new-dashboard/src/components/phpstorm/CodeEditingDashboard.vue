@@ -161,6 +161,20 @@
         />
       </div>
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Inline Rename"
+        measure="startInlineRename"
+        :projects="['mpdf/inlineRename']"
+      />
+    </section>
+    <div class="flex-1 min-w-0">
+      <GroupProjectsChart
+        label="PHP SearchEverywhere Class"
+        measure="searchEverywhere"
+        :projects="['bitrix/go-to-class-with-warmup/BCCo/typingLetterByLetter', 'magento2/go-to-class-with-warmup/MaAdMUser/typingLetterByLetter']"
+      />
+    </div>
   </DashboardPage>
 </template>
 

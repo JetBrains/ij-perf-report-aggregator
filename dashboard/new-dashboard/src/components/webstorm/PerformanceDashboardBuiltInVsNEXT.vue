@@ -57,6 +57,7 @@ const groups = [
       "vue3-admin-vite/completion/attribute",
       "pancake-frontend/completion/component",
       "pancake-frontend/completion/attribute",
+      "fp-ts/completion/completion",
     ],
   },
   {
@@ -77,6 +78,7 @@ const groups = [
       "pancake-frontend/localInspection/[tokenId].tsx",
       "kibana/localInspection/alerts_grouping.tsx",
       "kibana/localInspection/project_navigation.ts",
+      "fp-ts/localInspection/eq",
     ],
   },
   {
@@ -100,6 +102,7 @@ const groups = [
       "eslint-plugin-jest/localInspection/misc.ts",
       "allure-js/localInspection/JasmineAllureReporter.ts",
       "material-ui-react-admin/localInspection/PostEdit.tsx",
+      "fp-ts/localInspection/eq",
     ],
   },
   {

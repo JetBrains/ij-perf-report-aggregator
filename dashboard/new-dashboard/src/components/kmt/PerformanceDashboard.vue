@@ -4,7 +4,7 @@
     table="kmt"
     persistent-id="kmt_performance_dashboard"
     initial-machine="Mac Cidr Performance"
-    initial-mode="intellij-idea"
+    :initial-mode="modes"
     :charts="charts"
     :with-installer="false"
   >
@@ -45,4 +45,5 @@ const chartsDeclaration: ChartDefinition[] = [
 ]
 
 const charts = combineCharts(chartsDeclaration)
+const modes = ["intellij-idea", "android-studio"]
 </script>

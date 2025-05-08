@@ -61,7 +61,7 @@ export function createTestModeConfigurator(
   filters: FilterConfigurator[] = [],
   persistentName: string = "mode",
   multiple: boolean = true,
-  defaultMode: string = defaultModeName
+  defaultMode: string[] | string = defaultModeName
 ): DimensionConfigurator {
   const configurator = new TestModeConfigurator(multiple)
   const name = "mode"
@@ -78,9 +78,9 @@ export function createTestModeConfigurator(
       }
 
       const fetchedValues = data.filter((value, _n, _a) => value != "")
-      configurator.values.value = [defaultMode, ...fetchedValues]
-
-      filterSelected(configurator, [...data, defaultMode])
+      const defaultModeArray = Array.isArray(defaultMode) ? defaultMode : [defaultMode]
+      configurator.values.value = [...new Set([...defaultModeArray, ...fetchedValues])]
+      filterSelected(configurator, [...data, ...defaultModeArray])
     })
   return configurator
 }

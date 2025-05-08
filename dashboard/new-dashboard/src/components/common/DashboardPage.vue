@@ -63,7 +63,7 @@ interface PerformanceDashboardProps {
   isBuildNumberExists?: boolean
   releaseConfigurator?: ReleaseType
   branch?: string | null
-  initialMode?: string
+  initialMode?: string[]
 }
 
 const {

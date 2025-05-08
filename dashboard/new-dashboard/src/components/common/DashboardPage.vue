@@ -63,6 +63,7 @@ interface PerformanceDashboardProps {
   isBuildNumberExists?: boolean
   releaseConfigurator?: ReleaseType
   branch?: string | null
+  initialMode?: string
 }
 
 const {
@@ -75,6 +76,7 @@ const {
   isBuildNumberExists = false,
   releaseConfigurator = nightly,
   branch = "master",
+  initialMode = defaultModeName,
 } = defineProps<PerformanceDashboardProps>()
 
 const container = useTemplateRef<HTMLElement>("container")
@@ -96,7 +98,7 @@ const persistenceForDashboard = new PersistentStateManager(
     project: [],
     branch,
     releaseConfigurator,
-    mode: defaultModeName,
+    mode: initialMode,
   },
   router
 )
@@ -144,7 +146,7 @@ if (releaseNightlyConfigurator != null) {
   dashboardConfigurators.push(releaseNightlyConfigurator)
 }
 
-const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters) : null
+const testModeConfigurator = dbTypeStore().isModeSupported() ? createTestModeConfigurator(serverConfigurator, persistenceForDashboard, filters, "mode", true, initialMode) : null
 if (testModeConfigurator != null) {
   dashboardConfigurators.push(testModeConfigurator)
 }

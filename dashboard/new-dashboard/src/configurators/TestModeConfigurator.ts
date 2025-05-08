@@ -60,7 +60,8 @@ export function createTestModeConfigurator(
   persistentStateManager: PersistentStateManager | null,
   filters: FilterConfigurator[] = [],
   persistentName: string = "mode",
-  multiple: boolean = true
+  multiple: boolean = true,
+  defaultMode: string = defaultModeName
 ): DimensionConfigurator {
   const configurator = new TestModeConfigurator(multiple)
   const name = "mode"
@@ -77,9 +78,9 @@ export function createTestModeConfigurator(
       }
 
       const fetchedValues = data.filter((value, _n, _a) => value != "")
-      configurator.values.value = [defaultModeName, ...fetchedValues]
+      configurator.values.value = [defaultMode, ...fetchedValues]
 
-      filterSelected(configurator, [...data, defaultModeName])
+      filterSelected(configurator, [...data, defaultMode])
     })
   return configurator
 }

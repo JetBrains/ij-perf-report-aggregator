@@ -4,6 +4,7 @@
     table="kmt"
     persistent-id="kmt_performance_dashboard"
     initial-machine="Mac Cidr Performance"
+    initial-mode="intellij-idea"
     :charts="charts"
     :with-installer="false"
   >

@@ -31,8 +31,8 @@
       <GroupProjectsChart
         label="Chat/Context"
         :measure="[
-          'SimpleCompletableMessage::Collecting context…',
-          'SimpleCompletableMessage::Generating answer…',
+          'SimpleCompletableMessage::Collecting context…_1',
+          'SimpleCompletableMessage::Generating answer…_1',
           'retrieveContextAsync.Chat Submit(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=SLOW).time.max',
           'retrieveContextAsync.Initialize chat.time.max',
           'retrieveContextAsync.[Deprecated] Chat Retrieval(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=ALL).time.max',
@@ -53,6 +53,6 @@ const chatContextMetricsLegendFormatter = (name: string) => {
   else if (name.startsWith("retrieveContextAsync.Initialize chat")) return "retrieveContext.Initialize chat"
   else if (name.startsWith("retrieveContextAsync.[Deprecated] Chat Retrieval")) return "retrieveContext.Chat Retrieval[Deprecated]"
   else if (name.startsWith("computeContext.PsiFileSearchRetriever")) return "PsiFileSearchRetriever"
-  else return name.replace("SimpleCompletableMessage::", "")
+  else return name.replace("SimpleCompletableMessage::", "").split("…")[0]
 }
 </script>

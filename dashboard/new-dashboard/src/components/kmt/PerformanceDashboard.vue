@@ -4,7 +4,7 @@
     table="kmt"
     persistent-id="kmt_performance_dashboard"
     initial-machine="Mac Cidr Performance"
-    :initial-mode="modes"
+    :initial-mode="MODES"
     :charts="charts"
     :with-installer="false"
   >
@@ -16,6 +16,7 @@
         :measure="chart.definition.measure"
         :projects="chart.projects"
         :aliases="chart.aliases"
+        :legend-formatter="legendFormatter"
       />
     </section>
   </DashboardPage>
@@ -25,8 +26,19 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
+import { legendFormatter, MODES } from "./KmtMeasurements"
 
 const chartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Indexing"],
+    measures: [["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"]],
+    projects: ["KMT_Basic/indexingKMT_Basic"],
+  },
+  {
+    labels: ["KMP Setup"],
+    measures: [["Progress: Setting up run configurations...", "Progress: Generating Xcode files…"]],
+    projects: ["KMT_Basic/startupKMT_Basic"],
+  },
   {
     labels: ["Startup"],
     measures: ["totalOpeningTime/timeFromAppStartTillAnalysisFinished"],
@@ -37,13 +49,7 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["globalInspections"],
     projects: ["KMT_Basic/inspection/KMT_Basic"],
   },
-  {
-    labels: ["Indexing"],
-    measures: [["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"]],
-    projects: ["KMT_Basic/indexingKMT_Basic"],
-  },
 ]
 
 const charts = combineCharts(chartsDeclaration)
-const modes = ["intellij-idea", "android-studio"]
 </script>

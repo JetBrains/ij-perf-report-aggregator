@@ -23,6 +23,7 @@ type SlackMessage struct {
 type slackSettings interface {
 	CreateSlackMessage(degradations Degradation) SlackMessage
 	SlackChannel() string
+	ChartLink(timeRangeProvider TimeRangeProvider) string
 }
 
 type SlackSettings struct {
@@ -48,7 +49,7 @@ func eventLink(tests string, build string, timestamp int64) string {
 func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	reason := getMessageBasedOnMedianChange(d.medianValues)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
-	link := s.slackLink(d)
+	link := s.ChartLink(d)
 	tests := strings.ReplaceAll(s.Project, ",", "\n")
 	mode := "default"
 	if s.Mode != "" {
@@ -73,7 +74,7 @@ func (s PerformanceSettings) CreateSlackMessage(d Degradation) SlackMessage {
 func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	reason := getMessageBasedOnMedianChange(d.medianValues)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
-	link := s.slackLink(d)
+	link := s.ChartLink(d)
 	tests := strings.ReplaceAll(s.Project, ",", "\n")
 
 	text := fmt.Sprintf(
@@ -94,7 +95,7 @@ func (s StartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	reason := getMessageBasedOnMedianChange(d.medianValues)
 	date := time.UnixMilli(d.timestamp).UTC().Format("02-01-2006 15:04:05")
-	link := s.slackLink(d)
+	link := s.ChartLink(d)
 
 	text := fmt.Sprintf(
 		"%sMetric: %s\n"+
@@ -109,7 +110,7 @@ func (s FleetStartupSettings) CreateSlackMessage(d Degradation) SlackMessage {
 	}
 }
 
-func (s FleetStartupSettings) slackLink(d Degradation) string {
+func (s FleetStartupSettings) ChartLink(d TimeRangeProvider) string {
 	machineGroup := getMachineGroup(s.Machine)
 	measurements := strings.Split(s.Metric, ",")
 	escapedMeasurements := make([]string, 0, len(measurements))
@@ -118,10 +119,25 @@ func (s FleetStartupSettings) slackLink(d Degradation) string {
 	}
 	measure := strings.Join(escapedMeasurements, "&measure=")
 	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/fleet/startupExplore?machine=%s&branch=%s&measure=%s&%s|See charts>",
-		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure, getCustomDateLinkBetweenDates(d, time.Now()))
+		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), measure, getCustomRange(d.GetRangeStartTime(), time.Now()))
 }
 
-func (s PerformanceSettings) slackLink(d Degradation) string {
+func getCustomRange(start, end time.Time) string {
+	currentDate := fmt.Sprintf("%d-%02d-%d", end.Year(), end.Month(), end.Day())
+	startDate := fmt.Sprintf("%d-%02d-%d", start.Year(), start.Month(), start.Day())
+	return fmt.Sprintf("timeRange=custom&customRange=%s:%s", startDate, currentDate)
+}
+
+type TimeRangeProvider interface {
+	GetRangeStartTime() time.Time
+}
+
+func (d Degradation) GetRangeStartTime() time.Time {
+	t := time.Unix(d.timestamp/1000, 0)
+	return t.AddDate(0, 0, -7)
+}
+
+func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
 	testPage := "tests"
 	if strings.HasSuffix(s.Db, "Dev") {
 		testPage = "testsDev"
@@ -144,23 +160,13 @@ func (s PerformanceSettings) slackLink(d Degradation) string {
 	project := strings.Join(escapedProjects, "&project=")
 	measure := strings.Join(escapedMeasurements, "&measure=")
 	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?mode=%s&machine=%s&branch=%s&project=%s&measure=%s&%s|See charts>",
-		s.ProductLink, testPage, mode, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomDateLinkBetweenDates(d, time.Now()))
+		s.ProductLink, testPage, mode, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomRange(d.GetRangeStartTime(), time.Now()))
 }
 
-func getCustomDateLinkBetweenDates(d Degradation, now time.Time) string {
-	currentDate := fmt.Sprintf("%d-%02d-%d", now.Year(), now.Month(), now.Day())
-
-	t := time.Unix(d.timestamp/1000, 0)
-	oneWeekAgo := t.AddDate(0, 0, -7)
-	startDate := fmt.Sprintf("%d-%02d-%d", oneWeekAgo.Year(), oneWeekAgo.Month(), oneWeekAgo.Day())
-
-	return fmt.Sprintf("timeRange=custom&customRange=%s:%s", startDate, currentDate)
-}
-
-func (s StartupSettings) slackLink(d Degradation) string {
+func (s StartupSettings) ChartLink(d TimeRangeProvider) string {
 	machineGroup := getMachineGroup(s.Machine)
 	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/ij/explore?machine=%s&branch=%s&product=%s&project=%s&%s|See charts>",
-		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project), getCustomDateLinkBetweenDates(d, time.Now()))
+		url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), url.QueryEscape(s.Product), url.QueryEscape(s.Project), getCustomRange(d.GetRangeStartTime(), time.Now()))
 }
 
 func SendDegradationsToSlack(insertionResults <-chan DegradationWithSettings, client *http.Client) {

@@ -33,7 +33,7 @@ func TestGetDateLink(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
-			result := getCustomDateLinkBetweenDates(tc.degradation, mockNow)
+			result := getCustomRange(tc.degradation.GetRangeStartTime(), mockNow)
 			if result != tc.expected {
 				t.Errorf("getCustomDateLinkBetweenDates() = %v, want %v", result, tc.expected)
 			}

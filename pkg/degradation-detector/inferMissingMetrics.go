@@ -148,7 +148,11 @@ func normalizeMetrics(metrics string) string {
 	return strings.Join(parts, ", ")
 }
 
-func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
+func (d MissingData) GetRangeStartTime() time.Time {
+	return time.Now().AddDate(0, -1, 0)
+}
+
+func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 	// Messages grouped by Slack channel
 	channelMessages := make(map[string][]string)
 
@@ -196,7 +200,16 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 			}
 
 			// Add build configuration link
-			message.WriteString(fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n\n", buildType))
+			message.WriteString(fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n", buildType))
+
+			// Add link to the chart
+			for project := range projectMap {
+				missingData := projectMap[project]
+				if ijPerfLink := missingData.Settings.ChartLink(missingData); ijPerfLink != "" {
+					message.WriteString(ijPerfLink + "\n\n")
+					break
+				}
+			}
 
 			channelMessages[slackChannel] = append(channelMessages[slackChannel], message.String())
 		}
@@ -208,10 +221,16 @@ func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
 		result[channel] = fmt.Sprintf("Data is missing for more than %d days:\n%s", daysToCheckMissing, strings.Join(messages, "\n"))
 	}
 
+	return result
+}
+
+func SendMissingDataMessages(data MissingDataMerged, client *http.Client) {
+	messages := GenerateMissingDataMessages(data)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
-	for channel, message := range result {
+	for channel, message := range messages {
 		err := SendSlackMessage(ctx, client, SlackMessage{
 			Text:    message,
 			Channel: channel,

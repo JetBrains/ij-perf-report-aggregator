@@ -64,7 +64,7 @@ var teamConfigs = []teamConfig{
 			"com.intellij.lang.javascript", "com.intellij.html", "org.angular2.lang", "css", "org.jetbrains.vuejs",
 			"org.angularjs.performance", "com.intellij.flex.completion", "com.intellij.htmltools",
 			"org.jetbrains.plugins.sass", "org.jetbrains.plugins.scss", "org.jetbrains.astro.lang", "com.intellij.psi.html",
-			"com.intellij.plugins.watcher",
+			"com.intellij.plugins.watcher", "com.intellij.javascript",
 		},
 	},
 	{
@@ -184,7 +184,7 @@ func filterTests(tests []string, packages []string, include bool) []string {
 	for _, test := range tests {
 		matches := false
 		for _, pkg := range packages {
-			if strings.HasPrefix(test, pkg) {
+			if strings.HasPrefix(test, pkg+".") {
 				matches = true
 				break
 			}

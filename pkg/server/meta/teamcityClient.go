@@ -193,6 +193,12 @@ func (client *TeamCityClient) getBuildType(ctx context.Context, buildID string) 
 	return build.BuildTypeId, nil
 }
 
+type CommitRevisions struct {
+	FirstCommit string `json:"firstCommit"`
+	LastCommit  string `json:"lastCommit"`
+}
+
+//nolint:unused // Can be useful later to get changes from a build
 func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {
 	res, err := client.makeRequest(ctx, "/app/rest/changes?locator=build:(id:"+buildID+")&count=10000", map[string]string{"Accept": "application/json"})
 	if err != nil {

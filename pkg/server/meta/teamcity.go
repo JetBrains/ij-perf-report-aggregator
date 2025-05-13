@@ -7,7 +7,8 @@ import (
 
 type BisectRequest struct {
 	TargetValue  string `json:"targetValue"`
-	Changes      string `json:"changes"`
+	BuildId      string `json:"buildId"`
+	Requester    string `json:"requester"`
 	Direction    string `json:"direction"`
 	Test         string `json:"test"`
 	Metric       string `json:"metric"`
@@ -24,7 +25,8 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.bisected.simple.class":      bisectReq.ClassName,
 		"target.bisected.test":              bisectReq.Test,
 		"target.configuration.id":           bisectReq.BuildType,
-		"target.git.commits":                bisectReq.Changes,
+		"target.build.id":                   bisectReq.BuildId,
+		"target.executor.description":       bisectReq.Requester,
 		"target.value.before.changed.point": bisectReq.TargetValue,
 		"target.perf.messages.mode":         "yes",
 		"target.is.bisect.run":              "true",
@@ -36,33 +38,11 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 	return map[string]string{
 		"target.bisected.simple.class":          bisectReq.ClassName,
 		"target.configuration.id":               bisectReq.BuildType,
-		"target.git.commits":                    bisectReq.Changes,
+		"target.build.id":                       bisectReq.BuildId,
+		"target.executor.description":           bisectReq.Requester,
 		"env.BISECT_FUNCTIONAL_FAILURE_MESSAGE": bisectReq.ErrorMessage,
 		"target.perf.messages.mode":             "no",
 		"target.is.bisect.run":                  "true",
-	}
-}
-
-func HandleGetTeamCityChanges() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		buildID := r.URL.Query().Get("buildId")
-		if buildID == "" {
-			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
-			return
-		}
-
-		revisions, err := teamCityClient.getChanges(r.Context(), buildID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(revisions)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 	}
 }
 
@@ -89,11 +69,6 @@ func HandleGetTeamCityBuildType() http.HandlerFunc {
 	}
 }
 
-type CommitRevisions struct {
-	FirstCommit string `json:"firstCommit"`
-	LastCommit  string `json:"lastCommit"`
-}
-
 func CreatePostStartBisect() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var bisectReq BisectRequest
@@ -112,7 +87,7 @@ func CreatePostStartBisect() http.HandlerFunc {
 			buildParams = generateParamsForPerfRun(bisectReq)
 		}
 
-		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangeset", buildParams)
+		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_BisectChangesetOnSpace", buildParams)
 		if err != nil {
 			http.Error(writer, "Failed to start bisect: "+err.Error(), http.StatusInternalServerError)
 			return

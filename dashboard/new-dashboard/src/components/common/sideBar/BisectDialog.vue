@@ -14,22 +14,6 @@
         />
         <label for="targetValue">Target value</label>
       </FloatLabel>
-      <div class="flex">
-        <FloatLabel>
-          <InputText
-            id="changes"
-            v-model="firstCommit"
-          />
-          <label for="changes">First commit</label>
-        </FloatLabel>
-        <FloatLabel>
-          <InputText
-            id="changes"
-            v-model="lastCommit"
-          />
-          <label for="changes">Last commit</label>
-        </FloatLabel>
-      </div>
       <FloatLabel>
         <Select
           id="direction"
@@ -52,11 +36,25 @@
         </Select>
         <label for="direction">Direction</label>
       </FloatLabel>
+      <FloatLabel>
+        <InputText
+          id="requester"
+          v-model="requester"
+        />
+        <label for="requester">Requester</label>
+      </FloatLabel>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
           <AccordionContent>
             <div class="flex flex-col space-y-8 mb-4 mt-4">
+              <FloatLabel>
+                <InputText
+                  id="buildId"
+                  v-model="buildId"
+                />
+                <label for="buildId">Build ID</label>
+              </FloatLabel>
               <FloatLabel>
                 <InputText
                   id="test"
@@ -125,9 +123,9 @@ import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
 import { Ref, ref } from "vue"
-import { calculateChanges } from "../../../util/changes"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
+import { useUserStore } from "../../../shared/useUserStore"
 
 const { data } = defineProps<{
   data: InfoData
@@ -141,14 +139,8 @@ const test = ref(data.projectName)
 const isDegradation = data.deltaPrevious?.includes("-") ?? false
 const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
 const buildType = computedAsync(async () => await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId), null)
-const firstCommit = ref()
-const lastCommit = ref()
-const changesMerged = await calculateChanges(serverConfigurator.db, data.installerId ?? data.buildId)
-const changesUnmerged = changesMerged?.split("%2C") as string[] | null
-if (Array.isArray(changesUnmerged)) {
-  firstCommit.value = changesUnmerged.at(-1) ?? null
-  lastCommit.value = changesUnmerged[0] ?? null
-}
+const buildId = ref(data.buildId.toString())
+const requester = ref(useUserStore().user?.email)
 const methodName = data.description.value?.methodName ?? ""
 const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
@@ -171,7 +163,8 @@ async function startBisect() {
     //todo add validation on all values
     const weburl = await bisectClient.sendBisectRequest({
       targetValue: targetValue.value as string,
-      changes: (firstCommit.value as string) + "^.." + (lastCommit.value as string),
+      requester: requester.value ?? "",
+      buildId: buildId.value,
       direction: direction.value,
       test: test.value,
       metric: metric.value,

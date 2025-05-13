@@ -1,9 +1,10 @@
 import { ServerConfigurator } from "../dataQuery"
 
 interface BisectRequest {
-  changes: string
+  buildId: string
   buildType: string
   className: string
+  requester: string
 }
 
 interface PerformanceBisectRequest extends BisectRequest {
@@ -15,11 +16,6 @@ interface PerformanceBisectRequest extends BisectRequest {
 
 interface FunctionalBisectRequest extends BisectRequest {
   errorMessage: string
-}
-
-interface CommitRevisions {
-  firstCommit: string
-  lastCommit: string
 }
 
 export class BisectClient {
@@ -44,21 +40,6 @@ export class BisectClient {
       throw new Error(`Failed to send bisect request: ${response.statusText} ${errorMessage}`)
     }
     return response.text()
-  }
-
-  async fetchTeamCityChanges(buildId: string): Promise<CommitRevisions> {
-    try {
-      const response = await fetch(`${this.serverConfigurator?.serverUrl}/api/meta/teamcity/changes?buildId=${encodeURIComponent(buildId)}`)
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.log(`Failed to fetch changes: ${response.status} - ${errorText}`)
-        return { firstCommit: "", lastCommit: "" }
-      }
-      return (await response.json()) as CommitRevisions
-    } catch (error) {
-      console.log("Error fetching TeamCity changes:", error)
-      return { firstCommit: "", lastCommit: "" }
-    }
   }
 
   async fetchBuildType(buildId: string): Promise<string> {

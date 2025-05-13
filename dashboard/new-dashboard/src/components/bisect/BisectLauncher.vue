@@ -7,8 +7,8 @@
         </template>
         <template #content>
           <div class="flex flex-col space-y-8 mb-4 mt-6">
-            <div class="grid grid-cols-4 gap-4">
-              <div class="col-span-4 mb-2">
+            <div class="grid grid-cols-4">
+              <div class="col-span-4 mb-4">
                 <FloatLabel class="w-full">
                   <InputText
                     id="errorMessage"
@@ -18,36 +18,26 @@
                   <label for="errorMessage">Error message to look in the build log</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-2">
+              <div class="col-span-4 mb-4">
                 <FloatLabel class="w-full">
                   <InputText
-                    id="firstCommit"
-                    v-model="model.firstCommit"
+                    id="requester"
+                    v-model="model.requester"
                     class="w-full"
                   />
-                  <label for="firstCommit">First commit</label>
+                  <label for="requester">Requester</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-2">
+              <div class="col-span-4 mb-4">
                 <FloatLabel class="w-full">
                   <InputText
-                    id="lastCommit"
-                    v-model="model.lastCommit"
+                    id="buildType"
+                    v-model="model.buildType"
                     class="w-full"
                   />
-                  <label for="lastCommit">Last commit</label>
+                  <label for="buildType">Build type</label>
                 </FloatLabel>
               </div>
-            </div>
-            <div class="col-span-4 mb-2">
-              <FloatLabel class="w-full">
-                <InputText
-                  id="buildType"
-                  v-model="model.buildType"
-                  class="w-full"
-                />
-                <label for="buildType">Build type</label>
-              </FloatLabel>
             </div>
             <Accordion :value="-1">
               <AccordionPanel :value="0">
@@ -55,6 +45,16 @@
                 <AccordionContent>
                   <div class="grid grid-cols-4 gap-4 mt-2">
                     <div class="col-span-4 mt-2">
+                      <div class="col-span-4 mb-2">
+                        <FloatLabel class="w-full">
+                          <InputText
+                            id="buildID"
+                            v-model="model.buildId"
+                            class="w-full"
+                          />
+                          <label for="buildID">Build ID</label>
+                        </FloatLabel>
+                      </div>
                       <FloatLabel class="w-full">
                         <InputText
                           id="className"
@@ -96,6 +96,7 @@
 import { computed, onMounted, reactive, ref } from "vue"
 import { BisectClient } from "../common/sideBar/BisectClient"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
+import { useUserStore } from "../../shared/useUserStore"
 
 const props = withDefaults(
   defineProps<{
@@ -114,14 +115,14 @@ const serverConfigurator = new ServerWithCompressConfigurator("", "")
 const bisectClient = new BisectClient(serverConfigurator)
 
 const model = reactive({
-  firstCommit: "",
-  lastCommit: "",
   errorMessage: props.errorMessage,
   buildType: "",
+  buildId: props.buildId,
   className: props.className,
+  requester: useUserStore().user?.email,
 })
 
-const isRequiredFieldEmpty = computed(() => model.firstCommit.trim() == "" || model.lastCommit.trim() == "" || model.errorMessage.trim() == "" || model.buildType.trim() == "")
+const isRequiredFieldEmpty = computed(() => model.errorMessage.trim() == "" || model.buildType.trim() == "")
 
 const error = ref<string | null>(null)
 const loading = ref(false)
@@ -131,7 +132,8 @@ async function startBisect() {
   loading.value = true
   try {
     const weburl = await bisectClient.sendBisectRequest({
-      changes: model.firstCommit + "^.." + model.lastCommit,
+      buildId: model.buildId,
+      requester: model.requester ?? "",
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
@@ -146,9 +148,6 @@ async function startBisect() {
 
 onMounted(async () => {
   try {
-    const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
-    model.firstCommit = changes.firstCommit
-    model.lastCommit = changes.lastCommit
     model.buildType = await bisectClient.fetchBuildType(props.buildId)
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"

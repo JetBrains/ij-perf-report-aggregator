@@ -165,6 +165,7 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 		for buildType, projectMap := range buildTypeMap {
 			// Create groups for this build type
 			groups := make(map[GroupKey][]string)
+			missingDataMap := make(map[GroupKey]MissingData)
 
 			// Group projects by metrics and timestamp
 			for project, missingData := range projectMap {
@@ -178,6 +179,7 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 					LastTimestamp: missingData.LastTimestamp,
 				}
 				groups[key] = append(groups[key], project)
+				missingDataMap[key] = missingData
 			}
 
 			// Build message for this build type with grouped projects
@@ -196,20 +198,15 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 				message.WriteString(key.Metrics)
 				message.WriteString("\nLast Recorded: ")
 				message.WriteString(readableDate)
+
+				missingData := missingDataMap[key]
+				ijPerfLink := missingData.Settings.ChartLink(missingData)
+				message.WriteString("\n" + ijPerfLink)
 				message.WriteString("\n\n")
 			}
 
 			// Add build configuration link
 			message.WriteString(fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n", buildType))
-
-			// Add link to the chart
-			for project := range projectMap {
-				missingData := projectMap[project]
-				if ijPerfLink := missingData.Settings.ChartLink(missingData); ijPerfLink != "" {
-					message.WriteString(ijPerfLink + "\n\n")
-					break
-				}
-			}
 
 			channelMessages[slackChannel] = append(channelMessages[slackChannel], message.String())
 		}

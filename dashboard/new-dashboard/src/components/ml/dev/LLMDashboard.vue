@@ -29,8 +29,9 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Chat/Context"
+        label="Chat/Context Mock kotlinx/coroutines"
         :measure="[
+          'SimpleCompletableMessage::state_1',
           'SimpleCompletableMessage::Collecting context…_1',
           'SimpleCompletableMessage::Generating answer…_1',
           'retrieveContextAsync.Chat Submit(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=SLOW).time.max',
@@ -40,6 +41,20 @@
         ]"
         :legend-formatter="chatContextMetricsLegendFormatter"
         :projects="['kotlinx_coroutines_k2_dev_ContextPerformanceTest/basic context performance test']"
+      ></GroupProjectsChart>
+      <GroupProjectsChart
+        label="Chat/Context E2E petclinic"
+        :measure="[
+          'SimpleCompletableMessage::state',
+          'SimpleCompletableMessage::Collecting context…',
+          'SimpleCompletableMessage::Generating answer…',
+          'retrieveContextAsync.Chat Submit(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=SLOW).time.max',
+          'retrieveContextAsync.Initialize chat.time.max',
+          'retrieveContextAsync.[Deprecated] Chat Retrieval(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=ALL).time.max',
+          'computeContext.PsiFileSearchRetriever.[Deprecated] Chat Retrieval(userInput=&quot;test&quot;, chatSession=ChatRetrievalSession(&quot;New Chat&quot;), chatRetrieversType=ALL).time.max',
+        ]"
+        :legend-formatter="chatContextMetricsLegendFormatter"
+        :projects="['CodebaseModeE2ETest_petclinic/Codebase mode. explain method']"
       ></GroupProjectsChart>
     </section>
   </DashboardPage>
@@ -53,6 +68,7 @@ const chatContextMetricsLegendFormatter = (name: string) => {
   else if (name.startsWith("retrieveContextAsync.Initialize chat")) return "retrieveContext.Initialize chat"
   else if (name.startsWith("retrieveContextAsync.[Deprecated] Chat Retrieval")) return "retrieveContext.Chat Retrieval[Deprecated]"
   else if (name.startsWith("computeContext.PsiFileSearchRetriever")) return "PsiFileSearchRetriever"
+  else if (name.startsWith("SimpleCompletableMessage::state")) return "SimpleCompletableMessage"
   else return name.replace("SimpleCompletableMessage::", "").split("…")[0]
 }
 </script>

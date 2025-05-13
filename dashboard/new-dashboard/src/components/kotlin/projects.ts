@@ -100,6 +100,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   intelliJ: buildCategory("IntelliJ", "intellij_commit/"),
   // Same intelliJ. Need to avoid lot of lines on chart
   intelliJ2: buildCategory("IntelliJ suite 2", ""),
+  intelliJ3: buildCategory("IntelliJ suite 3", ""),
 
   intelliJSources: buildCategory("Intellij Sources", "intellij_sources/"),
   intelliJTyping: buildCategory("IntelliJ with typing", ""),

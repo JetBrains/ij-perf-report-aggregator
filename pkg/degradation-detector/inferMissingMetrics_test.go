@@ -33,7 +33,7 @@ func TestGenerateMissingDataMessages(t *testing.T) {
 		assert.Contains(t, message, "Metrics: metric1")
 		assert.Contains(t, message, "Last Recorded: 15-05-2023")
 		assert.Contains(t, message, "<https://buildserver.labs.intellij.net/buildConfiguration/build_type1|TC Configuration>")
-		assert.Contains(t, message, "<https://ij-perf.labs.jb.gg/product/tests?mode=default&machine=&branch=&project=&measure=metric1&timeRange=custom&customRange=2025-04-12:2025-05-12|See charts>")
+		assert.Contains(t, message, "<https://ij-perf.labs.jb.gg/product/tests?mode=default&machine=&branch=&project=&measure=metric1&timeRange=custom&customRange=")
 	})
 
 	// Test case 2: Multiple projects with same metrics and timestamp

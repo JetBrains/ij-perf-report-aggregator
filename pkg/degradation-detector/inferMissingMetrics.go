@@ -157,11 +157,14 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 	channelMessages := make(map[string][]string)
 
 	// Default to 3 if no settings provided is available
-	daysToCheckMissing := 3
+	channelDaysToCheck := make(map[string]int)
 
 	// First, group all messages by Slack channel
 	for slackChannel, buildTypeMap := range data {
 		// Group projects by metrics and timestamp within each build type
+
+		daysToCheckMissing := 3
+
 		for buildType, projectMap := range buildTypeMap {
 			// Create groups for this build type
 			groups := make(map[GroupKey][]string)
@@ -209,13 +212,15 @@ func GenerateMissingDataMessages(data MissingDataMerged) map[string]string {
 			message.WriteString(fmt.Sprintf("<https://buildserver.labs.intellij.net/buildConfiguration/%s|TC Configuration>\n", buildType))
 
 			channelMessages[slackChannel] = append(channelMessages[slackChannel], message.String())
+			channelDaysToCheck[slackChannel] = daysToCheckMissing
 		}
 	}
 
 	// Combine messages for each channel
 	result := make(map[string]string)
 	for channel, messages := range channelMessages {
-		result[channel] = fmt.Sprintf("Data is missing for more than %d days:\n%s", daysToCheckMissing, strings.Join(messages, "\n"))
+		daysValue := channelDaysToCheck[channel]
+		result[channel] = fmt.Sprintf("Data is missing for more than %d days:\n%s", daysValue, strings.Join(messages, "\n"))
 	}
 
 	return result

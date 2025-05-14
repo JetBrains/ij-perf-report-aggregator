@@ -116,6 +116,28 @@ const groups = [
       "axios/completion/functions",
     ],
   },
+  {
+    label: "Highlighting - remove symbol",
+    measure: "typing_EditorBackSpace_duration",
+    projects: [
+      "material-ui-react-admin/PostEdit.tsxHighlighting",
+      "WEB_5976/Card.jsHighlighting",
+      "kibana/alerts_grouping.tsxHighlighting",
+      "kibana/project_navigation.tsHighlighting",
+      "fp-ts/Foldable.tsHighlighting",
+    ],
+  },
+  {
+    label: "Highlighting - type symbol",
+    measure: "typing_}_duration",
+    projects: [
+      "material-ui-react-admin/PostEdit.tsxHighlighting",
+      "WEB_5976/Card.jsHighlighting",
+      "kibana/alerts_grouping.tsxHighlighting",
+      "kibana/project_navigation.tsHighlighting",
+      "fp-ts/Foldable.tsHighlighting",
+    ],
+  },
 ]
 
 function groupBy3<T>(array: T[]): T[][] {

@@ -144,6 +144,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["projectViewInit", "projectViewInit#cachedNodesLoaded"]],
     projects: ["intellij_commit/projectView"],
   },
+  {
+    labels: ["Find in Files"],
+    measures: [["findInFiles#openDialog", "findInFiles#search: newInstance", "findInFiles#search: intellij-ide-starter"]],
+    projects: ["intellij_commit/find-in-files"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

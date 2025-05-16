@@ -40,6 +40,7 @@ const enum ROUTE_PREFIX {
   Diogen = "/diogen",
   Toolbox = "/toolbox",
 }
+
 const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
@@ -204,8 +205,9 @@ enum ROUTES {
   VcsSpaceDashboardDev = `${ROUTE_PREFIX.Vcs}/spaceDev`,
   VcsStarterDashboardDev = `${ROUTE_PREFIX.Vcs}/starterDev`,
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
+  IJentBenchmarksDashboard = `${ROUTE_PREFIX.IJent}/benchmarksDashboard`,
+  IJentPerfTestsDashboard = `${ROUTE_PREFIX.IJent}/performanceDashboard`,
   IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
-  IJentPerfTests = `${ROUTE_PREFIX.IJent}/performance`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${DEV_TEST_ROUTE}`,
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
@@ -1094,12 +1096,16 @@ const IJENT: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.IJentBenchmarks,
-          label: "Benchmarks",
+          url: ROUTES.IJentBenchmarksDashboard,
+          label: "Benchmarks Dashboard",
         },
         {
-          url: ROUTES.IJentPerfTests,
-          label: "Tests",
+          url: ROUTES.IJentPerfTestsDashboard,
+          label: "Performance Dashboard",
+        },
+        {
+          url: ROUTES.IJentBenchmarks,
+          label: "Benchmarks",
         },
       ],
     },
@@ -1260,6 +1266,7 @@ export const PRODUCTS = [
   TOOLBOX,
   WEBSTORM,
 ]
+
 export function getNavigationElement(path: string): Product {
   const prefix = "/" + path.split("/")[1]
   return PRODUCTS.find((PRODUCTS) => prefix == PRODUCTS.url) ?? PRODUCTS[0]
@@ -2279,6 +2286,16 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Perf Unit Tests" },
         },
         {
+          path: ROUTES.IJentBenchmarksDashboard,
+          component: () => import("./components/ijent/IJentBenchmarskDashboard.vue"),
+          meta: { pageTitle: "IJent Benchmarks Dashboard" },
+        },
+        {
+          path: ROUTES.IJentPerfTestsDashboard,
+          component: () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"),
+          meta: { pageTitle: "IJent Performance Tests Dashboard" },
+        },
+        {
           path: ROUTES.IJentBenchmarks,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
@@ -2288,11 +2305,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "IJent Benchmarks" },
-        },
-        {
-          path: ROUTES.IJentPerfTests,
-          component: () => import("./components/ijent/IJentPerformanceTests.vue"),
-          meta: { pageTitle: "IJent Performance" },
         },
         {
           path: ROUTES.AIAssistantApiTests,

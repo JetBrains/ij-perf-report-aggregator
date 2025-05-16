@@ -4,6 +4,7 @@
     table="ijent"
     persistent-id="ijent_performance_dashboard"
     initial-machine="windows-azure"
+    :with-installer="false"
     :charts="charts"
   >
     <template #configurator>
@@ -37,6 +38,12 @@ import MeasureSelect from "../charts/MeasureSelect.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
+  "ijent.events.count",
+  "indexingTimeWithoutPauses",
+
+  "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
+  "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",
+
   "AWTEventQueue.dispatchTimeTotal",
   "gcPause",
   "gcPauseCount",
@@ -44,15 +51,40 @@ const metricsDeclaration = [
   "freedMemoryByGC",
   "totalHeapUsedMax",
 
+  "JVM.maxThreadCount",
+  "JVM.totalCpuTimeMs",
   "JVM.GC.collectionTimesMs",
   "JVM.GC.collections",
   "JVM.maxHeapMegabytes",
-  "JVM.maxThreadCount",
-  "JVM.totalCpuTimeMs",
+  "MEM.avgRamMegabytes",
+  "MEM.avgFileMappingsRamMegabytes",
+
+  "ijent.fileSystemClose.sum.ms",
+  "ijent.providerCheckAccess.sum.ms",
+  "ijent.providerCopy.sum.ms",
+  "ijent.providerCreateDirectory.sum.ms",
+  "ijent.providerDelete.sum.ms",
+  "ijent.providerMove.sum.ms",
+  "ijent.providerNewByteChannel.sum.ms",
+  "ijent.providerReadAttributes.sum.ms",
+  "ijent.seekableByteChannelClose.sum.ms",
+  "ijent.seekableByteChannelNewPosition.sum.ms",
+  "ijent.seekableByteChannelRead.sum.ms",
+  "ijent.seekableByteChannelSize.sum.ms",
+  "ijent.seekableByteChannelWrite.sum.ms",
 ]
 
-// TODO: add future projects here
-const projects = ["NO PROJECTS"]
+const projects = [
+  "wsl-import-jps-1000-modules-WSL",
+  "wsl-import-intellij",
+  "nio_default-import-jps-1000-modules-Local",
+  "nio_default-import-intellij",
+  "ijent-import-jps-1000-modules-Local",
+  "ijent-import-jps-1000-modules-Docker",
+  "ijent-import-intellij-Local",
+  "ijent-import-intellij-Docker",
+  "ijent-import-intellij",
+]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(projects)

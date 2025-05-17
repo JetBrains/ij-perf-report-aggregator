@@ -46,6 +46,18 @@
           <BranchIcon class="w-4 h-4" />
           <span>{{ data?.branch }}</span>
         </span>
+        <span
+          v-if="data?.branch"
+          class="flex gap-1.5 items-center"
+        >
+          <QueueListIcon class="w-4 h-4" />
+          <span
+            v-tooltip.left="'TeamCity build number'"
+            :class="'break-all'"
+          >
+            {{ data?.buildId }}
+          </span>
+        </span>
         <div
           v-if="data?.series.length == 1"
           class="flex flex-col gap-2"

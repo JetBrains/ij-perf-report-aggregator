@@ -5,6 +5,20 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, Simpl
 import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { refToObservable } from "../configurators/rxjs"
 
+export async function getTeamcityBuildCounter(buildId: number): Promise<string | null> {
+  try {
+    const response = await fetch(`${ServerWithCompressConfigurator.DEFAULT_SERVER_URL}/api/meta/teamcity/buildCounter?buildId=${encodeURIComponent(buildId.toString())}`)
+    if (!response.ok) {
+      console.log(`Failed to fetch TeamCity build counter: ${response.status} - ${await response.text()}`)
+      return null
+    }
+    return await response.text()
+  } catch (error) {
+    console.log("Error fetching TeamCity build counter:", error)
+    return null
+  }
+}
+
 export function getTeamcityBuildType(db: string, table: string, id: number): Promise<string | null> {
   return new Promise((resolve, _) => {
     const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))

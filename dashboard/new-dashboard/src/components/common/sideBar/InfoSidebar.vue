@@ -47,15 +47,15 @@
           <span>{{ data?.branch }}</span>
         </span>
         <span
-          v-if="data?.branch"
+          v-if="buildCounter != null"
           class="flex gap-1.5 items-center"
         >
-          <QueueListIcon class="w-4 h-4" />
+          <HashTagIcon class="w-4 h-4" />
           <span
-            v-tooltip.left="'TeamCity build number'"
+            v-tooltip.left="'TeamCity build counter'"
             :class="'break-all'"
           >
-            {{ data?.buildId }}
+            {{ buildCounter || data?.buildId }}
           </span>
         </span>
         <div
@@ -290,7 +290,7 @@ import { Accident, AccidentKind } from "../../../configurators/accidents/Acciden
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
-import { getTeamcityBuildType } from "../../../util/artifacts"
+import { getTeamcityBuildCounter, getTeamcityBuildType } from "../../../util/artifacts"
 import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
@@ -305,6 +305,7 @@ import { YoutrackClient } from "../youtrack/YoutrackClient"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import BisectDialog from "./BisectDialog.vue"
 import { dbTypeStore } from "../../../shared/dbTypes"
+import { computedAsync } from "@vueuse/core"
 
 const { timerangeConfigurator } = defineProps<{
   timerangeConfigurator: TimeRangeConfigurator
@@ -317,6 +318,14 @@ const showStacktrace = ref(false)
 const showBisectDialog = ref(false)
 const bisectSupported = dbTypeStore().dbType == DBType.INTELLIJ_DEV
 const accidentToEdit: Ref<Accident | null> = ref(null)
+
+const buildCounter = computedAsync(async () => {
+  const buildId = vm.data.value?.buildId
+  if (buildId) {
+    return await getTeamcityBuildCounter(buildId)
+  }
+  return null
+}, null)
 
 function getRawValueIfDifferent(value: DataSeries): string | null {
   return value.value != value.rawValue.toString() ? value.rawValue.toString() : null

@@ -69,6 +69,29 @@ func HandleGetTeamCityBuildType() http.HandlerFunc {
 	}
 }
 
+func HandleGetTeamCityBuildCounter() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		counter, err := teamCityClient.getBuildCounter(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "text/plain")
+		_, err = w.Write([]byte(counter))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func CreatePostStartBisect() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		var bisectReq BisectRequest

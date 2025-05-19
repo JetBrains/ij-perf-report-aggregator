@@ -50,7 +50,7 @@
           v-if="buildCounter != null"
           class="flex gap-1.5 items-center"
         >
-          <HashTagIcon class="w-4 h-4" />
+          <HashtagIcon class="w-4 h-4" />
           <span
             v-tooltip.left="'TeamCity build counter'"
             :class="'break-all'"

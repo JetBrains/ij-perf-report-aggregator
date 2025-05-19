@@ -48,12 +48,13 @@ export class LineChartVM {
           // if the same value is clicked again remove
           if (this.lastClickedValue.get(params.seriesName)?.timestamp == (params.value[0] as number)) {
             this.lastClickedValue.delete(params.seriesName)
+            sidebarVm.close()
           } else {
             this.lastClickedValue.set(params.seriesName, new ClickedValue(params.value[0] as number, params.value[1] as number))
+            const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }))
+            sidebarVm.show(infoData)
           }
         }
-        const infoData = getInfoDataFrom(this.lastParams ?? params, valueUnit, accidentsConfigurator, chartManager.chart.getDataURL({ type: "png" }))
-        sidebarVm.show(infoData)
       }
     }
   }

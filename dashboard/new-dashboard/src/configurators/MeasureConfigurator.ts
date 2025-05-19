@@ -34,8 +34,9 @@ import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
-import { getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
+import { getBuildId, getInfoDataFrom } from "../components/common/sideBar/InfoSidebarPerformance"
 import { useDarkModeStore } from "../shared/useDarkModeStore"
+import { useSelectedPointStore } from "../shared/selectedPointStore"
 
 export type TooltipTrigger = "item" | "axis" | "none"
 
@@ -391,6 +392,9 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
 function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
+      if (getInfoDataFrom(seriesIndex, "ms", null, "").buildId.toString() == useSelectedPointStore().selectedPoint) {
+        return getSelectedPointColor()
+      }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])
       if (accidents == null || accidents.length === 0) {
         const detectChange = detectedChanges.get(JSON.stringify(seriesIndex.value as string[]))
@@ -480,6 +484,10 @@ function mergeSeries(dataList: (string | number)[][][], configuration: DataQuery
   return new MergeResults(mergedDataList, seriesIdToSeriesName, seriesIdToMeasureName)
 }
 
+function getSelectedPointColor() {
+  return useDarkModeStore().darkMode ? "white" : "black"
+}
+
 async function configureChart(
   configuration: DataQueryExecutorConfiguration,
   dataList: DataQueryResult,
@@ -560,7 +568,7 @@ async function configureChart(
         selectedMode: "single",
         select: {
           itemStyle: {
-            color: useDarkModeStore().darkMode ? "white" : "black",
+            color: getSelectedPointColor(),
           },
         },
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)

@@ -138,6 +138,11 @@ func (d Degradation) GetRangeStartTime() time.Time {
 }
 
 func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
+	build := ""
+	if d, ok := d.(*Degradation); ok {
+		build = d.Build
+	}
+
 	testPage := "tests"
 	if strings.HasSuffix(s.Db, "Dev") {
 		testPage = "testsDev"
@@ -159,8 +164,8 @@ func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
 	}
 	project := strings.Join(escapedProjects, "&project=")
 	measure := strings.Join(escapedMeasurements, "&measure=")
-	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?mode=%s&machine=%s&branch=%s&project=%s&measure=%s&%s|See charts>",
-		s.ProductLink, testPage, mode, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomRange(d.GetRangeStartTime(), time.Now()))
+	return fmt.Sprintf("<https://ij-perf.labs.jb.gg/%s/%s?mode=%s&machine=%s&branch=%s&project=%s&measure=%s&%s&point=%s|See charts>",
+		s.ProductLink, testPage, mode, url.QueryEscape(machineGroup), url.QueryEscape(s.Branch), project, measure, getCustomRange(d.GetRangeStartTime(), time.Now()), build)
 }
 
 func (s StartupSettings) ChartLink(d TimeRangeProvider) string {

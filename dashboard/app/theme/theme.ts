@@ -1,6 +1,7 @@
 import { definePreset } from "@primeuix/themes"
 import Aura from "@primeuix/themes/aura"
 
+// noinspection TypeScriptValidateTypes
 export const MyPreset = definePreset(Aura, {
   primitive: {
     "blue.400": "#6495ED",
@@ -39,6 +40,9 @@ export const MyPreset = definePreset(Aura, {
     accordion: {
       header: {
         padding: "0 0 1rem 0",
+        focusRing: {
+          width: "0px",
+        },
       },
       content: {
         padding: "0",

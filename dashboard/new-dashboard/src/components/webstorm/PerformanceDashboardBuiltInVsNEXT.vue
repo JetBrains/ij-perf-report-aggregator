@@ -58,6 +58,8 @@ const groups = [
       "pancake-frontend/completion/component",
       "pancake-frontend/completion/attribute",
       "fp-ts/completion/completion",
+      "backstage/completion/completion",
+      "backstage/completion/component",
     ],
   },
   {
@@ -79,6 +81,7 @@ const groups = [
       "kibana/localInspection/alerts_grouping.tsx",
       "kibana/localInspection/project_navigation.ts",
       "fp-ts/localInspection/eq",
+      "backstage/localInspection/UserProfileCard.tsx",
     ],
   },
   {
@@ -103,6 +106,7 @@ const groups = [
       "allure-js/localInspection/JasmineAllureReporter.ts",
       "material-ui-react-admin/localInspection/PostEdit.tsx",
       "fp-ts/localInspection/eq",
+      "backstage/localInspection/UserProfileCard.tsx",
     ],
   },
   {
@@ -114,6 +118,7 @@ const groups = [
       "pancake-frontend/completion/attribute",
       "eslint-plugin-jest/completion/types",
       "axios/completion/functions",
+      "backstage/completion/completion",
     ],
   },
   {
@@ -125,6 +130,7 @@ const groups = [
       "kibana/alerts_grouping.tsxHighlighting",
       "kibana/project_navigation.tsHighlighting",
       "fp-ts/Foldable.tsHighlighting",
+      "backstage/UserProfileCard.tsxHighlighting",
     ],
   },
   {
@@ -136,6 +142,7 @@ const groups = [
       "kibana/alerts_grouping.tsxHighlighting",
       "kibana/project_navigation.tsHighlighting",
       "fp-ts/Foldable.tsHighlighting",
+      "backstage/UserProfileCard.tsxHighlighting",
     ],
   },
 ]

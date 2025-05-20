@@ -134,7 +134,7 @@ type TimeRangeProvider interface {
 
 func (d Degradation) GetRangeStartTime() time.Time {
 	t := time.Unix(d.timestamp/1000, 0)
-	return t.AddDate(0, 1, 0)
+	return t.AddDate(0, -1, 0)
 }
 
 func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {

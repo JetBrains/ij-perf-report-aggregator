@@ -139,7 +139,7 @@ func (d Degradation) GetRangeStartTime() time.Time {
 
 func (s PerformanceSettings) ChartLink(d TimeRangeProvider) string {
 	build := ""
-	if d, ok := d.(*Degradation); ok {
+	if d, ok := d.(Degradation); ok {
 		build = d.Build
 	}
 

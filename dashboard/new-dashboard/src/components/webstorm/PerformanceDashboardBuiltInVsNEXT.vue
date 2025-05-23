@@ -87,7 +87,7 @@ const groups = [
   {
     label: "Global inspections",
     measure: "globalInspections",
-    projects: ["eslint-plugin-jest/globalInspection/whole-project", "ring-ui/globalInspection/src", "fleetbot/globalInspection/src", "kibana/globalInspection/src"],
+    projects: ["eslint-plugin-jest/inspection/whole-project", "ring-ui/inspection/src", "fleetbot/inspection/src", "kibana/inspection/src"],
   },
   {
     label: "Typing",

@@ -52,7 +52,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: ["axios/inspection", "gitlab/inspection-app", "ring-ui/globalInspection/src"],
+    projects: ["axios/inspection/", "gitlab/inspection/appDir", "ring-ui/inspection/src"],
   },
 ]
 

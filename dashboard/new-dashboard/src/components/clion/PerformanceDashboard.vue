@@ -164,6 +164,18 @@
         />
       </div>
     </section>
+
+    <Divider title="Debugger" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Stepping (fmtlib)"
+          measure="['debugStep_into', 'debugStep_out', 'debugStep_over']"
+          project="fmtlib/debug/args-test/basic"
+        />
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

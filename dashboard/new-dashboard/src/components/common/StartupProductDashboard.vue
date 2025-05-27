@@ -29,7 +29,11 @@
         <section>
           <LineChart
             title="FUS Total startup"
-            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs', 'metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished']"
+            :measures="[
+              'metrics.startup/fusTotalDuration',
+              'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs',
+              'metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished'
+              ]"
             :configurators="configurators"
           />
         </section>
@@ -167,7 +171,7 @@ const persistentStateManager = new PersistentStateManager(
   {
     project: defaultProject,
     machine: "Windows Munich i7-13700, 64 Gb",
-    branch: "master",
+    branch: "master"
   },
   useRouter()
 )
@@ -180,7 +184,7 @@ productConfigurator.selected.value = product
 const projectConfigurator = createProjectConfigurator(productConfigurator, serverConfigurator, persistentStateManager, [
   productConfigurator,
   timeRangeConfigurator,
-  branchConfigurator,
+  branchConfigurator
 ])
 const triggeredByConfigurator = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator, timeRangeConfigurator])
 
@@ -196,7 +200,7 @@ const metrics = ref([
   "notifications/number",
   "exitMetrics/application.exit",
   "exitMetrics/saveSettingsOnExit",
-  "exitMetrics/disposeProjects",
+  "exitMetrics/disposeProjects"
 ])
 
 const accidentsConfigurator = new AccidentsConfiguratorForStartup(serverConfigurator.serverUrl, ref(product), projectConfigurator.selected, metrics, timeRangeConfigurator)
@@ -210,7 +214,7 @@ const configurators = [
   projectConfigurator,
   branchConfigurator,
   triggeredByConfigurator,
-  accidentsConfigurator,
+  accidentsConfigurator
 ] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)

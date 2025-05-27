@@ -29,7 +29,7 @@
         <section>
           <LineChart
             title="FUS Total startup"
-            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs']"
+            :measures="['metrics.startup/fusTotalDuration', 'metrics.reopenProjectPerformance/fusCodeVisibleInEditorDurationMs', 'metrics.totalOpeningTime/timeFromAppStartTillAnalysisFinished']"
             :configurators="configurators"
           />
         </section>

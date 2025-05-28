@@ -171,7 +171,7 @@
       <div class="flex-1 min-w-0">
         <CLionVsRadlerGroupProjectsChart
           label="Stepping (fmtlib)"
-          measure="['debugStep_into', 'debugStep_out', 'debugStep_over']"
+          :measure="['debugStep_into', 'debugStep_out', 'debugStep_over']"
           project="fmtlib/debug/args-test/basic"
         />
       </div>

@@ -1,7 +1,7 @@
 <template>
   <GroupProjectsChart
     :label="`[CLion vs Radler] ${label}`"
-    :measure="measure"
+    :measure="measureArray"
     :projects="projects"
   />
 </template>
@@ -11,9 +11,10 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 
 const { label, measure, project } = defineProps<{
   label: string
-  measure: string
+  measure: string | string[]
   project: string
 }>()
 
+const measureArray = Array.isArray(measure) ? measure : [measure]
 const projects = [`clion/${project}`, `radler/${project}`]
 </script>

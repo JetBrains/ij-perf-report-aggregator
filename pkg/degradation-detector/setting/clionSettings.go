@@ -58,5 +58,8 @@ func getClionMetricFromTestName(test string) []string {
 	if strings.Contains(test, "checkLocalTestConfig") {
 		return []string{"waitFirstTestGutter"}
 	}
+	if strings.Contains(test, "/indexing") {
+		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs"}
+	}
 	return getMetricFromTestName(test)
 }

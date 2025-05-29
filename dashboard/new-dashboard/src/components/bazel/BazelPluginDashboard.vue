@@ -2,7 +2,7 @@
   <DashboardPage
     db-name="bazel"
     table="report"
-    persistent-id="intellij_bsp_dashboard"
+    persistent-id="bazel_plugin_dashboard"
     initial-machine="Linux EC2 M5ad.2xlarge (8 vCPU Xeon, 32 GB)"
     :with-installer="false"
   >
@@ -23,6 +23,26 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
+  ["resolve.project.time.ms"],
+  ["max.used.memory.mb"],
+  ["used.at.exit.mb"],
+  ["building.project.with.aspect.time.ms"],
+  ["mapping.to.internal.model.time.ms"],
+  ["parsing.aspect.outputs.time.ms"],
+  ["create.modules.time.ms"],
+  ["reading.aspect.output.paths.time.ms"],
+  ["fetching.all.possible.target.names.time.ms"],
+  ["discovering.supported.external.rules.time.ms"],
+  ["select.targets.time.ms"],
+  ["libraries.from.jdeps.time.ms"],
+  ["libraries.from.targets.and.deps.time.ms"],
+  ["build.dependency.tree.time.ms"],
+  ["build.reverse.sources.time.ms"],
+  ["targets.as.libraries.time.ms"],
+  ["create.ap.libraries.time.ms"],
+  ["create.kotlin.stdlibs.time.ms"],
+  ["save.invalid.target.labels.time.ms"],
+  ["libraries.from.transitive.compile-time.jars.time.ms"],
   ["bsp.sync.project.ms"],
   ["bsp.used.at.exit.mb", "bsp.used.after.sync.mb"],
   ["bsp.used.after.indexing.mb"],
@@ -48,16 +68,16 @@ const chartsDeclaration: BazelCharts[] = metricsDeclaration.map((metricGroup) =>
     labels: metricGroup,
     measures: metricGroup,
     projects: [
-      "Bazel (ij)",
-      "Bazel-BSP (ij)",
-      "Datalore (ij)",
-      "gRPC-Java (ij)",
-      "Hirschgarten (ij)",
-      "Synthetic 1 project (ij)",
-      "Synthetic 1000 project (ij)",
-      "Synthetic 10000 project (ij)",
-      "Synthetic 20000 project (ij)",
-      "Synthetic 5000 project (ij)",
+      "Bazel",
+      "Bazel-BSP",
+      "Datalore",
+      "gRPC-Java",
+      "Hirschgarten",
+      "Synthetic 1 project",
+      "Synthetic 1000 project",
+      "Synthetic 5000 project",
+      "Synthetic 10000 project",
+      "Synthetic 20000 project",
     ],
   }
 })

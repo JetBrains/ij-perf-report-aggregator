@@ -51,7 +51,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["SearchEverywhere"],
     measures: ["searchEverywhere"],
-    projects: [],
+    projects: [
+      "mypy/go-to-all-with-warmup/class/typingLetterByLetter",
+      "empty/go-to-all-with-warmup/class/typingLetterByLetter",
+      "flask/go-to-all-with-warmup/class/typingLetterByLetter",
+      "keras/go-to-all-with-warmup/class/typingLetterByLetter",
+    ],
   },
   {
     labels: ["TypingCodeAnalysis"],

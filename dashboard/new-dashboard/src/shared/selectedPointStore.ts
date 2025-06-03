@@ -8,7 +8,7 @@ export const useSelectedPointStore = defineStore("selectedPointStore", () => {
   const storedSelectedPoint = useUrlSearchParams("history")
 
   const selectedPoint = computed({
-    get: () => storedSelectedPoint[pointParamName],
+    get: (): string|undefined => storedSelectedPoint[pointParamName],
     set(value) {
       storedSelectedPoint[pointParamName] = value
     },

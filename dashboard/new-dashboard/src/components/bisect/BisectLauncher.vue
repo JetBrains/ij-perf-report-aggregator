@@ -18,7 +18,7 @@
                   <label for="errorMessage">Error message to look in the build log</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-4 mb-4">
+              <div class="col-span-4 mb-4 mt-4">
                 <FloatLabel class="w-full">
                   <InputText
                     id="requester"
@@ -28,7 +28,7 @@
                   <label for="requester">Requester</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-4 mb-4">
+              <div class="col-span-4 mb-4 mt-4">
                 <FloatLabel class="w-full">
                   <InputText
                     id="buildType"
@@ -55,7 +55,7 @@
                           <label for="buildID">Build ID</label>
                         </FloatLabel>
                       </div>
-                      <FloatLabel class="w-full">
+                      <FloatLabel class="w-full mt-6">
                         <InputText
                           id="className"
                           v-model="model.className"

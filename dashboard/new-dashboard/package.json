@@ -3,16 +3,16 @@
   "private": true,
   "dependencies": {
     "@heroicons/vue": "2.2.0",
-    "@primevue/core": "^4.3.4",
-    "@vueuse/core": "^13.2.0",
+    "@primevue/core": "^4.3.5",
+    "@vueuse/core": "^13.3.0",
     "echarts": "5.6.0",
     "fast-equals": "5.2.2",
     "humanize-duration": "3.32.2",
     "p-limit": "^6.2.0",
     "pinia": "^3.0.2",
-    "primevue": "4.3.4",
+    "primevue": "4.3.5",
     "rxjs": "8.0.0-alpha.14",
-    "vue": "3.5.14",
+    "vue": "3.5.16",
     "vue-router": "4.5.1"
   },
   "devDependencies": {
@@ -20,6 +20,6 @@
     "@types/sanitize-html": "^2.16.0",
     "global-jsdom": "^26.0.0",
     "jsdom": "^26.1.0",
-    "msw": "^2.8.4"
+    "msw": "^2.9.0"
   }
 }

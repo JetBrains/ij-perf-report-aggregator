@@ -36,8 +36,8 @@ function getTestActions(): {
       },
     })
   }
-  if (data?.description != null) {
-    const methodName = data.description.value?.methodName
+  if (data?.description() != null) {
+    const methodName = data.description().value?.methodName
     if (methodName && methodName != "") {
       actions.push(
         {
@@ -57,7 +57,7 @@ function getTestActions(): {
       )
     }
 
-    const url = data.description.value?.url
+    const url = data.description().value?.url
     if (url && url != "") {
       actions.push({
         label: "Download test project",

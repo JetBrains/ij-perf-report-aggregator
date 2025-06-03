@@ -141,7 +141,7 @@ const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
 const buildType = computedAsync(async () => await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId), null)
 const buildId = ref(data.buildId.toString())
 const requester = ref(useUserStore().user?.email)
-const methodName = data.description.value?.methodName ?? ""
+const methodName = data.description().value?.methodName ?? ""
 const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)

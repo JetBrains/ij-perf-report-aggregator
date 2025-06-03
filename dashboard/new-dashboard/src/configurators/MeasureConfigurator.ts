@@ -392,8 +392,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
 function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
-      if (useSelectedPointStore().selectedPoint != undefined
-        && getInfoDataFrom(seriesIndex, "ms", null, "").buildId.toString() == useSelectedPointStore().selectedPoint) {
+      if (useSelectedPointStore().selectedPoint != undefined && getInfoDataFrom(seriesIndex, "ms", null, "").buildId.toString() == useSelectedPointStore().selectedPoint) {
         return getSelectedPointColor()
       }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])

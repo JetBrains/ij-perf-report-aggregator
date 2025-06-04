@@ -58,6 +58,16 @@
                 />
                 <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
               </FloatLabel>
+              <div class="mt-6 col-span-4">
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="className"
+                    v-model="model.className"
+                    class="w-full"
+                  />
+                  <label for="className">Short class name. Example: ArrowKtScriptPerformanceTest</label>
+                </FloatLabel>
+              </div>
             </div>
             <Accordion :value="-1">
               <AccordionPanel :value="0">
@@ -96,18 +106,6 @@
                       />
                       <label for="buildType">Build type</label>
                     </FloatLabel>
-                  </div>
-                  <div class="grid grid-cols-4 mt-6">
-                    <div class="col-span-4">
-                      <FloatLabel class="w-full">
-                        <InputText
-                          id="className"
-                          v-model="model.className"
-                          class="w-full"
-                        />
-                        <label for="className">Class name</label>
-                      </FloatLabel>
-                    </div>
                   </div>
                 </AccordionContent>
               </AccordionPanel>
@@ -189,7 +187,11 @@ async function startBisect() {
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
-      excludedCommits: model.excludedCommits.split(",").map(commit => commit.trim()).filter(commit => commit !== "").join(","),
+      excludedCommits: model.excludedCommits
+        .split(",")
+        .map((commit) => commit.trim())
+        .filter((commit) => commit !== "")
+        .join(","),
     })
     window.open(weburl, "_blank")
   } catch (error_) {

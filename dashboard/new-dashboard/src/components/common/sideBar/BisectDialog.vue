@@ -22,14 +22,14 @@
         v-if="isCommitMode"
         class="flex"
       >
-        <FloatLabel>
+        <FloatLabel class="flex-1 mr-4">
           <InputText
             id="changes"
             v-model="firstCommit"
           />
           <label for="changes">First commit</label>
         </FloatLabel>
-        <FloatLabel>
+        <FloatLabel class="flex-1">
           <InputText
             id="changes"
             v-model="lastCommit"
@@ -37,13 +37,6 @@
           <label for="changes">Last commit</label>
         </FloatLabel>
       </div>
-      <FloatLabel v-if="!isCommitMode">
-        <InputText
-          id="buildId"
-          v-model="buildId"
-        />
-        <label for="buildId">Build ID</label>
-      </FloatLabel>
       <FloatLabel>
         <Select
           id="direction"
@@ -66,19 +59,33 @@
         </Select>
         <label for="direction">Direction</label>
       </FloatLabel>
-      <FloatLabel>
-        <InputText
-          id="requester"
-          v-model="requester"
-          :disabeld="requester !== undefined && requester !== ''"
-        />
-        <label for="requester">Requester</label>
-      </FloatLabel>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
           <AccordionContent>
             <div class="flex flex-col space-y-8 mb-4 mt-4">
+              <FloatLabel>
+                <InputText
+                  id="className"
+                  v-model="className"
+                />
+                <label for="className">Class name</label>
+              </FloatLabel>
+              <FloatLabel>
+                <InputText
+                  id="requester"
+                  v-model="requester"
+                  :disabeld="requester !== undefined && requester !== ''"
+                />
+                <label for="requester">Requester</label>
+              </FloatLabel>
+              <FloatLabel v-if="!isCommitMode">
+                <InputText
+                  id="buildId"
+                  v-model="buildId"
+                />
+                <label for="buildId">Build ID</label>
+              </FloatLabel>
               <FloatLabel>
                 <InputText
                   id="test"
@@ -99,14 +106,6 @@
                   v-model="buildType"
                 />
                 <label for="buildType">Build type</label>
-              </FloatLabel>
-
-              <FloatLabel>
-                <InputText
-                  id="className"
-                  v-model="className"
-                />
-                <label for="className">Class name</label>
               </FloatLabel>
             </div>
           </AccordionContent>

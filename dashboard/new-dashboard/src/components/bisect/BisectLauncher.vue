@@ -50,36 +50,36 @@
                   <label for="lastCommit">Last commit</label>
                 </FloatLabel>
               </div>
-              <div
-                v-if="!isCommitMode"
-                class="col-span-4 mb-2 mt-4"
-              >
-                <FloatLabel class="w-full">
-                  <InputText
-                    id="buildID"
-                    v-model="model.buildId"
-                    class="w-full"
-                  />
-                  <label for="buildID">Build ID</label>
-                </FloatLabel>
-              </div>
-              <div class="col-span-4 mb-2 mt-4">
-                <FloatLabel class="w-full">
-                  <InputText
-                    id="requester"
-                    v-model="email"
-                    class="w-full"
-                    :disabled="email !== undefined && email !== ''"
-                  />
-                  <label for="requester">Requester</label>
-                </FloatLabel>
-              </div>
             </div>
             <Accordion :value="-1">
               <AccordionPanel :value="0">
                 <AccordionHeader>Additional parameters</AccordionHeader>
                 <AccordionContent>
-                  <div class="col-span-4 mt-2">
+                  <div class="mb-2 mt-4">
+                    <FloatLabel class="w-full">
+                      <InputText
+                        id="requester"
+                        v-model="email"
+                        class="w-full"
+                        :disabled="email !== undefined && email !== ''"
+                      />
+                      <label for="requester">Requester</label>
+                    </FloatLabel>
+                  </div>
+                  <div
+                    v-if="!isCommitMode"
+                    class="mb-2 mt-6"
+                  >
+                    <FloatLabel class="w-full">
+                      <InputText
+                        id="buildID"
+                        v-model="model.buildId"
+                        class="w-full"
+                      />
+                      <label for="buildID">Build ID</label>
+                    </FloatLabel>
+                  </div>
+                  <div class="col-span-4 mt-6">
                     <FloatLabel class="w-full">
                       <InputText
                         id="buildType"
@@ -89,9 +89,9 @@
                       <label for="buildType">Build type</label>
                     </FloatLabel>
                   </div>
-                  <div class="grid grid-cols-4 mt-2">
-                    <div class="col-span-4 mt-2">
-                      <FloatLabel class="w-full mt-6">
+                  <div class="grid grid-cols-4 mt-6">
+                    <div class="col-span-4">
+                      <FloatLabel class="w-full">
                         <InputText
                           id="className"
                           v-model="model.className"

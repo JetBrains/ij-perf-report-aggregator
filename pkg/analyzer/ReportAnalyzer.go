@@ -124,12 +124,6 @@ func (t *ReportAnalyzer) Analyze(data []byte, extraData model.ExtraData) error {
 			// ignore empty report
 			return nil
 		}
-	case "bazel":
-		ignore := analyzePerfBazelReport(runResult)
-		if ignore {
-			// ignore empty report
-			return nil
-		}
 	case "qodana":
 		reportURL := runResult.ReportFileName
 		fileName := reportURL[strings.LastIndex(reportURL, "/")+1:]

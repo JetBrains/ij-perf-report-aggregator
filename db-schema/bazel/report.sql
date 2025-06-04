@@ -13,7 +13,8 @@ create table bazel.report
   `measures.type`         Array(LowCardinality(String)) CODEC (ZSTD(20)),
 
   `triggeredBy`           LowCardinality(String) CODEC (ZSTD(20)),
-  `tc_build_type`  LowCardinality(String) CODEC (ZSTD(20))
+  `tc_build_type`  LowCardinality(String) CODEC (ZSTD(20)),
+  `mode`           LowCardinality(String) CODEC (ZSTD(20))
 )
   engine = MergeTree
     partition by (toYYYYMM(generated_time))

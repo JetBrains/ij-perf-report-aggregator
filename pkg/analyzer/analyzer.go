@@ -147,9 +147,10 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 		return DatabaseConfiguration{
 			DbName:          "bazel",
 			TableName:       "report",
+			ReportReader:    analyzePerfReport[int32],
 			extraFieldCount: 3,
 			insertStatementWriter: func(sb *strings.Builder) {
-				sb.WriteString(", measures.name, measures.value, measures.type")
+				sb.WriteString(", measures.name, measures.value, measures.type, mode")
 			},
 		}
 	case id == "qodana":

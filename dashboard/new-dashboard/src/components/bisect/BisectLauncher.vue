@@ -156,7 +156,7 @@ const model = reactive({
   buildType: "",
   buildId: props.buildId,
   className: props.className,
-  requester: useUserStore().user?.email,
+  requester: "",
 })
 
 const mode = ref("Build")
@@ -175,7 +175,7 @@ async function startBisect() {
     const weburl = await bisectClient.sendBisectRequest({
       buildId: model.buildId,
       changes: model.firstCommit + "^.." + model.lastCommit,
-      requester: model.requester ?? "",
+      requester: model.requester,
       mode: mode.value,
       errorMessage: model.errorMessage,
       buildType: model.buildType,
@@ -195,6 +195,7 @@ onMounted(async () => {
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
     model.buildType = await bisectClient.fetchBuildType(props.buildId)
+    model.requester = useUserStore().user?.email ?? ""
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"
   } finally {

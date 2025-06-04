@@ -34,7 +34,7 @@ import { createComponentState, updateComponentState } from "./componentState"
 import { configureQueryFilters, createFilterObservable, FilterConfigurator } from "./filter"
 import { fromFetchWithRetryAndErrorHandling, refToObservable } from "./rxjs"
 import { removeOutliers } from "../components/settings/configurators/RemoveOutliersConfigurator"
-import { getBuildId, getInfoDataFrom } from "../components/common/sideBar/InfoSidebarPerformance"
+import { getBasicInfo, getBuildId } from "../components/common/sideBar/InfoSidebarPerformance"
 import { useDarkModeStore } from "../shared/useDarkModeStore"
 import { useSelectedPointStore } from "../shared/selectedPointStore"
 
@@ -392,8 +392,7 @@ function configureQuery(measureNames: string[], query: DataQuery, configuration:
 function getItemStyleForSeries(accidentConfigurator: AccidentsConfigurator | null, detectedChanges = new Map<string, ChangePointClassification>()) {
   return {
     color(seriesIndex: CallbackDataParams): ZRColor {
-      if (useSelectedPointStore().selectedPoint != undefined
-        && getInfoDataFrom(seriesIndex, "ms", null, "").buildId.toString() == useSelectedPointStore().selectedPoint) {
+      if (useSelectedPointStore().selectedPoint != undefined && getBasicInfo(seriesIndex, "ms").buildId.toString() == useSelectedPointStore().selectedPoint) {
         return getSelectedPointColor()
       }
       const accidents = accidentConfigurator?.getAccidents(seriesIndex.value as string[])

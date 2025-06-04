@@ -109,7 +109,7 @@ export function getFullBuildId(params: CallbackDataParams): string | undefined {
   return buildVersion == undefined ? buildNumber : `${buildVersion}.${buildNum1}${buildNum2 == 0 ? "" : `.${buildNum2}`}`
 }
 
-function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+export function getBasicInfo(params: CallbackDataParams, valueUnit: ValueUnit) {
   const seriesName = params.seriesName as string
   const dataSeries = params.value as OptionDataValue[]
   const dateMs = dataSeries[0] as number
@@ -198,18 +198,7 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
   const changesUrl = installerId == undefined ? `${buildUrl(buildId as number)}&buildTab=changes` : `${buildUrl(installerId)}&buildTab=changes`
   const artifactsUrl = `${buildUrl(buildId as number)}&tab=artifacts`
   const installerUrl = installerId == undefined ? undefined : `${buildUrl(installerId)}&tab=artifacts`
-  const accidentBuild = getAccidentBuild(params)
 
-  const filteredAccidents = computed(() => {
-    if (accidentBuild == undefined) return []
-    const testAccident = accidents?.value?.get(projectName + "_" + accidentBuild) ?? []
-    const metricAccident = metricName == undefined ? [] : (accidents?.value?.get(projectName + "/" + metricName + "_" + accidentBuild) ?? [])
-    const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
-    return [...testAccident, ...buildAccident, ...metricAccident]
-  })
-  const description = computedAsync(async () => {
-    return await getDescriptionFromMetaDb(projectName, "master")
-  }) as Ref<Description | null>
   return {
     seriesName,
     build: getFullBuildId(params),
@@ -221,14 +210,39 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     projectName,
     title: "Details",
     installerId,
-    accidents: filteredAccidents,
     buildId: buildId as number,
-    description,
     branch,
     metricName,
     type,
     mode,
   }
+}
+
+function getInfoWithAccidentsAndDescription(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+  const basicInfo = getBasicInfo(params, valueUnit)
+  const accidentBuild = getAccidentBuild(params)
+
+  const filteredAccidents = computed(() => {
+    if (accidentBuild == undefined) return []
+    const testAccident = accidents?.value?.get(basicInfo.projectName + "_" + accidentBuild) ?? []
+    const metricAccident = basicInfo.metricName == undefined ? [] : (accidents?.value?.get(basicInfo.projectName + "/" + basicInfo.metricName + "_" + accidentBuild) ?? [])
+    const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
+    return [...testAccident, ...buildAccident, ...metricAccident]
+  })
+
+  const description = computedAsync(async () => {
+    return await getDescriptionFromMetaDb(basicInfo.projectName, "master")
+  }) as Ref<Description | null>
+
+  return {
+    ...basicInfo,
+    accidents: filteredAccidents,
+    description,
+  }
+}
+
+function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Ref<Map<string, Accident[]> | undefined> | undefined) {
+  return getInfoWithAccidentsAndDescription(params, valueUnit, accidents)
 }
 
 export function getInfoDataFrom(

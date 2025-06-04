@@ -129,11 +129,15 @@
           @click="showDialog = false"
         />
         <Button
+          v-tooltip.top="reasonOfDisabling === '' ? null : {
+            value: reasonOfDisabling,
+            autoHide: false,
+          }"
           label="Start"
           icon="pi pi-play"
           autofocus
           :loading="loading"
-          :disabled="!isTargetValueValid()"
+          :disabled="reasonOfDisabling !== ''"
           @click="startBisect"
         />
       </div>
@@ -146,7 +150,7 @@ import { getTeamcityBuildType } from "../../../util/artifacts"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
-import { computed, Ref, ref } from "vue"
+import { computed, Ref, ref, watch } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
@@ -193,6 +197,16 @@ function isTargetValueValid() {
   const value = Number(targetValue.value)
   return targetValue.value !== null && targetValue.value !== "" && Number.isInteger(value)
 }
+
+const reasonOfDisabling = computed(() => {
+  if (firstCommit.value === "" || lastCommit.value === "") {
+    return "Build has no changes"
+  }
+  if (!isTargetValueValid()){
+    return "Target value must be a valid integer"
+  }
+  return ""
+})
 
 async function startBisect() {
   error.value = null

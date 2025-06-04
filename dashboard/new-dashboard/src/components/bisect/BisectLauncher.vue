@@ -67,7 +67,7 @@
                 <FloatLabel class="w-full">
                   <InputText
                     id="requester"
-                    v-model="model.requester"
+                    v-model="email"
                     class="w-full"
                   />
                   <label for="requester">Requester</label>
@@ -156,7 +156,6 @@ const model = reactive({
   buildType: "",
   buildId: props.buildId,
   className: props.className,
-  requester: "",
 })
 
 const mode = ref("Build")
@@ -175,7 +174,7 @@ async function startBisect() {
     const weburl = await bisectClient.sendBisectRequest({
       buildId: model.buildId,
       changes: model.firstCommit + "^.." + model.lastCommit,
-      requester: model.requester,
+      requester: email.value ?? "",
       mode: mode.value,
       errorMessage: model.errorMessage,
       buildType: model.buildType,
@@ -189,13 +188,14 @@ async function startBisect() {
   }
 }
 
+const email = computed(() => useUserStore().user?.email)
+
 onMounted(async () => {
   try {
     const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
     model.buildType = await bisectClient.fetchBuildType(props.buildId)
-    model.requester = useUserStore().user?.email ?? ""
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"
   } finally {

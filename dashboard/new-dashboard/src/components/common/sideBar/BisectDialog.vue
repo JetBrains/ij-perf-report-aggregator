@@ -236,7 +236,11 @@ async function startBisect() {
       metric: metric.value,
       buildType: buildType.value as string,
       className,
-      excludedCommits: excludedCommits.value.split(",").map(commit => commit.trim()).filter(commit => commit !== "").join(","),
+      excludedCommits: excludedCommits.value
+        .split(",")
+        .map((commit) => commit.trim())
+        .filter((commit) => commit !== "")
+        .join(","),
     })
     showDialog.value = false // Close dialog on success
     window.open(weburl, "_blank")

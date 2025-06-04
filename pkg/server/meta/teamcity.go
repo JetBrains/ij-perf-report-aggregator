@@ -3,11 +3,14 @@ package meta
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 type BisectRequest struct {
 	TargetValue  string `json:"targetValue"`
 	BuildId      string `json:"buildId"`
+	Changes      string `json:"changes"`
+	Mode         string `json:"mode"`
 	Requester    string `json:"requester"`
 	Direction    string `json:"direction"`
 	Test         string `json:"test"`
@@ -26,6 +29,8 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.bisected.test":              bisectReq.Test,
 		"target.configuration.id":           bisectReq.BuildType,
 		"target.build.id":                   bisectReq.BuildId,
+		"target.git.commits":                bisectReq.Changes,
+		"target.mode":                       strings.ToLower(bisectReq.Mode),
 		"target.executor.description":       bisectReq.Requester,
 		"target.value.before.changed.point": bisectReq.TargetValue,
 		"target.perf.messages.mode":         "yes",
@@ -39,10 +44,35 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 		"target.bisected.simple.class":          bisectReq.ClassName,
 		"target.configuration.id":               bisectReq.BuildType,
 		"target.build.id":                       bisectReq.BuildId,
+		"target.git.commits":                    bisectReq.Changes,
+		"target.mode":                           strings.ToLower(bisectReq.Mode),
 		"target.executor.description":           bisectReq.Requester,
 		"env.BISECT_FUNCTIONAL_FAILURE_MESSAGE": bisectReq.ErrorMessage,
 		"target.perf.messages.mode":             "no",
 		"target.is.bisect.run":                  "true",
+	}
+}
+
+func HandleGetTeamCityChanges() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		revisions, err := teamCityClient.getChanges(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(revisions)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 

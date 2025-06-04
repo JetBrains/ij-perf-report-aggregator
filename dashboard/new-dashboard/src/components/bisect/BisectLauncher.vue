@@ -18,7 +18,52 @@
                   <label for="errorMessage">Error message to look in the build log</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-4 mb-4 mt-4">
+              <div class="col-span-4 mb-4">
+                <SelectButton
+                  v-model="mode"
+                  :options="modeOptions"
+                />
+              </div>
+              <div
+                v-if="isCommitMode"
+                class="col-span-2 mb-4 mt-4 mr-4"
+              >
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="firstCommit"
+                    v-model="model.firstCommit"
+                    class="w-full"
+                  />
+                  <label for="firstCommit">First commit</label>
+                </FloatLabel>
+              </div>
+              <div
+                v-if="isCommitMode"
+                class="col-span-2 mb-4 mt-4"
+              >
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="lastCommit"
+                    v-model="model.lastCommit"
+                    class="w-full"
+                  />
+                  <label for="lastCommit">Last commit</label>
+                </FloatLabel>
+              </div>
+              <div
+                v-if="!isCommitMode"
+                class="col-span-4 mb-2 mt-4"
+              >
+                <FloatLabel class="w-full">
+                  <InputText
+                    id="buildID"
+                    v-model="model.buildId"
+                    class="w-full"
+                  />
+                  <label for="buildID">Build ID</label>
+                </FloatLabel>
+              </div>
+              <div class="col-span-4 mb-2 mt-4">
                 <FloatLabel class="w-full">
                   <InputText
                     id="requester"
@@ -28,33 +73,23 @@
                   <label for="requester">Requester</label>
                 </FloatLabel>
               </div>
-              <div class="col-span-4 mb-4 mt-4">
-                <FloatLabel class="w-full">
-                  <InputText
-                    id="buildType"
-                    v-model="model.buildType"
-                    class="w-full"
-                  />
-                  <label for="buildType">Build type</label>
-                </FloatLabel>
-              </div>
             </div>
             <Accordion :value="-1">
               <AccordionPanel :value="0">
                 <AccordionHeader>Additional parameters</AccordionHeader>
                 <AccordionContent>
-                  <div class="grid grid-cols-4 gap-4 mt-2">
+                  <div class="col-span-4 mt-2">
+                    <FloatLabel class="w-full">
+                      <InputText
+                        id="buildType"
+                        v-model="model.buildType"
+                        class="w-full"
+                      />
+                      <label for="buildType">Build type</label>
+                    </FloatLabel>
+                  </div>
+                  <div class="grid grid-cols-4 mt-2">
                     <div class="col-span-4 mt-2">
-                      <div class="col-span-4 mb-2">
-                        <FloatLabel class="w-full">
-                          <InputText
-                            id="buildID"
-                            v-model="model.buildId"
-                            class="w-full"
-                          />
-                          <label for="buildID">Build ID</label>
-                        </FloatLabel>
-                      </div>
                       <FloatLabel class="w-full mt-6">
                         <InputText
                           id="className"
@@ -116,11 +151,17 @@ const bisectClient = new BisectClient(serverConfigurator)
 
 const model = reactive({
   errorMessage: props.errorMessage,
+  firstCommit: "",
+  lastCommit: "",
   buildType: "",
   buildId: props.buildId,
   className: props.className,
   requester: useUserStore().user?.email,
 })
+
+const mode = ref("Build")
+const modeOptions = ref(["Build", "Commit"])
+const isCommitMode = computed(() => mode.value === "Commit")
 
 const isRequiredFieldEmpty = computed(() => model.errorMessage.trim() == "" || model.buildType.trim() == "")
 
@@ -133,7 +174,9 @@ async function startBisect() {
   try {
     const weburl = await bisectClient.sendBisectRequest({
       buildId: model.buildId,
+      changes: model.firstCommit + "^.." + model.lastCommit,
       requester: model.requester ?? "",
+      mode: mode.value,
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
@@ -148,6 +191,9 @@ async function startBisect() {
 
 onMounted(async () => {
   try {
+    const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
+    model.firstCommit = changes.firstCommit
+    model.lastCommit = changes.lastCommit
     model.buildType = await bisectClient.fetchBuildType(props.buildId)
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"

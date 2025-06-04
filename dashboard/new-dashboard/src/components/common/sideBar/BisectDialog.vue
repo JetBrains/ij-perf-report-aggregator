@@ -14,6 +14,36 @@
         />
         <label for="targetValue">Target value</label>
       </FloatLabel>
+      <SelectButton
+        v-model="mode"
+        :options="modeOptions"
+      />
+      <div
+        v-if="isCommitMode"
+        class="flex"
+      >
+        <FloatLabel>
+          <InputText
+            id="changes"
+            v-model="firstCommit"
+          />
+          <label for="changes">First commit</label>
+        </FloatLabel>
+        <FloatLabel>
+          <InputText
+            id="changes"
+            v-model="lastCommit"
+          />
+          <label for="changes">Last commit</label>
+        </FloatLabel>
+      </div>
+      <FloatLabel v-if="!isCommitMode">
+        <InputText
+          id="buildId"
+          v-model="buildId"
+        />
+        <label for="buildId">Build ID</label>
+      </FloatLabel>
       <FloatLabel>
         <Select
           id="direction"
@@ -48,13 +78,6 @@
           <AccordionHeader>Additional parameters</AccordionHeader>
           <AccordionContent>
             <div class="flex flex-col space-y-8 mb-4 mt-4">
-              <FloatLabel>
-                <InputText
-                  id="buildId"
-                  v-model="buildId"
-                />
-                <label for="buildId">Build ID</label>
-              </FloatLabel>
               <FloatLabel>
                 <InputText
                   id="test"
@@ -122,16 +145,21 @@ import { getTeamcityBuildType } from "../../../util/artifacts"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
-import { Ref, ref } from "vue"
+import { computed, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
+import { calculateChanges } from "../../../util/changes"
 
 const { data } = defineProps<{
   data: InfoData
 }>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
+
+const mode = ref("Build")
+const modeOptions = ref(["Build", "Commit"])
+const isCommitMode = computed(() => mode.value === "Commit")
 
 const showDialog = defineModel<boolean>("showDialog")
 const metric = ref(data.series[0].metricName ?? "")
@@ -145,6 +173,15 @@ const methodName = data.description().value?.methodName ?? ""
 const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)
+
+const firstCommit = ref()
+const lastCommit = ref()
+const changesMerged = await calculateChanges(serverConfigurator.db, data.installerId ?? data.buildId)
+const changesUnmerged = changesMerged?.split("%2C") as string[] | null
+if (Array.isArray(changesUnmerged)) {
+  firstCommit.value = changesUnmerged.at(-1) ?? null
+  lastCommit.value = changesUnmerged[0] ?? null
+}
 
 const bisectClient = new BisectClient(serverConfigurator)
 
@@ -164,7 +201,9 @@ async function startBisect() {
     const weburl = await bisectClient.sendBisectRequest({
       targetValue: targetValue.value as string,
       requester: requester.value ?? "",
+      changes: (firstCommit.value as string) + "^.." + (lastCommit.value as string),
       buildId: buildId.value,
+      mode: mode.value,
       direction: direction.value,
       test: test.value,
       metric: metric.value,

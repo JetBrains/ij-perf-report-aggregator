@@ -3,7 +3,6 @@ package meta
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 )
 
 type BisectRequest struct {
@@ -31,7 +30,7 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.configuration.id":           bisectReq.BuildType,
 		"target.build.id":                   bisectReq.BuildId,
 		"target.git.commits":                bisectReq.Changes,
-		"target.mode":                       strings.ToLower(bisectReq.Mode),
+		"target.mode":                       bisectReq.Mode,
 		"target.executor.description":       bisectReq.Requester,
 		"target.value.before.changed.point": bisectReq.TargetValue,
 		"target.perf.messages.mode":         "yes",
@@ -47,7 +46,7 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 		"target.configuration.id":               bisectReq.BuildType,
 		"target.build.id":                       bisectReq.BuildId,
 		"target.git.commits":                    bisectReq.Changes,
-		"target.mode":                           strings.ToLower(bisectReq.Mode),
+		"target.mode":                           bisectReq.Mode,
 		"target.executor.description":           bisectReq.Requester,
 		"env.BISECT_FUNCTIONAL_FAILURE_MESSAGE": bisectReq.ErrorMessage,
 		"target.perf.messages.mode":             "no",

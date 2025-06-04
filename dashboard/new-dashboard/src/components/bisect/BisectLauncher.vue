@@ -185,11 +185,11 @@ async function startBisect() {
       buildId: model.buildId,
       changes: model.firstCommit + "^.." + model.lastCommit,
       requester: email.value ?? "",
-      mode: isCommitMode.value ? "commits" : "build",
+      mode: isCommitMode.value ? "commit" : "build",
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
-      excludedCommits: model.excludedCommits,
+      excludedCommits: model.excludedCommits.split(",").map(commit => commit.trim()).filter(commit => commit !== "").join(","),
     })
     window.open(weburl, "_blank")
   } catch (error_) {

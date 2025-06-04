@@ -70,6 +70,7 @@
         <InputText
           id="requester"
           v-model="requester"
+          :disabeld="requester !== undefined && requester !== ''"
         />
         <label for="requester">Requester</label>
       </FloatLabel>

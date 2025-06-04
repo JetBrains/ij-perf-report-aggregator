@@ -50,6 +50,14 @@
                   <label for="lastCommit">Last commit</label>
                 </FloatLabel>
               </div>
+              <FloatLabel class="col-span-4 w-full mt-4">
+                <InputText
+                  id="excludedCommits"
+                  v-model="model.excludedCommits"
+                  class="w-full"
+                />
+                <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
+              </FloatLabel>
             </div>
             <Accordion :value="-1">
               <AccordionPanel :value="0">
@@ -155,6 +163,7 @@ const model = reactive({
   firstCommit: "",
   lastCommit: "",
   buildType: "",
+  excludedCommits: "",
   buildId: props.buildId,
   className: props.className,
 })
@@ -180,6 +189,7 @@ async function startBisect() {
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,
+      excludedCommits: model.excludedCommits,
     })
     window.open(weburl, "_blank")
   } catch (error_) {

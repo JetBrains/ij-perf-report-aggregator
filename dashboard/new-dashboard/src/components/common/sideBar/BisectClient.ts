@@ -7,6 +7,7 @@ interface BisectRequest {
   className: string
   requester: string
   mode: string
+  excludedCommits: string
 }
 
 interface PerformanceBisectRequest extends BisectRequest {

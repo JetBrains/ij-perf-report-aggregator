@@ -59,6 +59,14 @@
         </Select>
         <label for="direction">Direction</label>
       </FloatLabel>
+      <FloatLabel class="w-full">
+        <InputText
+          id="excludedCommits"
+          v-model="excludedCommits"
+          class="w-full"
+        />
+        <label for="excludedCommits">List of excluded commits. Ex: 805bfa9758dec2912dcfecba,c7ee80058a9182c3037ee883615</label>
+      </FloatLabel>
       <Accordion>
         <AccordionPanel value="0">
           <AccordionHeader>Additional parameters</AccordionHeader>
@@ -181,6 +189,7 @@ const methodName = data.description.value?.methodName ?? ""
 const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)
+const excludedCommits = ref("")
 
 const firstCommit = ref()
 const lastCommit = ref()
@@ -227,6 +236,7 @@ async function startBisect() {
       metric: metric.value,
       buildType: buildType.value as string,
       className,
+      excludedCommits: excludedCommits.value,
     })
     showDialog.value = false // Close dialog on success
     window.open(weburl, "_blank")

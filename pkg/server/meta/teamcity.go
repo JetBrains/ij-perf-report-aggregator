@@ -7,17 +7,18 @@ import (
 )
 
 type BisectRequest struct {
-	TargetValue  string `json:"targetValue"`
-	BuildId      string `json:"buildId"`
-	Changes      string `json:"changes"`
-	Mode         string `json:"mode"`
-	Requester    string `json:"requester"`
-	Direction    string `json:"direction"`
-	Test         string `json:"test"`
-	Metric       string `json:"metric"`
-	BuildType    string `json:"buildType"`
-	ClassName    string `json:"className"`
-	ErrorMessage string `json:"errorMessage"`
+	TargetValue     string `json:"targetValue"`
+	BuildId         string `json:"buildId"`
+	Changes         string `json:"changes"`
+	Mode            string `json:"mode"`
+	Requester       string `json:"requester"`
+	Direction       string `json:"direction"`
+	Test            string `json:"test"`
+	Metric          string `json:"metric"`
+	BuildType       string `json:"buildType"`
+	ClassName       string `json:"className"`
+	ErrorMessage    string `json:"errorMessage"`
+	ExcludedCommits string `json:"excludedCommits"`
 }
 
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
@@ -35,6 +36,7 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.value.before.changed.point": bisectReq.TargetValue,
 		"target.perf.messages.mode":         "yes",
 		"target.is.bisect.run":              "true",
+		"target.commits.to.exclude":         bisectReq.ExcludedCommits,
 	}
 }
 
@@ -50,6 +52,7 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 		"env.BISECT_FUNCTIONAL_FAILURE_MESSAGE": bisectReq.ErrorMessage,
 		"target.perf.messages.mode":             "no",
 		"target.is.bisect.run":                  "true",
+		"target.commits.to.exclude":             bisectReq.ExcludedCommits,
 	}
 }
 

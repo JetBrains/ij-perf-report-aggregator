@@ -23,26 +23,15 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
 const metricsDeclaration = [
-  ["resolve.project.time.ms"],
-  ["max.used.memory.mb"],
-  ["used.at.exit.mb"],
-  ["building.project.with.aspect.time.ms"],
-  ["mapping.to.internal.model.time.ms"],
-  ["parsing.aspect.outputs.time.ms"],
-  ["create.modules.time.ms"],
-  ["reading.aspect.output.paths.time.ms"],
-  ["fetching.all.possible.target.names.time.ms"],
-  ["discovering.supported.external.rules.time.ms"],
-  ["select.targets.time.ms"],
-  ["libraries.from.jdeps.time.ms"],
-  ["libraries.from.targets.and.deps.time.ms"],
+  ["Calculating external repository mapping"],
+  ["Realizing language aspect files from templates"],
+  ["resolve.project.time.ms", "Resolve project"],
+  ["building.project.with.aspect.time.ms", "Building project with aspect"],
+  ["mapping.to.internal.model.time.ms", "Mapping to internal model"],
+  ["parsing.aspect.outputs.time.ms", "Parsing aspect outputs"],
+  ["discovering.supported.external.rules.time.ms", "Discovering supported external rules"],
+  ["select.targets.time.ms", "Select targets"],
   ["build.dependency.tree.time.ms"],
-  ["build.reverse.sources.time.ms"],
-  ["targets.as.libraries.time.ms"],
-  ["create.ap.libraries.time.ms"],
-  ["create.kotlin.stdlibs.time.ms"],
-  ["save.invalid.target.labels.time.ms"],
-  ["libraries.from.transitive.compile-time.jars.time.ms"],
   ["bsp.sync.project.ms"],
   ["bsp.used.at.exit.mb", "bsp.used.after.sync.mb"],
   ["bsp.used.after.indexing.mb"],
@@ -54,7 +43,6 @@ const metricsDeclaration = [
   ["add.bsp.fetched.jdks.ms"],
   ["create.target.id.to.module.entities.map.ms"],
   ["load.modules.ms"],
-  ["calculate.all.unique.jdk.infos.ms"],
 ]
 
 interface BazelCharts {

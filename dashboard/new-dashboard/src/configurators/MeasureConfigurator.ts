@@ -185,7 +185,7 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     } else {
       mergedFilter.push("has(`measures.name`, '" + (currentValue ?? "") + "')")
     }
-    const filterQuery = mergedFilter.join(" and ")
+    const filterQuery = mergedFilter.join(" or ")
     if (currentValue != undefined && currentValue.length > 0) {
       query.addFilter({ q: filterQuery })
       return true

@@ -160,8 +160,8 @@ const model = reactive({
 })
 
 const mode = ref("Build")
-const modeOptions = ref(["Build", "Commit"])
-const isCommitMode = computed(() => mode.value === "Commit")
+const modeOptions = ref(["Build", "Commits"])
+const isCommitMode = computed(() => mode.value === "Commits")
 
 const isRequiredFieldEmpty = computed(() => model.errorMessage.trim() == "" || model.buildType.trim() == "")
 
@@ -176,7 +176,7 @@ async function startBisect() {
       buildId: model.buildId,
       changes: model.firstCommit + "^.." + model.lastCommit,
       requester: email.value ?? "",
-      mode: mode.value,
+      mode: isCommitMode.value ? "commits" : "build",
       errorMessage: model.errorMessage,
       buildType: model.buildType,
       className: model.className,

@@ -166,8 +166,8 @@ const { data } = defineProps<{
 const serverConfigurator = injectOrError(serverConfiguratorKey)
 
 const mode = ref("Build")
-const modeOptions = ref(["Build", "Commit"])
-const isCommitMode = computed(() => mode.value === "Commit")
+const modeOptions = ref(["Build", "Commits"])
+const isCommitMode = computed(() => mode.value === "Commits")
 
 const showDialog = defineModel<boolean>("showDialog")
 const metric = ref(data.series[0].metricName ?? "")
@@ -221,7 +221,7 @@ async function startBisect() {
       requester: requester.value ?? "",
       changes: (firstCommit.value as string) + "^.." + (lastCommit.value as string),
       buildId: buildId.value,
-      mode: mode.value,
+      mode: isCommitMode.value ? "commit" : "build",
       direction: direction.value,
       test: test.value,
       metric: metric.value,

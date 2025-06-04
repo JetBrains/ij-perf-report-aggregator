@@ -25,7 +25,7 @@ export interface InfoData {
   branch: string | undefined
   series: DataSeries[]
   accidents: Ref<Accident[] | undefined> | undefined
-  description: () => Ref<Description | null>
+  description: Ref<Description | null>
   deltaPrevious: string | undefined
   deltaNext: string | undefined
   chartDataUrl: string

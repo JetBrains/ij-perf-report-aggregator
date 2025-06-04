@@ -176,7 +176,7 @@ async function createTicket() {
       projectId: project.value.id,
       buildLink: data.artifactsUrl,
       changesLink: (await getSpaceUrl(data, serverConfigurator)) ?? data.changesUrl,
-      testMethodName: data.description().value?.methodName?.replaceAll("#", "."),
+      testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,
       delta: data.deltaPrevious?.replace(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",

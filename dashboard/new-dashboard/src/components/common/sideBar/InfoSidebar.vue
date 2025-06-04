@@ -383,7 +383,7 @@ async function openSpaceUrl() {
 }
 
 useScrollListeners()
-const description = computed(() => vm.data.value?.description().value?.description ?? "")
+const description = computed(() => vm.data.value?.description.value?.description ?? "")
 
 const metricDescription = computed(() => getMetricDescription(data.value?.series[0].metricName))
 

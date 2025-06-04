@@ -207,10 +207,9 @@ function getInfo(params: CallbackDataParams, valueUnit: ValueUnit, accidents: Re
     const buildAccident = accidents?.value?.get(`_${accidentBuild}`) ?? []
     return [...testAccident, ...buildAccident, ...metricAccident]
   })
-  const description = () =>
-    computedAsync(async () => {
-      return await getDescriptionFromMetaDb(projectName, "master")
-    }) as Ref<Description | null>
+  const description = computedAsync(async () => {
+    return await getDescriptionFromMetaDb(projectName, "master")
+  }) as Ref<Description | null>
   return {
     seriesName,
     build: getFullBuildId(params),

@@ -69,7 +69,7 @@
                     id="requester"
                     v-model="email"
                     class="w-full"
-                    :disabled = "email !== undefined && email !== ''"
+                    :disabled="email !== undefined && email !== ''"
                   />
                   <label for="requester">Requester</label>
                 </FloatLabel>

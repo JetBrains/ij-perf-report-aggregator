@@ -31,7 +31,6 @@ const metricsDeclaration = [
   ["parsing.aspect.outputs.time.ms", "Parsing aspect outputs"],
   ["discovering.supported.external.rules.time.ms", "Discovering supported external rules"],
   ["select.targets.time.ms", "Select targets"],
-  ["build.dependency.tree.time.ms"],
   ["bsp.sync.project.ms"],
   ["bsp.used.at.exit.mb", "bsp.used.after.sync.mb"],
   ["bsp.used.after.indexing.mb"],

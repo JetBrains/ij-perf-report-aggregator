@@ -7,7 +7,7 @@
     "@primeuix/themes": "^1.1.1",
     "echarts": "5.6.0",
     "new-dashboard": "workspace:*",
-    "pinia": "^3.0.2",
+    "pinia": "^3.0.3",
     "primevue": "4.3.5",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.16",

@@ -85,7 +85,8 @@
         "kotlin_lang/highlight/LazyJVM_with_library_cache"
       ],
       "intelliJ3": [
-        "intellij_commit/highlight/GHGQLDataTest_with_library_cache"
+        "intellij_commit/highlight/GHGQLDataTest_with_library_cache",
+        "intellij_commit/highlight/MsIntrospector_with_library_cache"
       ],
       "kotlinLang": [
         "kotlin_lang/highlight/CommonParser_with_library_cache",

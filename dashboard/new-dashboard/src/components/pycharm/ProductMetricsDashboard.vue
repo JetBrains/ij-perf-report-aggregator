@@ -61,7 +61,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: [],
+    projects: [
+      "typing-code-analysis/typing/mypy",
+      "typing-code-analysis/typing/nova",
+      "typing-code-analysis/typing/generative-test",
+      "typing-code-analysis/typing/nova_long_typing",
+    ],
   },
   {
     labels: ["Inspections"],

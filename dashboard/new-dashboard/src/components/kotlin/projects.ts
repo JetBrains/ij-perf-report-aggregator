@@ -3,20 +3,13 @@ import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConf
 import { computed, ComputedRef } from "vue"
 import kotlinProjects from "../../../resources/projects/kotlin_projects.json"
 
-export const KOTLIN_MAIN_METRICS = [
-  "completion#mean_value",
-  "completion#firstElementShown#mean_value",
-  "localInspections#mean_value",
-  "semanticHighlighting#mean_value",
-  "findUsages#mean_value",
-]
+export const KOTLIN_MAIN_METRICS = ["completion#mean_value", "completion#firstElementShown#mean_value", "localInspections#mean_value", "findUsages#mean_value"]
 
 const MEASURES = {
   completionMeasures: [
     { name: "completion#mean_value", label: "completion mean value" },
     { name: "completion#firstElementShown#mean_value", label: "firstElementShown mean value" },
   ],
-  highlightingMeasures: [{ name: "semanticHighlighting#mean_value", label: "semantic highlighting mean value" }],
   codeAnalysisMeasures: [{ name: "localInspections#mean_value", label: "Code Analysis mean value" }],
   refactoringMeasures: [
     { name: "performInlineRename#mean_value", label: "PerformInlineRename" },
@@ -82,7 +75,6 @@ const MEASURES = {
     { name: "freedMemoryByGC", label: `Freed memory by GC ${tag}` },
   ],
   deleteAllImportsMeasures: [
-    { name: "semanticHighlighting#mean_value", label: "Semantic highlighting" },
     { name: "localInspections#mean_value", label: "Code Analysis" },
     { name: "completion#mean_value", label: "Completion" },
     { name: "completion#firstElementShown#mean_value", label: "First element shown" },
@@ -176,19 +168,6 @@ export const completionCharts = projectsToDefinition([
  */
 
 export const highlightingProjects = { ...KOTLIN_PROJECTS.linux.highlighting, ...KOTLIN_PROJECTS.mac.highlighting }
-
-export const highlightingCharts = projectsToDefinition([
-  {
-    projects: KOTLIN_PROJECTS.linux.highlighting,
-    measures: MEASURES.highlightingMeasures,
-    machines: [MACHINES.linux],
-  },
-  {
-    projects: KOTLIN_PROJECTS.mac.highlighting,
-    measures: MEASURES.highlightingMeasures,
-    machines: [MACHINES.mac],
-  },
-])
 
 export const codeAnalysisCharts = projectsToDefinition([
   {
@@ -375,13 +354,6 @@ const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
 ])
 
 const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
-export const highlightingScriptCharts = projectsToDefinition([
-  {
-    projects: scriptHighlight,
-    measures: MEASURES.highlightingMeasures,
-    machines: [MACHINES.linux],
-  },
-])
 export const codeAnalysisScriptCharts = projectsToDefinition([
   {
     projects: scriptHighlight,

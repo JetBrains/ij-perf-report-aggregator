@@ -26,10 +26,6 @@
       :metrics="metrics"
       :definitions="codeAnalysisCharts"
     />
-    <MemoryK1K2DashboardGroupCharts
-      :metrics="metrics"
-      :definitions="highlightingCharts"
-    />
     <Divider title="Find usages" />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
@@ -56,10 +52,6 @@
     />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
-      :definitions="highlightingScriptCharts"
-    />
-    <MemoryK1K2DashboardGroupCharts
-      :metrics="metrics"
       :definitions="codeAnalysisScriptCharts"
     />
   </DashboardPage>
@@ -77,11 +69,9 @@ import {
   completionCharts,
   evaluateExpressionChars,
   findUsagesCharts,
-  highlightingCharts,
   codeAnalysisCharts,
   refactoringCharts,
   scriptCompletionCharts,
-  highlightingScriptCharts,
   codeAnalysisScriptCharts,
   scriptFindUsagesCharts,
 } from "./projects"

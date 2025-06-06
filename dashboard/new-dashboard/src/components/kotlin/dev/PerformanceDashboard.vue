@@ -21,7 +21,6 @@
     <K1K2DashboardGroupCharts :definitions="completionCharts" />
     <Divider title="Code analysis" />
     <K1K2DashboardGroupCharts :definitions="codeAnalysisCharts" />
-    <K1K2DashboardGroupCharts :definitions="highlightingCharts" />
     <Divider title="Find usages" />
     <K1K2DashboardGroupCharts :definitions="findUsagesCharts" />
     <Divider title="Debugger" />
@@ -30,7 +29,6 @@
     <K1K2DashboardGroupCharts :definitions="refactoringCharts" />
     <Divider title="Script" />
     <K1K2DashboardGroupCharts :definitions="scriptCompletionCharts" />
-    <K1K2DashboardGroupCharts :definitions="highlightingScriptCharts" />
     <K1K2DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <K1K2DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider title="Convert Java to Kotlin" />
@@ -49,8 +47,6 @@ import {
   convertJavaToKotlinProjectsChars,
   evaluateExpressionChars,
   findUsagesCharts,
-  highlightingCharts,
-  highlightingScriptCharts,
   KOTLIN_PROJECT_CONFIGURATOR,
   refactoringCharts,
   scriptCompletionCharts,

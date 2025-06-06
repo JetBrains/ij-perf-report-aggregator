@@ -29,7 +29,6 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["firstCodeAnalysis", "Time it takes to perform code analysis on file opening"],
   ["localInspections", "Sum time of all analysis. From Daemon#restart till DaemonListener#daemonFinished."],
   ["localInspections#mean_value", "Code analysis mean time. From Daemon#restart till DaemonListener#daemonFinished."],
-  ["semanticHighlighting#mean_value", "Semantic highlighting mean time. From Daemon#restart till end of GeneralHighlightingPass."],
   ["runDaemon/executionTime", "Time it takes to complete a first daemon run. It might be restarted so it's not a full time."],
   ["codeAnalysisDaemon/fusExecutionTime", "Full highlighting duration since the file was modified and/or dumb mode status changed. It should be equal to the sum of segments."],
   ["globalInspections", "Time of all inspections runned in batch mode (Inspect Project)."],

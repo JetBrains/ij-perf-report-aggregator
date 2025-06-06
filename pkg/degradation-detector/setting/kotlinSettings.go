@@ -48,7 +48,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 	tests := generateKotlinTests(testNames)
 	metrics := []string{
 		"completion#mean_value", "findUsages#mean_value",
-		"semanticHighlighting#mean_value", "localInspections#mean_value",
+		"localInspections#mean_value",
 		"completion#firstElementShown#mean_value", "evaluateExpression#mean_value",
 		"performInlineRename#mean_value", "startInlineRename#mean_value",
 		"prepareForRename#mean_value", "execute_editor_optimizeimports",
@@ -60,7 +60,6 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		"completion#mean_value":                          "completion",
 		"completion#firstElementShown#mean_value":        "completion",
 		"findUsages#mean_value":                          "findUsages",
-		"semanticHighlighting#mean_value":                "highlighting",
 		"localInspections#mean_value":                    "highlighting",
 		"performInlineRename#mean_value":                 "rename",
 		"prepareForRename#mean_value":                    "rename",

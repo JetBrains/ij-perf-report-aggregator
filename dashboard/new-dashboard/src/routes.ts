@@ -1901,11 +1901,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Kotlin completion (dev/fast)" },
         },
         {
-          path: ROUTES.KotlinHighlightingDev,
-          component: () => import("./components/kotlin/dev/HighlightingDashboard.vue"),
-          meta: { pageTitle: "Kotlin highlighting (dev/fast)" },
-        },
-        {
           path: ROUTES.KotlinFindUsagesDev,
           component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
           meta: { pageTitle: "Kotlin findUsages (dev/fast)" },

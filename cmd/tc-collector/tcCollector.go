@@ -241,6 +241,8 @@ func updateLastCollectTime(ctx context.Context, buildTypeId string, lastCollectT
 		return fmt.Errorf("cannot prepare batch: %w", err)
 	}
 
+	defer batch.Close()
+
 	err = batch.Append(buildTypeId, lastCollectTimeToSet)
 	if err != nil {
 		return fmt.Errorf("cannot append to batch: %w", err)

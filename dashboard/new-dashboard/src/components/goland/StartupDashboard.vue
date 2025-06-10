@@ -1,7 +1,7 @@
 <template>
   <StartupProductDashboard
     product="GO"
-    default-project="opentelemetry-go-list-parallel"
+    default-project=" opentelemetry-go-list-parallel"
     initial-machine="Linux Munich i7-13700, 64 Gb"
   >
     <template #default="{ configurators }">

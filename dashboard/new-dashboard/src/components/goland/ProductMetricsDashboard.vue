@@ -3,7 +3,7 @@
     db-name="perfint"
     table="goland"
     persistent-id="goland_product_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
   >
     <section>

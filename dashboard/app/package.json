@@ -2,9 +2,9 @@
   "name": "app",
   "private": true,
   "dependencies": {
-    "@fontsource/inter": "5.2.5",
-    "@fontsource/jetbrains-mono": "5.2.5",
-    "@primeuix/themes": "^1.1.1",
+    "@fontsource/inter": "5.2.6",
+    "@fontsource/jetbrains-mono": "5.2.6",
+    "@primeuix/themes": "^1.1.2",
     "echarts": "5.6.0",
     "new-dashboard": "workspace:*",
     "pinia": "^3.0.3",

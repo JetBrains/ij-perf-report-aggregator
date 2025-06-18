@@ -26,6 +26,11 @@ import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["UI.Lagging", "Popup.Latency"],
+    measures: ["ui_lagging#mean_value", "popup_latency#mean_value"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
     labels: ["EditorContextMenu"],
     measures: ["popupShown#EditorContextMenu"],
     projects: ["popups-performance-test/test-popups"],

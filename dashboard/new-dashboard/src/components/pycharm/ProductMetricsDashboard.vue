@@ -28,7 +28,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["indexingTimeWithoutPauses"],
-    projects: ["django/indexing", "empty/indexing", "flask/indexing", "keras/indexing", "mypy/indexing"],
+    projects: ["django/indexing", "empty/indexing", "flask/indexing", "keras/indexing", "mypy/indexing", "notebooks-case-indexing/indexing"],
   },
   {
     labels: ["FirstCodeAnalysis"],
@@ -41,6 +41,7 @@ const chartsDeclaration: ChartDefinition[] = [
       "flask/findUsages/request",
       "keras/findUsages/Sequential",
       "mypy/findUsages/Errors",
+      "notebooks-case-1/localInspection",
     ],
   },
   {

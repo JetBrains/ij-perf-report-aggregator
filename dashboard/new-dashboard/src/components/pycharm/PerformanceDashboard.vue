@@ -36,21 +36,21 @@
       <GroupProjectsChart
         label="Indexing"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
-        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning"
         :measure="['scanningTimeWithoutPauses', 'scanning']"
-        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Number Of Indexed Files"
         measure="numberOfIndexedFiles"
-        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing']"
+        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
       />
     </section>
     <section>
@@ -72,6 +72,8 @@
           'flask/findUsages/request',
           'keras/findUsages/Sequential',
           'mypy/findUsages/Errors',
+          'notebooks-case-1/localInspection',
+          'notebooks-case-2/localInspection',
         ]"
       />
     </section>
@@ -88,6 +90,27 @@
           'keras/findUsages/Sequential',
           'mypy/findUsages/Errors',
         ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Scroll (average CPU load)"
+        measure="scrollEditor#average_cpu_load"
+        :projects="['notebooks-case-1/scrollEditor/scroll', 'notebooks-case-2/scrollEditor/scroll']"
+      />
+
+      <GroupProjectsWithClientChart
+        label="Scroll (maximum AWT delay)"
+        measure="scrollEditor#max_awt_delay"
+        :projects="['notebooks-case-1/scrollEditor/scroll', 'notebooks-case-2/scrollEditor/scroll']"
+      />
+    </section>
+
+    <section>
+      <GroupProjectsWithClientChart
+        label="Typing"
+        measure="typing#latency#mean_value"
+        :projects="['notebooks-case-1/typing/typing', 'notebooks-case-2/typing/typing']"
       />
     </section>
   </DashboardPage>

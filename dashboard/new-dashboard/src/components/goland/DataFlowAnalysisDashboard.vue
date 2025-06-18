@@ -7,29 +7,43 @@
   >
     <section>
       <GroupProjectsChart
-        label="Inspection Processing Times (95 & 99 Percentile)"
-        :measure="['go.dfa.inspection.file.processing.time.distribution.ms.95.percentile', 'go.dfa.inspection.file.processing.time.distribution.ms.99.percentile']"
+        label="General Total Time"
+        measure="go.dfa.general.total.time.ms"
         :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Interpretation Stage Time"
-        measure="go.dfa.inspection.interpretation.stage.time.ms"
+        label="General Average Time"
+        measure="go.dfa.general.avg.time.ms"
         :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Total Time"
-        measure="go.dfa.inspection.total.time.ms"
+        label="General Average Time Without Summary Load Time"
+        measure="go.dfa.general.avg.without.summary.load.time.ms"
         :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Resolve Function / Method Count"
-        :measure="['go.dfa.resolve.function.count', 'go.dfa.resolve.method.count']"
+        label="General Computed File Gists Count"
+        measure="go.dfa.general.computed.file.gists.count"
+        :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="General Files Count"
+        measure="go.dfa.general.files.count"
+        :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="General Functions Count"
+        measure="go.dfa.general.functions.count"
         :projects="['kubernetes/kubernetes/dfa', 'cockroach/cockroach/dfa', 'mattermost-server/mattermost-server/dfa']"
       />
     </section>

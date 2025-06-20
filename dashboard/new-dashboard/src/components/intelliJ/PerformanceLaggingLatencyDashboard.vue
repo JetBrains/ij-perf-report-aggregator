@@ -30,6 +30,7 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["ui.lagging#max_value", "ui.latency#max_value", "editor.typing.latency#max", "editor.typing.latency#90", "popup.latency#max_value"],
     projects: [
       "popups-performance-test/test-popups",
+      "popups-performance-test/test-popups/embeddedClient",
       "typingInJavaFile_16Threads/typing",
       "typingInJavaFile_4Threads/typing",
       "typingInKotlinFile_16Threads/typing",

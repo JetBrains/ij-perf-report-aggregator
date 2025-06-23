@@ -1,9 +1,8 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
-    :with-installer="false"
+    db-name="perfint"
     table="webstorm"
-    persistent-id="webstorm_dashboard"
+    persistent-id="webstorm_old_dashboard"
     initial-machine="linux-blade-hetzner"
   >
     <section>

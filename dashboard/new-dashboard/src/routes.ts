@@ -146,9 +146,13 @@ enum ROUTES {
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormProductMetricsDashboard = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}`,
+  WebStormProductMetricsDashboardOld = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}Old`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
+  WebStormDashboardOld = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}Old`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
+  WebStormDashboardBuiltInVsNEXTOld = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNextOld`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
+  WebStormTestsOld = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}Old`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
@@ -814,16 +818,32 @@ const WEBSTORM: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
+          url: ROUTES.WebStormProductMetricsDashboardOld,
+          label: PRODUCT_METRICS_LABEL + " (Old)",
+        },
+        {
           url: ROUTES.WebStormDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.WebStormDashboardOld,
+          label: DASHBOARD_LABEL + " (Old)",
         },
         {
           url: ROUTES.WebStormDashboardBuiltInVsNEXT,
           label: "Built-in vs NEXT",
         },
         {
+          url: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
+          label: "Built-in vs NEXT" + " (Old)",
+        },
+        {
           url: ROUTES.WebStormTests,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.WebStormTestsOld,
+          label: TESTS_LABEL + " (Old)",
         },
         {
           url: ROUTES.WebStormCompareBranches,
@@ -1730,12 +1750,33 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "WebStorm product metrics" },
         },
         {
+          path: ROUTES.WebStormProductMetricsDashboardOld,
+          component: () => import("./components/webstorm/ProductMetricsDashboardOld.vue"),
+          meta: { pageTitle: "WebStorm product metrics (Old)" },
+        },
+        {
           path: ROUTES.WebStormDashboard,
           component: () => import("./components/webstorm/PerformanceDashboard.vue"),
           meta: { pageTitle: "WebStorm Performance dashboard" },
         },
         {
+          path: ROUTES.WebStormDashboardOld,
+          component: () => import("./components/webstorm/PerformanceDashboardOld.vue"),
+          meta: { pageTitle: "WebStorm Performance dashboard (Old)" },
+        },
+        {
           path: ROUTES.WebStormTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            withInstaller: false,
+            table: "webstorm",
+            initialMachine: "linux-blade-hetzner",
+          },
+          meta: { pageTitle: "WebStorm Performance tests" },
+        },
+        {
+          path: ROUTES.WebStormTestsOld,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfint",
@@ -1750,10 +1791,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Built-in vs NEXT" },
         },
         {
+          path: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
+          component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXTOld.vue"),
+          meta: { pageTitle: "Built-in vs NEXT (Old)" },
+        },
+        {
           path: ROUTES.WebStormCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "webstorm",
           },
           meta: { pageTitle: COMPARE_BUILDS_LABEL },
@@ -1762,7 +1808,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.WebStormCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "webstorm",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },

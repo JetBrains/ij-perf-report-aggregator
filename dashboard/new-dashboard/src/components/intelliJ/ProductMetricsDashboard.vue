@@ -100,6 +100,26 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["globalInspections"],
     projects: ["kotlin_coroutines/inspection", "spring_boot_maven/inspection"],
   },
+  {
+    labels: ["Gradle Import"],
+    measures: ["ExternalSystemSyncProjectTask"],
+    projects: [
+      "project-import-android-500-modules/fastInstaller",
+      "project-import-gradle-1000-modules/fastInstaller",
+      "project-import-gradle-hibernate-orm/fastInstaller",
+      "project-import-gradle-monolith-51-modules-4000-dependencies-2000000-files/fastInstaller",
+    ],
+  },
+  {
+    labels: ["Maven Import"],
+    measures: ["maven.import.stats.sync.project.task"],
+    projects: [
+      "project-import-maven-1000-modules/fastInstaller",
+      "project-import-maven-javaee8/fastInstaller",
+      "project-reimport-maven-quarkus/fastInstaller",
+      "project-import-maven-flink/fastInstaller",
+    ],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

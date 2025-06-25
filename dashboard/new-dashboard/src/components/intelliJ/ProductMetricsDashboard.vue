@@ -27,18 +27,58 @@ import DashboardPage from "../common/DashboardPage.vue"
 const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
-    measures: ["indexingTimeWithoutPauses"],
+    measures: [["indexingTimeWithoutPauses", "fus_dumb_indexing_time"]],
+    projects: ["community/indexing", "intellij_commit/indexing", "kotlin/indexing"],
+  },
+  {
+    labels: ["Scanning"],
+    measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
     projects: ["community/indexing", "intellij_commit/indexing", "kotlin/indexing"],
   },
   {
     labels: ["FirstCodeAnalysis"],
-    measures: ["firstCodeAnalysis"],
+    measures: [["firstCodeAnalysis", "fus_daemon_finished_full_duration_since_started_ms"]],
     projects: ["intellij_commit/localInspection/java_file", "kotlin/localInspection", "kotlin_coroutines/localInspection"],
   },
   {
-    labels: ["Completion"],
-    measures: ["completion"],
-    projects: ["intellij_commit/completion/java_file"],
+    labels: ["Completion JAVA Duration"],
+    measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
+    projects: [
+      "intellij_commit/completion/java_file",
+      "keycloak_release_20/ultimateCase/JpaUserProvider",
+      "train-ticket/ultimateCase/ExecuteServiceImpl",
+      "grails/completion/java_file",
+    ],
+  },
+  {
+    labels: ["Completion JAVA Time to Show"],
+    measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
+    projects: [
+      "intellij_commit/completion/java_file",
+      "keycloak_release_20/ultimateCase/JpaUserProvider",
+      "train-ticket/ultimateCase/ExecuteServiceImpl",
+      "grails/completion/java_file",
+    ],
+  },
+  {
+    labels: ["Completion Kotlin Duration"],
+    measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
+    projects: ["toolbox_enterprise/ultimateCase/UserController"],
+  },
+  {
+    labels: ["Completion Kotlin Time to Show"],
+    measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
+    projects: ["toolbox_enterprise/ultimateCase/UserController"],
+  },
+  {
+    labels: ["Completion Others Duration"],
+    measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
+    projects: ["keycloak_release_20/completion/CorePomXml", "grails/completion/groovy_file"],
+  },
+  {
+    labels: ["Completion Others Time to Show"],
+    measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
+    projects: ["keycloak_release_20/completion/CorePomXml", "grails/completion/groovy_file"],
   },
   {
     labels: ["SearchEverywhere"],

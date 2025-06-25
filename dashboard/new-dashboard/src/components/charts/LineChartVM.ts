@@ -26,6 +26,7 @@ export class LineChartVM {
   private settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
   private lastClickedValue = new Map<string, ClickedValue>()
+  private hasDataCallback?: (hasData: boolean) => void
 
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
@@ -154,10 +155,12 @@ export class LineChartVM {
     private readonly dataQuery: DataQueryExecutor,
     valueUnit: ValueUnit,
     accidentsConfigurator: AccidentsConfigurator | null,
-    private readonly legendFormatter: (name: string) => string
+    private readonly legendFormatter: (name: string) => string,
+    hasDataCallback?: (hasData: boolean) => void
   ) {
     this.legendFormatter = legendFormatter
     this.accidentsConfigurator = accidentsConfigurator
+    this.hasDataCallback = hasDataCallback
     const isMs = valueUnit == "ms"
     this.eChart.chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
     this.eChart.chart.setOption<LineChartOptions>({
@@ -286,21 +289,12 @@ export class LineChartVM {
       }
       chart.hideLoading()
 
+      const hasData = data.flat(3).length > 0
+      this.hasDataCallback?.(hasData)
+
       const formatter = this.legendFormatter
       chart.setOption(
         {
-          title: {
-            show: data.flat(3).length === 0,
-            text: "No data",
-            subtext: "Please check selectors: machine, branch, time range",
-            left: "center",
-            top: "center",
-            textStyle: {
-              fontSize: 20,
-              fontWeight: "normal",
-              color: "#6B7280",
-            },
-          },
           legend: {
             type: "scroll",
             selector: [

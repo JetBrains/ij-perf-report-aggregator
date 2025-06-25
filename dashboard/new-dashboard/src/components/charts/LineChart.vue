@@ -24,9 +24,19 @@
       </span>
     </h3>
     <div
+      v-if="hasData"
       ref="chartElement"
       :style="{ height: `${chartHeight}px` }"
     />
+    <div
+      v-else
+      class="flex items-center justify-center text-gray-500 text-center"
+    >
+      <div>
+        <div class="text-lg font-medium mb-1">Missing data</div>
+        <div class="text-sm">Please check selectors: machine, branch, time range</div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -98,6 +108,7 @@ const skipZeroValuesRef = computed(() => {
 const reportInfoProvider = inject(reportInfoProviderKey, null)
 
 const labelHovered = ref(false)
+const hasData = ref(true)
 
 const infoFieldsConfigurator =
   reportInfoProvider && reportInfoProvider.infoFields.length > 0
@@ -157,7 +168,9 @@ function createChart() {
     chartManager?.dispose()
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
-    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, accidentsConfigurator, legendFormatter)
+    chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, accidentsConfigurator, legendFormatter, (hasDataValue: boolean) => {
+      hasData.value = hasDataValue
+    })
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnitFromMeasure.value, accidentsConfigurator))
   }

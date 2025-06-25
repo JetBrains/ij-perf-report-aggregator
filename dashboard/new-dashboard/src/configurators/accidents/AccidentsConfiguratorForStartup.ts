@@ -46,34 +46,34 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
     return map
   }
 
-  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = "") {
-    if (this.product.value == null || Array.isArray(this.product.value)) return
-    const test = `${this.product.value}/${affected_test}`
-    try {
-      const userName = useUserStore().user?.name ?? ""
-      const response = await fetch(this.getAccidentUrl() + "accidents/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace, user_name: userName }),
-      })
-
-      if (!response.ok) {
-        throw new Error("The accident wasn't created")
-      }
-      const idString: string = await response.text()
-      const id = Number(idString)
-      this.value.value ??= new Map<string, Accident[]>()
-      const updatedMap = new Map(this.value.value)
-      updatedMap.set(`${affected_test}_${build_number}`, [
-        { id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace, userName },
-      ])
-      this.value.value = updatedMap //we need to update value in reference to trigger the change
-      return id
-    } catch (error) {
-      console.error(error)
-      return
+  async writeAccidentToMetaDb(date: string, affected_test: string, reason: string, build_number: string, kind: string | undefined, stacktrace: string = ""): Promise<number> {
+    if (this.product.value == null || Array.isArray(this.product.value)) {
+      throw new Error("Product is not set or is an array")
     }
+    const test = `${this.product.value}/${affected_test}`
+    const userName = useUserStore().user?.name ?? ""
+    const response = await fetch(this.getAccidentUrl() + "accidents/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace, user_name: userName }),
+    })
+
+    if (!response.ok) {
+      if (response.status === 409) {
+        throw new Error("An accident for this test and build already exists")
+      }
+      throw new Error(`The accident wasn't created (HTTP ${response.status}: ${response.statusText})`)
+    }
+    const idString: string = await response.text()
+    const id = Number(idString)
+    this.value.value ??= new Map<string, Accident[]>()
+    const updatedMap = new Map(this.value.value)
+    updatedMap.set(`${affected_test}_${build_number}`, [
+      { id, affectedTest: affected_test, date, reason, buildNumber: build_number, kind: kind as AccidentKind, stacktrace, userName },
+    ])
+    this.value.value = updatedMap //we need to update value in reference to trigger the change
+    return id
   }
 }

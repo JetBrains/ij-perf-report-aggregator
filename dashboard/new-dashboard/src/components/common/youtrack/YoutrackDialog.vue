@@ -124,6 +124,7 @@
 </template>
 <script setup lang="ts">
 import { Ref, ref } from "vue"
+import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
 import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
@@ -152,6 +153,7 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
+const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
 const createdTicket = ref("")
 const createException = ref(false)
@@ -189,10 +191,23 @@ async function createTicket() {
       createdTicket.value = issueResponse.issue.idReadable
       if (issueResponse.exceptions) {
         console.error(`Issue was created, but with some problems:\n ${issueResponse.exceptions.join("\n")}`)
+        toast.add({
+          severity: "warn",
+          summary: "Issue Created with Problems",
+          detail: `YouTrack issue was created but with some problems:\n${issueResponse.exceptions.join("\n")}`,
+          life: 8000,
+        })
         createException.value = true
       }
     } catch (error: unknown) {
       console.error(error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.add({
+        severity: "error",
+        summary: "Issue Creation Failed",
+        detail: `Failed to create YouTrack issue: ${errorMessage}`,
+        life: 8000,
+      })
       createException.value = true
       return
     }
@@ -201,6 +216,13 @@ async function createTicket() {
       await accidentConfigurator.reloadAccidentData(accident.id)
     } catch (error: unknown) {
       console.error(error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.add({
+        severity: "error",
+        summary: "Accident Data Reload Failed",
+        detail: `Failed to reload accident data: ${errorMessage}`,
+        life: 8000,
+      })
       createException.value = true
     }
 
@@ -247,6 +269,13 @@ async function createTicket() {
       await youtrackClient.uploadAttachments(attachmentsInfo)
     } catch (error: unknown) {
       console.error(error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.add({
+        severity: "error",
+        summary: "Attachment Upload Failed",
+        detail: `Failed to upload attachments to YouTrack issue: ${errorMessage}`,
+        life: 8000,
+      })
       attachmentException.value = true
       return
     }

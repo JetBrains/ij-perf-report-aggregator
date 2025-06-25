@@ -138,6 +138,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { computed, ref, watch } from "vue"
+import { useToast } from "primevue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
 import RelatedAccidents from "./RelatedAccidents.vue"
@@ -149,6 +150,7 @@ const { data, accidentsConfigurator } = defineProps<{
 }>()
 
 const createIssueCheckbox = ref(false)
+const toast = useToast()
 
 const showDialog = defineModel<boolean>("showDialog")
 const createIssue = defineModel<boolean>("createIssue")
@@ -185,10 +187,23 @@ async function reportRegression() {
         stacktrace.value
       )
 
-      if (id != undefined && createIssueCheckbox.value) {
+      if (id === undefined) {
+        throw new Error("Failed to create accident - no ID returned")
+      }
+
+      if (createIssueCheckbox.value) {
         accidentToEdit.value = data?.accidents?.value?.find((a) => a.id == id)
         createIssue.value = true
       }
+    } catch (error: unknown) {
+      console.error("Failed to report accident", error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.add({
+        severity: "error",
+        summary: "Report Failed",
+        detail: `Failed to report accident: ${errorMessage}`,
+        life: 8000,
+      })
     } finally {
       showDialog.value = false
     }
@@ -207,8 +222,15 @@ async function updateRegression() {
     .then(async () => {
       await reportRegression()
     })
-    .catch(() => {
+    .catch((error: unknown) => {
       console.error("Failed to delete accident")
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      toast.add({
+        severity: "error",
+        summary: "Update Failed",
+        detail: `Failed to update accident: ${errorMessage}`,
+        life: 8000,
+      })
     })
 }
 

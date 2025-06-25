@@ -20,8 +20,10 @@
       </PageLayout>
     </template>
   </router-view>
+  <Toast />
 </template>
 <script setup lang="ts">
+import Toast from "primevue/toast"
 import PageLayout from "new-dashboard/src/PageLayout.vue"
 import { PersistentStateManager } from "new-dashboard/src/components/common/PersistentStateManager"
 import { ServerWithCompressConfigurator } from "new-dashboard/src/configurators/ServerWithCompressConfigurator"

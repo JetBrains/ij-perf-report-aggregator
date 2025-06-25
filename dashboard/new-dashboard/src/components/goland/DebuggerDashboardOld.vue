@@ -1,8 +1,7 @@
 <template>
   <DashboardPage
-    db-name="perfintDev"
+    db-name="perfint"
     table="goland"
-    :with-installer="false"
     persistent-id="goland_debugger_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
   >

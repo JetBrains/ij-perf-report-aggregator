@@ -4,8 +4,8 @@ import detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-
 
 func GenerateAIASettings() []detector.PerformanceSettings {
 	metrics := map[string][]string{
-		"gradle-calculator_SimpleInlineCompletionTest/simple inline completion": {"callInlineCompletionOnCompletion#mean_value"},
-		"gradle-calculator_CodeGenerationPerformanceTest/generate code":         {"ai-generate-code#mean_value", "doGenerate#mean_value"},
+		"gradle-calculator_SimpleInlineCompletionTest/simple cloud completion": {"callInlineCompletionOnCompletion#mean_value"},
+		"gradle-calculator_CodeGenerationPerformanceTest/generate code":        {"ai-generate-code#mean_value", "doGenerate#mean_value"},
 		"kotlinx_coroutines_k2_dev_ContextPrivacyFiltersTest/coroutinesProject-context-privacy-filters-all-files": {
 			"contextPrivacyFilter.AiIgnoreContextPrivacyFilter.sum.ms",
 			"contextPrivacyFilter.VcsUnversionedContextPrivacyFilter.sum.ms",

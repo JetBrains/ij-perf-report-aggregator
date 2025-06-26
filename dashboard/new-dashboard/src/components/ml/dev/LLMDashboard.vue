@@ -10,7 +10,7 @@
       <GroupProjectsChart
         label="Inline completion"
         measure="callInlineCompletionOnCompletion#mean_value"
-        :projects="['gradle-calculator_SimpleInlineCompletionTest/simple inline completion']"
+        :projects="['gradle-calculator_SimpleInlineCompletionTest/simple cloud completion']"
       />
     </section>
     <section>

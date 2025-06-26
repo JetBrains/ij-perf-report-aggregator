@@ -18,6 +18,7 @@ Directory `dashboard` contains Vue.js application built using [PrimeVue](https:/
 
 - `pnpm i` to install dependencies
 - `pnpm vite serve` to start a dev server with hot module replacement.
+- `pnpm vite serve --host` to start a dev server with hot module replacement on 0.0.0.0.
 - `pnpm build` to build for production and `pnpm vite preview` to preview the production build.
 - You can change server to the local one in `ServerWithCompressConfigurator.ts`
   - To test your changes against production server, replace the url to `https://ij-perf-api.labs.jb.gg`. Make sure you have access to the internal network.

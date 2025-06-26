@@ -8,6 +8,22 @@
   >
     <section>
       <GroupProjectsChart
+        label="Global Inspections Time"
+        measure="globalInspections"
+        :projects="[
+          'kubernetes/kubernetes/dfa',
+          'cockroach/cockroach/dfa',
+          'mattermost-server/mattermost-server/dfa',
+          'volcano/volcano/dfa',
+          'tempo/tempo/dfa',
+          'rclone/rclone/dfa',
+          'milvus/milvus/dfa',
+          'k8sDevice/k8sDevice/dfa',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="General Total Time"
         measure="go.dfa.general.total.time.ms"
         :projects="[

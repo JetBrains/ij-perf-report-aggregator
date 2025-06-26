@@ -160,6 +160,7 @@ enum ROUTES {
   WebStormDashboardOld = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}Old`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
   WebStormDashboardBuiltInVsNEXTOld = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNextOld`,
+  WebStormDashboardDelicateProjects = `${ROUTE_PREFIX.WebStorm}/dashboardDelicateProjects`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}Dev`,
   WebStormTestsOld = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
@@ -1890,6 +1891,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
           component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXTOld.vue"),
           meta: { pageTitle: "Built-in vs NEXT (Old)" },
+        },
+        {
+          path: ROUTES.WebStormDashboardDelicateProjects,
+          component: () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"),
+          meta: { pageTitle: "Delicate Projects" },
         },
         {
           path: ROUTES.WebStormCompare,

@@ -17,6 +17,12 @@
       </a>
       <span class="ml-auto flex items-center">
         <span
+          v-if="!hasData"
+          class="text-sm text-gray-500"
+        >
+          Missing data. Please check selectors: machine, branch, time range
+        </span>
+        <span
           v-if="canBeClosed"
           class="text-sm pi pi-plus rotate-45 cursor-pointer transition"
           @click="closeChart"
@@ -28,15 +34,6 @@
       ref="chartElement"
       :style="{ height: `${chartHeight}px` }"
     />
-    <div
-      v-else
-      class="flex items-center justify-center text-gray-500 text-center"
-    >
-      <div>
-        <div class="text-lg font-medium mb-1">Missing data</div>
-        <div class="text-sm">Please check selectors: machine, branch, time range</div>
-      </div>
-    </div>
   </div>
 </template>
 <script setup lang="ts">

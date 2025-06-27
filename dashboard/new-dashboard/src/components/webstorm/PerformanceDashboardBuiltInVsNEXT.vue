@@ -65,6 +65,28 @@ const groups = [
     ],
   },
   {
+    label: "FirstCodeAnalysis",
+    measure: "firstCodeAnalysis",
+    projects: [
+      "aws_cdk/localInspection/logging",
+      "eslint-plugin-jest/localInspection/misc.ts",
+      "allure-js/localInspection/JasmineAllureReporter.ts",
+      "axios/localInspection/utils.js",
+      "toh-pt6/localInspection/hero.service.ts",
+      "toh-pt6/localInspection/heroes.component.html",
+      "react-todo-js/localInspection/App.js",
+      "WEB_5976/localInspection/react_mui",
+      "material-ui-react-admin/localInspection/PostEdit.tsx",
+      "vue-template/localInspection/HelloWorld.vue",
+      "vue3-admin-vite/localInspection/index.vue",
+      "pancake-frontend/localInspection/[tokenId].tsx",
+      "kibana/localInspection/alerts_grouping.tsx",
+      "kibana/localInspection/project_navigation.ts",
+      "fp-ts/localInspection/eq",
+      "backstage/localInspection/UserProfileCard.tsx",
+    ],
+  },
+  {
     label: "Local inspections",
     measure: "localInspections",
     projects: [

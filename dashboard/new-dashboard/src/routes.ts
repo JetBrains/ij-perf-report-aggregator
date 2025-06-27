@@ -884,6 +884,10 @@ const WEBSTORM: Product = {
           label: "Built-in vs NEXT" + " (Old)",
         },
         {
+          url: ROUTES.WebStormDashboardDelicateProjects,
+          label: "Delicate Projects",
+        },
+        {
           url: ROUTES.WebStormTests,
           label: TESTS_LABEL,
         },

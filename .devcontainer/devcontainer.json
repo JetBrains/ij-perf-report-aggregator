@@ -5,8 +5,8 @@
   "workspaceFolder": "/workspace",
 
   "forwardPorts": [8080],
-  
+
   "postCreateCommand": "pnpm i && go mod download",
-  
+
   "remoteUser": "ijperf"
 }

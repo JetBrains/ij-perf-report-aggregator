@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="ijent"
     persistent-id="ijent_performance_dashboard"
-    initial-machine="windows-azure"
+    initial-machine="linux-blade-hetzner"
     :with-installer="false"
     :charts="charts"
   >
@@ -59,6 +59,8 @@ const metricsDeclaration = [
   "MEM.avgRamMegabytes",
   "MEM.avgFileMappingsRamMegabytes",
 
+  "ijent.directoryStreamClose.sum.ms",
+  "ijent.directoryStreamIteratorNext.sum.ms",
   "ijent.fileSystemClose.sum.ms",
   "ijent.providerCheckAccess.sum.ms",
   "ijent.providerCopy.sum.ms",
@@ -66,6 +68,7 @@ const metricsDeclaration = [
   "ijent.providerDelete.sum.ms",
   "ijent.providerMove.sum.ms",
   "ijent.providerNewByteChannel.sum.ms",
+  "ijent.providerNewDirectoryStream.sum.ms",
   "ijent.providerReadAttributes.sum.ms",
   "ijent.seekableByteChannelClose.sum.ms",
   "ijent.seekableByteChannelNewPosition.sum.ms",

@@ -38,16 +38,27 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FirstCodeAnalysis"],
     measures: [["firstCodeAnalysis", "fus_daemon_finished_full_duration_since_started_ms"]],
-    projects: ["intellij_commit/localInspection/java_file", "kotlin/localInspection", "kotlin_coroutines/localInspection"],
+    projects: [
+      "intellij_commit/localInspection/java_file",
+      "kotlin/localInspection",
+      "kotlin_coroutines/localInspection",
+      "intellij_commit/localInspection/java_file/embeddedClient",
+      "kotlin/localInspection/embeddedClient",
+      "kotlin_coroutines/localInspection/embeddedClient",
+    ],
   },
   {
     labels: ["Completion JAVA Duration"],
     measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
     projects: [
       "intellij_commit/completion/java_file",
+      "intellij_commit/completion/java_file/embeddedClient",
       "keycloak_release_20/ultimateCase/JpaUserProvider",
+      "keycloak_release_20/ultimateCase/JpaUserProvider/embeddedClient",
       "train-ticket/ultimateCase/ExecuteServiceImpl",
+      "train-ticket/ultimateCase/ExecuteServiceImpl/embeddedClient",
       "grails/completion/java_file",
+      "grails/completion/java_file/embeddedClient",
     ],
   },
   {
@@ -55,30 +66,44 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
     projects: [
       "intellij_commit/completion/java_file",
+      "intellij_commit/completion/java_file/embeddedClient",
       "keycloak_release_20/ultimateCase/JpaUserProvider",
+      "keycloak_release_20/ultimateCase/JpaUserProvider/embeddedClient",
       "train-ticket/ultimateCase/ExecuteServiceImpl",
+      "train-ticket/ultimateCase/ExecuteServiceImpl/embeddedClient",
       "grails/completion/java_file",
+      "grails/completion/java_file/embeddedClient",
     ],
   },
   {
     labels: ["Completion Kotlin Duration"],
     measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
-    projects: ["toolbox_enterprise/ultimateCase/UserController"],
+    projects: ["toolbox_enterprise/ultimateCase/UserController", "toolbox_enterprise/ultimateCase/UserController/embeddedClient"],
   },
   {
     labels: ["Completion Kotlin Time to Show"],
     measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
-    projects: ["toolbox_enterprise/ultimateCase/UserController"],
+    projects: ["toolbox_enterprise/ultimateCase/UserController", "toolbox_enterprise/ultimateCase/UserController/embeddedClient"],
   },
   {
     labels: ["Completion Others Duration"],
     measures: [["completion", "fus_completion_duration_90p", "fus_completion_duration_sum"]],
-    projects: ["keycloak_release_20/completion/CorePomXml", "grails/completion/groovy_file"],
+    projects: [
+      "keycloak_release_20/completion/CorePomXml",
+      "grails/completion/groovy_file",
+      "keycloak_release_20/completion/CorePomXml/embeddedClient",
+      "grails/completion/groovy_file/embeddedClient",
+    ],
   },
   {
     labels: ["Completion Others Time to Show"],
     measures: [["completion#firstElementShown#mean_value", "fus_time_to_show_90p"]],
-    projects: ["keycloak_release_20/completion/CorePomXml", "grails/completion/groovy_file"],
+    projects: [
+      "keycloak_release_20/completion/CorePomXml",
+      "grails/completion/groovy_file",
+      "keycloak_release_20/completion/CorePomXml/embeddedClient",
+      "grails/completion/groovy_file/embeddedClient",
+    ],
   },
   {
     labels: ["SearchEverywhere"],
@@ -93,12 +118,19 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: ["toolbox_enterprise/ultimateCase/SecurityTests", "keycloak_release_20/ultimateCase/JpaUserProvider", "train-ticket/ultimateCase/InsidePaymentServiceImpl"],
+    projects: [
+      "toolbox_enterprise/ultimateCase/SecurityTests",
+      "keycloak_release_20/ultimateCase/JpaUserProvider",
+      "train-ticket/ultimateCase/InsidePaymentServiceImpl",
+      "toolbox_enterprise/ultimateCase/SecurityTests/embeddedClient",
+      "keycloak_release_20/ultimateCase/JpaUserProvider/embeddedClient",
+      "train-ticket/ultimateCase/InsidePaymentServiceImpl/embeddedClient",
+    ],
   },
   {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    projects: ["kotlin_coroutines/inspection", "spring_boot_maven/inspection"],
+    projects: ["kotlin_coroutines/inspection", "spring_boot_maven/inspection", "kotlin_coroutines/inspection/embeddedClient", "spring_boot_maven/inspection/embeddedClient"],
   },
   {
     labels: ["Gradle Import"],

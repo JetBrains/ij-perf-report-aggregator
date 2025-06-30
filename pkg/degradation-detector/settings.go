@@ -10,15 +10,17 @@ type Settings interface {
 }
 
 type BaseSettings struct {
+	SlackSettings
+	AnalysisSettings
+
 	Metric  string
 	Branch  string
 	Machine string
-	SlackSettings
-	AnalysisSettings
 }
 
 type PerformanceSettings struct {
 	BaseSettings
+
 	Db          string
 	Table       string
 	Project     string
@@ -28,6 +30,7 @@ type PerformanceSettings struct {
 
 type StartupSettings struct {
 	BaseSettings
+
 	Product string
 	Project string
 }

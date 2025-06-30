@@ -31,6 +31,8 @@ linters:
     - goconst
     - gochecknoinits
     - contextcheck
+    - noinlineerr
+    - wsl_v5
   settings:
     errcheck:
       check-type-assertions: true

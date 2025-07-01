@@ -139,7 +139,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion (Diaspora)"
-        measure="completion"
+        measure="completion#mean_value"
         :projects="[
           'diaspora-project-test/completion/routes',
           'diaspora-project-test/completion/exceptions',
@@ -155,7 +155,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion (GitLab)"
-        measure="completion"
+        measure="completion#mean_value"
         :projects="[
           'gitlab-project-test/completion/routes',
           'gitlab-project-test/completion/exceptions',
@@ -171,7 +171,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Completion (Redmine)"
-        measure="completion"
+        measure="completion#mean_value"
         :projects="[
           'redmine-project-test/completion/routes',
           'redmine-project-test/completion/exceptions',

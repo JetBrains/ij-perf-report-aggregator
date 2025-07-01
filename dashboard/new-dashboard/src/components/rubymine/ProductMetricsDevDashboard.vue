@@ -149,7 +149,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Completion (Diaspora)"],
-    measures: ["completion"],
+    measures: ["completion#mean_value"],
     projects: [
       "diaspora-project-test/completion/routes",
       "diaspora-project-test/completion/exceptions",
@@ -163,7 +163,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Completion (GitLab)"],
-    measures: ["completion"],
+    measures: ["completion#mean_value"],
     projects: [
       "gitlab-project-test/completion/routes",
       "gitlab-project-test/completion/exceptions",
@@ -177,7 +177,7 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Completion (Redmine)"],
-    measures: ["completion"],
+    measures: ["completion#mean_value"],
     projects: [
       "redmine-project-test/completion/routes",
       "redmine-project-test/completion/exceptions",

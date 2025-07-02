@@ -169,5 +169,10 @@ const groups = [
       "backstage/UserProfileCard.tsxHighlighting",
     ],
   },
+  {
+    label: "Find Usages",
+    measure: "find_Usages_Duration",
+    projects: ["pancake/Model.tsxFindUsages", "backstage/types.tsFindUsages"],
+  },
 ]
 </script>

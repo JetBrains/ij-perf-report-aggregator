@@ -60,6 +60,9 @@
         "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
         "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
         "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache"
+      ],
+      "jooq": [
+        "jooq-k2/completion/Main_chainedDSL_typing_with_library_cache"
       ]
     },
     "highlighting": {

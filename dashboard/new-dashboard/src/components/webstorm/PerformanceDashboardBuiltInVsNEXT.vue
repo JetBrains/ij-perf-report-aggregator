@@ -62,6 +62,8 @@ const groups = [
       "fp-ts/completion/completion",
       "backstage/completion/completion",
       "backstage/completion/component",
+      "vue-naive-ui-admin/completion/built-in-completion",
+      "vue-naive-ui-admin/completion/completion",
     ],
   },
   {
@@ -106,6 +108,7 @@ const groups = [
       "kibana/localInspection/project_navigation.ts",
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
+      "vue-naive-ui-admin/localInspection/inspections",
     ],
   },
   {
@@ -171,7 +174,7 @@ const groups = [
   },
   {
     label: "Find Usages",
-    measure: "findUsages",
+    measure: "find_Usages_Duration",
     projects: ["pancake/Model.tsxFindUsages", "backstage/types.tsFindUsages"],
   },
 ]

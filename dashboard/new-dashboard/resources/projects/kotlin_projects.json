@@ -60,6 +60,9 @@
         "kotlin_lang/completion/build.gradle_completion_kts_typing_with_library_cache",
         "kotlin_lang/completion/build.gradle_completion_kts_with_library_cache",
         "kotlin_lang/completion/build.gradle_top_level_typing_with_library_cache"
+      ],
+      "jooq": [
+        "jooq-k2/completion/Main_chainedDSL_typing_with_library_cache"
       ]
     },
     "highlighting": {
@@ -191,7 +194,8 @@
       ],
       "syntheticFiles": [
         "kotlin_synthetic_files/highlight/repro1_with_library_cache",
-        "kotlin_synthetic_files/highlight/repro2_with_library_cache"
+        "kotlin_synthetic_files/highlight/repro2_with_library_cache",
+        "kotlin_synthetic_files/highlight/many_library_dependencies/Usage_with_library_cache"
       ]
     },
     "moveFiles": {

@@ -118,6 +118,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   mppNativeAcceptance: buildCategory("Native-acceptance", "kotlin_kmp_native_acceptance/"),
   petClinic: buildCategory("Pet Clinic", "kotlin_petclinic/"),
   arrow: buildCategory("Arrow", "arrow/"),
+  jooq: buildCategory("JOOQ", "jooq-k2/"),
   kotlinEmptyScript: buildCategory("Empty Script (.kts)", "kotlin_empty_kts/"),
 
   qaRefactorMove: buildCategory("QA Refactor / Move", "refactor-move/"),

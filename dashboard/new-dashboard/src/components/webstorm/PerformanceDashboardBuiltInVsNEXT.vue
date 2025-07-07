@@ -174,7 +174,7 @@ const groups = [
   },
   {
     label: "Find Usages",
-    measure: "find_Usages_Duration",
+    measure: "findUsages",
     projects: ["pancake/Model.tsxFindUsages", "backstage/types.tsFindUsages"],
   },
 ]

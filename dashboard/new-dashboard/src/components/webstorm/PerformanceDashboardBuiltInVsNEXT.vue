@@ -175,7 +175,7 @@ const groups = [
   {
     label: "Find Usages",
     measure: "findUsages",
-    projects: ["pancake/Model.tsxFindUsages", "backstage/types.tsFindUsages"],
+    projects: ["pancake/Model.tsx", "backstage/types.ts"],
   },
 ]
 </script>

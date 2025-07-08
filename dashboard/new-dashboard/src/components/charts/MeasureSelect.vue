@@ -10,6 +10,7 @@
     :auto-filter-focus="true"
     :option-label="(it: string) => it"
     :max-selected-labels="1"
+    :virtual-scroller-options="virtualScrollerOptions"
   >
     <template #value="slotProps">
       <div class="group flex items-center gap-1">
@@ -67,6 +68,12 @@ interface Props {
 
 const { configurator, selectedLabel = (items: string[]) => `${items.length} items selected`, title = "Metrics" } = defineProps<Props>()
 const showAllMetrics = ref(false)
+
+const virtualScrollerOptions = computed(() => {
+  const itemCount = configurator.data.value?.length ?? 0
+  return itemCount > 1000 ? { itemSize: 38 } : undefined
+})
+
 watch(showAllMetrics, (value) => {
   if (configurator instanceof MeasureConfigurator) {
     configurator.setShowAllMetrics(value)

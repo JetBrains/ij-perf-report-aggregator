@@ -8,21 +8,32 @@
   >
     <section>
       <GroupProjectsChart
-        label="Local inspection execution time"
+        label="Local Inspections (total execution time)"
         measure="localInspections"
         :projects="['istio/localInspection/adsc.go', 'minotaur/localInspection/server.go']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Global inspection execution time"
+        label="Global Inspections (total execution time)"
         measure="globalInspections"
-        :projects="['delve/inspection', 'kubernetes/inspection']"
+        :projects="[
+          'delve/inspection',
+          'kubernetes/inspection',
+          'caddy/inspection',
+          'cockroach/inspection',
+          'k8sDevice/inspection',
+          'mattermost-server/inspection',
+          'milvus/inspection',
+          'rclone/inspection',
+          'tempo/inspection',
+          'volcano/inspection',
+        ]"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Single inspections execution time (cockroach)"
+        label="Single Inspections (total execution time)"
         measure="globalInspections"
         :projects="['singleInspection/cockroach/VgoDependencyUpdateAvailable']"
       />

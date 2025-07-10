@@ -683,11 +683,11 @@ const GOLAND: Product = {
         },
         {
           url: ROUTES.GoLandCompletionDashboard,
-          label: "Completion & Typing",
+          label: "Completion",
         },
         {
           url: ROUTES.GoLandCompletionDashboardOld,
-          label: "Completion & Typing (Old)",
+          label: "Completion (Old)",
         },
         {
           url: ROUTES.GoLandInspectionDashboard,
@@ -715,11 +715,11 @@ const GOLAND: Product = {
         },
         {
           url: ROUTES.GoLandDFADashboard,
-          label: "Data Flow Analysis",
+          label: "DFA",
         },
         {
           url: ROUTES.GoLandDFADashboardOld,
-          label: "Data Flow Analysis (Old)",
+          label: "DFA (Old)",
         },
         {
           url: ROUTES.GoLandDistributiveSizeDashboard,

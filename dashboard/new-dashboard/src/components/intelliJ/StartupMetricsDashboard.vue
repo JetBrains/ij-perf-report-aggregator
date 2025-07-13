@@ -60,6 +60,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["totalOpeningTime/timeFromAppStartTillAnalysisFinished"],
     projects: ["idea/measureStartup", "idea/measureStartup/embeddedClient"],
   },
+  {
+    labels: ["First file opening time"],
+    measures: ["openFile"],
+    projects: ["idea/warmup/embeddedClient"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

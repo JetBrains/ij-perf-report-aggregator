@@ -210,7 +210,8 @@
     },
     "refactoringRename": {
       "intelliJ": [
-        "intellij_commit/rename/SqlBlock_SqlBlockRenamed"
+        "intellij_commit/rename/SqlBlock_SqlBlockRenamed",
+        "intellij_commit/rename/MavenCoordinates_versionRenamed"
       ],
       "kotlinLanguageServer": [
         "kotlin_language_server/rename/Compiler_createKtFileTest"

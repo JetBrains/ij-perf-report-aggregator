@@ -65,6 +65,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["openFile"],
     projects: ["idea/warmup/embeddedClient"],
   },
+  {
+    labels: ["Reopening file time after ide restart"],
+    measures: ["reopenFileAfterIdeRestart"],
+    projects: ["idea/measureStartup/embeddedClient"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

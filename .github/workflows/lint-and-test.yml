@@ -17,9 +17,9 @@ jobs:
       - name: Create dummy file in resources
         run: mkdir cmd/frontend/resources && touch cmd/frontend/resources/make-typecheck-happy.txt
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v7
+        uses: golangci/golangci-lint-action@v8
         with:
-          version: 2.2.1
+          version: v2.2.1
       - name: Run Go tests
         run: go test ./pkg/...
       - uses: ./.github/send-notification-action

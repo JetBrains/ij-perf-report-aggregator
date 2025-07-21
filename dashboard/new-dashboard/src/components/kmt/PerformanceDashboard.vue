@@ -32,22 +32,17 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"]],
-    projects: ["KMT_Basic/indexingKMT_Basic"],
+    projects: ["Wizard/indexing", "KotlinConf/indexing"],
   },
   {
     labels: ["KMP Setup"],
     measures: [["Progress: Setting up run configurations...", "Progress: Generating Xcode files…"]],
-    projects: ["KMT_Basic/startupKMT_Basic"],
+    projects: ["Wizard/setup", "KotlinConf/setup"],
   },
   {
-    labels: ["Startup"],
-    measures: ["totalOpeningTime/timeFromAppStartTillAnalysisFinished"],
-    projects: ["KMT_Basic/measureStartup"],
-  },
-  {
-    labels: ["Inspections"],
+    labels: ["Swift support"],
     measures: ["globalInspections"],
-    projects: ["KMT_Basic/inspection/KMT_Basic"],
+    projects: ["Wizard/inspection", "KotlinConf/inspection"],
   },
 ]
 

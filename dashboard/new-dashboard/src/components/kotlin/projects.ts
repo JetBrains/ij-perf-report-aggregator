@@ -15,6 +15,7 @@ const MEASURES = {
     { name: "performInlineRename#mean_value", label: "PerformInlineRename" },
     { name: "startInlineRename#mean_value", label: "StartInlineRename" },
     { name: "prepareForRename#mean_value", label: "PrepareForRename" },
+    { name: "fus_refactoring_usages_searched", label: "FindUsagesForRename" },
   ],
   moveFilesMeasure: [
     { name: "moveFiles#mean_value", label: "Move files" },

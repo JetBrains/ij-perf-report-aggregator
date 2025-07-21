@@ -207,11 +207,16 @@ enum ROUTES {
   ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionNovaStartupDashboard = `${ROUTE_PREFIX.Clion}/nova_${STARTUP_ROUTE}`,
   ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
-  ClionTest = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
+  ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
+  ClionTestOld = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
+  ClionPerfDashboardOld = `${ROUTE_PREFIX.Clion}/perfDashboardOld`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
+  ClionDetailedPerfDashboardOld = `${ROUTE_PREFIX.Clion}/detailedPerfDashboardOld`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
+  ClionMemoryDashboardOld = `${ROUTE_PREFIX.Clion}/memoryDashboardOld`,
   ClionProjectModelDashboard = `${ROUTE_PREFIX.Clion}/projectModelDashboard`,
+  ClionProjectModelDashboardOld = `${ROUTE_PREFIX.Clion}/projectModelDashboardOld`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
@@ -1096,20 +1101,40 @@ const CLION: Product = {
           label: "Performance",
         },
         {
+          url: ROUTES.ClionPerfDashboardOld,
+          label: "Performance (Old)",
+        },
+        {
           url: ROUTES.ClionDetailedPerfDashboard,
           label: "Detailed Performance",
+        },
+        {
+          url: ROUTES.ClionDetailedPerfDashboardOld,
+          label: "Detailed Performance (Old)",
         },
         {
           url: ROUTES.ClionMemoryDashboard,
           label: "Memory",
         },
         {
+          url: ROUTES.ClionMemoryDashboardOld,
+          label: "Memory (Old)",
+        },
+        {
           url: ROUTES.ClionProjectModelDashboard,
           label: "Project Model",
         },
         {
+          url: ROUTES.ClionProjectModelDashboardOld,
+          label: "Project Model (Old)",
+        },
+        {
           url: ROUTES.ClionTest,
           label: TESTS_LABEL,
+        },
+        {
+          url: ROUTES.ClionTestOld,
+          label: TESTS_LABEL + "(Old)",
         },
         {
           url: ROUTES.ClionCompareBranches,
@@ -2321,6 +2346,17 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionTest,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
+            dbName: "perfintDev",
+            table: "clion",
+            withInstallers: false,
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "CLion tests" },
+        },
+        {
+          path: ROUTES.ClionTestOld,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
             dbName: "perfint",
             table: "clion",
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
@@ -2356,8 +2392,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionPerfDashboard,
           component: () => import("./components/clion/PerformanceDashboard.vue"),
           props: {
-            dbName: "perfint",
-            table: "clion",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "CLion dashboard" },
+        },
+        {
+          path: ROUTES.ClionPerfDashboardOld,
+          component: () => import("./components/clion/PerformanceDashboardOld.vue"),
+          props: {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion dashboard" },
@@ -2366,8 +2408,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionDetailedPerfDashboard,
           component: () => import("./components/clion/DetailedPerformanceDashboard.vue"),
           props: {
-            dbName: "perfint",
-            table: "clion",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "CLion Detailed Performance dashboard" },
+        },
+        {
+          path: ROUTES.ClionDetailedPerfDashboardOld,
+          component: () => import("./components/clion/DetailedPerformanceDashboardOld.vue"),
+          props: {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion Detailed Performance dashboard" },
@@ -2376,8 +2424,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionMemoryDashboard,
           component: () => import("./components/clion/MemoryDashboard.vue"),
           props: {
-            dbName: "perfint",
-            table: "clion",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "CLion Memory dashboard" },
+        },
+        {
+          path: ROUTES.ClionMemoryDashboardOld,
+          component: () => import("./components/clion/MemoryDashboardOld.vue"),
+          props: {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion Memory dashboard" },
@@ -2386,8 +2440,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionProjectModelDashboard,
           component: () => import("./components/clion/ProjectModelDashboard.vue"),
           props: {
-            dbName: "perfint",
-            table: "clion",
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
+          meta: { pageTitle: "CLion Project Model dashboard" },
+        },
+        {
+          path: ROUTES.ClionProjectModelDashboardOld,
+          component: () => import("./components/clion/ProjectModelDashboardOld.vue"),
+          props: {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion Project Model dashboard" },
@@ -2396,7 +2456,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           path: ROUTES.ClionCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
           props: {
-            dbName: "perfint",
+            dbName: "perfintDev",
             table: "clion",
           },
           meta: { pageTitle: COMPARE_BRANCHES_LABEL },

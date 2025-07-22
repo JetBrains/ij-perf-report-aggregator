@@ -63,7 +63,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["First file opening time"],
     measures: ["openFile"],
-    projects: ["idea/warmup/embeddedClient"],
+    projects: ["idea/warmup/embeddedClient, idea/warmup"],
   },
   {
     labels: ["Reopening file time after ide restart"],

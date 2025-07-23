@@ -31,7 +31,7 @@
         :legend-formatter="legendFormatter"
       />
     </section>
-    <Divider title="Swift & Cross-language Support" />
+    <Divider title="Compose Multiplatform Support" />
     <section>
       <GroupProjectsWithClientChart
         v-for="chart in chartsCompose"

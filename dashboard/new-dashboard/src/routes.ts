@@ -1099,7 +1099,7 @@ const CLION: Product = {
         },
         {
           url: ROUTES.ClionProductMetricsDashboardOld,
-          label: `${PRODUCT_METRICS_LABEL} (Old)`,
+          label: PRODUCT_METRICS_LABEL + " (Old)",
         },
         {
           url: ROUTES.ClionPerfDashboard,
@@ -2394,7 +2394,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "CLion product metrics" },
         },
         {
-          path: ROUTES.ClionProductMetricsDashboard,
+          path: ROUTES.ClionProductMetricsDashboardOld,
           component: () => import("./components/clion/ProductMetricsDashboardOld.vue"),
           props: {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",

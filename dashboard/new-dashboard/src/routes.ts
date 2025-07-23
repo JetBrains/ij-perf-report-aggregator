@@ -207,6 +207,7 @@ enum ROUTES {
   ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionNovaStartupDashboard = `${ROUTE_PREFIX.Clion}/nova_${STARTUP_ROUTE}`,
   ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
+  ClionProductMetricsDashboardOld = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}Old`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
   ClionTestOld = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
@@ -1095,6 +1096,10 @@ const CLION: Product = {
         {
           url: ROUTES.ClionProductMetricsDashboard,
           label: PRODUCT_METRICS_LABEL,
+        },
+        {
+          url: ROUTES.ClionProductMetricsDashboardOld,
+          label: `${PRODUCT_METRICS_LABEL} (Old)`,
         },
         {
           url: ROUTES.ClionPerfDashboard,
@@ -2386,6 +2391,14 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         {
           path: ROUTES.ClionProductMetricsDashboard,
           component: () => import("./components/clion/ProductMetricsDashboard.vue"),
+          meta: { pageTitle: "CLion product metrics" },
+        },
+        {
+          path: ROUTES.ClionProductMetricsDashboard,
+          component: () => import("./components/clion/ProductMetricsDashboardOld.vue"),
+          props: {
+            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+          },
           meta: { pageTitle: "CLion product metrics" },
         },
         {

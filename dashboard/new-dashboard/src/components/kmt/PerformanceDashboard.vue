@@ -5,12 +5,36 @@
     persistent-id="kmt_performance_dashboard"
     initial-machine="Mac Cidr Performance"
     :initial-mode="MODES"
-    :charts="charts"
     :with-installer="false"
   >
+    <Divider title="KMP IDE Setup" />
     <section>
       <GroupProjectsWithClientChart
-        v-for="chart in charts"
+        v-for="chart in chartsSetup"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+        :aliases="chart.aliases"
+        :legend-formatter="legendFormatter"
+      />
+    </section>
+    <Divider title="Swift & Cross-language Support" />
+    <section>
+      <GroupProjectsWithClientChart
+        v-for="chart in chartsCrossLang"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+        :aliases="chart.aliases"
+        :legend-formatter="legendFormatter"
+      />
+    </section>
+    <Divider title="Swift & Cross-language Support" />
+    <section>
+      <GroupProjectsWithClientChart
+        v-for="chart in chartsCompose"
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
@@ -27,8 +51,9 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 import { legendFormatter, MODES } from "./KmtMeasurements"
+import Divider from "../common/Divider.vue"
 
-const chartsDeclaration: ChartDefinition[] = [
+const chartsDeclarationSetup: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: [["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"]],
@@ -36,15 +61,57 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["KMP Setup"],
-    measures: [["Progress: Setting up run configurations...", "Progress: Generating Xcode files…"]],
+    measures: [
+      [
+        "Progress: Setting up run configurations...",
+        "Progress: Generating Xcode files…",
+        "Create KMP Run Configurations",
+        "Create KMP JS Run Configuration",
+        "Create KMP Wasm Run Configuration",
+        "Create KMP JVM Run Configuration",
+      ],
+    ],
     projects: ["Wizard/setup", "KotlinConf/setup"],
-  },
-  {
-    labels: ["Swift support"],
-    measures: ["globalInspections"],
-    projects: ["Wizard/inspection", "KotlinConf/inspection"],
   },
 ]
 
-const charts = combineCharts(chartsDeclaration)
+const chartsDeclarationCrossLang: ChartDefinition[] = [
+  {
+    labels: ["Swift Inspections (SourceKit)", "Highlighting"],
+    measures: [
+      ["globalInspections", "firstCodeAnalysis", "localInspections"],
+      ["SourceKitDiagnosticsPass", "SourceKitSemanticHighlightingPass", "SwiftDocCommentHighlighter", "SwiftSoftKeywordHighlighter"],
+    ],
+    projects: ["Wizard/inspection", "KotlinConf/inspection", "Wizard/localInspection/swift", "KotlinConf/localInspection/swift"],
+  },
+  {
+    labels: ["Completion in Swift"],
+    measures: ["completion"],
+    projects: ["Wizard/completion/kotlinSymbols", "KotlinConf/completion/kotlinSymbols", "Wizard/completion/swiftSymbols", "KotlinConf/completion/swiftSymbols"],
+  },
+  {
+    labels: ["Navigation (Go To Declaration)", "Find Usages"],
+    measures: ["execute_editor_gotodeclaration", ["FindUsagesTotal", "execute_editor_findusages"]],
+    projects: [
+      "Wizard/gotodeclaration/kotlinSymbols",
+      "KotlinConf/gotodeclaration/kotlinSymbols",
+      "Wizard/gotodeclaration/swiftSymbols",
+      "KotlinConf/gotodeclaration/swiftSymbols",
+      "Wizard/findUsages/swiftSymbols",
+      "KotlinConf/findUsages/swiftSymbols",
+    ],
+  },
+]
+
+const chartsDeclarationCompose: ChartDefinition[] = [
+  {
+    labels: ["Navigation (Go To Declaration)", "Find Usages"],
+    measures: ["execute_editor_gotodeclaration", ["FindUsagesTotal", "execute_editor_findusages"]],
+    projects: ["Wizard/gotodeclaration/composeResourceImage", "KotlinConf/findUsages/composeResourceString", "KotlinConf/gotodeclaration/composeResourceString"],
+  },
+]
+
+const chartsSetup = combineCharts(chartsDeclarationSetup)
+const chartsCrossLang = combineCharts(chartsDeclarationCrossLang)
+const chartsCompose = combineCharts(chartsDeclarationCompose)
 </script>

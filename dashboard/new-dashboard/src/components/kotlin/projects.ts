@@ -98,6 +98,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   intelliJSources: buildCategory("Intellij Sources", "intellij_sources/"),
   intelliJTyping: buildCategory("IntelliJ with typing", ""),
   kotlinLang: buildCategory("Kotlin lang", "kotlin_lang/"),
+  kotlinLang_slow: buildCategory("Kotlin lang (slow)", "kotlin_lang/"),
   // Same kotlinLang. Need to avoid lot of lines on chart
   kotlinScript: buildCategory("Kotlin script", ""),
 
@@ -113,8 +114,10 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   rustPlugin: buildCategory("Rust plugin", "rust_commit/"),
   syntheticFiles: buildCategory("Synthetic files", "kotlin_synthetic_files/"),
   sqliter: buildCategory("SQLiter", "SQLiter/"),
+  sqliter_slow: buildCategory("SQLiter (slow)", "SQLiter/"),
   ktor: buildCategory("Ktor", "ktor_before_add_wasm_client/"),
   kotlinCoroutinesQG: buildCategory("Kotlin Coroutines QG", "kotlin_coroutines_qg/"),
+  kotlinCoroutinesQG_slow: buildCategory("Kotlin Coroutines QG (slow)", "kotlin_coroutines_qg/"),
 
   mppNativeAcceptance: buildCategory("Native-acceptance", "kotlin_kmp_native_acceptance/"),
   petClinic: buildCategory("Pet Clinic", "kotlin_petclinic/"),

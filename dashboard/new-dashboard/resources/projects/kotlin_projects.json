@@ -248,9 +248,11 @@
       "kotlinLang": [
         "kotlin_lang/findUsages/CommonParser_with_library_cache",
         "kotlin_lang/findUsages/DefaultArgumentStubGenerator_with_library_cache",
-        "kotlin_lang/findUsages/FirErrors_with_library_cache",
         "kotlin_lang/findUsages/Flag_with_library_cache",
         "kotlin_lang/findUsages/ReferenceSymbolTable_with_library_cache"
+      ],
+      "kotlinLang_slow": [
+        "kotlin_lang/findUsages/FirErrors_with_library_cache"
       ],
       "tbe": [
         "toolbox_enterprise/findUsages/ErrorReport_with_library_cache",
@@ -425,7 +427,6 @@
         "kotlin_coroutines_qg/completion/AwaitStressTest_test_AwaitStressTest_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/CoroutineContext_enqueue_CoroutineContext_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/CoroutineContext_isJsdom_typing_with_library_cache",
-        "kotlin_coroutines_qg/completion/Dispatchers_dispatch_async_Dispatchers_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/Future_JobNode_Future_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/Launcher_testLauncherEntryPoint_Launcher_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/SchedulerTask_afterTask_SchedulerTask_typing_with_library_cache",
@@ -433,10 +434,15 @@
         "kotlin_coroutines_qg/completion/WorkerTest_test_WorkerTest_typing_with_library_cache",
         "kotlin_coroutines_qg/completion/CoroutineScheduler_in_constructor_typing_with_library_cache"
       ],
+      "kotlinCoroutinesQG_slow": [
+        "kotlin_coroutines_qg/completion/Dispatchers_dispatch_async_Dispatchers_typing_with_library_cache"
+      ],
       "sqliter": [
-        "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache",
         "SQLiter/completion/TracingSqliteStatement_TracingSqliteStatement_typing_with_library_cache",
         "SQLiter/completion/Types_Types_typing_with_library_cache"
+      ],
+      "sqliter_slow": [
+        "SQLiter/completion/SqliteDatabase_SqliteDatabase_typing_with_library_cache"
       ],
       "ktor": [
         "ktor_before_add_wasm_client/completion/CharsetLinux_encodeImpl_typing_with_library_cache",

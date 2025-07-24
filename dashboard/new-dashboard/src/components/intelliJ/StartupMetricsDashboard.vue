@@ -68,7 +68,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Reopening file time after ide restart"],
     measures: ["reopenFileAfterIdeRestart"],
-    projects: ["idea/measureStartup/embeddedClient"],
+    projects: ["idea/measureStartup/embeddedClient", "idea/warmup"],
   },
 ]
 

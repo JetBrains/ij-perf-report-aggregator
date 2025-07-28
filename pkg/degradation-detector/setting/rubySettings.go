@@ -17,6 +17,7 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 			Branch: "master",
 		},
 	}
+	branches := []string{"master", "252"}
 	modes := []string{"", "split"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -24,39 +25,42 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 		slog.Error("error while getting tests", "error", err)
 		return settings
 	}
-	for _, mode := range modes {
-		for _, machine := range machines {
-			for _, test := range tests {
-				metrics := getRubyMetricFromTestName(test)
-				for _, metric := range metrics {
-					medianThreshold := 10.0
-					if metric == "gcPause" || metric == "freedMemoryByGC" {
-						medianThreshold = 20
+	for _, branch := range branches {
+		for _, mode := range modes {
+			for _, machine := range machines {
+				for _, test := range tests {
+					metrics := getRubyMetricFromTestName(test)
+					for _, metric := range metrics {
+						medianThreshold := 10.0
+						if metric == "gcPause" || metric == "freedMemoryByGC" {
+							medianThreshold = 20
+						}
+						settings = append(settings, detector.PerformanceSettings{
+							Db:      baseSettings.Db,
+							Table:   baseSettings.Table,
+							Project: test,
+							Mode:    mode,
+							BaseSettings: detector.BaseSettings{
+								Branch:  branch,
+								Machine: machine,
+								Metric:  metric,
+								AnalysisSettings: detector.AnalysisSettings{
+									MinimumSegmentLength:      14,
+									MedianDifferenceThreshold: medianThreshold,
+									ReportType:                detector.DegradationEvent,
+								},
+								SlackSettings: detector.SlackSettings{
+									Channel:     "rubymine-performance-alerts",
+									ProductLink: "rubymine",
+								},
+							},
+						})
 					}
-					settings = append(settings, detector.PerformanceSettings{
-						Db:      baseSettings.Db,
-						Table:   baseSettings.Table,
-						Project: test,
-						Mode:    mode,
-						BaseSettings: detector.BaseSettings{
-							Branch:  baseSettings.Branch,
-							Machine: machine,
-							Metric:  metric,
-							AnalysisSettings: detector.AnalysisSettings{
-								MinimumSegmentLength:      14,
-								MedianDifferenceThreshold: medianThreshold,
-								ReportType:                detector.DegradationEvent,
-							},
-							SlackSettings: detector.SlackSettings{
-								Channel:     "rubymine-performance-alerts",
-								ProductLink: "rubymine",
-							},
-						},
-					})
 				}
 			}
 		}
 	}
+
 	return settings
 }
 

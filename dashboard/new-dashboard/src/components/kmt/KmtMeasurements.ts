@@ -1,3 +1,5 @@
+import { ChartDefinition } from "../charts/DashboardCharts"
+
 export const MODES = ["intellij-idea", "android-studio"]
 
 const directMapping: Record<string, string> = {
@@ -24,4 +26,27 @@ export const legendFormatter = (name: string) => {
     return MEASUREMENTS_MAPPING[name]
   }
   return name
+}
+
+export function filterChartsByProjects(chartDefinitions: ChartDefinition[], selectedProjectRoots: string[]): ChartDefinition[] {
+  return chartDefinitions
+    .map((chart) => {
+      // Filter projects that start with any of the selected project roots
+      const filteredProjects = chart.projects.filter((project) => {
+        const projectRoot = project.split("/")[0]
+        return selectedProjectRoots.includes(projectRoot)
+      })
+
+      // Only return charts that have at least one matching project
+      if (filteredProjects.length > 0) {
+        // Create a new chart definition with filtered projects but same labels and measures
+        return {
+          ...chart,
+          projects: filteredProjects,
+        }
+      }
+
+      return null
+    })
+    .filter((chart) => chart !== null) as ChartDefinition[]
 }

@@ -7,11 +7,22 @@
     :initial-mode="MODES"
     :with-installer="false"
   >
+    <template #configurator>
+      <MeasureSelect
+        :configurator="testConfigurator"
+        title="Project"
+      >
+        <template #icon>
+          <ChartBarIcon class="w-4 h-4" />
+        </template>
+      </MeasureSelect>
+    </template>
     <Divider title="KMP IDE Setup" />
     <section>
+      <!-- :key is used to uniquely identify charts to re-render when definition changes -->
       <GroupProjectsWithClientChart
         v-for="chart in chartsSetup"
-        :key="chart.definition.label"
+        :key="`${chart.definition.label}-${chart.projects.join(',')}`"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
@@ -23,7 +34,7 @@
     <section>
       <GroupProjectsWithClientChart
         v-for="chart in chartsCrossLang"
-        :key="chart.definition.label"
+        :key="`${chart.definition.label}-${chart.projects.join(',')}`"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
@@ -35,7 +46,7 @@
     <section>
       <GroupProjectsWithClientChart
         v-for="chart in chartsCompose"
-        :key="chart.definition.label"
+        :key="`${chart.definition.label}-${chart.projects.join(',')}`"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
@@ -50,8 +61,11 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
-import { legendFormatter, MODES } from "./KmtMeasurements"
+import { legendFormatter, MODES, filterChartsByProjects } from "./KmtMeasurements"
 import Divider from "../common/Divider.vue"
+import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
+import MeasureSelect from "../charts/MeasureSelect.vue"
+import { computed } from "vue"
 
 const chartsDeclarationSetup: ChartDefinition[] = [
   {
@@ -111,7 +125,14 @@ const chartsDeclarationCompose: ChartDefinition[] = [
   },
 ]
 
-const chartsSetup = combineCharts(chartsDeclarationSetup)
-const chartsCrossLang = combineCharts(chartsDeclarationCrossLang)
-const chartsCompose = combineCharts(chartsDeclarationCompose)
+const chartsDeclaration = chartsDeclarationSetup.concat(chartsDeclarationCrossLang).concat(chartsDeclarationCompose)
+const uniqueProjects: string[] = [...new Set(chartsDeclaration.flatMap((chart) => chart.projects.map((project) => project.split("/")[0])))]
+const testConfigurator = new SimpleMeasureConfigurator("project", null)
+testConfigurator.initData(uniqueProjects)
+
+const chartsSetup = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationSetup, testConfigurator.selected.value ?? [])))
+
+const chartsCrossLang = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationCrossLang, testConfigurator.selected.value ?? [])))
+
+const chartsCompose = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationCompose, testConfigurator.selected.value ?? [])))
 </script>

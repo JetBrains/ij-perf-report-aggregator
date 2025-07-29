@@ -167,14 +167,9 @@ enum ROUTES {
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
   RubyMineProductMetricsDashboard = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}Dev`,
-  RubyMineProductMetricsDashboardOld = `${ROUTE_PREFIX.RubyMine}/${PRODUCT_METRICS_ROUTE}`,
-  RubyMineDashboardOld = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}`,
   RubyMineDashboard = `${ROUTE_PREFIX.RubyMine}/${DASHBOARD_ROUTE}Dev`,
-  RubyMineIndexingDashBoardOld = `${ROUTE_PREFIX.RubyMine}/indexingDashboard`,
   RubyMineIndexingDashBoard = `${ROUTE_PREFIX.RubyMine}/indexingDashboardDev`,
-  RubyMineInspectionsDashBoardOld = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboard`,
   RubyMineInspectionsDashBoard = `${ROUTE_PREFIX.RubyMine}/inspectionsDashboardDev`,
-  RubyMineTests = `${ROUTE_PREFIX.RubyMine}/${TEST_ROUTE}`,
   RubyMineTestsDev = `${ROUTE_PREFIX.RubyMine}/${DEV_TEST_ROUTE}`,
   RubyMineCompare = `${ROUTE_PREFIX.RubyMine}/${COMPARE_ROUTE}`,
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
@@ -764,14 +759,6 @@ const RUBYMINE: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.RubyMineProductMetricsDashboardOld,
-          label: PRODUCT_METRICS_LABEL + " (Old)",
-        },
-        {
-          url: ROUTES.RubyMineDashboardOld,
-          label: DASHBOARD_LABEL + " (Old)",
-        },
-        {
           url: ROUTES.RubyMineDashboard,
           label: DASHBOARD_LABEL,
         },
@@ -780,20 +767,8 @@ const RUBYMINE: Product = {
           label: "Inspections",
         },
         {
-          url: ROUTES.RubyMineInspectionsDashBoardOld,
-          label: "Inspections (Old)",
-        },
-        {
           url: ROUTES.RubyMineIndexingDashBoard,
           label: "Indexing",
-        },
-        {
-          url: ROUTES.RubyMineIndexingDashBoardOld,
-          label: "Indexing (Old)",
-        },
-        {
-          url: ROUTES.RubyMineTests,
-          label: TESTS_LABEL + " (Old)",
         },
         {
           url: ROUTES.RubyMineTestsDev,
@@ -1964,18 +1939,8 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "RubyMine product metrics" },
         },
         {
-          path: ROUTES.RubyMineProductMetricsDashboardOld,
-          component: () => import("./components/rubymine/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "RubyMine product metrics" },
-        },
-        {
           path: ROUTES.RubyMineDashboard,
           component: () => import("./components/rubymine/PerformanceDevDashboard.vue"),
-          meta: { pageTitle: "RubyMine Performance Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineDashboardOld,
-          component: () => import("./components/rubymine/PerformanceDashboard.vue"),
           meta: { pageTitle: "RubyMine Performance Dashboard" },
         },
         {
@@ -1984,29 +1949,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "RubyMine Inspections Dashboard" },
         },
         {
-          path: ROUTES.RubyMineInspectionsDashBoardOld,
-          component: () => import("./components/rubymine/InspectionsDashboard.vue"),
-          meta: { pageTitle: "RubyMine Inspections Dashboard" },
-        },
-        {
           path: ROUTES.RubyMineIndexingDashBoard,
           component: () => import("./components/rubymine/IndexingDevDashboard.vue"),
           meta: { pageTitle: "RubyMine Indexing Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineIndexingDashBoardOld,
-          component: () => import("./components/rubymine/IndexingDashboard.vue"),
-          meta: { pageTitle: "RubyMine Indexing Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "ruby",
-            initialMachine: "Linux Munich i7-3770, 32 Gb",
-          },
-          meta: { pageTitle: "RubyMine Performance tests" },
         },
         {
           path: ROUTES.RubyMineTestsDev,

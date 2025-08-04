@@ -95,6 +95,11 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/editor-highlighting", "intellij_commit/editor-kotlin-highlighting"],
   },
   {
+    labels: ["Highlighting - remove method"],
+    measures: ["replaceTextCodeAnalysis"],
+    projects: ["intellij_commit/red-code-kotlin"],
+  },
+  {
     labels: ["Debug run configuration", "Debug step into"],
     measures: ["debugRunConfiguration", "debugStep_into"],
     projects: ["kotlin_petclinic/debug"],

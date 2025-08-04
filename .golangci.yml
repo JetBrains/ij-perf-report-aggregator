@@ -33,7 +33,6 @@ linters:
     - contextcheck
     - noinlineerr
     - wsl_v5
-    - noctx
   settings:
     errcheck:
       check-type-assertions: true

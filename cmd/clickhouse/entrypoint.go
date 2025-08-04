@@ -26,9 +26,10 @@ func main() {
 	clickhouseExecutable := "/usr/bin/clickhouse"
 
 	isLocalRun := os.Getenv("KUBERNETES_SERVICE_HOST") == ""
+	ctx := context.Background()
 	if isLocalRun {
 		clickhouseExecutable = "/Users/maxim.kolmakov/clickhouse"
-		clickhousebackup.SetS3EnvForLocalRun()
+		clickhousebackup.SetS3EnvForLocalRun(ctx)
 	}
 
 	bucket := getEnvOrFile("S3_BUCKET", "/etc/s3/bucket")
@@ -53,7 +54,7 @@ func main() {
 		}
 	}
 
-	cmd := exec.Command(clickhouseExecutable, "server", "--config-file="+configFile)
+	cmd := exec.CommandContext(ctx, clickhouseExecutable, "server", "--config-file="+configFile)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 

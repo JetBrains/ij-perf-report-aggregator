@@ -28,7 +28,7 @@ func start(natsUrl string) error {
 	defer cancel()
 
 	if os.Getenv("KUBERNETES_SERVICE_HOST") == "" {
-		clickhousebackup.SetS3EnvForLocalRun()
+		clickhousebackup.SetS3EnvForLocalRun(taskContext)
 	}
 
 	backuper := clickhousebackup.CreateBackuper()

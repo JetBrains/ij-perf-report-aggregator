@@ -2,6 +2,7 @@ package clickhouse_backup
 
 import (
 	"bytes"
+	"context"
 	"log"
 	"os"
 	"os/exec"
@@ -29,8 +30,8 @@ func CreateBackuper() *backup.Backuper {
 	return backuper
 }
 
-func SetS3EnvForLocalRun() {
-	cmd := exec.Command("doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
+func SetS3EnvForLocalRun(ctx context.Context) {
+	cmd := exec.CommandContext(ctx, "doppler", "secrets", "download", "--project", "s3", "--config", "prd", "--no-file")
 	stdout, err := cmd.Output()
 	if err != nil {
 		log.Println("failed to use doppler to retrieve credentials", err)

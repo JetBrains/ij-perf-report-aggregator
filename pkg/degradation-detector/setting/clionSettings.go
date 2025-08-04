@@ -17,6 +17,7 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
+	branches := []string{"master", "252"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	if err != nil {
@@ -24,28 +25,31 @@ func GenerateClionSettings(backendUrl string, client *http.Client) []detector.Pe
 		return settings
 	}
 	modes := []string{"split", ""}
-	for _, mode := range modes {
-		for _, test := range tests {
-			metrics := getClionMetricFromTestName(test)
-			for _, metric := range metrics {
-				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					Mode:    mode,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: baseSettings.Machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "cidr-radler-perf-tests",
-							ProductLink: "clion",
+	for _, branch := range branches {
+		for _, mode := range modes {
+			for _, test := range tests {
+				metrics := getClionMetricFromTestName(test)
+				for _, metric := range metrics {
+					settings = append(settings, detector.PerformanceSettings{
+						Db:      baseSettings.Db,
+						Table:   baseSettings.Table,
+						Project: test,
+						Mode:    mode,
+						BaseSettings: detector.BaseSettings{
+							Branch:  branch,
+							Machine: baseSettings.Machine,
+							Metric:  metric,
+							SlackSettings: detector.SlackSettings{
+								Channel:     "cidr-radler-perf-tests",
+								ProductLink: "clion",
+							},
 						},
-					},
-				})
+					})
+				}
 			}
 		}
 	}
+
 	return settings
 }
 

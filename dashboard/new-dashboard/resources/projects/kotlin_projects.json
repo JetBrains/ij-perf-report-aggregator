@@ -323,7 +323,7 @@
         "intellij_sources/javaToKotlin/HighlightFixUtil",
         "intellij_sources/javaToKotlin/CompilerConfigurationImpl",
         "intellij_sources/javaToKotlin/DaemonCodeAnalyzerImpl",
-        "intellij_sources/javaToKotlin/HighlightMethodUtil",
+        "intellij_sources/javaToKotlin/HighlightNamesUtil",
         "intellij_sources/javaToKotlin/EditorImpl"
       ]
     },

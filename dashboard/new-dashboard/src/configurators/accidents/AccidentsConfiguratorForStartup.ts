@@ -57,7 +57,7 @@ export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ date, affected_test: test, reason, build_number: build_number.toString(), kind, stacktrace, user_name: userName }),
+      body: JSON.stringify({ date, affected_test: test, reason, build_number, kind, stacktrace, user_name: userName }),
     })
 
     if (!response.ok) {

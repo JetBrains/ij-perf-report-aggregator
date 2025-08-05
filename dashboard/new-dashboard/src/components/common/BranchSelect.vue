@@ -195,7 +195,7 @@ function createItems(configurator?: DimensionConfigurator) {
     })
 
     return values.map((it) => {
-      return { label: it.toString(), value: it }
+      return { label: it, value: it }
     })
   })
 }

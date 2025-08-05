@@ -5,7 +5,7 @@ export function nsToMs(v: number) {
 }
 
 export function formatPercentage(difference: number): string {
-  return Number(difference).toLocaleString(undefined, { style: "percent", minimumFractionDigits: 2 })
+  return difference.toLocaleString(undefined, { style: "percent", minimumFractionDigits: 2 })
 }
 
 // https://github.com/apache/echarts/issues/8294

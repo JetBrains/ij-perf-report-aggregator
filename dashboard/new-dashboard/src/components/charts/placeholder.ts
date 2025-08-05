@@ -8,7 +8,7 @@ export function usePlaceholder(props: { label: string }, model: () => string | u
     if (values == null || values.length === 0) {
       const value = selected()
       if (value != null && value.length > 0) {
-        return Array.isArray(value) ? value.join(", ") : value.toString()
+        return Array.isArray(value) ? value.join(", ") : value
       }
     }
     return props.label

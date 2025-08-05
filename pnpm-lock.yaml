@@ -90,8 +90,8 @@ importers:
         specifier: 5.2.6
         version: 5.2.6
       '@primeuix/themes':
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: ^1.2.3
+        version: 1.2.3
       echarts:
         specifier: 5.6.0
         version: 5.6.0
@@ -625,10 +625,6 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@primeuix/styled@0.6.4':
-    resolution: {integrity: sha512-7ePLwqazLV0x269YlPMeE4wtQKT0NScY2/gEin0/96krTiGiElmlzKMMbH69bVApm/sfen5DZGuCEEwPiBJJ5g==}
-    engines: {node: '>=12.11.0'}
-
   '@primeuix/styled@0.7.2':
     resolution: {integrity: sha512-tIJ6byZezTYZ9YUICNSidQHOIQOQL3zeUgjwiX0JnBTK3+WCvy4DyCBcrJ94RtiX0WGFZSYNvaGaFkTo4jU8FQ==}
     engines: {node: '>=12.11.0'}
@@ -636,12 +632,8 @@ packages:
   '@primeuix/styles@1.2.3':
     resolution: {integrity: sha512-+KwmQsLTYgVAqFADmO252btz40lstPML6r4QMNjxz4gLNCKVW3kPR0/aCouQx6/21+boXG1P68tu8Zk3FAKr2w==}
 
-  '@primeuix/themes@1.1.2':
-    resolution: {integrity: sha512-yxnmMqMct6RYWX6m9gS9AIG8QArjnROQzBqQf8UDQggAedX3My1fxr9FKEpvZMoY39WD494kG0pU9zIa1k2XyA==}
-
-  '@primeuix/utils@0.5.4':
-    resolution: {integrity: sha512-8LggV3Jz59pymHQD10e/u63z/GemQ22RBeu2Gb1eJgBYVwn1iOb82LR+daeAc/LxrXCC5pHnftnCmnZO6vInLA==}
-    engines: {node: '>=12.11.0'}
+  '@primeuix/themes@1.2.3':
+    resolution: {integrity: sha512-GLAU2h6lhgln2w10EQalUQlgwbgQ0xZoIOLMNGfIvqU4O09L282P7rwKCKQksvAGAFt1GoO/Q1NgBSxnttr7iA==}
 
   '@primeuix/utils@0.6.1':
     resolution: {integrity: sha512-tQL/ZOPgCdD+NTimlUmhyD0ey8J1XmpZE4hDHM+/fnuBicVVmlKOd5HpS748LcOVRUKbWjmEPdHX4hi5XZoC1Q==}
@@ -3320,10 +3312,6 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@primeuix/styled@0.6.4':
-    dependencies:
-      '@primeuix/utils': 0.5.4
-
   '@primeuix/styled@0.7.2':
     dependencies:
       '@primeuix/utils': 0.6.1
@@ -3332,11 +3320,9 @@ snapshots:
     dependencies:
       '@primeuix/styled': 0.7.2
 
-  '@primeuix/themes@1.1.2':
+  '@primeuix/themes@1.2.3':
     dependencies:
-      '@primeuix/styled': 0.6.4
-
-  '@primeuix/utils@0.5.4': {}
+      '@primeuix/styled': 0.7.2
 
   '@primeuix/utils@0.6.1': {}
 

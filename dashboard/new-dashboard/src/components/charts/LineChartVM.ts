@@ -297,6 +297,7 @@ export class LineChartVM {
       chart.setOption(
         {
           legend: {
+            bottom: null,
             type: "scroll",
             selector: [
               {

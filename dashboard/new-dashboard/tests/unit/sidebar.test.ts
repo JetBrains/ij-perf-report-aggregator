@@ -3,7 +3,7 @@ import { expect, test, describe, beforeEach } from "vitest"
 import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebarPerformance"
 import { dbTypeStore } from "../../src/shared/dbTypes"
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 
 describe("InfoSideBar Test", () => {
   beforeEach(() => {

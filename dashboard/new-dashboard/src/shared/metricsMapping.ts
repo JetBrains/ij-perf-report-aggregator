@@ -1,4 +1,4 @@
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 
 export const METRICS_MAPPING: Record<string, string> = {
   "processingTime#": "",

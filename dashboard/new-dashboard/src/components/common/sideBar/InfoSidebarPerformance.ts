@@ -1,5 +1,6 @@
 import { computedAsync } from "@vueuse/core"
-import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
+import type { OptionDataValue } from "../../../shared/echarts-types"
 import { computed, Ref } from "vue"
 import { Accident, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../../configurators/ServerWithCompressConfigurator"

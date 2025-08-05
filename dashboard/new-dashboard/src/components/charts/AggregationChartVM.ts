@@ -1,6 +1,7 @@
 import { LineSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption } from "echarts/types/dist/shared"
-import { CallbackDataParams, OptionDataItem, OptionSourceData, ScaleDataValue } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
+import type { ScaleDataValue, OptionDataItem, OptionSourceData } from "../../shared/echarts-types"
 import { ref } from "vue"
 import { DataQueryExecutor } from "../common/DataQueryExecutor"
 import { ValueUnit } from "../common/chart"

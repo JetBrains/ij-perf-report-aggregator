@@ -1,5 +1,5 @@
-import { OptionDataValue } from "echarts/types/src/util/types"
 import { durationAxisPointerFormatter, typeIsCounter } from "../components/common/formatter"
+import type { OptionDataValue } from "../shared/echarts-types"
 
 /**
  * This class is actually just a storage.

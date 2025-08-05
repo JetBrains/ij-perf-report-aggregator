@@ -1,6 +1,6 @@
 import { LineSeriesOption, ScatterSeriesOption } from "echarts/charts"
 import { DatasetOption, ECBasicOption, ZRColor } from "echarts/types/dist/shared"
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { deepEqual } from "fast-equals"
 import { combineLatest, debounceTime, distinctUntilChanged, forkJoin, map, Observable, of, switchMap } from "rxjs"
 import { ref, Ref, shallowRef } from "vue"

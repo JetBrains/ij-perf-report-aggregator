@@ -16,7 +16,7 @@
     "module": "preserve",
     "jsx": "preserve",
     "noEmit": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "newLine": "LF",
     "sourceMap": true,
     "lib": ["esnext", "dom"],

@@ -1,5 +1,5 @@
 import { ECBasicOption } from "echarts/types/dist/shared"
-import { CallbackDataParams } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
 import { DataQueryExecutorConfiguration } from "./dataQuery"
 
 export const DEFAULT_LINE_CHART_HEIGHT = 340

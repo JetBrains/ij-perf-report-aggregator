@@ -1,5 +1,6 @@
 import { BarSeriesOption } from "echarts/charts"
-import { CallbackDataParams, DimensionDefinition } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
+import type { DimensionDefinition } from "../shared/echarts-types"
 import { Ref } from "vue"
 import { DataQueryResult } from "../components/common/DataQueryExecutor"
 import { ChartConfigurator, ChartStyle, ValueUnit } from "../components/common/chart"

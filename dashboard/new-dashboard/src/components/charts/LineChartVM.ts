@@ -1,5 +1,6 @@
 import { ECElementEvent } from "echarts/core"
-import { CallbackDataParams, OptionDataValue } from "echarts/types/src/util/types"
+import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
+import type { OptionDataValue } from "../../shared/echarts-types"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { measureNameToLabel } from "../../shared/metricsMapping"
 import { appendLineWithIcon, getDiffIcon, getLeftArrow, getRightArrow, getWarningIcon } from "../../shared/popupIcons"

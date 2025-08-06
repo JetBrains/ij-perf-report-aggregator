@@ -7,6 +7,9 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -53,6 +56,12 @@ type GenerateDescriptionData struct {
 type CreateIssueResponse struct {
 	Issue      YoutrackIssue `json:"issue"`
 	Exceptions []string      `json:"exceptions"`
+}
+
+type VersionResponse struct {
+	Values []struct {
+		Name string `json:"name"`
+	} `json:"values"`
 }
 
 var (
@@ -154,16 +163,12 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 				},
 			},
 		}
-		if params.ProjectId == "22-414" { // If project ID is KTIJ set subsystem as they require it
-			subsystemsCustomField := CustomField{
-				Name: "Subsystems",
-				Type: "MultiOwnedIssueCustomField",
-				Value: []CustomFieldValue{
-					{Name: "IDE"},
-				},
-			}
-			issueInfo.CustomFields = append(issueInfo.CustomFields, subsystemsCustomField)
-		}
+
+		setSubsystems(params, &issueInfo)
+
+		setAffectedVersions(params, request, response, &issueInfo)
+
+		setTags(params, &issueInfo)
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
 		if err != nil {
@@ -475,4 +480,110 @@ func marshalAndWriteIssueResponse(writer http.ResponseWriter, response interface
 	}
 
 	return nil
+}
+
+func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
+	if params.ProjectId == "22-414" { // If project ID is KTIJ set subsystem as they require it
+		subsystemsCustomField := CustomField{
+			Name: "Subsystems",
+			Type: "MultiOwnedIssueCustomField",
+			Value: []CustomFieldValue{
+				{Name: "IDE"},
+			},
+		}
+		issueInfo.CustomFields = append(issueInfo.CustomFields, subsystemsCustomField)
+	}
+}
+
+func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
+	if params.ProjectId == "22-22" || params.ProjectId == "22-619" { // Set Affected Versions for IJPL and IDEA
+		var affectedVersionsFieldId string
+		switch params.ProjectId {
+		case "22-22":
+			affectedVersionsFieldId = "123-220"
+		case "22-619":
+			affectedVersionsFieldId = "123-9553"
+		}
+
+		latestMajorAffectedVersion := getLatestMajorAffectedVersion(params.ProjectId, affectedVersionsFieldId, request, response)
+
+		affectedVersionsCustomField := CustomField{
+			Type: "MultiVersionIssueCustomField",
+			ID:   affectedVersionsFieldId,
+			Value: []CustomFieldValue{
+				{Name: latestMajorAffectedVersion},
+			},
+		}
+		issueInfo.CustomFields = append(issueInfo.CustomFields, affectedVersionsCustomField)
+	}
+}
+
+func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
+	var tag Tag
+	switch params.ProjectId {
+	case "22-68", "22-414":
+		tag = Tag{
+			Name: "kotlin-regression",
+			ID:   "68-78861",
+			Type: "Tag",
+		}
+	default:
+		tag = Tag{
+			Name: "Regression",
+			ID:   "68-3044",
+			Type: "Tag",
+		}
+	}
+
+	issueInfo.Tags = append(issueInfo.Tags, tag)
+}
+
+func getLatestMajorAffectedVersion(projectId string, affectedVersionsFieldId string, request *http.Request, response CreateIssueResponse) string {
+	fetchAffectedVersionsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields/%s/bundle?fields=id,name,values(name)", projectId, affectedVersionsFieldId)
+
+	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchAffectedVersionsUrl, "GET", nil, nil)
+	if err != nil {
+		logError("cannot fetch affected versions for "+projectId, err, &response.Exceptions)
+	}
+
+	var versionResp VersionResponse
+	if err := json.Unmarshal(responseData, &versionResp); err != nil {
+		logError("cannot unmarshal affected versions for "+projectId, err, &response.Exceptions)
+	}
+
+	pattern := regexp.MustCompile(`^\d+\.\d+$`)
+	var versions []string
+
+	for _, v := range versionResp.Values {
+		if pattern.MatchString(v.Name) {
+			versions = append(versions, v.Name)
+		}
+	}
+
+	if len(versions) == 0 {
+		logError("cannot find major versions for "+projectId, err, &response.Exceptions)
+	}
+
+	sort.Slice(versions, func(i, j int) bool {
+		return compareVersions(versions[i], versions[j]) > 0
+	})
+
+	return versions[0]
+}
+
+func compareVersions(a, b string) int {
+	aParts := strings.Split(a, ".")
+	bParts := strings.Split(b, ".")
+
+	for i := 0; i < len(aParts) && i < len(bParts); i++ {
+		aNum, _ := strconv.Atoi(aParts[i])
+		bNum, _ := strconv.Atoi(bParts[i])
+		if aNum > bNum {
+			return 1
+		}
+		if aNum < bNum {
+			return -1
+		}
+	}
+	return 0
 }

@@ -35,6 +35,7 @@ type CustomFieldValue struct {
 }
 
 type CustomField struct {
+	ID    string      `json:"id,omitempty"`
 	Name  string      `json:"name"`
 	Type  string      `json:"$type"`
 	Value interface{} `json:"value"`
@@ -46,6 +47,12 @@ type Visibility struct {
 	Type            string        `json:"$type"`
 }
 
+type Tag struct {
+	Name string `json:"name"`
+	ID   string `json:"id"`
+	Type string `json:"$type"`
+}
+
 type CreateIssueInfo struct {
 	Summary      string          `json:"summary"`
 	Description  string          `json:"description"`
@@ -53,6 +60,7 @@ type CreateIssueInfo struct {
 	Reporter     *auth.YTUser    `json:"reporter,omitempty"`
 	Visibility   Visibility      `json:"visibility"`
 	CustomFields []CustomField   `json:"customFields"`
+	Tags         []Tag           `json:"tags,omitempty"`
 }
 
 func NewYoutrackClient(youTrackUrl, youtrackToken string) *YoutrackClient {

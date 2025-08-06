@@ -142,7 +142,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			userId = nil
 		}
 		issueInfo := CreateIssueInfo{
-			Summary:     fmt.Sprintf("[%s] %s", lowerKind, params.TicketLabel),
+			Summary:     params.TicketLabel,
 			Description: generateDescription(descriptionData),
 			Project:     YoutrackProject{ID: params.ProjectId},
 			Reporter:    userId,

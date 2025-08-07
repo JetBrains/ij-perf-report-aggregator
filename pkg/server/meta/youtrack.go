@@ -168,6 +168,8 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 		setAffectedVersions(params, request, response, &issueInfo)
 
+		setPriority(params, &issueInfo)
+
 		setTags(params, &issueInfo)
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
@@ -516,6 +518,21 @@ func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Reques
 		}
 		issueInfo.CustomFields = append(issueInfo.CustomFields, affectedVersionsCustomField)
 	}
+}
+
+func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
+	if params.ProjectId == "22-68" { // Kotlin have their own priority field
+		return
+	}
+	priorityField := CustomField{
+		Type: "SingleEnumIssueCustomField",
+		Name: "Priority",
+		Value: CustomFieldValue{
+			Name: "Major",
+		},
+	}
+
+	issueInfo.CustomFields = append(issueInfo.CustomFields, priorityField)
 }
 
 func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {

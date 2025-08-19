@@ -45,7 +45,6 @@ const TEST_ROUTE = "tests"
 const DEV_TEST_ROUTE = "testsDev"
 const DASHBOARD_ROUTE = "dashboard"
 const STARTUP_ROUTE = "startup"
-const STARTUP_METRICS_ROUTE = "startup-metrics"
 const PRODUCT_METRICS_ROUTE = "product-metrics"
 const COMPARE_ROUTE = "compare"
 const COMPARE_BRANCHES_ROUTE = "compareBranches"
@@ -60,7 +59,6 @@ enum ROUTES {
   StartupExplore = `${ROUTE_PREFIX.Startup}/explore`,
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
-  IntelliJNewStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_METRICS_ROUTE}`,
   IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
   IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
   IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
@@ -229,7 +227,6 @@ enum ROUTES {
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
   LLMDevTests = `${ROUTE_PREFIX.ML}/dev/llmDashboardDev`,
   AIAPrivacyDashboard = `${ROUTE_PREFIX.ML}/dev/aiaPrivacyDashboard`,
-  DataGripStartupDashboard = `${ROUTE_PREFIX.DataGrip}/${STARTUP_ROUTE}`,
   DataGripProductMetricsDashboard = `${ROUTE_PREFIX.DataGrip}/${PRODUCT_METRICS_ROUTE}`,
   DataGripIndexingDashboard = `${ROUTE_PREFIX.DataGrip}/indexingDashboard`,
   AIATests = `${ROUTE_PREFIX.AIA}/${TEST_ROUTE}`,
@@ -271,7 +268,6 @@ const COMPARE_BRANCHES_LABEL = "Compare Branches"
 const COMPARE_MODES_LABEL = "Compare Modes"
 const DASHBOARD_LABEL = "Dashboard"
 const STARTUP_LABEL = "Startup"
-const STARTUP_NEW_LABEL = "Startup NEW"
 const PRODUCT_METRICS_LABEL = "Product Metrics"
 
 const IJ_STARTUP: Product = {
@@ -325,10 +321,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJStartupDashboard,
           label: STARTUP_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJNewStartupDashboard,
-          label: STARTUP_NEW_LABEL,
         },
         {
           url: ROUTES.IntelliJProductMetricsDashboard,
@@ -1062,11 +1054,7 @@ const CLION: Product = {
       tabs: [
         {
           url: ROUTES.ClionClassicStartupDashboard,
-          label: "CLion Classic Startup",
-        },
-        {
-          url: ROUTES.ClionNovaStartupDashboard,
-          label: "CLion Nova Startup",
+          label: "CLion Startup",
         },
         {
           url: ROUTES.ClionProductMetricsDashboard,
@@ -1133,10 +1121,6 @@ const DATAGRIP: Product = {
       url: ROUTE_PREFIX.DataGrip,
       label: "",
       tabs: [
-        {
-          url: ROUTES.DataGripStartupDashboard,
-          label: STARTUP_LABEL,
-        },
         {
           url: ROUTES.DataGripProductMetricsDashboard,
           label: PRODUCT_METRICS_LABEL,
@@ -1402,17 +1386,12 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.IntelliJStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "IU",
+            table: "idea",
             defaultProject: "idea",
           },
           meta: { pageTitle: "IDEA Startup dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJNewStartupDashboard,
-          component: () => import("./components/intelliJ/StartupMetricsDashboard.vue"),
-          meta: { pageTitle: "IDEA NEW Startup dashboard" },
         },
         {
           path: ROUTES.IntelliJProductMetricsDashboard,
@@ -1559,10 +1538,10 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PhpStormStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "PS",
-            defaultProject: "stitcher with composer",
+            table: "phpstorm",
+            defaultProject: "stitcher_with_composer",
           },
           meta: { pageTitle: "PhpStorm Startup dashboard" },
         },
@@ -1657,10 +1636,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.GoLandStartupDashboard,
-          component: () => import("./components/goland/StartupDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "GO",
-            defaultProject: "kratos",
+            table: "goland",
+            defaultProject: "mattermost",
+            customCharts: [{ label: "Updating Go modules dependencies", measure: "Progress: Updating Go modules dependencies" }],
           },
           meta: { pageTitle: "GoLand Startup dashboard" },
         },
@@ -1780,9 +1760,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.PyCharmStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "PY",
+            table: "pycharm",
             defaultProject: "tensorflow",
           },
           meta: { pageTitle: "PyCharm Startup dashboard" },
@@ -1843,9 +1823,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.WebStormStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "WS",
+            table: "webstorm",
             defaultProject: "angular",
           },
           meta: { pageTitle: "WebStorm Startup dashboard" },
@@ -1926,9 +1906,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.RubyStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "RM",
+            table: "ruby",
             defaultProject: "diaspora",
           },
           meta: { pageTitle: "Ruby Startup dashboard" },
@@ -2315,23 +2295,12 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         },
         {
           path: ROUTES.ClionClassicStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
+          component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
-            product: "CL",
-            defaultProject: "clion/cmake",
+            table: "clion",
+            defaultProject: "clion/clion/cmake",
           },
-          meta: { pageTitle: "CLion Classic Startup dashboard" },
-        },
-        {
-          path: ROUTES.ClionNovaStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
-          props: {
-            product: "CL",
-            defaultProject: "radler/cmake",
-            persistentId: "nova-startup-dashboard",
-            withInstaller: true,
-          },
-          meta: { pageTitle: "CLion Nova Startup dashboard" },
+          meta: { pageTitle: "CLion Startup dashboard" },
         },
         {
           path: ROUTES.ClionProductMetricsDashboard,
@@ -2511,15 +2480,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "ML Tests dev-server" },
-        },
-        {
-          path: ROUTES.DataGripStartupDashboard,
-          component: () => import("./components/common/StartupProductDashboard.vue"),
-          props: {
-            product: "DB",
-            defaultProject: "empty project",
-          },
-          meta: { pageTitle: "DataGrip Startup dashboard" },
         },
         {
           path: ROUTES.DataGripProductMetricsDashboard,

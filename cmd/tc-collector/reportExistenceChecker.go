@@ -48,7 +48,7 @@ func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName strin
 	}
 
 	if rows.Err() != nil {
-		return fmt.Errorf("cannot scan %s: %w", tableName, err)
+		return fmt.Errorf("cannot scan %s: %w", tableName, rows.Err())
 	}
 	return nil
 }

@@ -14,21 +14,21 @@ type ReportExistenceChecker struct {
 	ids intsets.Sparse
 }
 
-func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName string, tableName string, db driver.Conn, since time.Time) error {
+func (t *ReportExistenceChecker) reset(taskContext context.Context, dbName string, tableName string, db driver.Conn, since time.Time, buildType string) error {
 	t.ids.Clear()
 
 	var rows driver.Rows
 	var err error
 	if dbName == "ij" {
 		// don't filter by machine - product is enough to reduce set
-		query := "select tc_build_id from report where generated_time > $1 order by tc_build_id"
+		query := "select tc_build_id from report where generated_time > $1 " + "and tc_build_type = '" + buildType + "' order by tc_build_id"
 		rows, err = db.Query(taskContext, query, since)
 	} else {
 		table := "report"
 		if tableName != "" {
 			table = tableName
 		}
-		query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " order by tc_build_id"
+		query := "select tc_build_id from " + table + " where generated_time > " + strconv.FormatInt(since.Unix(), 10) + " and tc_build_type = '" + buildType + "' order by tc_build_id"
 		rows, err = db.Query(taskContext, query, since)
 	}
 

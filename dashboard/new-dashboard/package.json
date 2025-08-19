@@ -8,7 +8,7 @@
     "echarts": "6.0.0",
     "fast-equals": "5.2.2",
     "humanize-duration": "3.33.0",
-    "p-limit": "^7.0.0",
+    "p-limit": "^7.1.0",
     "pinia": "^3.0.3",
     "primevue": "4.3.7",
     "rxjs": "8.0.0-alpha.14",

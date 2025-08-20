@@ -48,7 +48,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 		effectSizeThreshold = 2
 	}
 
-	changePoints := statistic.GetChangePointIndexes(values, statistic.Min(statistic.Min(minimumSegmentLength, 2), len(values)/2))
+	changePoints := statistic.GetChangePointIndexes(values, statistic.Min(5, len(values)/2))
 	segments := getSegmentsBetweenChangePoints(changePoints, values)
 	if len(segments) < 2 {
 		slog.Debug("no significant change points were detected")

@@ -226,12 +226,19 @@
     "optimizeImports": {
       "intelliJ": [
         "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest",
+        "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest_",
         "intellij_commit/otimizeImports/FSD",
+        "intellij_commit/otimizeImports/FSD_",
         "intellij_commit/otimizeImports/DiagramsModel.Generated",
+        "intellij_commit/otimizeImports/DiagramsModel.Generated_",
         "intellij_commit/otimizeImports/OraIntrospector",
+        "intellij_commit/otimizeImports/OraIntrospector_",
         "intellij_commit/otimizeImports/QuickFixRegistrar",
+        "intellij_commit/otimizeImports/QuickFixRegistrar_",
         "intellij_commit/otimizeImports/SwiftTypeAssignabilityTest",
-        "intellij_commit/otimizeImports/TerraformConfigCompletionContributor"
+        "intellij_commit/otimizeImports/SwiftTypeAssignabilityTest_",
+        "intellij_commit/otimizeImports/TerraformConfigCompletionContributor",
+        "intellij_commit/otimizeImports/TerraformConfigCompletionContributor_"
       ]
     },
     "findUsages": {

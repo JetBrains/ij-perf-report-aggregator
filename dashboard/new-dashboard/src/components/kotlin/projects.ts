@@ -25,10 +25,7 @@ const MEASURES = {
     { name: "moveDeclarations#mean_value", label: "Move declarations" },
     { name: "moveDeclarations_back#mean_value", label: "Move declarations back" },
   ],
-  optimizeImportsMeasures: [
-    { name: "execute_editor_optimizeimports", label: "Optimize imports" },
-    { name: "execute_editor_optimizeimports#mean_value", label: "Optimize imports mean value" },
-  ],
+  optimizeImportsMeasures: [{ name: "execute_editor_optimizeimports", label: "Optimize imports" }],
   insertCodeMeasures: [{ name: "execute_editor_paste", label: "Insert code" }],
   findUsagesMeasures: [{ name: "findUsages#mean_value", label: "findUsages mean value" }],
   findUsagesFirstUsageMeasures: [{ name: "findUsages_firstUsage#mean_value", label: "findUsages first usage mean value" }],

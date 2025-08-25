@@ -498,15 +498,13 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 }
 
 func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	if params.ProjectId == "22-22" || params.ProjectId == "22-619" { // Set Affected Versions for IJPL and IDEA
-		var affectedVersionsFieldId string
-		switch params.ProjectId {
-		case "22-22":
-			affectedVersionsFieldId = "123-220"
-		case "22-619":
-			affectedVersionsFieldId = "123-9553"
-		}
+	projectToAffectedField := map[string]string{
+		"22-22":  "123-220",  // IJPL
+		"22-619": "123-9553", // IDEA
+		"22-25":  "123-223",  // RUBY
+	}
 
+	if affectedVersionsFieldId, ok := projectToAffectedField[params.ProjectId]; ok {
 		latestMajorAffectedVersion := getLatestMajorAffectedVersion(params.ProjectId, affectedVersionsFieldId, request, response)
 
 		affectedVersionsCustomField := CustomField{

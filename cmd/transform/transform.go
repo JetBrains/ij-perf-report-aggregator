@@ -61,6 +61,8 @@ type ReportRow struct {
 	MeasuresName  []string `ch:"measures.name"`
 	MeasuresValue []int32  `ch:"measures.value"`
 	MeasuresType  []string `ch:"measures.type"`
+
+	Mode string `ch:"mode"`
 }
 
 // set insertWorkerCount to 1 if not enough memory
@@ -227,13 +229,13 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 			}
 		}
 
-		if config.DbName == "perfint" {
+		if config.DbName == "perfint" || config.DbName == "perfintDev" {
 			runResult.Report = &model.Report{
 				Project:   row.Project,
 				BuildDate: row.BuildTime.Format("20060102T150405+0000"),
 				Generated: row.GeneratedTime.Format("20060102T150405+0000"),
 			}
-			runResult.ExtraFieldData = []interface{}{row.MeasuresName, row.MeasuresValue, row.MeasuresType}
+			runResult.ExtraFieldData = []interface{}{row.MeasuresName, row.MeasuresValue, row.MeasuresType, row.Mode}
 			runResult.TriggeredBy = row.TriggeredBy
 			runResult.TcBuildType = row.TcBuildType
 		}

@@ -45,10 +45,10 @@ spec:
           resources:
             requests:
               cpu: "3"
-              memory: "8Gi"
+              memory: "16Gi"
             limits:
               cpu: "4"
-              memory: "16Gi"
+              memory: "32Gi"
           volumeMounts: *clickhouseVolumeMounts
         # backup requires access to volume, so, it cannot be done using k8s cron job
         - name: clickhouse-backup

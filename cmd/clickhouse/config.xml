@@ -137,7 +137,8 @@
         <cache_enabled>true</cache_enabled>
         <data_cache_enabled>true</data_cache_enabled>
         <cache_path>/var/lib/clickhouse/disks/s3_disk/cache/</cache_path>
-        <max_cache_size>3221225472</max_cache_size>
+        <!--10 GB of cache-->
+        <max_cache_size>10737418240</max_cache_size>
       </s3>
     </disks>
     <policies>

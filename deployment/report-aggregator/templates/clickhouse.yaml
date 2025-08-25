@@ -78,7 +78,7 @@ spec:
                   - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 20Gi  # Set this to match your ephemeral-storage requirement
+                    storage: 100Gi  # Set this to match your ephemeral-storage requirement
         - name: s3
           secret:
             secretName: ij-perf-data-s3-rw

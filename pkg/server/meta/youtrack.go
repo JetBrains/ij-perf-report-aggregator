@@ -491,14 +491,6 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 }
 
 func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	setVersionField("Affected versions", params, request, response, issueInfo)
-}
-
-func setPlannedFor(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	setVersionField("Planned for", params, request, response, issueInfo)
-}
-
-func setVersionField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	projectsToSetFor := []string{
 		"22-22",  // IJPL
 		"22-619", // IDEA
@@ -510,6 +502,24 @@ func setVersionField(versionFieldName string, params YoutrackCreateIssueRequest,
 		return
 	}
 
+	setVersionField("Affected versions", params, request, response, issueInfo)
+}
+
+func setPlannedFor(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
+	projectsToSetFor := []string{
+		"22-22",  // IJPL
+		"22-619", // IDEA
+		"22-25",  // RUBY
+	}
+
+	if !slices.Contains(projectsToSetFor, params.ProjectId) {
+		return
+	}
+
+	setVersionField("Planned for", params, request, response, issueInfo)
+}
+
+func setVersionField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	versionFieldId := getFieldIdByName(params.ProjectId, versionFieldName, request, response)
 	if versionFieldId == "" {
 		return

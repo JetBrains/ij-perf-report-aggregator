@@ -553,23 +553,32 @@ func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) 
 }
 
 func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
-	var tag Tag
+	var tags []Tag
+
 	switch params.ProjectId {
 	case "22-68", "22-414":
-		tag = Tag{
+		tags = append(tags, Tag{
 			Name: "kotlin-regression",
 			ID:   "68-78861",
 			Type: "Tag",
-		}
+		}, Tag{
+			Name: "blocking-release-idea",
+			ID:   "68-297083",
+			Type: "Tag",
+		})
 	default:
-		tag = Tag{
+		tags = append(tags, Tag{
 			Name: "Regression",
 			ID:   "68-3044",
 			Type: "Tag",
-		}
+		}, Tag{
+			Name: "blocking-release",
+			ID:   "68-158967",
+			Type: "Tag",
+		})
 	}
 
-	issueInfo.Tags = append(issueInfo.Tags, tag)
+	issueInfo.Tags = tags
 }
 
 func getFieldIdByName(projectId string, fieldName string, request *http.Request, response CreateIssueResponse) string {

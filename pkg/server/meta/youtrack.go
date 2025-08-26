@@ -607,12 +607,12 @@ func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, req
 
 	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchAffectedVersionsUrl, "GET", nil, nil)
 	if err != nil {
-		logError("cannot fetch affected versions for "+projectId, err, &response.Exceptions)
+		logError("cannot fetch versions for "+projectId, err, &response.Exceptions)
 	}
 
 	var versionResp VersionResponse
 	if err := json.Unmarshal(responseData, &versionResp); err != nil {
-		logError("cannot unmarshal affected versions for "+projectId, err, &response.Exceptions)
+		logError("cannot unmarshal versions for "+projectId, err, &response.Exceptions)
 	}
 
 	pattern := regexp.MustCompile(`^\d+\.\d+\s?[A-Za-z]*$`)

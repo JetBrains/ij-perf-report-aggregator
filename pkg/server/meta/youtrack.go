@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -492,24 +493,32 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 }
 
 func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	projectToAffectedField := map[string]string{
-		"22-22":  "123-220",  // IJPL
-		"22-619": "123-9553", // IDEA
-		"22-25":  "123-223",  // RUBY
+	projectsToSetFor := []string{
+		"22-22",  // IJPL
+		"22-619", // IDEA
+		"22-25",  // RUBY
+		"22-414", // KTIJ
 	}
 
-	if affectedVersionsFieldId, ok := projectToAffectedField[params.ProjectId]; ok {
-		latestMajorAffectedVersion := getLatestMajorAffectedVersion(params.ProjectId, affectedVersionsFieldId, request, response)
-
-		affectedVersionsCustomField := CustomField{
-			Type: "MultiVersionIssueCustomField",
-			ID:   affectedVersionsFieldId,
-			Value: []CustomFieldValue{
-				{Name: latestMajorAffectedVersion},
-			},
-		}
-		issueInfo.CustomFields = append(issueInfo.CustomFields, affectedVersionsCustomField)
+	if !slices.Contains(projectsToSetFor, params.ProjectId) {
+		return
 	}
+
+	affectedVersionsFieldId := getFieldIdByName(params.ProjectId, "Affected versions", request, response)
+	if affectedVersionsFieldId == "" {
+		return
+	}
+
+	latestMajorAffectedVersion := getLatestMajorAffectedVersion(params.ProjectId, affectedVersionsFieldId, request, response)
+
+	affectedVersionsCustomField := CustomField{
+		Type: "MultiVersionIssueCustomField",
+		ID:   affectedVersionsFieldId,
+		Value: []CustomFieldValue{
+			{Name: latestMajorAffectedVersion},
+		},
+	}
+	issueInfo.CustomFields = append(issueInfo.CustomFields, affectedVersionsCustomField)
 }
 
 func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
@@ -545,6 +554,36 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 	}
 
 	issueInfo.Tags = append(issueInfo.Tags, tag)
+}
+
+func getFieldIdByName(projectId string, fieldName string, request *http.Request, response CreateIssueResponse) string {
+	fetchProjectFieldsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields?fields=id,field(name)&$top=-1", projectId)
+
+	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchProjectFieldsUrl, "GET", nil, nil)
+	if err != nil {
+		logError("cannot fetch fields for "+projectId, err, &response.Exceptions)
+	}
+
+	type projectField struct {
+		ID    string `json:"id"`
+		Field struct {
+			Name string `json:"name"`
+		} `json:"field"`
+	}
+
+	var fields []projectField
+	if err := json.Unmarshal(responseData, &fields); err != nil {
+		logError("cannot unmarshal fields for "+projectId, err, &response.Exceptions)
+	}
+
+	for _, f := range fields {
+		if f.Field.Name == fieldName {
+			return f.ID
+		}
+	}
+
+	logError("cannot find field "+fieldName+" for "+projectId, nil, &response.Exceptions)
+	return ""
 }
 
 func getLatestMajorAffectedVersion(projectId string, affectedVersionsFieldId string, request *http.Request, response CreateIssueResponse) string {

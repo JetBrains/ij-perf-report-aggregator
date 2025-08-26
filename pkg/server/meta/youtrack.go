@@ -166,11 +166,9 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		setSubsystems(params, &issueInfo)
-
 		setAffectedVersions(params, request, response, &issueInfo)
-
+		setPlannedFor(params, request, response, &issueInfo)
 		setPriority(params, &issueInfo)
-
 		setTags(params, &issueInfo)
 
 		issue, err := youtrackClient.CreateIssue(request.Context(), issueInfo)
@@ -493,6 +491,14 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 }
 
 func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
+	setVersionField("Affected versions", params, request, response, issueInfo)
+}
+
+func setPlannedFor(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
+	setVersionField("Planned for", params, request, response, issueInfo)
+}
+
+func setVersionField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	projectsToSetFor := []string{
 		"22-22",  // IJPL
 		"22-619", // IDEA
@@ -504,21 +510,21 @@ func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Reques
 		return
 	}
 
-	affectedVersionsFieldId := getFieldIdByName(params.ProjectId, "Affected versions", request, response)
-	if affectedVersionsFieldId == "" {
+	versionFieldId := getFieldIdByName(params.ProjectId, versionFieldName, request, response)
+	if versionFieldId == "" {
 		return
 	}
 
-	latestMajorAffectedVersion := getLatestMajorAffectedVersion(params.ProjectId, affectedVersionsFieldId, request, response)
+	latestMajorVersion := getLatestMajorVersion(params.ProjectId, versionFieldId, request, response)
 
-	affectedVersionsCustomField := CustomField{
+	versionCustomField := CustomField{
 		Type: "MultiVersionIssueCustomField",
-		ID:   affectedVersionsFieldId,
+		ID:   versionFieldId,
 		Value: []CustomFieldValue{
-			{Name: latestMajorAffectedVersion},
+			{Name: latestMajorVersion},
 		},
 	}
-	issueInfo.CustomFields = append(issueInfo.CustomFields, affectedVersionsCustomField)
+	issueInfo.CustomFields = append(issueInfo.CustomFields, versionCustomField)
 }
 
 func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
@@ -586,7 +592,7 @@ func getFieldIdByName(projectId string, fieldName string, request *http.Request,
 	return ""
 }
 
-func getLatestMajorAffectedVersion(projectId string, affectedVersionsFieldId string, request *http.Request, response CreateIssueResponse) string {
+func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, request *http.Request, response CreateIssueResponse) string {
 	fetchAffectedVersionsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields/%s/bundle?fields=id,name,values(name)", projectId, affectedVersionsFieldId)
 
 	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchAffectedVersionsUrl, "GET", nil, nil)

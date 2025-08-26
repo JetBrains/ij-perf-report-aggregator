@@ -166,8 +166,8 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		setSubsystems(params, &issueInfo)
-		setAffectedVersions(params, request, response, &issueInfo)
-		setPlannedFor(params, request, response, &issueInfo)
+		setVersionsField("Affected versions", params, request, response, &issueInfo)
+		setVersionsField("Planned for", params, request, response, &issueInfo)
 		setPriority(params, &issueInfo)
 		setTags(params, &issueInfo)
 
@@ -490,7 +490,7 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 	}
 }
 
-func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
+func setVersionsField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	projectsToSetFor := []string{
 		"22-22",  // IJPL
 		"22-619", // IDEA
@@ -502,24 +502,6 @@ func setAffectedVersions(params YoutrackCreateIssueRequest, request *http.Reques
 		return
 	}
 
-	setVersionField("Affected versions", params, request, response, issueInfo)
-}
-
-func setPlannedFor(params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	projectsToSetFor := []string{
-		"22-22",  // IJPL
-		"22-619", // IDEA
-		"22-25",  // RUBY
-	}
-
-	if !slices.Contains(projectsToSetFor, params.ProjectId) {
-		return
-	}
-
-	setVersionField("Planned for", params, request, response, issueInfo)
-}
-
-func setVersionField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	versionFieldId := getFieldIdByName(params.ProjectId, versionFieldName, request, response)
 	if versionFieldId == "" {
 		return

@@ -23,18 +23,18 @@ func main() {
 	}
 }
 
-func parseTableName(fullTableName string) (database, table string) {
+func parseTableName(fullTableName string) string {
 	parts := strings.Split(fullTableName, ".")
 	if len(parts) == 2 {
-		return parts[0], parts[1]
+		return parts[0]
 	}
-	return "default", fullTableName
+	return "default"
 }
 
 func copyTable(clickHouseUrl string, sourceTable string, targetTable string) error {
 	slog.Info("start copying", "source", sourceTable, "target", targetTable)
 
-	sourceDb, _ := parseTableName(sourceTable)
+	sourceDb := parseTableName(sourceTable)
 
 	db, err := clickhouse.Open(&clickhouse.Options{
 		Addr: []string{clickHouseUrl},
@@ -59,7 +59,7 @@ func copyTable(clickHouseUrl string, sourceTable string, targetTable string) err
 
 	// Get time range for processing
 	var minTime, maxTime time.Time
-	query := fmt.Sprintf("SELECT min(generated_time) as min, max(generated_time) as max FROM %s", sourceTable)
+	query := "SELECT min(generated_time) as min, max(generated_time) as max FROM " + sourceTable
 	err = db.QueryRow(ctx, query).Scan(&minTime, &maxTime)
 	if err != nil {
 		return fmt.Errorf("cannot query min/max: %w", err)

@@ -615,7 +615,7 @@ func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, req
 		logError("cannot unmarshal affected versions for "+projectId, err, &response.Exceptions)
 	}
 
-	pattern := regexp.MustCompile(`^\d+\.\d+$`)
+	pattern := regexp.MustCompile(`^\d+\.\d+\s?[A-Za-z]*$`)
 	var versions []string
 
 	for _, v := range versionResp.Values {
@@ -636,18 +636,43 @@ func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, req
 }
 
 func compareVersions(a, b string) int {
-	aParts := strings.Split(a, ".")
-	bParts := strings.Split(b, ".")
+	parse := func(s string) (major, minor int, hasSuffix bool) {
+		parts := strings.SplitN(s, " ", 2)
+		numeric := parts[0]
+		if len(parts) > 1 && parts[1] != "" {
+			hasSuffix = true
+		}
+		nums := strings.SplitN(numeric, ".", 2)
+		if len(nums) > 0 {
+			major, _ = strconv.Atoi(nums[0])
+		}
+		if len(nums) > 1 {
+			minor, _ = strconv.Atoi(nums[1])
+		}
+		return
+	}
 
-	for i := 0; i < len(aParts) && i < len(bParts); i++ {
-		aNum, _ := strconv.Atoi(aParts[i])
-		bNum, _ := strconv.Atoi(bParts[i])
-		if aNum > bNum {
+	aMajor, aMinor, aHasSuffix := parse(a)
+	bMajor, bMinor, bHasSuffix := parse(b)
+
+	if aMajor != bMajor {
+		if aMajor > bMajor {
 			return 1
 		}
-		if aNum < bNum {
-			return -1
+		return -1
+	}
+	if aMinor != bMinor {
+		if aMinor > bMinor {
+			return 1
 		}
+		return -1
+	}
+
+	if aHasSuffix != bHasSuffix {
+		if !aHasSuffix {
+			return 1
+		}
+		return -1
 	}
 	return 0
 }

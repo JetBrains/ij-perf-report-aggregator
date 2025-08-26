@@ -54,7 +54,7 @@ func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []dete
 
 func getIndexingMetricFromTestNameForIDEA(test string) []string {
 	if strings.Contains(test, "/indexing") {
-		return []string{"scanningTimeWithoutPauses", "indexingTimeWithoutPauses", "processingTime#Kotlin", "processingTime#JAVA"}
+		return []string{"scanningTimeWithoutPauses", "indexingTimeWithoutPauses"}
 	}
 	if strings.Contains(test, "-scanning") {
 		return []string{"scanningTimeWithoutPauses"}

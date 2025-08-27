@@ -636,7 +636,9 @@ func getVersionFieldValue(projectId string, versionFieldName string, desiredMajo
 }
 
 func compareVersions(a, b string) int {
-	parse := func(s string) (major, minor int, hasSuffix bool) {
+	parse := func(s string) (int, int, bool) {
+		var major, minor int
+		hasSuffix := false
 		parts := strings.SplitN(s, " ", 2)
 		numeric := parts[0]
 		if len(parts) > 1 && parts[1] != "" {
@@ -649,7 +651,7 @@ func compareVersions(a, b string) int {
 		if len(nums) > 1 {
 			minor, _ = strconv.Atoi(nums[1])
 		}
-		return
+		return major, minor, hasSuffix
 	}
 
 	aMajor, aMinor, aHasSuffix := parse(a)

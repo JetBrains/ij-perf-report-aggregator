@@ -166,8 +166,21 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		setSubsystems(params, &issueInfo)
-		setVersionsField("Affected versions", params, request, response, &issueInfo)
-		setVersionsField("Planned for", params, request, response, &issueInfo)
+
+		projectsToSetVersionsFor := []string{
+			"22-22",  // IJPL
+			"22-619", // IDEA
+			"22-25",  // RUBY
+			"22-414", // KTIJ
+		}
+
+		if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
+			latestAffectedVersion := getVersionFieldValue(params.ProjectId, "Affected versions", nil, request, response)
+			baseVersion := strings.SplitN(latestAffectedVersion, " ", 2)[0]
+			setVersionField("Affected versions", baseVersion, params, request, response, &issueInfo)
+			setVersionField("Planned for", baseVersion, params, request, response, &issueInfo)
+		}
+
 		setPriority(params, &issueInfo)
 		setTags(params, &issueInfo)
 
@@ -490,30 +503,19 @@ func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo
 	}
 }
 
-func setVersionsField(versionFieldName string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
-	projectsToSetFor := []string{
-		"22-22",  // IJPL
-		"22-619", // IDEA
-		"22-25",  // RUBY
-		"22-414", // KTIJ
-	}
-
-	if !slices.Contains(projectsToSetFor, params.ProjectId) {
-		return
-	}
-
+func setVersionField(versionFieldName string, desiredMajorVersion string, params YoutrackCreateIssueRequest, request *http.Request, response CreateIssueResponse, issueInfo *CreateIssueInfo) {
 	versionFieldId := getFieldIdByName(params.ProjectId, versionFieldName, request, response)
 	if versionFieldId == "" {
 		return
 	}
 
-	latestMajorVersion := getLatestMajorVersion(params.ProjectId, versionFieldId, request, response)
+	versionFieldValue := getVersionFieldValue(params.ProjectId, versionFieldName, &desiredMajorVersion, request, response)
 
 	versionCustomField := CustomField{
 		Type: "MultiVersionIssueCustomField",
 		ID:   versionFieldId,
 		Value: []CustomFieldValue{
-			{Name: latestMajorVersion},
+			{Name: versionFieldValue},
 		},
 	}
 	issueInfo.CustomFields = append(issueInfo.CustomFields, versionCustomField)
@@ -593,8 +595,9 @@ func getFieldIdByName(projectId string, fieldName string, request *http.Request,
 	return ""
 }
 
-func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, request *http.Request, response CreateIssueResponse) string {
-	fetchAffectedVersionsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields/%s/bundle?fields=id,name,values(name)", projectId, affectedVersionsFieldId)
+func getVersionFieldValue(projectId string, versionFieldName string, desiredMajorVersion *string, request *http.Request, response CreateIssueResponse) string {
+	versionFieldId := getFieldIdByName(projectId, versionFieldName, request, response)
+	fetchAffectedVersionsUrl := fmt.Sprintf("/api/admin/projects/%s/customFields/%s/bundle?fields=id,name,values(name)", projectId, versionFieldId)
 
 	responseData, err := youtrackClient.fetchFromYouTrack(request.Context(), fetchAffectedVersionsUrl, "GET", nil, nil)
 	if err != nil {
@@ -606,7 +609,13 @@ func getLatestMajorVersion(projectId string, affectedVersionsFieldId string, req
 		logError("cannot unmarshal versions for "+projectId, err, &response.Exceptions)
 	}
 
-	pattern := regexp.MustCompile(`^\d+\.\d+\s?[A-Za-z]*$`)
+	var pattern *regexp.Regexp
+	if desiredMajorVersion != nil {
+		pattern = regexp.MustCompile(fmt.Sprintf(`^%s\s?[A-Za-z]*$`, *desiredMajorVersion))
+	} else {
+		pattern = regexp.MustCompile(`^\d+\.\d+\s?[A-Za-z]*$`)
+	}
+
 	var versions []string
 
 	for _, v := range versionResp.Values {

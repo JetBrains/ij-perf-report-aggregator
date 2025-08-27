@@ -19,6 +19,7 @@ const enum ROUTE_PREFIX {
   GoLand = "/goland",
   RubyMine = "/rubymine",
   Kotlin = "/kotlin",
+  KotlinBuildTools = "/kotlinBuildTools",
   KotlinMemory = Kotlin + "/memory",
   Rust = "/rust",
   Scala = "/scala",
@@ -240,6 +241,7 @@ enum ROUTES {
   KMTDashboard = `${ROUTE_PREFIX.KMT}/${DASHBOARD_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
+  KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -1305,6 +1307,23 @@ const TOOLBOX: Product = {
   ],
 }
 
+const KOTLIN_BUILD_TOOLS: Product = {
+  url: ROUTE_PREFIX.KotlinBuildTools,
+  label: "Kotlin Build Tools",
+  children: [
+    {
+      url: ROUTE_PREFIX.KotlinBuildTools,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.KotlinBuildToolsTests,
+          label: "All",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
   BAZEL,
@@ -1319,6 +1338,7 @@ export const PRODUCTS = [
   JBR,
   KMT,
   KOTLIN,
+  KOTLIN_BUILD_TOOLS,
   ML_TESTS,
   PERF_UNIT,
   PHPSTORM,
@@ -2603,6 +2623,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withoutAccidents: true,
           },
           meta: { pageTitle: "Toolbox" },
+        },
+        {
+          path: ROUTES.KotlinBuildToolsTests,
+          component: () => import("./components/common/PerformanceTests.vue"),
+          props: {
+            dbName: "perfintDev",
+            table: "kotlinBuildTools",
+            withInstaller: false,
+            branch: "master",
+            initialMachine: "linux-blade-hetzner",
+          },
+          meta: { pageTitle: "KMT Integration Tests" },
         },
       ],
     },

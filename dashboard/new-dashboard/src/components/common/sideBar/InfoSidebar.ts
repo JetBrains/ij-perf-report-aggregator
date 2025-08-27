@@ -108,7 +108,7 @@ export async function getArtifactsUrl(data: InfoData | null, serverConfigurator:
 export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   const currentRoute = router.currentRoute.value
   let parts = currentRoute.path.split("/")
-  if (parts.at(-1) == "startup" || parts.at(1) == "ij") {
+  if (parts.at(1) == "ij") {
     parts = ["", "ij", "explore"]
   } else if (parts.at(1) == "fleet" && parts.at(2) == "startupDashboard") {
     parts = ["", "fleet", "startupExplore"]

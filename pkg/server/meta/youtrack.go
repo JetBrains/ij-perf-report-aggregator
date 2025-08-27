@@ -67,8 +67,10 @@ type VersionResponse struct {
 
 var (
 	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
-	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	youtrackClient = NewYoutrackClient("https://youtrack-staging.labs.intellij.net", os.Getenv("YOUTRACK_TOKEN"))
+	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com/issues?q=by:%20eugene.morozov%20sort%20by:%20created%20degradation%20%22search%20everywhere%22", os.Getenv("YOUTRACK_TOKEN"))
+	//youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	//ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
 )
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -172,6 +174,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			"22-619", // IDEA
 			"22-25",  // RUBY
 			"22-414", // KTIJ
+			"22-96",  // WEB,
 		}
 
 		if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
@@ -540,7 +543,9 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 	var tags []Tag
 
 	switch params.ProjectId {
-	case "22-68", "22-414":
+	case
+		"22-68",  // KT
+		"22-414": // KTIJ
 		tags = append(tags, Tag{
 			Name: "kotlin-regression",
 			ID:   "68-78861",
@@ -550,7 +555,11 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 			ID:   "68-297083",
 			Type: "Tag",
 		})
-	default:
+	case
+		"22-22",  // IJPL
+		"22-619", // IDEA
+		"22-25",  // RUBY
+		"22-96":  // WEB
 		tags = append(tags, Tag{
 			Name: "Regression",
 			ID:   "68-3044",

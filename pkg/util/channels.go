@@ -7,11 +7,9 @@ func Broadcast[T any](input <-chan T, outputs ...chan T) {
 	go func() {
 		for value := range input {
 			for _, out := range outputs {
-				wg.Add(1)
-				go func() {
-					defer wg.Done()
+				wg.Go(func() {
 					out <- value
-				}()
+				})
 			}
 		}
 		wg.Wait()

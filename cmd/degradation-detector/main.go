@@ -12,7 +12,6 @@ import (
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/setting"
-	_ "go.uber.org/automaxprocs"
 )
 
 func main() {
@@ -35,24 +34,21 @@ func main() {
 	util.Broadcast(metrics, metricsForDegradation, metricsForMissingMetrics)
 
 	var wg sync.WaitGroup
-	wg.Add(2)
 
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		degradations := detector.InferDegradations(metricsForDegradation)
 		insertionResults := detector.PostDegradations(client, backendUrl, degradations)
 		filteredResults := detector.FilterErrors(insertionResults)
 		mergedResults := detector.MergeDegradations(filteredResults)
 		detector.SendDegradationsToSlack(mergedResults, client)
-	}()
+	})
 
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		missingData := detector.InferMissingData(metricsForMissingMetrics)
 		missingData = detector.PostMissingData(client, backendUrl, missingData)
 		mergedMissingData := detector.MergeMissingData(missingData)
 		detector.SendMissingDataMessages(mergedMissingData, client)
-	}()
+	})
 
 	wg.Wait()
 	slog.Info("finished")

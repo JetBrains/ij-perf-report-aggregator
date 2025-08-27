@@ -14,7 +14,6 @@ import (
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/araddon/dateparse"
 	"go.deanishe.net/env"
-	_ "go.uber.org/automaxprocs"
 )
 
 // 1. You need to provide CONFIG env variable that may look like:

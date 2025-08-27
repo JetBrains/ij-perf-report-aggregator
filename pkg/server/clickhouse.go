@@ -164,9 +164,7 @@ func getMedianValues(queryResults []struct {
 	responseChan := make(chan responseItem, len(queryResults))
 	var wg sync.WaitGroup
 	for _, result := range queryResults {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			values := result.MeasureValues
 			slices.Reverse(values)
 			indexes := statistic.GetChangePointIndexes(values, 1)
@@ -184,7 +182,7 @@ func getMedianValues(queryResults []struct {
 				MeasureName: result.MeasureName,
 				Median:      median,
 			}
-		}()
+		})
 	}
 
 	go func() {

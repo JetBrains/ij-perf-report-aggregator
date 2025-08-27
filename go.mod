@@ -1,6 +1,6 @@
 module github.com/JetBrains/ij-perf-report-aggregator
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
@@ -13,7 +13,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
 	github.com/cenkalti/backoff/v4 v4.3.0
-	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/jackc/puddle/v2 v2.2.2
 	github.com/json-iterator/go v1.1.12
@@ -23,14 +23,13 @@ require (
 	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
 	github.com/slack-go/slack v0.17.3
-	github.com/stretchr/testify v1.11.0
+	github.com/stretchr/testify v1.11.1
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fastjson v1.6.4
 	github.com/valyala/quicktemplate v1.8.0
 	github.com/zeebo/xxh3 v1.0.2
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
-	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b
 	golang.org/x/sync v0.16.0
 	golang.org/x/tools v0.36.0

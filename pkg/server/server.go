@@ -27,7 +27,6 @@ import (
 	"github.com/rs/cors"
 	"github.com/valyala/bytebufferpool"
 	"go.deanishe.net/env"
-	_ "go.uber.org/automaxprocs" // automatically set GOMAXPROCS
 )
 
 const DefaultDbUrl = "127.0.0.1:9000"

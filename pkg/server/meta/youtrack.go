@@ -304,12 +304,8 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 
 		if collector != nil {
 			var wg sync.WaitGroup
-			wg.Add(len(builds))
-
 			for index, buildId := range builds {
-				go func(index int, buildId int) {
-					defer wg.Done()
-
+				wg.Go(func() {
 					testArtifactPath := collector.getArtifactsPath(params)
 
 					children, err := teamCityClient.getArtifactChildren(request.Context(), buildId, testArtifactPath)
@@ -335,28 +331,26 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 					}
 
 					var childWg sync.WaitGroup
-					childWg.Add(len(filteredChildren))
 					for _, str := range filteredChildren {
-						go func(artifactName string) {
-							defer childWg.Done()
-							artifact, err := teamCityClient.downloadArtifact(request.Context(), buildId, testArtifactPath+"/"+artifactName)
+						childWg.Go(func() {
+							artifact, err := teamCityClient.downloadArtifact(request.Context(), buildId, testArtifactPath+"/"+str)
 							if err != nil {
 								slog.Error("Failed to download artefacts form teamcity", "error", err)
 								errCh <- err
 								return
 							}
 
-							attachmentName := getAttachmentName(artifactName, attachmentPostfix)
+							attachmentName := getAttachmentName(str, attachmentPostfix)
 							err = youtrackClient.UploadAttachment(request.Context(), params.IssueId, artifact, attachmentName)
 							if err != nil {
 								slog.Error("Failed to upload attachment to youtrack", "error", err)
 								errCh <- err
 								return
 							}
-						}(str)
+						})
 					}
 					childWg.Wait()
-				}(index, buildId)
+				})
 			}
 			wg.Wait()
 		}

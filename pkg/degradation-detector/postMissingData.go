@@ -19,9 +19,7 @@ func PostMissingData(client *http.Client, backendURL string, missingData <-chan 
 		defer close(insertionResults)
 		var wg sync.WaitGroup
 		for missingDatum := range missingData {
-			wg.Add(1)
-			func() {
-				defer wg.Done()
+			wg.Go(func() {
 				insertParams := meta.MissingDataInsertParams{BuildType: missingDatum.TCBuildType, Project: missingDatum.Settings.GetProject(), Metric: missingDatum.Settings.GetMetric(), MissingSince: missingDatum.LastTimestamp}
 				params, err := json.Marshal(insertParams)
 				if err != nil {
@@ -55,7 +53,7 @@ func PostMissingData(client *http.Client, backendURL string, missingData <-chan 
 				}
 
 				insertionResults <- missingDatum
-			}()
+			})
 		}
 		wg.Wait()
 	}()

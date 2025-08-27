@@ -83,7 +83,7 @@ func collectFromTeamCity(taskContext context.Context, clickHouseUrl string, tcUr
 	defer util.Close(db)
 	defer metaDb.Close()
 	errGroup, loadContext := errgroup.WithContext(taskContext)
-	errGroup.SetLimit(runtime.GOMAXPROCS(-1)) // take the current value set by automaxprocs
+	errGroup.SetLimit(runtime.GOMAXPROCS(-1))
 	for _, buildTypeId := range buildConfigurationIds {
 		if taskContext.Err() != nil {
 			return fmt.Errorf("error in context: %w", taskContext.Err())

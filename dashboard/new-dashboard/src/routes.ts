@@ -2634,7 +2634,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             branch: "master",
             initialMachine: "linux-blade-hetzner",
           },
-          meta: { pageTitle: "KMT Integration Tests" },
+          meta: { pageTitle: "Kotlin Build Tools Tests" },
         },
       ],
     },

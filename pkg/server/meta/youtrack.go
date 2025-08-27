@@ -67,10 +67,8 @@ type VersionResponse struct {
 
 var (
 	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
-	youtrackClient = NewYoutrackClient("https://youtrack-staging.labs.intellij.net", os.Getenv("YOUTRACK_TOKEN"))
-	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com/issues?q=by:%20eugene.morozov%20sort%20by:%20created%20degradation%20%22search%20everywhere%22", os.Getenv("YOUTRACK_TOKEN"))
-	//youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-	//ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
 )
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {

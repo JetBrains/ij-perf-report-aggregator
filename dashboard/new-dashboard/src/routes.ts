@@ -242,6 +242,7 @@ enum ROUTES {
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
+  ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -1301,6 +1302,10 @@ const TOOLBOX: Product = {
         {
           url: ROUTES.ToolboxTests,
           label: "All",
+        },
+        {
+          url: ROUTES.ToolboxTestsGwDeployDashboard,
+          label: "GW Deploy",
         },
       ],
     },
@@ -2623,6 +2628,18 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withoutAccidents: true,
           },
           meta: { pageTitle: "Toolbox" },
+        },
+        {
+          path: ROUTES.ToolboxTestsGwDeployDashboard,
+          component: () => import("./components/toolbox/GwDeployMetricsDashboard.vue"),
+          props: {
+            dbName: "toolbox",
+            table: "report",
+            withInstaller: false,
+            branch: "refs/heads/master",
+            withoutAccidents: true,
+          },
+          meta: { pageTitle: "GW Dashboard" },
         },
         {
           path: ROUTES.KotlinBuildToolsTests,

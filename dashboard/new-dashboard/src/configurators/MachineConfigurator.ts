@@ -348,7 +348,7 @@ export function getMachineGroupName(machine: string): string {
     machine.startsWith("intellij-linux-aws-3-lt") ||
     machine.startsWith("intellij-linux-aws-lt")
   ) {
-    groupName = "C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
+    groupName = "Linux C5ad.xlarge or M5ad.xlarge or M5d.xlarge or C5d.xlarge"
   } else if (machine.startsWith("intellij-macos-unit-2200-large-")) {
     groupName = macLarge
   } else if (machine.startsWith("intellij-linux-performance-aws-i-") || machine.startsWith("intellij-linux-performance-aws-lt")) {
@@ -371,11 +371,15 @@ export function getMachineGroupName(machine: string): string {
     machine.startsWith("intellij-linux-2004-aws-m5d-lt") ||
     machine.startsWith("intellij-linux-2204-aws-m5d-lt") ||
     machine.startsWith("intellij-linux-2004-aws-m5dn-lt") ||
-    machine.startsWith("intellij-linux-2204-aws-m5dn-lt")
+    machine.startsWith("intellij-linux-2204-aws-m5dn-lt") ||
+    machine.startsWith("intellij-linux-2204-large-disk-aws-1") ||
+    machine.startsWith("intellij-linux-2004-large-disk-aws-1") ||
+    machine.startsWith("intellij-linux-2204-aws-2-i") ||
+    machine.startsWith("intellij-linux-2204-aws-1-i")
   ) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)"
+    groupName = "Linux EC2 m5d.xlarge (4 vCPU Xeon, 16 GB)"
   } else if (machine.startsWith("intellij-linux-hw-munit-")) {
     groupName = "Linux Munich i7-3770, 32 Gb"
   } else if (machine.startsWith("intellij-linux-hw-EXC")) {
@@ -436,6 +440,16 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Linux EC R7g.xlarge (4 vCPU ARM, 32 GB)"
   } else if (machine.startsWith("cidr.performance.")) {
     groupName = "Mac Cidr Performance"
+  } else if (machine.startsWith("intellij-linux-2204-aws-i4i")) {
+    groupName = "Linux EC2 i4i.xlarge (4 vCPU Xeon, 32 GB)"
+  } else if (machine.startsWith("intellij-linux-2204-aws-4-i-") || machine.startsWith("intellij-linux-2204-aws-3-i")) {
+    groupName = "Linux EC2 m5dn.xlarge (4 vCPU Xeon, 16 GB)"
+  } else if (machine.startsWith("intellij-linux-2204-aws-r5d")) {
+    groupName = "Linux EC2 r5d.xlarge (4 vCPU Xeon, 32 GB)"
+  } else if (machine.startsWith("intellij-linux-2004-aws-4-i-")) {
+    groupName = "Linux EC2 c5ad.xlarge (4 vCPU EPYC, 8 GB)"
+  } else if (machine.startsWith("intellij-linux-2204-aws-c5d")) {
+    groupName = "Linux EC2 c5d.xlarge (4 vCPU Xeon, 8 GB)"
   }
 
   return groupName

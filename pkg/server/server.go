@@ -77,6 +77,8 @@ func Serve(dbUrl string, natsUrl string) error {
 		if err != nil {
 			return err
 		}
+	} else {
+		slog.Info("no nats server configured")
 	}
 
 	router.Use(middleware.AllowContentType("application/octet-stream", "application/json"))

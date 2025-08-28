@@ -275,7 +275,7 @@ const PRODUCT_METRICS_LABEL = "Product Metrics"
 
 const IJ_STARTUP: Product = {
   url: ROUTE_PREFIX.Startup,
-  label: "IntelliJ Startup",
+  label: "IntelliJ Startup (deprecated)",
   children: [
     {
       url: ROUTE_PREFIX.Startup,

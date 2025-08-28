@@ -106,6 +106,7 @@ const reportInfoProvider = inject(reportInfoProviderKey, null)
 
 const labelHovered = ref(false)
 const hasData = ref(true)
+const previousHasData = ref(true)
 
 const infoFieldsConfigurator =
   reportInfoProvider && reportInfoProvider.infoFields.length > 0
@@ -166,7 +167,14 @@ function createChart() {
     unsubscribe?.()
     chartManager = new ChartManager(chartElement.value, container.value)
     chartVm = new LineChartVM(chartManager, dataQueryExecutor, valueUnitFromMeasure.value, accidentsConfigurator, legendFormatter, (hasDataValue: boolean) => {
+      // If transitioning from no data to having data, recreate the chart, otherwise empty chart is shown
+      if (!previousHasData.value && hasDataValue) {
+        setTimeout(() => {
+          createChart()
+        }, 0)
+      }
       hasData.value = hasDataValue
+      previousHasData.value = hasDataValue
     })
     unsubscribe = chartVm.subscribe()
     chartManager.chart.on("click", chartVm.getOnClickHandler(sidebarVm, chartManager, valueUnitFromMeasure.value, accidentsConfigurator))

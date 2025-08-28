@@ -523,12 +523,20 @@ func setVersionField(versionFieldName string, desiredMajorVersion string, params
 }
 
 func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
-	if params.ProjectId == "22-68" { // Kotlin have their own priority field
+	var priorityFieldName string
+
+	switch params.ProjectId {
+	case "22-68": // KT have their own priority field with unique values
 		return
+	case "22-139": // The field is called Severity in CLion
+		priorityFieldName = "Severity"
+	default:
+		priorityFieldName = "Priority"
 	}
+
 	priorityField := CustomField{
 		Type: "SingleEnumIssueCustomField",
-		Name: "Priority",
+		Name: priorityFieldName,
 		Value: CustomFieldValue{
 			Name: "Major",
 		},
@@ -557,7 +565,9 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 		"22-22",  // IJPL
 		"22-619", // IDEA
 		"22-25",  // RUBY
-		"22-96":  // WEB
+		"22-96",  // WEB
+		"22-19",  // WI
+		"22-211": // GO
 		tags = append(tags, Tag{
 			Name: "Regression",
 			ID:   "68-3044",

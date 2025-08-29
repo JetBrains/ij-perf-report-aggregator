@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
@@ -78,6 +79,10 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 	settings := make([]detector.PerformanceSettings, 0, len(testNames)*len(metrics)*2)
 
 	for _, test := range tests {
+		threshold := 10
+		if strings.HasSuffix(test, "_k1") {
+			threshold = 20
+		}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
@@ -95,6 +100,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						ReportType:         detector.DegradationEvent,
+						MedianDifferenceThreshold: threshold,
 						DaysToCheckMissing: -1,
 					},
 				},
@@ -102,6 +108,10 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		}
 	}
 	for _, test := range tests {
+	  threshold := 10
+  	if strings.HasSuffix(test, "_k1") {
+  		threshold = 20
+  	}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
@@ -119,6 +129,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						ReportType: detector.DegradationEvent,
+						MedianDifferenceThreshold: threshold,
 					},
 				},
 			})

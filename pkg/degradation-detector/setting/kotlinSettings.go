@@ -99,19 +99,19 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 						ProductLink: "kotlin",
 					},
 					AnalysisSettings: detector.AnalysisSettings{
-						ReportType:         detector.DegradationEvent,
-						MedianDifferenceThreshold: threshold,
-						DaysToCheckMissing: -1,
+						ReportType:                detector.DegradationEvent,
+						MedianDifferenceThreshold: float64(threshold),
+						DaysToCheckMissing:        -1,
 					},
 				},
 			})
 		}
 	}
 	for _, test := range tests {
-	  threshold := 10
-  	if strings.HasSuffix(test, "_k1") {
-  		threshold = 20
-  	}
+		threshold := 10
+		if strings.HasSuffix(test, "_k1") {
+			threshold = 20
+		}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
@@ -128,8 +128,8 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 						ProductLink: "kotlin",
 					},
 					AnalysisSettings: detector.AnalysisSettings{
-						ReportType: detector.DegradationEvent,
-						MedianDifferenceThreshold: threshold,
+						ReportType:                detector.DegradationEvent,
+						MedianDifferenceThreshold: float64(threshold),
 					},
 				},
 			})

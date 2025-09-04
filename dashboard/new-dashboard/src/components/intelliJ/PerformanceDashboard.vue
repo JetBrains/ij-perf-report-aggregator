@@ -152,7 +152,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Find in Files"],
     measures: [["findInFiles#openDialog", "findInFiles#search: newInstance", "findInFiles#search: intellij-ide-starter"]],
-    projects: ["intellij_commit/find-in-files"],
+    projects: ["intellij_commit/find-in-files", "intellij_commit/find-in-files-old"],
   },
 ]
 

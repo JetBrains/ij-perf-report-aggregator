@@ -86,12 +86,12 @@ const chartsDeclaration: ChartDefinition[] = [
   },
   {
     labels: ["Highlighting - remove symbol"],
-    measures: ["typing_EditorBackSpace_duration"],
+    measures: ["typing_EditorBackSpace_duration", "typing_EditorBackSpace_warmup_duration"],
     projects: ["intellij_commit/editor-highlighting", "intellij_commit/editor-kotlin-highlighting"],
   },
   {
     labels: ["Highlighting - type symbol"],
-    measures: ["typing_}_duration"],
+    measures: ["typing_}_duration", "typing_}_warmup_duration"],
     projects: ["intellij_commit/editor-highlighting", "intellij_commit/editor-kotlin-highlighting"],
   },
   {

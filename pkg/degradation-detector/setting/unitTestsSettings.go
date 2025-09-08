@@ -74,6 +74,13 @@ var teamConfigs = []teamConfig{
 			"org.jetbrains.osgi.maven", "org.jetbrains.plugins.gradle",
 		},
 	},
+	{
+		Team:         "rubymine",
+		SlackChannel: "rubymine-performance-alerts",
+		Packages: []string{
+			"org.jetbrains.plugins.ruby",
+		},
+	},
 }
 
 func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

@@ -77,7 +77,7 @@ const groups = [
       "material-ui-react-admin/localInspection/PostEdit.tsx",
       "vue-template/localInspection/HelloWorld.vue",
       "vue3-admin-vite/localInspection/index.vue",
-      "pancake-frontend/localInspection/[tokenId].tsx",
+      "pancake-frontend/localInspection/index.tsx",
       "kibana/localInspection/alerts_grouping.tsx",
       "kibana/localInspection/project_navigation.ts",
       "fp-ts/localInspection/eq",

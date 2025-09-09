@@ -10,7 +10,14 @@
       <GroupProjectsChart
         label="Local Inspections (total execution time)"
         measure="localInspections"
-        :projects="['istio/localInspection/adsc.go', 'minotaur/localInspection/server.go', 'caddy/localInspection/replacer.go']"
+        :projects="[
+          'istio/localInspection/adsc.go',
+          'minotaur/localInspection/server.go',
+          'caddy/localInspection/replacer.go',
+          'cockroach/localInspection/tochar.go',
+          'flux/localInspection/sourcesecret.go',
+          'kubernetes/localInspection/client_test.go',
+        ]"
       />
     </section>
     <section>

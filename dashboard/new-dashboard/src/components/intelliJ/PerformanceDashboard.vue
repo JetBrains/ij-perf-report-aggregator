@@ -60,11 +60,6 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["txt", "java", "kotlin"],
   },
   {
-    labels: ["Rebuild (Big projects)"],
-    measures: ["build_compilation_duration"],
-    projects: ["community/rebuild"],
-  },
-  {
     labels: ["Inspection"],
     measures: ["globalInspections"],
     projects: ["kotlin/inspection", "kotlin_coroutines/inspection", "intellij_commit/jvm-inspection"],

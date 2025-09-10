@@ -113,6 +113,10 @@ const chartsDeclaration: ChartDefinition[] = [
       "community/go-to-all-with-warmup/Editor/typingLetterByLetter",
       "community/go-to-all/Editor/typingLetterByLetter/embeddedClient",
       "community/go-to-all-with-warmup/Editor/typingLetterByLetter/embeddedClient",
+      "intellij_commit/go-to-all/Editor/typingLetterByLetter",
+      "intellij_commit/go-to-all-with-warmup/Editor/typingLetterByLetter",
+      "intellij_commit/go-to-all/Editor/typingLetterByLetter/embeddedClient",
+      "intellij_commit/go-to-all-with-warmup/Editor/typingLetterByLetter/embeddedClient",
     ],
   },
   {

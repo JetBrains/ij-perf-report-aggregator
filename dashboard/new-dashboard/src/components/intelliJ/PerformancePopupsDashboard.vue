@@ -88,12 +88,17 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FindUsagesPopup"],
     measures: ["findUsage_popup"],
-    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall"],
+    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall", "intellij_commit/findUsages/Library_getName"],
   },
   {
     labels: ["SearchEverywherePopup"],
     measures: ["searchEverywhere_dialog_shown"],
-    projects: ["community/go-to-all/Runtime/typingLetterByLetter", "community/go-to-all-with-warmup/Runtime/typingLetterByLetter"],
+    projects: [
+      "community/go-to-all/Runtime/typingLetterByLetter",
+      "community/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-all/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+    ],
   },
 ]
 

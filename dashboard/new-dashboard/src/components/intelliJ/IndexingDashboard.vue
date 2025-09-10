@@ -50,7 +50,13 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (Big projects)", "FUS Indexing time"],
     measures: ["indexingTimeWithoutPauses", "fus_dumb_indexing_time"],
-    projects: ["community/indexing", "intellij_commit/indexing", "community/indexingWithHighlighting", "indexing-community/indexingWithHighlighting"],
+    projects: [
+      "community/indexing",
+      "intellij_commit/indexing",
+      "community/indexingWithHighlighting",
+      "indexing-community/indexingWithHighlighting",
+      "indexing-intellij_commit/indexingWithHighlighting",
+    ],
   },
   {
     labels: ["Indexing (after checkout)", "Scanning (after checkout)"],

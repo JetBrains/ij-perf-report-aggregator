@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="ijent"
     persistent-id="ijent_performance_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="Linux Munich i7-13700, 64 Gb"
     :with-installer="false"
     :charts="charts"
   >
@@ -40,6 +40,9 @@ import DashboardPage from "../common/DashboardPage.vue"
 const metricsDeclaration = [
   "ijent.events.count",
   "indexingTimeWithoutPauses",
+  "scanningTimeWithoutPauses",
+  "numberOfIndexedFiles",
+  "build_compilation_duration",
 
   "Memory | IDE | RESIDENT SIZE (MB) 95th pctl",
   "Memory | IDE | VIRTUAL SIZE (MB) 95th pctl",

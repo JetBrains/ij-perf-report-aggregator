@@ -61,7 +61,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing (after checkout)", "Scanning (after checkout)"],
     measures: ["indexingTimeWithoutPauses", "scanningTimeWithoutPauses"],
-    projects: ["intellij_sources/checkout/243"],
+    projects: ["intellij_sources/checkout/243", "intellij_commit/checkout/243"],
   },
   {
     labels: ["Scanning (Big projects)", "FUS Scanning time"],

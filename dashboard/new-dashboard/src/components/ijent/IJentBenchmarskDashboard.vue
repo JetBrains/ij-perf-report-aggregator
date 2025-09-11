@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="ijent"
     persistent-id="ijent_benchmark_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="Linux Munich i7-13700, 64 Gb"
     :with-installer="false"
     :charts="charts"
   >

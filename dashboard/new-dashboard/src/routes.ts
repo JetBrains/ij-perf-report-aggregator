@@ -222,7 +222,7 @@ enum ROUTES {
   PerfUnitTests = `${ROUTE_PREFIX.PerfUnit}/${TEST_ROUTE}`,
   IJentBenchmarksDashboard = `${ROUTE_PREFIX.IJent}/benchmarksDashboard`,
   IJentPerfTestsDashboard = `${ROUTE_PREFIX.IJent}/performanceDashboard`,
-  IJentBenchmarks = `${ROUTE_PREFIX.IJent}/benchmarks`,
+  IJentRawPerfData = `${ROUTE_PREFIX.IJent}/rawPerfData`,
   MLDevTests = `${ROUTE_PREFIX.ML}/dev/${DEV_TEST_ROUTE}`,
   AIAssistantApiTests = `${ROUTE_PREFIX.ML}/dev/apiTests`,
   AIAssistantTestGeneration = `${ROUTE_PREFIX.ML}/dev/testGeneration`,
@@ -1171,8 +1171,8 @@ const IJENT: Product = {
           label: "Performance Dashboard",
         },
         {
-          url: ROUTES.IJentBenchmarks,
-          label: "Benchmarks",
+          url: ROUTES.IJentRawPerfData,
+          label: "Raw Performance Data",
         },
       ],
     },
@@ -2465,15 +2465,15 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IJent Performance Tests Dashboard" },
         },
         {
-          path: ROUTES.IJentBenchmarks,
+          path: ROUTES.IJentRawPerfData,
           component: () => import("./components/common/PerformanceTests.vue"),
           props: {
             dbName: "perfintDev",
             table: "ijent",
-            initialMachine: "windows-azure",
+            initialMachine: "Linux Munich i7-13700, 64 Gb",
             withInstaller: false,
           },
-          meta: { pageTitle: "IJent Benchmarks" },
+          meta: { pageTitle: "IJent Raw Performance Data" },
         },
         {
           path: ROUTES.AIAssistantApiTests,

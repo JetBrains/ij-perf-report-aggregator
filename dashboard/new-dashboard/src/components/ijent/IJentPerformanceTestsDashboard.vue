@@ -75,6 +75,18 @@ const metricsDeclaration = [
   "ijent.seekableByteChannelRead.sum.ms",
   "ijent.seekableByteChannelSize.sum.ms",
   "ijent.seekableByteChannelWrite.sum.ms",
+
+  "project.opening",
+  "jps.aggregate.sync.duration",
+  "jps.aggregate.counters",
+
+  "jps.app.storage.content.reader.load.component.ms",
+  "jps.project.serializers.load.ms",
+  "jps.storage.jps.conf.reader.load.component.ms",
+
+  "workspaceModel.loading.total.ms",
+  "workspaceModel.moduleBridgeLoader.loading.modules.ms",
+  "workspaceModel.moduleManagerBridge.load.module.ms",
 ]
 
 const projects = [

@@ -8,13 +8,9 @@ const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
   IntelliJBuildTools = "/intellij/buildTools",
-  IntelliJUltimate = "/intellij/ultimate",
-  IntelliJJava = "/intellij/java",
   IntelliJSharedIndexes = "/intellij/sharedIndexes",
-  IntelliJIncrementalCompilation = "/intellij/incrementalCompilation",
   IntelliJKotlinK2Performance = "/intellij/kotlinK2Performance",
   IntelliJPackageChecker = "/intellij/packageChecker",
-  IntelliJFus = "/intellij/fus",
   PhpStorm = "/phpstorm",
   GoLand = "/goland",
   RubyMine = "/rubymine",
@@ -61,16 +57,13 @@ enum ROUTES {
   StartupExploreInstaller = `${ROUTE_PREFIX.Startup}/exploreInstaller`,
   IntelliJStartupDashboard = `${ROUTE_PREFIX.IntelliJ}/${STARTUP_ROUTE}`,
   IntelliJProductMetricsDashboard = `${ROUTE_PREFIX.IntelliJ}/${PRODUCT_METRICS_ROUTE}`,
-  IntelliJDashboard = `${ROUTE_PREFIX.IntelliJ}/${DASHBOARD_ROUTE}`,
-  IntelliJPopupsDashboard = `${ROUTE_PREFIX.IntelliJ}/popupsDashboard`,
-  IntelliJLaggingLatencyDashboard = `${ROUTE_PREFIX.IntelliJ}/laggingLatencyDashboard`,
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
-  IntelliJIncrementalCompilationDashboard = `${ROUTE_PREFIX.IntelliJIncrementalCompilation}/${DASHBOARD_ROUTE}`,
-  IntelliJFindUsagesDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardFindUsages`,
-  IntelliJSEDashboard = `${ROUTE_PREFIX.IntelliJ}/dashboardSearchEverywhere`,
+  IntelliJJavaDashboard = `${ROUTE_PREFIX.IntelliJ}/javaDashboard`,
+  IntelliJKotlinDashboard = `${ROUTE_PREFIX.IntelliJ}/kotlinDashboard`,
+  IntelliJUIDashboard = `${ROUTE_PREFIX.IntelliJ}/uiDashboard`,
+  IntelliJLaggingLatencyDashboard = `${ROUTE_PREFIX.IntelliJ}/laggingLatencyDashboard`,
   IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
   IntelliJK2Dashboard = `${ROUTE_PREFIX.IntelliJKotlinK2Performance}/${DASHBOARD_ROUTE}`,
-  IntelliJTests = `${ROUTE_PREFIX.IntelliJ}/${TEST_ROUTE}`,
   IntelliJDevTests = `${ROUTE_PREFIX.IntelliJ}/${DEV_TEST_ROUTE}`,
   IntelliJCompare = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_ROUTE}`,
   IntelliJCompareBranches = `${ROUTE_PREFIX.IntelliJ}/${COMPARE_BRANCHES_ROUTE}`,
@@ -81,10 +74,6 @@ enum ROUTES {
   IntelliJJpsDashboardDev = `${ROUTE_PREFIX.IntelliJBuildTools}/jpsDashboardDev`,
   IntelliJBuildTests = `${ROUTE_PREFIX.IntelliJBuildTools}/${TEST_ROUTE}`,
   IntelliJBuildTestsDev = `${ROUTE_PREFIX.IntelliJBuildTools}/${DEV_TEST_ROUTE}`,
-  IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJUltimate}/${DASHBOARD_ROUTE}`,
-  IntelliJUltimateDashboardOld = `${ROUTE_PREFIX.IntelliJUltimate}/ultimateDashboardOld`,
-  IntelliJJavaDashboard = `${ROUTE_PREFIX.IntelliJJava}/${DASHBOARD_ROUTE}`,
-  IntelliJUltimateTests = `${ROUTE_PREFIX.IntelliJUltimate}/${DEV_TEST_ROUTE}`,
   IntelliJSharedIndicesDashboard = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${DASHBOARD_ROUTE}`,
   IntelliJSharedIndicesTests = `${ROUTE_PREFIX.IntelliJSharedIndexes}/${TEST_ROUTE}`,
   IntelliJPackageCheckerDashboard = `${ROUTE_PREFIX.IntelliJPackageChecker}/${DASHBOARD_ROUTE}`,
@@ -99,7 +88,6 @@ enum ROUTES {
   PhpStormTests = `${ROUTE_PREFIX.PhpStorm}/${TEST_ROUTE}`,
   PhpStormDevTests = `${ROUTE_PREFIX.PhpStorm}/${DEV_TEST_ROUTE}`,
   PhpStormWithPluginsTests = `${ROUTE_PREFIX.PhpStorm}/testsWithPlugins`,
-  PhpStormCompare = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_ROUTE}`,
   PhpStormCompareBranches = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_BRANCHES_ROUTE}`,
   PhpStormCompareModes = `${ROUTE_PREFIX.PhpStorm}/${COMPARE_MODES_ROUTE}`,
   KotlinDashboard = `${ROUTE_PREFIX.Kotlin}/${DASHBOARD_ROUTE}`,
@@ -109,7 +97,6 @@ enum ROUTES {
   KotlinTests = `${ROUTE_PREFIX.Kotlin}/${TEST_ROUTE}`,
   KotlinTestsDev = `${ROUTE_PREFIX.Kotlin}/${DEV_TEST_ROUTE}`,
   KotlinCompletionDev = `${ROUTE_PREFIX.Kotlin}/completionDev`,
-  KotlinHighlightingDev = `${ROUTE_PREFIX.Kotlin}/highlightingDev`,
   KotlinFindUsagesDev = `${ROUTE_PREFIX.Kotlin}/findUsagesDev`,
   KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
@@ -198,7 +185,6 @@ enum ROUTES {
   BazelPluginDashboard = `${ROUTE_PREFIX.Bazel}/BazelPluginDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
   ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
-  ClionNovaStartupDashboard = `${ROUTE_PREFIX.Clion}/nova_${STARTUP_ROUTE}`,
   ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
   ClionProductMetricsDashboardOld = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}Old`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
@@ -329,32 +315,24 @@ const IDEA: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.IntelliJDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJPopupsDashboard,
-          label: "Popups",
-        },
-        {
-          url: ROUTES.IntelliJLaggingLatencyDashboard,
-          label: "Lagging/Latency",
-        },
-        {
-          url: ROUTES.IntelliJFindUsagesDashboard,
-          label: "Find Usages",
-        },
-        {
-          url: ROUTES.IntelliJSEDashboard,
-          label: "Search Everywhere",
-        },
-        {
           url: ROUTES.IntelliJIndexingDashboard,
           label: "Indexes",
         },
         {
-          url: ROUTES.IntelliJTests,
-          label: TESTS_LABEL,
+          url: ROUTES.IntelliJJavaDashboard,
+          label: "Java",
+        },
+        {
+          url: ROUTES.IntelliJKotlinDashboard,
+          label: "Kotlin",
+        },
+        {
+          url: ROUTES.IntelliJUIDashboard,
+          label: "UI",
+        },
+        {
+          url: ROUTES.IntelliJLaggingLatencyDashboard,
+          label: "Lagging/Latency",
         },
         {
           url: ROUTES.IntelliJDevTests,
@@ -401,34 +379,6 @@ const IDEA: Product = {
       ],
     },
     {
-      url: ROUTE_PREFIX.IntelliJUltimate,
-      label: "Ultimate",
-      tabs: [
-        {
-          url: ROUTES.IntelliJUltimateDashboard,
-          label: DASHBOARD_LABEL,
-        },
-        {
-          url: ROUTES.IntelliJUltimateDashboardOld,
-          label: "Dashboard (<=241)",
-        },
-        {
-          url: ROUTES.IntelliJUltimateTests,
-          label: TESTS_LABEL,
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.IntelliJJava,
-      label: "Java",
-      tabs: [
-        {
-          url: ROUTES.IntelliJJavaDashboard,
-          label: DASHBOARD_LABEL,
-        },
-      ],
-    },
-    {
       url: ROUTE_PREFIX.IntelliJSharedIndexes,
       label: "Shared Indexes",
       tabs: [
@@ -439,16 +389,6 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJSharedIndicesTests,
           label: TESTS_LABEL,
-        },
-      ],
-    },
-    {
-      url: ROUTE_PREFIX.IntelliJIncrementalCompilation,
-      label: "Incremental Compilation",
-      tabs: [
-        {
-          url: ROUTES.IntelliJIncrementalCompilationDashboard,
-          label: DASHBOARD_LABEL,
         },
       ],
     },
@@ -1419,29 +1359,29 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "IDEA product metrics" },
         },
         {
-          path: ROUTES.IntelliJDashboard,
-          component: () => import("./components/intelliJ/PerformanceDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJPopupsDashboard,
-          component: () => import("./components/intelliJ/PerformancePopupsDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Popups Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJLaggingLatencyDashboard,
-          component: () => import("./components/intelliJ/PerformanceLaggingLatencyDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Lagging/Latency Performance dashboard" },
-        },
-        {
           path: ROUTES.IntelliJIndexingDashboard,
           component: () => import("./components/intelliJ/IndexingDashboard.vue"),
           meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
         },
         {
-          path: ROUTES.IntelliJIncrementalCompilationDashboard,
-          component: () => import("./components/intelliJ/IncrementalCompilationDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Incremental Compilation dashboard" },
+          path: ROUTES.IntelliJJavaDashboard,
+          component: () => import("./components/intelliJ/JavaDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Java Performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJKotlinDashboard,
+          component: () => import("./components/intelliJ/KotlinDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Kotlin Performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJUIDashboard,
+          component: () => import("./components/intelliJ/UIDashboard.vue"),
+          meta: { pageTitle: "IntelliJ UI Performance dashboard" },
+        },
+        {
+          path: ROUTES.IntelliJLaggingLatencyDashboard,
+          component: () => import("./components/intelliJ/PerformanceLaggingLatencyDashboard.vue"),
+          meta: { pageTitle: "IntelliJ Lagging/Latency Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJK2Dashboard,
@@ -1469,29 +1409,9 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "JPS Import dashboard DevServer" },
         },
         {
-          path: ROUTES.IntelliJUltimateDashboard,
-          component: () => import("./components/intelliJ/UltimateProjectsDashboard.vue"),
-          meta: { pageTitle: "Ultimate Projects" },
-        },
-        {
-          path: ROUTES.IntelliJJavaDashboard,
-          component: () => import("./components/intelliJ/JavaProjectsDashboard.vue"),
-          meta: { pageTitle: "Java Projects" },
-        },
-        {
           path: ROUTES.IntelliJPackageCheckerDashboard,
           component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
           meta: { pageTitle: "Package Checker" },
-        },
-        {
-          path: ROUTES.IntelliJFindUsagesDashboard,
-          component: () => import("./components/intelliJ/PerformanceFindUsagesDashboard.vue"),
-          meta: { pageTitle: "Find Usages IntelliJ Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJSEDashboard,
-          component: () => import("./components/intelliJ/PerformanceSEDashboard.vue"),
-          meta: { pageTitle: "Search Everywhere IntelliJ Performance dashboard" },
         },
         {
           path: ROUTES.IntelliJSharedIndicesDashboard,

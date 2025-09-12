@@ -2,13 +2,13 @@
   <DashboardPage
     db-name="perfintDev"
     table="idea"
-    persistent-id="idea_search_everywhere_dashboard_dev"
+    persistent-id="idea_java_dashboard_devserver"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
     :with-installer="false"
   >
     <section>
-      <GroupProjectsWithClientChart
+      <GroupProjectsChart
         v-for="chart in charts"
         :key="chart.definition.label"
         :label="chart.definition.label"
@@ -21,10 +21,115 @@
 
 <script setup lang="ts">
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
+import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import GroupProjectsWithClientChart from "../charts/GroupProjectsWithClientChart.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["Expand Project Menu"],
+    measures: ["%expandProjectMenu"],
+    projects: ["intellij_commit/expandProjectMenu"],
+  },
+  {
+    labels: ["Expand Main Menu"],
+    measures: ["%expandMainMenu"],
+    projects: ["intellij_commit/expandMainMenu"],
+  },
+  {
+    labels: ["Expand Editor Menu"],
+    measures: ["%expandEditorMenu"],
+    projects: ["intellij_commit/expandEditorMenu"],
+  },
+  {
+    labels: ["Editor Scrolling AWT Delay"],
+    measures: [["scrollEditor#max_awt_delay", "scrollEditor#average_awt_delay"]],
+    projects: ["intellij_commit/scrollEditor/java_file_ContentManagerImpl"],
+  },
+  {
+    labels: ["Editor Scrolling CPU Load"],
+    measures: [["scrollEditor#max_cpu_load", "scrollEditor#average_cpu_load"]],
+    projects: ["intellij_commit/scrollEditor/java_file_ContentManagerImpl"],
+  },
+  {
+    labels: ["Project View"],
+    measures: [["projectViewInit", "projectViewInit#cachedNodesLoaded"]],
+    projects: ["intellij_commit/projectView"],
+  },
+  {
+    labels: ["Find in Files"],
+    measures: [["findInFiles#openDialog", "findInFiles#search: newInstance", "findInFiles#search: intellij-ide-starter"]],
+    projects: ["intellij_commit/find-in-files", "intellij_commit/find-in-files-old"],
+  },
+  {
+    labels: ["EditorContextMenu"],
+    measures: ["popupShown#EditorContextMenu"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["ProjectViewContextMenu"],
+    measures: ["popupShown#ProjectViewContextMenu"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["ProjectWidget"],
+    measures: ["popupShown#ProjectWidget"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["RunConfigurations"],
+    measures: ["popupShown#RunConfigurations"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["VcsLogBranchFilter"],
+    measures: ["popupShown#VcsLogBranchFilter"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["VcsLogDateFilter"],
+    measures: ["popupShown#VcsLogDateFilter"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["VcsLogPathFilter"],
+    measures: ["popupShown#VcsLogPathFilter"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["VcsLogUserFilter"],
+    measures: ["popupShown#VcsLogUserFilter"],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["VcsWidget"],
+    measures: [["popupShown#VcsWidget", "afterShow#GitBranchesTreePopup", "afterShow#GitDefaultBranchesPopup"]],
+    projects: ["popups-performance-test/test-popups"],
+  },
+  {
+    labels: ["FileStructurePopup"],
+    measures: ["FileStructurePopup"],
+    projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
+  },
+  {
+    labels: ["ShowQuickFixes"],
+    measures: ["showQuickFixes"],
+    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+  },
+  {
+    labels: ["FindUsagesPopup"],
+    measures: ["findUsage_popup"],
+    projects: ["intellij_commit/findUsages/PsiManager_getInstance_firstCall", "intellij_commit/findUsages/Library_getName"],
+  },
+  {
+    labels: ["SearchEverywherePopup"],
+    measures: ["searchEverywhere_dialog_shown"],
+    projects: [
+      "community/go-to-all/Runtime/typingLetterByLetter",
+      "community/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-all/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-all-with-warmup/Runtime/typingLetterByLetter",
+    ],
+  },
   {
     labels: ["Search Everywhere Action (slow typing)", "SE First Element Added Action (slow typing)"],
     measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],

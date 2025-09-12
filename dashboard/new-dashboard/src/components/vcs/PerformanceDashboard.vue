@@ -256,12 +256,9 @@ import DashboardPage from "../common/DashboardPage.vue"
 const indexingProjects = ["intellij_clone_specific_commit/gitLogIndexing", "intellij_sources/gitLogIndexing"]
 
 const showFileHistoryProjects = [
-  "intellij_clone_specific_commit/EditorImpl-phm",
   "intellij_clone_specific_commit/EditorImpl-noindex",
-  "intellij_sources/EditorImpl-phm",
-  "intellij_sources/EditorImpl-noindex",
-  "intellij_sources/showFileHistory/EditorImpl",
-  "intellij_sources/showFileHistory/EditorImpl-instant-git",
+  "intellij_commit/showFileHistory/EditorImpl",
+  "intellij_commit/showFileHistory/EditorImpl-instant-git",
 ]
 
 const checkoutProjects = ["intellij_clone_specific_commit/git-checkout", "intellij_sources/git-checkout"]

@@ -48,6 +48,18 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
+    labels: ["VFS Refresh"],
+    measures: ["vfs_initial_refresh"],
+    projects: ["intellij_commit/vfsRefresh/default", "intellij_commit/vfsRefresh/with-1-thread(s)", "intellij_commit/vfsRefresh/git-status"],
+    aliases: ["default", "1 thread", "git status"],
+  },
+  {
+    labels: ["VFS Refresh after Mass Changes"],
+    measures: [["vfsRefreshAfterMassCreate", "vfsRefreshAfterMassModify", "vfsRefreshAfterMassDelete"]],
+    projects: ["empty_project/vfs-mass-update-txt", "empty_project/vfs-mass-update-java", "empty_project/vfs-mass-update-kt"],
+    aliases: ["txt", "java", "kotlin"],
+  },
+  {
     labels: ["Indexing (big projects)"],
     measures: [["indexingTimeWithoutPauses", "fus_dumb_indexing_time"]],
     projects: [

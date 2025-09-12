@@ -93,15 +93,38 @@ const metricsDeclaration = [
 ]
 
 const projects = [
-  "wsl-import-jps-1000-modules-WSL",
-  "wsl-import-intellij",
-  "nio_default-import-jps-1000-modules-Local",
-  "nio_default-import-intellij",
-  "ijent-import-jps-1000-modules-Local",
-  "ijent-import-jps-1000-modules-Docker",
+  "community/indexingLocal",
+  "community/indexingDocker",
+  "community/indexingWSL",
+
+  "community/rebuild_Local",
+  "community/rebuild_Docker",
+  "community/rebuild_WSL",
+
+  "indexing-php-project/indexingLocal",
+  "indexing-php-project/indexingDocker",
+  "indexing-php-project/indexingWSL",
+
+  "spring-pet-clinic-gradle/indexingLocal",
+  "spring-pet-clinic-gradle/indexingDocker",
+  "spring-pet-clinic-gradle/indexingWSL",
+
+  "spring-pet-clinic-maven/indexingLocal",
+  "spring-pet-clinic-maven/indexingDocker",
+  "spring-pet-clinic-maven/indexingWSL",
+
+  "ijent-build-intellij-Local",
+  "ijent-build-intellij-Docker",
+  "ijent-build-intellij-WSL",
+
   "ijent-import-intellij-Local",
   "ijent-import-intellij-Docker",
-  "ijent-import-intellij",
+  "ijent-import-intellij-WSL",
+
+  "ijent-import-jps-1000-modules-Local",
+  "ijent-import-jps-1000-modules-Docker",
+  "nio-default-import-jps-1000-modules-Local",
+  "wsl-import-jps-1000-modules-WSL",
 ]
 
 const testConfigurator = new SimpleMeasureConfigurator("project", null)

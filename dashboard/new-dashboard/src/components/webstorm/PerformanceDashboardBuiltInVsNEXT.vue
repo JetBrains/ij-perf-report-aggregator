@@ -114,7 +114,15 @@ const groups = [
   {
     label: "Global inspections",
     measure: "globalInspections",
-    projects: ["eslint-plugin-jest/inspection/whole-project", "ring-ui/inspection/src", "fleetbot/inspection/src", "kibana/inspection/src"],
+    projects: [
+      "eslint-plugin-jest/inspection/whole-project",
+      "ring-ui/inspection/src",
+      "fleetbot/inspection/src",
+      "kibana/inspection/src",
+      "allure-js/inspection/whole-project",
+      "axios/inspection/",
+      "gitlab/inspection/appDir",
+    ],
   },
   {
     label: "Typing",

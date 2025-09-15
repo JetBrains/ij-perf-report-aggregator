@@ -24,7 +24,7 @@
           <GroupProjectsChart
             :label="project"
             :measure="group.measure"
-            :projects="[project, project + 'NEXT']"
+            :projects="[project, project + 'NEXT', project + 'TSGONEXT']"
           />
         </div>
       </section>

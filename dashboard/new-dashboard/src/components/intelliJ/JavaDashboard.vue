@@ -150,6 +150,16 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["renameDirectoryAsPackage"],
     projects: ["hadoop_commit/rename-package"],
   },
+  {
+    labels: ["Type Java file with completion"],
+    measures: ["completion"],
+    projects: ["hadoop_commit/code-completion-java"],
+  },
+  {
+    labels: ["Java red-code - highlighting and completion"],
+    measures: ["replaceTextCodeAnalysis"],
+    projects: ["hadoop_commit/java-red-code"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -170,7 +170,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		projectsToSetVersionsFor := []string{
 			"22-22",  // IJPL
 			"22-619", // IDEA
-			"22-25",  // RUBY
+// 			"22-25",  // RUBY
 			"22-414", // KTIJ
 			"22-96",  // WEB,
 		}
@@ -564,7 +564,7 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 	case
 		"22-22",  // IJPL
 		"22-619", // IDEA
-		"22-25",  // RUBY
+// 		"22-25",  // RUBY
 		"22-96",  // WEB
 		"22-19",  // WI
 		"22-211": // GO

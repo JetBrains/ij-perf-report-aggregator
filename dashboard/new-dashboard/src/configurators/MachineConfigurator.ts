@@ -337,8 +337,10 @@ function getValueToGroup() {
 
 export function getMachineGroupName(machine: string): string {
   let groupName: string | null = "Unknown"
-  if (machine.startsWith("intellij-linux-hw-blade-") || machine.startsWith("intellij-linux-test-hw-blade-")) {
+  if (machine.startsWith("intellij-linux-hw-blade-")) {
     groupName = "linux-blade"
+  } else if (machine.startsWith("intellij-linux-test-hw-blade-")) {
+    groupName = "linux-blade-test"
   } else if (machine.startsWith("intellij-windows-hw-blade-")) {
     groupName = "windows-blade"
   } else if (machine.startsWith("intellij-windows-hw-munit-")) {

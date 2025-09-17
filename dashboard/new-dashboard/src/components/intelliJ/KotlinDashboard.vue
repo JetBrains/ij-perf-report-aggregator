@@ -26,8 +26,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["First Code Analysis", "Local Inspection"],
-    measures: ["firstCodeAnalysis", "localInspections"],
+    labels: ["First Code Analysis", "Local Inspections", "File Openings: code loaded", "File Openings: tab shown"],
+    measures: ["firstCodeAnalysis", "localInspections", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
     projects: [
       "toolbox_enterprise/ultimateCase/SecurityTests",
       "toolbox_enterprise/ultimateCase/ToolController",

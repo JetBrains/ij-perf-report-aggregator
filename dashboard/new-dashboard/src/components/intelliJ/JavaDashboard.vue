@@ -26,8 +26,8 @@ import DashboardPage from "../common/DashboardPage.vue"
 
 const chartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["First Code Analysis"],
-    measures: ["firstCodeAnalysis"],
+    labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],
+    measures: ["firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
     projects: [
       "keycloak_release_20/ultimateCase/AuthenticationManagementResource",
       "keycloak_release_20/ultimateCase/IdentityBrokerService",

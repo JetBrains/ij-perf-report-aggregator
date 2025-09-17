@@ -324,6 +324,7 @@ function getValueToGroup() {
     "intellij-linux-hw-blade-047": blade,
     "intellij-linux-hw-blade-048": blade,
     "intellij-linux-hw-blade-049": blade,
+    "intellij-linux-test-hw-blade-002": blade,
 
     "intellij-linux-hw-de-unit-1705": "Linux Munich i7-13700, 64 Gb",
     "intellij-linux-hw-de-unit-1716": "Linux Munich i7-13700, 64 Gb",

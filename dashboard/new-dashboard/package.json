@@ -7,7 +7,7 @@
     "@vueuse/core": "^13.9.0",
     "echarts": "6.0.0",
     "fast-equals": "5.2.2",
-    "humanize-duration": "3.33.0",
+    "humanize-duration": "3.33.1",
     "p-limit": "^7.1.1",
     "pinia": "^3.0.3",
     "primevue": "4.3.9",

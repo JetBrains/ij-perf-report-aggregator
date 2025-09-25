@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"slices"
@@ -11,6 +12,7 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
+	"github.com/JetBrains/ij-perf-report-aggregator/pkg/outlier-detection"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
 	"github.com/valyala/bytebufferpool"
 )
@@ -223,4 +225,139 @@ func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*byt
 
 	buffer, err := toJSONBuffer(passes)
 	return buffer, true, err
+}
+
+func removeLastPart(s string) string {
+	lastIndex := strings.LastIndex(s, "-")
+	if lastIndex == -1 {
+		return s
+	}
+	return s[:lastIndex]
+}
+
+func (t *StatsServer) processMetricData(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
+	type requestParams struct {
+		TestName   string `json:"test_name"`
+		Branch     string `json:"branch"`
+		Machine    string `json:"machine"`
+		Product    string `json:"product"`
+		MetricName string `json:"metric_name"`
+		Mode       string `json:"mode"`
+	}
+
+	var params requestParams
+	decoder := json.NewDecoder(request.Body)
+	if err := decoder.Decode(&params); err != nil {
+		return nil, false, err
+	}
+
+	// Set default minimum points if not specified
+	minPoints := 5
+
+	// Map OS to machine field (assuming OS maps to machine in the database)
+
+	// Replace all matches with %
+	machine := removeLastPart(params.Machine) + "%"
+	// Map product to table - this is a simplified mapping, adjust as needed
+	table := mapProductToTable(params.Product)
+	if table == "" {
+		return nil, false, fmt.Errorf("unknown product: %s", params.Product)
+	}
+
+	// Query the database for metric values
+	sql := fmt.Sprintf(`
+		SELECT groupArray(metric_value) AS MetricValues
+		FROM (
+			SELECT measures.value as metric_value
+			FROM perfintDev.%s ARRAY JOIN measures
+			WHERE branch = '%s'
+			AND measures.name = '%s'
+			AND machine LIKE '%s'
+			AND project = '%s'
+			AND mode = '%s'
+			AND generated_time >= now() - INTERVAL 1 MONTH
+			ORDER BY generated_time
+		)
+	`, table, params.Branch, params.MetricName, machine, params.TestName, params.Mode)
+
+	db, err := t.openDatabaseConnection()
+	if err != nil {
+		return nil, false, err
+	}
+	defer func(db driver.Conn) {
+		_ = db.Close()
+	}(db)
+
+	var queryResult struct {
+		MetricValues []int
+	}
+
+	err = db.QueryRow(request.Context(), sql).Scan(&queryResult.MetricValues)
+	if err != nil {
+		return nil, false, err
+	}
+
+	if len(queryResult.MetricValues) == 0 {
+		return nil, false, errors.New("no data found for the specified parameters")
+	}
+
+	// Run Change Point algorithm
+	changePoints := statistic.GetChangePointIndexes(queryResult.MetricValues, 3)
+
+	// Get the last segment that's larger than minPoints
+	var lastSegment []int
+	if len(changePoints) == 0 {
+		lastSegment = queryResult.MetricValues
+	} else {
+		// Find the last segment with sufficient points
+		for i := len(changePoints) - 1; i >= 0; i-- {
+			// Check if this is the last segment and it has enough points
+			if i == len(changePoints)-1 {
+				segment := queryResult.MetricValues[changePoints[i]:]
+				if len(segment) >= minPoints {
+					lastSegment = segment
+					break
+				}
+			}
+		}
+
+		// If no suitable segment found from change points, use the entire last segment
+		if len(lastSegment) == 0 {
+			if len(changePoints) > 0 {
+				lastIndex := changePoints[len(changePoints)-1]
+				lastSegment = queryResult.MetricValues[lastIndex:]
+			} else {
+				lastSegment = queryResult.MetricValues
+			}
+		}
+	}
+
+	// If the segment is still too small, use all data
+	if len(lastSegment) < minPoints {
+		lastSegment = queryResult.MetricValues
+	}
+
+	// Remove outliers using MAD-based detection (windowSize=5, threshold=3)
+	processedData := outlier_detection.RemoveOutliers(lastSegment, 5, 3.0)
+
+	type processMetricResponse struct {
+		MaxValue int `json:"max_value"`
+	}
+
+	response := processMetricResponse{
+		MaxValue: slices.Max(processedData),
+	}
+
+	buffer, err := toJSONBuffer(response)
+	return buffer, true, err
+}
+
+// mapProductToTable maps product names to database table names
+func mapProductToTable(product string) string {
+	switch product {
+	case "IU":
+		return "idea"
+	default:
+		return ""
+	}
 }

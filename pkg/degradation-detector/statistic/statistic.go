@@ -6,13 +6,6 @@ import (
 	"slices"
 )
 
-func Min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func MedianF(nums []float64) float64 {
 	if len(nums) == 0 {
 		return 0

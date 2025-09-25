@@ -13,7 +13,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-// example: if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day
+// MaxIncrementalBackupCount works like if data collected each 3 hours, will be 8 backup per day, so, upload full backup at least once a day
 const MaxIncrementalBackupCount = 4
 
 func CreateBackuper() *backup.Backuper {

@@ -89,7 +89,7 @@ func (s StartupSettings) MergeMetrics(settings Settings) Settings {
 	return mergeMetricsHelper(s, settings)
 }
 
-// slack channel => tc_build_type => project => missingData
+// MissingDataMerged is a map: slack channel => tc_build_type => project => missingData
 type MissingDataMerged map[string]map[string]map[string]MissingData
 
 func MergeMissingData(missingData <-chan MissingData) MissingDataMerged {

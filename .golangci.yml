@@ -33,6 +33,7 @@ linters:
     - contextcheck
     - noinlineerr
     - wsl_v5
+    - unqueryvet
   settings:
     errcheck:
       check-type-assertions: true

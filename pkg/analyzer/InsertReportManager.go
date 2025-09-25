@@ -146,7 +146,7 @@ func NewInsertReportManager(ctx context.Context, db driver.Conn, metaDb *pgxpool
 	return manager, nil
 }
 
-// checks that not duplicated, warn if metrics cannot be computed
+// Insert checks that entries are not duplicated and warn if metrics cannot be computed
 func (t *InsertReportManager) Insert(runResult *RunResult) error {
 	logger := slog.Default()
 	if t.config.HasProductField {

@@ -1,6 +1,5 @@
 package degradation_detector
 
-// enum for report type
 type ReportType int
 
 const (

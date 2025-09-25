@@ -65,7 +65,7 @@ func ReadProperties(data []byte) ([]byte, error) {
 	return []byte(json), nil
 }
 
-// cat '/Volumes/data/Downloads/build.finish.properties' | python -m json.tool > f.json
+// IsExcludedProperty obtained by cat '/Volumes/data/Downloads/build.finish.properties' | python -m json.tool > f.json
 func IsExcludedProperty(key string) bool {
 	if excludedTcProperties[key] ||
 		strings.HasPrefix(key, "DotNetCredentialProvider") ||

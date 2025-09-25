@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// Load reads a buffer into a Properties struct.
+// LoadBytes load reads a buffer into a Properties struct.
 func LoadBytes(buf []byte, isExcludedKey func(string) bool) (*Properties, error) {
 	if isExcludedKey == nil {
 		isExcludedKey = func(string) bool { return false }

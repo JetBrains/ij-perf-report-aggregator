@@ -22,6 +22,7 @@ export const rustGlobalInspectionProjects = [
   "tokio",
   "turbo",
   "yew",
+  "lemmy",
 ]
 
 export const rustCompletionCases = [
@@ -59,6 +60,7 @@ export const rustCompletionCases = [
   "completion/diesel/src/sql_function.rs",
   "completion/hyperfine/src/command.rs",
   "completion/hyperfine/src/export/markup.rs",
+  "completion/icu4x/components/collator/src/provider.rs",
   "completion/lemmy/comment_report_view.rs",
   "completion/nalgebra/src/base/matrix.rs",
   "completion/nalgebra/src/base/alias_slice.rs",
@@ -110,7 +112,9 @@ export const rustLocalInspectionCases = [
   "diesel/local-inspection/src/sql_function.rs",
   "hyperfine/local-inspection/src/command.rs",
   "hyperfine/local-inspection/src/export/markup.rs",
-  "lemmy/local-inspection/comment_report_view.rs",
+  "icu4x/local-inspection/components/collator/src/provider.rs",
+  "lemmy/local-inspection/crates/db_views/src/comment_report_view.rs",
+  "lemmy/local-inspection/crates/crates/db_views/src/local_user_view.rs",
   "nalgebra/local-inspection/src/base/matrix.rs",
   "nalgebra/local-inspection/src/base/alias_slice.rs",
   "nalgebra/local-inspection/src/linalg/cholesky.rs",

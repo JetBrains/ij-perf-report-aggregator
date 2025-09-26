@@ -38,7 +38,7 @@ console.assert(projects.length == names.length)
 const getAllProjects = (prefix: string) => projects.map((project) => `${prefix}/${project}`)
 const clionProjects = getAllProjects("clion")
 const radlerProjects = getAllProjects("radler")
-const measure = "workspaceModel.updates.ms"
+const measure = ["cidr.workspace.metrics#duration_in_write_action_ms", "cidr.workspace.metrics#duration_total_ms"]
 
 const projectToNameMap = new Map<string, string>()
 for (const [i, name] of names.entries()) {

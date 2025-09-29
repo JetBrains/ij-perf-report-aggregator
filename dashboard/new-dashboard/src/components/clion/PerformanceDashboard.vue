@@ -84,7 +84,7 @@
     <section>
       <CLionVsRadlerGroupProjectsChart
         label="Workspace Model Update (LLVM)"
-        measure="workspaceModel.updates.ms"
+        measure="cidr.workspace.metrics#duration_total_ms"
         project="llvm/indexing"
       />
     </section>

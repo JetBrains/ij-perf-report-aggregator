@@ -237,11 +237,11 @@ func removeLastPart(s string) string {
 
 func (t *StatsServer) processMetricData(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	type requestParams struct {
-		TestName   string `json:"test_name"`
+		TestName   string `json:"testName"`
 		Branch     string `json:"branch"`
 		Machine    string `json:"machine"`
 		Product    string `json:"product"`
-		MetricName string `json:"metric_name"`
+		MetricName string `json:"metricName"`
 		Mode       string `json:"mode"`
 	}
 
@@ -357,6 +357,16 @@ func mapProductToTable(product string) string {
 	switch product {
 	case "IU":
 		return "idea"
+	case "GO":
+		return "goland"
+	case "RM":
+		return "ruby"
+	case "PS":
+		return "phpstorm"
+	case "PY":
+		return "pycharm"
+	case "WS":
+		return "webstorm"
 	default:
 		return ""
 	}

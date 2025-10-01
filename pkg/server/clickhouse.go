@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"slices"
@@ -235,37 +234,39 @@ func removeLastPart(s string) string {
 	return s[:lastIndex]
 }
 
-func (t *StatsServer) processMetricData(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
-	type requestParams struct {
-		TestName   string `json:"testName"`
-		Branch     string `json:"branch"`
-		Machine    string `json:"machine"`
-		Product    string `json:"product"`
-		MetricName string `json:"metricName"`
-		Mode       string `json:"mode"`
-	}
+func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, request *http.Request) {
+		type requestParams struct {
+			TestName   string `json:"testName"`
+			Branch     string `json:"branch"`
+			Machine    string `json:"machine"`
+			Product    string `json:"product"`
+			MetricName string `json:"metricName"`
+			Mode       string `json:"mode"`
+		}
 
-	var params requestParams
-	decoder := json.NewDecoder(request.Body)
-	if err := decoder.Decode(&params); err != nil {
-		return nil, false, err
-	}
+		var params requestParams
+		decoder := json.NewDecoder(request.Body)
+		defer request.Body.Close()
+		if err := decoder.Decode(&params); err != nil {
+			http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+			return
+		}
 
-	// Set default minimum points if not specified
-	minPoints := 5
+		// Set default minimum points if not specified
+		minPoints := 5
 
-	// Map OS to machine field (assuming OS maps to machine in the database)
+		// Replace all matches with %
+		machine := removeLastPart(params.Machine) + "%"
+		// Map product to table - this is a simplified mapping, adjust as needed
+		table := mapProductToTable(params.Product)
+		if table == "" {
+			http.Error(w, "Unknown product: "+params.Product, http.StatusBadRequest)
+			return
+		}
 
-	// Replace all matches with %
-	machine := removeLastPart(params.Machine) + "%"
-	// Map product to table - this is a simplified mapping, adjust as needed
-	table := mapProductToTable(params.Product)
-	if table == "" {
-		return nil, false, fmt.Errorf("unknown product: %s", params.Product)
-	}
-
-	// Query the database for metric values
-	sql := fmt.Sprintf(`
+		// Query the database for metric values
+		sql := fmt.Sprintf(`
 		SELECT groupArray(metric_value) AS MetricValues
 		FROM (
 			SELECT measures.value as metric_value
@@ -280,76 +281,87 @@ func (t *StatsServer) processMetricData(request *http.Request) (*bytebufferpool.
 		)
 	`, table, params.Branch, params.MetricName, machine, params.TestName, params.Mode)
 
-	db, err := t.openDatabaseConnection()
-	if err != nil {
-		return nil, false, err
-	}
-	defer func(db driver.Conn) {
-		_ = db.Close()
-	}(db)
+		db, err := t.openDatabaseConnection()
+		if err != nil {
+			http.Error(w, "Failed to open database: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer func(db driver.Conn) {
+			_ = db.Close()
+		}(db)
 
-	var queryResult struct {
-		MetricValues []int
-	}
+		var queryResult struct {
+			MetricValues []int
+		}
 
-	err = db.QueryRow(request.Context(), sql).Scan(&queryResult.MetricValues)
-	if err != nil {
-		return nil, false, err
-	}
+		err = db.QueryRow(request.Context(), sql).Scan(&queryResult.MetricValues)
+		if err != nil {
+			http.Error(w, "Database query failed: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-	if len(queryResult.MetricValues) == 0 {
-		return nil, false, errors.New("no data found for the specified parameters")
-	}
+		if len(queryResult.MetricValues) == 0 {
+			http.Error(w, "No data found for the specified parameters", http.StatusNotFound)
+			return
+		}
 
-	// Run Change Point algorithm
-	changePoints := statistic.GetChangePointIndexes(queryResult.MetricValues, 3)
+		// Run Change Point algorithm
+		changePoints := statistic.GetChangePointIndexes(queryResult.MetricValues, 3)
 
-	// Get the last segment that's larger than minPoints
-	var lastSegment []int
-	if len(changePoints) == 0 {
-		lastSegment = queryResult.MetricValues
-	} else {
-		// Find the last segment with sufficient points
-		for i := len(changePoints) - 1; i >= 0; i-- {
-			// Check if this is the last segment and it has enough points
-			if i == len(changePoints)-1 {
-				segment := queryResult.MetricValues[changePoints[i]:]
-				if len(segment) >= minPoints {
-					lastSegment = segment
-					break
+		// Get the last segment that's larger than minPoints
+		var lastSegment []int
+		if len(changePoints) == 0 {
+			lastSegment = queryResult.MetricValues
+		} else {
+			// Find the last segment with sufficient points
+			for i := len(changePoints) - 1; i >= 0; i-- {
+				// Check if this is the last segment and it has enough points
+				if i == len(changePoints)-1 {
+					segment := queryResult.MetricValues[changePoints[i]:]
+					if len(segment) >= minPoints {
+						lastSegment = segment
+						break
+					}
+				}
+			}
+
+			// If no suitable segment found from change points, use the entire last segment
+			if len(lastSegment) == 0 {
+				if len(changePoints) > 0 {
+					lastIndex := changePoints[len(changePoints)-1]
+					lastSegment = queryResult.MetricValues[lastIndex:]
+				} else {
+					lastSegment = queryResult.MetricValues
 				}
 			}
 		}
 
-		// If no suitable segment found from change points, use the entire last segment
-		if len(lastSegment) == 0 {
-			if len(changePoints) > 0 {
-				lastIndex := changePoints[len(changePoints)-1]
-				lastSegment = queryResult.MetricValues[lastIndex:]
-			} else {
-				lastSegment = queryResult.MetricValues
-			}
+		// If the segment is still too small, use all data
+		if len(lastSegment) < minPoints {
+			lastSegment = queryResult.MetricValues
 		}
+
+		// Remove outliers using MAD-based detection (windowSize=5, threshold=3)
+		processedData := outlier_detection.RemoveOutliers(lastSegment, 5, 3.0)
+
+		type processMetricResponse struct {
+			MaxValue int `json:"maxValue"`
+		}
+
+		response := processMetricResponse{
+			MaxValue: slices.Max(processedData),
+		}
+
+		jsonData, err := json.Marshal(response)
+		if err != nil {
+			http.Error(w, "Failed to marshal response: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write(jsonData)
 	}
-
-	// If the segment is still too small, use all data
-	if len(lastSegment) < minPoints {
-		lastSegment = queryResult.MetricValues
-	}
-
-	// Remove outliers using MAD-based detection (windowSize=5, threshold=3)
-	processedData := outlier_detection.RemoveOutliers(lastSegment, 5, 3.0)
-
-	type processMetricResponse struct {
-		MaxValue int `json:"max_value"`
-	}
-
-	response := processMetricResponse{
-		MaxValue: slices.Max(processedData),
-	}
-
-	buffer, err := toJSONBuffer(response)
-	return buffer, true, err
 }
 
 // mapProductToTable maps product names to database table names

@@ -227,6 +227,11 @@ func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*byt
 }
 
 func removeLastPart(s string) string {
+	awsIndex := strings.LastIndex(s, "aws")
+	if awsIndex != -1 {
+		return s[:awsIndex+3]
+	}
+
 	lastIndex := strings.LastIndex(s, "-")
 	if lastIndex == -1 {
 		return s

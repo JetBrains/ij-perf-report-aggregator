@@ -49,7 +49,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	}
 
 	changePoints := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
-	segments := getSegmentsBetweenChangePoints(changePoints, values)
+	segments := GetSegmentsBetweenChangePoints(changePoints, values)
 	if len(segments) < 2 {
 		slog.Debug("no significant change points were detected")
 		return degradations
@@ -105,7 +105,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	return degradations
 }
 
-func getSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
+func GetSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {
 	segments := make([][]int, 0, len(changePoints)+1)
 	prevChangePoint := 0
 	for _, changePoint := range changePoints {

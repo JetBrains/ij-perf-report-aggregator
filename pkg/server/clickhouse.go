@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"slices"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
+	degradation_detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/outlier-detection"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/util"
@@ -258,9 +260,6 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 			return
 		}
 
-		// Set default minimum points if not specified
-		minPoints := 5
-
 		// Replace all matches with %
 		machine := removeLastPart(params.Machine) + "%"
 		// Map product to table - this is a simplified mapping, adjust as needed
@@ -313,41 +312,28 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 		// Run Change Point algorithm
 		changePoints := statistic.GetChangePointIndexes(queryResult.MetricValues, 3)
 
-		// Get the last segment that's larger than minPoints
-		var lastSegment []int
-		if len(changePoints) == 0 {
-			lastSegment = queryResult.MetricValues
+		// Median difference and effect size thresholds (same as degradation detector)
+		medianDifferenceThreshold := 10.0
+		effectSizeThreshold := 2.0
+
+		// Filter change points based on median difference and effect size
+		validChangePoints := filterValidChangePoints(queryResult.MetricValues, changePoints, medianDifferenceThreshold, effectSizeThreshold)
+
+		// Get the segment to analyze for max value
+		// Strategy: use data after the last significant behavior change
+		var segmentForAnalysis []int
+		if len(validChangePoints) == 0 {
+			// No valid change points - use all data
+			segmentForAnalysis = queryResult.MetricValues
 		} else {
-			// Find the last segment with sufficient points
-			for i := len(changePoints) - 1; i >= 0; i-- {
-				// Check if this is the last segment and it has enough points
-				if i == len(changePoints)-1 {
-					segment := queryResult.MetricValues[changePoints[i]:]
-					if len(segment) >= minPoints {
-						lastSegment = segment
-						break
-					}
-				}
-			}
+			// Use data after the last valid change point
+			lastChangePoint := validChangePoints[len(validChangePoints)-1]
+			segmentForAnalysis = queryResult.MetricValues[lastChangePoint:]
 
-			// If no suitable segment found from change points, use the entire last segment
-			if len(lastSegment) == 0 {
-				if len(changePoints) > 0 {
-					lastIndex := changePoints[len(changePoints)-1]
-					lastSegment = queryResult.MetricValues[lastIndex:]
-				} else {
-					lastSegment = queryResult.MetricValues
-				}
-			}
-		}
-
-		// If the segment is still too small, use all data
-		if len(lastSegment) < minPoints {
-			lastSegment = queryResult.MetricValues
 		}
 
 		// Remove outliers using MAD-based detection (windowSize=5, threshold=3)
-		processedData := outlier_detection.RemoveOutliers(lastSegment, 5, 3.0)
+		processedData := outlier_detection.RemoveOutliers(segmentForAnalysis, 5, 3.0)
 
 		type processMetricResponse struct {
 			MaxValue int `json:"maxValue"`
@@ -387,4 +373,50 @@ func mapProductToTable(product string) string {
 	default:
 		return ""
 	}
+}
+
+// filterValidChangePoints filters change points based on median difference and effect size thresholds
+// This logic is similar to the degradation detector's approach
+func filterValidChangePoints(values []int, changePoints []int, medianDifferenceThreshold float64, effectSizeThreshold float64) []int {
+	if len(changePoints) == 0 {
+		return changePoints
+	}
+
+	// Split values into segments
+	segments := degradation_detector.GetSegmentsBetweenChangePoints(changePoints, values)
+	if len(segments) < 2 {
+		return []int{}
+	}
+
+	validChangePoints := make([]int, 0)
+
+	// Iterate through segments and validate change points
+	for i := 1; i < len(segments); i++ {
+		prevSegment := segments[i-1]
+		currentSegment := segments[i]
+
+		// Calculate medians
+		prevMedian := statistic.Median(prevSegment)
+		currentMedian := statistic.Median(currentSegment)
+
+		// Calculate percentage change and absolute change
+		percentageChange := math.Abs((currentMedian - prevMedian) / prevMedian * 100)
+		absoluteChange := math.Abs(currentMedian - prevMedian)
+
+		// Check if change is significant enough
+		if absoluteChange < 10 || percentageChange < medianDifferenceThreshold {
+			continue
+		}
+
+		// Calculate effect size
+		effectSize := statistic.EffectSize(currentSegment, prevSegment)
+		if effectSize < effectSizeThreshold {
+			continue
+		}
+
+		// This is a valid change point
+		validChangePoints = append(validChangePoints, changePoints[i-1])
+	}
+
+	return validChangePoints
 }

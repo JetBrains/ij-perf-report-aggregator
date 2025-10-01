@@ -329,7 +329,6 @@ func (t *StatsServer) CreateProcessMetricDataHandler() http.HandlerFunc {
 			// Use data after the last valid change point
 			lastChangePoint := validChangePoints[len(validChangePoints)-1]
 			segmentForAnalysis = queryResult.MetricValues[lastChangePoint:]
-
 		}
 
 		// Remove outliers using MAD-based detection (windowSize=5, threshold=3)

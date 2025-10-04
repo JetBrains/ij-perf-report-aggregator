@@ -4,18 +4,39 @@
       <section>
         <GroupProjectsChart
           :label="`[Radler] ${label}, Total Time`"
-          :measure="measure"
+          measure="cidr.workspace.metrics#duration_total_ms"
           :projects="radlerProjects"
           :legend-formatter="legendFormatter"
         />
       </section>
     </div>
-
     <div class="flex-1 min-w-0">
       <section>
         <GroupProjectsChart
           :label="`[CLion] ${label}, Total Time`"
-          :measure="measure"
+          measure="cidr.workspace.metrics#duration_total_ms"
+          :projects="clionProjects"
+          :legend-formatter="legendFormatter"
+        />
+      </section>
+    </div>
+  </section>
+  <section class="flex gap-x-6 flex-col md:flex-row">
+    <div class="flex-1 min-w-0">
+      <section>
+        <GroupProjectsChart
+          :label="`[Radler] ${label}, In Write Action Time`"
+          measure="cidr.workspace.metrics#duration_in_write_action_ms"
+          :projects="radlerProjects"
+          :legend-formatter="legendFormatter"
+        />
+      </section>
+    </div>
+    <div class="flex-1 min-w-0">
+      <section>
+        <GroupProjectsChart
+          :label="`[CLion] ${label}, In Write Action Time`"
+          measure="cidr.workspace.metrics#duration_in_write_action_ms"
           :projects="clionProjects"
           :legend-formatter="legendFormatter"
         />
@@ -38,7 +59,6 @@ console.assert(projects.length == names.length)
 const getAllProjects = (prefix: string) => projects.map((project) => `${prefix}/${project}`)
 const clionProjects = getAllProjects("clion")
 const radlerProjects = getAllProjects("radler")
-const measure = ["cidr.workspace.metrics#duration_in_write_action_ms", "cidr.workspace.metrics#duration_total_ms"]
 
 const projectToNameMap = new Map<string, string>()
 for (const [i, name] of names.entries()) {

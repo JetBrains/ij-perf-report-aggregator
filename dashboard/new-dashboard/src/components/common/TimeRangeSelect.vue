@@ -36,6 +36,7 @@
       <DatePicker
         v-if="isShowCalendar"
         v-model="date"
+        update-model-type="date"
         date-format="dd/mm/yy"
         selection-mode="range"
         :inline="true"

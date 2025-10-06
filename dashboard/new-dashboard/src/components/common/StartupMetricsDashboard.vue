@@ -241,6 +241,11 @@ const lowLevelCharts: ChartDefinition[] = [
     projects: ["measureStartup"],
   },
   {
+    labels: ["Class Loading Time"],
+    measures: [["classLoadingTime", "classLoadingSearchTime", "classLoadingDefineTime"]],
+    projects: ["measureStartup"],
+  },
+  {
     labels: ["Class Loading - Loaded Count"],
     measures: ["classLoadingLoadedCount"],
     projects: ["measureStartup"],

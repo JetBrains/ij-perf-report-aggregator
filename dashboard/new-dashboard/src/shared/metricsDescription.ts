@@ -56,6 +56,21 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     "typing#latency",
     "Average time in ms of inserting a letter in the Editor (approximation of how long does it take from keyboard press till the appearance of the letter); measured during typing",
   ],
+  //refactorings
+  ["performInlineRename#mean_value", "Rename mean time. Find usages is not included, only actual rename time is counted"],
+  ["startInlineRename#mean_value", "Mean time to prepare rename template in the current file"],
+  ["prepareForRename#mean_value", "Mean time to perform find usages and other preparations such as conflict detection for write phase of rename"],
+  ["fus_refactoring_usages_searched", "Mean time to perform find usages during refactorings"],
+  ["moveFiles#mean_value", "Mean time to perform move files refactoring: with find usages, conflict detection and actual move"],
+  ["moveFiles_back#mean_value", "Mean time to restore project as it was before move files"],
+  ["moveDeclarations#mean_value", "Mean time to perform move files refactoring: with find usages, conflict detection and actual move"],
+  ["moveDeclarations_back#mean_value", "Mean time to restore project as it was before move declarations"],
+
+  //editor actions
+  ["execute_editor_optimizeimports#mean_value", "Mean time to execute optimize imports action in the editor"],
+  ["execute_editor_paste#mean_value", "Mean time to execute paste action in the editor"],
+  ["convertJavaToKotlin#mean_value", "Mean time to execute J2K action in the editor"],
+
   //GC
   ["freedMemoryByGC", metricInfo("Freed memory by GC (in Mb/s)", "https://github.com/chewiebug/GCViewer#readme")],
   ["fullGCPause", metricInfo("Time that full GC was active (IDE is fully paused)", "https://github.com/chewiebug/GCViewer#readme")],

@@ -2213,7 +2213,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           props: {
             dbName: "perfintDev",
             table: "clion",
-            withInstallers: false,
+            withInstaller: false,
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion tests" },

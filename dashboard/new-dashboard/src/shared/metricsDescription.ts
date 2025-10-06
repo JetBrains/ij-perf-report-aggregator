@@ -67,9 +67,9 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["moveDeclarations_back#mean_value", "Mean time to restore project as it was before move declarations"],
 
   //editor actions
-  ["execute_editor_optimizeimports#mean_value", "Mean time to execute optimize imports action in the editor"],
-  ["execute_editor_paste#mean_value", "Mean time to execute paste action in the editor"],
-  ["convertJavaToKotlin#mean_value", "Mean time to execute J2K action in the editor"],
+  ["execute_editor_optimizeimports", "Time to execute optimize imports action in the editor"],
+  ["execute_editor_paste", "Time to execute paste action in the editor"],
+  ["convertJavaToKotlin", "Time to execute J2K action in the editor"],
 
   //GC
   ["freedMemoryByGC", metricInfo("Freed memory by GC (in Mb/s)", "https://github.com/chewiebug/GCViewer#readme")],

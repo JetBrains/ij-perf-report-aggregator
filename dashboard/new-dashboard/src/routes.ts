@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 
-import { ParentRouteRecord } from "./components/common/route"
+import { ParentRouteRecord, TypedRouteRecord } from "./components/common/route"
 import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 import { eap } from "./configurators/ReleaseNightlyConfigurator"
+import type { PerformanceTestsProps } from "./components/common/PerformanceTests.vue"
 
 const enum ROUTE_PREFIX {
   Startup = "/ij",
@@ -1432,7 +1433,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "IntelliJ Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${DEV_TEST_ROUTE}`,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1443,7 +1444,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "IntelliJ Integration Performance Tests On DevServer" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.IntelliJCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -1519,7 +1520,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "PhpStorm Performance tests with plugins" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.PhpStormTests,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1529,7 +1530,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "PhpStorm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.PhpStormDevTests,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1540,7 +1541,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "PhpStorm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.PhpStormCompareBranches,
           component: () => import("./components/common/compare/CompareBranches.vue"),
@@ -1664,7 +1665,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "GoLand Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.GoLandTestsOld,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1674,7 +1675,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "GoLand Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.GoLandCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -1726,7 +1727,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "PyCharm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.PyCharmDevTests,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1737,7 +1738,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "PyCharm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.PyCharmCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -1795,7 +1796,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "WebStorm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.WebStormTestsOld,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1805,7 +1806,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "WebStorm Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.WebStormDashboardBuiltInVsNEXT,
           component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
@@ -1878,7 +1879,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "RubyMine Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.RubyMineCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -1925,7 +1926,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "Kotlin Performance tests explore" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.KotlinTestsDev,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -1936,7 +1937,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.KotlinDashboard,
           component: () => import("./components/kotlin/PerformanceDashboard.vue"),
@@ -2059,7 +2060,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             releaseConfigurator: eap,
           },
           meta: { pageTitle: "Rust Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.RustCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -2087,7 +2088,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "Scala Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ScalaCompare,
           component: () => import("./components/common/compare/CompareBuilds.vue"),
@@ -2156,7 +2157,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Fleet Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.FleetPerfDashboard,
           component: () => import("./components/fleet/PerformanceDashboard.vue"),
@@ -2190,7 +2191,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Bazel Performance tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.BazelPluginDashboard,
           component: () => import("./components/bazel/BazelPluginDashboard.vue"),
@@ -2206,7 +2207,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Qodana tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ClionTest,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -2217,7 +2218,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ClionTestOld,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -2227,7 +2228,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
           },
           meta: { pageTitle: "CLion tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ClionClassicStartupDashboard,
           component: () => import("./components/common/StartupMetricsDashboard.vue"),
@@ -2363,7 +2364,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "Perf Unit Tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.IJentBenchmarksDashboard,
           component: () => import("./components/ijent/IJentBenchmarskDashboard.vue"),
@@ -2384,7 +2385,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "IJent Raw Performance Data" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.AIAssistantApiTests,
           component: () => import("./components/ml/dev/AiAssistantApiTests.vue"),
@@ -2415,7 +2416,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withInstaller: false,
           },
           meta: { pageTitle: "ML Tests dev-server" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.DataGripProductMetricsDashboard,
           component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
@@ -2458,7 +2459,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: null,
           },
           meta: { pageTitle: "AIA Tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.AIACompletionDashboard,
           component: () => import("./components/aia/AIACompletionDashboard.vue"),
@@ -2495,7 +2496,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Mac Cidr Performance",
           },
           meta: { pageTitle: "KMT Unit Tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.KMTIntegrationTests,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -2507,7 +2508,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "Mac Cidr Performance",
           },
           meta: { pageTitle: "KMT Integration Tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.KMTDashboard,
           component: () => import("./components/kmt/PerformanceDashboard.vue"),
@@ -2525,7 +2526,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withoutAccidents: true,
           },
           meta: { pageTitle: "Diogen" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ToolboxTests,
           component: () => import("./components/common/PerformanceTests.vue"),
@@ -2538,7 +2539,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             withoutAccidents: true,
           },
           meta: { pageTitle: "Toolbox" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
         {
           path: ROUTES.ToolboxTestsGwDeployDashboard,
           component: () => import("./components/toolbox/GwDeployMetricsDashboard.vue"),
@@ -2562,7 +2563,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
             initialMachine: "linux-blade-hetzner",
           },
           meta: { pageTitle: "Kotlin Build Tools Tests" },
-        },
+        } satisfies TypedRouteRecord<PerformanceTestsProps>,
       ],
     },
   ]

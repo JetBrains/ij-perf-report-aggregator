@@ -164,7 +164,7 @@ import { createTestModeConfigurator, defaultModeName } from "../../configurators
 import { dbTypeStore } from "../../shared/dbTypes"
 import { FilterConfigurator } from "../../configurators/filter"
 
-interface PerformanceTestsProps {
+export interface PerformanceTestsProps {
   dbName: string
   table: string
   initialMachine: string | null

@@ -5,6 +5,19 @@ import { KOTLIN_MAIN_METRICS } from "./components/kotlin/projects"
 import { eap } from "./configurators/ReleaseNightlyConfigurator"
 import type { PerformanceTestsProps } from "./components/common/PerformanceTests.vue"
 
+const COMPONENTS = {
+  perfTests: () => import("./components/common/PerformanceTests.vue"),
+  compareBuilds: () => import("./components/common/compare/CompareBuilds.vue"),
+  startupDashboard: () => import("./components/common/StartupMetricsDashboard.vue"),
+  compareBranches: () => import("./components/common/compare/CompareBranches.vue"),
+  compareModes: () => import("./components/common/compare/CompareModes.vue"),
+}
+
+const MACHINES = {
+  HETZNER: "linux-blade-hetzner",
+  AWS_LINUX: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
+}
+
 const enum ROUTE_PREFIX {
   Startup = "/ij",
   IntelliJ = "/intellij",
@@ -1297,1136 +1310,1351 @@ export function getNavigationElement(path: string): Product {
   return PRODUCTS.find((PRODUCTS) => prefix == PRODUCTS.url) ?? PRODUCTS[0]
 }
 
+const startupRoutes = [
+  {
+    path: ROUTES.StartupPulse,
+    component: () => import("./components/startup/IntelliJPulse.vue"),
+    meta: { pageTitle: "Pulse" },
+  },
+  {
+    path: ROUTES.StartupPulseInstaller,
+    component: () => import("./components/startup/IntelliJPulse.vue"),
+    props: {
+      withInstaller: true,
+    },
+    meta: { pageTitle: "Pulse" },
+  },
+  {
+    path: ROUTES.StartupModuleLoading,
+    component: () => import("./components/startup/IntelliJModuleLoading.vue"),
+    meta: { pageTitle: "Module Loading" },
+  },
+  {
+    path: ROUTES.StartupGcAndMemory,
+    component: () => import("./components/startup/GcAndMemory.vue"),
+    meta: { pageTitle: "GC and Memory" },
+  },
+  {
+    path: ROUTES.StartupProgress,
+    component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
+    meta: { pageTitle: "Progress Over Time" },
+  },
+  {
+    path: ROUTES.StartupExplore,
+    component: () => import("./components/startup/IntelliJExplore.vue"),
+    props: {
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Explore" },
+  },
+  {
+    path: ROUTES.StartupExploreInstaller,
+    component: () => import("./components/startup/IntelliJExplore.vue"),
+    props: {
+      withInstaller: true,
+    },
+    meta: { pageTitle: "Explore (Installer)" },
+  },
+]
+
+const intellijRoutes = [
+  {
+    path: ROUTES.IntelliJStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "idea",
+      defaultProject: "idea",
+    },
+    meta: { pageTitle: "IDEA Startup dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJProductMetricsDashboard,
+    component: () => import("./components/intelliJ/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "IDEA product metrics" },
+  },
+  {
+    path: ROUTES.IntelliJIndexingDashboard,
+    component: () => import("./components/intelliJ/IndexingDashboard.vue"),
+    meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJJavaDashboard,
+    component: () => import("./components/intelliJ/JavaDashboard.vue"),
+    meta: { pageTitle: "IntelliJ Java Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJKotlinDashboard,
+    component: () => import("./components/intelliJ/KotlinDashboard.vue"),
+    meta: { pageTitle: "IntelliJ Kotlin Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJUIDashboard,
+    component: () => import("./components/intelliJ/UIDashboard.vue"),
+    meta: { pageTitle: "IntelliJ UI Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJLaggingLatencyDashboard,
+    component: () => import("./components/intelliJ/PerformanceLaggingLatencyDashboard.vue"),
+    meta: { pageTitle: "IntelliJ Lagging/Latency Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJK2Dashboard,
+    component: () => import("./components/intelliJ/PerformanceK2Dashboard.vue"),
+    meta: { pageTitle: "IntelliJ Performance K2 dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJGradleDashboardDev,
+    component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardDevServer.vue"),
+    meta: { pageTitle: "Gradle Import DevServer" },
+  },
+  {
+    path: ROUTES.IntelliJMavenDashboardDev,
+    component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardDevServer.vue"),
+    meta: { pageTitle: "Maven Import dashboard DevServer" },
+  },
+  {
+    path: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
+    component: () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
+    meta: { pageTitle: "Maven Importers And Configurators dashboard DevServer" },
+  },
+  {
+    path: ROUTES.IntelliJJpsDashboardDev,
+    component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"),
+    meta: { pageTitle: "JPS Import dashboard DevServer" },
+  },
+  {
+    path: ROUTES.IntelliJPackageCheckerDashboard,
+    component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
+    meta: { pageTitle: "Package Checker" },
+  },
+  {
+    path: ROUTES.IntelliJSharedIndicesDashboard,
+    component: () => import("./components/intelliJ/SharedIndexesDashboard.vue"),
+    meta: { pageTitle: "Shared Indexes Performance Dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJEmbeddingSearchDashboard,
+    component: () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"),
+    meta: { pageTitle: "IntelliJ performance tests for embedding search" },
+  },
+  {
+    path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "idea",
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "IntelliJ Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${DEV_TEST_ROUTE}`,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "idea",
+      initialMachine: MACHINES.AWS_LINUX,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "IntelliJ Integration Performance Tests On DevServer" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.IntelliJCompare,
+    component: () => COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "idea",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.IntelliJCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "idea",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.IntelliJCompareModes,
+    component: COMPONENTS.compareModes,
+    props: {
+      dbName: "perfintDev",
+      table: "idea",
+    },
+    meta: { pageTitle: COMPARE_MODES_LABEL },
+  },
+]
+
+const phpstormRoutes = [
+  {
+    path: ROUTES.PhpStormStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "phpstorm",
+      defaultProject: "stitcher_with_composer",
+    },
+    meta: { pageTitle: "PhpStorm Startup dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormProductMetricsDashboard,
+    component: () => import("./components/phpstorm/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "PhpStorm product metrics" },
+  },
+  {
+    path: ROUTES.PhpStormLLMDashboard,
+    component: () => import("./components/phpstorm/MLDashboard.vue"),
+    meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormIndexingDashboard,
+    component: () => import("./components/phpstorm/IndexingDashboard.vue"),
+    meta: { pageTitle: "PhpStorm Indexing Dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormInspectionsDashboard,
+    component: () => import("./components/phpstorm/InspectionsDashboard.vue"),
+    meta: { pageTitle: "PhpStorm Inspections Dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormCodeEditingDashboard,
+    component: () => import("./components/phpstorm/CodeEditingDashboard.vue"),
+    meta: { pageTitle: "PhpStorm Code Editing Dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormWithPluginsDashboard,
+    component: () => import("./components/phpstorm/PerformanceDashboardWithPlugins.vue"),
+    meta: { pageTitle: "PhpStorm With Plugins Performance dashboard" },
+  },
+  {
+    path: ROUTES.PhpStormWithPluginsTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "phpstormWithPlugins",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "PhpStorm Performance tests with plugins" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.PhpStormTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "phpstorm",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "PhpStorm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.PhpStormDevTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "phpstorm",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "PhpStorm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.PhpStormCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "phpstorm",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.PhpStormCompareModes,
+    component: COMPONENTS.compareModes,
+    props: {
+      dbName: "perfintDev",
+      table: "phpstorm",
+    },
+    meta: { pageTitle: COMPARE_MODES_LABEL },
+  },
+]
+
+const golandRoutes = [
+  {
+    path: ROUTES.GoLandInspectionDashboard,
+    component: () => import("./components/goland/InspectionsDashboard.vue"),
+    meta: { pageTitle: "GoLand Inspections dashboard" },
+  },
+  {
+    path: ROUTES.GoLandInspectionDashboardOld,
+    component: () => import("./components/goland/InspectionsDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Inspections dashboard" },
+  },
+  {
+    path: ROUTES.GoLandStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "goland",
+      defaultProject: "mattermost",
+      customCharts: [{ label: "Updating Go modules dependencies", measure: "Progress: Updating Go modules dependencies" }],
+    },
+    meta: { pageTitle: "GoLand Startup dashboard" },
+  },
+  {
+    path: ROUTES.GoLandProductMetricsDashboard,
+    component: () => import("./components/goland/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "GoLand product metrics" },
+  },
+  {
+    path: ROUTES.GoLandProductMetricsDashboardOld,
+    component: () => import("./components/goland/ProductMetricsDashboardOld.vue"),
+    meta: { pageTitle: "GoLand product metrics" },
+  },
+  {
+    path: ROUTES.GoLandIndexingDashboard,
+    component: () => import("./components/goland/IndexingDashboard.vue"),
+    meta: { pageTitle: "GoLand Indexing dashboard" },
+  },
+  {
+    path: ROUTES.GoLandIndexingDashboardOld,
+    component: () => import("./components/goland/IndexingDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Indexing dashboard" },
+  },
+  {
+    path: ROUTES.GoLandScanningDashboard,
+    component: () => import("./components/goland/ScanningDashboard.vue"),
+    meta: { pageTitle: "GoLand Scanning dashboard" },
+  },
+  {
+    path: ROUTES.GoLandScanningDashboardOld,
+    component: () => import("./components/goland/ScanningDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Scanning dashboard" },
+  },
+  {
+    path: ROUTES.GoLandCompletionDashboard,
+    component: () => import("./components/goland/CompletionDashboard.vue"),
+    meta: { pageTitle: "GoLand Completion dashboard" },
+  },
+  {
+    path: ROUTES.GoLandCompletionDashboardOld,
+    component: () => import("./components/goland/CompletionDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Completion dashboard" },
+  },
+  {
+    path: ROUTES.GoLandDebuggerDashboard,
+    component: () => import("./components/goland/DebuggerDashboard.vue"),
+    meta: { pageTitle: "GoLand Debugger dashboard" },
+  },
+  {
+    path: ROUTES.GoLandDebuggerDashboardOld,
+    component: () => import("./components/goland/DebuggerDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Debugger dashboard" },
+  },
+  {
+    path: ROUTES.GoLandFindUsagesDashboard,
+    component: () => import("./components/goland/FindUsagesDashboard.vue"),
+    meta: { pageTitle: "GoLand Find Usages dashboard" },
+  },
+  {
+    path: ROUTES.GoLandFindUsagesDashboardOld,
+    component: () => import("./components/goland/FindUsagesDashboardOld.vue"),
+    meta: { pageTitle: "GoLand Find Usages dashboard" },
+  },
+  {
+    path: ROUTES.GoLandDFADashboard,
+    component: () => import("./components/goland/DataFlowAnalysisDashboard.vue"),
+    meta: { pageTitle: "GoLand DFA dashboard" },
+  },
+  {
+    path: ROUTES.GoLandDFADashboardOld,
+    component: () => import("./components/goland/DataFlowAnalysisDashboardOld.vue"),
+    meta: { pageTitle: "GoLand DFA dashboard" },
+  },
+  {
+    path: ROUTES.GoLandDistributiveSizeDashboard,
+    component: () => import("./components/goland/DistributionSizeDashboard.vue"),
+    meta: { pageTitle: "GoLand Distribuvite Size dashboard" },
+  },
+  {
+    path: ROUTES.GoLandTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "goland",
+      withInstaller: false,
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "GoLand Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.GoLandTestsOld,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "goland",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "GoLand Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.GoLandCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfintDev",
+      table: "goland",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.GoLandCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "goland",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const pycharmRoutes = [
+  {
+    path: ROUTES.PyCharmStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "pycharm",
+      defaultProject: "tensorflow",
+    },
+    meta: { pageTitle: "PyCharm Startup dashboard" },
+  },
+  {
+    path: ROUTES.PyCharmProductMetricsDashboard,
+    component: () => import("./components/pycharm/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "PyCharm product metrics" },
+  },
+  {
+    path: ROUTES.PyCharmDashboard,
+    component: () => import("./components/pycharm/PerformanceDashboard.vue"),
+    meta: { pageTitle: "PyCharm Performance dashboard" },
+  },
+  {
+    path: ROUTES.PyCharmOldDashboard,
+    component: () => import("./components/pycharm/PerformanceDashboardOld.vue"),
+    meta: { pageTitle: "PyCharm Performance dashboard" },
+  },
+  {
+    path: ROUTES.PyCharmTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "pycharm",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "PyCharm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.PyCharmDevTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "pycharm",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "PyCharm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.PyCharmCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "pycharm",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.PyCharmCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "pycharm",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const webstormRoutes = [
+  {
+    path: ROUTES.WebStormStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "webstorm",
+      defaultProject: "angular",
+    },
+    meta: { pageTitle: "WebStorm Startup dashboard" },
+  },
+  {
+    path: ROUTES.WebStormProductMetricsDashboard,
+    component: () => import("./components/webstorm/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "WebStorm product metrics" },
+  },
+  {
+    path: ROUTES.WebStormProductMetricsDashboardOld,
+    component: () => import("./components/webstorm/ProductMetricsDashboardOld.vue"),
+    meta: { pageTitle: "WebStorm product metrics (Old)" },
+  },
+  {
+    path: ROUTES.WebStormDashboard,
+    component: () => import("./components/webstorm/PerformanceDashboard.vue"),
+    meta: { pageTitle: "WebStorm Performance dashboard" },
+  },
+  {
+    path: ROUTES.WebStormDashboardOld,
+    component: () => import("./components/webstorm/PerformanceDashboardOld.vue"),
+    meta: { pageTitle: "WebStorm Performance dashboard (Old)" },
+  },
+  {
+    path: ROUTES.WebStormTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      withInstaller: false,
+      table: "webstorm",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "WebStorm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.WebStormTestsOld,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "webstorm",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "WebStorm Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.WebStormDashboardBuiltInVsNEXT,
+    component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
+    meta: { pageTitle: "Built-in vs NEXT" },
+  },
+  {
+    path: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
+    component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXTOld.vue"),
+    meta: { pageTitle: "Built-in vs NEXT (Old)" },
+  },
+  {
+    path: ROUTES.WebStormDashboardDelicateProjects,
+    component: () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"),
+    meta: { pageTitle: "Delicate Projects" },
+  },
+  {
+    path: ROUTES.WebStormCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfintDev",
+      table: "webstorm",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.WebStormCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "webstorm",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const rubymineRoutes = [
+  {
+    path: ROUTES.RubyStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "ruby",
+      defaultProject: "diaspora",
+    },
+    meta: { pageTitle: "Ruby Startup dashboard" },
+  },
+  {
+    path: ROUTES.RubyMineProductMetricsDashboard,
+    component: () => import("./components/rubymine/ProductMetricsDevDashboard.vue"),
+    meta: { pageTitle: "RubyMine product metrics" },
+  },
+  {
+    path: ROUTES.RubyMineDashboard,
+    component: () => import("./components/rubymine/PerformanceDevDashboard.vue"),
+    meta: { pageTitle: "RubyMine Performance Dashboard" },
+  },
+  {
+    path: ROUTES.RubyMineInspectionsDashBoard,
+    component: () => import("./components/rubymine/InspectionsDevDashboard.vue"),
+    meta: { pageTitle: "RubyMine Inspections Dashboard" },
+  },
+  {
+    path: ROUTES.RubyMineIndexingDashBoard,
+    component: () => import("./components/rubymine/IndexingDevDashboard.vue"),
+    meta: { pageTitle: "RubyMine Indexing Dashboard" },
+  },
+  {
+    path: ROUTES.RubyMineTestsDev,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "ruby",
+      initialMachine: MACHINES.AWS_LINUX,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "RubyMine Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.RubyMineCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "ruby",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.RubyMineCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "ruby",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.RubyMineCompareModes,
+    component: COMPONENTS.compareModes,
+    props: {
+      dbName: "perfintDev",
+      table: "ruby",
+    },
+    meta: { pageTitle: COMPARE_MODES_LABEL },
+  },
+]
+
+const rustRoutes = [
+  {
+    path: ROUTES.RustCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfint",
+      table: "ruby",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.RustRoverProductMetricsDashboard,
+    component: () => import("./components/rust/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "RustRover product metrics" },
+  },
+  {
+    path: ROUTES.RustRoverDashboard,
+    component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
+    props: {
+      releaseConfigurator: eap,
+    },
+    meta: { pageTitle: "RustRover Performance dashboard" },
+  },
+  {
+    path: ROUTES.RustRoverFirstStartupDashboard,
+    component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartup.vue"),
+    meta: { pageTitle: "RustRover First Startup Performance dashboard" },
+  },
+  {
+    path: ROUTES.RustTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "rust",
+      initialMachine: MACHINES.AWS_LINUX,
+      releaseConfigurator: eap,
+    },
+    meta: { pageTitle: "Rust Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.RustCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "rust",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.RustCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfint",
+      table: "rust",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const kotlinRoutes = [
+  {
+    path: ROUTES.KotlinTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "kotlin",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "Kotlin Performance tests explore" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.KotlinTestsDev,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "kotlin",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.KotlinDashboard,
+    component: () => import("./components/kotlin/PerformanceDashboard.vue"),
+    meta: { pageTitle: "Kotlin Performance dashboard" },
+  },
+  {
+    path: ROUTES.KotlinDashboardDev,
+    component: () => import("./components/kotlin/dev/PerformanceDashboard.vue"),
+    meta: { pageTitle: "Kotlin Performance dashboard (dev)" },
+  },
+  {
+    path: ROUTES.KotlinUserScenariosDashboardDev,
+    component: () => import("./components/kotlin/dev/UserScenariosDashboard.vue"),
+    meta: { pageTitle: "User scenarios dashboard (dev)" },
+  },
+  {
+    path: ROUTES.KotlinCodeAnalysisDev,
+    component: () => import("./components/kotlin/dev/KotlinCodeAnalysisChartsDashboard.vue"),
+    meta: { pageTitle: "Code analysis (dev)" },
+  },
+  {
+    path: ROUTES.KotlinCompletionDev,
+    component: () => import("./components/kotlin/dev/CompletionDashboard.vue"),
+    meta: { pageTitle: "Kotlin completion (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinFindUsagesDev,
+    component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
+    meta: { pageTitle: "Kotlin findUsages (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinRefactoringDev,
+    component: () => import("./components/kotlin/dev/RefactoringDashboard.vue"),
+    meta: { pageTitle: "Kotlin refactoring (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinDebuggerDev,
+    component: () => import("./components/kotlin/dev/DebuggerDashboard.vue"),
+    meta: { pageTitle: "Kotlin debugger (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinScriptDev,
+    component: () => import("./components/kotlin/dev/ScriptDashboard.vue"),
+    meta: { pageTitle: "Kts (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinK1VsK2Comparison,
+    component: () => import("./components/kotlin/K1VsK2ComparisonDashboard.vue"),
+    meta: { pageTitle: "Kotlin K1 vs. K2" },
+  },
+  {
+    path: ROUTES.KotlinK1VsK2ComparisonDev,
+    component: () => import("./components/kotlin/dev/K1VsK2ComparisonDevDashboard.vue"),
+    meta: { pageTitle: "Kotlin K1 vs. K2 (dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "kotlin",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.KotlinCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfint",
+      table: "kotlin",
+      metricsNames: KOTLIN_MAIN_METRICS,
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.KotlinCompareBranchesDev,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "kotlin",
+      metricsNames: KOTLIN_MAIN_METRICS,
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL + "(dev/fast)" },
+  },
+  {
+    path: ROUTES.KotlinMemoryDashboard,
+    component: () => import("./components/kotlin/MemoryPerformanceDashboard.vue"),
+    meta: { pageTitle: "Memory" },
+  },
+  {
+    path: ROUTES.KotlinMemoryDashboardDev,
+    component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
+    meta: { pageTitle: "Memory (dev)" },
+  },
+]
+
+const scalaRoutes = [
+  {
+    path: ROUTES.ScalaTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "scala",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "Scala Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.ScalaCompare,
+    component: COMPONENTS.compareBuilds,
+    props: {
+      dbName: "perfint",
+      table: "scala",
+    },
+    meta: { pageTitle: COMPARE_BUILDS_LABEL },
+  },
+  {
+    path: ROUTES.ScalaCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfint",
+      table: "scala",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const jbrRoutes = [
+  {
+    path: ROUTES.JBRTests,
+    component: () => import("./components/jbr/PerformanceTests.vue"),
+    meta: { pageTitle: "JBR Performance tests" },
+  },
+  {
+    path: ROUTES.MapBenchDashboard,
+    component: () => import("./components/jbr/MapBenchDashboard.vue"),
+    meta: { pageTitle: "MapBench Dashboard" },
+  },
+  {
+    path: ROUTES.DaCapoDashboard,
+    component: () => import("./components/jbr/DaCapoDashboard.vue"),
+    meta: { pageTitle: "DaCapo Dashboard" },
+  },
+  {
+    path: ROUTES.J2DBenchDashboard,
+    component: () => import("./components/jbr/J2DBenchDashboard.vue"),
+    meta: { pageTitle: "J2DBench Dashboard" },
+  },
+  {
+    path: ROUTES.JavaDrawDashboard,
+    component: () => import("./components/jbr/JavaDrawDashboard.vue"),
+    meta: { pageTitle: "JavaDraw Dashboard" },
+  },
+  {
+    path: ROUTES.RenderDashboard,
+    component: () => import("./components/jbr/RenderDashboard.vue"),
+    meta: { pageTitle: "Render Dashboard" },
+  },
+  {
+    path: ROUTES.SPECjbb2015Dashboard,
+    component: () => import("./components/jbr/SPECjbb2015Dashboard.vue"),
+    meta: { pageTitle: "Spec Dashboard" },
+  },
+  {
+    path: ROUTES.SwingMarkDashboard,
+    component: () => import("./components/jbr/SwingMarkDashboard.vue"),
+    meta: { pageTitle: "SwingMark Dashboard" },
+  },
+]
+
+const fleetRoutes = [
+  {
+    path: ROUTES.FleetTest,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "fleet",
+      table: "measure_new",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Fleet Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.FleetPerfDashboard,
+    component: () => import("./components/fleet/PerformanceDashboard.vue"),
+    meta: { pageTitle: "Fleet Performance dashboard" },
+  },
+  {
+    path: ROUTES.FleetPerfStartupComparisonDashboard,
+    component: () => import("./components/fleet/StartupComparisonDashboard.vue"),
+    meta: { pageTitle: "Fleet Startup Comparison dashboard" },
+  },
+  {
+    path: ROUTES.FleetStartupDashboard,
+    component: () => import("./components/fleet/FleetDashboard.vue"),
+    meta: { pageTitle: "Fleet Startup dashboard" },
+  },
+  {
+    path: ROUTES.FleetStartupExplore,
+    component: () => import("./components/fleet/FleetExplore.vue"),
+    meta: { pageTitle: "Fleet Startup Explore" },
+    props: {
+      withInstaller: true,
+    },
+  },
+]
+
+const bazelRoutes = [
+  {
+    path: ROUTES.BazelTest,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "bazel",
+      table: "report",
+      initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)",
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Bazel Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.BazelPluginDashboard,
+    component: () => import("./components/bazel/BazelPluginDashboard.vue"),
+    meta: { pageTitle: "Bazel Plugin Dashboard" },
+  },
+]
+
+const qodanaRoutes = [
+  {
+    path: ROUTES.QodanaTest,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "qodana",
+      table: "report",
+      initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Qodana tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const clionRoutes = [
+  {
+    path: ROUTES.ClionTest,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "clion",
+      withInstaller: false,
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.ClionTestOld,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfint",
+      table: "clion",
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.ClionClassicStartupDashboard,
+    component: COMPONENTS.startupDashboard,
+    props: {
+      table: "clion",
+      defaultProject: "clion/clion/cmake",
+    },
+    meta: { pageTitle: "CLion Startup dashboard" },
+  },
+  {
+    path: ROUTES.ClionProductMetricsDashboard,
+    component: () => import("./components/clion/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "CLion product metrics" },
+  },
+  {
+    path: ROUTES.ClionProductMetricsDashboardOld,
+    component: () => import("./components/clion/ProductMetricsDashboardOld.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion product metrics" },
+  },
+  {
+    path: ROUTES.ClionPerfDashboard,
+    component: () => import("./components/clion/PerformanceDashboard.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion dashboard" },
+  },
+  {
+    path: ROUTES.ClionPerfDashboardOld,
+    component: () => import("./components/clion/PerformanceDashboardOld.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion dashboard" },
+  },
+  {
+    path: ROUTES.ClionDetailedPerfDashboard,
+    component: () => import("./components/clion/DetailedPerformanceDashboard.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Detailed Performance dashboard" },
+  },
+  {
+    path: ROUTES.ClionDetailedPerfDashboardOld,
+    component: () => import("./components/clion/DetailedPerformanceDashboardOld.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Detailed Performance dashboard" },
+  },
+  {
+    path: ROUTES.ClionMemoryDashboard,
+    component: () => import("./components/clion/MemoryDashboard.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Memory dashboard" },
+  },
+  {
+    path: ROUTES.ClionMemoryDashboardOld,
+    component: () => import("./components/clion/MemoryDashboardOld.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Memory dashboard" },
+  },
+  {
+    path: ROUTES.ClionProjectModelDashboard,
+    component: () => import("./components/clion/ProjectModelDashboard.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Project Model dashboard" },
+  },
+  {
+    path: ROUTES.ClionProjectModelDashboardOld,
+    component: () => import("./components/clion/ProjectModelDashboardOld.vue"),
+    props: {
+      initialMachine: MACHINES.AWS_LINUX,
+    },
+    meta: { pageTitle: "CLion Project Model dashboard" },
+  },
+  {
+    path: ROUTES.ClionCompareBranches,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
+      table: "clion",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+]
+
+const vcsRoutes = [
+  {
+    path: ROUTES.VcsIdeaDashboardDev,
+    component: () => import("./components/vcs/PerformanceDashboardDev.vue"),
+    meta: { pageTitle: "Vcs Idea performance dashboard DevServer" },
+  },
+  {
+    path: ROUTES.VcsSpaceDashboardDev,
+    component: () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"),
+    meta: { pageTitle: "Vcs Space performance dashboard DevServer" },
+  },
+  {
+    path: ROUTES.VcsStarterDashboardDev,
+    component: () => import("./components/vcs/PerformanceStarterDashboardDev.vue"),
+    meta: { pageTitle: "Vcs Starer performance dashboard DevServer" },
+  },
+  {
+    path: ROUTES.VcsIdeaDashboard,
+    component: () => import("./components/vcs/PerformanceDashboard.vue"),
+    meta: { pageTitle: "Vcs Idea performance dashboard (obsolete)" },
+  },
+  {
+    path: ROUTES.VcsSpaceDashboard,
+    component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
+    meta: { pageTitle: "Vcs Space performance dashboard (obsolete)" },
+  },
+  {
+    path: ROUTES.VcsStarterDashboard,
+    component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
+    meta: { pageTitle: "Vcs Starer performance dashboard (obsolete)" },
+  },
+]
+
+const datagripRoutes = [
+  {
+    path: ROUTES.DataGripProductMetricsDashboard,
+    component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "DataGrip product metrics" },
+  },
+  {
+    path: ROUTES.DataGripIndexingDashboard,
+    component: () => import("./components/datagrip/IndexingDashboard.vue"),
+    meta: { pageTitle: "DataGrip Indexing dashboard" },
+  },
+]
+
+const toolboxRoutes = [
+  {
+    path: ROUTES.ToolboxTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "toolbox",
+      table: "report",
+      withInstaller: false,
+      branch: "refs/heads/main",
+      initialMachine: "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)",
+      withoutAccidents: true,
+    },
+    meta: { pageTitle: "Toolbox" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.ToolboxTestsGwDeployDashboard,
+    component: () => import("./components/toolbox/GwDeployMetricsDashboard.vue"),
+    props: {
+      dbName: "toolbox",
+      table: "report",
+      withInstaller: false,
+      branch: "refs/heads/master",
+      withoutAccidents: true,
+    },
+    meta: { pageTitle: "GW Dashboard" },
+  },
+]
+
+const ijentRoutes = [
+  {
+    path: ROUTES.IJentBenchmarksDashboard,
+    component: () => import("./components/ijent/IJentBenchmarskDashboard.vue"),
+    meta: { pageTitle: "IJent Benchmarks Dashboard" },
+  },
+  {
+    path: ROUTES.IJentPerfTestsDashboard,
+    component: () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"),
+    meta: { pageTitle: "IJent Performance Tests Dashboard" },
+  },
+  {
+    path: ROUTES.IJentRawPerfData,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "ijent",
+      initialMachine: "Linux Munich i7-13700, 64 Gb",
+      withInstaller: false,
+    },
+    meta: { pageTitle: "IJent Raw Performance Data" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const mlRoutes = [
+  {
+    path: ROUTES.AIAssistantApiTests,
+    component: () => import("./components/ml/dev/AiAssistantApiTests.vue"),
+    meta: { pageTitle: "AI API Tests" },
+  },
+  {
+    path: ROUTES.AIAssistantTestGeneration,
+    component: () => import("./components/ml/dev/TestGenerationDashboard.vue"),
+    meta: { pageTitle: "Test generation" },
+  },
+  {
+    path: ROUTES.LLMDevTests,
+    component: () => import("./components/ml/dev/LLMDashboard.vue"),
+    meta: { pageTitle: "AIA dashboard" },
+  },
+  {
+    path: ROUTES.AIAPrivacyDashboard,
+    component: () => import("./components/ml/dev/AIAPrivacyDashboard.vue"),
+    meta: { pageTitle: "AIA Privacy" },
+  },
+  {
+    path: ROUTES.MLDevTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "ml",
+      initialMachine: MACHINES.AWS_LINUX,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "ML Tests dev-server" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const aiaRoutes = [
+  {
+    path: ROUTES.AIATests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "mlEvaluation",
+      table: "report",
+      withInstaller: false,
+      branch: null,
+      initialMachine: null,
+    },
+    meta: { pageTitle: "AIA Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.AIACompletionDashboard,
+    component: () => import("./components/aia/AIACompletionDashboard.vue"),
+    meta: { pageTitle: "AIA completion dashboard" },
+  },
+  {
+    path: ROUTES.AIACodeGenerationDashboard,
+    component: () => import("./components/aia/AIACodeGeneration.vue"),
+    meta: { pageTitle: "AIA code generation dashboard" },
+  },
+  {
+    path: ROUTES.AIAChatCodeGenerationDashboard,
+    component: () => import("./components/aia/ChatCodeGeneration.vue"),
+    meta: { pageTitle: "AIA chat code generation dashboard" },
+  },
+  {
+    path: ROUTES.AIANameSuggestionDashboard,
+    component: () => import("./components/aia/AIANameSuggestion.vue"),
+    meta: { pageTitle: "AIA name suggestion dashboard" },
+  },
+  {
+    path: ROUTES.AIATestGenerationDashboard,
+    component: () => import("./components/aia/AIATestGeneration.vue"),
+    meta: { pageTitle: "AIA test generation dashboard" },
+  },
+]
+
+const kmtRoutes = [
+  {
+    path: ROUTES.KMTTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "swift",
+      withInstaller: false,
+      branch: null,
+      initialMachine: "Mac Cidr Performance",
+    },
+    meta: { pageTitle: "KMT Unit Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.KMTIntegrationTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "kmt",
+      withInstaller: false,
+      branch: "master",
+      initialMachine: "Mac Cidr Performance",
+    },
+    meta: { pageTitle: "KMT Integration Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.KMTDashboard,
+    component: () => import("./components/kmt/PerformanceDashboard.vue"),
+    meta: { pageTitle: "KMT Dashboard" },
+  },
+]
+
+const diogenRoutes = [
+  {
+    path: ROUTES.DiogenTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "diogen",
+      table: "report",
+      withInstaller: false,
+      branch: "refs/heads/main",
+      initialMachine: null,
+      withoutAccidents: true,
+    },
+    meta: { pageTitle: "Diogen" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const perfUnitTestsRoutes = [
+  {
+    path: ROUTES.PerfUnitTests,
+    component: () => import("./components/common/PerformanceUnitTests.vue"),
+    props: {
+      dbName: "perfUnitTests",
+      table: "report",
+      initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Perf Unit Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const kotlinBuildToolsRoutes = [
+  {
+    path: ROUTES.KotlinBuildToolsTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "kotlinBuildTools",
+      withInstaller: false,
+      branch: "master",
+      initialMachine: MACHINES.HETZNER,
+    },
+    meta: { pageTitle: "Kotlin Build Tools Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
 export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
       children: [
-        {
-          path: ROUTES.StartupPulse,
-          component: () => import("./components/startup/IntelliJPulse.vue"),
-          meta: { pageTitle: "Pulse" },
-        },
-        {
-          path: ROUTES.StartupPulseInstaller,
-          component: () => import("./components/startup/IntelliJPulse.vue"),
-          props: {
-            withInstaller: true,
-          },
-          meta: { pageTitle: "Pulse" },
-        },
-        {
-          path: ROUTES.StartupModuleLoading,
-          component: () => import("./components/startup/IntelliJModuleLoading.vue"),
-          meta: { pageTitle: "Module Loading" },
-        },
-        {
-          path: ROUTES.StartupGcAndMemory,
-          component: () => import("./components/startup/GcAndMemory.vue"),
-          meta: { pageTitle: "GC and Memory" },
-        },
-        {
-          path: ROUTES.StartupProgress,
-          component: () => import("./components/startup/IntelliJProgressOverTime.vue"),
-          meta: { pageTitle: "Progress Over Time" },
-        },
-        {
-          path: ROUTES.StartupExplore,
-          component: () => import("./components/startup/IntelliJExplore.vue"),
-          props: {
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Explore" },
-        },
-        {
-          path: ROUTES.StartupExploreInstaller,
-          component: () => import("./components/startup/IntelliJExplore.vue"),
-          props: {
-            withInstaller: true,
-          },
-          meta: { pageTitle: "Explore (Installer)" },
-        },
-        {
-          path: ROUTES.IntelliJStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "idea",
-            defaultProject: "idea",
-          },
-          meta: { pageTitle: "IDEA Startup dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJProductMetricsDashboard,
-          component: () => import("./components/intelliJ/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "IDEA product metrics" },
-        },
-        {
-          path: ROUTES.IntelliJIndexingDashboard,
-          component: () => import("./components/intelliJ/IndexingDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Indexing Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJJavaDashboard,
-          component: () => import("./components/intelliJ/JavaDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Java Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJKotlinDashboard,
-          component: () => import("./components/intelliJ/KotlinDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Kotlin Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJUIDashboard,
-          component: () => import("./components/intelliJ/UIDashboard.vue"),
-          meta: { pageTitle: "IntelliJ UI Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJLaggingLatencyDashboard,
-          component: () => import("./components/intelliJ/PerformanceLaggingLatencyDashboard.vue"),
-          meta: { pageTitle: "IntelliJ Lagging/Latency Performance dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJK2Dashboard,
-          component: () => import("./components/intelliJ/PerformanceK2Dashboard.vue"),
-          meta: { pageTitle: "IntelliJ Performance K2 dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJGradleDashboardDev,
-          component: () => import("./components/intelliJ/build-tools/gradle/GradleImportPerformanceDashboardDevServer.vue"),
-          meta: { pageTitle: "Gradle Import DevServer" },
-        },
-        {
-          path: ROUTES.IntelliJMavenDashboardDev,
-          component: () => import("./components/intelliJ/build-tools/maven/MavenImportPerformanceDashboardDevServer.vue"),
-          meta: { pageTitle: "Maven Import dashboard DevServer" },
-        },
-        {
-          path: ROUTES.IntelliJMavenImportersConfiguratorsDashboardDev,
-          component: () => import("./components/intelliJ/build-tools/maven/MavenImportersAndConfiguratorsPerformanceDashboardDevServer.vue"),
-          meta: { pageTitle: "Maven Importers And Configurators dashboard DevServer" },
-        },
-        {
-          path: ROUTES.IntelliJJpsDashboardDev,
-          component: () => import("./components/intelliJ/build-tools/jps/JpsImportPerformanceDashboardDevServer.vue"),
-          meta: { pageTitle: "JPS Import dashboard DevServer" },
-        },
-        {
-          path: ROUTES.IntelliJPackageCheckerDashboard,
-          component: () => import("./components/intelliJ/PackageCheckerDashboard.vue"),
-          meta: { pageTitle: "Package Checker" },
-        },
-        {
-          path: ROUTES.IntelliJSharedIndicesDashboard,
-          component: () => import("./components/intelliJ/SharedIndexesDashboard.vue"),
-          meta: { pageTitle: "Shared Indexes Performance Dashboard" },
-        },
-        {
-          path: ROUTES.IntelliJEmbeddingSearchDashboard,
-          component: () => import("./components/intelliJ/embeddingSearch/Dashboard.vue"),
-          meta: { pageTitle: "IntelliJ performance tests for embedding search" },
-        },
-        {
-          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${TEST_ROUTE}`,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "idea",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "IntelliJ Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: `${ROUTE_PREFIX.IntelliJ}/:subproject?/${DEV_TEST_ROUTE}`,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "idea",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "IntelliJ Integration Performance Tests On DevServer" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.IntelliJCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "idea",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.IntelliJCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "idea",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.IntelliJCompareModes,
-          component: () => import("./components/common/compare/CompareModes.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "idea",
-          },
-          meta: { pageTitle: COMPARE_MODES_LABEL },
-        },
-        {
-          path: ROUTES.PhpStormStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "phpstorm",
-            defaultProject: "stitcher_with_composer",
-          },
-          meta: { pageTitle: "PhpStorm Startup dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormProductMetricsDashboard,
-          component: () => import("./components/phpstorm/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "PhpStorm product metrics" },
-        },
-        {
-          path: ROUTES.PhpStormLLMDashboard,
-          component: () => import("./components/phpstorm/MLDashboard.vue"),
-          meta: { pageTitle: "PhpStorm LLM Performance dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormIndexingDashboard,
-          component: () => import("./components/phpstorm/IndexingDashboard.vue"),
-          meta: { pageTitle: "PhpStorm Indexing Dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormInspectionsDashboard,
-          component: () => import("./components/phpstorm/InspectionsDashboard.vue"),
-          meta: { pageTitle: "PhpStorm Inspections Dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormCodeEditingDashboard,
-          component: () => import("./components/phpstorm/CodeEditingDashboard.vue"),
-          meta: { pageTitle: "PhpStorm Code Editing Dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormWithPluginsDashboard,
-          component: () => import("./components/phpstorm/PerformanceDashboardWithPlugins.vue"),
-          meta: { pageTitle: "PhpStorm With Plugins Performance dashboard" },
-        },
-        {
-          path: ROUTES.PhpStormWithPluginsTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "phpstormWithPlugins",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "PhpStorm Performance tests with plugins" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.PhpStormTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "phpstorm",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "PhpStorm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.PhpStormDevTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "phpstorm",
-            initialMachine: "linux-blade-hetzner",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "PhpStorm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.PhpStormCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "phpstorm",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.PhpStormCompareModes,
-          component: () => import("./components/common/compare/CompareModes.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "phpstorm",
-          },
-          meta: { pageTitle: COMPARE_MODES_LABEL },
-        },
-        {
-          path: ROUTES.GoLandInspectionDashboard,
-          component: () => import("./components/goland/InspectionsDashboard.vue"),
-          meta: { pageTitle: "GoLand Inspections dashboard" },
-        },
-        {
-          path: ROUTES.GoLandInspectionDashboardOld,
-          component: () => import("./components/goland/InspectionsDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Inspections dashboard" },
-        },
-        {
-          path: ROUTES.GoLandStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "goland",
-            defaultProject: "mattermost",
-            customCharts: [{ label: "Updating Go modules dependencies", measure: "Progress: Updating Go modules dependencies" }],
-          },
-          meta: { pageTitle: "GoLand Startup dashboard" },
-        },
-        {
-          path: ROUTES.GoLandProductMetricsDashboard,
-          component: () => import("./components/goland/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "GoLand product metrics" },
-        },
-        {
-          path: ROUTES.GoLandProductMetricsDashboardOld,
-          component: () => import("./components/goland/ProductMetricsDashboardOld.vue"),
-          meta: { pageTitle: "GoLand product metrics" },
-        },
-        {
-          path: ROUTES.GoLandIndexingDashboard,
-          component: () => import("./components/goland/IndexingDashboard.vue"),
-          meta: { pageTitle: "GoLand Indexing dashboard" },
-        },
-        {
-          path: ROUTES.GoLandIndexingDashboardOld,
-          component: () => import("./components/goland/IndexingDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Indexing dashboard" },
-        },
-        {
-          path: ROUTES.GoLandScanningDashboard,
-          component: () => import("./components/goland/ScanningDashboard.vue"),
-          meta: { pageTitle: "GoLand Scanning dashboard" },
-        },
-        {
-          path: ROUTES.GoLandScanningDashboardOld,
-          component: () => import("./components/goland/ScanningDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Scanning dashboard" },
-        },
-        {
-          path: ROUTES.GoLandCompletionDashboard,
-          component: () => import("./components/goland/CompletionDashboard.vue"),
-          meta: { pageTitle: "GoLand Completion dashboard" },
-        },
-        {
-          path: ROUTES.GoLandCompletionDashboardOld,
-          component: () => import("./components/goland/CompletionDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Completion dashboard" },
-        },
-        {
-          path: ROUTES.GoLandDebuggerDashboard,
-          component: () => import("./components/goland/DebuggerDashboard.vue"),
-          meta: { pageTitle: "GoLand Debugger dashboard" },
-        },
-        {
-          path: ROUTES.GoLandDebuggerDashboardOld,
-          component: () => import("./components/goland/DebuggerDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Debugger dashboard" },
-        },
-        {
-          path: ROUTES.GoLandFindUsagesDashboard,
-          component: () => import("./components/goland/FindUsagesDashboard.vue"),
-          meta: { pageTitle: "GoLand Find Usages dashboard" },
-        },
-        {
-          path: ROUTES.GoLandFindUsagesDashboardOld,
-          component: () => import("./components/goland/FindUsagesDashboardOld.vue"),
-          meta: { pageTitle: "GoLand Find Usages dashboard" },
-        },
-        {
-          path: ROUTES.GoLandDFADashboard,
-          component: () => import("./components/goland/DataFlowAnalysisDashboard.vue"),
-          meta: { pageTitle: "GoLand DFA dashboard" },
-        },
-        {
-          path: ROUTES.GoLandDFADashboardOld,
-          component: () => import("./components/goland/DataFlowAnalysisDashboardOld.vue"),
-          meta: { pageTitle: "GoLand DFA dashboard" },
-        },
-        {
-          path: ROUTES.GoLandDistributiveSizeDashboard,
-          component: () => import("./components/goland/DistributionSizeDashboard.vue"),
-          meta: { pageTitle: "GoLand Distribuvite Size dashboard" },
-        },
-        {
-          path: ROUTES.GoLandTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "goland",
-            withInstaller: false,
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "GoLand Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.GoLandTestsOld,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "goland",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "GoLand Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.GoLandCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "goland",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.GoLandCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "goland",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.PyCharmStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "pycharm",
-            defaultProject: "tensorflow",
-          },
-          meta: { pageTitle: "PyCharm Startup dashboard" },
-        },
-        {
-          path: ROUTES.PyCharmProductMetricsDashboard,
-          component: () => import("./components/pycharm/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "PyCharm product metrics" },
-        },
-        {
-          path: ROUTES.PyCharmDashboard,
-          component: () => import("./components/pycharm/PerformanceDashboard.vue"),
-          meta: { pageTitle: "PyCharm Performance dashboard" },
-        },
-        {
-          path: ROUTES.PyCharmOldDashboard,
-          component: () => import("./components/pycharm/PerformanceDashboardOld.vue"),
-          meta: { pageTitle: "PyCharm Performance dashboard" },
-        },
-        {
-          path: ROUTES.PyCharmTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "pycharm",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "PyCharm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.PyCharmDevTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "pycharm",
-            initialMachine: "linux-blade-hetzner",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "PyCharm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.PyCharmCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "pycharm",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.PyCharmCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "pycharm",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.WebStormStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "webstorm",
-            defaultProject: "angular",
-          },
-          meta: { pageTitle: "WebStorm Startup dashboard" },
-        },
-        {
-          path: ROUTES.WebStormProductMetricsDashboard,
-          component: () => import("./components/webstorm/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "WebStorm product metrics" },
-        },
-        {
-          path: ROUTES.WebStormProductMetricsDashboardOld,
-          component: () => import("./components/webstorm/ProductMetricsDashboardOld.vue"),
-          meta: { pageTitle: "WebStorm product metrics (Old)" },
-        },
-        {
-          path: ROUTES.WebStormDashboard,
-          component: () => import("./components/webstorm/PerformanceDashboard.vue"),
-          meta: { pageTitle: "WebStorm Performance dashboard" },
-        },
-        {
-          path: ROUTES.WebStormDashboardOld,
-          component: () => import("./components/webstorm/PerformanceDashboardOld.vue"),
-          meta: { pageTitle: "WebStorm Performance dashboard (Old)" },
-        },
-        {
-          path: ROUTES.WebStormTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            withInstaller: false,
-            table: "webstorm",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "WebStorm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.WebStormTestsOld,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "webstorm",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "WebStorm Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.WebStormDashboardBuiltInVsNEXT,
-          component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
-          meta: { pageTitle: "Built-in vs NEXT" },
-        },
-        {
-          path: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
-          component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXTOld.vue"),
-          meta: { pageTitle: "Built-in vs NEXT (Old)" },
-        },
-        {
-          path: ROUTES.WebStormDashboardDelicateProjects,
-          component: () => import("./components/webstorm/PerformanceDashboardDelicateProjects.vue"),
-          meta: { pageTitle: "Delicate Projects" },
-        },
-        {
-          path: ROUTES.WebStormCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "webstorm",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.WebStormCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "webstorm",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.RubyStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "ruby",
-            defaultProject: "diaspora",
-          },
-          meta: { pageTitle: "Ruby Startup dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineProductMetricsDashboard,
-          component: () => import("./components/rubymine/ProductMetricsDevDashboard.vue"),
-          meta: { pageTitle: "RubyMine product metrics" },
-        },
-        {
-          path: ROUTES.RubyMineDashboard,
-          component: () => import("./components/rubymine/PerformanceDevDashboard.vue"),
-          meta: { pageTitle: "RubyMine Performance Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineInspectionsDashBoard,
-          component: () => import("./components/rubymine/InspectionsDevDashboard.vue"),
-          meta: { pageTitle: "RubyMine Inspections Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineIndexingDashBoard,
-          component: () => import("./components/rubymine/IndexingDevDashboard.vue"),
-          meta: { pageTitle: "RubyMine Indexing Dashboard" },
-        },
-        {
-          path: ROUTES.RubyMineTestsDev,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "ruby",
-            initialMachine: "Linux Munich i7-3770, 32 Gb",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "RubyMine Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.RubyMineCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "ruby",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.RubyMineCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "ruby",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.RubyMineCompareModes,
-          component: () => import("./components/common/compare/CompareModes.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "ruby",
-          },
-          meta: { pageTitle: COMPARE_MODES_LABEL },
-        },
-        {
-          path: ROUTES.RustCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfint",
-            table: "ruby",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-
-        {
-          path: ROUTES.KotlinTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "kotlin",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "Kotlin Performance tests explore" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.KotlinTestsDev,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "kotlin",
-            initialMachine: "linux-blade-hetzner",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Kotlin Performance tests explore (dev/fast installer)" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.KotlinDashboard,
-          component: () => import("./components/kotlin/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Kotlin Performance dashboard" },
-        },
-        {
-          path: ROUTES.KotlinDashboardDev,
-          component: () => import("./components/kotlin/dev/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Kotlin Performance dashboard (dev)" },
-        },
-        {
-          path: ROUTES.KotlinUserScenariosDashboardDev,
-          component: () => import("./components/kotlin/dev/UserScenariosDashboard.vue"),
-          meta: { pageTitle: "User scenarios dashboard (dev)" },
-        },
-        {
-          path: ROUTES.KotlinCodeAnalysisDev,
-          component: () => import("./components/kotlin/dev/KotlinCodeAnalysisChartsDashboard.vue"),
-          meta: { pageTitle: "Code analysis (dev)" },
-        },
-        {
-          path: ROUTES.KotlinCompletionDev,
-          component: () => import("./components/kotlin/dev/CompletionDashboard.vue"),
-          meta: { pageTitle: "Kotlin completion (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinFindUsagesDev,
-          component: () => import("./components/kotlin/dev/FindUsagesDashboard.vue"),
-          meta: { pageTitle: "Kotlin findUsages (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinRefactoringDev,
-          component: () => import("./components/kotlin/dev/RefactoringDashboard.vue"),
-          meta: { pageTitle: "Kotlin refactoring (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinDebuggerDev,
-          component: () => import("./components/kotlin/dev/DebuggerDashboard.vue"),
-          meta: { pageTitle: "Kotlin debugger (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinScriptDev,
-          component: () => import("./components/kotlin/dev/ScriptDashboard.vue"),
-          meta: { pageTitle: "Kts (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinK1VsK2Comparison,
-          component: () => import("./components/kotlin/K1VsK2ComparisonDashboard.vue"),
-          meta: { pageTitle: "Kotlin K1 vs. K2" },
-        },
-        {
-          path: ROUTES.KotlinK1VsK2ComparisonDev,
-          component: () => import("./components/kotlin/dev/K1VsK2ComparisonDevDashboard.vue"),
-          meta: { pageTitle: "Kotlin K1 vs. K2 (dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "kotlin",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.KotlinCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfint",
-            table: "kotlin",
-            metricsNames: KOTLIN_MAIN_METRICS,
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.KotlinCompareBranchesDev,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "kotlin",
-            metricsNames: KOTLIN_MAIN_METRICS,
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL + "(dev/fast)" },
-        },
-        {
-          path: ROUTES.KotlinMemoryDashboard,
-          component: () => import("./components/kotlin/MemoryPerformanceDashboard.vue"),
-          meta: { pageTitle: "Memory" },
-        },
-        {
-          path: ROUTES.KotlinMemoryDashboardDev,
-          component: () => import("./components/kotlin/dev/MemoryPerformanceDashboard.vue"),
-          meta: { pageTitle: "Memory (dev)" },
-        },
-        {
-          path: ROUTES.RustRoverProductMetricsDashboard,
-          component: () => import("./components/rust/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "RustRover product metrics" },
-        },
-        {
-          path: ROUTES.RustRoverDashboard,
-          component: () => import("./components/rust/PerformanceDashboardRustRover.vue"),
-          props: {
-            releaseConfigurator: eap,
-          },
-          meta: { pageTitle: "RustRover Performance dashboard" },
-        },
-        {
-          path: ROUTES.RustRoverFirstStartupDashboard,
-          component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartup.vue"),
-          meta: { pageTitle: "RustRover First Startup Performance dashboard" },
-        },
-        {
-          path: ROUTES.RustTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "rust",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-            releaseConfigurator: eap,
-          },
-          meta: { pageTitle: "Rust Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.RustCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "rust",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.RustCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfint",
-            table: "rust",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.ScalaTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "scala",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "Scala Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ScalaCompare,
-          component: () => import("./components/common/compare/CompareBuilds.vue"),
-          props: {
-            dbName: "perfint",
-            table: "scala",
-          },
-          meta: { pageTitle: COMPARE_BUILDS_LABEL },
-        },
-        {
-          path: ROUTES.ScalaCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfint",
-            table: "scala",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.JBRTests,
-          component: () => import("./components/jbr/PerformanceTests.vue"),
-          meta: { pageTitle: "JBR Performance tests" },
-        },
-        {
-          path: ROUTES.MapBenchDashboard,
-          component: () => import("./components/jbr/MapBenchDashboard.vue"),
-          meta: { pageTitle: "MapBench Dashboard" },
-        },
-        {
-          path: ROUTES.DaCapoDashboard,
-          component: () => import("./components/jbr/DaCapoDashboard.vue"),
-          meta: { pageTitle: "DaCapo Dashboard" },
-        },
-        {
-          path: ROUTES.J2DBenchDashboard,
-          component: () => import("./components/jbr/J2DBenchDashboard.vue"),
-          meta: { pageTitle: "J2DBench Dashboard" },
-        },
-        {
-          path: ROUTES.JavaDrawDashboard,
-          component: () => import("./components/jbr/JavaDrawDashboard.vue"),
-          meta: { pageTitle: "JavaDraw Dashboard" },
-        },
-        {
-          path: ROUTES.RenderDashboard,
-          component: () => import("./components/jbr/RenderDashboard.vue"),
-          meta: { pageTitle: "Render Dashboard" },
-        },
-        {
-          path: ROUTES.SPECjbb2015Dashboard,
-          component: () => import("./components/jbr/SPECjbb2015Dashboard.vue"),
-          meta: { pageTitle: "Spec Dashboard" },
-        },
-        {
-          path: ROUTES.SwingMarkDashboard,
-          component: () => import("./components/jbr/SwingMarkDashboard.vue"),
-          meta: { pageTitle: "SwingMark Dashboard" },
-        },
-        {
-          path: ROUTES.FleetTest,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "fleet",
-            table: "measure_new",
-            initialMachine: "linux-blade-hetzner",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Fleet Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.FleetPerfDashboard,
-          component: () => import("./components/fleet/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Fleet Performance dashboard" },
-        },
-        {
-          path: ROUTES.FleetPerfStartupComparisonDashboard,
-          component: () => import("./components/fleet/StartupComparisonDashboard.vue"),
-          meta: { pageTitle: "Fleet Startup Comparison dashboard" },
-        },
-        {
-          path: ROUTES.FleetStartupDashboard,
-          component: () => import("./components/fleet/FleetDashboard.vue"),
-          meta: { pageTitle: "Fleet Startup dashboard" },
-        },
-        {
-          path: ROUTES.FleetStartupExplore,
-          component: () => import("./components/fleet/FleetExplore.vue"),
-          meta: { pageTitle: "Fleet Startup Explore" },
-          props: {
-            withInstaller: true,
-          },
-        },
-        {
-          path: ROUTES.BazelTest,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "bazel",
-            table: "report",
-            initialMachine: "Linux EC2 m5ad.2xlarge (8 vCPU Xeon, 32 GB)",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Bazel Performance tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.BazelPluginDashboard,
-          component: () => import("./components/bazel/BazelPluginDashboard.vue"),
-          meta: { pageTitle: "Bazel Plugin Dashboard" },
-        },
-        {
-          path: ROUTES.QodanaTest,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "qodana",
-            table: "report",
-            initialMachine: "Linux EC2 c5a(d).xlarge (4 vCPU, 8 GB)",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Qodana tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ClionTest,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "clion",
-            withInstaller: false,
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ClionTestOld,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfint",
-            table: "clion",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ClionClassicStartupDashboard,
-          component: () => import("./components/common/StartupMetricsDashboard.vue"),
-          props: {
-            table: "clion",
-            defaultProject: "clion/clion/cmake",
-          },
-          meta: { pageTitle: "CLion Startup dashboard" },
-        },
-        {
-          path: ROUTES.ClionProductMetricsDashboard,
-          component: () => import("./components/clion/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "CLion product metrics" },
-        },
-        {
-          path: ROUTES.ClionProductMetricsDashboardOld,
-          component: () => import("./components/clion/ProductMetricsDashboardOld.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion product metrics" },
-        },
-        {
-          path: ROUTES.ClionPerfDashboard,
-          component: () => import("./components/clion/PerformanceDashboard.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion dashboard" },
-        },
-        {
-          path: ROUTES.ClionPerfDashboardOld,
-          component: () => import("./components/clion/PerformanceDashboardOld.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion dashboard" },
-        },
-        {
-          path: ROUTES.ClionDetailedPerfDashboard,
-          component: () => import("./components/clion/DetailedPerformanceDashboard.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Detailed Performance dashboard" },
-        },
-        {
-          path: ROUTES.ClionDetailedPerfDashboardOld,
-          component: () => import("./components/clion/DetailedPerformanceDashboardOld.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Detailed Performance dashboard" },
-        },
-        {
-          path: ROUTES.ClionMemoryDashboard,
-          component: () => import("./components/clion/MemoryDashboard.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Memory dashboard" },
-        },
-        {
-          path: ROUTES.ClionMemoryDashboardOld,
-          component: () => import("./components/clion/MemoryDashboardOld.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Memory dashboard" },
-        },
-        {
-          path: ROUTES.ClionProjectModelDashboard,
-          component: () => import("./components/clion/ProjectModelDashboard.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Project Model dashboard" },
-        },
-        {
-          path: ROUTES.ClionProjectModelDashboardOld,
-          component: () => import("./components/clion/ProjectModelDashboardOld.vue"),
-          props: {
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-          },
-          meta: { pageTitle: "CLion Project Model dashboard" },
-        },
-        {
-          path: ROUTES.ClionCompareBranches,
-          component: () => import("./components/common/compare/CompareBranches.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "clion",
-          },
-          meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-        },
-        {
-          path: ROUTES.VcsIdeaDashboardDev,
-          component: () => import("./components/vcs/PerformanceDashboardDev.vue"),
-          meta: { pageTitle: "Vcs Idea performance dashboard DevServer" },
-        },
-        {
-          path: ROUTES.VcsSpaceDashboardDev,
-          component: () => import("./components/vcs/PerformanceSpaceDashboardDev.vue"),
-          meta: { pageTitle: "Vcs Space performance dashboard DevServer" },
-        },
-        {
-          path: ROUTES.VcsStarterDashboardDev,
-          component: () => import("./components/vcs/PerformanceStarterDashboardDev.vue"),
-          meta: { pageTitle: "Vcs Starer performance dashboard DevServer" },
-        },
-        {
-          path: ROUTES.VcsIdeaDashboard,
-          component: () => import("./components/vcs/PerformanceDashboard.vue"),
-          meta: { pageTitle: "Vcs Idea performance dashboard (obsolete)" },
-        },
-        {
-          path: ROUTES.VcsSpaceDashboard,
-          component: () => import("./components/vcs/PerformanceSpaceDashboard.vue"),
-          meta: { pageTitle: "Vcs Space performance dashboard (obsolete)" },
-        },
-        {
-          path: ROUTES.VcsStarterDashboard,
-          component: () => import("./components/vcs/PerformanceStarterDashboard.vue"),
-          meta: { pageTitle: "Vcs Starer performance dashboard (obsolete)" },
-        },
-        {
-          path: ROUTES.PerfUnitTests,
-          component: () => import("./components/common/PerformanceUnitTests.vue"),
-          props: {
-            dbName: "perfUnitTests",
-            table: "report",
-            initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "Perf Unit Tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.IJentBenchmarksDashboard,
-          component: () => import("./components/ijent/IJentBenchmarskDashboard.vue"),
-          meta: { pageTitle: "IJent Benchmarks Dashboard" },
-        },
-        {
-          path: ROUTES.IJentPerfTestsDashboard,
-          component: () => import("./components/ijent/IJentPerformanceTestsDashboard.vue"),
-          meta: { pageTitle: "IJent Performance Tests Dashboard" },
-        },
-        {
-          path: ROUTES.IJentRawPerfData,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "ijent",
-            initialMachine: "Linux Munich i7-13700, 64 Gb",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "IJent Raw Performance Data" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.AIAssistantApiTests,
-          component: () => import("./components/ml/dev/AiAssistantApiTests.vue"),
-          meta: { pageTitle: "AI API Tests" },
-        },
-        {
-          path: ROUTES.AIAssistantTestGeneration,
-          component: () => import("./components/ml/dev/TestGenerationDashboard.vue"),
-          meta: { pageTitle: "Test generation" },
-        },
-        {
-          path: ROUTES.LLMDevTests,
-          component: () => import("./components/ml/dev/LLMDashboard.vue"),
-          meta: { pageTitle: "AIA dashboard" },
-        },
-        {
-          path: ROUTES.AIAPrivacyDashboard,
-          component: () => import("./components/ml/dev/AIAPrivacyDashboard.vue"),
-          meta: { pageTitle: "AIA Privacy" },
-        },
-        {
-          path: ROUTES.MLDevTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "ml",
-            initialMachine: "Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)",
-            withInstaller: false,
-          },
-          meta: { pageTitle: "ML Tests dev-server" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.DataGripProductMetricsDashboard,
-          component: () => import("./components/datagrip/ProductMetricsDashboard.vue"),
-          meta: { pageTitle: "DataGrip product metrics" },
-        },
-        {
-          path: ROUTES.DataGripIndexingDashboard,
-          component: () => import("./components/datagrip/IndexingDashboard.vue"),
-          meta: { pageTitle: "DataGrip Indexing dashboard" },
-        },
+        ...startupRoutes,
+        ...intellijRoutes,
+        ...phpstormRoutes,
+        ...golandRoutes,
+        ...pycharmRoutes,
+        ...webstormRoutes,
+        ...rubymineRoutes,
+        ...rustRoutes,
+        ...kotlinRoutes,
+        ...scalaRoutes,
+        ...jbrRoutes,
+        ...fleetRoutes,
+        ...bazelRoutes,
+        ...qodanaRoutes,
+        ...clionRoutes,
+        ...vcsRoutes,
+        ...datagripRoutes,
+        ...toolboxRoutes,
+        ...ijentRoutes,
+        ...mlRoutes,
+        ...aiaRoutes,
+        ...kmtRoutes,
+        ...diogenRoutes,
+        ...perfUnitTestsRoutes,
+        ...kotlinBuildToolsRoutes,
         {
           path: ROUTES.ReportDegradations,
           component: () => import("./components/degradations/ReportDegradation.vue"),
@@ -2448,122 +2676,6 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           meta: { pageTitle: "Bisect launcher" },
           props: (route) => ({ ...route.query }),
         },
-        {
-          path: ROUTES.AIATests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "mlEvaluation",
-            table: "report",
-            withInstaller: false,
-            branch: null,
-            initialMachine: null,
-          },
-          meta: { pageTitle: "AIA Tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.AIACompletionDashboard,
-          component: () => import("./components/aia/AIACompletionDashboard.vue"),
-          meta: { pageTitle: "AIA completion dashboard" },
-        },
-        {
-          path: ROUTES.AIACodeGenerationDashboard,
-          component: () => import("./components/aia/AIACodeGeneration.vue"),
-          meta: { pageTitle: "AIA code generation dashboard" },
-        },
-        {
-          path: ROUTES.AIAChatCodeGenerationDashboard,
-          component: () => import("./components/aia/ChatCodeGeneration.vue"),
-          meta: { pageTitle: "AIA chat code generation dashboard" },
-        },
-        {
-          path: ROUTES.AIANameSuggestionDashboard,
-          component: () => import("./components/aia/AIANameSuggestion.vue"),
-          meta: { pageTitle: "AIA name suggestion dashboard" },
-        },
-        {
-          path: ROUTES.AIATestGenerationDashboard,
-          component: () => import("./components/aia/AIATestGeneration.vue"),
-          meta: { pageTitle: "AIA test generation dashboard" },
-        },
-        {
-          path: ROUTES.KMTTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "swift",
-            withInstaller: false,
-            branch: null,
-            initialMachine: "Mac Cidr Performance",
-          },
-          meta: { pageTitle: "KMT Unit Tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.KMTIntegrationTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "kmt",
-            withInstaller: false,
-            branch: "master",
-            initialMachine: "Mac Cidr Performance",
-          },
-          meta: { pageTitle: "KMT Integration Tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.KMTDashboard,
-          component: () => import("./components/kmt/PerformanceDashboard.vue"),
-          meta: { pageTitle: "KMT Dashboard" },
-        },
-        {
-          path: ROUTES.DiogenTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "diogen",
-            table: "report",
-            withInstaller: false,
-            branch: "refs/heads/main",
-            initialMachine: null,
-            withoutAccidents: true,
-          },
-          meta: { pageTitle: "Diogen" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ToolboxTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "toolbox",
-            table: "report",
-            withInstaller: false,
-            branch: "refs/heads/main",
-            initialMachine: "Linux EC2 M5d.xlarge (4 vCPU Xeon, 16 GB)",
-            withoutAccidents: true,
-          },
-          meta: { pageTitle: "Toolbox" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
-        {
-          path: ROUTES.ToolboxTestsGwDeployDashboard,
-          component: () => import("./components/toolbox/GwDeployMetricsDashboard.vue"),
-          props: {
-            dbName: "toolbox",
-            table: "report",
-            withInstaller: false,
-            branch: "refs/heads/master",
-            withoutAccidents: true,
-          },
-          meta: { pageTitle: "GW Dashboard" },
-        },
-        {
-          path: ROUTES.KotlinBuildToolsTests,
-          component: () => import("./components/common/PerformanceTests.vue"),
-          props: {
-            dbName: "perfintDev",
-            table: "kotlinBuildTools",
-            withInstaller: false,
-            branch: "master",
-            initialMachine: "linux-blade-hetzner",
-          },
-          meta: { pageTitle: "Kotlin Build Tools Tests" },
-        } satisfies TypedRouteRecord<PerformanceTestsProps>,
       ],
     },
   ]

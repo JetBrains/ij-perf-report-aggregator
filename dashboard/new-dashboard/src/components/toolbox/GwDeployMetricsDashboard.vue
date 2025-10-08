@@ -15,6 +15,11 @@
         :measure="backendRunningMetrics"
         :projects="['GW: open recent with backend running']"
       />
+      <GroupProjectsChart
+        label="GW: restart from BCC"
+        :measure="restartFromBccMetrics"
+        :projects="['GW: restart from BCC']"
+      />
     </section>
   </DashboardPage>
 </template>
@@ -37,5 +42,12 @@ const backendRunningMetrics = [
   "gw.warm.start.from.gw.link.clicked.to.client.first.metric",
   "gw.warm.start.from.client.first.metric.to.connection.established",
   "gw.warm.start.from.connection.established.to.editors.opened",
+]
+
+const restartFromBccMetrics = [
+  "gw.restart.bcc.from.restart.clicked.to.editors.opened",
+  "gw.restart.bcc.from.restart.clicked.to.host.first.metric",
+  "gw.restart.bcc.from.host.first.metric.to.connection.established",
+  "gw.restart.bcc.from.connection.established.to.editors.opened",
 ]
 </script>

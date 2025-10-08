@@ -27,7 +27,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Find Usages: Execution Time"
-        measure="['findUsages', 'findUsagesInToolWindow']"
+        measure="findUsagesInToolWindow"
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',
@@ -83,7 +83,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Find Usages: Quantity"
-        measure="['findUsages#number', 'findUsagesInToolWindow#number']"
+        measure="findUsagesInToolWindow#number"
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',

@@ -137,6 +137,7 @@
         ]"
       />
     </section>
+    <section>
       <GroupProjectsWithClientChart
         label="Find Usages and Show Usages: Execution Time"
         measure="['findUsages', 'findUsagesInToolWindow']"

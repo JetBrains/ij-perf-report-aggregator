@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/AndreyAkinshin/pragmastat/go/v3"
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	degradation_detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
@@ -394,13 +395,23 @@ func filterValidChangePoints(values []int, changePoints []int, medianDifferenceT
 		prevSegment := segments[i-1]
 		currentSegment := segments[i]
 
-		// Calculate medians
-		prevMedian := statistic.Median(prevSegment)
-		currentMedian := statistic.Median(currentSegment)
+		ratio, err := pragmastat.Ratio(currentSegment, prevSegment)
+		if err != nil {
+			continue
+		}
 
-		// Calculate percentage change and absolute change
-		percentageChange := math.Abs((currentMedian - prevMedian) / prevMedian * 100)
-		absoluteChange := math.Abs(currentMedian - prevMedian)
+		currentCenter, err := pragmastat.Center(currentSegment)
+		if err != nil {
+			continue
+		}
+		previousCenter, err := pragmastat.Center(prevSegment)
+		if err != nil {
+			continue
+		}
+
+		// Convert ratio to percentage change: (ratio - 1) * 100
+		percentageChange := math.Abs((ratio - 1) * 100)
+		absoluteChange := math.Abs(currentCenter - previousCenter)
 
 		// Check if change is significant enough
 		if absoluteChange < 10 || percentageChange < medianDifferenceThreshold {

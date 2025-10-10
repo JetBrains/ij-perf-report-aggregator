@@ -216,7 +216,7 @@ func getMachineGroup(pattern string) string {
 	return machineGroupMap[pattern]
 }
 
-func getMessageBasedOnMedianChange(medianValues MedianValues) string {
+func getMessageBasedOnMedianChange(medianValues CenterValues) string {
 	percentageChange := medianValues.PercentageChange()
 	medianMessage := fmt.Sprintf("Median changed by: %.2f%%. Median was %.2f and now it is %.2f.", percentageChange, medianValues.previousValue, medianValues.newValue)
 	if medianValues.newValue > medianValues.previousValue {
@@ -225,7 +225,7 @@ func getMessageBasedOnMedianChange(medianValues MedianValues) string {
 	return "Improvement detected. " + medianMessage
 }
 
-func icon(v MedianValues) string {
+func icon(v CenterValues) string {
 	var icon string
 	if v.newValue > v.previousValue {
 		icon = ":chart_with_upwards_trend:"

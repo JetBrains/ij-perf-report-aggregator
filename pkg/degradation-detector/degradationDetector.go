@@ -4,17 +4,18 @@ import (
 	"log/slog"
 	"math"
 
+	"github.com/AndreyAkinshin/pragmastat/go/v3"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 )
 
 type Degradation struct {
 	Build         string
 	timestamp     int64
-	medianValues  MedianValues
+	medianValues  CenterValues
 	IsDegradation bool
 }
 
-type MedianValues struct {
+type CenterValues struct {
 	previousValue float64
 	newValue      float64
 }
@@ -27,7 +28,7 @@ type analysisSettings interface {
 	GetDaysToCheckMissing() int
 }
 
-func (v MedianValues) PercentageChange() float64 {
+func (v CenterValues) PercentageChange() float64 {
 	return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
 
@@ -66,10 +67,26 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 			skippedSegments++
 			continue
 		}
-		currentMedian := statistic.Median(lastSegment)
-		previousMedian := statistic.Median(segments[i])
-		percentageChange := math.Abs((currentMedian - previousMedian) / previousMedian * 100)
-		absoluteChange := math.Abs(currentMedian - previousMedian)
+
+		ratio, err := pragmastat.Ratio(lastSegment, segments[i])
+		if err != nil {
+			skippedSegments++
+			continue
+		}
+
+		currentCenter, err := pragmastat.Center(lastSegment)
+		if err != nil {
+			skippedSegments++
+			continue
+		}
+		previousCenter, err := pragmastat.Center(segments[i])
+		if err != nil {
+			skippedSegments++
+			continue
+		}
+
+		percentageChange := math.Abs((ratio - 1) * 100)
+		absoluteChange := math.Abs(currentCenter - previousCenter)
 
 		if absoluteChange < 10 || percentageChange < medianDifference {
 			break
@@ -80,10 +97,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 			break
 		}
 
-		isDegradation := false
-		if currentMedian > previousMedian {
-			isDegradation = true
-		}
+		isDegradation := ratio > 1
 		reportType := analysisSettings.GetReportType()
 
 		if !isDegradation && reportType == DegradationEvent {
@@ -96,7 +110,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 		degradations = append(degradations, Degradation{
 			Build:         builds[index],
 			timestamp:     timestamps[index],
-			medianValues:  MedianValues{previousValue: previousMedian, newValue: currentMedian},
+			medianValues:  CenterValues{previousValue: previousCenter, newValue: currentCenter},
 			IsDegradation: isDegradation,
 		})
 		break

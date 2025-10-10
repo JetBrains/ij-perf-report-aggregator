@@ -13,14 +13,14 @@ func TestMergeDegradations(t *testing.T) {
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 10,
 				newValue:      20,
 			}},
 			Settings: PerformanceSettings{Project: "a", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
@@ -58,21 +58,21 @@ func TestSomeDegradationsNotMerged(t *testing.T) {
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 10,
 				newValue:      20,
 			}},
 			Settings: PerformanceSettings{Project: "a", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "1234", medianValues: MedianValues{
+			Details: Degradation{Build: "1234", medianValues: CenterValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
 			Settings: PerformanceSettings{Project: "b", BaseSettings: BaseSettings{Metric: "metric", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 15,
 				newValue:      20,
 			}},
@@ -94,21 +94,21 @@ func TestMetricAlias(t *testing.T) {
 	inputChan := make(chan DegradationWithSettings)
 	go func() {
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 10,
 				newValue:      20,
 			}},
 			Settings: PerformanceSettings{Project: "a", MetricAlias: "metric", BaseSettings: BaseSettings{Metric: "metricBetta", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 10,
 				newValue:      20,
 			}},
 			Settings: PerformanceSettings{Project: "a", MetricAlias: "metric", BaseSettings: BaseSettings{Metric: "metricBetta", SlackSettings: SlackSettings{Channel: "slack"}}},
 		}
 		inputChan <- DegradationWithSettings{
-			Details: Degradation{Build: "123", medianValues: MedianValues{
+			Details: Degradation{Build: "123", medianValues: CenterValues{
 				previousValue: 15,
 				newValue:      20,
 			}},

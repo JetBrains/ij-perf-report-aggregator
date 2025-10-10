@@ -1,5 +1,4 @@
-import { hodgesLehmannEstimator, pooledShamos } from "./statistic"
-import { center, ratio } from "pragmastat"
+import { avgSpread, center, ratio, shift } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -61,9 +60,9 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     const centerAfter = center(segmentAfter)
     const absoluteChange = Math.abs(centerAfter - centerBefore)
 
-    const hlValue = hodgesLehmannEstimator(segmentBefore, segmentAfter)
-    const shamos = pooledShamos(segmentBefore, segmentAfter)
-    const effectSize = hlValue / shamos
+    const shiftValue = shift(segmentAfter, segmentBefore)
+    const avgSpreadValue = avgSpread(segmentBefore, segmentAfter)
+    const effectSize = avgSpreadValue === 0 ? 100 : Math.abs(shiftValue / avgSpreadValue)
     let classification
 
     if (
@@ -74,10 +73,10 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
       classification = ChangePointClassification.NO_CHANGE
     } else if (absoluteChange < 10) {
       classification = ChangePointClassification.NO_CHANGE
-    } else if (Math.abs(effectSize) < 2) {
+    } else if (effectSize < 2) {
       classification = ChangePointClassification.NO_CHANGE
     } else {
-      classification = hlValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
+      classification = shiftValue > 0 ? ChangePointClassification.DEGRADATION : ChangePointClassification.OPTIMIZATION
     }
 
     classifications.push(classification)

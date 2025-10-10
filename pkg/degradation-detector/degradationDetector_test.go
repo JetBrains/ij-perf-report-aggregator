@@ -33,7 +33,7 @@ func TestDegradation(t *testing.T) {
 	assert.Empty(t, degradations)
 }
 
-func TestWithoutDegradations2(t *testing.T) {
+func TestCloseEffectSizeDegradations(t *testing.T) {
 	t.Parallel()
 	data := []int{
 		14676, 20160, 19577, 19013, 20483, 20062, 17768, 19582, 12458, 18929, 18889, 17305, 19186, 14837, 15470, 15283, 15933, 18849, 18230, 19086, 19377,
@@ -49,7 +49,8 @@ func TestWithoutDegradations2(t *testing.T) {
 		times[i] = int64(i)
 	}
 	degradations := detectDegradations(data, builds, times, AnalysisSettings{})
-	assert.Empty(t, degradations)
+	assert.Len(t, degradations, 1)
+	assert.Equal(t, int64(113), degradations[0].timestamp)
 }
 
 func TestWithDegradations(t *testing.T) {

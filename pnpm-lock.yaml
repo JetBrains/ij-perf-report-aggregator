@@ -140,6 +140,9 @@ importers:
       pinia:
         specifier: ^3.0.3
         version: 3.0.3(typescript@5.9.3)(vue@3.5.22(typescript@5.9.3))
+      pragmastat:
+        specifier: 3.1.29
+        version: 3.1.29
       primevue:
         specifier: 4.4.0
         version: 4.4.0(vue@3.5.22(typescript@5.9.3))
@@ -2341,6 +2344,9 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  pragmastat@3.1.29:
+    resolution: {integrity: sha512-uKqdGuRR5N0UZ56xWrNuKU8h8ykRvoC0iTDlWMPSyWd1RkPJMBc6ke3aVdIADRcCJ6aXKr8jWsIpM/sxOSNGNg==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -5184,6 +5190,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  pragmastat@3.1.29: {}
 
   prelude-ls@1.2.1: {}
 

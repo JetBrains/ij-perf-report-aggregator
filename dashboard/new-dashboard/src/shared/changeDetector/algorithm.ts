@@ -1,4 +1,5 @@
-import { hodgesLehmannEstimator, median, pooledShamos } from "./statistic"
+import { hodgesLehmannEstimator, pooledShamos } from "./statistic"
+import { center, ratio } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -53,10 +54,12 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
 
-    const medianBefore = median(segmentBefore)
-    const medianAfter = median(segmentAfter)
+    const ratioValue = ratio(segmentAfter, segmentBefore)
+    const percentageDifference = Math.abs((ratioValue - 1) * 100)
 
-    const percentageDifference = Math.abs(((medianAfter - medianBefore) / medianBefore) * 100)
+    const centerBefore = center(segmentBefore)
+    const centerAfter = center(segmentAfter)
+    const absoluteChange = Math.abs(centerAfter - centerBefore)
 
     const hlValue = hodgesLehmannEstimator(segmentBefore, segmentAfter)
     const shamos = pooledShamos(segmentBefore, segmentAfter)
@@ -64,12 +67,12 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     let classification
 
     if (
-      (medianBefore < 2000 && percentageDifference < 5) ||
-      (medianBefore >= 2000 && medianBefore < 10000 && percentageDifference < 2) ||
-      (medianBefore >= 10000 && percentageDifference < 1)
+      (centerBefore < 2000 && percentageDifference < 5) ||
+      (centerBefore >= 2000 && centerBefore < 10000 && percentageDifference < 2) ||
+      (centerBefore >= 10000 && percentageDifference < 1)
     ) {
       classification = ChangePointClassification.NO_CHANGE
-    } else if (Math.abs(medianBefore - medianAfter) < 10) {
+    } else if (absoluteChange < 10) {
       classification = ChangePointClassification.NO_CHANGE
     } else if (Math.abs(effectSize) < 2) {
       classification = ChangePointClassification.NO_CHANGE

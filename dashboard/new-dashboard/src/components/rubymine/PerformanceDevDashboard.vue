@@ -140,7 +140,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Find Usages and Show Usages: Execution Time"
-        measure="['findUsages', 'findUsagesInToolWindow']"
+        :measure="['findUsages', 'findUsagesInToolWindow']"
         :projects="[
           'RUBY-23764-Case1/ruby-23764-findusages-case1',
           'RUBY-23764-Case2/ruby-23764-findusages-case2',

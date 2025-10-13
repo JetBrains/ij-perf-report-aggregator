@@ -80,8 +80,10 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 
 	for _, test := range tests {
 		threshold := 10
+		daysToCheck := -1
 		if strings.HasSuffix(test, "_k1") {
 			threshold = 20
+			daysToCheck = -3
 		}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
@@ -101,7 +103,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					AnalysisSettings: detector.AnalysisSettings{
 						ReportType:                detector.DegradationEvent,
 						MedianDifferenceThreshold: float64(threshold),
-						DaysToCheckMissing:        -1,
+						DaysToCheckMissing:        daysToCheck,
 					},
 				},
 			})

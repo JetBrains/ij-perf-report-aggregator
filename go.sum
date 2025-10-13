@@ -29,6 +29,8 @@ github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694 h1:64
 github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694/go.mod h1:MBJZOU8qf2uw/mV3FTMNxvHAn/L57Mi9CFQvuUxU0wo=
 github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.29 h1:IP5sBtiZiPYQ2uqDPWHyPDrBRYP+tKeVe71lUeSuxtM=
 github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.29/go.mod h1:Imi8PHaz3GUraRTyyg2F4xKFiQb70tI30+zdBvWI5Ig=
+github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.30 h1:xNyRPpQCfoDCBHsbc5c7/y0WZplWSXGM2u5vCZpXJ3w=
+github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.30/go.mod h1:Imi8PHaz3GUraRTyyg2F4xKFiQb70tI30+zdBvWI5Ig=
 github.com/Azure/azure-pipeline-go v0.2.3 h1:7U9HBg1JFK3jHl5qmo4CTZKFTVgMwdFHMVtCdfBE21U=
 github.com/Azure/azure-pipeline-go v0.2.3/go.mod h1:x841ezTBIMG6O3lAcl8ATHnsOPVl2bqk7S3ta6S6u4k=
 github.com/Azure/azure-storage-blob-go v0.15.0 h1:rXtgp8tN1p29GvpGgfJetavIG0V7OgcSXPpwp3tx6qk=

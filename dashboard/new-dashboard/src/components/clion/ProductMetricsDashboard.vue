@@ -32,8 +32,8 @@ const chartsDeclaration: ChartDefinition[] = [
     aliases: ["LLVM", "OpenCV", "cURL"],
   },
   {
-    labels: ["FirstCodeAnalysis"],
-    measures: ["firstCodeAnalysis"],
+    labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],
+    measures: ["firstCodeAnalysis", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
     projects: ["radler/fmtlib/typing/simple (4 lines)"],
     aliases: ["{fmt}"],
   },

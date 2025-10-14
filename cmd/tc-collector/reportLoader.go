@@ -23,7 +23,7 @@ import (
 var networkRequestCount = runtime.NumCPU() + 1
 
 func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
-	networkRequestCount = 20
+	networkRequestCount = 10
 	t.logger.Info("Network request count", "count", networkRequestCount)
 
 	for index, build := range builds {

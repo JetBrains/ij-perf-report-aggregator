@@ -239,7 +239,7 @@ let scenarioConfigurator = dimensionConfigurator("project", serverConfigurator, 
 let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistentStateManager, filters, true, "line")
 
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
-if (initialMachine != null && machineConfigurator != null && machineConfigurator.selected.value.length === 0) {
+if (initialMachine != null && machineConfigurator?.selected.value.length === 0) {
   machineConfigurator.selected.value = [initialMachine]
 }
 

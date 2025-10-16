@@ -48,7 +48,9 @@ const measureArray: Ref<string[]> = computed(() => {
   return Array.isArray(measure) ? measure : [measure]
 })
 
-const emit = defineEmits(["chartClosed"])
+const emit = defineEmits<{
+  chartClosed: [projects: string[]]
+}>()
 
 function onChartClosed(): void {
   emit("chartClosed", projects)

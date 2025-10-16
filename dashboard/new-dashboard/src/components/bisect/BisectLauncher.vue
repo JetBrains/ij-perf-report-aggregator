@@ -140,30 +140,27 @@ import { BisectClient } from "../common/sideBar/BisectClient"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { useUserStore } from "../../shared/useUserStore"
 
-const props = withDefaults(
-  defineProps<{
-    buildId?: string
-    errorMessage?: string
-    className?: string
-  }>(),
-  {
-    buildId: "",
-    errorMessage: "",
-    className: "",
-  }
-)
+const {
+  buildId = "",
+  errorMessage = "",
+  className = "",
+} = defineProps<{
+  buildId?: string
+  errorMessage?: string
+  className?: string
+}>()
 
 const serverConfigurator = new ServerWithCompressConfigurator("", "")
 const bisectClient = new BisectClient(serverConfigurator)
 
 const model = reactive({
-  errorMessage: props.errorMessage,
+  errorMessage,
   firstCommit: "",
   lastCommit: "",
   buildType: "",
   excludedCommits: "",
-  buildId: props.buildId,
-  className: props.className,
+  buildId,
+  className,
 })
 
 const mode = ref("Build")
@@ -204,10 +201,10 @@ async function startBisect() {
 const email = computed(() => useUserStore().user?.email)
 onMounted(async () => {
   try {
-    const changes = await bisectClient.fetchTeamCityChanges(props.buildId)
+    const changes = await bisectClient.fetchTeamCityChanges(buildId)
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
-    model.buildType = await bisectClient.fetchBuildType(props.buildId)
+    model.buildType = await bisectClient.fetchBuildType(buildId)
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"
   } finally {

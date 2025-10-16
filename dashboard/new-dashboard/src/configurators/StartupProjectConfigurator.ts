@@ -1,9 +1,8 @@
 import { Observable, switchMap } from "rxjs"
 import { PersistentStateManager } from "../components/common/PersistentStateManager"
 import { DataQuery, ServerConfigurator } from "../components/common/dataQuery"
-import { FilterConfigurator } from "./filter"
+import { FilterConfigurator, createFilterObservable } from "./filter"
 import { DimensionConfigurator, loadDimension, filterSelected } from "./DimensionConfigurator"
-import { createFilterObservable } from "./filter"
 import { updateComponentState } from "./componentState"
 
 class ProjectLikeFilter implements FilterConfigurator {

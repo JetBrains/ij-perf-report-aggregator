@@ -18,6 +18,7 @@ lint:
 #To fix run: pnpm prettier --write . --loglevel
 	pnpm prettier --check . --log-level warn
 	pnpm eslint
+	pnpm oxlint
 	vue-tsc
 
 

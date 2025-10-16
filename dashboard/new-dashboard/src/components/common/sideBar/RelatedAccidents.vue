@@ -106,7 +106,9 @@ function loadEventsAroundDate() {
   })
 }
 
-const emit = defineEmits(["copyAccident"])
+const emit = defineEmits<{
+  copyAccident: [accident: AccidentSimple]
+}>()
 
 function copy(accident: AccidentSimple): void {
   emit("copyAccident", accident)

@@ -299,7 +299,7 @@ function handleNavigateToTest(project: string, metric: string) {
   queryParams.delete("metrics")
   queryParams.delete("tests")
 
-  window.open(router.resolve(testURL + "?" + queryParams.toString() + `&branch=${branch1.value}` + `&branch=${branch2.value}`).href, "_blank")
+  window.open(router.resolve(`${testURL}?${queryParams.toString()}&branch=${branch1.value}&branch=${branch2.value}`).href, "_blank")
 }
 </script>
 

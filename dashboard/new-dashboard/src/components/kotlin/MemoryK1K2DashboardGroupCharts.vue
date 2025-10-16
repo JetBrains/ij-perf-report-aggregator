@@ -35,5 +35,5 @@ interface Props {
   metrics: Ref<string | string[]>
 }
 
-defineProps<Props>()
+const { definitions, metrics } = defineProps<Props>()
 </script>

@@ -91,7 +91,7 @@ const getPartialSums = (data: number[], k: number): number[][] => {
 
   for (let i = 0; i < k; i++) {
     const z = -1 + (2 * i + 1) / k
-    const p = 1 / (1 + Math.pow(2 * n - 1, -z))
+    const p = 1 / (1 + (2 * n - 1) ** -z)
     const t = sortedData[Math.floor((n - 1) * p)]
 
     for (let tau = 1; tau <= n; tau++) {

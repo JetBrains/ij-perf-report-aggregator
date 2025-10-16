@@ -34,7 +34,7 @@ const asmLibraryArg = {
     HEAPU8.copyWithin(dest, src, src + num)
   },
   b(requestedSize: number) {
-    requestedSize = requestedSize >>> 0
+    requestedSize >>>= 0
     abort(`OOM (requestedSize: ${requestedSize})`)
   },
 }

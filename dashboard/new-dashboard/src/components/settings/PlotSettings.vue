@@ -32,11 +32,15 @@ import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfig
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"
 import { PopoverMethods } from "primevue/popover"
+import { DataQueryConfigurator } from "../common/dataQuery"
+import { FilterConfigurator } from "../../configurators/filter"
 
 const settingsPanel = useTemplateRef<PopoverMethods>("settingsPanel")
 const settingsIcon = useTemplateRef<HTMLElement>("settingsIcon")
 
-const emit = defineEmits(["update:configurators"])
+const emit = defineEmits<{
+  "update:configurators": [configurator: DataQueryConfigurator & FilterConfigurator]
+}>()
 emit("update:configurators", new ScalingConfigurator())
 emit("update:configurators", new SmoothingConfigurator())
 emit("update:configurators", new DetectChangesConfigurator())

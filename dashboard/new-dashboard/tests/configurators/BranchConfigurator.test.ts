@@ -95,19 +95,5 @@ describe("Branch configurator", () => {
       await awaitMockCallsCount(data.fetchMock, 4)
       assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
     })
-
-    test.skip("Valid query when edit selected multiple value", async () => {
-      dataQueryExecutor.subscribe(() => {})
-      console.log(data.fetchMock.mock.calls)
-      await awaitMockCallsCount(data.fetchMock, 2)
-      const values = ["foo", "bar"]
-
-      branchConfigurator.selected.value = values
-      await awaitMockCallsCount(data.fetchMock, 4)
-      for (const [index, value] of values.entries()) {
-        const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"${value}"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
-        assert.equal(data.fetchMock.mock.calls[index + 2][0], expectedValue)
-      }
-    })
   })
 })

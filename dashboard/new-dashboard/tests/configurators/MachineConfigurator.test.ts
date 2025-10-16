@@ -83,16 +83,6 @@ describe("Machine configurator", () => {
       assert.equal(data.fetchMock.mock.calls[0][0], expectedValue)
     })
 
-    test.skip("Valid query with default selected value", async () => {
-      await awaitMockCallsCount(data.fetchMock, 2)
-      console.log(data.fetchMock.mock.calls)
-      dataQueryExecutor.subscribe(() => {})
-      await awaitMockCallsCount(data.fetchMock, 3)
-      console.log(data.fetchMock.mock.calls)
-      const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"machine","v":["machine"]},{"f":"branch","v":"branch1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
-      assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
-    })
-
     test("Valid query when select single value for machine configurator", async () => {
       branchConfigurator.selected.value = ["branch1"]
       machineConfigurator.selected.value = ["intellij-linux-hw-blade-test"]

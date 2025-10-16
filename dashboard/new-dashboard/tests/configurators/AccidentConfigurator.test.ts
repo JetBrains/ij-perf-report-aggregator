@@ -21,12 +21,12 @@ describe("Branch configurator", () => {
     timeRangeConfigurator = new TimeRangeConfigurator(persistence)
   })
 
-  afterAll(() => {
-    server.close()
-  })
-
   afterEach(() => {
     server.resetHandlers()
+  })
+
+  afterAll(() => {
+    server.close()
   })
 
   test("Valid query to create accident for startup", async () => {

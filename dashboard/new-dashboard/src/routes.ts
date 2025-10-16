@@ -806,7 +806,7 @@ const WEBSTORM: Product = {
         },
         {
           url: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
-          label: "Built-in vs NEXT" + " (Old)",
+          label: "Built-in vs NEXT (Old)",
         },
         {
           url: ROUTES.WebStormDashboardDelicateProjects,

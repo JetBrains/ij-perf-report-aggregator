@@ -14,7 +14,7 @@ export function base64ToHex(base64: string): string {
   return hex
 }
 
-export async function calculateChanges(db: string, id: number): Promise<string | null> {
+export function calculateChanges(db: string, id: number): Promise<string | null> {
   return new Promise((resolve, _) => {
     const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))
     const separator = ".."

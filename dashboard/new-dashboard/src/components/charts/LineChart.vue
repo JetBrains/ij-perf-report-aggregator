@@ -146,10 +146,6 @@ const measureConfigurator = new PredefinedMeasureConfigurator(
   tooltipTrigger
 )
 
-if (measuresRef.value.length == 1) {
-  new SeriesNameConfigurator(measuresRef.value[0])
-}
-
 const lineConfigurators = [...configurators, measureConfigurator, infoFieldsConfigurator]
 if (withMeasureName) {
   lineConfigurators.push(new SeriesNameConfigurator(measuresRef.value[0]))
@@ -181,7 +177,9 @@ function createChart() {
   }
 }
 
-const emit = defineEmits(["chartClosed"])
+const emit = defineEmits<{
+  chartClosed: [measures: string[]]
+}>()
 
 function closeChart() {
   emit("chartClosed", measuresRef.value)

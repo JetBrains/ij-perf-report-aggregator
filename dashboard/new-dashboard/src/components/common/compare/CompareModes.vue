@@ -290,7 +290,7 @@ function handleNavigateToTest(project: string, metric: string) {
   queryParams.delete("mode1")
   queryParams.delete("mode2")
 
-  window.open(router.resolve(testURL + "?" + queryParams.toString() + `&mode=${mode1.value}` + `&mode=${mode2.value}`).href, "_blank")
+  window.open(router.resolve(`${testURL}?${queryParams.toString()}&mode=${mode1.value}&mode=${mode2.value}`).href, "_blank")
 }
 </script>
 

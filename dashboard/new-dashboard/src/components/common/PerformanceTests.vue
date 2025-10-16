@@ -271,8 +271,8 @@ const updateConfigurators = (configurator: DataQueryConfigurator) => {
 }
 provide(dashboardConfiguratorsKey, configurators)
 
-function onTestChartClosed(metric: Ref<string[]>) {
-  measureConfigurator.setSelected(measureConfigurator.selected.value?.filter((item) => !metric.value.includes(item)) as string[])
+function onTestChartClosed(metric: string[]) {
+  measureConfigurator.setSelected(measureConfigurator.selected.value?.filter((item) => !metric.includes(item)) as string[])
 }
 
 function onMeasureChartClosed(projects: string[]) {

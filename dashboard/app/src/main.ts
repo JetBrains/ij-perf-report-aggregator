@@ -12,7 +12,6 @@ import { createAndConfigureRouter } from "./route"
 // avoid tiff/svg/other deprecated stuff in a final build
 import "../theme/primeicons.css"
 import { MyPreset } from "../theme/theme"
-import "./main.css"
 
 import "../theme/button.css"
 import "../theme/menubar.css"

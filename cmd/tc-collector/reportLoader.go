@@ -9,7 +9,6 @@ import (
 	"io"
 	"log/slog"
 	"net/url"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -20,10 +19,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var networkRequestCount = runtime.NumCPU() + 1
-
 func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
-	networkRequestCount = 5
+	var networkRequestCount = 1
 	t.logger.Info("Network request count", "count", networkRequestCount)
 
 	for index, build := range builds {

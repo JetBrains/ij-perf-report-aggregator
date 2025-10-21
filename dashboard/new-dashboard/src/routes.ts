@@ -174,10 +174,15 @@ enum ROUTES {
   RubyMineCompareBranches = `${ROUTE_PREFIX.RubyMine}/${COMPARE_BRANCHES_ROUTE}`,
   RubyMineCompareModes = `${ROUTE_PREFIX.RubyMine}/${COMPARE_MODES_ROUTE}`,
   RustRoverDashboard = `${ROUTE_PREFIX.Rust}/rustPluginDashboard`,
+  RustRoverDashboardDev = `${ROUTE_PREFIX.Rust}/rustPluginDashboardDev`,
   RustRoverProductMetricsDashboard = `${ROUTE_PREFIX.Rust}/${PRODUCT_METRICS_ROUTE}`,
+  RustRoverProductMetricsDashboardDev = `${ROUTE_PREFIX.Rust}/${PRODUCT_METRICS_ROUTE}Dev`,
   RustRoverFirstStartupDashboard = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboard`,
+  RustRoverFirstStartupDashboardDev = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboardDev`,
   RustTests = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}`,
+  RustTestsDev = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}Dev`,
   RustCompare = `${ROUTE_PREFIX.Rust}/${COMPARE_ROUTE}`,
+  RustCompareBranchesDev = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}Dev`,
   RustCompareBranches = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
   ScalaCompare = `${ROUTE_PREFIX.Scala}/${COMPARE_ROUTE}`,
@@ -838,24 +843,44 @@ const RUST: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.RustRoverFirstStartupDashboard,
+          url: ROUTES.RustRoverFirstStartupDashboardDev,
           label: "RustRover First Startup Dashboard",
         },
         {
-          url: ROUTES.RustRoverProductMetricsDashboard,
+          url: ROUTES.RustRoverFirstStartupDashboard,
+          label: "RustRover First Startup Dashboard (Old)",
+        },
+        {
+          url: ROUTES.RustRoverProductMetricsDashboardDev,
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.RustRoverDashboard,
+          url: ROUTES.RustRoverProductMetricsDashboard,
+          label: PRODUCT_METRICS_LABEL + " (Old)",
+        },
+        {
+          url: ROUTES.RustRoverDashboardDev,
           label: "RustRover Dashboard",
         },
         {
-          url: ROUTES.RustTests,
+          url: ROUTES.RustRoverDashboard,
+          label: "RustRover Dashboard (Old)",
+        },
+        {
+          url: ROUTES.RustTestsDev,
           label: TESTS_LABEL,
         },
         {
-          url: ROUTES.RustCompareBranches,
+          url: ROUTES.RustTests,
+          label: TESTS_LABEL + " (Old)",
+        },
+        {
+          url: ROUTES.RustCompareBranchesDev,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.RustCompareBranches,
+          label: COMPARE_BRANCHES_LABEL + " (Old)",
         },
       ],
     },
@@ -1939,17 +1964,13 @@ const rubymineRoutes = [
 
 const rustRoutes = [
   {
-    path: ROUTES.RustCompareBranches,
-    component: COMPONENTS.compareBranches,
-    props: {
-      dbName: "perfint",
-      table: "ruby",
-    },
-    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
-  },
-  {
     path: ROUTES.RustRoverProductMetricsDashboard,
     component: () => import("./components/rust/ProductMetricsDashboard.vue"),
+    meta: { pageTitle: "RustRover product metrics" },
+  },
+  {
+    path: ROUTES.RustRoverProductMetricsDashboardDev,
+    component: () => import("./components/rust/ProductMetricsDashboardDev.vue"),
     meta: { pageTitle: "RustRover product metrics" },
   },
   {
@@ -1961,8 +1982,18 @@ const rustRoutes = [
     meta: { pageTitle: "RustRover Performance dashboard" },
   },
   {
+    path: ROUTES.RustRoverDashboardDev,
+    component: () => import("./components/rust/PerformanceDashboardRustRoverDev.vue"),
+    meta: { pageTitle: "RustRover Performance dashboard" },
+  },
+  {
     path: ROUTES.RustRoverFirstStartupDashboard,
     component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartup.vue"),
+    meta: { pageTitle: "RustRover First Startup Performance dashboard" },
+  },
+  {
+    path: ROUTES.RustRoverFirstStartupDashboardDev,
+    component: () => import("./components/rust/PerformanceDashboardRustRoverFirstStartupDev.vue"),
     meta: { pageTitle: "RustRover First Startup Performance dashboard" },
   },
   {
@@ -1973,6 +2004,17 @@ const rustRoutes = [
       table: "rust",
       initialMachine: MACHINES.AWS_LINUX,
       releaseConfigurator: eap,
+    },
+    meta: { pageTitle: "Rust Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.RustTestsDev,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "rust",
+      initialMachine: MACHINES.AWS_LINUX,
+      withInstaller: false,
     },
     meta: { pageTitle: "Rust Performance tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
@@ -1990,6 +2032,15 @@ const rustRoutes = [
     component: COMPONENTS.compareBranches,
     props: {
       dbName: "perfint",
+      table: "rust",
+    },
+    meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.RustCompareBranchesDev,
+    component: COMPONENTS.compareBranches,
+    props: {
+      dbName: "perfintDev",
       table: "rust",
     },
     meta: { pageTitle: COMPARE_BRANCHES_LABEL },

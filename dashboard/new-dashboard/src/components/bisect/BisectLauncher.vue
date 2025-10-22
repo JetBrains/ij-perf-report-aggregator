@@ -107,6 +107,18 @@
                       <label for="buildType">Build type</label>
                     </FloatLabel>
                   </div>
+                  <div class="flex items-center mb-4 mt-4">
+                    <Checkbox
+                      id="targetJpsCompile"
+                      v-model="model.targetJpsCompile"
+                      binary
+                    />
+                    <label
+                      for="targetJpsCompile"
+                      class="ml-2"
+                      >JPS compilation
+                    </label>
+                  </div>
                 </AccordionContent>
               </AccordionPanel>
             </Accordion>
@@ -161,6 +173,7 @@ const model = reactive({
   excludedCommits: "",
   buildId,
   className,
+  targetJpsCompile: false,
 })
 
 const mode = ref("Build")
@@ -189,6 +202,7 @@ async function startBisect() {
         .map((commit) => commit.trim())
         .filter((commit) => commit !== "")
         .join(","),
+      jpsCompilation: model.targetJpsCompile ? "true" : "false",
     })
     window.open(weburl, "_blank")
   } catch (error_) {
@@ -205,6 +219,15 @@ onMounted(async () => {
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
     model.buildType = await bisectClient.fetchBuildType(buildId)
+
+    const buildInfo = await bisectClient.fetchBuildInfo(buildId)
+    if (buildInfo !== null) {
+      const branch = buildInfo.branchName
+      const dateStr = buildInfo.startDate.slice(0, 8)
+      const buildDate = new Date(`${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`)
+      const cutoffDate = new Date("2025-10-19")
+      model.targetJpsCompile = branch === "master" && buildDate <= cutoffDate
+    } else model.targetJpsCompile = false
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Failed to fetch TC info"
   } finally {

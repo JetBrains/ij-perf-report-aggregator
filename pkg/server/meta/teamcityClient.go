@@ -169,6 +169,8 @@ type BuildResponse struct {
 type BuildInfo struct {
 	BuildTypeId string `json:"buildTypeId"`
 	Number      string `json:"number"`
+	BranchName  string `json:"branchName"`
+	StartDate   string `json:"startDate"`
 }
 
 type Change struct {
@@ -212,6 +214,21 @@ func (client *TeamCityClient) getBuildCounter(ctx context.Context, buildID strin
 type CommitRevisions struct {
 	FirstCommit string `json:"firstCommit"`
 	LastCommit  string `json:"lastCommit"`
+}
+
+func (client *TeamCityClient) getBuildInfo(ctx context.Context, buildID string) (*BuildInfo, error) {
+	res, err := client.makeRequest(ctx, "/app/rest/builds/id:"+buildID, map[string]string{"Accept": "application/json"})
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	var build BuildInfo
+	if err := json.NewDecoder(res.Body).Decode(&build); err != nil {
+		return nil, fmt.Errorf("failed to decode build info response: %w", err)
+	}
+
+	return &build, nil
 }
 
 func (client *TeamCityClient) getChanges(ctx context.Context, buildID string) (*CommitRevisions, error) {

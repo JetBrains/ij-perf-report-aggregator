@@ -20,7 +20,7 @@ import (
 )
 
 func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportExistenceChecker, reportAnalyzer *analyzer.ReportAnalyzer) error {
-	var networkRequestCount = 1
+	networkRequestCount := 1
 	t.logger.Info("Network request count", "count", networkRequestCount)
 
 	for index, build := range builds {

@@ -18,6 +18,7 @@ type BisectRequest struct {
 	ClassName       string `json:"className"`
 	ErrorMessage    string `json:"errorMessage"`
 	ExcludedCommits string `json:"excludedCommits"`
+	JpsCompilation  string `json:"jpsCompilation"`
 }
 
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
@@ -36,6 +37,7 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.perf.messages.mode":         "yes",
 		"target.is.bisect.run":              "true",
 		"target.commits.to.exclude":         bisectReq.ExcludedCommits,
+		"target.jps.compile":                bisectReq.JpsCompilation,
 	}
 }
 
@@ -52,6 +54,7 @@ func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 		"target.perf.messages.mode":             "no",
 		"target.is.bisect.run":                  "true",
 		"target.commits.to.exclude":             bisectReq.ExcludedCommits,
+		"target.jps.compile":                    bisectReq.JpsCompilation,
 	}
 }
 
@@ -117,6 +120,29 @@ func HandleGetTeamCityBuildCounter() http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "text/plain")
 		_, err = w.Write([]byte(counter))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func HandleGetTeamCityBuildInfo() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		buildInfo, err := teamCityClient.getBuildInfo(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(buildInfo)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

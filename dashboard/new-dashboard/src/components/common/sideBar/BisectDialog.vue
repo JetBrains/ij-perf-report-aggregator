@@ -116,6 +116,18 @@
                 <label for="buildType">Build type</label>
               </FloatLabel>
             </div>
+            <div class="flex items-center mb-4 mt-4">
+              <Checkbox
+                id="targetJpsCompile"
+                v-model="targetJpsCompile"
+                binary
+              />
+              <label
+                for="targetJpsCompile"
+                class="ml-2"
+                >JPS compilation</label
+              >
+            </div>
           </AccordionContent>
         </AccordionPanel>
       </Accordion>
@@ -190,6 +202,7 @@ const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#"
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)
 const excludedCommits = ref("")
+const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= new Date("2025-10-19"))
 
 const firstCommit = ref()
 const lastCommit = ref()
@@ -241,6 +254,7 @@ async function startBisect() {
         .map((commit) => commit.trim())
         .filter((commit) => commit !== "")
         .join(","),
+      jpsCompilation: targetJpsCompile.value ? "true" : "false",
     })
     showDialog.value = false // Close dialog on success
     window.open(weburl, "_blank")

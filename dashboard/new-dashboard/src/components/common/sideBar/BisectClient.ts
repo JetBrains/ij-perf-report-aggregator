@@ -8,6 +8,7 @@ interface BisectRequest {
   requester: string
   mode: string
   excludedCommits: string
+  jpsCompilation: string
 }
 
 interface PerformanceBisectRequest extends BisectRequest {
@@ -24,6 +25,13 @@ interface FunctionalBisectRequest extends BisectRequest {
 interface CommitRevisions {
   firstCommit: string
   lastCommit: string
+}
+
+interface BuildInfo {
+  buildTypeId: string
+  number: string
+  branchName: string
+  startDate: string
 }
 
 export class BisectClient {
@@ -77,6 +85,21 @@ export class BisectClient {
     } catch (error) {
       console.log("Error fetching TeamCity changes:", error)
       return { firstCommit: "", lastCommit: "" }
+    }
+  }
+
+  async fetchBuildInfo(buildId: string): Promise<BuildInfo | null> {
+    try {
+      const response = await fetch(`${this.serverConfigurator?.serverUrl}/api/meta/teamcity/buildInfo?buildId=${encodeURIComponent(buildId)}`)
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.log(`Failed to fetch build info: ${response.status} - ${errorText}`)
+        return null
+      }
+      return (await response.json()) as BuildInfo
+    } catch (error) {
+      console.log("Error fetching TeamCity build info:", error)
+      return null
     }
   }
 }

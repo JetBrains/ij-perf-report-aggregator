@@ -44,6 +44,7 @@
     "no-nested-ternary": "off",
     "no-ternary": "off",
     "no-unassigned-import": "off",
+    "no-warning-comments": "off",
     "param-names": "off",
     "prefer-await-to-callbacks": "off",
     "prefer-await-to-then": "off",

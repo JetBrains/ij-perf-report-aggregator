@@ -16,6 +16,36 @@ import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools
  * ```
  */
 export const metricsDescription: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
+  // FUS events (some of them used for (mega)APDEX calculations)
+  ["fus_file_types_usage_duration_ms", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_file_types_usage_time_to_show_ms", 'FUS event with groupID="" eventID="finished" eventField="full_duration_since_started_ms"'],
+  ["fus_daemon_finished_full_duration_since_started_ms", 'FUS event with groupID="daemon" eventID="" eventField=""'],
+  ["fus_completion_duration_sum", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_completion_duration_90p", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_time_to_show_90p", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_dumb_indexing_time", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_scanning_time", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_git_branches_checkout_operation", 'FUS event with groupID="git.branches" eventID="checkout.checkout_operation.finished" eventField="duration_ms"'],
+  ["fus_git_branches_vfs_refresh", 'FUS event with groupID="git.branches" eventID="checkout.vfs_refresh.finished" eventField="duration_ms"'],
+  ["fus_vcs_commit_duration", 'FUS event with groupID="vcs" eventID="commit.finished" eventField="duration_ms"'],
+  ["fus_find_usages_all", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_find_usages_first", 'FUS event with groupID="" eventID="" eventField=""'],
+  ["fus_startup_totalDuration", 'FUS event with groupID="startup" eventID="totalDuration" eventField="duration"'],
+  ["fus_reopen_startup_frame_became_interactive", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.interactive" eventField="duration_ms"'],
+  ["fus_reopen_startup_first_ui_shown", 'FUS event with groupID="reopen.project.startup.performance" eventID="first.ui.shown" eventField="duration_ms"'],
+  ["fus_reopen_startup_frame_became_visible", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.visible" eventField="duration_ms"'],
+  [
+    "fus_reopen_startup_code_loaded_and_visible_in_editor",
+    'FUS event with groupID="reopen.project.startup.performance" eventID="code.loaded.and.visible.in.editor" eventField="duration_ms"',
+  ],
+  [
+    "fus_gradle.sync",
+    'Difference between durations of FUS events with groupID="build.gradle.import" eventID="gradle.sync.finished" eventField="duration_ms" and groupID="build.gradle.import" eventID="gradle.sync.started" eventField="duration_ms"',
+  ],
+  ["fus_PROJECT_RESOLVERS", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="PROJECT_RESOLVERS" eventField="duration_ms"'],
+  ["fus_GRADLE_CALL", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="GRADLE_CALL" eventField="duration_ms"'],
+  ["fus_DATA_SERVICES", 'FUS event with groupID="build.gradle.import" eventID="phase.finished" phase="DATA_SERVICES" eventField="duration_ms"'],
+
   //completion
   ["completion", "Total time of each completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],
   ["completion#mean_value", "Mean value of all completion invocation in test. Completion invocation time is a time that it takes to load all completion variants."],

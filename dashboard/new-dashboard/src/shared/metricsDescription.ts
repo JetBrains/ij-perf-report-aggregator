@@ -17,8 +17,8 @@ import { GRADLE_METRICS_NEW_DASHBOARD } from "../components/intelliJ/build-tools
  */
 export const metricsDescription: Map<string, string | MetricInfo> = new Map<string, string | MetricInfo>([
   // FUS events (some of them used for (mega)APDEX calculations)
-  ["fus_file_types_usage_duration_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="duration_ms"'],
-  ["fus_file_types_usage_time_to_show_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="time_to_show"'],
+  ["fus_file_types_usage_duration_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="duration_ms", (mega)APDEX: "File Openings: Code Loaded"'],
+  ["fus_file_types_usage_time_to_show_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="time_to_show", (mega)APDEX: "File Openings: Tab Shown"'],
   ["fus_daemon_finished_full_duration_since_started_ms", 'FUS event with groupID="daemon" eventID="finished" eventField="full_duration_since_started_ms"'],
   ["fus_completion_duration_sum", 'SUM of FUS events with groupID="completion" eventID="finished" eventField="duration"'],
   ["fus_completion_duration_90p", '90 percentile of FUS events with groupID="completion" eventID="finished" eventField="duration"'],

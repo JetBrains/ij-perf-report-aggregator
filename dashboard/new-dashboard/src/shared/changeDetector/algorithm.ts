@@ -1,4 +1,4 @@
-import { avgSpread, center, ratio, shift } from "pragmastat"
+import { avgSpread, center, shift } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -53,11 +53,11 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
 
-    const ratioValue = ratio(segmentAfter, segmentBefore)
-    const percentageDifference = Math.abs((ratioValue - 1) * 100)
-
     const centerBefore = center(segmentBefore)
     const centerAfter = center(segmentAfter)
+    const ratioValue = centerAfter / centerBefore
+
+    const percentageDifference = Math.abs((ratioValue - 1) * 100)
     const absoluteChange = Math.abs(centerAfter - centerBefore)
 
     const shiftValue = shift(segmentAfter, segmentBefore)

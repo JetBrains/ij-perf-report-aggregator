@@ -68,12 +68,6 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 			continue
 		}
 
-		ratio, err := pragmastat.Ratio(lastSegment, segments[i])
-		if err != nil {
-			skippedSegments++
-			continue
-		}
-
 		currentCenter, err := pragmastat.Center(lastSegment)
 		if err != nil {
 			skippedSegments++
@@ -84,6 +78,8 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 			skippedSegments++
 			continue
 		}
+
+		ratio := currentCenter / previousCenter
 
 		percentageChange := math.Abs((ratio - 1) * 100)
 		absoluteChange := math.Abs(currentCenter - previousCenter)
@@ -97,7 +93,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 			break
 		}
 
-		isDegradation := ratio > 1
+		isDegradation := currentCenter > previousCenter
 		reportType := analysisSettings.GetReportType()
 
 		if !isDegradation && reportType == DegradationEvent {

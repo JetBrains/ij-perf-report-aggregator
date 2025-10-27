@@ -202,7 +202,7 @@ const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#"
 const className = fullClassName.slice(fullClassName.lastIndexOf(".") + 1)
 const targetValue: Ref<string | null> = ref(null)
 const excludedCommits = ref("")
-const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= new Date("2025-10-19"))
+const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= new Date("2025-10-19T23:59:59.999Z"))
 
 const firstCommit = ref()
 const lastCommit = ref()

@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
-	github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.30
+	github.com/AndreyAkinshin/pragmastat/go/v3 v3.1.32
 	github.com/ClickHouse/ch-go v0.69.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.40.3
 	github.com/VictoriaMetrics/fastcache v1.13.0
@@ -31,7 +31,7 @@ require (
 	github.com/zeebo/xxh3 v1.0.2
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
-	golang.org/x/exp v0.0.0-20251017212417-90e834f514db
+	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546
 	golang.org/x/sync v0.17.0
 	golang.org/x/tools v0.38.0
 )

@@ -20,6 +20,11 @@
         :measure="restartFromBccMetrics"
         :projects="['GW: restart from BCC']"
       />
+      <GroupProjectsChart
+        label="GW: restart from SE action"
+        :measure="restartFromSeActionMetrics"
+        :projects="['GW: restart from SE action']"
+      />
     </section>
   </DashboardPage>
 </template>
@@ -49,5 +54,12 @@ const restartFromBccMetrics = [
   "gw.restart.bcc.from.restart.clicked.to.host.first.metric",
   "gw.restart.bcc.from.host.first.metric.to.connection.established",
   "gw.restart.bcc.from.connection.established.to.editors.opened",
+]
+
+const restartFromSeActionMetrics = [
+  "gw.restart.se.from.restart.clicked.to.editors.opened",
+  "gw.restart.se.from.restart.clicked.to.host.first.metric",
+  "gw.restart.se.from.host.first.metric.to.connection.established",
+  "gw.restart.se.from.connection.established.to.editors.opened",
 ]
 </script>

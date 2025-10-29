@@ -8,6 +8,23 @@ const (
 	ImprovementEvent
 )
 
+// AnalysisKind selects which algorithm to use for detection.
+// Default (zero) keeps backward-compatible change-point detection.
+type AnalysisKind int
+
+const (
+	ChangePointAnalysis AnalysisKind = iota
+	ThresholdAnalysis
+)
+
+// ThresholdMode specifies how the latest value should be compared to the threshold.
+type ThresholdMode int
+
+const (
+	ThresholdGreaterThan ThresholdMode = iota
+	ThresholdLessThan
+)
+
 type AnalysisSettings struct {
 	ReportType ReportType
 	// Determines the minimum length of a segment the larger the segment the more accurate the analysis but it will take more time to detect degradation
@@ -23,6 +40,10 @@ type AnalysisSettings struct {
 	// Number of days to check for missing data.
 	// The default value is -3 (3 days ago).
 	DaysToCheckMissing int
+
+	AnalysisKind   AnalysisKind
+	ThresholdMode  ThresholdMode
+	ThresholdValue float64
 }
 
 func (s AnalysisSettings) GetReportType() ReportType {
@@ -47,3 +68,12 @@ func (s AnalysisSettings) GetDaysToCheckMissing() int {
 	}
 	return s.DaysToCheckMissing
 }
+
+// GetAnalysisKind returns the analysis kind setting.
+func (s AnalysisSettings) GetAnalysisKind() AnalysisKind { return s.AnalysisKind }
+
+// GetThresholdMode returns the threshold comparison mode.
+func (s AnalysisSettings) GetThresholdMode() ThresholdMode { return s.ThresholdMode }
+
+// GetThresholdValue returns the threshold value.
+func (s AnalysisSettings) GetThresholdValue() float64 { return s.ThresholdValue }

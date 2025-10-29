@@ -24,3 +24,14 @@ func TestMavenSetting(t *testing.T) {
 		assert.Equal(t, detector.DegradationEvent, setting.AnalysisSettings.ReportType)
 	}
 }
+
+func TestGenerateAIATestTokenSettings(t *testing.T) {
+	t.Parallel()
+	settings := make([]detector.PerformanceSettings, 0, 1000)
+	settings = append(settings, GenerateAIATestTokenSettings()...)
+	for _, setting := range settings {
+		assert.Equal(t, detector.ThresholdAnalysis, setting.AnalysisSettings.AnalysisKind)
+		assert.Equal(t, detector.ThresholdGreaterThan, setting.AnalysisSettings.ThresholdMode)
+		assert.InEpsilon(t, 95.0, setting.AnalysisSettings.ThresholdValue, 0.0001)
+	}
+}

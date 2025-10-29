@@ -1,21 +1,41 @@
 package setting
 
 import (
-	"net/http"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
-func GenerateIdeaIndexingSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
+func getIndexingProjects() ([]string, error) {
+	var result map[string]interface{}
+	env := os.Getenv("KO_DATA_PATH")
+	projectsFile := "projects/idea_indexing_projects.json"
+	var indexingProjectsFilePath string
+	if env == "" {
+		indexingProjectsFilePath = filepath.Join("cmd", "degradation-detector", "kodata", projectsFile)
+	} else {
+		indexingProjectsFilePath = filepath.Join(env, projectsFile)
+	}
+	content, err := os.ReadFile(indexingProjectsFilePath)
+	if err != nil {
+		return nil, err
+	}
+	_ = json.Unmarshal(content, &result)
+	return extractStrings(result), nil
+}
+
+func GenerateIdeaIndexingSettings() []detector.PerformanceSettings {
 	return slices.Concat(
-		generateIdeaIndexingSettings(backendUrl, client),
+		generateIdeaIndexingSettings(),
 	)
 }
 
-func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	tests := []string{"%/indexing", "%/%-scanning"}
+func generateIdeaIndexingSettings() []detector.PerformanceSettings {
+	tests, _ := getIndexingProjects()
 	baseSettings := detector.PerformanceSettings{
 		Db:    "perfintDev",
 		Table: "idea",
@@ -24,11 +44,10 @@ func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []dete
 			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
-	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
 	for _, machine := range machines {
-		for _, test := range testsExpanded {
+		for _, test := range tests {
 			metrics := getIndexingMetricFromTestNameForIDEA(test)
 			for _, metric := range metrics {
 				settings = append(settings, detector.PerformanceSettings{

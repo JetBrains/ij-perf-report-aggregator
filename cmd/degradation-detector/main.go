@@ -89,7 +89,7 @@ func generateFleetStartupSettings() []detector.FleetStartupSettings {
 func generatePerformanceSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	return slices.Concat(
 		setting.GenerateIdeaSettings(backendUrl, client),
-		setting.GenerateIdeaIndexingSettings(backendUrl, client),
+		setting.GenerateIdeaIndexingSettings(),
 		setting.GenerateWorkspaceSettings(),
 		setting.GenerateKotlinSettings(),
 		setting.GenerateMavenSettings(),

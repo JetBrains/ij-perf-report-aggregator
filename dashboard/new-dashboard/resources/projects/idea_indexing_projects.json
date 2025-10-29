@@ -1,0 +1,172 @@
+{
+  "vfsRefresh": {
+    "default": [
+      "intellij_commit/vfsRefresh/default",
+      "intellij_commit/vfsRefresh/with-1-thread(s)",
+      "intellij_commit/vfsRefresh/git-status"
+    ],
+    "afterMassChanges": [
+      "empty_project/vfs-mass-update-txt",
+      "empty_project/vfs-mass-update-java",
+      "empty_project/vfs-mass-update-kt"
+    ]
+  },
+  "indexing": {
+    "big": [
+      "community/indexing",
+      "intellij_commit/indexing",
+      "community/indexingWithHighlighting",
+      "indexing-community/indexingWithHighlighting",
+      "indexing-intellij_commit/indexingWithHighlighting",
+      "space/indexing",
+      "kotlin_coroutines/indexing"
+    ],
+    "medium": [
+      "kotlin/indexing",
+      "toolbox_enterprise/indexing",
+      "spring_boot/indexing",
+      "keycloak_release_20/indexing"
+    ],
+    "small": [
+      "empty_project/indexing",
+      "grails/indexing",
+      "java/indexing",
+      "spring_boot_maven/indexing",
+      "kotlin_petclinic/indexing",
+      "train-ticket/indexing"
+    ]
+  },
+  "firstScanning": {
+    "big": [
+      "community/indexing",
+      "intellij_commit/indexing",
+      "space/indexing",
+      "kotlin_coroutines/indexing"
+    ],
+    "medium": [
+      "kotlin/indexing",
+      "toolbox_enterprise/indexing",
+      "spring_boot/indexing",
+      "keycloak_release_20/indexing"
+    ],
+    "small": [
+      "empty_project/indexing",
+      "grails/indexing",
+      "java/indexing",
+      "spring_boot_maven/indexing",
+      "kotlin_petclinic/indexing",
+      "train-ticket/indexing"
+    ]
+  },
+  "secondScanning": {
+    "big": [
+      "community/second-scanning",
+      "intellij_commit/second-scanning",
+      "space/second-scanning",
+      "kotlin_coroutines/second-scanning"
+    ],
+    "medium": [
+      "kotlin/second-scanning",
+      "toolbox_enterprise/second-scanning",
+      "spring_boot/second-scanning",
+      "keycloak_release_20/second-scanning"
+    ],
+    "small": [
+      "empty_project/second-scanning",
+      "grails/second-scanning",
+      "java/second-scanning",
+      "spring_boot_maven/second-scanning",
+      "kotlin_petclinic/second-scanning",
+      "train-ticket/second-scanning"
+    ]
+  },
+  "thirdScanning": {
+    "big": [
+      "community/third-scanning",
+      "intellij_commit/third-scanning",
+      "intellij_commit/allow-skipping-full-scanning",
+      "space/third-scanning",
+      "kotlin_coroutines/third-scanning"
+    ],
+    "medium": [
+      "kotlin/third-scanning",
+      "toolbox_enterprise/third-scanning",
+      "spring_boot/third-scanning",
+      "keycloak_release_20/third-scanning"
+    ],
+    "small": [
+      "empty_project/third-scanning",
+      "grails/third-scanning",
+      "java/third-scanning",
+      "spring_boot_maven/third-scanning",
+      "kotlin_petclinic/third-scanning",
+      "train-ticket/third-scanning"
+    ]
+  },
+  "numberOfIndexedFiles": {
+    "big": [
+      "community/indexing",
+      "intellij_commit/indexing",
+      "space/indexing",
+      "kotlin_coroutines/indexing",
+      "community/second-scanning",
+      "intellij_commit/second-scanning",
+      "space/second-scanning",
+      "kotlin_coroutines/second-scanning",
+      "community/third-scanning",
+      "intellij_commit/third-scanning",
+      "space/third-scanning",
+      "kotlin_coroutines/third-scanning",
+      "intellij_commit/allow-skipping-full-scanning"
+    ],
+    "medium": [
+      "kotlin/indexing",
+      "toolbox_enterprise/indexing",
+      "spring_boot/indexing",
+      "keycloak_release_20/indexing",
+      "kotlin/second-scanning",
+      "toolbox_enterprise/second-scanning",
+      "spring_boot/second-scanning",
+      "keycloak_release_20/second-scanning",
+      "kotlin/third-scanning",
+      "toolbox_enterprise/third-scanning",
+      "spring_boot/third-scanning",
+      "keycloak_release_20/third-scanning"
+    ],
+    "small": [
+      "empty_project/indexing",
+      "grails/indexing",
+      "java/indexing",
+      "spring_boot_maven/indexing",
+      "kotlin_petclinic/indexing",
+      "train-ticket/indexing",
+      "empty_project/second-scanning",
+      "grails/second-scanning",
+      "java/second-scanning",
+      "spring_boot_maven/second-scanning",
+      "kotlin_petclinic/second-scanning",
+      "train-ticket/second-scanning",
+      "empty_project/third-scanning",
+      "grails/third-scanning",
+      "java/third-scanning",
+      "spring_boot_maven/third-scanning",
+      "kotlin_petclinic/third-scanning",
+      "train-ticket/third-scanning"
+    ]
+  },
+  "afterCheckout": [
+    "intellij_sources/checkout/243",
+    "intellij_commit/checkout/243"
+  ],
+  "indexStorage": [
+    "index-storage/default-2shards-intellij_commit/indexing",
+    "index-storage/default-intellij_commit/indexing",
+    "index-storage/default-w-coroutines-intellij_commit/indexing",
+    "index-storage/default-w-mru-cache-intellij_commit/indexing",
+    "index-storage/fake-writer-intellij_commit/indexing",
+    "index-storage/mmapped-2shards-intellij_commit/indexing",
+    "index-storage/mmapped-2shards-w-coroutines-intellij_commit/indexing",
+    "index-storage/mmapped-intellij_commit/indexing",
+    "index-storage/mmapped-w-coroutines-intellij_commit/indexing"
+  ]
+}

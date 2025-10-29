@@ -26,6 +26,10 @@ type analysisSettings interface {
 	GetMedianDifferenceThreshold() float64
 	GetEffectSizeThreshold() float64
 	GetDaysToCheckMissing() int
+
+	GetAnalysisKind() AnalysisKind
+	GetThresholdMode() ThresholdMode
+	GetThresholdValue() float64
 }
 
 func (v CenterValues) PercentageChange() float64 {
@@ -34,6 +38,10 @@ func (v CenterValues) PercentageChange() float64 {
 
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
 	degradations := make([]Degradation, 0)
+
+	if analysisSettings.GetAnalysisKind() == ThresholdAnalysis {
+		return detectThresholdExceed(values, builds, timestamps, analysisSettings)
+	}
 
 	minimumSegmentLength := analysisSettings.GetMinimumSegmentLength()
 	if minimumSegmentLength == 0 {
@@ -113,6 +121,44 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 	}
 
 	return degradations
+}
+
+// detectThresholdExceed emits a degradation when the latest value crosses the configured threshold
+// according to the selected ThresholdMode. For GreaterThan mode, strictly greater (>) is used; for
+// LessThan mode, strictly less (<) is used.
+func detectThresholdExceed(values []int, builds []string, timestamps []int64, s analysisSettings) []Degradation {
+	result := make([]Degradation, 0)
+	if len(values) == 0 || len(builds) == 0 || len(timestamps) == 0 {
+		return result
+	}
+	lastIdx := len(values) - 1
+	last := float64(values[lastIdx])
+	threshold := s.GetThresholdValue()
+
+	meets := false
+	switch s.GetThresholdMode() {
+	case ThresholdGreaterThan:
+		meets = last > threshold
+	case ThresholdLessThan:
+		meets = last < threshold
+	}
+	if !meets {
+		return result
+	}
+	// Treat exceeding threshold as degradation event; consumer can filter by ReportType if needed
+	var previous float64
+	if lastIdx > 0 {
+		previous = float64(values[lastIdx-1])
+	} else {
+		previous = threshold
+	}
+	result = append(result, Degradation{
+		Build:         builds[lastIdx],
+		timestamp:     timestamps[lastIdx],
+		medianValues:  CenterValues{previousValue: previous, newValue: last},
+		IsDegradation: true,
+	})
+	return result
 }
 
 func GetSegmentsBetweenChangePoints(changePoints []int, values []int) [][]int {

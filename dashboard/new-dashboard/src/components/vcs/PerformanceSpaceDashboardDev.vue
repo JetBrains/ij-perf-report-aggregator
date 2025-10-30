@@ -62,7 +62,7 @@
           <GroupProjectsChart
             id="commit"
             label="Commit FUS duration"
-            measure="git-commit#fusCommitDuration"
+            measure="fus_vcs_commit_duration"
             :projects="commitProjects"
           />
         </section>
@@ -148,14 +148,14 @@
         <section>
           <GroupProjectsChart
             label="Checkout duration(FUS)"
-            measure="git-checkout-space#fusCheckoutDuration"
+            measure="fus_git_branches_checkout_operation"
             :projects="checkoutProjects"
           />
         </section>
         <section>
           <GroupProjectsChart
             label="Checkout VFS refresh duration(FUS)"
-            measure="git-checkout-space#fusVfsRefreshDuration"
+            measure="fus_git_branches_vfs_refresh"
             :projects="checkoutProjects"
           />
         </section>

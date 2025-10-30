@@ -19,7 +19,10 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   // FUS events (some of them used for (mega)APDEX calculations)
   ["fus_file_types_usage_duration_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="duration_ms", (mega)APDEX: "File Openings: Code Loaded"'],
   ["fus_file_types_usage_time_to_show_ms", 'FUS event with groupID="file.types.usage" eventID="open" eventField="time_to_show", (mega)APDEX: "File Openings: Tab Shown"'],
-  ["fus_daemon_finished_full_duration_since_started_ms", 'FUS event with groupID="daemon" eventID="finished" eventField="full_duration_since_started_ms"'],
+  [
+    "fus_daemon_finished_full_duration_since_started_ms",
+    'FUS event with groupID="daemon" eventID="finished" eventField="full_duration_since_started_ms. Full highlighting duration since the file was modified and/or dumb mode status changed. It should be equal to the sum of segments."',
+  ],
   ["fus_completion_duration_sum", 'SUM of FUS events with groupID="completion" eventID="finished" eventField="duration"'],
   ["fus_completion_duration_90p", '90 percentile of FUS events with groupID="completion" eventID="finished" eventField="duration"'],
   ["fus_time_to_show_90p", '90 percentile of FUS events with groupID="completion" eventID="finished" eventField="time_to_show"'],
@@ -29,14 +32,14 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["fus_git_branches_vfs_refresh", 'FUS event with groupID="git.branches" eventID="checkout.vfs_refresh.finished" eventField="duration_ms"'],
   ["fus_vcs_commit_duration", 'FUS event with groupID="vcs" eventID="commit.finished" eventField="duration_ms"'],
   ["fus_find_usages_all", 'FUS event with groupID="usage.view" eventID="finished" eventField="duration_ms"'],
-  ["fus_find_usages_first", 'FUS event with groupID="usage.view" eventID="finished" eventField="duration_first_results_ms"'],
+  ["fus_find_usages_first", 'FUS event with groupID="usage.view" eventID="finished" eventField="duration_first_results_ms. Old startup metric"'],
   ["fus_startup_totalDuration", 'FUS event with groupID="startup" eventID="totalDuration" eventField="duration"'],
   ["fus_reopen_startup_frame_became_interactive", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.interactive" eventField="duration_ms"'],
   ["fus_reopen_startup_first_ui_shown", 'FUS event with groupID="reopen.project.startup.performance" eventID="first.ui.shown" eventField="duration_ms"'],
   ["fus_reopen_startup_frame_became_visible", 'FUS event with groupID="reopen.project.startup.performance" eventID="frame.became.visible" eventField="duration_ms"'],
   [
     "fus_reopen_startup_code_loaded_and_visible_in_editor",
-    'FUS event with groupID="reopen.project.startup.performance" eventID="code.loaded.and.visible.in.editor" eventField="duration_ms"',
+    'FUS event with groupID="reopen.project.startup.performance" eventID="code.loaded.and.visible.in.editor" eventField="duration_ms. New main metric for startup"',
   ],
   [
     "fus_gradle.sync",
@@ -60,7 +63,6 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
   ["localInspections", "Sum time of all analysis. From Daemon#restart till DaemonListener#daemonFinished."],
   ["localInspections#mean_value", "Code analysis mean time. From Daemon#restart till DaemonListener#daemonFinished."],
   ["runDaemon/executionTime", "Time it takes to complete a first daemon run. It might be restarted so it's not a full time."],
-  ["codeAnalysisDaemon/fusExecutionTime", "Full highlighting duration since the file was modified and/or dumb mode status changed. It should be equal to the sum of segments."],
   ["globalInspections", "Time of all inspections runned in batch mode (Inspect Project)."],
   //indexing
   ["indexSize", "Index size in (in kb)"],
@@ -75,9 +77,6 @@ export const metricsDescription: Map<string, string | MetricInfo> = new Map<stri
     "pageHit",
     "CPU attempts to obtain a needed page from main memory and the page exists in main memory (RAM), it is referred to as a PAGE HIT. This metric displays the number of successful Pages' obtainment.",
   ],
-  // startup
-  ["reopenProjectPerformance/fusCodeVisibleInEditorDurationMs", metricInfo("New main metric for startup", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
-  ["startup/fusTotalDuration", metricInfo("Old metric (outdated)", "https://youtrack.jetbrains.com/articles/IJPL-A-286/Startup-Metric")],
   //typing
   ["typing", "Typing executing time (usually equal to number of typed characters times delay between key presses)"],
   ["typing#average_awt_delay", "How long on average it takes to process a single empty AWT event in the queue during typing."],

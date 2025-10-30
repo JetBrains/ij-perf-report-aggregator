@@ -95,7 +95,7 @@
             title=""
           />
           <LineChart
-            :measures="['metrics.codeAnalysisDaemon/fusExecutionTime', 'metrics.runDaemon/executionTime']"
+            :measures="['metrics.fus_daemon_finished_full_duration_since_started_ms', 'metrics.runDaemon/executionTime']"
             :configurators="configurators"
             title=""
             tooltip-trigger="axis"

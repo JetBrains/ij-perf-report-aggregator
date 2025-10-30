@@ -25,7 +25,7 @@ func GenerateStartupSettingsForGoland(backendUrl string, client *http.Client) []
 		slog.Error("error while getting projects", "error", err)
 		return settings
 	}
-	metrics := []string{"startup/fusTotalDuration", "progressMetric/Progress: Updating Go modules dependencies", "metrics.progressMetric/Progress: Updating Go modules dependencies#mean_value"}
+	metrics := []string{"fus_startup_totalDuration", "progressMetric/Progress: Updating Go modules dependencies", "metrics.progressMetric/Progress: Updating Go modules dependencies#mean_value"}
 	for _, project := range projects {
 		for _, metric := range metrics {
 			settings = append(settings, detector.StartupSettings{

@@ -159,27 +159,27 @@ const getCustomCharts = (configurator: DimensionConfigurator) => {
 const mainCharts: ChartDefinition[] = [
   {
     labels: ["Reopen Project FUS code visible in editor duration"],
-    measures: ["reopenProjectPerformance/fusCodeVisibleInEditorDurationMs"],
+    measures: [["reopenProjectPerformance/fusCodeVisibleInEditorDurationMs", "fus_reopen_startup_code_loaded_and_visible_in_editor"]],
     projects: ["measureStartup"],
   },
   {
     labels: ["Reopen Project FUS first UI shown"],
-    measures: ["reopenProjectPerformance/fusFirstUIShowsMs"],
+    measures: [["reopenProjectPerformance/fusFirstUIShowsMs", "fus_reopen_startup_first_ui_shown"]],
     projects: ["measureStartup"],
   },
   {
     labels: ["Reopen Project FUS frame became interactive"],
-    measures: ["reopenProjectPerformance/fusFrameBecameInteractiveMs"],
+    measures: [["reopenProjectPerformance/fusFrameBecameInteractiveMs", "fus_reopen_startup_frame_became_interactive"]],
     projects: ["measureStartup"],
   },
   {
     labels: ["Reopen Project FUS frame became visible"],
-    measures: ["reopenProjectPerformance/fusFrameBecameVisibleMs"],
+    measures: [["reopenProjectPerformance/fusFrameBecameVisibleMs", "fus_reopen_startup_frame_became_visible"]],
     projects: ["measureStartup"],
   },
   {
     labels: ["Startup FUS total duration"],
-    measures: ["startup/fusTotalDuration"],
+    measures: [["startup/fusTotalDuration", "fus_startup_totalDuration"]],
     projects: ["measureStartup"],
   },
   {
@@ -189,7 +189,7 @@ const mainCharts: ChartDefinition[] = [
   },
   {
     labels: ["Code Analysis Daemon FUS execution time"],
-    measures: ["codeAnalysisDaemon/fusExecutionTime"],
+    measures: [["codeAnalysisDaemon/fusExecutionTime", "fus_daemon_finished_full_duration_since_started_ms"]],
     projects: ["measureStartup"],
   },
   {

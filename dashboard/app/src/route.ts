@@ -13,7 +13,7 @@ export function createAndConfigureRouter(): Router {
   const routes: RouteRecordRaw[] = [
     {
       path: "",
-      redirect: "/intellij/dashboard",
+      redirect: "/intellij/product-metrics",
     },
     {
       path: "/:catchAll(.*)",

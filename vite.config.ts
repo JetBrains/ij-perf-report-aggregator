@@ -23,6 +23,7 @@ export default defineConfig({
     include: [...configDefaults.include, "**/*.{test,spec}.ts"],
     globals: true,
     environment: "jsdom",
+    setupFiles: ["tests/setup.ts"],
     testTimeout: 10000,
   },
   plugins: [

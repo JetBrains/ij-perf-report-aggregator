@@ -9,16 +9,16 @@ import (
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )
 
-func extractStrings(data interface{}) []string {
+func extractStrings(data any) []string {
 	var result []string
 	switch v := data.(type) {
 	case string:
 		result = append(result, v)
-	case []interface{}:
+	case []any:
 		for _, item := range v {
 			result = append(result, extractStrings(item)...)
 		}
-	case map[string]interface{}:
+	case map[string]any:
 		for _, item := range v {
 			result = append(result, extractStrings(item)...)
 		}
@@ -27,7 +27,7 @@ func extractStrings(data interface{}) []string {
 }
 
 func getKotlinProjects() ([]string, error) {
-	var result interface{}
+	var result any
 	env := os.Getenv("KO_DATA_PATH")
 	projectsFile := "projects/kotlin_projects.json"
 	var kotlinProjectsFilePath string

@@ -34,7 +34,7 @@ func execute(taskContext context.Context) error {
 		ConnMaxLifetime: 6 * time.Hour,
 		DialTimeout:     time.Hour,
 		ReadTimeout:     time.Hour,
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			// https://github.com/ClickHouse/ClickHouse/issues/2833
 			// ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
 			"send_timeout":     30_000,

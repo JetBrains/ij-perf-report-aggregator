@@ -46,7 +46,7 @@ type RunResult struct {
 	TriggeredBy string
 	BuildNumber string
 
-	ExtraFieldData []interface{}
+	ExtraFieldData []any
 
 	branch string
 }
@@ -232,7 +232,7 @@ func (t *InsertReportManager) WriteMetrics(product string, row *RunResult, branc
 		}
 	}
 
-	args := make([]interface{}, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
+	args := make([]any, 0, t.nonMetricFieldCount+t.config.extraFieldCount)
 	args = append(args, row.Machine, row.GeneratedTime, project, uint32(row.TcBuildId), branch, row.TcBuildType)
 
 	if t.config.HasProductField {

@@ -476,7 +476,7 @@ func logError(message string, err error, exceptions *[]string) {
 	*exceptions = append(*exceptions, fmt.Sprintf("Message: %s. Error: %s", message, err.Error()))
 }
 
-func marshalAndWriteIssueResponse(writer http.ResponseWriter, response interface{}) error {
+func marshalAndWriteIssueResponse(writer http.ResponseWriter, response any) error {
 	jsonBytes, err := json.Marshal(response)
 	if err != nil {
 		slog.Error("cannot marshal response", "error", err)

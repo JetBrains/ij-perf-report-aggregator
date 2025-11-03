@@ -68,7 +68,7 @@ func FetchAllTests(backendUrl string, client *http.Client, settings PerformanceS
 }
 
 func extractValuesFromRequest(response []byte) ([]string, error) {
-	var data [][]interface{}
+	var data [][]any
 
 	err := json.Unmarshal(response, &data)
 	if err != nil {

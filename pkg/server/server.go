@@ -54,7 +54,7 @@ func Serve(dbUrl string, natsUrl string) error {
 	}
 
 	defer func() {
-		statsServer.nameToDbPool.Range(func(_, pool interface{}) bool {
+		statsServer.nameToDbPool.Range(func(_, pool any) bool {
 			p, ok := pool.(*puddle.Pool[*ch.Client])
 			if ok {
 				p.Close()

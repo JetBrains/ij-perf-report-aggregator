@@ -76,6 +76,6 @@ func analyzePerfReport[T Numeric](runResult *RunResult, data *fastjson.Value) er
 		return nil
 	}
 
-	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes, mode}
+	runResult.ExtraFieldData = []any{measureNames, measureValues, measureTypes, mode}
 	return nil
 }

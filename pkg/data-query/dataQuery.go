@@ -31,11 +31,11 @@ type Query struct {
 }
 
 type QueryFilter struct {
-	Field    string      `json:"f"`
-	Value    interface{} `json:"v,omitempty"`
-	Sql      string      `json:"q,omitempty"`
-	Operator string      `json:"o,omitempty"`
-	Split    bool        `json:"s"`
+	Field    string `json:"f"`
+	Value    any    `json:"v,omitempty"`
+	Sql      string `json:"q,omitempty"`
+	Operator string `json:"o,omitempty"`
+	Split    bool   `json:"s"`
 }
 
 type QueryDimension struct {
@@ -111,8 +111,8 @@ func getSplitParameters(query Query) (*SplitParameters, error) {
 }
 
 // Helper function to assert filter.Value to a slice of empty interfaces.
-func assertValueSlice(value interface{}) ([]interface{}, error) {
-	valueSlice, ok := value.([]interface{})
+func assertValueSlice(value any) ([]any, error) {
+	valueSlice, ok := value.([]any)
 	if !ok {
 		return nil, fmt.Errorf("invalid filter.Value type %T, expected array", value)
 	}
@@ -120,7 +120,7 @@ func assertValueSlice(value interface{}) ([]interface{}, error) {
 }
 
 // Helper function to convert values in the slice to a map with string keys.
-func convertValuesToMap(valueSlice []interface{}) (map[string]int, error) {
+func convertValuesToMap(valueSlice []any) (map[string]int, error) {
 	values := make(map[string]int)
 	for i, value := range valueSlice {
 		strValue, ok := value.(string)
@@ -450,7 +450,7 @@ func writeWhereClause(sb *strings.Builder, query Query) error {
 				writeString(sb, v[j])
 			}
 			sb.WriteByte(')')
-		case []interface{}:
+		case []any:
 			sb.WriteString(" in (")
 			for j := range v {
 				if j != 0 {

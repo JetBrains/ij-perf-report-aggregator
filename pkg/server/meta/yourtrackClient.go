@@ -35,10 +35,10 @@ type CustomFieldValue struct {
 }
 
 type CustomField struct {
-	ID    string      `json:"id,omitempty"`
-	Name  string      `json:"name"`
-	Type  string      `json:"$type"`
-	Value interface{} `json:"value"`
+	ID    string `json:"id,omitempty"`
+	Name  string `json:"name"`
+	Type  string `json:"$type"`
+	Value any    `json:"value"`
 }
 
 type Visibility struct {
@@ -78,7 +78,7 @@ func (client *YoutrackClient) CreateIssue(ctx context.Context, info CreateIssueI
 
 	slog.Info("Create issue data:", "info", string(body))
 
-	var jsonData map[string]interface{}
+	var jsonData map[string]any
 	if err := json.Unmarshal(body, &jsonData); err != nil {
 		slog.Error("error unmarshalling JSON:", "error", err)
 	} else {

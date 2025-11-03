@@ -50,6 +50,6 @@ func analyzePerfJbrReport(runResult *RunResult, data model.ExtraData) bool {
 	if len(measureNames) == 0 && len(measureValues) == 0 {
 		return true
 	}
-	runResult.ExtraFieldData = []interface{}{measureNames, measureValues, measureTypes}
+	runResult.ExtraFieldData = []any{measureNames, measureValues, measureTypes}
 	return false
 }

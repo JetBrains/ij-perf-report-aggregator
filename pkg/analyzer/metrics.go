@@ -153,7 +153,7 @@ func init() {
 	}
 }
 
-func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]interface{}, logger *slog.Logger) error {
+func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]any, logger *slog.Logger) error {
 	for _, info := range IjMetricDescriptors {
 		switch info.maxValue {
 		case 65535:
@@ -221,7 +221,7 @@ func ComputeIjMetrics(nonMetricFieldCount int, report *model.Report, result *[]i
 	return nil
 }
 
-func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.Report, result *[]interface{}) error {
+func setMetric(nonMetricFieldCount int, activity model.Activity, report *model.Report, result *[]any) error {
 	info, ok := metricNameToDescriptor[activity.Name]
 	if !ok {
 		return nil

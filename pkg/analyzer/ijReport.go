@@ -114,7 +114,7 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value) error {
 		})
 	}
 
-	runResult.ExtraFieldData = []interface{}{
+	runResult.ExtraFieldData = []any{
 		clTotal, clSearch, clDefine, clCount, clPreparedCount, clLoadedCount, rlTime, rlCount,
 		measureName, measureStart, measureDuration, measureThread, metricNames, metricValues,
 	}

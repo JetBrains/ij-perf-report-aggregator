@@ -200,7 +200,7 @@ func (s PerformanceSettings) query() dataQuery.Query {
 }
 
 func extractDataFromRequest(response []byte) (queryResult, error) {
-	var data [][][]interface{}
+	var data [][][]any
 
 	err := json.Unmarshal(response, &data)
 	if err != nil {

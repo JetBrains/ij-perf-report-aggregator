@@ -278,8 +278,8 @@ func readFilters(list []*fastjson.Value, query *Query) error {
 	return nil
 }
 
-func readArray(parentValue *fastjson.Value) []interface{} {
-	list := make([]interface{}, 0)
+func readArray(parentValue *fastjson.Value) []any {
+	list := make([]any, 0)
 	for _, v := range parentValue.GetArray() {
 		switch v.Type() {
 		case fastjson.TypeFalse:

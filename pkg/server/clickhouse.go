@@ -25,7 +25,7 @@ func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
 		Auth: clickhouse.Auth{
 			Database: "ij",
 		},
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			"readonly":         1,
 			"max_query_size":   1000000,
 			"max_memory_usage": 3221225472,
@@ -33,7 +33,7 @@ func (t *StatsServer) openDatabaseConnection() (driver.Conn, error) {
 	})
 }
 
-func toJSONBuffer(data interface{}) (*bytebufferpool.ByteBuffer, error) {
+func toJSONBuffer(data any) (*bytebufferpool.ByteBuffer, error) {
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return nil, err

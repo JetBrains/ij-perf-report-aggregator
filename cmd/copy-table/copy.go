@@ -43,7 +43,7 @@ func copyTable(clickHouseUrl string, sourceTable string, targetTable string) err
 		},
 		DialTimeout:     time.Second,
 		ConnMaxLifetime: time.Hour,
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			"send_timeout":     30_000,
 			"receive_timeout":  3000,
 			"max_memory_usage": 100000000000,

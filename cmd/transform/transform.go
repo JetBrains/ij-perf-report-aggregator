@@ -84,7 +84,7 @@ func transform(clickHouseUrl string, idName string, tableName string) error {
 		},
 		DialTimeout:     time.Second,
 		ConnMaxLifetime: time.Hour,
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			// https://github.com/ClickHouse/ClickHouse/issues/2833
 			// ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
 			"send_timeout":     30_000,
@@ -235,7 +235,7 @@ func process(taskContext context.Context, db driver.Conn, config analyzer.Databa
 				BuildDate: row.BuildTime.Format("20060102T150405+0000"),
 				Generated: row.GeneratedTime.Format("20060102T150405+0000"),
 			}
-			runResult.ExtraFieldData = []interface{}{row.MeasuresName, row.MeasuresValue, row.MeasuresType, row.Mode}
+			runResult.ExtraFieldData = []any{row.MeasuresName, row.MeasuresValue, row.MeasuresType, row.Mode}
 			runResult.TriggeredBy = row.TriggeredBy
 			runResult.TcBuildType = row.TcBuildType
 		}

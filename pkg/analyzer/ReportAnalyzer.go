@@ -76,7 +76,7 @@ func OpenDb(clickHouseUrl string, config DatabaseConfiguration) (driver.Conn, *p
 		},
 		DialTimeout:     10 * time.Second,
 		ConnMaxLifetime: time.Hour,
-		Settings: map[string]interface{}{
+		Settings: map[string]any{
 			// https://github.com/ClickHouse/ClickHouse/issues/2833
 			// ZSTD 19+ is used, read/write timeout should be quite large (10 minutes)
 			"send_timeout":    30_000,

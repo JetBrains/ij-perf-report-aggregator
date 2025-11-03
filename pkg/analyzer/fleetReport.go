@@ -41,7 +41,7 @@ func analyzePerfFleetReport(runResult *RunResult, data *fastjson.Value) error {
 		metricTypes = append(metricTypes, "d")
 	}
 
-	runResult.ExtraFieldData = []interface{}{metricNames, metricValues, metricTypes}
+	runResult.ExtraFieldData = []any{metricNames, metricValues, metricTypes}
 	return nil
 }
 
@@ -79,6 +79,6 @@ func analyzeFleetReport(runResult *RunResult, data *fastjson.Value) error {
 		return nil
 	}
 
-	runResult.ExtraFieldData = []interface{}{names, values, starts, threads}
+	runResult.ExtraFieldData = []any{names, values, starts, threads}
 	return nil
 }

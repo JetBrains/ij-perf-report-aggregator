@@ -17,10 +17,7 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
 
 	report, err := parser.ParseBytes(runResult.RawReport)
 	if err != nil {
-		endIndex := len(runResult.RawReport)
-		if endIndex > 10000 {
-			endIndex = 10000
-		}
+		endIndex := min(len(runResult.RawReport), 10000)
 		slog.Warn("invalid report. corrupted JSON, report will be skipped", "error", err, "file", runResult.ReportFileName, "rawReport", runResult.RawReport[:endIndex])
 		runResult.Report = nil
 		return nil

@@ -2,6 +2,7 @@ package tc_properties
 
 import (
 	"fmt"
+	"slices"
 )
 
 // LoadBytes load reads a buffer into a Properties struct.
@@ -57,10 +58,8 @@ done:
 
 func (p *parser) expectOneOf(expected ...itemType) (item, error) {
 	token := p.lex.nextItem()
-	for _, v := range expected {
-		if token.typ == v {
-			return token, nil
-		}
+	if slices.Contains(expected, token.typ) {
+		return token, nil
 	}
 	return item{}, fmt.Errorf("properties: Line %d: %s: %s", p.lex.lineNumber(), "unexpected token", token)
 }

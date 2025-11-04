@@ -6,6 +6,12 @@
     persistent-id="webstorm_dashboard_builtin_vs_next"
     initial-machine="linux-blade-hetzner"
   >
+    <template #configurator>
+      <ProjectVariantSelect
+        :variant-options="variantOptions"
+        @update:selected-variants="selectedVariants = $event"
+      />
+    </template>
     <template
       v-for="group in groups"
       :key="group.measure"
@@ -24,7 +30,7 @@
           <GroupProjectsChart
             :label="project"
             :measure="group.measure"
-            :projects="[project, project + 'NEXT', project + 'TSGONEXT', project + 'TSGO_COMBINED']"
+            :projects="getFilteredProjects(project)"
           />
         </div>
       </section>
@@ -33,10 +39,30 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
+import ProjectVariantSelect from "./ProjectVariantSelect.vue"
 import { groupBy3 } from "./utils"
+
+const variantOptions = [
+  { label: "Built-in", value: "" },
+  { label: "NEXT", value: "NEXT" },
+  { label: "TSGONEXT", value: "TSGONEXT" },
+  { label: "TSGO_COMBINED", value: "TSGO_COMBINED" },
+]
+
+const allProjectVariants = variantOptions.map((option) => option.value)
+
+const selectedVariants = ref<string[]>([])
+
+const getFilteredProjects = (baseProject: string): string[] => {
+  if (selectedVariants.value.length === 0) {
+    return allProjectVariants.map((variant) => baseProject + variant)
+  }
+  return selectedVariants.value.map((variant) => baseProject + variant)
+}
 
 const groups = [
   {

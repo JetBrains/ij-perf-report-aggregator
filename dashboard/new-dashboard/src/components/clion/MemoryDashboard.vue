@@ -47,6 +47,7 @@
         label="[Radler] Resolve All References (cmake)"
         :measure="['clangd_light_modules_total_memory_mb', 'clangd_no_modules_total_memory_mb', 'nova_total_memory_mb']"
         :projects="['radler/cmakeResolving/measureResolve/cmake']"
+        value-unit="counter"
       />
     </section>
 

@@ -104,5 +104,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateRubyPerfSettings(backendUrl, client),
 		setting.GenerateJavaSettings(backendUrl, client),
 		setting.GenerateAIASettings(),
+		setting.GenerateKotlinBuildToolsSettings(backendUrl, client),
 	)
 }

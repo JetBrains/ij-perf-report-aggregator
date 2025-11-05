@@ -1,7 +1,7 @@
 <template>
   <MultiSelect
     v-model="selectedVariants"
-    :options="props.variantOptions"
+    :options="variantOptions"
     title="Variant"
     option-label="label"
     option-value="value"
@@ -42,11 +42,9 @@ interface VariantOption {
   value: string
 }
 
-interface Props {
+const { variantOptions } = defineProps<{
   variantOptions: VariantOption[]
-}
-
-const props = defineProps<Props>()
+}>()
 
 const selectedVariants = ref<string[]>([])
 
@@ -56,5 +54,5 @@ watch(selectedVariants, (newValue) => {
   emit("update:selectedVariants", newValue)
 })
 
-const labelByValue = new Map(props.variantOptions.map((v) => [v.value, v.label]))
+const labelByValue = new Map(variantOptions.map((v) => [v.value, v.label]))
 </script>

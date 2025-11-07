@@ -4,12 +4,13 @@
     table="clion"
     persistent-id="clion_lagging_latency_dashboard"
     initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
-    :charts="charts"
+    :charts="laggingCharts"
     :with-installer="false"
   >
     <section>
+      <Divider title="Lagging during indexing" />
       <GroupProjectsChart
-        v-for="chart in charts"
+        v-for="chart in laggingCharts"
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
@@ -23,33 +24,22 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 
-const chartsDeclaration: ChartDefinition[] = [
+const laggingIndexingCharts: ChartDefinition[] = [
   {
-    labels: ["ui.Lagging during indexing - average"],
-    measures: ["ui.lagging#average"],
+    labels: ["Lagging during indexing"],
+    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#sum"]],
     projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
     aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
   },
   {
-    labels: ["ui.Lagging during indexing - max"],
-    measures: ["ui.lagging#max"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
-  },
-  {
-    labels: ["ui.Lagging during indexing - count"],
+    labels: ["Lags count during indexing"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
-  },
-  {
-    labels: ["ui.Lagging during indexing - sum"],
-    measures: ["ui.lagging#sum"],
     projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
     aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
   },
 ]
 
-const charts = combineCharts(chartsDeclaration)
+const laggingCharts = combineCharts(laggingIndexingCharts)
 </script>

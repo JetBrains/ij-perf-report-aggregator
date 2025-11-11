@@ -47,6 +47,20 @@
     </section>
     <section>
       <GroupProjectsChart
+        label="GC Pause, ms"
+        measure="gcPause"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="GC Memory Collected, Mb"
+        measure="freedMemoryByGC"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
         label="Scanning Time"
         measure="scanningTimeWithoutPauses"
         :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"

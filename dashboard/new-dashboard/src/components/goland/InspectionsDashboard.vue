@@ -8,8 +8,8 @@
   >
     <section>
       <GroupProjectsChart
-        label="Local Inspections"
-        measure="localInspections"
+        label="File Analysis on Open"
+        measure="firstCodeAnalysis"
         :projects="[
           'istio/localInspection/adsc.go',
           'minotaur/localInspection/server.go',

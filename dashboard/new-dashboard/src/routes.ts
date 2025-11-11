@@ -137,7 +137,6 @@ enum ROUTES {
   GoLandFindUsagesDashboardOld = `${ROUTE_PREFIX.GoLand}/findUsagesDashboardOld`,
   GoLandDFADashboard = `${ROUTE_PREFIX.GoLand}/dfaDashboard`,
   GoLandDFADashboardOld = `${ROUTE_PREFIX.GoLand}/dfaDashboardOld`,
-  GoLandDistributiveSizeDashboard = `${ROUTE_PREFIX.GoLand}/distributiveDashboard`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}Dev`,
   GoLandTestsOld = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
@@ -661,10 +660,6 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandDFADashboardOld,
           label: "DFA (Old)",
-        },
-        {
-          url: ROUTES.GoLandDistributiveSizeDashboard,
-          label: "Distributive Size",
         },
         {
           url: ROUTES.GoLandTests,
@@ -1678,11 +1673,6 @@ const golandRoutes = [
     path: ROUTES.GoLandDFADashboardOld,
     component: () => import("./components/goland/DataFlowAnalysisDashboardOld.vue"),
     meta: { pageTitle: "GoLand DFA dashboard" },
-  },
-  {
-    path: ROUTES.GoLandDistributiveSizeDashboard,
-    component: () => import("./components/goland/DistributionSizeDashboard.vue"),
-    meta: { pageTitle: "GoLand Distribuvite Size dashboard" },
   },
   {
     path: ROUTES.GoLandTests,

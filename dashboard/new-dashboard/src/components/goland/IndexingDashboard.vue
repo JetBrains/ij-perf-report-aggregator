@@ -15,8 +15,22 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Processing time of Go files"
+        label="Index Size"
+        measure="indexingSize"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Time"
         measure="processingTime#Go"
+        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Processing Speed"
+        measure="processingSpeedAvg#Go"
         :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
       />
     </section>
@@ -39,6 +53,13 @@
         label="Number Of Indexed Files - third IDE run"
         measure="numberOfIndexedFilesWritingIndexValue"
         :projects="['kubernetes/thirdScanning', 'flux/thirdScanning', 'istio/thirdScanning', 'cockroach/thirdScanning', 'delve/thirdScanning', 'mattermost/thirdScanning']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Scanning Time"
+        measure="scanningTimeWithoutPauses"
+        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
   </DashboardPage>

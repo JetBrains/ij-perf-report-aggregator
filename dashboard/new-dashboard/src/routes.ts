@@ -1664,8 +1664,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/common/StartupMetricsDashboard.vue"),
           props: {
             table: "goland",
-            defaultProject: "mattermost",
-            customCharts: [{ label: "Updating Go modules dependencies", measure: "Progress: Updating Go modules dependencies" }],
+            defaultProject: "pocketbase",
           },
           meta: { pageTitle: "GoLand Startup dashboard" },
         },

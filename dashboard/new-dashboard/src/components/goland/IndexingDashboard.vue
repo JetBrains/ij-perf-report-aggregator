@@ -13,47 +13,37 @@
         :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Index Size"
-        measure="indexingSize"
-        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
-      />
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Indexed Files"
+          measure="numberOfIndexedFilesWritingIndexValue"
+          :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Index Size"
+          measure="indexSize"
+          :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
+        />
+      </div>
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Processing Time"
-        measure="processingTime#Go"
-        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Processing Speed"
-        measure="processingSpeedAvg#Go"
-        :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files"
-        measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['cockroach/indexing', 'delve/indexing', 'mattermost/indexing', 'kubernetes/indexing', 'flux/indexing', 'istio/indexing']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files - second IDE run"
-        measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['kubernetes/secondScanning', 'flux/secondScanning', 'istio/secondScanning', 'cockroach/secondScanning', 'delve/secondScanning', 'mattermost/secondScanning']"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Number Of Indexed Files - third IDE run"
-        measure="numberOfIndexedFilesWritingIndexValue"
-        :projects="['kubernetes/thirdScanning', 'flux/thirdScanning', 'istio/thirdScanning', 'cockroach/thirdScanning', 'delve/thirdScanning', 'mattermost/thirdScanning']"
-      />
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Processing Time"
+          measure="processingTime#Go"
+          :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Processing Speed"
+          measure="processingSpeedAvg#Go"
+          :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        />
+      </div>
     </section>
     <section>
       <GroupProjectsChart

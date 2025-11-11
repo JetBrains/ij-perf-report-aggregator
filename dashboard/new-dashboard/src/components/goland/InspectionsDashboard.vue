@@ -8,7 +8,7 @@
   >
     <section>
       <GroupProjectsChart
-        label="Local Inspections (total execution time)"
+        label="Local Inspections"
         measure="localInspections"
         :projects="[
           'istio/localInspection/adsc.go',
@@ -22,7 +22,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Global Inspections (total execution time)"
+        label="Global Inspections"
         measure="globalInspections"
         :projects="[
           'delve/inspection',
@@ -40,7 +40,7 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="Global Inspections without DFA (total execution time)"
+        label="Global Inspections without DFA"
         measure="globalInspections"
         :projects="[
           'cockroach/noDfa/inspection',
@@ -52,13 +52,6 @@
           'tempo/noDfa/inspection',
           'volcano/noDfa/inspection',
         ]"
-      />
-    </section>
-    <section>
-      <GroupProjectsChart
-        label="Single Inspections (total execution time)"
-        measure="globalInspections"
-        :projects="['singleInspection/cockroach/VgoDependencyUpdateAvailable']"
       />
     </section>
   </DashboardPage>

@@ -264,7 +264,7 @@ const lowLevelCharts: ChartDefinition[] = [
 
 const highlightingCharts: ChartDefinition[] = [
   {
-    labels: ["Highlighing Passes"],
+    labels: ["Highlighting Passes"],
     measures: [["CodeVisionPass", "GeneralHighlightingPass", "InlayHintsPass", "LocalInspectionsPass", "ShowIntentionsPass", "StickyLinesPass"]],
     projects: ["measureStartup"],
   },

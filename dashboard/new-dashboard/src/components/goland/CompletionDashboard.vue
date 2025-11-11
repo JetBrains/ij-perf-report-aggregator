@@ -8,22 +8,36 @@
   >
     <section>
       <GroupProjectsChart
-        label="Typing Code Analysis"
-        measure="typingCodeAnalyzing"
+        label="Typing: Total Time"
+        measure="typing"
         :projects="['act/typing']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Basic Completion"
-        measure="completion"
+        label="Completion"
+        measure="completion#mean_value"
         :projects="['caddy/completion/variable', 'caddy/completion/type', 'caddy/completion/return', 'caddy/completion/interface', 'caddy/completion/import']"
       />
     </section>
     <section>
       <GroupProjectsChart
-        label="Smart Completion"
-        measure="completion"
+        label="Completion First Element"
+        measure="completion#firstElementShown#mean_value"
+        :projects="['caddy/completion/variable', 'caddy/completion/type', 'caddy/completion/return', 'caddy/completion/interface', 'caddy/completion/import']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Type Completion"
+        measure="completion#mean_value"
+        :projects="['permify/completion/method', 'permify/completion/any']"
+      />
+    </section>
+    <section>
+      <GroupProjectsChart
+        label="Type Completion First Element"
+        measure="completion#firstElementShown#mean_value"
         :projects="['permify/completion/method', 'permify/completion/any']"
       />
     </section>

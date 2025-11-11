@@ -127,8 +127,6 @@ enum ROUTES {
   GoLandProductMetricsDashboardOld = `${ROUTE_PREFIX.GoLand}/${PRODUCT_METRICS_ROUTE}Old`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
   GoLandIndexingDashboardOld = `${ROUTE_PREFIX.GoLand}/indexingDashboardOld`,
-  GoLandScanningDashboard = `${ROUTE_PREFIX.GoLand}/scanningDashboard`,
-  GoLandScanningDashboardOld = `${ROUTE_PREFIX.GoLand}/scanningDashboardOld`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
   GoLandCompletionDashboardOld = `${ROUTE_PREFIX.GoLand}/completionDashboardOld`,
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
@@ -623,14 +621,6 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandIndexingDashboardOld,
           label: "Indexing (Old)",
-        },
-        {
-          url: ROUTES.GoLandScanningDashboard,
-          label: "Scanning",
-        },
-        {
-          url: ROUTES.GoLandScanningDashboardOld,
-          label: "Scanning (Old)",
         },
         {
           url: ROUTES.GoLandCompletionDashboard,
@@ -1648,16 +1638,6 @@ const golandRoutes = [
     path: ROUTES.GoLandIndexingDashboardOld,
     component: () => import("./components/goland/IndexingDashboardOld.vue"),
     meta: { pageTitle: "GoLand Indexing dashboard" },
-  },
-  {
-    path: ROUTES.GoLandScanningDashboard,
-    component: () => import("./components/goland/ScanningDashboard.vue"),
-    meta: { pageTitle: "GoLand Scanning dashboard" },
-  },
-  {
-    path: ROUTES.GoLandScanningDashboardOld,
-    component: () => import("./components/goland/ScanningDashboardOld.vue"),
-    meta: { pageTitle: "GoLand Scanning dashboard" },
   },
   {
     path: ROUTES.GoLandCompletionDashboard,

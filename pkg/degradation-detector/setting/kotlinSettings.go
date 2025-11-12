@@ -79,12 +79,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 	settings := make([]detector.PerformanceSettings, 0, len(testNames)*len(metrics)*2)
 
 	for _, test := range tests {
-		threshold := 10
 		daysToCheck := -1
-		if strings.HasSuffix(test, "_k1") {
-			threshold = 20
-			daysToCheck = -3
-		}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
@@ -102,7 +97,6 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						ReportType:                detector.DegradationEvent,
-						MedianDifferenceThreshold: float64(threshold),
 						DaysToCheckMissing:        daysToCheck,
 					},
 				},
@@ -110,10 +104,6 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 		}
 	}
 	for _, test := range tests {
-		threshold := 10
-		if strings.HasSuffix(test, "_k1") {
-			threshold = 20
-		}
 		for _, metric := range metrics {
 			alias := getAlias(metric, aliases)
 			settings = append(settings, detector.PerformanceSettings{
@@ -131,7 +121,6 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 					},
 					AnalysisSettings: detector.AnalysisSettings{
 						ReportType:                detector.DegradationEvent,
-						MedianDifferenceThreshold: float64(threshold),
 					},
 				},
 			})
@@ -141,11 +130,11 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 }
 
 func generateKotlinTests(tests []string) []string {
-	k1K2tests := make([]string, 0, len(tests)*2)
+	k2tests := make([]string, 0, len(tests))
 	for _, test := range tests {
-		k1K2tests = append(k1K2tests, test+"_k1", test+"_k2")
+		k2tests = append(k2tests, test+"_k2")
 	}
-	return k1K2tests
+	return k2tests
 }
 
 func getAlias(metric string, aliases map[string]string) string {

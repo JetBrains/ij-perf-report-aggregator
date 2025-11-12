@@ -42,7 +42,20 @@ const groups = [
   {
     label: "FirstCodeAnalysis",
     measure: "firstCodeAnalysis",
-    projects: ["clickUp_frontend/localInspection/app.component.html", "clickUp_frontend/localInspection/app.component.ts"],
+    projects: [
+      "clickUp_frontend/localInspection/app.component.html",
+      "clickUp_frontend/localInspection/app.component.ts",
+      "clickUp_frontend/localInspection/app.component.html",
+      "clickUp_frontend/localInspection/dashboard-table.component.ts",
+      "clickUp_frontend/localInspection/clip-page.component.ts",
+      "clickUp_frontend/localInspection/category-list.component.ts",
+      "clickUp_frontend/localInspection/task-sidebar-toggle-button.component.ts",
+      "clickUp_frontend/localInspection/automation-converged-ai-task-agents-dropdown-body.component.ts",
+      "clickUp_frontend/localInspection/automation-converged-ai-task-agents-dropdown.component.ts",
+      "clickUp_frontend/localInspection/calendar-picker-popover.component.ts",
+      "clickUp_frontend/localInspection/checklist.component.ts",
+      "clickUp_frontend/localInspection/addon-checkout.component.ts",
+    ],
   },
 ]
 </script>

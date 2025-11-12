@@ -28,26 +28,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["First Code Analysis", "Local Inspections", "File Openings: code loaded", "File Openings: tab shown"],
     measures: ["firstCodeAnalysis", "localInspections", "fus_file_types_usage_duration_ms", "fus_file_types_usage_time_to_show_ms"],
-    projects: [
-      "toolbox_enterprise/ultimateCase/SecurityTests",
-      "toolbox_enterprise/ultimateCase/ToolController",
-      "toolbox_enterprise/ultimateCase/ToolService",
-      "toolbox_enterprise/ultimateCase/UserController",
-      "toolbox_enterprise/ultimateCase/UserRepository",
-      "kotlin/localInspection",
-      "kotlin_coroutines/localInspection",
-    ],
-  },
-  {
-    labels: ["Typing (typingCodeAnalyzing)", "Typing (average_awt_delay)", "Typing (max_awt_delay)"],
-    measures: ["typingCodeAnalyzing", "test#average_awt_delay", "test#max_awt_delay"],
-    projects: [
-      "toolbox_enterprise/ultimateCase/SecurityTests",
-      "toolbox_enterprise/ultimateCase/ToolController",
-      "toolbox_enterprise/ultimateCase/ToolService",
-      "toolbox_enterprise/ultimateCase/UserController",
-      "toolbox_enterprise/ultimateCase/UserRepository",
-    ],
+    projects: ["kotlin/localInspection", "kotlin_coroutines/localInspection"],
   },
   {
     labels: ["Highlighting - remove symbol", "Highlighting - remove symbol warmup", "Highlighting - type symbol", "Highlighting - type symbol warmup"],
@@ -63,17 +44,6 @@ const chartsDeclaration: ChartDefinition[] = [
     labels: ["Inspection", "Inspection (Full GC Pause)", "Inspection (JVM GC collection times)"],
     measures: ["globalInspections", "fullGCPause", "JVM.GC.collectionTimesMs"],
     projects: ["kotlin/inspection", "kotlin_coroutines/inspection"],
-  },
-  {
-    labels: ["Completion", "Completion 90p", "Completion time to show 90p"],
-    measures: ["completion", "fus_completion_duration_90p", "fus_time_to_show_90p"],
-    projects: [
-      "toolbox_enterprise/ultimateCase/SecurityTests",
-      "toolbox_enterprise/ultimateCase/ToolController",
-      "toolbox_enterprise/ultimateCase/ToolService",
-      "toolbox_enterprise/ultimateCase/UserController",
-      "toolbox_enterprise/ultimateCase/UserRepository",
-    ],
   },
   {
     labels: ["FindUsages (all usages)", "FindUsages (first usage)", "FindUsages (Full GC Pause)", "FindUsages (JVM GC collection times)"],

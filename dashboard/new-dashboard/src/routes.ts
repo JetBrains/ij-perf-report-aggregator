@@ -74,6 +74,7 @@ enum ROUTES {
   IntelliJIndexingDashboard = `${ROUTE_PREFIX.IntelliJ}/indexingDashboard`,
   IntelliJJavaDashboard = `${ROUTE_PREFIX.IntelliJ}/javaDashboard`,
   IntelliJKotlinDashboard = `${ROUTE_PREFIX.IntelliJ}/kotlinDashboard`,
+  IntelliJUltimateDashboard = `${ROUTE_PREFIX.IntelliJ}/ultimateDashboard`,
   IntelliJUIDashboard = `${ROUTE_PREFIX.IntelliJ}/uiDashboard`,
   IntelliJLaggingLatencyDashboard = `${ROUTE_PREFIX.IntelliJ}/laggingLatencyDashboard`,
   IntelliJEmbeddingSearchDashboard = `${ROUTE_PREFIX.EmbeddingSearch}/dashboard`,
@@ -338,6 +339,10 @@ const IDEA: Product = {
         {
           url: ROUTES.IntelliJKotlinDashboard,
           label: "Kotlin",
+        },
+        {
+          url: ROUTES.IntelliJUltimateDashboard,
+          label: "Ultimate",
         },
         {
           url: ROUTES.IntelliJUIDashboard,
@@ -1381,6 +1386,11 @@ const intellijRoutes = [
     path: ROUTES.IntelliJKotlinDashboard,
     component: () => import("./components/intelliJ/KotlinDashboard.vue"),
     meta: { pageTitle: "IntelliJ Kotlin Performance dashboard" },
+  },
+  {
+    path: ROUTES.IntelliJUltimateDashboard,
+    component: () => import("./components/intelliJ/UltimateDashboard.vue"),
+    meta: { pageTitle: "IntelliJ Ultimate Performance dashboard" },
   },
   {
     path: ROUTES.IntelliJUIDashboard,

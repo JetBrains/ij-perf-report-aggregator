@@ -57,9 +57,6 @@ func generateJavaDevAnalysisSettings(backendUrl string, client *http.Client) []d
 }
 
 func getJavaMetricsFromTestsNames(test string) []string {
-	if strings.Contains(test, "/rebuild") {
-		return []string{"build_compilation_duration"}
-	}
 	if strings.Contains(test, "/inspection") {
 		return []string{"globalInspections"}
 	}

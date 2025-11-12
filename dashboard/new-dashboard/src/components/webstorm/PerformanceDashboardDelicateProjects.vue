@@ -45,7 +45,6 @@ const groups = [
     projects: [
       "clickUp_frontend/localInspection/app.component.html",
       "clickUp_frontend/localInspection/app.component.ts",
-      "clickUp_frontend/localInspection/app.component.html",
       "clickUp_frontend/localInspection/dashboard-table.component.ts",
       "clickUp_frontend/localInspection/clip-page.component.ts",
       "clickUp_frontend/localInspection/category-list.component.ts",

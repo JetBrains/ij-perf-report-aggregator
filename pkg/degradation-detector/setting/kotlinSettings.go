@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 
 	detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
 )

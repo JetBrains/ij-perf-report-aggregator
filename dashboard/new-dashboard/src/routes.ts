@@ -151,14 +151,10 @@ enum ROUTES {
   PyCharmCompareBranches = `${ROUTE_PREFIX.PyCharm}/${COMPARE_BRANCHES_ROUTE}`,
   WebStormStartupDashboard = `${ROUTE_PREFIX.WebStorm}/${STARTUP_ROUTE}`,
   WebStormProductMetricsDashboard = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}`,
-  WebStormProductMetricsDashboardOld = `${ROUTE_PREFIX.WebStorm}/${PRODUCT_METRICS_ROUTE}Old`,
   WebStormDashboard = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}`,
-  WebStormDashboardOld = `${ROUTE_PREFIX.WebStorm}/${DASHBOARD_ROUTE}Old`,
   WebStormDashboardBuiltInVsNEXT = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNext`,
-  WebStormDashboardBuiltInVsNEXTOld = `${ROUTE_PREFIX.WebStorm}/dashboardBuiltInVsNextOld`,
   WebStormDashboardDelicateProjects = `${ROUTE_PREFIX.WebStorm}/dashboardDelicateProjects`,
   WebStormTests = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}Dev`,
-  WebStormTestsOld = `${ROUTE_PREFIX.WebStorm}/${TEST_ROUTE}`,
   WebStormCompare = `${ROUTE_PREFIX.WebStorm}/${COMPARE_ROUTE}`,
   WebStormCompareBranches = `${ROUTE_PREFIX.WebStorm}/${COMPARE_BRANCHES_ROUTE}`,
   RubyStartupDashboard = `${ROUTE_PREFIX.RubyMine}/${STARTUP_ROUTE}`,
@@ -780,24 +776,12 @@ const WEBSTORM: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.WebStormProductMetricsDashboardOld,
-          label: PRODUCT_METRICS_LABEL + " (Old)",
-        },
-        {
           url: ROUTES.WebStormDashboard,
           label: DASHBOARD_LABEL,
         },
         {
-          url: ROUTES.WebStormDashboardOld,
-          label: DASHBOARD_LABEL + " (Old)",
-        },
-        {
           url: ROUTES.WebStormDashboardBuiltInVsNEXT,
           label: "Built-in vs NEXT",
-        },
-        {
-          url: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
-          label: "Built-in vs NEXT (Old)",
         },
         {
           url: ROUTES.WebStormDashboardDelicateProjects,
@@ -806,10 +790,6 @@ const WEBSTORM: Product = {
         {
           url: ROUTES.WebStormTests,
           label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.WebStormTestsOld,
-          label: TESTS_LABEL + " (Old)",
         },
         {
           url: ROUTES.WebStormCompareBranches,
@@ -1806,16 +1786,6 @@ const webstormRoutes = [
     props: {
       dbName: "perfintDev",
       withInstaller: false,
-      table: "webstorm",
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "WebStorm Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.WebStormTestsOld,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
       table: "webstorm",
       initialMachine: MACHINES.HETZNER,
     },

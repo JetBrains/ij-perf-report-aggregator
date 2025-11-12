@@ -1796,19 +1796,9 @@ const webstormRoutes = [
     meta: { pageTitle: "WebStorm product metrics" },
   },
   {
-    path: ROUTES.WebStormProductMetricsDashboardOld,
-    component: () => import("./components/webstorm/ProductMetricsDashboardOld.vue"),
-    meta: { pageTitle: "WebStorm product metrics (Old)" },
-  },
-  {
     path: ROUTES.WebStormDashboard,
     component: () => import("./components/webstorm/PerformanceDashboard.vue"),
     meta: { pageTitle: "WebStorm Performance dashboard" },
-  },
-  {
-    path: ROUTES.WebStormDashboardOld,
-    component: () => import("./components/webstorm/PerformanceDashboardOld.vue"),
-    meta: { pageTitle: "WebStorm Performance dashboard (Old)" },
   },
   {
     path: ROUTES.WebStormTests,
@@ -1835,11 +1825,6 @@ const webstormRoutes = [
     path: ROUTES.WebStormDashboardBuiltInVsNEXT,
     component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXT.vue"),
     meta: { pageTitle: "Built-in vs NEXT" },
-  },
-  {
-    path: ROUTES.WebStormDashboardBuiltInVsNEXTOld,
-    component: () => import("./components/webstorm/PerformanceDashboardBuiltInVsNEXTOld.vue"),
-    meta: { pageTitle: "Built-in vs NEXT (Old)" },
   },
   {
     path: ROUTES.WebStormDashboardDelicateProjects,

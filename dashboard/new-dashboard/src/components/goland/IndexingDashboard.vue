@@ -45,6 +45,22 @@
         />
       </div>
     </section>
+    <section class="flex gap-x-6">
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Parsing Time"
+          measure="parsingTime#go"
+          :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <GroupProjectsChart
+          label="Lexing Time"
+          measure="lexingTime#go"
+          :projects="['kubernetes/indexing', 'flux/indexing', 'istio/indexing', 'cockroach/indexing', 'delve/indexing', 'mattermost/indexing']"
+        />
+      </div>
+    </section>
     <section>
       <GroupProjectsChart
         label="GC Pause, ms"

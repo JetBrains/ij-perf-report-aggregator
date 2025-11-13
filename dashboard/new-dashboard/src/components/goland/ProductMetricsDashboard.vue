@@ -55,11 +55,6 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["globalInspections"],
     projects: ["delve/inspection", "kubernetes/inspection"],
   },
-  {
-    labels: ["Distributive Size (in Kb, unpacked)"],
-    measures: ["unpackedDistributiveSize"],
-    projects: ["distributive-size-GO"],
-  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -76,7 +76,7 @@ func getMetricFromTestName(test string) []string {
 	if strings.Contains(test, "/rebuild") {
 		return []string{"build_compilation_duration"}
 	}
-	if strings.Contains(test, "/inspection") {
+	if strings.Contains(test, "/inspection") || strings.Contains(test, "/globalInspection") {
 		return []string{"globalInspections"}
 	}
 	if strings.Contains(test, "/localInspection") {

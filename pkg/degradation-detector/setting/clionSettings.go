@@ -10,14 +10,14 @@ import (
 
 func GenerateClionSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
 	baseSettings := detector.PerformanceSettings{
-		Db:    "perfint",
+		Db:    "perfintDev",
 		Table: "clion",
 		BaseSettings: detector.BaseSettings{
 			Branch:  "master",
 			Machine: "intellij-linux-performance-aws-%",
 		},
 	}
-	branches := []string{"master", "252"}
+	branches := []string{"252", "253", "master"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	if err != nil {
@@ -63,7 +63,23 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/indexing") {
-		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs"}
+		return []string{
+			"ocSymbolBuildingTimeMs",
+			"backendIndexingTimeMs",
+			"cidr.workspace.metrics#duration_in_write_action_ms",
+			"ui.lagging#average"}
+	}
+	if strings.Contains(test, "/completion") {
+		return []string{"fus_time_to_show_90p"}
+	}
+	if strings.Contains(test, "/findUsages") {
+		return []string{"%syncAction FindUsages"}
+	}
+	if strings.Contains(test, "/gotoDeclaration") {
+		return []string{"clionGotoDeclaration"}
+	}
+	if strings.Contains(test, "/checkLocalTestConfig") {
+		return []string{"waitFirstTestGutter"}
 	}
 	return getMetricFromTestName(test)
 }

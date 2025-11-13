@@ -95,8 +95,8 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 						ProductLink: "kotlin",
 					},
 					AnalysisSettings: detector.AnalysisSettings{
-						ReportType:                detector.DegradationEvent,
-						DaysToCheckMissing:        daysToCheck,
+						ReportType:         detector.DegradationEvent,
+						DaysToCheckMissing: daysToCheck,
 					},
 				},
 			})
@@ -119,7 +119,7 @@ func GenerateKotlinSettings() []detector.PerformanceSettings {
 						ProductLink: "kotlin",
 					},
 					AnalysisSettings: detector.AnalysisSettings{
-						ReportType:                detector.DegradationEvent,
+						ReportType: detector.DegradationEvent,
 					},
 				},
 			})

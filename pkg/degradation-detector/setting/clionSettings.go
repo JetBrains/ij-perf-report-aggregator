@@ -63,11 +63,7 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/indexing") {
-		return []string{
-			"ocSymbolBuildingTimeMs",
-			"backendIndexingTimeMs",
-			"cidr.workspace.metrics#duration_in_write_action_ms",
-			"ui.lagging#average"}
+		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "cidr.workspace.metrics#duration_in_write_action_ms", "ui.lagging#average"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"fus_time_to_show_90p"}

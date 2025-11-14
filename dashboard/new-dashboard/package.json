@@ -6,7 +6,7 @@
     "@primevue/core": "^4.4.1",
     "@vueuse/core": "^14.0.0",
     "echarts": "6.0.0",
-    "fast-equals": "5.3.2",
+    "fast-equals": "5.3.3",
     "humanize-duration": "3.33.1",
     "p-limit": "^7.2.0",
     "pinia": "^3.0.4",
@@ -19,6 +19,6 @@
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.16.0",
-    "msw": "^2.12.1"
+    "msw": "^2.12.2"
   }
 }

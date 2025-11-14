@@ -43,66 +43,64 @@ import Divider from "../common/Divider.vue"
 
 const laggingIndexingCharts: ChartDefinition[] = [
   {
-    labels: ["Lagging during indexing"],
-    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#sum"]],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
+    labels: ["Lagging during indexing - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project"],
   },
   {
-    labels: ["Lags count during indexing"],
+    labels: ["Lagging during indexing - sum"],
+    measures: ["ui.lagging#sum"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project"],
+  },
+  {
+    labels: ["Lagging during indexing - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL", "Big Project"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project"],
   },
 ]
 
 const laggingCompletionCharts: ChartDefinition[] = [
   {
-    labels: ["Lagging during completion"],
-    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#sum"]],
-    projects: [
-      "radler/fmtlib/completion/fmt.join_view (dep) (hot)",
-      "radler/fmtlib/completion/std.shared_ptr (dep) (hot)",
-      "radler/fmtlib/completion/std.string (cold)",
-      "radler/fmtlib/completion/std.string (hot)",
-    ],
-    aliases: ["fmt.join_view", "std.shared_ptr (dep) (hot)", "std.string (cold)", "std.string (hot)"],
+    labels: ["Lagging during completion - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
+    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
+    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
   },
   {
-    labels: ["Lags count during completion"],
+    labels: ["Lagging during completion - sum"],
+    measures: ["ui.lagging#sum"],
+    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
+    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
+  },
+  {
+    labels: ["Lagging during completion - count"],
     measures: ["ui.lagging#count"],
-    projects: [
-      "radler/fmtlib/completion/fmt.join_view (dep) (hot)",
-      "radler/fmtlib/completion/std.shared_ptr (dep) (hot)",
-      "radler/fmtlib/completion/std.string (cold)",
-      "radler/fmtlib/completion/std.string (hot)",
-    ],
-    aliases: ["fmt.join_view", "std.shared_ptr (dep) (hot)", "std.string (cold)", "std.string (hot)"],
+    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
+    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
   },
 ]
 
 const laggingNavigationCharts: ChartDefinition[] = [
   {
-    labels: ["Lagging during navigation"],
-    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#sum"]],
-    projects: [
-      "radler/luau/findUsages/class template (DenseHashTable)",
-      "radler/luau/findUsages/enumerable (LuauOpcode)",
-      "radler/luau/gotoDeclaration/time.h",
-      "radler/luau/gotoDeclaration/TypeChecker.getScopes",
-    ],
-    aliases: ["class template (DenseHashTable)", "enumerable (LuauOpcode)", "time.h", "TypeChecker.getScopes"],
+    labels: ["Lagging during navigation - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
+    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
+    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
   },
   {
-    labels: ["Lags count during navigation"],
+    labels: ["Lagging during navigation - sum"],
+    measures: ["ui.lagging#sum"],
+    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
+    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
+  },
+  {
+    labels: ["Lagging during navigation - count"],
     measures: ["ui.lagging#count"],
-    projects: [
-      "radler/luau/findUsages/class template (DenseHashTable)",
-      "radler/luau/findUsages/enumerable (LuauOpcode)",
-      "radler/luau/gotoDeclaration/time.h",
-      "radler/luau/gotoDeclaration/TypeChecker.getScopes",
-    ],
-    aliases: ["class template (DenseHashTable)", "enumerable (LuauOpcode)", "time.h", "TypeChecker.getScopes"],
+    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
+    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
   },
 ]
 

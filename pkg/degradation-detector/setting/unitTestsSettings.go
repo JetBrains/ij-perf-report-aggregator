@@ -41,6 +41,7 @@ var teamConfigs = []teamConfig{
 		Packages: []string{
 			"com.intellij.java", "org.jetbrains.plugins.groovy", "org.jetbrains.uast.test.java",
 			"com.intellij.lang.properties", "com.intellij.structuralsearch", "org.jetbrains.java",
+			"org.jetbrains.plugins.cucumber.java",
 		},
 	},
 	{

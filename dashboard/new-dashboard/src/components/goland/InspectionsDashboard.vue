@@ -38,22 +38,6 @@
         ]"
       />
     </section>
-    <section>
-      <GroupProjectsChart
-        label="Global Inspections without DFA"
-        measure="globalInspections"
-        :projects="[
-          'cockroach/noDfa/inspection',
-          'k8sDevice/noDfa/inspection',
-          'kubernetes/noDfa/inspection',
-          'mattermost-server/noDfa/inspection',
-          'milvus/noDfa/inspection',
-          'rclone/noDfa/inspection',
-          'tempo/noDfa/inspection',
-          'volcano/noDfa/inspection',
-        ]"
-      />
-    </section>
   </DashboardPage>
 </template>
 

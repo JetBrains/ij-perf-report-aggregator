@@ -38,6 +38,28 @@
         ]"
       />
     </section>
+    <section>
+      <GroupProjectsChart
+        label="Single Inspections: Code Style"
+        measure="globalInspections"
+        :projects="[
+          'milvus/GoCommentLeadingSpace',
+          'milvus/GoCommentStart',
+          'milvus/GoErrorStringFormat',
+          'milvus/GoExportedElementShouldHaveComment',
+          'milvus/GoExportedOwnDeclaration',
+          'milvus/GoNameStartsWithPackageName',
+          'milvus/GoReceiverNames',
+          'milvus/GoUnsortedImport',
+          'milvus/GoUnitSpecificDurationSuffix',
+          'milvus/GoTypeParameterInLowerCase',
+          'milvus/GoStructInitializationWithoutFieldNames',
+          'milvus/GoSnakeCaseUsage',
+          'milvus/GoRedundantTrueInForCondition',
+          'milvus/GoRedundantElseInIf',
+        ]"
+      />
+    </section>
   </DashboardPage>
 </template>
 

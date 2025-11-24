@@ -42,6 +42,8 @@ jobs:
         run: pnpm eslint
       - name: Run VueTSC
         run: pnpm vue-tsc
+      - name: Run Oxlint
+        run: pnpm oxlint
       - name: Run Prettier
         run: pnpm prettier --check . --log-level warn
       - name: Run tests

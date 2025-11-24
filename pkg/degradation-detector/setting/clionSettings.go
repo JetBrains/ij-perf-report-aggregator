@@ -63,7 +63,7 @@ func getClionMetricFromTestName(test string) []string {
 		return []string{"waitFirstTestGutter"}
 	}
 	if strings.Contains(test, "/indexing") {
-		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "cidr.workspace.metrics#duration_in_write_action_ms", "ui.lagging#average"}
+		return []string{"ocSymbolBuildingTimeMs", "backendIndexingTimeMs", "cidr.workspace.metrics#duration_in_write_action_ms", "ui.lagging#average", "rd.memory.allocatedManagedMemoryMb/afterIndexing"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"fus_time_to_show_90p"}
@@ -76,6 +76,9 @@ func getClionMetricFromTestName(test string) []string {
 	}
 	if strings.Contains(test, "/checkLocalTestConfig") {
 		return []string{"waitFirstTestGutter"}
+	}
+	if strings.Contains(test, "/measureResolve") {
+		return []string{"nova_total_memory_mb"}
 	}
 	return getMetricFromTestName(test)
 }

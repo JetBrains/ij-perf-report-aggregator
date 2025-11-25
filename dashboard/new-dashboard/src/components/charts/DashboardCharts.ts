@@ -11,7 +11,7 @@ export interface Chart {
 
 export interface ChartDefinition {
   labels: string[]
-  measures: string[] | string[][] | (string | string[])[]
+  measures: (string | string[])[]
   projects: string[]
   aliases?: string[]
   machines?: string[]

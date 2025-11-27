@@ -120,34 +120,6 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Third Scanning (big projects)"],
-    measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
-    projects: [
-      "community/third-scanning",
-      "intellij_commit/third-scanning",
-      "intellij_commit/allow-skipping-full-scanning",
-      "space/third-scanning",
-      "kotlin_coroutines/third-scanning",
-    ],
-  },
-  {
-    labels: ["Third Scanning (middle projects)"],
-    measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
-    projects: ["kotlin/third-scanning", "toolbox_enterprise/third-scanning", "spring_boot/third-scanning", "keycloak_release_20/third-scanning"],
-  },
-  {
-    labels: ["Third Scanning (small projects)"],
-    measures: [["scanningTimeWithoutPauses", "fus_scanning_time"]],
-    projects: [
-      "empty_project/third-scanning",
-      "grails/third-scanning",
-      "java/third-scanning",
-      "spring_boot_maven/third-scanning",
-      "kotlin_petclinic/third-scanning",
-      "train-ticket/third-scanning",
-    ],
-  },
-  {
     labels: ["Number of indexed files (big projects)"],
     measures: ["numberOfIndexedFiles"],
     projects: [
@@ -159,11 +131,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "intellij_commit/second-scanning",
       "space/second-scanning",
       "kotlin_coroutines/second-scanning",
-      "community/third-scanning",
-      "intellij_commit/third-scanning",
-      "space/third-scanning",
-      "kotlin_coroutines/third-scanning",
-      "intellij_commit/allow-skipping-full-scanning",
     ],
   },
   {
@@ -178,10 +145,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "toolbox_enterprise/second-scanning",
       "spring_boot/second-scanning",
       "keycloak_release_20/second-scanning",
-      "kotlin/third-scanning",
-      "toolbox_enterprise/third-scanning",
-      "spring_boot/third-scanning",
-      "keycloak_release_20/third-scanning",
     ],
   },
   {
@@ -200,12 +163,6 @@ const chartsDeclaration: ChartDefinition[] = [
       "spring_boot_maven/second-scanning",
       "kotlin_petclinic/second-scanning",
       "train-ticket/second-scanning",
-      "empty_project/third-scanning",
-      "grails/third-scanning",
-      "java/third-scanning",
-      "spring_boot_maven/third-scanning",
-      "kotlin_petclinic/third-scanning",
-      "train-ticket/third-scanning",
     ],
   },
   {

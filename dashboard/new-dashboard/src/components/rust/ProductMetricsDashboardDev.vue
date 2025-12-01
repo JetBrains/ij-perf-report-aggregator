@@ -52,9 +52,14 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: rustLocalInspectionCases.concat(rustLocalInspectionCases.map((testCase) => `${testCase}-top-level-typing`)),
   },
   {
-    labels: ["Inspections"],
+    labels: ["All Inspections"],
     measures: ["globalInspections"],
     projects: rustGlobalInspectionProjects.map((project) => `global-inspection/${project}-inspection`),
+  },
+  {
+    labels: ["Rust-only Inspections"],
+    measures: ["globalInspections"],
+    projects: rustGlobalInspectionProjects.map((project) => `rust-only-inspection/${project}-inspection`),
   },
 ]
 

@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: jetbrains/ij-perf-report-aggregator/degradation-detector
+  IMAGE_NAME: jetbrains/ij-perf-report-aggregator/degradation-analyzer
 
 jobs:
   build:

@@ -31,7 +31,7 @@ func getKotlinProjects() ([]string, error) {
 	projectsFile := "projects/kotlin_projects.json"
 	var kotlinProjectsFilePath string
 	if env == "" {
-		kotlinProjectsFilePath = filepath.Join("..", "..", "..", "cmd", "degradation-detector", "kodata", projectsFile)
+		kotlinProjectsFilePath = filepath.Join("..", "..", "..", "cmd", "degradation-analyzer", "kodata", projectsFile)
 	} else {
 		kotlinProjectsFilePath = filepath.Join(env, projectsFile)
 	}

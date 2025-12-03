@@ -57,7 +57,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          dest: "../../degradation-detector/kodata",
+          dest: "../../degradation-analyzer/kodata",
           src: path.resolve(__dirname, "dashboard/new-dashboard/resources/projects"),
         },
       ],

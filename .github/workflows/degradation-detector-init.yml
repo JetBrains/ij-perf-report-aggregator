@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  KO_DOCKER_REPO: ghcr.io/jetbrains/ij-perf-report-aggregator
+  IMAGE_NAME: jetbrains/ij-perf-report-aggregator/degradation-detector
 
 jobs:
   build:
@@ -21,14 +21,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.23'
-
-      - name: Setup ko
-        uses: ko-build/setup-ko@v0.9
-
       - name: Log into registry
         uses: docker/login-action@v3
         with:
@@ -36,6 +28,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push degradation-detector
-        run: |
-          ko build --base-import-paths ./cmd/degradation-detector
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push minimal image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .github/workflows/Dockerfile.init
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:init

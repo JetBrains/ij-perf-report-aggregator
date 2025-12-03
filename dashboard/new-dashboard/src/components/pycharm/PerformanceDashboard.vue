@@ -36,14 +36,14 @@
       <GroupProjectsChart
         label="Indexing"
         :measure="['indexing', 'indexingTimeWithoutPauses']"
-        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
+        :projects="['django-sources/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Scanning"
         :measure="['scanningTimeWithoutPauses', 'scanning']"
-        :projects="['django/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
+        :projects="['django-sources/indexing', 'empty/indexing', 'flask/indexing', 'keras/indexing', 'mypy/indexing', 'notebooks-case-indexing/indexing']"
       />
     </section>
     <section>
@@ -57,7 +57,7 @@
       <GroupProjectsChart
         label="Global Inspections"
         measure="globalInspections"
-        :projects="['django/inspection', 'flask/inspection', 'keras/inspection', 'mypy/inspection']"
+        :projects="['django-sources/inspection', 'flask/inspection', 'keras/inspection', 'mypy/inspection']"
       />
     </section>
     <section>
@@ -65,9 +65,9 @@
         label="First Code Analysis"
         measure="firstCodeAnalysis"
         :projects="[
-          'django/findUsages/ForeignKey',
-          'django/findUsages/Form',
-          'django/findUsages/Model',
+          'django-sources/findUsages/ForeignKey',
+          'django-sources/findUsages/Form',
+          'django-sources/findUsages/Model',
           'flask/findUsages/Flask',
           'flask/findUsages/request',
           'keras/findUsages/Sequential',
@@ -82,9 +82,9 @@
         label="Find Usages"
         measure="findUsages"
         :projects="[
-          'django/findUsages/ForeignKey',
-          'django/findUsages/Form',
-          'django/findUsages/Model',
+          'django-sources/findUsages/ForeignKey',
+          'django-sources/findUsages/Form',
+          'django-sources/findUsages/Model',
           'flask/findUsages/Flask',
           'flask/findUsages/request',
           'keras/findUsages/Sequential',

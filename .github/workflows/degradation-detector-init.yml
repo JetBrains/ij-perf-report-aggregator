@@ -1,7 +1,6 @@
-name: Initialize degradation-detector package
+name: Initialize degradation-detector package 2
 
 # This workflow creates the degradation-detector package in GHCR.
-# Run it once manually, then it can be deleted.
 
 on:
   workflow_dispatch:

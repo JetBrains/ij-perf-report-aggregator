@@ -1,0 +1,41 @@
+name: Initialize degradation-detector package
+
+# This workflow creates the degradation-detector package in GHCR.
+# Run it once manually, then it can be deleted.
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  KO_DOCKER_REPO: ghcr.io/jetbrains/ij-perf-report-aggregator
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Setup ko
+        uses: ko-build/setup-ko@v0.9
+
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push degradation-detector
+        run: |
+          ko build --base-import-paths ./cmd/degradation-detector

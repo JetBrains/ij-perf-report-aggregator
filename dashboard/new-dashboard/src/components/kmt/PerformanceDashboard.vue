@@ -54,6 +54,29 @@
         :legend-formatter="legendFormatter"
       />
     </section>
+    <Divider title="Run/Debug configurations" />
+    <section>
+      <GroupProjectsWithClientChart
+        v-for="chart in chartsRunConfigurations"
+        :key="`${chart.definition.label}-${chart.projects.join(',')}`"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+        :aliases="chart.aliases"
+        :legend-formatter="legendFormatter"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        v-for="chart in chartsRunConfigurationsDebug"
+        :key="`${chart.definition.label}-${chart.projects.join(',')}`"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+        :aliases="chart.aliases"
+        :legend-formatter="legendFormatter"
+      />
+    </section>
   </DashboardPage>
 </template>
 
@@ -128,7 +151,22 @@ const chartsDeclarationCompose: ChartDefinition[] = [
   },
 ]
 
-const chartsDeclaration = chartsDeclarationSetup.concat(chartsDeclarationCrossLang).concat(chartsDeclarationCompose)
+const chartsDeclarationRunConfigurations: ChartDefinition[] = [
+  {
+    labels: ["iOS app - Run with Simulator"],
+    measures: [["GradleBuild", "XCodeBuild", "IosAppStartup", "KmpIosConfigurationRun"]],
+    projects: ["Wizard/runConfigurationIos/run", "KotlinConf/runConfigurationIos/run"],
+  },
+]
+const chartsDeclarationRunConfigurationsDebug: ChartDefinition[] = [
+  {
+    labels: ["iOS app - Debug with Simulator"],
+    measures: [["GradleBuild", "XCodeBuild", "IosAppStartupDebug", "KmpIosConfigurationRun"]],
+    projects: ["Wizard/runConfigurationIos/debug", "KotlinConf/runConfigurationIos/debug"],
+  },
+]
+
+const chartsDeclaration = chartsDeclarationSetup.concat(chartsDeclarationCrossLang).concat(chartsDeclarationCompose).concat(chartsDeclarationRunConfigurations)
 const uniqueProjects: string[] = [...new Set(chartsDeclaration.flatMap((chart) => chart.projects.map((project) => project.split("/")[0])))]
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(uniqueProjects)
@@ -138,4 +176,7 @@ const chartsSetup = computed(() => combineCharts(filterChartsByProjects(chartsDe
 const chartsCrossLang = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationCrossLang, testConfigurator.selected.value ?? [])))
 
 const chartsCompose = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationCompose, testConfigurator.selected.value ?? [])))
+
+const chartsRunConfigurations = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationRunConfigurations, testConfigurator.selected.value ?? [])))
+const chartsRunConfigurationsDebug = computed(() => combineCharts(filterChartsByProjects(chartsDeclarationRunConfigurationsDebug, testConfigurator.selected.value ?? [])))
 </script>

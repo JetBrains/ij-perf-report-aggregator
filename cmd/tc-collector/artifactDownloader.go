@@ -43,7 +43,8 @@ func (t *Collector) findAndDownloadStartUpReports(ctx context.Context, build Bui
 			artifactUrlString := t.serverUrl + strings.Replace(strings.TrimPrefix(artifact.Url, "/app/rest"), "/artifacts/metadata/", "/artifacts/content/", 1)
 			report, err := t.downloadStartUpReportWithRetries(ctx, build, artifactUrlString)
 			if err != nil {
-				return err
+				t.logger.Error("Failed to download artifact, skipping", "buildTypeId", build.Type, "buildId", build.Id, "artifact", artifactUrlString, "error", err)
+				continue
 			}
 
 			*result = append(*result, ArtifactItem{

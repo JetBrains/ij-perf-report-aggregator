@@ -74,7 +74,8 @@ func (t *Collector) loadReports(builds []*Build, reportExistenceChecker *ReportE
 
 			tcBuildProperties, err := t.downloadBuildProperties(loadContext, *build)
 			if err != nil {
-				return err
+				slog.Error("failed to download build properties, skipping build", "buildId", build.Id, "error", err)
+				return nil
 			}
 			if tcBuildProperties == nil {
 				return nil

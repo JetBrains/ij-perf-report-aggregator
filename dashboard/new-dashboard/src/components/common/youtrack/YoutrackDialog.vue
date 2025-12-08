@@ -277,7 +277,6 @@ async function createTicket() {
         life: 8000,
       })
       attachmentException.value = true
-      return
     }
   } finally {
     downloadState.value = DownloadState.FINISHED

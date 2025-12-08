@@ -79,7 +79,7 @@ export function getAccidentBuild(params: CallbackDataParams): string | undefined
   if (dbType == DBType.UNKNOWN) {
     console.error("Unknown type of DB")
   }
-  return
+  return undefined
 }
 
 export function getFullBuildId(params: CallbackDataParams): string | undefined {

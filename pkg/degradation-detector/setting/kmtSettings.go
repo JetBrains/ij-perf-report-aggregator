@@ -40,6 +40,7 @@ func GenerateKotlinMultiplatformToolingSettings(backendUrl string, client *http.
 				Db:      baseSettings.Db,
 				Table:   baseSettings.Table,
 				Project: test,
+				Mode:    "intellij-idea",
 				BaseSettings: detector.BaseSettings{
 					Branch:  baseSettings.Branch,
 					Machine: baseSettings.Machine,

@@ -14,12 +14,12 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
-    "@primevue/auto-import-resolver": "^4.5.2",
-    "@tailwindcss/vite": "^4.1.17",
-    "@vitejs/plugin-vue": "^6.0.2",
+    "@eslint/js": "^9.39.2",
+    "@primevue/auto-import-resolver": "^4.5.3",
+    "@tailwindcss/vite": "^4.1.18",
+    "@vitejs/plugin-vue": "^6.0.3",
     "@vue/eslint-config-typescript": "^14.6.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
@@ -30,15 +30,15 @@
     "oxlint": "^1.32.0",
     "prettier": "^3.7.4",
     "rollup": "^4.53.3",
-    "tailwindcss": "^4.1.17",
+    "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.48.1",
+    "typescript-eslint": "^8.49.0",
     "unplugin-vue-components": "^30.0.0",
     "vite": "npm:rolldown-vite@latest",
     "vite-plugin-static-copy": "^3.1.4",
     "vitest": "^4.0.15",
     "vue": "^3.5.25",
-    "vue-tsc": "3.1.5"
+    "vue-tsc": "3.1.8"
   },
   "packageManager": "pnpm@10.21.0",
   "engines": {

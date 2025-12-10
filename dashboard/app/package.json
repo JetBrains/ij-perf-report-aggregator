@@ -8,9 +8,9 @@
     "echarts": "6.0.0",
     "new-dashboard": "workspace:*",
     "pinia": "^3.0.4",
-    "primevue": "4.5.0",
+    "primevue": "4.5.3",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.25",
-    "vue-router": "4.6.3"
+    "vue-router": "4.6.4"
   }
 }

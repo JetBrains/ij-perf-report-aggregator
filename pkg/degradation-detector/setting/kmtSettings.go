@@ -13,11 +13,11 @@ func GenerateKotlinMultiplatformToolingSettings(backendUrl string, client *http.
 		Table: "kmt",
 		BaseSettings: detector.BaseSettings{
 			Branch:  "master",
-			Machine: "cidr.appcode.performance%",
+			Machine: "cidr.performance.appcode.osx%",
 		},
 	}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
-	settings := make([]detector.PerformanceSettings, 0, 100)
+	settings := make([]detector.PerformanceSettings, 0, 300)
 	if err != nil {
 		slog.Error("error while getting tests", "error", err)
 		return settings

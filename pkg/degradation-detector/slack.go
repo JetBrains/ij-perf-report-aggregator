@@ -27,7 +27,9 @@ type slackSettings interface {
 }
 
 type SlackSettings struct {
-	Channel     string
+	Channel string
+	// ProductLink is the part of the link on your dashboards after https://ij-perf.labs.jb.gg/.
+	// For example: intellij,ijent, kmt, clion
 	ProductLink string
 }
 

@@ -20,4 +20,18 @@ export const jbrMacConfigurations = [
   "macOS15x86_64miniOGL",
 ]
 
-export const jbrLinuxConfigurations = ["Ubuntu2004x86_64", "Ubuntu2004x86_64OGL"]
+export const jbrLinuxConfigurations = [
+  "Ubuntu2004x64",
+  "Ubuntu2004x64OGL",
+  "Ubuntu2004x86_64",
+  "Ubuntu2004x86_64OGL",
+  "Ubuntu2204x64",
+  "Ubuntu2204x64OGL",
+  "Ubuntu2204x86_64",
+  "Ubuntu2204x86_64OGL",
+  "Ubuntu2404aarch64",
+  "Ubuntu2404x86_64",
+  "Ubuntu2404aarch64RB_Wayland",
+  "Ubuntu2404x86_64MM_Vulkan",
+  "Ubuntu2404x86_64MM_Wayland",
+]

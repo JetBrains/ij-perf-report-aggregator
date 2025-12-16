@@ -17,37 +17,58 @@
         </template>
       </MeasureSelect>
     </template>
-    <Divider title="Completion" />
+    <Divider
+      title="Completion"
+      :description="completionChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="completionCharts"
     />
-    <Divider title="Code analysis" />
+    <Divider
+      title="Code analysis"
+      :description="codeAnalysisChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="codeAnalysisCharts"
     />
-    <Divider title="Find usages" />
+    <Divider
+      title="Find usages"
+      :description="findUsagesChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="findUsagesCharts"
     />
-    <Divider title="Debugger" />
+    <Divider
+      title="Debugger"
+      :description="evaluateExpressionCharsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="evaluateExpressionChars"
     />
-    <Divider title="Refactoring" />
+    <Divider
+      title="Refactoring"
+      :description="refactoringChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="refactoringCharts"
     />
-    <Divider title="Code Typing" />
+    <Divider
+      title="Code Typing"
+      :description="codeTypingChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="codeTypingCharts"
     />
-    <Divider title="Script" />
+    <Divider
+      title="Script"
+      :description="scriptChartsDescription"
+    />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
       :definitions="scriptCompletionCharts"
@@ -73,14 +94,21 @@ import Divider from "../../common/Divider.vue"
 import MemoryK1K2DashboardGroupCharts from "../MemoryK1K2DashboardGroupCharts.vue"
 import {
   completionCharts,
+  completionChartsDescription,
   evaluateExpressionChars,
+  evaluateExpressionCharsDescription,
   findUsagesCharts,
+  findUsagesChartsDescription,
   codeAnalysisCharts,
+  codeAnalysisChartsDescription,
   refactoringCharts,
+  refactoringChartsDescription,
   scriptCompletionCharts,
+  scriptChartsDescription,
   codeAnalysisScriptCharts,
   scriptFindUsagesCharts,
   codeTypingCharts,
+  codeTypingChartsDescription,
 } from "../projects"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)

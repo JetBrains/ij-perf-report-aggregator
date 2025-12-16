@@ -127,10 +127,9 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
 
   const previousChangePointIndex = new Array(n + 1).fill(0) as number[]
   let previousTaus: number[] = [0, minDistance]
-  let costForPreviousTau: number[] = []
 
   for (let currentTau = 2 * minDistance; currentTau < n + 1; currentTau++) {
-    costForPreviousTau = previousTaus.map((previousTau) => bestCost[previousTau] + cost(previousTau, currentTau) + penalty)
+    const costForPreviousTau = previousTaus.map((previousTau) => bestCost[previousTau] + cost(previousTau, currentTau) + penalty)
 
     const bestPreviousTauIndex = whichMin(costForPreviousTau)
     bestCost[currentTau] = costForPreviousTau[bestPreviousTauIndex]

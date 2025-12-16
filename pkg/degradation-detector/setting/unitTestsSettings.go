@@ -82,6 +82,13 @@ var teamConfigs = []teamConfig{
 			"org.jetbrains.plugins.ruby",
 		},
 	},
+	{
+		Team:         "lsp",
+		SlackChannel: "kotlin-lsp-alerts",
+		Packages: []string{
+			"com.jetbrains.ls",
+		},
+	},
 }
 
 func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

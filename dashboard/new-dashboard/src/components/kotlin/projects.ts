@@ -156,6 +156,9 @@ function projectsToDefinition(projectsByOS: ProjectsByOS[]): ComputedRef<ChartDe
 
 export const completionProjects = { ...KOTLIN_PROJECTS.linux.completion, ...KOTLIN_PROJECTS.mac.completion }
 
+export const completionChartsDescription =
+  "A Completion test invokes completion (CTRL + Space) explicitly at a specific position in a file. Depending on the test, the completion can be invoked with or without already typed text."
+
 export const completionCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.completion,
@@ -175,6 +178,8 @@ export const completionCharts = projectsToDefinition([
 
 export const highlightingProjects = { ...KOTLIN_PROJECTS.linux.highlighting, ...KOTLIN_PROJECTS.mac.highlighting }
 
+export const codeAnalysisChartsDescription = "A Code Analysis test measures the full highlighting of a single file, including inspections."
+
 export const codeAnalysisCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.highlighting,
@@ -187,6 +192,8 @@ export const codeAnalysisCharts = projectsToDefinition([
     machines: [MACHINES.mac],
   },
 ])
+
+export const refactoringChartsDescription = undefined
 
 export const refactoringCharts = projectsToDefinition([
   {
@@ -216,6 +223,9 @@ export const refactoringCharts = projectsToDefinition([
   },
 ])
 
+export const codeTypingChartsDescription =
+  "A Code Typing test types a piece of code with medium complexity from beginning to end. It invokes completion and waits for code analysis at predetermined points."
+
 export const codeTypingCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.codeTyping,
@@ -225,6 +235,10 @@ export const codeTypingCharts = projectsToDefinition([
 ])
 
 export const findUsagesProjects = { ...KOTLIN_PROJECTS.linux.findUsages, ...KOTLIN_PROJECTS.mac.findUsages }
+
+export const findUsagesChartsDescription =
+  "A Find Usages test invokes Find Usages (Option + F7) on a specific declaration in a file. It waits until all usages have been found and compares the number of usages with the" +
+  " expected value.\n\nThe test does not wait for the file's code analysis to finish but rather runs Find Usages in parallel with it. This matches user behavior more closely."
 
 export const findUsagesCharts = projectsToDefinition([
   {
@@ -244,6 +258,8 @@ export const findUsagesCharts = projectsToDefinition([
   },
 ])
 
+export const evaluateExpressionCharsDescription = undefined
+
 export const evaluateExpressionChars = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.evaluateExpression,
@@ -256,6 +272,9 @@ export const evaluateExpressionChars = projectsToDefinition([
     machines: [MACHINES.linux],
   },
 ])
+
+export const convertJavaToKotlinProjectsCharsDescription =
+  "A Java to Kotlin (J2K) test converts a Java file to a Kotlin file. It measures the full time it takes to complete the conversion."
 
 export const convertJavaToKotlinProjectsChars = projectsToDefinition([
   {
@@ -368,6 +387,9 @@ const findUsagesAndGoToImplementationScenarioCharts = projectsToDefinition([
 ])
 
 const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
+
+export const scriptChartsDescription = "This category contains various kinds of performance tests that are performed on script files (.kts)."
+
 export const codeAnalysisScriptCharts = projectsToDefinition([
   {
     projects: scriptHighlight,

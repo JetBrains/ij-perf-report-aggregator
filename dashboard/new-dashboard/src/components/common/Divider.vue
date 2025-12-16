@@ -4,7 +4,14 @@
     class="relative flex py-5 items-center"
   >
     <div class="grow border-t" />
-    <span class="shrink mx-4 text-lg">{{ title }}</span>
+    <div class="shrink mx-4 flex items-center">
+      <span class="text-lg">{{ title }}</span>
+      <i
+        v-if="description"
+        v-tooltip="{ value: description, pt: { text: { class: 'text-base w-md' } } }"
+        class="pi pi-info-circle text-sm cursor-help ml-2"
+      />
+    </div>
     <div class="grow border-t" />
   </div>
   <!-- https://tailwindui.com/components/application-ui/layout/dividers -->
@@ -25,7 +32,8 @@
 export interface Props {
   title?: string
   label?: string
+  description?: string
 }
 
-const { title = null, label = null } = defineProps<Props>()
+const { title = null, label = null, description = null } = defineProps<Props>()
 </script>

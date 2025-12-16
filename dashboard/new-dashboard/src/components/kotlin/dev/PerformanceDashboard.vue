@@ -17,23 +17,47 @@
       </MeasureSelect>
     </template>
     <SlackLink></SlackLink>
-    <Divider title="Completion" />
+    <Divider
+      title="Completion"
+      :description="completionChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="completionCharts" />
-    <Divider title="Code analysis" />
+    <Divider
+      title="Code analysis"
+      :description="codeAnalysisChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="codeAnalysisCharts" />
-    <Divider title="Find usages" />
+    <Divider
+      title="Find usages"
+      :description="findUsagesChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="findUsagesCharts" />
-    <Divider title="Debugger" />
+    <Divider
+      title="Debugger"
+      :description="evaluateExpressionCharsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="evaluateExpressionChars" />
-    <Divider title="Refactoring" />
+    <Divider
+      title="Refactoring"
+      :description="refactoringChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="refactoringCharts" />
-    <Divider title="Code Typing" />
+    <Divider
+      title="Code Typing"
+      :description="codeTypingChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="codeTypingCharts" />
-    <Divider title="Script" />
+    <Divider
+      title="Script"
+      :description="scriptChartsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="scriptCompletionCharts" />
     <K1K2DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
     <K1K2DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
-    <Divider title="Convert Java to Kotlin" />
+    <Divider
+      title="Convert Java to Kotlin"
+      :description="convertJavaToKotlinProjectsCharsDescription"
+    />
     <K1K2DashboardGroupCharts :definitions="convertJavaToKotlinProjectsChars" />
   </DashboardPage>
 </template>
@@ -44,15 +68,23 @@ import DashboardPage from "../../common/DashboardPage.vue"
 import Divider from "../../common/Divider.vue"
 import {
   codeAnalysisCharts,
+  codeAnalysisChartsDescription,
   codeAnalysisScriptCharts,
   codeTypingCharts,
+  codeTypingChartsDescription,
   completionCharts,
+  completionChartsDescription,
   convertJavaToKotlinProjectsChars,
+  convertJavaToKotlinProjectsCharsDescription,
   evaluateExpressionChars,
+  evaluateExpressionCharsDescription,
   findUsagesCharts,
+  findUsagesChartsDescription,
   KOTLIN_PROJECT_CONFIGURATOR,
   refactoringCharts,
+  refactoringChartsDescription,
   scriptCompletionCharts,
+  scriptChartsDescription,
   scriptFindUsagesCharts,
 } from "../projects"
 import SlackLink from "../SlackLink.vue"

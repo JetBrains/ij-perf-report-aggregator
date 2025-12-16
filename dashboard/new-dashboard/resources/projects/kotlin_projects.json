@@ -223,6 +223,16 @@
         "kotlin_language_server/insertCode/SpecialJavaFileForTest_j2k"
       ]
     },
+    "codeTyping": {
+      "kotlinEmpty": [
+        "code_typing/Main_transform_string_explicit_type_with_library_cache",
+        "code_typing/Main_transform_string_implicit_type_with_library_cache"
+      ],
+      "kotlinLang": [
+        "code_typing/LLFirBodyLazyResolver_calculate_cfg_explicit_type_with_library_cache",
+        "code_typing/LLFirBodyLazyResolver_calculate_cfg_implicit_type_with_library_cache"
+      ]
+    },
     "optimizeImports": {
       "intelliJ": [
         "intellij_commit/otimizeImports/AbstractKotlinMavenImporterTest",

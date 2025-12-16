@@ -17,6 +17,7 @@ const MEASURES = {
     { name: "prepareForRename#mean_value", label: "PrepareForRename" },
     { name: "fus_refactoring_usages_searched", label: "FindUsagesForRename" },
   ],
+  codeTypingMeasures: [{ name: "codeTyping#mean_value", label: "Code Typing mean value" }],
   moveFilesMeasure: [
     { name: "moveFiles#mean_value", label: "Move files" },
     { name: "moveFiles_back#mean_value", label: "Move files back" },
@@ -211,6 +212,14 @@ export const refactoringCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.moveDeclarations,
     measures: MEASURES.moveDeclarationsMeasure,
+    machines: [MACHINES.linux],
+  },
+])
+
+export const codeTypingCharts = projectsToDefinition([
+  {
+    projects: KOTLIN_PROJECTS.linux.codeTyping,
+    measures: MEASURES.codeTypingMeasures,
     machines: [MACHINES.linux],
   },
 ])

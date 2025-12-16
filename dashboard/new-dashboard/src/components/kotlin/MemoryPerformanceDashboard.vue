@@ -41,6 +41,11 @@
       :metrics="metrics"
       :definitions="refactoringCharts"
     />
+    <Divider title="Code Typing" />
+    <MemoryK1K2DashboardGroupCharts
+      :metrics="metrics"
+      :definitions="codeTypingCharts"
+    />
     <Divider title="Script" />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
@@ -74,6 +79,7 @@ import {
   scriptCompletionCharts,
   codeAnalysisScriptCharts,
   scriptFindUsagesCharts,
+  codeTypingCharts,
 } from "./projects"
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)

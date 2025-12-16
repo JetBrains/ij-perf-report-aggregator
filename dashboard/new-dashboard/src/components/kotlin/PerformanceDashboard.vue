@@ -26,6 +26,8 @@
     <K1K2DashboardGroupCharts :definitions="evaluateExpressionChars" />
     <Divider title="Refactoring" />
     <K1K2DashboardGroupCharts :definitions="refactoringCharts" />
+    <Divider title="Code Typing" />
+    <K1K2DashboardGroupCharts :definitions="codeTypingCharts" />
     <Divider title="Script" />
     <K1K2DashboardGroupCharts :definitions="scriptCompletionCharts" />
     <K1K2DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
@@ -42,6 +44,7 @@ import K1K2DashboardGroupCharts from "./K1K2DashboardGroupCharts.vue"
 import {
   codeAnalysisCharts,
   codeAnalysisScriptCharts,
+  codeTypingCharts,
   completionCharts,
   convertJavaToKotlinProjectsChars,
   evaluateExpressionChars,

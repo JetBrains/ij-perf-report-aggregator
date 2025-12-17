@@ -34,9 +34,9 @@
     <K1K2DashboardGroupCharts :definitions="findUsagesCharts" />
     <Divider
       title="Debugger"
-      :description="evaluateExpressionCharsDescription"
+      :description="evaluateExpressionChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="evaluateExpressionChars" />
+    <K1K2DashboardGroupCharts :definitions="evaluateExpressionCharts" />
     <Divider
       title="Refactoring"
       :description="refactoringChartsDescription"
@@ -56,9 +56,9 @@
     <K1K2DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider
       title="Convert Java to Kotlin"
-      :description="convertJavaToKotlinProjectsCharsDescription"
+      :description="convertJavaToKotlinProjectsChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="convertJavaToKotlinProjectsChars" />
+    <K1K2DashboardGroupCharts :definitions="convertJavaToKotlinProjectsCharts" />
   </DashboardPage>
 </template>
 
@@ -74,10 +74,10 @@ import {
   codeTypingChartsDescription,
   completionCharts,
   completionChartsDescription,
-  convertJavaToKotlinProjectsChars,
-  convertJavaToKotlinProjectsCharsDescription,
-  evaluateExpressionChars,
-  evaluateExpressionCharsDescription,
+  convertJavaToKotlinProjectsCharts,
+  convertJavaToKotlinProjectsChartsDescription,
+  evaluateExpressionCharts,
+  evaluateExpressionChartsDescription,
   findUsagesCharts,
   findUsagesChartsDescription,
   KOTLIN_PROJECT_CONFIGURATOR,

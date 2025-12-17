@@ -43,11 +43,11 @@
     />
     <Divider
       title="Debugger"
-      :description="evaluateExpressionCharsDescription"
+      :description="evaluateExpressionChartsDescription"
     />
     <MemoryK1K2DashboardGroupCharts
       :metrics="metrics"
-      :definitions="evaluateExpressionChars"
+      :definitions="evaluateExpressionCharts"
     />
     <Divider
       title="Refactoring"
@@ -95,8 +95,8 @@ import MemoryK1K2DashboardGroupCharts from "../MemoryK1K2DashboardGroupCharts.vu
 import {
   completionCharts,
   completionChartsDescription,
-  evaluateExpressionChars,
-  evaluateExpressionCharsDescription,
+  evaluateExpressionCharts,
+  evaluateExpressionChartsDescription,
   findUsagesCharts,
   findUsagesChartsDescription,
   codeAnalysisCharts,

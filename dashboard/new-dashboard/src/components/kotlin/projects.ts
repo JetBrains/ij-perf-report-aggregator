@@ -34,14 +34,14 @@ const MEASURES = {
   convertJavaToKotlinProjectsMeasures: [{ name: "convertJavaToKotlin", label: "convert java to kotlin" }],
   navigationToDeclarationMeasures: [
     { name: "localInspections_cold#mean_value", label: "Code Analysis cold cache" },
-    { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
+    { name: "localInspections_hot#mean_value", label: "Code Analysis hot cache" },
     { name: "execute_editor_gotodeclaration_cold#mean_value", label: "Navigate to declaration cold cache" },
     { name: "execute_editor_gotodeclaration_hot#mean_value", label: "Navigate to declaration hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
   sequenceHighlightingMeasures: [
     { name: "localInspections_cold#mean_value", label: "Code Analysis cold cache" },
-    { name: "localInspections_hot#mean_value", label: "Code Analysis  hot cache" },
+    { name: "localInspections_hot#mean_value", label: "Code Analysis hot cache" },
     { name: "freedMemoryByGC", label: "Freed memory by GC" },
   ],
   findUsagesScenarioMeasures: [
@@ -96,7 +96,7 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
   intelliJ2: buildCategory("IntelliJ suite 2", ""),
   intelliJ3: buildCategory("IntelliJ suite 3", ""),
 
-  intelliJSources: buildCategory("Intellij Sources", "intellij_sources/"),
+  intelliJSources: buildCategory("IntelliJ Sources", "intellij_sources/"),
   intelliJTyping: buildCategory("IntelliJ with typing", ""),
   kotlinLang: buildCategory("Kotlin lang", "kotlin_lang/"),
   kotlinLang_slow: buildCategory("Kotlin lang (slow)", "kotlin_lang/"),
@@ -258,9 +258,9 @@ export const findUsagesCharts = projectsToDefinition([
   },
 ])
 
-export const evaluateExpressionCharsDescription = undefined
+export const evaluateExpressionChartsDescription = undefined
 
-export const evaluateExpressionChars = projectsToDefinition([
+export const evaluateExpressionCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.evaluateExpression,
     measures: MEASURES.evaluateExpressionMeasures,
@@ -273,10 +273,10 @@ export const evaluateExpressionChars = projectsToDefinition([
   },
 ])
 
-export const convertJavaToKotlinProjectsCharsDescription =
+export const convertJavaToKotlinProjectsChartsDescription =
   "A Java to Kotlin (J2K) test converts a Java file to a Kotlin file. It measures the full time it takes to complete the conversion."
 
-export const convertJavaToKotlinProjectsChars = projectsToDefinition([
+export const convertJavaToKotlinProjectsCharts = projectsToDefinition([
   {
     projects: KOTLIN_PROJECTS.linux.convertJavaToKotlin,
     measures: MEASURES.convertJavaToKotlinProjectsMeasures,
@@ -415,14 +415,14 @@ export const scriptFindUsagesCharts = projectsToDefinition([
 ])
 
 export const USER_SCENARIOS: Record<string, ScenarioData> = {
-  navigateToDeclaration: { label: "Navigate to declaration(one file per test)", charts: navigateToDeclarationScenarioCharts },
+  navigateToDeclaration: { label: "Navigate to declaration (one file per test)", charts: navigateToDeclarationScenarioCharts },
   sequenceNavigateToDeclaration: { label: "Sequence highlighting", charts: sequenceHighlightingScenarioCharts },
   deleteAllImports: { label: "Delete all imports", charts: deleteAllImportsScenarioCharts },
   findUsagesAndHighlighting: { label: "Find usages and Highlighting", charts: findUsagesAndHighlightingScenarioCharts },
   findUsagesAndGoToImplementation: { label: "Find usages and Goto implementation", charts: findUsagesAndGoToImplementationScenarioCharts },
   completionCausingModification: { label: "Completion causing modification", charts: completionCausingModificationScenarioCharts },
   errorCodeModification: { label: "Make/fix error and highlighting", charts: errorCodeModificationScenarioCharts },
-  renameAndCompletion: { label: "Rename symbol(file A) and use this name in completion(file B)", charts: renameAndCompletionScenarioCharts },
+  renameAndCompletion: { label: "Rename symbol (file A) and use this name in completion (file B)", charts: renameAndCompletionScenarioCharts },
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)

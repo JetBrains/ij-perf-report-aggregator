@@ -126,22 +126,6 @@
           project="fmtlib/completion/std.string (hot)"
         />
       </div>
-
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::string, hot)"
-          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
-          :projects="['radler/fmtlib/completion/std.string (hot)']"
-        />
-      </div>
-
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items, mean (std::string, hot)"
-          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
-          :projects="['radler/fmtlib/completion/std.string (hot)']"
-        />
-      </div>
     </section>
 
     <Divider title="Actions" />

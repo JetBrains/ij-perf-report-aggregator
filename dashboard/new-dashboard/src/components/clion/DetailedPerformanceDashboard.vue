@@ -139,20 +139,6 @@
           project="fmtlib/completion/std.string (cold)"
         />
       </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::string, cold)"
-          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
-          :projects="['radler/fmtlib/completion/std.string (cold)']"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items, mean (std::string, cold)"
-          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
-          :projects="['radler/fmtlib/completion/std.string (cold)']"
-        />
-      </div>
     </section>
 
     <!-- Completion: std::string (hot) -->
@@ -162,20 +148,6 @@
           label="Time to show completion list, 90th percentile (std::string, hot)"
           measure="fus_time_to_show_90p"
           project="fmtlib/completion/std.string (hot)"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::string, hot)"
-          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
-          :projects="['radler/fmtlib/completion/std.string (hot)']"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items, mean (std::string, hot)"
-          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
-          :projects="['radler/fmtlib/completion/std.string (hot)']"
         />
       </div>
     </section>
@@ -189,20 +161,6 @@
           project="fmtlib/completion/std.shared_ptr (dep) (hot)"
         />
       </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, 90th percentile (std::shared_ptr<T>, hot)"
-          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
-          :projects="['radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items, mean (std::shared_ptr<T>, hot)"
-          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
-          :projects="['radler/fmtlib/completion/std.shared_ptr (dep) (hot)']"
-        />
-      </div>
     </section>
 
     <!-- Completion: fmt::join<It> -->
@@ -212,20 +170,6 @@
           label="Time to show completion list, 90th percentile (fmt::join<It>, hot)"
           measure="fus_time_to_show_90p"
           project="fmtlib/completion/fmt.join_view (dep) (hot)"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] First element calculated, 90th percentile (fmt::join<It>, hot)"
-          :measure="['fus_clangd_time_ms_90p', 'fus_rider_time_ms_90p']"
-          :projects="['radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <GroupProjectsChart
-          label="[Radler, clangd vs R#] Total items, mean (fmt::join<It>, hot)"
-          :measure="['fus_clangd_items_count_mean', 'fus_rider_items_count_mean']"
-          :projects="['radler/fmtlib/completion/fmt.join_view (dep) (hot)']"
         />
       </div>
     </section>
@@ -508,6 +452,17 @@
       </div>
     </section>
 
+    <Divider title="Debugger" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Stepping (fmtlib)"
+          :measure="['debugStep_into', 'debugStep_out', 'debugStep_over']"
+          project="fmtlib/debug/args-test/basic"
+        />
+      </div>
+    </section>
     <!-- END -->
   </DashboardPage>
 </template>

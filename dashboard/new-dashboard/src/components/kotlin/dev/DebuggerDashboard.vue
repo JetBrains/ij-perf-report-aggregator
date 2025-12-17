@@ -28,7 +28,7 @@
       </div>
     </section>
 
-    <K1K2DashboardGroupCharts :definitions="evaluateExpressionChars" />
+    <K1K2DashboardGroupCharts :definitions="evaluateExpressionCharts" />
   </DashboardPage>
 </template>
 
@@ -36,5 +36,5 @@
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
 import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
-import { evaluateExpressionChars } from "../projects"
+import { evaluateExpressionCharts } from "../projects"
 </script>

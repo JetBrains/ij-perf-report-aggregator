@@ -2275,7 +2275,7 @@ const clionRoutes = [
     component: COMPONENTS.startupDashboard,
     props: {
       table: "clion",
-      defaultProject: "clion/clion/cmake",
+      defaultProject: "radler/clion/cmake",
     },
     meta: { pageTitle: "CLion Startup dashboard" },
   },

@@ -82,6 +82,7 @@ export default tseslint.config(
       ],
       "@typescript-eslint/no-unsafe-enum-comparison": "off",
       "@typescript-eslint/non-nullable-type-assertion-style": "off",
+      "@typescript-eslint/no-useless-default-assignment": "off",
       "vue/html-quotes": [
         "error",
         "double",

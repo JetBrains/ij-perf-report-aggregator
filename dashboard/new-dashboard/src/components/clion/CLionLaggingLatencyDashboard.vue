@@ -31,6 +31,14 @@
         :measure="chart.definition.measure"
         :projects="chart.projects"
       />
+      <Divider title="Lagging during browsing files" />
+      <GroupProjectsChart
+        v-for="chart in laggingHighlightingChartsCombined"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+      />
     </section>
   </DashboardPage>
 </template>
@@ -104,7 +112,23 @@ const laggingNavigationCharts: ChartDefinition[] = [
   },
 ]
 
+const laggingHighlightingCharts: ChartDefinition[] = [
+  {
+    labels: ["Lagging during browsing - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#percentage_share"]],
+    projects: ["radler/opencv/syntaxHighlighting/opencv"],
+    aliases: ["syntaxHighlighting opencv"],
+  },
+  {
+    labels: ["Lagging during browsing - lagging percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: ["radler/opencv/syntaxHighlighting/opencv"],
+    aliases: ["syntaxHighlighting opencv"],
+  },
+]
+
 const laggingIndexingChartsCombined = combineCharts(laggingIndexingCharts)
 const laggingCompletionChartsCombined = combineCharts(laggingCompletionCharts)
 const laggingNavigationChartsCombined = combineCharts(laggingNavigationCharts)
+const laggingHighlightingChartsCombined = combineCharts(laggingHighlightingCharts)
 </script>

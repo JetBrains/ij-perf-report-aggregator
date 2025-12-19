@@ -107,5 +107,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateAIASettings(),
 		setting.GenerateKotlinBuildToolsSettings(backendUrl, client),
 		setting.GenerateKotlinMultiplatformToolingSettings(backendUrl, client),
+		setting.GenerateUISettings(),
 	)
 }

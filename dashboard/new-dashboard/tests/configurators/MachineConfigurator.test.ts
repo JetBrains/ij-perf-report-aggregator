@@ -3,6 +3,7 @@ import { assert, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
 import { MachineConfigurator } from "../../src/configurators/MachineConfigurator"
+import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
 import { awaitMockCallsCount } from "../utils/awaitors"
 import ConfiguratorTest, { ConfigurationTestData } from "./ConfiguratorTest"
 
@@ -18,7 +19,8 @@ describe("Machine configurator", () => {
   describe("tests without filters", () => {
     beforeEach(() => {
       machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard)
-      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator])
+      const measureConfigurator = new TestMeasureConfigurator()
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, measureConfigurator])
     })
 
     test("Valid query on configurator init", async () => {
@@ -74,7 +76,8 @@ describe("Machine configurator", () => {
       )
       branchConfigurator = createBranchConfigurator(data.serverConfigurator, data.persistenceForDashboard, [data.timeRangeConfigurator])
       machineConfigurator = new MachineConfigurator(data.serverConfigurator, data.persistenceForDashboard, [data.timeRangeConfigurator, branchConfigurator])
-      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, branchConfigurator, data.timeRangeConfigurator])
+      const measureConfigurator = new TestMeasureConfigurator()
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, machineConfigurator, branchConfigurator, data.timeRangeConfigurator, measureConfigurator])
     })
 
     test("Valid query on configurator init", async () => {

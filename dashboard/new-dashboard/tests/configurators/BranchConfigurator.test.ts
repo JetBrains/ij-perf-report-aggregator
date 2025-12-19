@@ -1,6 +1,7 @@
 import { assert, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
+import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
 import { awaitMockCallsCount } from "../utils/awaitors"
 import ConfiguratorTest, { ConfigurationTestData } from "./ConfiguratorTest"
 
@@ -16,7 +17,8 @@ describe("Branch configurator", () => {
     beforeEach(async () => {
       branchConfigurator = createBranchConfigurator(data.serverConfigurator, data.persistenceForDashboard)
       await awaitMockCallsCount(data.fetchMock, 1)
-      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, branchConfigurator])
+      const measureConfigurator = new TestMeasureConfigurator()
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, branchConfigurator, measureConfigurator])
     })
 
     test("Valid query on configurator init", () => {
@@ -65,7 +67,8 @@ describe("Branch configurator", () => {
     beforeEach(async () => {
       branchConfigurator = createBranchConfigurator(data.serverConfigurator, data.persistenceForDashboard, [data.timeRangeConfigurator])
       await awaitMockCallsCount(data.fetchMock, 1)
-      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, branchConfigurator, data.timeRangeConfigurator])
+      const measureConfigurator = new TestMeasureConfigurator()
+      dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, branchConfigurator, data.timeRangeConfigurator, measureConfigurator])
     })
 
     test("Valid query on configurator init", () => {

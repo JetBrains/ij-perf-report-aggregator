@@ -62,7 +62,9 @@
     "require-typed-ref": "off",
     "sort-imports": "off",
     "sort-keys": "off",
-    "sort-vars": "off"
+    "sort-vars": "off",
+    "capitalized-comments": "off",
+    "no-inline-comments": "off"
   },
   "ignorePatterns": [
     "**/tailwind.config.cjs",

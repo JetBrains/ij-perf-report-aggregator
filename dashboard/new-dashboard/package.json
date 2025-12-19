@@ -6,7 +6,7 @@
     "@primevue/core": "^4.5.4",
     "@vueuse/core": "^14.1.0",
     "echarts": "6.0.0",
-    "fast-equals": "5.4.0",
+    "fast-equals": "6.0.0",
     "humanize-duration": "3.33.2",
     "p-limit": "^7.2.0",
     "pinia": "^3.0.4",

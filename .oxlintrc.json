@@ -64,7 +64,8 @@
     "sort-keys": "off",
     "sort-vars": "off",
     "capitalized-comments": "off",
-    "no-inline-comments": "off"
+    "no-inline-comments": "off",
+    "max-statements": "off"
   },
   "ignorePatterns": [
     "**/tailwind.config.cjs",

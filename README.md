@@ -24,3 +24,8 @@ Directory `dashboard` contains Vue.js application built using [PrimeVue](https:/
   - To test your changes against production server, replace the url to `https://ij-perf-api.labs.jb.gg`. Make sure you have access to the internal network.
 
 To change dashboard, edit your dashboard page in `dashboard/new-dashboard/src/components`
+
+### Edit TeamCity configurations for collection
+
+Repository with a list of TeamCity configurations that are collected
+[ij-report-aggregator-deployment/report-aggregator/](https://code.jetbrains.team/p/ij-report-aggregator-deployment/repositories/report-aggregator)

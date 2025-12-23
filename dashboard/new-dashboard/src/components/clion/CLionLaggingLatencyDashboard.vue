@@ -53,20 +53,20 @@ const laggingIndexingCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during indexing - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
   },
   {
     labels: ["Lagging during indexing - sum"],
     measures: ["ui.lagging#sum"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
   },
   {
     labels: ["Lagging during indexing - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
+    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
   },
 ]
 

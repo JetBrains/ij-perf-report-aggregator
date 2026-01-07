@@ -50,6 +50,7 @@ const enum ROUTE_PREFIX {
   KMT = "/kmt",
   Diogen = "/diogen",
   Toolbox = "/toolbox",
+  LSP = "/lsp",
 }
 
 const TEST_ROUTE = "tests"
@@ -242,6 +243,8 @@ enum ROUTES {
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
+  LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
+  LSPDashboard = `${ROUTE_PREFIX.LSP}/diagnosticDashboard`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -1278,6 +1281,27 @@ const KOTLIN_BUILD_TOOLS: Product = {
   ],
 }
 
+const LSP: Product = {
+  url: ROUTE_PREFIX.LSP,
+  label: "LSP",
+  children: [
+    {
+      url: ROUTE_PREFIX.LSP,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.LSPDashboard,
+          label: "Dashboard",
+        },
+        {
+          url: ROUTES.LSPTests,
+          label: "Tests",
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
   BAZEL,
@@ -1293,6 +1317,7 @@ export const PRODUCTS = [
   KMT,
   KOTLIN,
   KOTLIN_BUILD_TOOLS,
+  LSP,
   ML_TESTS,
   PERF_UNIT,
   PHPSTORM,
@@ -2599,7 +2624,7 @@ const perfUnitTestsRoutes = [
     props: {
       dbName: "perfUnitTests",
       table: "report",
-      initialMachine: "Linux EC2 C5ad.xlarge (4 vCPU AMD EPYC 7002, 8 GB)",
+      initialMachine: MACHINES.HETZNER,
       withInstaller: false,
     },
     meta: { pageTitle: "Perf Unit Tests" },
@@ -2619,6 +2644,25 @@ const kotlinBuildToolsRoutes = [
     },
     meta: { pageTitle: "Kotlin Build Tools Tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
+]
+
+const lspRoutes = [
+  {
+    path: ROUTES.LSPTests,
+    component: () => import("./components/common/PerformanceUnitTests.vue"),
+    props: {
+      dbName: "perfUnitTests",
+      table: "report",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "LSP Tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.LSPDashboard,
+    component: () => import("./components/lsp/LSPDashboard.vue"),
+    meta: { pageTitle: "LSP Diagnostic Dashboard" },
+  },
 ]
 
 export function getNewDashboardRoutes(): ParentRouteRecord[] {
@@ -2650,6 +2694,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...diogenRoutes,
         ...perfUnitTestsRoutes,
         ...kotlinBuildToolsRoutes,
+        ...lspRoutes,
         {
           path: ROUTES.ReportDegradations,
           component: () => import("./components/degradations/ReportDegradation.vue"),

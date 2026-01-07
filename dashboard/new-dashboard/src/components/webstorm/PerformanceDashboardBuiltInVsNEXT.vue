@@ -49,7 +49,6 @@ import { groupBy3 } from "./utils"
 const variantOptions = [
   { label: "Built-in", value: "" },
   { label: "NEXT", value: "NEXT" },
-  { label: "TSGONEXT", value: "TSGONEXT" },
   { label: "TSGO_COMBINED", value: "TSGO_COMBINED" },
 ]
 

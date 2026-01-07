@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { MockInstance, vitest } from "vitest"
+import { MockInstance, vi } from "vitest"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
 import { ServerConfigurator } from "../../src/components/common/dataQuery"
@@ -17,7 +17,7 @@ export interface ConfigurationTestData {
 
 export default {
   setupPreconditions(mockValue: string[]): ConfigurationTestData {
-    const fetchMock: MockInstance = vitest.spyOn(rxjs, "fromFetchWithRetryAndErrorHandling").mockClear().mockReset()
+    const fetchMock: MockInstance = vi.spyOn(rxjs, "fromFetchWithRetryAndErrorHandling").mockClear().mockReset()
 
     fetchMock.mockReturnValue(
       new Observable((sub) => {

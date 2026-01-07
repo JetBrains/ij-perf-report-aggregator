@@ -1,8 +1,8 @@
-import { Mock, MockInstance, vitest } from "vitest"
+import { Mock, MockInstance, vi } from "vitest"
 
 type Test = () => boolean
 export const awaitCallbackTrue = async (callback: Test, timeoutMs: number = 1000) => {
-  await vitest.waitFor(
+  await vi.waitFor(
     () => {
       if (!callback()) {
         throw new Error(`The callback did not return the true value during the timeout ${timeoutMs}`)

@@ -378,7 +378,9 @@ export function getMachineGroupName(machine: string): string {
     machine.startsWith("intellij-linux-2204-large-disk-aws-1") ||
     machine.startsWith("intellij-linux-2004-large-disk-aws-1") ||
     machine.startsWith("intellij-linux-2204-aws-2-i") ||
-    machine.startsWith("intellij-linux-2204-aws-1-i")
+    machine.startsWith("intellij-linux-2204-aws-1-i") ||
+    machine.startsWith("intellij-linux-2204-aws-4-i-") ||
+    machine.startsWith("intellij-linux-2204-aws-3-i")
   ) {
     // https://aws.amazon.com/ec2/instance-types/c5/
     // noinspection SpellCheckingInspection
@@ -445,8 +447,6 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Mac Cidr Performance"
   } else if (machine.startsWith("intellij-linux-2204-aws-i4i")) {
     groupName = "Linux EC2 i4i.xlarge (4 vCPU Xeon, 32 GB)"
-  } else if (machine.startsWith("intellij-linux-2204-aws-4-i-") || machine.startsWith("intellij-linux-2204-aws-3-i")) {
-    groupName = "Linux EC2 m5dn.xlarge (4 vCPU Xeon, 16 GB)"
   } else if (machine.startsWith("intellij-linux-2204-aws-r5d")) {
     groupName = "Linux EC2 r5d.xlarge (4 vCPU Xeon, 32 GB)"
   } else if (machine.startsWith("intellij-linux-2004-aws-4-i-")) {

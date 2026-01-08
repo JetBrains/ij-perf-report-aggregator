@@ -212,7 +212,13 @@ func filterTests(tests []string, packages []string, include bool) []string {
 }
 
 func collectAllPackages(teamConfigs []teamConfig) []string {
-	var allPackages []string
+	// pre-allocation calculation
+	totalLen := 0
+	for _, config := range teamConfigs {
+		totalLen += len(config.Packages)
+	}
+
+	allPackages := make([]string, 0, totalLen)
 	for _, config := range teamConfigs {
 		allPackages = append(allPackages, config.Packages...)
 	}

@@ -45,9 +45,9 @@ func analyzeIjReport(runResult *RunResult, data *fastjson.Value) error {
 	var rlTime int32
 	var rlCount int32
 
-	measures := make([]measureItem, 0)
-
 	report.Activities = readActivities("items", data)
+
+	measures := make([]measureItem, 0, len(report.Activities)+1)
 
 	for _, activity := range report.Activities {
 		measures = append(measures, measureItem{

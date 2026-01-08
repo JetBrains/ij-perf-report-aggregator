@@ -127,7 +127,7 @@ func detectDegradations(values []int, builds []string, timestamps []int64, analy
 // according to the selected ThresholdMode. For GreaterThan mode, strictly greater (>) is used; for
 // LessThan mode, strictly less (<) is used.
 func detectThresholdExceed(values []int, builds []string, timestamps []int64, s analysisSettings) []Degradation {
-	result := make([]Degradation, 0)
+	result := make([]Degradation, 0, 1)
 	if len(values) == 0 || len(builds) == 0 || len(timestamps) == 0 {
 		return result
 	}

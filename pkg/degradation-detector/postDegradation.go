@@ -49,19 +49,43 @@ func (s FleetStartupSettings) DBTestName() string {
 	return "fleet" + "/" + s.Metric
 }
 
+type accidentState struct {
+	mu                   sync.Mutex
+	posted               bool // true if POST attempt was made
+	successfullyInserted bool // true if got 200 OK (newly inserted)
+}
+
 func PostDegradations(client *http.Client, backendURL string, degradations <-chan DegradationWithSettings) chan InsertionResults {
 	url := backendURL + "/api/meta/accidents"
 	insertionResults := make(chan InsertionResults, 100)
 	go func() {
 		defer close(insertionResults)
 		var wg sync.WaitGroup
-		newlyInserted := sync.Map{}
+		accidentStates := sync.Map{} // map[string]*accidentState
+
 		for degradation := range degradations {
 			wg.Go(func() {
 				d := degradation.Details
 				if d.timestamp < time.Now().Add(-672*time.Hour).UnixMilli() { // Do not post degradations older than 28 days
 					return
 				}
+
+				accidentKey := fmt.Sprintf("%s:%s", degradation.Settings.DBTestName(), d.Build)
+				stateInterface, _ := accidentStates.LoadOrStore(accidentKey, &accidentState{})
+				state := stateInterface.(*accidentState)
+
+				state.mu.Lock()
+				defer state.mu.Unlock()
+
+				if state.posted {
+					if state.successfullyInserted {
+						insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
+					}
+					return
+				}
+
+				state.posted = true
+
 				date := time.UnixMilli(d.timestamp).UTC().Format("2006-01-02")
 				medianMessage := getMessageBasedOnMedianChange(d.medianValues)
 				kind := "InferredRegression"
@@ -90,26 +114,18 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 				}
 				defer resp.Body.Close()
 
-				accidentKey := fmt.Sprintf("%s:%s", degradation.Settings.DBTestName(), d.Build)
-
 				if resp.StatusCode == http.StatusOK {
-					newlyInserted.Store(accidentKey, true)
+					state.successfullyInserted = true
 					insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
 					return
 				}
 
 				// the accident already exists
 				if resp.StatusCode == http.StatusConflict {
-					if _, wasInsertedInThisRun := newlyInserted.Load(accidentKey); wasInsertedInThisRun {
-						insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
-					}
 					return
 				}
 
-				if resp.StatusCode != http.StatusOK {
-					insertionResults <- InsertionResults{Error: fmt.Errorf("failed to post Details: %v", resp.Status)}
-					return
-				}
+				insertionResults <- InsertionResults{Error: fmt.Errorf("failed to post Details: %v", resp.Status)}
 			})
 		}
 		wg.Wait()

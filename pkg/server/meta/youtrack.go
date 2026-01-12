@@ -30,6 +30,7 @@ type YoutrackCreateIssueRequest struct {
 	Delta          string        `json:"delta"`
 	TestMethodName *string       `json:"testMethodName"`
 	TestType       string        `json:"testType"`
+	CurrentBuildId *int          `json:"currentBuildId"`
 }
 
 type UploadAttachmentsToIssueRequest struct {
@@ -52,6 +53,7 @@ type GenerateDescriptionData struct {
 	TestHistoryUrl *string
 	TestMethod     *string
 	TestType       string
+	Commits        *CommitRevisions
 }
 
 type CreateIssueResponse struct {
@@ -117,18 +119,27 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			logError("cannot get test history link", err, &response.Exceptions)
 		}
 
+		var commits *CommitRevisions
+		if params.CurrentBuildId != nil {
+			commits, err = teamCityClient.getChanges(request.Context(), strconv.Itoa(*params.CurrentBuildId))
+			if err != nil {
+				logError("cannot get commits from build", err, &response.Exceptions)
+			}
+		}
+
 		descriptionData := GenerateDescriptionData{
-			lowerKind,
-			affectedTest,
-			affectedMetric,
-			params.Delta,
-			relatedAccident.Stacktrace,
-			params.BuildLink,
-			params.ChangesLink,
-			params.DashboardLink,
-			&testHistoryUrl,
-			params.TestMethodName,
-			params.TestType,
+			Kind:           lowerKind,
+			AffectedTest:   affectedTest,
+			AffectedMetric: affectedMetric,
+			Delta:          params.Delta,
+			StackTrace:     relatedAccident.Stacktrace,
+			BuildLink:      params.BuildLink,
+			Changes:        params.ChangesLink,
+			DashboardLink:  params.DashboardLink,
+			TestHistoryUrl: &testHistoryUrl,
+			TestMethod:     params.TestMethodName,
+			TestType:       params.TestType,
+			Commits:        commits,
 		}
 
 		accessToken := request.Header.Get("X-Auth-Request-Access-Token")
@@ -414,6 +425,14 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	// Changes in space
 	if generateDescriptorData.Changes != "" {
 		parts = append(parts, fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes))
+	}
+
+	// Commits
+	if generateDescriptorData.Commits != nil {
+		commitsSection := fmt.Sprintf("**Commits:**\nFirst: %s\nLast: %s",
+			generateDescriptorData.Commits.FirstCommit,
+			generateDescriptorData.Commits.LastCommit)
+		parts = append(parts, commitsSection)
 	}
 
 	// Idea logs and snapshots

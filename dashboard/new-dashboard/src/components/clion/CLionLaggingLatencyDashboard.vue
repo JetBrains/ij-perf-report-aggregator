@@ -39,6 +39,14 @@
         :measure="chart.definition.measure"
         :projects="chart.projects"
       />
+      <Divider title="Lagging during debugging" />
+      <GroupProjectsChart
+        v-for="chart in laggingDebuggingChartsCombined"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+      />
     </section>
   </DashboardPage>
 </template>
@@ -127,8 +135,36 @@ const laggingHighlightingCharts: ChartDefinition[] = [
   },
 ]
 
+const laggingDebuggingCharts: ChartDefinition[] = [
+  {
+    labels: ["Lagging during debugging - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
+    projects: ["radler/fmtlib/debug/args-test/basic"],
+    aliases: ["fmtlib"],
+  },
+  {
+    labels: ["Lagging during debugging - sum"],
+    measures: ["ui.lagging#sum"],
+    projects: ["radler/fmtlib/debug/args-test/basic"],
+    aliases: ["fmtlib"],
+  },
+  {
+    labels: ["Lagging during debugging - count"],
+    measures: ["ui.lagging#count"],
+    projects: ["radler/fmtlib/debug/args-test/basic"],
+    aliases: ["fmtlib"],
+  },
+  {
+    labels: ["Lagging during debuggig - percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: ["radler/fmtlib/debug/args-test/basic"],
+    aliases: ["fmtlib"],
+  },
+]
+
 const laggingIndexingChartsCombined = combineCharts(laggingIndexingCharts)
 const laggingCompletionChartsCombined = combineCharts(laggingCompletionCharts)
 const laggingNavigationChartsCombined = combineCharts(laggingNavigationCharts)
 const laggingHighlightingChartsCombined = combineCharts(laggingHighlightingCharts)
+const laggingDebuggingChartsCombined = combineCharts(laggingDebuggingCharts)
 </script>

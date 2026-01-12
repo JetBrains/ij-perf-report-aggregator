@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -72,7 +73,11 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 
 				accidentKey := fmt.Sprintf("%s:%s", degradation.Settings.DBTestName(), d.Build)
 				stateInterface, _ := accidentStates.LoadOrStore(accidentKey, &accidentState{})
-				state := stateInterface.(*accidentState)
+				state, ok := stateInterface.(*accidentState)
+				if !ok {
+					insertionResults <- InsertionResults{Error: errors.New("unexpected type in accidentStates map")}
+					return
+				}
 
 				state.mu.Lock()
 				defer state.mu.Unlock()

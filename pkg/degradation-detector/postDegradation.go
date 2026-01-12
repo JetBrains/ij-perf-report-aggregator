@@ -55,6 +55,7 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 	go func() {
 		defer close(insertionResults)
 		var wg sync.WaitGroup
+		newlyInserted := sync.Map{}
 		for degradation := range degradations {
 			wg.Go(func() {
 				d := degradation.Details
@@ -89,8 +90,19 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 				}
 				defer resp.Body.Close()
 
+				accidentKey := fmt.Sprintf("%s:%s", degradation.Settings.DBTestName(), d.Build)
+
+				if resp.StatusCode == http.StatusOK {
+					newlyInserted.Store(accidentKey, true)
+					insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
+					return
+				}
+
 				// the accident already exists
 				if resp.StatusCode == http.StatusConflict {
+					if _, wasInsertedInThisRun := newlyInserted.Load(accidentKey); wasInsertedInThisRun {
+						insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
+					}
 					return
 				}
 
@@ -98,8 +110,6 @@ func PostDegradations(client *http.Client, backendURL string, degradations <-cha
 					insertionResults <- InsertionResults{Error: fmt.Errorf("failed to post Details: %v", resp.Status)}
 					return
 				}
-
-				insertionResults <- InsertionResults{DegradationWithSettings{d, degradation.Settings}, nil}
 			})
 		}
 		wg.Wait()

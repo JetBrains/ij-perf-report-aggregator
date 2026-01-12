@@ -256,6 +256,9 @@ func (f perfintCollector) checkArtifact(artifactName string) bool {
 			return true
 		}
 	}
+	if artifactName == "metrics.performance.json" {
+		return true
+	}
 	return false
 }
 
@@ -417,11 +420,13 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 	if generateDescriptorData.TestType == "intellij" || generateDescriptorData.TestType == "intellij_dev" {
 		logs := "**Idea logs, screenshots, thread dumps etc:**\nCurrent: [logs-current.zip](logs-current.zip)"
 		snapshots := "**Snapshots:**\nCurrent: [snapshots-current.zip](snapshots-current.zip)"
+		metrics := "**Metrics:**\nCurrent: [metrics.performance-current.json](metrics.performance-current.json)"
 		if generateDescriptorData.Kind != "exception" {
 			logs += "\nBefore: [logs-before.zip](logs-before.zip)"
 			snapshots += "\nBefore: [snapshots-before.zip](snapshots-before.zip)"
+			metrics += "\nBefore: [metrics.performance-before.json](metrics.performance-before.json)"
 		}
-		parts = append(parts, logs, snapshots)
+		parts = append(parts, logs, snapshots, metrics)
 	}
 
 	if generateDescriptorData.TestType == "perfUnitTests" {
@@ -451,6 +456,11 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 }
 
 func getAttachmentName(filename, suffix string) string {
+	// Handle metrics.performance.json specially
+	if strings.HasPrefix(filename, "metrics.performance") && strings.HasSuffix(filename, ".json") {
+		return fmt.Sprintf("metrics.performance-%s.json", suffix)
+	}
+
 	parts := strings.Split(filename, ".")
 	if len(parts) != 2 {
 		return filename

@@ -15,7 +15,7 @@ func GenerateIdeaIndexingSettings(backendUrl string, client *http.Client) []dete
 }
 
 func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {
-	tests := []string{"%/indexing", "%/%-scanning"}
+	tests := []string{"%/indexing", "%/%-scanning", "intellij_commit/vfsRefresh/%", "intellij_commit/checkout/243", "empty_project/vfs-mass-update-%"}
 	baseSettings := detector.PerformanceSettings{
 		Db:    "perfintDev",
 		Table: "idea",
@@ -58,6 +58,15 @@ func getIndexingMetricFromTestNameForIDEA(test string) []string {
 	}
 	if strings.Contains(test, "-scanning") {
 		return []string{"scanningTimeWithoutPauses"}
+	}
+	if strings.Contains(test, "/vfsRefresh") {
+		return []string{"vfs_initial_refresh"}
+	}
+	if strings.Contains(test, "/checkout") {
+		return []string{"indexingTimeWithoutPauses", "scanningTimeWithoutPauses", "numberOfIndexedFiles"}
+	}
+	if strings.Contains(test, "/vfs-mass-update-") {
+		return []string{"vfsRefreshAfterMassCreate", "vfsRefreshAfterMassModify", "vfsRefreshAfterMassDelete"}
 	}
 	return []string{}
 }

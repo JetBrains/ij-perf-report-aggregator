@@ -93,6 +93,9 @@ func getJavaMetricsFromTestsNames(test string) []string {
 	if strings.Contains(test, "/rename-package") {
 		return []string{"renameDirectoryAsPackage"}
 	}
+	if strings.Contains(test, "/editor-highlighting") {
+		return []string{"typing_EditorBackSpace_duration", "typing_EditorBackSpace_warmup_duration", "typing_}_duration", "typing_}_warmup_duration"}
+	}
 
 	// for the future cases
 	if strings.Contains(test, "/findUsages") {

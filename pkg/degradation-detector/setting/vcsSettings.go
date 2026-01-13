@@ -15,6 +15,8 @@ func GenerateVCSSettings() []detector.PerformanceSettings {
 			"intellij_sources/EditorImpl-noindex",
 			"intellij_sources/showFileHistory/EditorImpl",
 			"intellij_sources/showFileHistory/EditorImpl-instant-git",
+			"intellij_commit/showFileHistory/EditorImpl",
+			"intellij_commit/showFileHistory/EditorImpl-instant-git",
 		}, metric: []string{"showFileHistory", "showFirstPack"}},
 		{test: []string{"intellij_sources/filterVcsLogTab-phm", "intellij_sources/filterVcsLogTab-noindex"}, metric: []string{"vcs-log-filtering"}},
 		{test: []string{"intellij_sources/filterVcsLogTab-path-phm", "intellij_sources/filterVcsLogTab-path-noindex"}, metric: []string{"vcs-log-filtering"}},

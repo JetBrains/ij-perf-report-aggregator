@@ -15,7 +15,7 @@ func GenerateUISettings() []detector.PerformanceSettings {
 			"scrollEditor#average_cpu_load",
 		}},
 
-		{test: []string{"intellij_commit/projectView"}, metric: []string{"projectViewInit", "projectViewInit#cachedNodesLoaded"}},
+		{test: []string{"intellij_commit/projectView", "kotlin_petclinic/projectView"}, metric: []string{"projectViewInit", "projectViewInit#cachedNodesLoaded"}},
 
 		{test: []string{"intellij_commit/find-in-files", "intellij_commit/find-in-files-old"}, metric: []string{
 			"findInFiles#openDialog",

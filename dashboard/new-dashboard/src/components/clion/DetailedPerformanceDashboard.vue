@@ -452,6 +452,23 @@
       </div>
     </section>
 
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to Show Context menu in Project View for a single file"
+          measure="fus_popup_latency_ms"
+          project="llvm/showPopupMenu/SingleSelection"
+        />
+      </div>
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to Show Context menu in Project View for multiple files"
+          measure="fus_popup_latency_ms"
+          project="llvm/showPopupMenu/MultipleSelection"
+        />
+      </div>
+    </section>
+
     <Divider title="Debugger" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">

@@ -12,7 +12,7 @@
           v-model="targetValue"
           :invalid="!isTargetValueValid()"
         />
-        <label for="targetValue">Target value</label>
+        <label for="targetValue">Target value in milliseconds</label>
       </FloatLabel>
       <SelectButton
         v-model="mode"

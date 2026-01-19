@@ -32,7 +32,7 @@ var teamConfigs = []teamConfig{
 		Team:         "vcs",
 		SlackChannel: "vcs-perf-tests",
 		Packages: []string{
-			"com.intellij.diff", "com.intellij.openapi.vcs",
+			"com.intellij.diff", "com.intellij.openapi.vcs", "git4idea",
 		},
 	},
 	{

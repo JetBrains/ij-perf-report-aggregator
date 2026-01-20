@@ -111,7 +111,7 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, ref("fleet"), ref(null), timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, accidentsConfigurator] as DataQueryConfigurator[]
+const dashboardConfigurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator] as DataQueryConfigurator[]
 
 const updateConfigurators = (configurator: DataQueryConfigurator) => {
   dashboardConfigurators.push(configurator)

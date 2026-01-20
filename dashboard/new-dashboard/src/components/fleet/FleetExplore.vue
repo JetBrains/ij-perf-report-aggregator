@@ -104,14 +104,7 @@ const measureConfigurator = new MeasureConfigurator(serverConfigurator, persiste
 const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, ref("fleet"), ref(measureConfigurator.selected), timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const configurators = [
-  serverConfigurator,
-  machineConfigurator,
-  timeRangeConfigurator,
-  branchConfigurator,
-  triggeredByConfigurator,
-  accidentsConfigurator,
-] as DataQueryConfigurator[]
+const configurators = [serverConfigurator, machineConfigurator, timeRangeConfigurator, branchConfigurator, triggeredByConfigurator] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)
 

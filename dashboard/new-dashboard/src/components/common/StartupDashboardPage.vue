@@ -121,7 +121,7 @@ const projectConfigurator = startupProjectConfigurator(serverConfigurator, persi
 const accidentsConfigurator = new AccidentsConfiguratorForDashboard(serverConfigurator.serverUrl, charts, timeRangeConfigurator)
 provide(accidentsConfiguratorKey, accidentsConfigurator)
 
-const dashboardConfigurators = [timeRangeConfigurator, triggeredByConfigurator, accidentsConfigurator] as FilterConfigurator[]
+const dashboardConfigurators = [timeRangeConfigurator, triggeredByConfigurator] as FilterConfigurator[]
 if (machineConfigurator != null) {
   dashboardConfigurators.push(machineConfigurator)
 }

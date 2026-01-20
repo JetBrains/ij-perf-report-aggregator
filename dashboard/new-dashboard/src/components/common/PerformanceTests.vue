@@ -247,7 +247,6 @@ const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeCon
 if (!withoutAccidents) {
   const accidentsConfigurator = new AccidentsConfiguratorForTests(serverConfigurator.serverUrl, scenarioConfigurator.selected, measureConfigurator.selected, timeRangeConfigurator)
   provide(accidentsConfiguratorKey, accidentsConfigurator)
-  configurators.push(accidentsConfigurator)
 }
 
 if (branchConfigurator != null) {

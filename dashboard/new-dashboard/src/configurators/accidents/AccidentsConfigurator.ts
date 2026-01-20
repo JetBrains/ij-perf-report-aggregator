@@ -1,11 +1,7 @@
-import { Observable } from "rxjs"
 import { Ref, ref } from "vue"
-import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration } from "../../components/common/dataQuery"
 import { DBType } from "../../components/common/sideBar/InfoSidebar"
 import { ServerWithCompressConfigurator } from "../ServerWithCompressConfigurator"
 import { TimeRange } from "../TimeRangeConfigurator"
-import { FilterConfigurator } from "../filter"
-import { refToObservable } from "../rxjs"
 import { useUserStore } from "../../shared/useUserStore"
 
 class AccidentFromServer {
@@ -43,21 +39,9 @@ export class Accident {
   ) {}
 }
 
-export abstract class AccidentsConfigurator implements DataQueryConfigurator, FilterConfigurator {
+export abstract class AccidentsConfigurator {
   readonly value: Ref<Map<string, Accident[]> | undefined> = ref()
   protected dbType: DBType = DBType.UNKNOWN
-
-  createObservable(): Observable<Map<string, Accident[]> | undefined> {
-    return refToObservable(this.value)
-  }
-
-  configureFilter(_: DataQuery): boolean {
-    return true
-  }
-
-  configureQuery(_: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {
-    return true
-  }
 
   protected abstract getAccidentUrl(): string
 

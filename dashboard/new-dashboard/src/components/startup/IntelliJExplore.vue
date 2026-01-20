@@ -154,7 +154,6 @@ const configurators = [
   projectConfigurator,
   branchConfigurator,
   triggeredByConfigurator,
-  accidentsConfigurator,
 ] as DataQueryConfigurator[]
 
 provide(configuratorListKey, configurators)

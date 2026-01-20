@@ -109,7 +109,6 @@ export class PersistentStateManager {
 
     const existingValue = this.state[name]
     if (existingValue != null && (typeof existingValue !== "string" || existingValue.length > 0)) {
-      // console.debug(`[persistentState] set ${name} to ${existingValue}`)
       value.value = existingValueTransformer == null ? existingValue : existingValueTransformer(existingValue)
       this.updateUrlSubject.next(null)
     }

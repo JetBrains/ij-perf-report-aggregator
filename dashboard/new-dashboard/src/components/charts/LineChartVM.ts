@@ -1,5 +1,6 @@
 import { ECElementEvent } from "echarts/core"
 import type { DefaultLabelFormatterCallbackParams as CallbackDataParams } from "echarts"
+import { watch } from "vue"
 import type { OptionDataValue } from "../../shared/echarts-types"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { measureNameToLabel } from "../../shared/metricsMapping"
@@ -28,6 +29,9 @@ export class LineChartVM {
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
   private lastClickedValue = new Map<string, ClickedValue>()
   private hasDataCallback?: (hasData: boolean) => void
+  // Store last data for re-rendering when accidents change
+  private lastData: DataQueryResult | null = null
+  private lastConfiguration: DataQueryExecutorConfiguration | null = null
 
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
@@ -282,7 +286,7 @@ export class LineChartVM {
   }
 
   subscribe(): () => void {
-    return this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
+    const dataUnsubscribe = this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
       const chart = this.eChart.chart
       if (isLoading || data == null) {
         chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
@@ -290,61 +294,89 @@ export class LineChartVM {
       }
       chart.hideLoading()
 
-      const hasData = data.flat(3).length > 0
-      this.hasDataCallback?.(hasData)
+      // Store for potential re-render when accidents change
+      this.lastData = data
+      this.lastConfiguration = configuration
 
-      // Save legend selection state BEFORE any setOption calls
-      const legendState = chart.getOption()["legend"] as { selected?: Record<string, boolean> }[] | undefined
-      const savedLegendSelection = legendState?.[0]?.selected
+      this.renderChart(data, configuration)
+    })
 
-      const formatter = this.legendFormatter
-      chart.setOption(
-        {
-          legend: {
-            bottom: null,
-            type: "scroll",
-            selector: [
-              {
-                type: "inverse",
-                title: "inverse",
-              },
-              {
-                type: "all",
-                title: "enable all",
-              },
-            ],
-            formatter(name: string): string {
-              name = measureNameToLabel(name)
-              if (formatter("test") != "") {
-                return formatter(name)
-              }
-              return name
+    // Watch for accidents changes to re-render the chart without re-fetching data
+    let accidentsUnwatch: (() => void) | null = null
+    if (this.accidentsConfigurator != null) {
+      accidentsUnwatch = watch(
+        () => this.accidentsConfigurator?.value.value,
+        () => {
+          // Re-render with cached data when accidents change
+          if (this.lastData != null && this.lastConfiguration != null) {
+            this.renderChart(this.lastData, this.lastConfiguration)
+          }
+        }
+      )
+    }
+
+    return () => {
+      dataUnsubscribe()
+      accidentsUnwatch?.()
+    }
+  }
+
+  private renderChart(data: DataQueryResult, configuration: DataQueryExecutorConfiguration): void {
+    const chart = this.eChart.chart
+    const hasData = data.flat(3).length > 0
+    this.hasDataCallback?.(hasData)
+
+    // Save legend selection state BEFORE any setOption calls
+    const legendState = chart.getOption()["legend"] as { selected?: Record<string, boolean> }[] | undefined
+    const savedLegendSelection = legendState?.[0]?.selected
+
+    const formatter = this.legendFormatter
+    chart.setOption(
+      {
+        legend: {
+          bottom: null,
+          type: "scroll",
+          selector: [
+            {
+              type: "inverse",
+              title: "inverse",
             },
+            {
+              type: "all",
+              title: "enable all",
+            },
+          ],
+          formatter(name: string): string {
+            name = measureNameToLabel(name)
+            if (formatter("test") != "") {
+              return formatter(name)
+            }
+            return name
           },
-          toolbox: {
-            top: 20,
-            feature: {
-              saveAsImage: {
-                name: "plot",
-              },
+        },
+        toolbox: {
+          top: 20,
+          feature: {
+            saveAsImage: {
+              name: "plot",
             },
           },
         },
-        {
-          replaceMerge: ["legend"],
-        }
-      )
-
-      for (const it of configuration.getChartConfigurators()) {
-        it.configureChart(data, configuration)
-          .then((options) => {
-            this.eChart.updateChart(options, savedLegendSelection)
-          })
-          .catch((error: unknown) => {
-            console.error(error)
-          })
+      },
+      {
+        replaceMerge: ["legend"],
       }
-    })
+    )
+
+    for (const it of configuration.getChartConfigurators()) {
+      it.configureChart(data, configuration)
+        .then((options) => {
+          this.eChart.updateChart(options, savedLegendSelection)
+        })
+        .catch((error: unknown) => {
+          console.error(error)
+        })
+    }
   }
 
   dispose(): void {

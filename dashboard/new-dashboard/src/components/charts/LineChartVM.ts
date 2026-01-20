@@ -326,10 +326,6 @@ export class LineChartVM {
     const hasData = data.flat(3).length > 0
     this.hasDataCallback?.(hasData)
 
-    // Save legend selection state BEFORE any setOption calls
-    const legendState = chart.getOption()["legend"] as { selected?: Record<string, boolean> }[] | undefined
-    const savedLegendSelection = legendState?.[0]?.selected
-
     const formatter = this.legendFormatter
     chart.setOption(
       {
@@ -371,7 +367,7 @@ export class LineChartVM {
     for (const it of configuration.getChartConfigurators()) {
       it.configureChart(data, configuration)
         .then((options) => {
-          this.eChart.updateChart(options, savedLegendSelection)
+          this.eChart.updateChart(options)
         })
         .catch((error: unknown) => {
           console.error(error)

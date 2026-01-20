@@ -48,19 +48,10 @@ export class ChartManager {
     this.resizeObserver.observe(this.resizeContainer)
   }
 
-  updateChart(options: ECBasicOption, savedLegendSelection?: Record<string, boolean>): void {
+  updateChart(options: ECBasicOption): void {
     this.chart.setOption(options, {
       replaceMerge: ["dataset", "series"],
     })
-
-    // Restore legend selection state after update
-    if (savedLegendSelection && Object.keys(savedLegendSelection).length > 0) {
-      this.chart.setOption({
-        legend: {
-          selected: savedLegendSelection,
-        },
-      })
-    }
   }
 
   dispose(): void {

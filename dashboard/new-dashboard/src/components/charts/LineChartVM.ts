@@ -29,9 +29,8 @@ export class LineChartVM {
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
   private lastClickedValue = new Map<string, ClickedValue>()
   private hasDataCallback?: (hasData: boolean) => void
-  // Store last data for re-rendering when accidents change
+  // Track if data has been loaded (for accident marker refresh)
   private lastData: DataQueryResult | null = null
-  private lastConfiguration: DataQueryExecutorConfiguration | null = null
 
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
@@ -294,9 +293,8 @@ export class LineChartVM {
       }
       chart.hideLoading()
 
-      // Store for potential re-render when accidents change
+      // Track that data has been loaded (for accident marker refresh)
       this.lastData = data
-      this.lastConfiguration = configuration
 
       this.renderChart(data, configuration)
     })
@@ -307,9 +305,13 @@ export class LineChartVM {
       accidentsUnwatch = watch(
         () => this.accidentsConfigurator?.value.value,
         () => {
-          // Re-render with cached data when accidents change
-          if (this.lastData != null && this.lastConfiguration != null) {
-            this.renderChart(this.lastData, this.lastConfiguration)
+          // Trigger a lightweight re-render by "refreshing" the series.
+          // The itemStyle.color callback will read the updated accidents.
+          if (this.lastData != null) {
+            const option = this.eChart.chart.getOption()
+            if (option["series"]) {
+              this.eChart.chart.setOption({ series: option["series"] })
+            }
           }
         }
       )

@@ -125,21 +125,13 @@ enum ROUTES {
   KotlinCompareBranchesDev = `${ROUTE_PREFIX.Kotlin}/${COMPARE_BRANCHES_ROUTE}Dev`,
   GoLandStartupDashboard = `${ROUTE_PREFIX.GoLand}/${STARTUP_ROUTE}`,
   GoLandProductMetricsDashboard = `${ROUTE_PREFIX.GoLand}/${PRODUCT_METRICS_ROUTE}`,
-  GoLandProductMetricsDashboardOld = `${ROUTE_PREFIX.GoLand}/${PRODUCT_METRICS_ROUTE}Old`,
   GoLandIndexingDashboard = `${ROUTE_PREFIX.GoLand}/indexingDashboard`,
-  GoLandIndexingDashboardOld = `${ROUTE_PREFIX.GoLand}/indexingDashboardOld`,
   GoLandCompletionDashboard = `${ROUTE_PREFIX.GoLand}/completionDashboard`,
-  GoLandCompletionDashboardOld = `${ROUTE_PREFIX.GoLand}/completionDashboardOld`,
   GoLandInspectionDashboard = `${ROUTE_PREFIX.GoLand}/inspectionsDashboard`,
-  GoLandInspectionDashboardOld = `${ROUTE_PREFIX.GoLand}/inspectionsDashboardOld`,
   GoLandDebuggerDashboard = `${ROUTE_PREFIX.GoLand}/debuggerDashboard`,
-  GoLandDebuggerDashboardOld = `${ROUTE_PREFIX.GoLand}/debuggerDashboardOld`,
   GoLandFindUsagesDashboard = `${ROUTE_PREFIX.GoLand}/findUsagesDashboard`,
-  GoLandFindUsagesDashboardOld = `${ROUTE_PREFIX.GoLand}/findUsagesDashboardOld`,
   GoLandDFADashboard = `${ROUTE_PREFIX.GoLand}/dfaDashboard`,
-  GoLandDFADashboardOld = `${ROUTE_PREFIX.GoLand}/dfaDashboardOld`,
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}Dev`,
-  GoLandTestsOld = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
@@ -607,64 +599,32 @@ const GOLAND: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.GoLandProductMetricsDashboardOld,
-          label: PRODUCT_METRICS_LABEL + " (Old)",
-        },
-        {
           url: ROUTES.GoLandIndexingDashboard,
           label: "Indexing",
-        },
-        {
-          url: ROUTES.GoLandIndexingDashboardOld,
-          label: "Indexing (Old)",
         },
         {
           url: ROUTES.GoLandCompletionDashboard,
           label: "Completion",
         },
         {
-          url: ROUTES.GoLandCompletionDashboardOld,
-          label: "Completion (Old)",
-        },
-        {
           url: ROUTES.GoLandInspectionDashboard,
           label: "Inspections",
-        },
-        {
-          url: ROUTES.GoLandInspectionDashboardOld,
-          label: "Inspections (Old)",
         },
         {
           url: ROUTES.GoLandDebuggerDashboard,
           label: "Debugger",
         },
         {
-          url: ROUTES.GoLandDebuggerDashboardOld,
-          label: "Debugger (Old)",
-        },
-        {
           url: ROUTES.GoLandFindUsagesDashboard,
           label: "Find Usages",
-        },
-        {
-          url: ROUTES.GoLandFindUsagesDashboardOld,
-          label: "Find Usages (Old)",
         },
         {
           url: ROUTES.GoLandDFADashboard,
           label: "DFA",
         },
         {
-          url: ROUTES.GoLandDFADashboardOld,
-          label: "DFA (Old)",
-        },
-        {
           url: ROUTES.GoLandTests,
           label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.GoLandTestsOld,
-          label: TESTS_LABEL + " (Old)",
         },
         {
           url: ROUTES.GoLandCompareBranches,
@@ -1588,11 +1548,6 @@ const golandRoutes = [
     meta: { pageTitle: "GoLand Inspections dashboard" },
   },
   {
-    path: ROUTES.GoLandInspectionDashboardOld,
-    component: () => import("./components/goland/InspectionsDashboardOld.vue"),
-    meta: { pageTitle: "GoLand Inspections dashboard" },
-  },
-  {
     path: ROUTES.GoLandStartupDashboard,
     component: COMPONENTS.startupDashboard,
     props: {
@@ -1607,18 +1562,8 @@ const golandRoutes = [
     meta: { pageTitle: "GoLand product metrics" },
   },
   {
-    path: ROUTES.GoLandProductMetricsDashboardOld,
-    component: () => import("./components/goland/ProductMetricsDashboardOld.vue"),
-    meta: { pageTitle: "GoLand product metrics" },
-  },
-  {
     path: ROUTES.GoLandIndexingDashboard,
     component: () => import("./components/goland/IndexingDashboard.vue"),
-    meta: { pageTitle: "GoLand Indexing dashboard" },
-  },
-  {
-    path: ROUTES.GoLandIndexingDashboardOld,
-    component: () => import("./components/goland/IndexingDashboardOld.vue"),
     meta: { pageTitle: "GoLand Indexing dashboard" },
   },
   {
@@ -1627,18 +1572,8 @@ const golandRoutes = [
     meta: { pageTitle: "GoLand Completion dashboard" },
   },
   {
-    path: ROUTES.GoLandCompletionDashboardOld,
-    component: () => import("./components/goland/CompletionDashboardOld.vue"),
-    meta: { pageTitle: "GoLand Completion dashboard" },
-  },
-  {
     path: ROUTES.GoLandDebuggerDashboard,
     component: () => import("./components/goland/DebuggerDashboard.vue"),
-    meta: { pageTitle: "GoLand Debugger dashboard" },
-  },
-  {
-    path: ROUTES.GoLandDebuggerDashboardOld,
-    component: () => import("./components/goland/DebuggerDashboardOld.vue"),
     meta: { pageTitle: "GoLand Debugger dashboard" },
   },
   {
@@ -1647,18 +1582,8 @@ const golandRoutes = [
     meta: { pageTitle: "GoLand Find Usages dashboard" },
   },
   {
-    path: ROUTES.GoLandFindUsagesDashboardOld,
-    component: () => import("./components/goland/FindUsagesDashboardOld.vue"),
-    meta: { pageTitle: "GoLand Find Usages dashboard" },
-  },
-  {
     path: ROUTES.GoLandDFADashboard,
     component: () => import("./components/goland/DataFlowAnalysisDashboard.vue"),
-    meta: { pageTitle: "GoLand DFA dashboard" },
-  },
-  {
-    path: ROUTES.GoLandDFADashboardOld,
-    component: () => import("./components/goland/DataFlowAnalysisDashboardOld.vue"),
     meta: { pageTitle: "GoLand DFA dashboard" },
   },
   {
@@ -1668,16 +1593,6 @@ const golandRoutes = [
       dbName: "perfintDev",
       table: "goland",
       withInstaller: false,
-      initialMachine: MACHINES.HETZNER,
-    },
-    meta: { pageTitle: "GoLand Performance tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
-    path: ROUTES.GoLandTestsOld,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "goland",
       initialMachine: MACHINES.HETZNER,
     },
     meta: { pageTitle: "GoLand Performance tests" },

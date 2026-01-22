@@ -11,8 +11,8 @@
     <section>
       <CLionVsRadlerWorkspaceUpdateChart
         label="Workspace Model Update"
-        :projects="['llvm/indexing', 'opencv/indexing', 'curl/indexing', 'big_project_50k_10k/indexing', 'big_project_50k_10k_many_symbols/indexing']"
-        :names="['LLVM', 'OpenCV', 'curl', '50k_10k', '50k_10k_many_symbols']"
+        :projects="['llvm/indexing', 'opencv/indexing', 'curl/indexing', 'big_project_50k_10k/indexing']"
+        :names="['LLVM', 'OpenCV', 'curl', '50k_10k']"
       />
     </section>
   </DashboardPage>

@@ -27,25 +27,29 @@ func generateIdeaIndexingSettings(backendUrl string, client *http.Client) []dete
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
-	for _, machine := range machines {
-		for _, test := range testsExpanded {
-			metrics := getIndexingMetricFromTestNameForIDEA(test)
-			for _, metric := range metrics {
-				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "ij-indexes-perf-alerts",
-							ProductLink: "intellij",
+	modes := []string{"split", "with-aia", ""}
+	for _, mode := range modes {
+		for _, machine := range machines {
+			for _, test := range testsExpanded {
+				metrics := getIndexingMetricFromTestNameForIDEA(test)
+				for _, metric := range metrics {
+					settings = append(settings, detector.PerformanceSettings{
+						Db:      baseSettings.Db,
+						Table:   baseSettings.Table,
+						Project: test,
+						Mode:    mode,
+						BaseSettings: detector.BaseSettings{
+							Branch:  baseSettings.Branch,
+							Machine: machine,
+							Metric:  metric,
+							SlackSettings: detector.SlackSettings{
+								Channel:     "ij-indexes-perf-alerts",
+								ProductLink: "intellij",
+							},
+							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
 						},
-						AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-					},
-				})
+					})
+				}
 			}
 		}
 	}

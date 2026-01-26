@@ -111,9 +111,9 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
   },
   {
-    labels: ["ShowQuickFixes"],
-    measures: ["showQuickFixes"],
-    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
+    labels: ["ShowQuickFixes", "Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],
+    measures: ["showQuickFixes", "test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal"],
+    projects: ["grails/showIntentions/Find cause", "kotlin/showIntention/OldDarkScheme/Import", "kotlin/showIntention/Import", "spring_boot/showIntentions"],
   },
   {
     labels: ["FindUsagesPopup"],

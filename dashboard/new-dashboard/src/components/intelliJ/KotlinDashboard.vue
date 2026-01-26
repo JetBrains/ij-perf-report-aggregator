@@ -56,11 +56,6 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],
-    measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal"],
-    projects: ["kotlin/showIntention/Import"],
-  },
-  {
     labels: ["Creating a new file"],
     measures: ["createKotlinFile"],
     projects: ["intellij_commit/createKotlinClass"],

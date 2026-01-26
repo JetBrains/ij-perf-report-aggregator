@@ -39,7 +39,7 @@ func GenerateUISettings() []detector.PerformanceSettings {
 
 		{test: []string{"intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"}, metric: []string{"FileStructurePopup"}},
 
-		{test: []string{"grails/showIntentions/Find cause", "kotlin/showIntention/Import", "spring_boot/showIntentions"}, metric: []string{"showQuickFixes"}},
+		{test: []string{"grails/showIntentions/Find cause", "kotlin/showIntention/Import", "kotlin/showIntention/OldDarkScheme/Import", "spring_boot/showIntentions"}, metric: []string{"showQuickFixes"}},
 
 		{test: []string{"intellij_commit/findUsages/PsiManager_getInstance_firstCall", "intellij_commit/findUsages/Library_getName"}, metric: []string{"findUsage_popup"}},
 

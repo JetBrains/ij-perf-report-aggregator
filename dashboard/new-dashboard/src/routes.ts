@@ -185,17 +185,11 @@ enum ROUTES {
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
   ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
-  ClionProductMetricsDashboardOld = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}Old`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
-  ClionTestOld = `${ROUTE_PREFIX.Clion}/${TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
-  ClionPerfDashboardOld = `${ROUTE_PREFIX.Clion}/perfDashboardOld`,
   ClionDetailedPerfDashboard = `${ROUTE_PREFIX.Clion}/detailedPerfDashboard`,
-  ClionDetailedPerfDashboardOld = `${ROUTE_PREFIX.Clion}/detailedPerfDashboardOld`,
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
-  ClionMemoryDashboardOld = `${ROUTE_PREFIX.Clion}/memoryDashboardOld`,
   ClionProjectModelDashboard = `${ROUTE_PREFIX.Clion}/projectModelDashboard`,
-  ClionProjectModelDashboardOld = `${ROUTE_PREFIX.Clion}/projectModelDashboardOld`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
@@ -945,40 +939,20 @@ const CLION: Product = {
           label: PRODUCT_METRICS_LABEL,
         },
         {
-          url: ROUTES.ClionProductMetricsDashboardOld,
-          label: PRODUCT_METRICS_LABEL + " (Old)",
-        },
-        {
           url: ROUTES.ClionPerfDashboard,
           label: "Performance",
-        },
-        {
-          url: ROUTES.ClionPerfDashboardOld,
-          label: "Performance (Old)",
         },
         {
           url: ROUTES.ClionDetailedPerfDashboard,
           label: "Detailed Performance",
         },
         {
-          url: ROUTES.ClionDetailedPerfDashboardOld,
-          label: "Detailed Performance (Old)",
-        },
-        {
           url: ROUTES.ClionMemoryDashboard,
           label: "Memory",
         },
         {
-          url: ROUTES.ClionMemoryDashboardOld,
-          label: "Memory (Old)",
-        },
-        {
           url: ROUTES.ClionProjectModelDashboard,
           label: "Project Model",
-        },
-        {
-          url: ROUTES.ClionProjectModelDashboardOld,
-          label: "Project Model (Old)",
         },
         {
           url: ROUTES.ClionLaggingLatencyDashboard,
@@ -987,10 +961,6 @@ const CLION: Product = {
         {
           url: ROUTES.ClionTest,
           label: TESTS_LABEL,
-        },
-        {
-          url: ROUTES.ClionTestOld,
-          label: TESTS_LABEL + "(Old)",
         },
         {
           url: ROUTES.ClionCompareBranches,
@@ -2127,16 +2097,6 @@ const clionRoutes = [
     meta: { pageTitle: "CLion tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
   {
-    path: ROUTES.ClionTestOld,
-    component: COMPONENTS.perfTests,
-    props: {
-      dbName: "perfint",
-      table: "clion",
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion tests" },
-  } satisfies TypedRouteRecord<PerformanceTestsProps>,
-  {
     path: ROUTES.ClionClassicStartupDashboard,
     component: COMPONENTS.startupDashboard,
     props: {
@@ -2151,24 +2111,8 @@ const clionRoutes = [
     meta: { pageTitle: "CLion product metrics" },
   },
   {
-    path: ROUTES.ClionProductMetricsDashboardOld,
-    component: () => import("./components/clion/ProductMetricsDashboardOld.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion product metrics" },
-  },
-  {
     path: ROUTES.ClionPerfDashboard,
     component: () => import("./components/clion/PerformanceDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion dashboard" },
-  },
-  {
-    path: ROUTES.ClionPerfDashboardOld,
-    component: () => import("./components/clion/PerformanceDashboardOld.vue"),
     props: {
       initialMachine: MACHINES.AWS_LINUX,
     },
@@ -2183,14 +2127,6 @@ const clionRoutes = [
     meta: { pageTitle: "CLion Detailed Performance dashboard" },
   },
   {
-    path: ROUTES.ClionDetailedPerfDashboardOld,
-    component: () => import("./components/clion/DetailedPerformanceDashboardOld.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Detailed Performance dashboard" },
-  },
-  {
     path: ROUTES.ClionMemoryDashboard,
     component: () => import("./components/clion/MemoryDashboard.vue"),
     props: {
@@ -2199,24 +2135,8 @@ const clionRoutes = [
     meta: { pageTitle: "CLion Memory dashboard" },
   },
   {
-    path: ROUTES.ClionMemoryDashboardOld,
-    component: () => import("./components/clion/MemoryDashboardOld.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Memory dashboard" },
-  },
-  {
     path: ROUTES.ClionProjectModelDashboard,
     component: () => import("./components/clion/ProjectModelDashboard.vue"),
-    props: {
-      initialMachine: MACHINES.AWS_LINUX,
-    },
-    meta: { pageTitle: "CLion Project Model dashboard" },
-  },
-  {
-    path: ROUTES.ClionProjectModelDashboardOld,
-    component: () => import("./components/clion/ProjectModelDashboardOld.vue"),
     props: {
       initialMachine: MACHINES.AWS_LINUX,
     },

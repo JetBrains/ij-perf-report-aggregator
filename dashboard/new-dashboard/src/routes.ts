@@ -216,7 +216,7 @@ enum ROUTES {
   AIANameSuggestionDashboard = `${ROUTE_PREFIX.AIA}/nameSuggestion`,
   AIATestGenerationDashboard = `${ROUTE_PREFIX.AIA}/testGeneration`,
   KMTTests = `${ROUTE_PREFIX.KMT}/unitTests`,
-  KMTIntegrationTests = `${ROUTE_PREFIX.KMT}/${TEST_ROUTE}`,
+  KMTIntegrationTests = `${ROUTE_PREFIX.KMT}/${DEV_TEST_ROUTE}`,
   KMTDashboard = `${ROUTE_PREFIX.KMT}/${DASHBOARD_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,

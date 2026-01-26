@@ -29,25 +29,29 @@ func GenerateKotlinIdeaSettings(backendUrl string, client *http.Client) []detect
 
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
-	for _, machine := range machines {
-		for _, test := range testsWithoutIndexingScanning {
-			metrics := getKotlinMetricsFromTestName(test)
-			for _, metric := range metrics {
-				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "kotlin-plugin-perf-tests",
-							ProductLink: "intellij",
+	modes := []string{"split", "with-aia", ""}
+	for _, mode := range modes {
+		for _, machine := range machines {
+			for _, test := range testsWithoutIndexingScanning {
+				metrics := getKotlinMetricsFromTestName(test)
+				for _, metric := range metrics {
+					settings = append(settings, detector.PerformanceSettings{
+						Db:      baseSettings.Db,
+						Table:   baseSettings.Table,
+						Project: test,
+						Mode:    mode,
+						BaseSettings: detector.BaseSettings{
+							Branch:  baseSettings.Branch,
+							Machine: machine,
+							Metric:  metric,
+							SlackSettings: detector.SlackSettings{
+								Channel:     "kotlin-plugin-perf-tests",
+								ProductLink: "intellij",
+							},
+							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
 						},
-						AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-					},
-				})
+					})
+				}
 			}
 		}
 	}

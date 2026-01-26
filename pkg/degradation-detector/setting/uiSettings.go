@@ -232,29 +232,33 @@ func GenerateUISettings() []detector.PerformanceSettings {
 	}
 
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
+	modes := []string{"split", "with-aia", ""}
 
 	settings := make([]detector.PerformanceSettings, 0, 100)
-	for _, testMetric := range testMetrics {
-		for _, test := range testMetric.test {
-			for _, metric := range testMetric.metric {
-				for _, machine := range machines {
-					settings = append(settings, detector.PerformanceSettings{
-						Db:      "perfintDev",
-						Table:   "idea",
-						Project: test,
-						BaseSettings: detector.BaseSettings{
-							Machine: machine,
-							Metric:  metric,
-							Branch:  "master",
-							SlackSettings: detector.SlackSettings{
-								Channel:     "ij-ui-performance-alerts",
-								ProductLink: "intellij",
+	for _, mode := range modes {
+		for _, testMetric := range testMetrics {
+			for _, test := range testMetric.test {
+				for _, metric := range testMetric.metric {
+					for _, machine := range machines {
+						settings = append(settings, detector.PerformanceSettings{
+							Db:      "perfintDev",
+							Table:   "idea",
+							Project: test,
+							Mode:    mode,
+							BaseSettings: detector.BaseSettings{
+								Machine: machine,
+								Metric:  metric,
+								Branch:  "master",
+								SlackSettings: detector.SlackSettings{
+									Channel:     "ij-ui-performance-alerts",
+									ProductLink: "intellij",
+								},
+								AnalysisSettings: detector.AnalysisSettings{
+									MinimumSegmentLength: 8,
+								},
 							},
-							AnalysisSettings: detector.AnalysisSettings{
-								MinimumSegmentLength: 8,
-							},
-						},
-					})
+						})
+					}
 				}
 			}
 		}

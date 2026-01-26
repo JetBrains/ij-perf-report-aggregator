@@ -30,25 +30,29 @@ func generateUltimateDevAnalysisSettings(backendUrl string, client *http.Client)
 	testsExpanded := detector.ExpandTestsByPattern(backendUrl, client, tests, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
-	for _, machine := range machines {
-		for _, test := range testsExpanded {
-			metrics := getUltimateMetricsFromTestsNames(test)
-			for _, metric := range metrics {
-				settings = append(settings, detector.PerformanceSettings{
-					Db:      baseSettings.Db,
-					Table:   baseSettings.Table,
-					Project: test,
-					BaseSettings: detector.BaseSettings{
-						Branch:  baseSettings.Branch,
-						Machine: machine,
-						Metric:  metric,
-						SlackSettings: detector.SlackSettings{
-							Channel:     "ij-u-team-performance-issues-check",
-							ProductLink: "intellij",
+	modes := []string{"split", ""}
+	for _, mode := range modes {
+		for _, machine := range machines {
+			for _, test := range testsExpanded {
+				metrics := getUltimateMetricsFromTestsNames(test)
+				for _, metric := range metrics {
+					settings = append(settings, detector.PerformanceSettings{
+						Db:      baseSettings.Db,
+						Table:   baseSettings.Table,
+						Project: test,
+						Mode:    mode,
+						BaseSettings: detector.BaseSettings{
+							Branch:  baseSettings.Branch,
+							Machine: machine,
+							Metric:  metric,
+							SlackSettings: detector.SlackSettings{
+								Channel:     "ij-u-team-performance-issues-check",
+								ProductLink: "intellij",
+							},
+							AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
 						},
-						AnalysisSettings: detector.AnalysisSettings{MinimumSegmentLength: 8},
-					},
-				})
+					})
+				}
 			}
 		}
 	}

@@ -4,7 +4,7 @@
   "dependencies": {
     "@fontsource/inter": "5.2.8",
     "@fontsource/jetbrains-mono": "5.2.8",
-    "@primeuix/themes": "^2.0.2",
+    "@primeuix/themes": "^2.0.3",
     "echarts": "6.0.0",
     "new-dashboard": "workspace:*",
     "pinia": "^3.0.4",

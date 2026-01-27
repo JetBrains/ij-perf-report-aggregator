@@ -134,6 +134,7 @@ enum ROUTES {
   GoLandTests = `${ROUTE_PREFIX.GoLand}/${TEST_ROUTE}Dev`,
   GoLandCompare = `${ROUTE_PREFIX.GoLand}/${COMPARE_ROUTE}`,
   GoLandCompareBranches = `${ROUTE_PREFIX.GoLand}/${COMPARE_BRANCHES_ROUTE}`,
+  GoLandCompareModes = `${ROUTE_PREFIX.GoLand}/${COMPARE_MODES_ROUTE}`,
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
   PyCharmProductMetricsDashboard = `${ROUTE_PREFIX.PyCharm}/${PRODUCT_METRICS_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}Dev`,
@@ -623,6 +624,10 @@ const GOLAND: Product = {
         {
           url: ROUTES.GoLandCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
+        },
+        {
+          url: ROUTES.GoLandCompareModes,
+          label: COMPARE_MODES_LABEL,
         },
       ],
     },
@@ -1584,6 +1589,15 @@ const golandRoutes = [
       table: "goland",
     },
     meta: { pageTitle: COMPARE_BRANCHES_LABEL },
+  },
+  {
+    path: ROUTES.GoLandCompareModes,
+    component: COMPONENTS.compareModes,
+    props: {
+      dbName: "perfintDev",
+      table: "goland",
+    },
+    meta: { pageTitle: COMPARE_MODES_LABEL },
   },
 ]
 

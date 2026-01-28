@@ -11,20 +11,21 @@ import (
 func FetchAllProjects(backendUrl string, client *http.Client, settings StartupSettings) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
+	filters := []dataQuery.QueryFilter{
+		{Field: "branch", Value: settings.Branch},
+		{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
+		{Field: "triggeredBy", Value: ""},
+	}
+	if settings.Machine != "" {
+		filters = append(filters, dataQuery.QueryFilter{Field: "machine", Value: settings.Machine, Operator: "like"})
+	}
 	query := dataQuery.Query{
-		Database: "ijDev",
-		Table:    "report",
+		Database: settings.Db,
+		Table:    settings.Table,
 		Fields:   []dataQuery.QueryDimension{{Name: "project", Sql: "distinct project"}},
 		Flat:     true,
-		Filters: []dataQuery.QueryFilter{
-			{Sql: "not endsWith(project, '(fast installer)')"},
-			{Field: "branch", Value: settings.Branch},
-			{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
-			{Field: "machine", Value: settings.Machine, Operator: "like"},
-			{Field: "triggeredBy", Value: ""},
-			{Field: "product", Value: settings.Product},
-		},
-		Order: []string{"project"},
+		Filters:  filters,
+		Order:    []string{"project"},
 	}
 	response, err := getValuesFromServer(ctx, client, backendUrl, query)
 	if err != nil {

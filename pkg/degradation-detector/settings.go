@@ -31,6 +31,8 @@ type PerformanceSettings struct {
 type StartupSettings struct {
 	BaseSettings
 
+	Db      string
+	Table   string
 	Product string
 	Project string
 }

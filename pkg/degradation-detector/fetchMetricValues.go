@@ -141,7 +141,6 @@ func (s StartupSettings) query() dataQuery.Query {
 		{Field: "branch", Value: s.Branch},
 		{Field: "generated_time", Sql: ">subtractDays(now(),100)"},
 		{Field: "project", Value: s.Project},
-		{Field: "product", Value: s.Product},
 		{Field: "machine", Value: s.Machine, Operator: "like"},
 		{Field: "triggeredBy", Value: ""},
 	}
@@ -160,8 +159,8 @@ func (s StartupSettings) query() dataQuery.Query {
 	fields = append(fields, dataQuery.QueryDimension{Name: "Build", Sql: "concat(toString(build_c1),'.',toString(build_c2))"}, dataQuery.QueryDimension{Name: "tc_build_type"})
 
 	query := dataQuery.Query{
-		Database: "ijDev",
-		Table:    "report",
+		Database: s.Db,
+		Table:    s.Table,
 		Fields:   fields,
 		Filters:  filters,
 		Order:    []string{"t"},

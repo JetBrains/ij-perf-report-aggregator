@@ -77,6 +77,7 @@ func generateStartupSettings(backendUrl string, client *http.Client) []detector.
 	return slices.Concat(
 		setting.GenerateStartupSettingsForIDEA(backendUrl, client),
 		setting.GenerateStartupSettingsForGoland(backendUrl, client),
+		setting.GenerateStartupSettingsForPhpStorm(backendUrl, client),
 	)
 }
 

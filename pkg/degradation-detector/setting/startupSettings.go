@@ -31,7 +31,11 @@ func GenerateStartupSettingsForIDEA(backendUrl string, client *http.Client) []de
 	metrics := []string{
 		"appInit_d", "app initialization.end", "bootstrap_d",
 		"classLoadingLoadedCount", "classLoadingPreparedCount", "editorRestoring",
-		"fus_daemon_finished_full_duration_since_started_ms", "runDaemon/executionTime", "fus_startup_totalDuration", "exitMetrics/application.exit", "fus_reopen_startup_code_loaded_and_visible_in_editor",
+		"fus_daemon_finished_full_duration_since_started_ms", "runDaemon/executionTime", "fus_startup_totalDuration", "exitMetrics/application.exit",
+		"fus_reopen_startup_code_loaded_and_visible_in_editor",
+		"fus_reopen_startup_first_ui_shown",
+		"fus_reopen_startup_frame_became_interactive",
+		"fus_reopen_startup_frame_became_visible",
 	}
 	for _, machine := range machines {
 		for _, project := range projects {

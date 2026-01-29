@@ -3,10 +3,14 @@
     v-slot="{ averagesConfigurators }"
     db-name="perfintDev"
     table="kotlin"
-    persistent-id="kotlinDev_dashboard"
+    persistent-id="kotlinDev_completion_dashboard"
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
+    <ConfiguratorRegistration
+      :configurator="projectConfigurator"
+      :data="Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label)"
+    />
     <section class="flex gap-6">
       <div class="flex-1 min-w-0">
         <AggregationChart
@@ -36,5 +40,10 @@
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
 import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
-import { completionCharts } from "../projects"
+import { createKotlinCharts, PROJECT_CATEGORIES } from "../projects"
+import { SimpleMeasureConfigurator } from "../../../configurators/SimpleMeasureConfigurator"
+import ConfiguratorRegistration from "../ConfiguratorRegistration.vue"
+
+const projectConfigurator = new SimpleMeasureConfigurator("project", null)
+const { completionCharts } = createKotlinCharts(projectConfigurator)
 </script>

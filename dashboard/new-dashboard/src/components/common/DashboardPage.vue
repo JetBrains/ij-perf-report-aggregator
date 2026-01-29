@@ -40,7 +40,7 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, persistenceForDashboardKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
@@ -103,6 +103,8 @@ const persistenceForDashboard = new PersistentStateManager(
   router
 )
 
+provide(persistenceForDashboardKey, persistenceForDashboard)
+
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 
 const scenarioConfigurator = charts == null ? null : dimensionConfigurator("project", serverConfigurator, null, true)
@@ -160,10 +162,4 @@ function onChangeRange(value: TimeRange) {
 const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
-
-defineExpose<{
-  persistenceForDashboard: PersistentStateManager
-}>({
-  persistenceForDashboard,
-})
 </script>

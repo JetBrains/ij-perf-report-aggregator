@@ -7,7 +7,7 @@
   >
     <template #configurator>
       <MeasureSelect
-        :configurator="KOTLIN_PROJECT_CONFIGURATOR"
+        :configurator="projectConfigurator"
         title="Project"
         :selected-label="projectSelectedLabel"
       >
@@ -16,6 +16,10 @@
         </template>
       </MeasureSelect>
     </template>
+    <ConfiguratorRegistration
+      :configurator="projectConfigurator"
+      :data="Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label)"
+    />
     <SlackLink></SlackLink>
     <Divider
       title="Completion"
@@ -63,45 +67,39 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, useTemplateRef } from "vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import { PersistentStateManager } from "../common/PersistentStateManager"
 import Divider from "../common/Divider.vue"
 import K1K2DashboardGroupCharts from "./K1K2DashboardGroupCharts.vue"
 import {
-  codeAnalysisCharts,
   codeAnalysisChartsDescription,
-  codeAnalysisScriptCharts,
-  codeTypingCharts,
   codeTypingChartsDescription,
-  completionCharts,
   completionChartsDescription,
-  convertJavaToKotlinProjectsCharts,
   convertJavaToKotlinProjectsChartsDescription,
-  evaluateExpressionCharts,
+  createKotlinCharts,
   evaluateExpressionChartsDescription,
-  findUsagesCharts,
   findUsagesChartsDescription,
-  KOTLIN_PROJECT_CONFIGURATOR,
   PROJECT_CATEGORIES,
-  refactoringCharts,
   refactoringChartsDescription,
-  scriptCompletionCharts,
   scriptChartsDescription,
-  scriptFindUsagesCharts,
 } from "./projects"
 import SlackLink from "./SlackLink.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import { projectSelectedLabel } from "./label-formatter"
+import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
+import ConfiguratorRegistration from "./ConfiguratorRegistration.vue"
 
-const dashboardPage = useTemplateRef<{ persistenceForDashboard: PersistentStateManager }>("dashboardPage")
+const projectConfigurator = new SimpleMeasureConfigurator("project", null)
 
-onMounted(() => {
-  const persistentStateManager = dashboardPage.value?.persistenceForDashboard
-  if (persistentStateManager) {
-    KOTLIN_PROJECT_CONFIGURATOR.registerWithPersistentStateManager(persistentStateManager)
-  }
-  // Initialize data after registering, so saved values are preserved
-  KOTLIN_PROJECT_CONFIGURATOR.initData(Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label))
-})
+const {
+  completionCharts,
+  codeAnalysisCharts,
+  refactoringCharts,
+  codeTypingCharts,
+  findUsagesCharts,
+  evaluateExpressionCharts,
+  convertJavaToKotlinProjectsCharts,
+  codeAnalysisScriptCharts,
+  scriptCompletionCharts,
+  scriptFindUsagesCharts,
+} = createKotlinCharts(projectConfigurator)
 </script>

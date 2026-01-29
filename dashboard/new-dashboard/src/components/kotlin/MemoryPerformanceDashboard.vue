@@ -2,9 +2,13 @@
   <DashboardPage
     db-name="perfint"
     table="kotlin"
-    persistent-id="kotlin_dashboard"
+    persistent-id="kotlin_memory_dashboard"
     initial-machine="linux-blade-hetzner"
   >
+    <ConfiguratorRegistration
+      :configurator="projectConfigurator"
+      :data="Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label)"
+    />
     <template #configurator>
       <MeasureSelect
         :configurator="measureConfigurator"
@@ -92,23 +96,30 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import MemoryK1K2DashboardGroupCharts from "./MemoryK1K2DashboardGroupCharts.vue"
 import {
-  completionCharts,
+  createKotlinCharts,
+  PROJECT_CATEGORIES,
   completionChartsDescription,
-  evaluateExpressionCharts,
   evaluateExpressionChartsDescription,
-  findUsagesCharts,
   findUsagesChartsDescription,
-  codeAnalysisCharts,
   codeAnalysisChartsDescription,
-  refactoringCharts,
   refactoringChartsDescription,
-  scriptCompletionCharts,
   scriptChartsDescription,
-  codeAnalysisScriptCharts,
-  scriptFindUsagesCharts,
-  codeTypingCharts,
   codeTypingChartsDescription,
 } from "./projects"
+import ConfiguratorRegistration from "./ConfiguratorRegistration.vue"
+
+const projectConfigurator = new SimpleMeasureConfigurator("project", null)
+const {
+  completionCharts,
+  codeAnalysisCharts,
+  refactoringCharts,
+  codeTypingCharts,
+  findUsagesCharts,
+  evaluateExpressionCharts,
+  scriptCompletionCharts,
+  codeAnalysisScriptCharts,
+  scriptFindUsagesCharts,
+} = createKotlinCharts(projectConfigurator)
 
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", null)
 measureConfigurator.initData(["freedMemory"])

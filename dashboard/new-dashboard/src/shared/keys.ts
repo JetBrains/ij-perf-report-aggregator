@@ -5,6 +5,7 @@ import { AccidentsConfigurator } from "../configurators/accidents/AccidentsConfi
 import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { FilterConfigurator } from "../configurators/filter"
 import { YoutrackClient } from "../components/common/youtrack/YoutrackClient"
+import { PersistentStateManager } from "../components/common/PersistentStateManager"
 
 export const sidebarVmKey: InjectionKey<InfoSidebar> = Symbol("sidebarVm")
 export const containerKey: InjectionKey<Ref<HTMLElement | null>> = Symbol("chartContainerKey")
@@ -13,3 +14,4 @@ export const serverConfiguratorKey: InjectionKey<ServerWithCompressConfigurator>
 export const accidentsConfiguratorKey: InjectionKey<AccidentsConfigurator> = Symbol("accidentsKey")
 export const dashboardConfiguratorsKey: InjectionKey<DataQueryConfigurator[] | FilterConfigurator[]> = Symbol("dashboardConfiguratorsKey")
 export const youtrackClientKey: InjectionKey<YoutrackClient> = Symbol("youtrackClientKey")
+export const persistenceForDashboardKey: InjectionKey<PersistentStateManager> = Symbol("persistenceForDashboard")

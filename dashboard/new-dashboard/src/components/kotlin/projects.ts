@@ -426,10 +426,10 @@ export const USER_SCENARIOS: Record<string, ScenarioData> = {
 }
 
 export const KOTLIN_PROJECT_CONFIGURATOR = new SimpleMeasureConfigurator("project", null)
-KOTLIN_PROJECT_CONFIGURATOR.initData(Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label))
+// Note: initData is called from the component after registering with PersistentStateManager
 
 export const KOTLIN_SCENARIO_CONFIGURATOR = new SimpleMeasureConfigurator("scenario", null)
-KOTLIN_SCENARIO_CONFIGURATOR.initData(Object.values(USER_SCENARIOS).map((c) => c.label))
+// Note: initData is called from the component after registering with PersistentStateManager
 
 type Projects = Record<string, string[]>
 

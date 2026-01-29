@@ -10,10 +10,11 @@ export class SimpleMeasureConfigurator {
     loading: true,
     disabled: true,
   }
+  private isRegistered = false
 
   initData(value: string[]) {
     this.data.value = value
-    this._selected.value = value
+    this._selected.value ??= value
     this.state.loading = false
     this.state.disabled = false
   }
@@ -34,7 +35,18 @@ export class SimpleMeasureConfigurator {
     return ref as Ref<string[] | null>
   }
 
-  constructor(measureName: string, persistentStateManager: PersistentStateManager | null) {
+  constructor(
+    private readonly measureName: string,
+    persistentStateManager: PersistentStateManager | null
+  ) {
     persistentStateManager?.add(measureName, this._selected)
+  }
+
+  registerWithPersistentStateManager(persistentStateManager: PersistentStateManager): void {
+    if (this.isRegistered) {
+      return
+    }
+    this.isRegistered = true
+    persistentStateManager.add(this.measureName, this._selected)
   }
 }

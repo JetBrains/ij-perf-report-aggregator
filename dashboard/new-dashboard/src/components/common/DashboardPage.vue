@@ -95,10 +95,10 @@ const persistenceForDashboard = new PersistentStateManager(
   persistentId,
   {
     machine: initialMachine ?? "",
-    project: [],
     branch,
     releaseConfigurator,
     mode: initialMode,
+    project: null,
   },
   router
 )
@@ -160,4 +160,10 @@ function onChangeRange(value: TimeRange) {
 const updateConfigurators = (configurator: FilterConfigurator) => {
   dashboardConfigurators.push(configurator)
 }
+
+defineExpose<{
+  persistenceForDashboard: PersistentStateManager
+}>({
+  persistenceForDashboard,
+})
 </script>

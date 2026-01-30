@@ -361,14 +361,14 @@ function handleCloseClick() {
 
 async function getChangesUrl() {
   if (serverConfigurator?.table == null) {
-    vm.data.value?.changesUrl.forEach((url) => window.open(url))
+    window.open(vm.data.value?.changesUrl)
   } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
     const db = serverConfigurator.db
     if (db == "perfint" || db == "perfintDev") {
       const type = await getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId)
       window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
     } else {
-      vm.data.value.changesUrl.forEach((url) => window.open(url))
+      window.open(vm.data.value.changesUrl)
     }
   }
 }

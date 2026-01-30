@@ -14,7 +14,7 @@ export interface InfoData {
   seriesName: string
   build: string | undefined
   artifactsUrl: string
-  changesUrl: string[]
+  changesUrl: string
   installerUrl: string | undefined
   buildId: number
   machineName: string
@@ -147,7 +147,7 @@ export async function getSpaceUrl(data: InfoData | null, serverConfigurator: Ser
     const decodedChanges = await calculateChanges(db, data.installerId ?? data.buildId)
     if (decodedChanges == null || decodedChanges.length === 0) {
       console.log("No changes found")
-      return data.changesUrl
+      return [data.changesUrl]
     } else {
       const baseUrl = db === "diogen" ? "https://code.jetbrains.team/p/diogen/repositories/diogen/commits" : "https://code.jetbrains.team/p/ij/repositories/ultimate/commits"
 

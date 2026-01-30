@@ -178,7 +178,7 @@ async function createTicket() {
       ticketLabel: label.value,
       projectId: project.value.id,
       buildLink: data.artifactsUrl,
-      changesLink: spaceUrls.length > 0 ? spaceUrls : data.changesUrl,
+      changesLink: spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,

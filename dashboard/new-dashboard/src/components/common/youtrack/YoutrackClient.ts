@@ -119,7 +119,7 @@ export interface CreateIssueRequest {
   ticketLabel: string
   projectId: string
   buildLink: string
-  changesLink: string[]
+  changesLink: string
   dashboardLink: string
   affectedMetric: string
   delta: string

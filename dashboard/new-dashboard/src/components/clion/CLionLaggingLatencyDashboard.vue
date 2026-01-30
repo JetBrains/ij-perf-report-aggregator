@@ -57,108 +57,141 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 
+let indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
+let indexingAliases = ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"]
+
 const laggingIndexingCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during indexing - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
+    projects: indexingProjects,
+    aliases: indexingAliases,
   },
   {
     labels: ["Lagging during indexing - sum"],
     measures: ["ui.lagging#sum"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
+    projects: indexingProjects,
+    aliases: indexingAliases,
   },
   {
     labels: ["Lagging during indexing - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"],
-    aliases: ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"],
+    projects: indexingProjects,
+    aliases: indexingAliases,
+  },
+  {
+    labels: ["Lagging during indexing - percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: indexingProjects,
+    aliases: indexingAliases,
   },
 ]
+
+let completionProjects = ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"]
+let completionAliases = ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"]
 
 const laggingCompletionCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during completion - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
-    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
+    projects: completionProjects,
+    aliases: completionAliases,
   },
   {
     labels: ["Lagging during completion - sum"],
     measures: ["ui.lagging#sum"],
-    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
-    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
+    projects: completionProjects,
+    aliases: completionAliases,
   },
   {
     labels: ["Lagging during completion - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"],
-    aliases: ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"],
+    projects: completionProjects,
+    aliases: completionAliases,
+  },
+  {
+    labels: ["Lagging during completion - percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: completionProjects,
+    aliases: completionAliases,
   },
 ]
+
+let navigationProjects = ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"]
+let navigationAliases = ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"]
 
 const laggingNavigationCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during navigation - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
-    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
+    projects: navigationProjects,
+    aliases: navigationAliases,
   },
   {
     labels: ["Lagging during navigation - sum"],
     measures: ["ui.lagging#sum"],
-    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
-    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
+    projects: navigationProjects,
+    aliases: navigationAliases,
   },
   {
     labels: ["Lagging during navigation - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"],
-    aliases: ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"],
+    projects: navigationProjects,
+    aliases: navigationAliases,
+  },
+  {
+    labels: ["Lagging during navigation - percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: navigationProjects,
+    aliases: navigationAliases,
   },
 ]
+
+let syntaxHighlightingProjects = ["radler/opencv/syntaxHighlighting/opencv"]
+let syntaxHighlightingAliases = ["syntaxHighlighting opencv"]
 
 const laggingHighlightingCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during browsing - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max", "ui.lagging#percentage_share"]],
-    projects: ["radler/opencv/syntaxHighlighting/opencv"],
-    aliases: ["syntaxHighlighting opencv"],
+    projects: syntaxHighlightingProjects,
+    aliases: syntaxHighlightingAliases,
   },
   {
     labels: ["Lagging during browsing - lagging percentage share"],
     measures: [["ui.lagging#percentage_share"]],
-    projects: ["radler/opencv/syntaxHighlighting/opencv"],
-    aliases: ["syntaxHighlighting opencv"],
+    projects: syntaxHighlightingProjects,
+    aliases: syntaxHighlightingAliases,
   },
 ]
+
+let debugProjects = ["radler/fmtlib/debug/args-test/basic"]
+let debugAliases = ["fmtlib"]
 
 const laggingDebuggingCharts: ChartDefinition[] = [
   {
     labels: ["Lagging during debugging - average, max"],
     measures: [["ui.lagging#average", "ui.lagging#max"]],
-    projects: ["radler/fmtlib/debug/args-test/basic"],
-    aliases: ["fmtlib"],
+    projects: debugProjects,
+    aliases: debugAliases,
   },
   {
     labels: ["Lagging during debugging - sum"],
     measures: ["ui.lagging#sum"],
-    projects: ["radler/fmtlib/debug/args-test/basic"],
-    aliases: ["fmtlib"],
+    projects: debugProjects,
+    aliases: debugAliases,
   },
   {
     labels: ["Lagging during debugging - count"],
     measures: ["ui.lagging#count"],
-    projects: ["radler/fmtlib/debug/args-test/basic"],
-    aliases: ["fmtlib"],
+    projects: debugProjects,
+    aliases: debugAliases,
   },
   {
-    labels: ["Lagging during debuggig - percentage share"],
+    labels: ["Lagging during debugging - percentage share"],
     measures: [["ui.lagging#percentage_share"]],
-    projects: ["radler/fmtlib/debug/args-test/basic"],
-    aliases: ["fmtlib"],
+    projects: debugProjects,
+    aliases: debugAliases,
   },
 ]
 

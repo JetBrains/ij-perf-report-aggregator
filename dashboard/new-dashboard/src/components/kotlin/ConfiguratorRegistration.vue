@@ -21,7 +21,3 @@ onMounted(() => {
   props.configurator.initData(props.data)
 })
 </script>
-
-<template>
-  <div style="display: none"></div>
-</template>

@@ -14,7 +14,7 @@ export function base64ToHex(base64: string): string {
   return hex
 }
 
-export function calculateChanges(db: string, id: number): Promise<string | null> {
+export function calculateChanges(db: string, id: number): Promise<string[] | null> {
   return new Promise((resolve, _) => {
     const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))
     const separator = ".."
@@ -40,11 +40,17 @@ export function calculateChanges(db: string, id: number): Promise<string | null>
       const changes = data.flat(3)[0]
       if (typeof changes === "string") {
         //commit has to be decoded as base64 and converted to hex
-        const changesDecoded = changes
-          .split(separator)
-          .map((it) => base64ToHex(it))
-          .join("%2C")
-        resolve(changesDecoded)
+        const changesDecoded = changes.split(separator).map((it) => base64ToHex(it))
+
+        // Split into chunks of 150 changes each
+        // otherwise the URL will be too long and fail
+        const result: string[] = []
+        for (let i = 0; i < changesDecoded.length; i += 150) {
+          const chunk = changesDecoded.slice(i, i + 150)
+          result.push(chunk.join("%2C"))
+        }
+
+        resolve(result)
       } else {
         resolve(null)
       }

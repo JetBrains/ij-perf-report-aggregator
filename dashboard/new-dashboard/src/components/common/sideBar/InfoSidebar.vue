@@ -361,14 +361,14 @@ function handleCloseClick() {
 
 async function getChangesUrl() {
   if (serverConfigurator?.table == null) {
-    window.open(vm.data.value?.changesUrl)
+    vm.data.value?.changesUrl.forEach((url) => window.open(url))
   } else if (vm.data.value?.installerId ?? vm.data.value?.buildId) {
     const db = serverConfigurator.db
     if (db == "perfint" || db == "perfintDev") {
       const type = await getTeamcityBuildType(db, serverConfigurator.table, vm.data.value.buildId)
       window.open(`${tcUrl}buildConfiguration/${type}/${vm.data.value.buildId}?buildTab=changes`)
     } else {
-      window.open(vm.data.value.changesUrl)
+      vm.data.value.changesUrl.forEach((url) => window.open(url))
     }
   }
 }
@@ -378,8 +378,8 @@ async function openArtifactsUrl(data: InfoData | null) {
 }
 
 async function openSpaceUrl() {
-  const url = await getSpaceUrl(vm.data.value, serverConfigurator)
-  if (url != undefined) window.open(url)
+  const urls = await getSpaceUrl(vm.data.value, serverConfigurator)
+  urls.forEach((url) => window.open(url))
 }
 
 useScrollListeners()

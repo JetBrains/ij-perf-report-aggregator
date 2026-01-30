@@ -131,16 +131,16 @@ export const PROJECT_CATEGORIES: Record<string, ProjectCategory> = {
 
 export const KOTLIN_PROJECTS = kotlinProjects
 
-const codeTypingProjects = KOTLIN_PROJECTS.linux.codeTyping as Record<string, string[]>
-const findUsagesFirstUsageProjects = KOTLIN_PROJECTS.linux.findUsagesFirstUsage as Record<string, string[]>
-const evaluateExpressionProjects = KOTLIN_PROJECTS.linux.evaluateExpression as Record<string, string[]>
-const convertJavaToKotlinProjects = KOTLIN_PROJECTS.linux.convertJavaToKotlin as Record<string, string[]>
-const navigationToDeclarationProjects = KOTLIN_PROJECTS.linux.navigationToDeclaration as Record<string, string[]>
-const sequenceHighlightingProjects = KOTLIN_PROJECTS.linux.sequenceHighlighting as Record<string, string[]>
+const codeTypingProjects = KOTLIN_PROJECTS.linux.codeTyping
+const findUsagesFirstUsageProjects = KOTLIN_PROJECTS.linux.findUsagesFirstUsage
+const evaluateExpressionProjects = KOTLIN_PROJECTS.linux.evaluateExpression
+const convertJavaToKotlinProjects = KOTLIN_PROJECTS.linux.convertJavaToKotlin
+const navigationToDeclarationProjects = KOTLIN_PROJECTS.linux.navigationToDeclaration
+const sequenceHighlightingProjects = KOTLIN_PROJECTS.linux.sequenceHighlighting
 
-const scriptHighlight = { kotlinScript: (KOTLIN_PROJECTS.linux.highlighting as Record<string, string[]>)["kotlinScript"] }
-const scriptCompletion = { kotlinScript: (KOTLIN_PROJECTS.linux.completion as Record<string, string[]>)["kotlinScript"] }
-const scriptFindUsages = { kotlinScript: (KOTLIN_PROJECTS.linux.findUsages as Record<string, string[]>)["kotlinScript"] }
+const scriptHighlight = { kotlinScript: KOTLIN_PROJECTS.linux.highlighting.kotlinScript }
+const scriptCompletion = { kotlinScript: KOTLIN_PROJECTS.linux.completion.kotlinScript }
+const scriptFindUsages = { kotlinScript: KOTLIN_PROJECTS.linux.findUsages.kotlinScript }
 
 function buildCategory(label: string, prefix: string): ProjectCategory {
   return { label, prefix }

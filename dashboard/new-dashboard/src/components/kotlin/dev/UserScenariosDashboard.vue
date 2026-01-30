@@ -1,6 +1,5 @@
 <template>
   <DashboardPage
-    ref="dashboardPage"
     db-name="perfintDev"
     table="kotlin"
     persistent-id="kotlin_scenarios_dashboard_dev"

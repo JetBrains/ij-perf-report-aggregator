@@ -5,6 +5,8 @@ import { DataQuery, DataQueryConfigurator, DataQueryExecutorConfiguration, Simpl
 import { ServerWithCompressConfigurator } from "../configurators/ServerWithCompressConfigurator"
 import { refToObservable } from "../configurators/rxjs"
 
+const MAX_CHANGES_PER_URL = 150
+
 export function base64ToHex(base64: string): string {
   const decodedArray = new Uint8Array(Array.from(atob(base64), (c) => c.codePointAt(0) ?? 0))
   let hex = ""
@@ -42,11 +44,10 @@ export function calculateChanges(db: string, id: number): Promise<string[] | nul
         //commit has to be decoded as base64 and converted to hex
         const changesDecoded = changes.split(separator).map((it) => base64ToHex(it))
 
-        // Split into chunks of 150 changes each
-        // otherwise the URL will be too long and fail
+        // Split into chunks otherwise the URL will be too long and fail
         const result: string[] = []
-        for (let i = 0; i < changesDecoded.length; i += 150) {
-          const chunk = changesDecoded.slice(i, i + 150)
+        for (let i = 0; i < changesDecoded.length; i += MAX_CHANGES_PER_URL) {
+          const chunk = changesDecoded.slice(i, i + MAX_CHANGES_PER_URL)
           result.push(chunk.join("%2C"))
         }
 

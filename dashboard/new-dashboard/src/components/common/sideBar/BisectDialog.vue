@@ -207,7 +207,7 @@ const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= 
 const firstCommit = ref()
 const lastCommit = ref()
 const changesMerged = await calculateChanges(serverConfigurator.db, data.installerId ?? data.buildId)
-const changesUnmerged = changesMerged?.join("%2C").split("%2C") as string[] | null
+const changesUnmerged = changesMerged?.flatMap((chunk) => chunk.split("%2C")) as string[] | null
 if (Array.isArray(changesUnmerged)) {
   firstCommit.value = changesUnmerged.at(-1) ?? null
   lastCommit.value = changesUnmerged[0] ?? null

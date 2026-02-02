@@ -6,7 +6,7 @@
   >
     <template #configurator>
       <MeasureSelect
-        :configurator="projectConfigurator"
+        :configurator="KOTLIN_PROJECT_CONFIGURATOR"
         title="Project"
         :selected-label="projectSelectedLabel"
       >
@@ -15,10 +15,6 @@
         </template>
       </MeasureSelect>
     </template>
-    <ConfiguratorRegistration
-      :configurator="projectConfigurator"
-      :data="Object.values(PROJECT_CATEGORIES).flatMap((c) => c.label)"
-    />
     <SlackLink></SlackLink>
     <Divider
       title="Completion"
@@ -70,35 +66,27 @@ import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 import K1K2DashboardGroupCharts from "./K1K2DashboardGroupCharts.vue"
 import {
+  codeAnalysisCharts,
   codeAnalysisChartsDescription,
+  codeAnalysisScriptCharts,
+  codeTypingCharts,
   codeTypingChartsDescription,
+  completionCharts,
   completionChartsDescription,
+  convertJavaToKotlinProjectsCharts,
   convertJavaToKotlinProjectsChartsDescription,
-  createKotlinCharts,
+  evaluateExpressionCharts,
   evaluateExpressionChartsDescription,
+  findUsagesCharts,
   findUsagesChartsDescription,
-  PROJECT_CATEGORIES,
+  KOTLIN_PROJECT_CONFIGURATOR,
+  refactoringCharts,
   refactoringChartsDescription,
+  scriptCompletionCharts,
   scriptChartsDescription,
+  scriptFindUsagesCharts,
 } from "./projects"
 import SlackLink from "./SlackLink.vue"
 import MeasureSelect from "../charts/MeasureSelect.vue"
 import { projectSelectedLabel } from "./label-formatter"
-import { SimpleMeasureConfigurator } from "../../configurators/SimpleMeasureConfigurator"
-import ConfiguratorRegistration from "./ConfiguratorRegistration.vue"
-
-const projectConfigurator = new SimpleMeasureConfigurator("project", null)
-
-const {
-  completionCharts,
-  codeAnalysisCharts,
-  refactoringCharts,
-  codeTypingCharts,
-  findUsagesCharts,
-  evaluateExpressionCharts,
-  convertJavaToKotlinProjectsCharts,
-  codeAnalysisScriptCharts,
-  scriptCompletionCharts,
-  scriptFindUsagesCharts,
-} = createKotlinCharts(projectConfigurator)
 </script>

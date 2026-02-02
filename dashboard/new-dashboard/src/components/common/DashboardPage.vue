@@ -40,7 +40,7 @@ import { nightly, ReleaseNightlyConfigurator, ReleaseType } from "../../configur
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 import { TimeRange, TimeRangeConfigurator } from "../../configurators/TimeRangeConfigurator"
 import { FilterConfigurator } from "../../configurators/filter"
-import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, persistenceForDashboardKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
+import { accidentsConfiguratorKey, containerKey, dashboardConfiguratorsKey, serverConfiguratorKey, sidebarVmKey } from "../../shared/keys"
 import { Chart, extractUniqueProjects } from "../charts/DashboardCharts"
 import PlotSettings from "../settings/PlotSettings.vue"
 import DashboardToolbar from "./DashboardToolbar.vue"
@@ -95,15 +95,13 @@ const persistenceForDashboard = new PersistentStateManager(
   persistentId,
   {
     machine: initialMachine ?? "",
+    project: [],
     branch,
     releaseConfigurator,
     mode: initialMode,
-    project: null,
   },
   router
 )
-
-provide(persistenceForDashboardKey, persistenceForDashboard)
 
 const timeRangeConfigurator = new TimeRangeConfigurator(persistenceForDashboard)
 

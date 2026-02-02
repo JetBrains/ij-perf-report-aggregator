@@ -16,10 +16,6 @@
         </template>
       </MeasureSelect>
     </template>
-    <ConfiguratorRegistration
-      :configurator="KOTLIN_SCENARIO_CONFIGURATOR"
-      :data="Object.values(USER_SCENARIOS).map((c) => c.label)"
-    />
     <SlackLink></SlackLink>
     <div
       v-for="(label, index) in KOTLIN_SCENARIO_CONFIGURATOR.selected.value"
@@ -39,5 +35,4 @@ import { KOTLIN_SCENARIO_CONFIGURATOR, USER_SCENARIOS } from "../projects"
 import SlackLink from "../SlackLink.vue"
 import MeasureSelect from "../../charts/MeasureSelect.vue"
 import { scenarioSelectedLabel } from "../label-formatter"
-import ConfiguratorRegistration from "../ConfiguratorRegistration.vue"
 </script>

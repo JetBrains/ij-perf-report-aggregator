@@ -43,10 +43,6 @@ export class PersistentStateManager {
       const route = this.route
       const query = route.query
       for (const [name, value] of Object.entries(query)) {
-        // Skip 'project' parameter - only use localStorage for project filter
-        if (name === "project") {
-          continue
-        }
         if (value === "[]") {
           this.state[name] = []
         } else {
@@ -83,18 +79,7 @@ export class PersistentStateManager {
     const currentRoute = this.route!
     const query: LocationQueryRaw = { ...currentRoute.query }
     let isChanged = false
-
-    // Remove 'project' from URL if it exists
-    if (query["project"] !== undefined) {
-      delete query["project"]
-      isChanged = true
-    }
-
     for (const [name, value] of Object.entries(this.state)) {
-      // Skip 'project' parameter to avoid long URLs with many projects
-      if (name === "project") {
-        continue
-      }
       if (((name !== "serverUrl" && typeof value === "string") || Array.isArray(value) || value === null) && (isChanged || query[name] !== value)) {
         // Persist empty arrays as `[]` to allow 0-value selections shared via the URL to override a user's local state.
         query[name] = Array.isArray(value) && value.length === 0 ? "[]" : value

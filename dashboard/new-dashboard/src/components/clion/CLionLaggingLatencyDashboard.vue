@@ -57,8 +57,8 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 
-let indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
-let indexingAliases = ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"]
+const indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
+const indexingAliases = ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"]
 
 const laggingIndexingCharts: ChartDefinition[] = [
   {
@@ -87,8 +87,12 @@ const laggingIndexingCharts: ChartDefinition[] = [
   },
 ]
 
-let completionProjects = ["radler/fmtlib/completion/fmt.join_view (dep) (hot)", "radler/fmtlib/completion/std.shared_ptr (dep) (hot)", "radler/fmtlib/completion/std.string (hot)"]
-let completionAliases = ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"]
+const completionProjects = [
+  "radler/fmtlib/completion/fmt.join_view (dep) (hot)",
+  "radler/fmtlib/completion/std.shared_ptr (dep) (hot)",
+  "radler/fmtlib/completion/std.string (hot)",
+]
+const completionAliases = ["fmt.join_view (dep) (hot)", "std.shared_ptr (dep) (hot)", "std.string (hot)"]
 
 const laggingCompletionCharts: ChartDefinition[] = [
   {
@@ -117,8 +121,8 @@ const laggingCompletionCharts: ChartDefinition[] = [
   },
 ]
 
-let navigationProjects = ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"]
-let navigationAliases = ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"]
+const navigationProjects = ["radler/luau/findUsages/class template (DenseHashTable)", "radler/luau/gotoDeclaration/time.h", "radler/luau/gotoDeclaration/TypeChecker.getScopes"]
+const navigationAliases = ["class template (DenseHashTable)", "time.h", "TypeChecker.getScopes"]
 
 const laggingNavigationCharts: ChartDefinition[] = [
   {
@@ -147,8 +151,8 @@ const laggingNavigationCharts: ChartDefinition[] = [
   },
 ]
 
-let syntaxHighlightingProjects = ["radler/opencv/syntaxHighlighting/opencv"]
-let syntaxHighlightingAliases = ["syntaxHighlighting opencv"]
+const syntaxHighlightingProjects = ["radler/opencv/syntaxHighlighting/opencv"]
+const syntaxHighlightingAliases = ["syntaxHighlighting opencv"]
 
 const laggingHighlightingCharts: ChartDefinition[] = [
   {
@@ -165,8 +169,8 @@ const laggingHighlightingCharts: ChartDefinition[] = [
   },
 ]
 
-let debugProjects = ["radler/fmtlib/debug/args-test/basic"]
-let debugAliases = ["fmtlib"]
+const debugProjects = ["radler/fmtlib/debug/args-test/basic"]
+const debugAliases = ["fmtlib"]
 
 const laggingDebuggingCharts: ChartDefinition[] = [
   {

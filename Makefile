@@ -19,7 +19,7 @@ lint:
 	pnpm prettier --check . --log-level warn
 	pnpm eslint
 	pnpm oxlint
-	vue-tsc
+	pnpm vue-tsc
 
 
 build-server:

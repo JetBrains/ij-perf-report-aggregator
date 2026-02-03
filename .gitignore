@@ -13,5 +13,5 @@ cmd/degradation-analyzer/kodata/
 values-resolved.yaml
 
 .eslintcache
-
+.DS_Store
 jb

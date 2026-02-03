@@ -17,8 +17,11 @@
           'edx-platform (Django)/completion/testCompletionInSettings/pyrefly',
           'edx-platform (Django)/completion/testCompletionInSettings/pycharm',
 
-          'pandas-examples/completion/pyrefly',
-          'pandas-examples/completion/pycharm',
+          'pandas-examples/completion/testCompletionInGroupBy/pyrefly',
+          'pandas-examples/completion/testCompletionInGroupBy/pycharm',
+
+          'pandas-examples/completion/testCompletionInMerge/pyrefly',
+          'pandas-examples/completion/testCompletionInMerge/pycharm',
         ]"
       />
     </section>
@@ -31,8 +34,8 @@
           'edx-platform (Django)/inspection/testInspection/pyrefly',
           'edx-platform (Django)/inspection/testInspection/pycharm',
 
-          'pandas/inspection/pyrefly',
-          'pandas/inspection/pycharm',
+          'pandas-examples/inspection/testInspection/pyrefly',
+          'pandas-examples/inspection/testInspection/pycharm',
         ]"
       />
     </section>
@@ -47,8 +50,11 @@
           'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pyrefly',
           'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pycharm',
 
-          'pandas-examples/typing/pyrefly',
-          'pandas-examples/typing/pycharm',
+          'pandas-examples/typing/typingCodeAnalysisGroupBy/pyrefly',
+          'pandas-examples/typing/typingCodeAnalysisGroupBy/pycharm',
+
+          'pandas-examples/typing/typingCodeAnalysisMerge/pyrefly',
+          'pandas-examples/typing/typingCodeAnalysisMerge/pycharm',
         ]"
       />
     </section>

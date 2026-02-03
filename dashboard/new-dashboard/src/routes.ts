@@ -138,6 +138,7 @@ enum ROUTES {
   PyCharmStartupDashboard = `${ROUTE_PREFIX.PyCharm}/${STARTUP_ROUTE}`,
   PyCharmProductMetricsDashboard = `${ROUTE_PREFIX.PyCharm}/${PRODUCT_METRICS_ROUTE}`,
   PyCharmDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}Dev`,
+  PyCharmExternalTypeProviders = `${ROUTE_PREFIX.PyCharm}/externalTypeProviders`,
   PyCharmOldDashboard = `${ROUTE_PREFIX.PyCharm}/${DASHBOARD_ROUTE}`,
   PyCharmTests = `${ROUTE_PREFIX.PyCharm}/${TEST_ROUTE}`,
   PyCharmDevTests = `${ROUTE_PREFIX.PyCharm}/${DEV_TEST_ROUTE}`,
@@ -697,6 +698,10 @@ const PYCHARM: Product = {
         {
           url: ROUTES.PyCharmDashboard,
           label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.PyCharmExternalTypeProviders,
+          label: "External Type Providers",
         },
         {
           url: ROUTES.PyCharmOldDashboard,
@@ -1620,6 +1625,11 @@ const pycharmRoutes = [
     path: ROUTES.PyCharmDashboard,
     component: () => import("./components/pycharm/PerformanceDashboard.vue"),
     meta: { pageTitle: "PyCharm Performance dashboard" },
+  },
+  {
+    path: ROUTES.PyCharmExternalTypeProviders,
+    component: () => import("./components/pycharm/ExternalTypeProviders.vue"),
+    meta: { pageTitle: "PyCharm External Type Providers dashboard" },
   },
   {
     path: ROUTES.PyCharmOldDashboard,

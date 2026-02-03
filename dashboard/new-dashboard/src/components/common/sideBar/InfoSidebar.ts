@@ -141,22 +141,20 @@ export function getNavigateToTestUrl(data: InfoData | null, router: Router) {
   return router.resolve(testURL + "?" + queryParams + measures).href
 }
 
-export async function getSpaceUrl(data: InfoData | null, serverConfigurator: ServerConfigurator | null): Promise<string | undefined> {
+export async function getSpaceUrl(data: InfoData | null, serverConfigurator: ServerConfigurator | null): Promise<string[]> {
   const db = serverConfigurator?.db
   if (db != null && (data?.installerId ?? data?.buildId)) {
     const decodedChanges = await calculateChanges(db, data.installerId ?? data.buildId)
     if (decodedChanges == null || decodedChanges.length === 0) {
       console.log("No changes found")
-      return data.changesUrl
+      return [data.changesUrl]
     } else {
-      if (db === "diogen") {
-        return `https://code.jetbrains.team/p/diogen/repositories/diogen/commits?query=%22${decodedChanges}%22&tab=changes`
-      } else {
-        return `https://code.jetbrains.team/p/ij/repositories/ultimate/commits?query=%22${decodedChanges}%22&tab=changes`
-      }
+      const baseUrl = db === "diogen" ? "https://code.jetbrains.team/p/diogen/repositories/diogen/commits" : "https://code.jetbrains.team/p/ij/repositories/ultimate/commits"
+
+      return decodedChanges.map((change) => `${baseUrl}?query=%22${change}%22&tab=changes`)
     }
   }
-  return undefined
+  return []
 }
 
 function replaceUnderscore(project: string) {

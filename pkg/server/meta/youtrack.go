@@ -424,7 +424,17 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 
 	// Changes in space
 	if generateDescriptorData.Changes != "" {
-		parts = append(parts, fmt.Sprintf("**Changes in space:**\n[space link](%s)", generateDescriptorData.Changes))
+		changeLinks := strings.Split(generateDescriptorData.Changes, ",")
+		var changeLinkParts []string
+		for i, link := range changeLinks {
+			trimmedLink := strings.TrimSpace(link)
+			if trimmedLink != "" {
+				changeLinkParts = append(changeLinkParts, fmt.Sprintf("[space link %d](%s)", i+1, trimmedLink))
+			}
+		}
+		if len(changeLinkParts) > 0 {
+			parts = append(parts, "**Changes in space:**\n"+strings.Join(changeLinkParts, "\n"))
+		}
 	}
 
 	// Commits

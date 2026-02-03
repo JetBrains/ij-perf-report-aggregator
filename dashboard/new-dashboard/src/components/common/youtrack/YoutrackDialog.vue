@@ -171,13 +171,14 @@ async function createTicket() {
     downloadState.value = DownloadState.STARTED
     const buildId = data.buildId
     const affectedMetric = data.series[0].metricName ?? ""
+    const spaceUrls = await getSpaceUrl(data, serverConfigurator)
 
     const issueInfo: CreateIssueRequest = {
       accidentId: `${accident.id}`,
       ticketLabel: label.value,
       projectId: project.value.id,
       buildLink: data.artifactsUrl,
-      changesLink: (await getSpaceUrl(data, serverConfigurator)) ?? data.changesUrl,
+      changesLink: spaceUrls.length > 0 ? spaceUrls.join(",") : data.changesUrl,
       testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,

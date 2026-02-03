@@ -378,8 +378,8 @@ async function openArtifactsUrl(data: InfoData | null) {
 }
 
 async function openSpaceUrl() {
-  const url = await getSpaceUrl(vm.data.value, serverConfigurator)
-  if (url != undefined) window.open(url)
+  const urls = await getSpaceUrl(vm.data.value, serverConfigurator)
+  urls.forEach((url) => window.open(url))
 }
 
 useScrollListeners()

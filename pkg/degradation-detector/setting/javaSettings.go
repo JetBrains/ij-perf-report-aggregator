@@ -68,7 +68,7 @@ func getJavaMetricsFromTestsNames(test string) []string {
 		return []string{"Test#average_awt_delay", "showQuickFixes"}
 	}
 	if strings.Contains(test, "/localInspection/java_file") {
-		return []string{"localInspections", "firstCodeAnalysis"}
+		return []string{"localInspections", "firstCodeAnalysis", "fus_file_types_usage_duration_ms"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"completion"}

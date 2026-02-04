@@ -8,54 +8,59 @@
   >
     <section>
       <GroupProjectsChart
-        label="Completion"
-        :measure="['fus_time_to_show_90p']"
-        :projects="[
-          'edx-platform (Django)/completion/testCompletionInModel/pyrefly',
-          'edx-platform (Django)/completion/testCompletionInModel/pycharm',
-
-          'edx-platform (Django)/completion/testCompletionInSettings/pyrefly',
-          'edx-platform (Django)/completion/testCompletionInSettings/pycharm',
-
-          'pandas-examples/completion/testCompletionInGroupBy/pyrefly',
-          'pandas-examples/completion/testCompletionInGroupBy/pycharm',
-
-          'pandas-examples/completion/testCompletionInMerge/pyrefly',
-          'pandas-examples/completion/testCompletionInMerge/pycharm',
-        ]"
+        label="Global Inspections (edx-platform)"
+        measure="globalInspections"
+        :projects="['edx-platform (Django)/inspection/testInspection/pyrefly', 'edx-platform (Django)/inspection/testInspection/pycharm']"
+      />
+      <GroupProjectsChart
+        label="Global Inspections (pandas-examples)"
+        measure="globalInspections"
+        :projects="['pandas-examples/inspection/testInspection/pyrefly', 'pandas-examples/inspection/testInspection/pycharm']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Typing Code Analysis (edx-platform/course)"
+        measure="typingCodeAnalyzing"
+        :projects="['edx-platform (Django)/typing/typingCodeAnalysisCourse/pyrefly', 'edx-platform (Django)/typing/typingCodeAnalysisCourse/pycharm']"
+      />
+      <GroupProjectsWithClientChart
+        label="Typing Code Analysis (edx-platform/admin)"
+        measure="typingCodeAnalyzing"
+        :projects="['edx-platform (Django)/typing/typingCodeAnalysisAdmin/pyrefly', 'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pycharm']"
+      />
+      <GroupProjectsWithClientChart
+        label="Typing Code Analysis (pandas-examples/groupBy)"
+        measure="typingCodeAnalyzing"
+        :projects="['pandas-examples/typing/typingCodeAnalysisGroupBy/pyrefly', 'pandas-examples/typing/typingCodeAnalysisGroupBy/pycharm']"
+      />
+      <GroupProjectsWithClientChart
+        label="Typing Code Analysis (pandas-examples/merge)"
+        measure="typingCodeAnalyzing"
+        :projects="['pandas-examples/typing/typingCodeAnalysisMerge/pyrefly', 'pandas-examples/typing/typingCodeAnalysisMerge/pycharm']"
       />
     </section>
 
     <section>
       <GroupProjectsChart
-        label="Global Inspections"
-        measure="globalInspections"
-        :projects="[
-          'edx-platform (Django)/inspection/testInspection/pyrefly',
-          'edx-platform (Django)/inspection/testInspection/pycharm',
-
-          'pandas-examples/inspection/testInspection/pyrefly',
-          'pandas-examples/inspection/testInspection/pycharm',
-        ]"
+        label="Completion (edx-platform/model)"
+        :measure="['fus_time_to_show_90p']"
+        :projects="['edx-platform (Django)/completion/testCompletionInModel/pyrefly', 'edx-platform (Django)/completion/testCompletionInModel/pycharm']"
       />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Typing Code Analysis"
-        measure="typingCodeAnalyzing"
-        :projects="[
-          'edx-platform (Django)/typing/typingCodeAnalysisCourse/pyrefly',
-          'edx-platform (Django)/typing/typingCodeAnalysisCourse/pycharm',
-
-          'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pyrefly',
-          'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pycharm',
-
-          'pandas-examples/typing/typingCodeAnalysisGroupBy/pyrefly',
-          'pandas-examples/typing/typingCodeAnalysisGroupBy/pycharm',
-
-          'pandas-examples/typing/typingCodeAnalysisMerge/pyrefly',
-          'pandas-examples/typing/typingCodeAnalysisMerge/pycharm',
-        ]"
+      <GroupProjectsChart
+        label="Completion (edx-platform/settings)"
+        :measure="['fus_time_to_show_90p']"
+        :projects="['edx-platform (Django)/completion/testCompletionInSettings/pyrefly', 'edx-platform (Django)/completion/testCompletionInSettings/pycharm']"
+      />
+      <GroupProjectsChart
+        label="Completion (pandas-examples/groupBy)"
+        :measure="['fus_time_to_show_90p']"
+        :projects="['pandas-examples/completion/testCompletionInGroupBy/pyrefly', 'pandas-examples/completion/testCompletionInGroupBy/pycharm']"
+      />
+      <GroupProjectsChart
+        label="Completion (pandas-examples/merge)"
+        :measure="['fus_time_to_show_90p']"
+        :projects="['pandas-examples/completion/testCompletionInMerge/pyrefly', 'pandas-examples/completion/testCompletionInMerge/pycharm']"
       />
     </section>
   </DashboardPage>

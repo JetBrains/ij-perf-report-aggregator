@@ -8,9 +8,9 @@
     "echarts": "6.0.0",
     "fast-equals": "6.0.0",
     "humanize-duration": "3.33.2",
-    "p-limit": "^7.2.0",
+    "p-limit": "^7.3.0",
     "pinia": "^3.0.4",
-    "pragmastat": "5.2.1",
+    "pragmastat": "6.0.1",
     "primevue": "4.5.4",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.27",
@@ -19,6 +19,6 @@
   "devDependencies": {
     "@types/humanize-duration": "^3.27.4",
     "@types/sanitize-html": "^2.16.0",
-    "msw": "^2.12.7"
+    "msw": "^2.12.8"
   }
 }

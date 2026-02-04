@@ -29,7 +29,7 @@
     "isoworker": "^0.2.4",
     "oxlint": "^1.43.0",
     "prettier": "^3.8.1",
-    "rollup": "^4.57.0",
+    "rollup": "^4.57.1",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.54.0",

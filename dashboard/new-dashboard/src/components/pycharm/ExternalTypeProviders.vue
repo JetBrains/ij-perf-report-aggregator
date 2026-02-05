@@ -22,22 +22,22 @@
       <GroupProjectsWithClientChart
         label="Typing Code Analysis (edx-platform/course)"
         measure="typingCodeAnalyzing"
-        :projects="['edx-platform (Django)/typing/typingCodeAnalysisCourse/pyrefly', 'edx-platform (Django)/typing/typingCodeAnalysisCourse/pycharm']"
+        :projects="['edx-platform (Django)/typing/testTypingCodeAnalysisCourse/pyrefly', 'edx-platform (Django)/typing/testTypingCodeAnalysisCourse/pycharm']"
       />
       <GroupProjectsWithClientChart
         label="Typing Code Analysis (edx-platform/admin)"
         measure="typingCodeAnalyzing"
-        :projects="['edx-platform (Django)/typing/typingCodeAnalysisAdmin/pyrefly', 'edx-platform (Django)/typing/typingCodeAnalysisAdmin/pycharm']"
+        :projects="['edx-platform (Django)/typing/testTypingCodeAnalysisAdmin/pyrefly', 'edx-platform (Django)/typing/testTypingCodeAnalysisAdmin/pycharm']"
       />
       <GroupProjectsWithClientChart
         label="Typing Code Analysis (pandas-examples/groupBy)"
         measure="typingCodeAnalyzing"
-        :projects="['pandas-examples/typing/typingCodeAnalysisGroupBy/pyrefly', 'pandas-examples/typing/typingCodeAnalysisGroupBy/pycharm']"
+        :projects="['pandas-examples/typing/testTypingCodeAnalysisGroupBy/pyrefly', 'pandas-examples/typing/testTypingCodeAnalysisGroupBy/pycharm']"
       />
       <GroupProjectsWithClientChart
         label="Typing Code Analysis (pandas-examples/merge)"
         measure="typingCodeAnalyzing"
-        :projects="['pandas-examples/typing/typingCodeAnalysisMerge/pyrefly', 'pandas-examples/typing/typingCodeAnalysisMerge/pycharm']"
+        :projects="['pandas-examples/typing/testTypingCodeAnalysisMerge/pyrefly', 'pandas-examples/typing/testTypingCodeAnalysisMerge/pycharm']"
       />
     </section>
 

@@ -17,7 +17,7 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 			Branch: "master",
 		},
 	}
-	branches := []string{"master", "252"}
+	branches := []string{"master", "253"}
 	modes := []string{"", "split"}
 	tests, err := detector.FetchAllTests(backendUrl, client, baseSettings)
 	settings := make([]detector.PerformanceSettings, 0, 100)
@@ -76,7 +76,7 @@ func getRubyMetricFromTestName(test string) []string {
 		return []string{"globalInspections", "gcPause", "freedMemoryByGC"}
 	}
 	if strings.Contains(test, "/typing") {
-		return []string{"firstCodeAnalysis", "test#average_awt_delay", "typing"}
+		return []string{"firstCodeAnalysis", "test#average_awt_delay", "typing#median_value"}
 	}
 	if strings.Contains(test, "/completion") {
 		return []string{"firstCodeAnalysis", "completion", "completion#firstElementShown#mean_value"}

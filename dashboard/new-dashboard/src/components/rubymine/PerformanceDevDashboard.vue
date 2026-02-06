@@ -269,8 +269,8 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
-        label="Typing: Total Time"
-        measure="typing"
+        label="Typing: Median Time"
+        measure="typing#median_value"
         :projects="[
           'RUBY-26170/typing',
           'RUBY-29334/typing',
@@ -351,8 +351,8 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
-        label="Enter Handling: Total Time"
-        measure="typing"
+        label="Enter Handling: Median Time"
+        measure="typing#median_value"
         :projects="[
           'RUBY-29542/typing',
           'GitLab/typing/do_in_method',

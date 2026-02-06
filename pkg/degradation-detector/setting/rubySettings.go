@@ -82,7 +82,7 @@ func getRubyMetricFromTestName(test string) []string {
 		return []string{"firstCodeAnalysis", "completion", "completion#firstElementShown#mean_value"}
 	}
 	if strings.Contains(test, "/getSymbolMembers") {
-		return []string{"getSymbolMembers", "getSymbolMembers#number"}
+		return []string{"getSymbolMembers#mean_value", "getSymbolMembers#number#mean_value"}
 	}
 	// very likely find usages
 	return []string{"findUsages", "findUsages#number", "gcPause", "freedMemoryByGC"}

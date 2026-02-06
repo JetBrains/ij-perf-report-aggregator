@@ -399,8 +399,8 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
-        label="Symbol Members: Execution Time"
-        measure="getSymbolMembers"
+        label="Symbol Members: Mean Execution Time"
+        measure="getSymbolMembers#mean_value"
         :projects="[
           'diaspora-project-test/getSymbolMembers-ApplicationController-false',
           'diaspora-project-test/getSymbolMembers-ApplicationController-true',
@@ -422,7 +422,7 @@
     <section>
       <GroupProjectsWithClientChart
         label="Symbol Members: Quantity"
-        measure="getSymbolMembers#number"
+        measure="getSymbolMembers#number#mean_value"
         :projects="[
           'diaspora-project-test/getSymbolMembers-ApplicationController-false',
           'diaspora-project-test/getSymbolMembers-ApplicationController-true',

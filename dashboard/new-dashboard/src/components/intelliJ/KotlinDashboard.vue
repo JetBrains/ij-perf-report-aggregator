@@ -60,6 +60,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["createKotlinFile"],
     projects: ["intellij_commit/createKotlinClass"],
   },
+  {
+    labels: ["Typing during indexing (max AWT delay)", "AWT dispatch time", "Typing latency max", "Typing latency mean"],
+    measures: ["test#max_awt_delay", "AWTEventQueue.dispatchTimeTotal", "typing#latency#max", "typing#latency#mean_value"],
+    projects: ["typingInKotlinFile_16Threads/typing", "typingInKotlinFile_4Threads/typing"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -370,6 +370,17 @@ const chartsDeclaration: ChartDefinition[] = [
       "intellij_commit/new-se-go-to-text-with-warmup/Runtime/typingLetterByLetter",
     ],
   },
+  {
+    labels: ["performance.ui.lagging", "performance.ui.latency", "performance.popup.latency"],
+    measures: ["ui.lagging#max_value", "ui.latency#max_value", "popup.latency#max_value"],
+    projects: [
+      "popups-performance-test/test-popups",
+      "typingInJavaFile_16Threads/typing",
+      "typingInJavaFile_4Threads/typing",
+      "typingInKotlinFile_16Threads/typing",
+      "typingInKotlinFile_4Threads/typing",
+    ],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

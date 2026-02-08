@@ -90,6 +90,11 @@ const chartsDeclaration: ChartDefinition[] = [
     measures: ["replaceTextCodeAnalysis"],
     projects: ["hadoop_commit/java-red-code"],
   },
+  {
+    labels: ["Typing during indexing (max AWT delay)", "AWT dispatch time", "Typing latency max", "Typing latency mean"],
+    measures: ["test#max_awt_delay", "AWTEventQueue.dispatchTimeTotal", "typing#latency#max", "typing#latency#mean_value"],
+    projects: ["typingInJavaFile_16Threads/typing", "typingInJavaFile_4Threads/typing"],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

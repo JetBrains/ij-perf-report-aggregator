@@ -70,7 +70,6 @@ function compareBuilds(a: string, b: string) {
     return 1
   } else if (branch1 > branch2) {
     return -1
-  } else {
-    return build1 < build2 ? 1 : -1
   }
+  return build1 < build2 ? 1 : -1
 }

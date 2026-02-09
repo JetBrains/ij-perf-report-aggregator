@@ -148,11 +148,9 @@ export async function getSpaceUrl(data: InfoData | null, serverConfigurator: Ser
     if (decodedChanges == null || decodedChanges.length === 0) {
       console.log("No changes found")
       return [data.changesUrl]
-    } else {
-      const baseUrl = db === "diogen" ? "https://code.jetbrains.team/p/diogen/repositories/diogen/commits" : "https://code.jetbrains.team/p/ij/repositories/ultimate/commits"
-
-      return decodedChanges.map((change) => `${baseUrl}?query=%22${change}%22&tab=changes`)
     }
+    const baseUrl = db === "diogen" ? "https://code.jetbrains.team/p/diogen/repositories/diogen/commits" : "https://code.jetbrains.team/p/ij/repositories/ultimate/commits"
+    return decodedChanges.map((change) => `${baseUrl}?query=%22${change}%22&tab=changes`)
   }
   return []
 }

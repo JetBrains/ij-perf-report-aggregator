@@ -63,10 +63,9 @@ export class TimeRangeConfigurator implements DataQueryConfigurator, FilterConfi
     const timeRange = this.value.value
     if (this.customRange.value == "") {
       return Promise.resolve({ xAxis: { min: getStartTime(timeRange), max: getEndTime(timeRange) } })
-    } else {
-      const between = this.customRange.value.split(":")
-      return Promise.resolve({ xAxis: { min: between[0], max: between[1] } })
     }
+    const between = this.customRange.value.split(":")
+    return Promise.resolve({ xAxis: { min: between[0], max: between[1] } })
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration | null): boolean {

@@ -102,9 +102,8 @@ const items = computed(() => {
   result.sort((a, b) => {
     if (selectedValue.includes(a)) {
       return selectedValue.includes(b) ? 0 : -1
-    } else {
-      return selectedValue.includes(b) ? 1 : 0
     }
+    return selectedValue.includes(b) ? 1 : 0
   })
   return result
 })

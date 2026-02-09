@@ -107,9 +107,8 @@ export class MachineConfigurator implements DataQueryConfigurator, FilterConfigu
       return "pi icon-linux"
     } else if (groupName.toLowerCase().startsWith("mac")) {
       return "pi pi-apple"
-    } else {
-      return "pi pi-microsoft"
     }
+    return "pi pi-microsoft"
   }
 
   configureQuery(query: DataQuery, configuration: DataQueryExecutorConfiguration): boolean {

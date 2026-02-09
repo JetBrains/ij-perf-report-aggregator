@@ -265,38 +265,37 @@ export function getInfoDataFrom(
     }
 
     return { ...info, series, deltaPrevious: undefined, deltaNext: undefined, chartDataUrl, buildIdPrevious: undefined, buildIdNext: undefined }
-  } else {
-    if (Array.isArray(params)) {
-      params = params[0]
+  }
+  if (Array.isArray(params)) {
+    params = params[0]
+  }
+  const info = getInfo(params, valueUnit, accidents)
+  const dataSeries = params.value as OptionDataValue[]
+  const value: number = useSettingsStore().scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
+  const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, info.type)
+  const delta = findDeltaInData(dataSeries)
+  let deltaPrevious: string | undefined
+  let deltaNext: string | undefined
+  let buildIdPrevious: number | undefined
+  let buildIdNext: number | undefined
+  if (delta != undefined) {
+    if (delta.prev != null) {
+      deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", info.type)
+      buildIdPrevious = delta.prevBuildId
     }
-    const info = getInfo(params, valueUnit, accidents)
-    const dataSeries = params.value as OptionDataValue[]
-    const value: number = useSettingsStore().scaling ? (dataSeries.at(-1) as number) : (dataSeries[1] as number)
-    const showValue: string = durationAxisPointerFormatter(valueUnit == "ns" ? nsToMs(value) : value, info.type)
-    const delta = findDeltaInData(dataSeries)
-    let deltaPrevious: string | undefined
-    let deltaNext: string | undefined
-    let buildIdPrevious: number | undefined
-    let buildIdNext: number | undefined
-    if (delta != undefined) {
-      if (delta.prev != null) {
-        deltaPrevious = getDifferenceString(value, delta.prev, valueUnit == "ms", info.type)
-        buildIdPrevious = delta.prevBuildId
-      }
-      if (delta.next != null) {
-        deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
-        buildIdNext = delta.nextBuildId
-      }
+    if (delta.next != null) {
+      deltaNext = getDifferenceString(value, delta.next, valueUnit == "ms", info.type)
+      buildIdNext = delta.nextBuildId
     }
-    return {
-      ...info,
-      deltaNext,
-      deltaPrevious,
-      series: [{ metricName: info.metricName, value: showValue, color: params.color as string, rawValue: value }],
-      chartDataUrl,
-      buildIdPrevious,
-      buildIdNext,
-    }
+  }
+  return {
+    ...info,
+    deltaNext,
+    deltaPrevious,
+    series: [{ metricName: info.metricName, value: showValue, color: params.color as string, rawValue: value }],
+    chartDataUrl,
+    buildIdPrevious,
+    buildIdNext,
   }
 }
 

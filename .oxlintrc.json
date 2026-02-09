@@ -50,7 +50,6 @@
     "no-async-endpoint-handlers": "off",
     "no-await-in-loop": "off",
     "no-continue": "off",
-    "no-else-return": "off",
     "no-inferrable-types": "off",
     "no-inline-comments": "off",
     "no-lonely-if": "off",

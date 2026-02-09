@@ -162,16 +162,13 @@ const value = computed<string | string[] | null>({
     if (dimension.multiple) {
       if (Array.isArray(value)) {
         return value
-      } else {
-        return value == null || value === "" ? [] : [value]
       }
-    } else {
-      if (Array.isArray(value)) {
-        return value[0]
-      } else {
-        return value === "" ? null : value
-      }
+      return value == null || value === "" ? [] : [value]
     }
+    if (Array.isArray(value)) {
+      return value[0]
+    }
+    return value === "" ? null : value
   },
   set(value) {
     // eslint-disable-next-line vue/no-mutating-props
@@ -200,9 +197,8 @@ const items = computed(() => {
       })
     }
     return result
-  } else {
-    return group(values as string[], valueToGroup, valueToLabel)
   }
+  return group(values as string[], valueToGroup, valueToLabel)
 })
 
 interface Item {

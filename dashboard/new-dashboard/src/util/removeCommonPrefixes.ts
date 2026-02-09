@@ -34,7 +34,6 @@ export function removeCommonSegments(paths: string[]): string[] {
     })
 
     return paths
-  } else {
-    return paths
   }
+  return paths
 }

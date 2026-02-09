@@ -307,9 +307,8 @@ function capitalizeFirstLetter(str: string): AccidentKind {
   const result = capitalizeString(str)
   if (isAccidentKind(result)) {
     return result
-  } else {
-    throw new Error("Unsupported AccidentKind " + str)
   }
+  throw new Error("Unsupported AccidentKind " + str)
 }
 
 function isAccidentKind(str: string): str is AccidentKind {

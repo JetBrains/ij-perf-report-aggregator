@@ -87,9 +87,8 @@ const valueUnitFromMeasure: Ref<ValueUnit> = computed(() => {
     return "ms"
   } else if (measures.every((m) => m.endsWith(".ns"))) {
     return "ns"
-  } else {
-    return valueUnit
   }
+  return valueUnit
 })
 
 const settingStore = useSettingsStore()

@@ -69,6 +69,6 @@ const chatContextMetricsLegendFormatter = (name: string) => {
   else if (name.startsWith("retrieveContextAsync.[Deprecated] Chat Retrieval")) return "retrieveContext.Chat Retrieval[Deprecated]"
   else if (name.startsWith("computeContext.PsiFileSearchRetriever")) return "PsiFileSearchRetriever"
   else if (name.startsWith("SimpleCompletableMessage::state")) return "SimpleCompletableMessage"
-  else return name.replace("SimpleCompletableMessage::", "").split("…")[0]
+  return name.replace("SimpleCompletableMessage::", "").split("…")[0]
 }
 </script>

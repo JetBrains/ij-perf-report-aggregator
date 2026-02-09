@@ -189,9 +189,8 @@ export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigur
     if (currentValue != undefined && currentValue.length > 0) {
       query.addFilter({ q: filterQuery })
       return true
-    } else {
-      return false
     }
+    return false
   }
 }
 

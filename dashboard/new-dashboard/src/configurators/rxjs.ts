@@ -53,9 +53,8 @@ export function fromFetchWithRetryAndErrorHandling<T>(
     mergeMap((response) => {
       if (response.ok) {
         return bodyConsumer(response)
-      } else {
-        throw new Error(`cannot load (status=${response.status})`)
       }
+      throw new Error(`cannot load (status=${response.status})`)
     }),
     retry({
       count: 10,

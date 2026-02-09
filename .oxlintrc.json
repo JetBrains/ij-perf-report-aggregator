@@ -75,7 +75,6 @@
     "prefer-enum-initializers": "off",
     "prefer-template": "off",
     "prefer-top-level-await": "off",
-    "radix": "off",
     "require-hook": "off",
     "require-typed-ref": "off",
     "return-await": "off",

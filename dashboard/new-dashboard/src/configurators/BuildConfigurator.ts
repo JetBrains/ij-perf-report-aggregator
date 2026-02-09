@@ -64,8 +64,8 @@ export function buildConfigurator(
 }
 
 function compareBuilds(a: string, b: string) {
-  const [branch1, build1] = a.split(".").map((value) => Number.parseInt(value))
-  const [branch2, build2] = b.split(".").map((value) => Number.parseInt(value))
+  const [branch1, build1] = a.split(".").map((value) => Number.parseInt(value, 10))
+  const [branch2, build2] = b.split(".").map((value) => Number.parseInt(value, 10))
   if (branch1 < branch2) {
     return 1
   } else if (branch1 > branch2) {

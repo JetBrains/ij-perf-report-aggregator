@@ -73,9 +73,9 @@ const testsArray = computed(() => tests.split(","))
 
 const dateFormatted = computed(() => {
   const parts = date.split("-")
-  const day = Number.parseInt(parts[0])
-  const month = Number.parseInt(parts[1])
-  const year = Number.parseInt(parts[2])
+  const day = Number.parseInt(parts[0],10)
+  const month = Number.parseInt(parts[1], 10)
+  const year = Number.parseInt(parts[2], 10)
   return year.toString() + "-" + month.toString() + "-" + day.toString()
 })
 

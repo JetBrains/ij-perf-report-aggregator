@@ -47,7 +47,6 @@
     "max-statements": "off",
     "new-cap": "off",
     "no-anonymous-default-export": "off",
-    "no-array-sort": "off",
     "no-async-endpoint-handlers": "off",
     "no-await-in-loop": "off",
     "no-continue": "off",

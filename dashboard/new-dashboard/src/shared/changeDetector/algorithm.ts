@@ -87,7 +87,7 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
 const getPartialSums = (data: number[], k: number): number[][] => {
   const n = data.length
   const partialSums: number[][] = Array.from({ length: k }, () => new Array(n + 1).fill(0) as number[])
-  const sortedData = [...data].sort((a, b) => a - b)
+  const sortedData = data.toSorted((a, b) => a - b)
 
   for (let i = 0; i < k; i++) {
     const z = -1 + (2 * i + 1) / k

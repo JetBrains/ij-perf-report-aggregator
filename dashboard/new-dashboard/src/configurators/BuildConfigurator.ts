@@ -58,7 +58,7 @@ export function buildConfigurator(
           const buildParts = value.split(".")
           return buildParts[2] == "0" ? buildParts[0] + "." + buildParts[1] : value
         })
-        .sort(compareBuilds)
+        .toSorted(compareBuilds)
     })
   return configurator
 }

@@ -2,7 +2,7 @@ export function median(arr: number[]): number {
   if (arr.length === 0) {
     throw new Error("Data array is empty")
   }
-  const sortedArr = [...arr].sort((a, b) => a - b)
+  const sortedArr = arr.toSorted((a, b) => a - b)
   const mid = Math.floor(sortedArr.length / 2)
   return sortedArr.length % 2 === 0 ? (sortedArr[mid - 1] + sortedArr[mid]) / 2 : sortedArr[mid]
 }

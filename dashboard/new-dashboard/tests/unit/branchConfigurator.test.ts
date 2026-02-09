@@ -57,7 +57,7 @@ test("sort branches", () => {
     "vadim.salavatov/IJPL-52-optimize-no-workers",
     "wsm/sdk_wip",
     "semantic-search-perf-impact-with-all-together",
-  ].sort(sortBranches)
+  ].toSorted(sortBranches)
   expect(branches).toStrictEqual([
     "master",
     "233",

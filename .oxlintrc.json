@@ -89,7 +89,6 @@
     "unicorn/no-null": "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/prefer-global-this": "off",
-    "unicorn/prefer-string-replace-all": "off",
     "unicorn/require-post-message-target-origin": "off",
     "unicorn/switch-case-braces": "off"
   },

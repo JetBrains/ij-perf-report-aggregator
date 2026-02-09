@@ -36,5 +36,5 @@ export function getPersistentLink(url: string, timerangeConfigurator: TimeRangeC
   } else {
     url = url + "&timeRange=custom&customRange=" + timerangeConfigurator.customRange.value
   }
-  return url.replace(/&+/g, "&")
+  return url.replaceAll(/&+/g, "&")
 }

@@ -68,9 +68,9 @@ const frontendMeasurePrefix = `JVM.heapUsageMb/${measure}`
 const backendMeasures = getAllMeasures(backendMeasurePrefix)
 const frontendMeasures = getAllMeasures(frontendMeasurePrefix)
 
-const legendFormatter = (name: string) => {
-  const lengthDescComparer = (a: string, b: string) => b.length - a.length
+const lengthDescComparer = (a: string, b: string) => b.length - a.length
 
+const legendFormatter = (name: string) => {
   name = name.replace(clionProject, "JVM (Frontend)") // HACK: remove this line when CLion Classic gets more than one memory metric
   for (const frontendMeasure of frontendMeasures.toSorted(lengthDescComparer)) {
     name = name.replace(frontendMeasure, "JVM (Frontend)")

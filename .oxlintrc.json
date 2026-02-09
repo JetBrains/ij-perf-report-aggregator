@@ -17,7 +17,6 @@
     "arrow-body-style": "off",
     "avoid-new": "off",
     "capitalized-comments": "off",
-    "consistent-function-scoping": "off",
     "consistent-type-imports": "off",
     "curly": "off",
     "default": "off",

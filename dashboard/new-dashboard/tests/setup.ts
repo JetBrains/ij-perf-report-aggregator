@@ -22,7 +22,7 @@ class LocalStorageMock implements Storage {
   }
 
   key(index: number): string | null {
-    const keys = Array.from(this.data.keys())
+    const keys = [...this.data.keys()]
     return keys[index] ?? null
   }
 }

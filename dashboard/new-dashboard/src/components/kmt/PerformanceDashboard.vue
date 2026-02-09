@@ -166,7 +166,7 @@ const chartsDeclarationRunConfigurationsDebug: ChartDefinition[] = [
   },
 ]
 
-const chartsDeclaration = chartsDeclarationSetup.concat(chartsDeclarationCrossLang).concat(chartsDeclarationCompose).concat(chartsDeclarationRunConfigurations)
+const chartsDeclaration = [...chartsDeclarationSetup, ...chartsDeclarationCrossLang, ...chartsDeclarationCompose, ...chartsDeclarationRunConfigurations]
 const uniqueProjects: string[] = [...new Set(chartsDeclaration.flatMap((chart) => chart.projects.map((project) => project.split("/")[0])))]
 const testConfigurator = new SimpleMeasureConfigurator("project", null)
 testConfigurator.initData(uniqueProjects)

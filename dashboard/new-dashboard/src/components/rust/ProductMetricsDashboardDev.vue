@@ -49,7 +49,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["TypingCodeAnalysis"],
     measures: ["typingCodeAnalyzing"],
-    projects: rustLocalInspectionCases.concat(rustLocalInspectionCases.map((testCase) => `${testCase}-top-level-typing`)),
+    projects: [...rustLocalInspectionCases, ...rustLocalInspectionCases.map((testCase) => `${testCase}-top-level-typing`)],
   },
   {
     labels: ["All Inspections"],

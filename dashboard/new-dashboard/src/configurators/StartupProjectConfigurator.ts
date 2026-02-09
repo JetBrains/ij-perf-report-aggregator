@@ -57,7 +57,7 @@ export function startupProjectConfigurator(
         }
       }
 
-      const mergedData = Array.from(mergedProjects)
+      const mergedData = [...mergedProjects]
 
       if (customValueSort != null) {
         mergedData.sort(customValueSort)

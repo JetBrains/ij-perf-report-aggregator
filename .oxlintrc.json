@@ -55,7 +55,6 @@
     "no-lonely-if": "off",
     "no-magic-numbers": "off",
     "no-map-spread": "off",
-    "no-mutable-exports": "off",
     "no-named-export": "off",
     "no-namespace": "off",
     "no-negated-condition": "off",
@@ -77,7 +76,6 @@
     "prefer-await-to-then": "off",
     "prefer-destructuring": "off",
     "prefer-enum-initializers": "off",
-    "prefer-math-trunc": "off",
     "prefer-string-slice": "off",
     "prefer-template": "off",
     "prefer-top-level-await": "off",
@@ -104,6 +102,7 @@
     "unicorn/switch-case-braces": "off"
   },
   "ignorePatterns": [
+    "**/zstd-module.ts",
     "**/tailwind.config.cjs",
     "**/components.d.ts",
     "**/auto-imports.d.ts",

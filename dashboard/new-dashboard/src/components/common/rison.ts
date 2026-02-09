@@ -76,7 +76,7 @@ function object(x: any): string {
 
 function array(x: unknown[]): string {
   let result = "!("
-  let isNonFirst, i
+  let i, isNonFirst
   const l = x.length
   for (i = 0; i < l; i++) {
     const value = x[i]

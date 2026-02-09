@@ -98,7 +98,6 @@
     "param-names": "off",
     "consistent-function-scoping": "off",
     "no-anonymous-default-export": "off",
-    "sort-vars": "off",
     "no-map-spread": "off",
     "unicorn/no-useless-spread": "off",
     "no-unsafe-enum-comparison": "off",

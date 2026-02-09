@@ -162,7 +162,6 @@ export class LineChartVM {
     private readonly legendFormatter: (name: string) => string,
     hasDataCallback?: (hasData: boolean) => void
   ) {
-    this.legendFormatter = legendFormatter
     this.accidentsConfigurator = accidentsConfigurator
     this.hasDataCallback = hasDataCallback
     const isMs = valueUnit == "ms"

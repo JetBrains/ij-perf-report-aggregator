@@ -64,7 +64,6 @@
     "no-ternary": "off",
     "no-unassigned-import": "off",
     "no-unnecessary-array-flat-depth": "off",
-    "no-unnecessary-parameter-property-assignment": "off",
     "no-unsafe-enum-comparison": "off",
     "no-unsafe-type-assertion": "off",
     "no-useless-undefined": "off",

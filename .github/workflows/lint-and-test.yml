@@ -38,12 +38,10 @@ jobs:
             - recursive: true
       - name: Test build
         run: pnpm build
-      - name: Run ESLint
-        run: pnpm eslint
       - name: Run VueTSC
         run: pnpm vue-tsc
       - name: Run Oxlint
-        run: pnpm oxlint
+        run: pnpm oxlint --type-aware
       - name: Run Oxfmt
         run: pnpm oxfmt --check
       - name: Run tests

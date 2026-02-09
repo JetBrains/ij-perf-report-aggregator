@@ -17,8 +17,7 @@ lint:
 	golangci-lint run cmd/... pkg/...
 #To fix run: pnpm oxfmt
 	pnpm oxfmt --check
-	pnpm eslint
-	pnpm oxlint
+	pnpm oxlint --type-aware
 	pnpm vue-tsc
 
 

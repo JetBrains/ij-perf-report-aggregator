@@ -146,5 +146,5 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
     changePointIndexes.push(currentIndex)
     currentIndex = previousChangePointIndex[currentIndex]
   }
-  return changePointIndexes.reverse()
+  return changePointIndexes.toReversed()
 }

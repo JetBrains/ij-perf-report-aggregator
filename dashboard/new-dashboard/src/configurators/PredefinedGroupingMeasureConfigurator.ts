@@ -110,7 +110,7 @@ function configureWithQueryProducers(dataList: (string | number)[][][], configur
     dimensions.push({ name, type: "number" })
   }
 
-  const series = new Array<BarSeriesOption>(dimensions.length - 1)
+  const series = Array.from<BarSeriesOption>({ length: dimensions.length - 1 })
   const formatter = getSeriesLabelFormatter(useDurationFormatter, chartStyle.valueUnit)
   for (let i = 0; i < series.length; i++) {
     series[i] = {

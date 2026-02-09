@@ -86,7 +86,7 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
 
 const getPartialSums = (data: number[], k: number): number[][] => {
   const n = data.length
-  const partialSums: number[][] = Array.from({ length: k }, () => new Array(n + 1).fill(0) as number[])
+  const partialSums: number[][] = Array.from({ length: k }, () => Array.from({ length: n + 1 }, () => 0))
   const sortedData = data.toSorted((a, b) => a - b)
 
   for (let i = 0; i < k; i++) {
@@ -119,13 +119,13 @@ export function getChangePointIndexes(data: number[] | undefined, minDistance: n
   const partialSums = getPartialSums(data, k)
   const cost = (tau1: number, tau2: number): number => getSegmentCost(partialSums, tau1, tau2, k, n)
 
-  const bestCost: number[] = new Array(n + 1).fill(0) as number[]
+  const bestCost: number[] = Array.from({ length: n + 1 }, () => 0)
   bestCost[0] = -penalty
   for (let currentTau = minDistance; currentTau < 2 * minDistance; currentTau++) {
     bestCost[currentTau] = cost(0, currentTau)
   }
 
-  const previousChangePointIndex = new Array(n + 1).fill(0) as number[]
+  const previousChangePointIndex: number[] = Array.from({ length: n + 1 }, () => 0)
   let previousTaus: number[] = [0, minDistance]
 
   for (let currentTau = 2 * minDistance; currentTau < n + 1; currentTau++) {

@@ -49,10 +49,10 @@ import { DimensionConfigurator } from "../../configurators/DimensionConfigurator
 const {
   timeRangeConfigurator,
   branchConfigurator,
-  releaseConfigurator = undefined,
+  releaseConfigurator,
   triggeredByConfigurator,
-  machineConfigurator = undefined,
-  testModeConfigurator = undefined,
+  machineConfigurator,
+  testModeConfigurator,
 } = defineProps<{
   timeRangeConfigurator: TimeRangeConfigurator
   branchConfigurator: BranchConfigurator | null

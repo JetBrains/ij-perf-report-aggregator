@@ -66,7 +66,6 @@
     "no-unnecessary-array-flat-depth": "off",
     "no-unsafe-enum-comparison": "off",
     "no-unsafe-type-assertion": "off",
-    "no-useless-undefined": "off",
     "no-warning-comments": "off",
     "number-literal-case": "off",
     "param-names": "off",

@@ -40,7 +40,7 @@ interface AggregationChartProps {
   title: string
 }
 
-const { valueUnit = "ms", configurators, aggregatedMeasure, aggregatedProject = undefined, isLike, title } = defineProps<AggregationChartProps>()
+const { valueUnit = "ms", configurators, aggregatedMeasure, aggregatedProject, isLike, title } = defineProps<AggregationChartProps>()
 const timeAverageConfigurator = new TimeAverageConfigurator()
 const measuresConfigurator = {
   configureQuery(query: DataQuery, _configuration: DataQueryExecutorConfiguration): boolean {

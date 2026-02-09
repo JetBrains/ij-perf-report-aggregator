@@ -1,8 +1,5 @@
 {
   "private": true,
-  "ignorePatterns": [
-    "**/node_modules/**/*.*"
-  ],
   "type": "module",
   "scripts": {
     "dev": "vite serve",
@@ -27,8 +24,8 @@
     "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.3.0",
     "isoworker": "^0.2.4",
+    "oxfmt": "^0.28.0",
     "oxlint": "^1.43.0",
-    "prettier": "^3.8.1",
     "rollup": "^4.57.1",
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
@@ -40,8 +37,11 @@
     "vue": "^3.5.27",
     "vue-tsc": "3.2.4"
   },
-  "packageManager": "pnpm@10.27.0",
   "engines": {
     "pnpm": ">=10"
-  }
+  },
+  "packageManager": "pnpm@10.27.0",
+  "ignorePatterns": [
+    "**/node_modules/**/*.*"
+  ]
 }

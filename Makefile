@@ -15,8 +15,8 @@ lint:
 	go test ./pkg/...
 	pnpm test
 	golangci-lint run cmd/... pkg/...
-#To fix run: pnpm prettier --write . --loglevel
-	pnpm prettier --check . --log-level warn
+#To fix run: pnpm oxfmt
+	pnpm oxfmt --check
 	pnpm eslint
 	pnpm oxlint
 	pnpm vue-tsc

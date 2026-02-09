@@ -44,8 +44,8 @@ jobs:
         run: pnpm vue-tsc
       - name: Run Oxlint
         run: pnpm oxlint
-      - name: Run Prettier
-        run: pnpm prettier --check . --log-level warn
+      - name: Run Oxfmt
+        run: pnpm oxfmt --check
       - name: Run tests
         run: pnpm test
       - uses: ./.github/send-notification-action

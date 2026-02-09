@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "semi": false,
+  "printWidth": 180,
+  "singleAttributePerLine": true,
+  "trailingComma": "es5",
+  "ignorePatterns": [
+    "dashboard/app/prime-theme/",
+    "dashboard/new-dashboard/resources",
+    "testData/",
+    "cmd/frontend/resources/",
+    ".idea/",
+    ".github/",
+    "*.yaml",
+    "*.yml",
+    "components.d.ts",
+    ".pnpm-store/"
+  ]
+}

@@ -42,9 +42,7 @@ export function fromFetchWithRetryAndErrorHandling<T>(
       limit(() =>
         fetch(request, {
           signal,
-          headers: {
-            ...(numberOfRetries.value > 0 ? { "Cache-Control": "no-cache" } : {}),
-          },
+          headers: numberOfRetries.value > 0 ? { "Cache-Control": "no-cache" } : undefined,
         })
       )
     )

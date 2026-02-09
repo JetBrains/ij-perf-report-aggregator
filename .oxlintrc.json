@@ -87,7 +87,6 @@
     "unicorn/no-immediate-mutation": "off",
     "unicorn/no-nested-ternary": "off",
     "unicorn/no-null": "off",
-    "unicorn/no-useless-spread": "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/prefer-global-this": "off",
     "unicorn/prefer-spread": "off",

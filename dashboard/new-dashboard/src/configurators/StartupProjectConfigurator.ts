@@ -49,9 +49,9 @@ export function startupProjectConfigurator(
         const measureStartupIndex = project.indexOf("/measureStartup")
 
         if (warmupIndex !== -1) {
-          mergedProjects.add(project.substring(0, warmupIndex))
+          mergedProjects.add(project.slice(0, warmupIndex))
         } else if (measureStartupIndex !== -1) {
-          mergedProjects.add(project.substring(0, measureStartupIndex))
+          mergedProjects.add(project.slice(0, measureStartupIndex))
         } else {
           mergedProjects.add(project)
         }

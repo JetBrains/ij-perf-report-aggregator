@@ -73,7 +73,6 @@
     "prefer-await-to-then": "off",
     "prefer-destructuring": "off",
     "prefer-enum-initializers": "off",
-    "prefer-string-slice": "off",
     "prefer-template": "off",
     "prefer-top-level-await": "off",
     "radix": "off",

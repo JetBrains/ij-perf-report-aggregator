@@ -61,7 +61,6 @@
     "no-nested-ternary": "off",
     "no-new-array": "off",
     "no-null": "off",
-    "no-relative-parent-imports": "off",
     "no-ternary": "off",
     "no-unassigned-import": "off",
     "no-unnecessary-array-flat-depth": "off",

@@ -11,7 +11,8 @@ func GenerateEditorSettings() []detector.PerformanceSettings {
 	testMetrics := []testEditorMetricDef{
 		{test: []string{"intellij_commit/localInspection/java_file"}, metric: []string{"firstCodeAnalysis"}},
 		{test: []string{"toolbox_enterprise/ultimateCase/SecurityTests"}, metric: []string{"typingCodeAnalyzing"}},
-		{test: []string{"spring_boot_maven/inspection"}, metric: []string{"globalInspections"}}}
+		{test: []string{"spring_boot_maven/inspection"}, metric: []string{"globalInspections"}},
+	}
 
 	machines := []string{"intellij-linux-performance-aws-%"} // uncomment latter to cover all os
 	// "intellij-windows-performance-aws-%",

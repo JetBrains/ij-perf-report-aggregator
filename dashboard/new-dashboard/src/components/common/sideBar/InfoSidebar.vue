@@ -82,6 +82,15 @@
               >{{ data?.series[0].metricName }}</span
             >
           </span>
+
+          <span
+            v-if="owner"
+            class="flex gap-1.5 items-center"
+          >
+            <UserGroupIcon class="w-4 h-4" />
+            {{ owner }}
+          </span>
+
           <span class="flex gap-1.5 items-center">
             <ClockIcon class="w-4 h-4" />
             <span
@@ -384,6 +393,7 @@ async function openSpaceUrl() {
 
 useScrollListeners()
 const description = computed(() => vm.data.value?.description.value?.description ?? "")
+const owner = computed(() => vm.data.value?.owner.value ?? null)
 
 const metricDescription = computed(() => getMetricDescription(data.value?.series[0].metricName))
 

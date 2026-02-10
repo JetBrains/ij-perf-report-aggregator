@@ -235,10 +235,15 @@ function getInfoWithAccidentsAndDescription(params: CallbackDataParams, valueUni
     return await getDescriptionFromMetaDb(basicInfo.projectName, "master")
   }) as Ref<Description | null>
 
+  const owner = computedAsync(async () => {
+    return await getOwnerFromMetaDb(basicInfo.projectName)
+  }) as Ref<string | null>
+
   return {
     ...basicInfo,
     accidents: filteredAccidents,
     description,
+    owner,
   }
 }
 
@@ -313,4 +318,13 @@ async function getDescriptionFromMetaDb(project: string | undefined, branch: str
   const description_url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/description/"
   const response = await fetch(description_url + encodeRison({ project, branch }))
   return response.ok ? ((await response.json()) as Description) : null
+}
+
+async function getOwnerFromMetaDb(project: string | undefined): Promise<string | null> {
+  if (project == undefined) return null
+  const url = ServerWithCompressConfigurator.DEFAULT_SERVER_URL + "/api/meta/ownerByProject?project=" + encodeURIComponent(project)
+  const response = await fetch(url)
+  if (!response.ok) return null
+  const data = (await response.json()) as { owner?: string }
+  return data.owner ?? null
 }

@@ -26,6 +26,7 @@ export interface InfoData {
   series: DataSeries[]
   accidents: Ref<Accident[] | undefined> | undefined
   description: Ref<Description | null>
+  owner: Ref<string | null>
   deltaPrevious: string | undefined
   deltaNext: string | undefined
   chartDataUrl: string

@@ -9,6 +9,7 @@ type Report struct {
 	Project            string `json:"project"`
 	ProjectURL         string `json:"projectURL"`
 	ProjectDescription string `json:"projectDescription"`
+	Owner              string `json:"owner"`
 
 	MethodName string `json:"methodName"`
 

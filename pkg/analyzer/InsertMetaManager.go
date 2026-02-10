@@ -20,6 +20,18 @@ func NewInsertMetaManager(insertContext context.Context, metaDb *pgxpool.Pool) (
 	return manager, nil
 }
 
+func (t *InsertMetaManager) InsertProjectOwner(project string, owner string) error {
+	if project != "" && owner != "" {
+		_, err := t.dbPool.Exec(t.context,
+			"INSERT INTO project_owner (project, owner) VALUES ($1, $2) ON CONFLICT (project) DO UPDATE SET owner = excluded.owner;",
+			project, owner)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (t *InsertMetaManager) InsertProjectDescription(project string, branch string, url string, methodName string, description string) error {
 	if project != "" && branch != "" && (methodName != "" || description != "" || url != "") {
 		_, err := t.dbPool.Exec(t.context, "INSERT INTO project_description (project, branch, url, methodName, description) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (project, branch) DO UPDATE SET methodName = excluded.methodName, url = excluded.url, description = excluded.description;", project, branch, url, methodName, description)

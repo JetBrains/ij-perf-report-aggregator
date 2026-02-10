@@ -57,6 +57,67 @@ paths:
                   $ref: '#/components/schemas/Accident'
         '500':
           description: Bad Request. The JSON is malformed or missing required fields.
+  /api/meta/projectsByOwner:
+    get:
+      summary: Get projects by owner
+      description: Returns all projects belonging to a given owner.
+      parameters:
+        - name: owner
+          in: query
+          required: true
+          schema:
+            type: string
+          example: 'IntelliJ Kotlin Plugin'
+          description: The owner to filter projects by
+      responses:
+        '200':
+          description: Returns a list of projects for the given owner
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - projects
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      type: string
+                    example: ['kotlin-highlights', 'kotlin-inspections']
+        '400':
+          description: Bad Request. The owner query parameter is missing.
+        '500':
+          description: Internal Server Error. An error occurred on the server.
+  /api/meta/ownerByProject:
+    get:
+      summary: Get owner by project
+      description: Returns the owner of a given project.
+      parameters:
+        - name: project
+          in: query
+          required: true
+          schema:
+            type: string
+          example: 'kotlin-highlights'
+          description: The project name to look up the owner for
+      responses:
+        '200':
+          description: Returns the owner for the given project. If no owner is found, returns an object with an empty owner string.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - owner
+                properties:
+                  owner:
+                    type: string
+                    description: The owner of the project
+                    example: 'IntelliJ Kotlin Plugin'
+        '400':
+          description: Bad Request. The project query parameter is missing.
+        '500':
+          description: Internal Server Error. An error occurred on the server.
 
 components:
   schemas:

@@ -29,6 +29,7 @@ func ReadReport(runResult *RunResult, config DatabaseConfiguration) error {
 		Project:            string(report.GetStringBytes("project")),
 		ProjectURL:         string(report.GetStringBytes("projectURL")),
 		ProjectDescription: string(report.GetStringBytes("projectDescription")),
+		Owner:              string(report.GetStringBytes("owner")),
 
 		ProductCode: string(report.GetStringBytes("productCode")),
 		MethodName:  string(report.GetStringBytes("methodName")),

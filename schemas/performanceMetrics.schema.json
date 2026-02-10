@@ -45,6 +45,10 @@
       "description": "Mode of the test. Example, 'split', 'customJBR', 'Kotlin K2'.",
       "type": "string"
     },
+    "owner": {
+      "description": "Owner of the project/test, e.g. 'IntelliJ Kotlin Plugin'",
+      "type": "string"
+    },
     "metrics": {
       "type": "array",
       "items": {

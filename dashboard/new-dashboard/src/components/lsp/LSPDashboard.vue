@@ -20,5 +20,8 @@
 import DashboardPage from "../common/DashboardPage.vue"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 
-const lspProjects = ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$huge$1.huge"]
+const lspProjects = [
+  "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$huge$1.huge",
+  "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$tiny$1.tiny",
+]
 </script>

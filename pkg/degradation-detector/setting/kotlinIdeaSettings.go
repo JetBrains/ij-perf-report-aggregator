@@ -29,7 +29,7 @@ func GenerateKotlinIdeaSettings(backendUrl string, client *http.Client) []detect
 
 	settings := make([]detector.PerformanceSettings, 0, 100)
 	machines := []string{"intellij-linux-performance-aws-%", "intellij-windows-performance-%"}
-	modes := []string{"split", "with-aia", ""}
+	modes := []string{""}
 	for _, mode := range modes {
 		for _, machine := range machines {
 			for _, test := range testsWithoutIndexingScanning {

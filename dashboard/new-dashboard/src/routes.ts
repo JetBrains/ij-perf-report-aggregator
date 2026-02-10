@@ -224,7 +224,7 @@ enum ROUTES {
   KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
-  LSPDashboard = `${ROUTE_PREFIX.LSP}/diagnosticDashboard`,
+  LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -2436,7 +2436,7 @@ const lspRoutes = [
   {
     path: ROUTES.LSPDashboard,
     component: () => import("./components/lsp/LSPDashboard.vue"),
-    meta: { pageTitle: "LSP Diagnostic Dashboard" },
+    meta: { pageTitle: "LSP Dashboard" },
   },
 ]
 

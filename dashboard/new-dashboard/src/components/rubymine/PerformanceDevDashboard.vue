@@ -402,20 +402,20 @@
         label="Symbol Members: Mean Execution Time"
         measure="getSymbolMembers#mean_value"
         :projects="[
-          'diaspora-project-test/getSymbolMembers-ApplicationController-false',
-          'diaspora-project-test/getSymbolMembers-ApplicationController-true',
-          'gitlab-project-test/getSymbolMembers-ApplicationController-false',
-          'gitlab-project-test/getSymbolMembers-ApplicationController-true',
-          'redmine-project-test/getSymbolMembers-ApplicationController-false',
-          'redmine-project-test/getSymbolMembers-ApplicationController-true',
+          'diaspora-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'diaspora-project-test/getSymbolMembers-ApplicationController-cold-cache',
+          'gitlab-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'gitlab-project-test/getSymbolMembers-ApplicationController-cold-cache',
+          'redmine-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'redmine-project-test/getSymbolMembers-ApplicationController-cold-cache',
         ]"
         :aliases="[
-          'ApplicationController (DI)',
-          'ApplicationController (DI, no caches)',
-          'ApplicationController (GL)',
-          'ApplicationController (GL, no caches)',
-          'ApplicationController (RM)',
-          'ApplicationController (RM, no caches)',
+          'ApplicationController (DI, hot cache)',
+          'ApplicationController (DI, cold cache)',
+          'ApplicationController (GL, hot cache)',
+          'ApplicationController (GL, cold cache)',
+          'ApplicationController (RM, hot cache)',
+          'ApplicationController (RM, cold cache)',
         ]"
       />
     </section>
@@ -424,20 +424,20 @@
         label="Symbol Members: Quantity"
         measure="getSymbolMembers#number#mean_value"
         :projects="[
-          'diaspora-project-test/getSymbolMembers-ApplicationController-false',
-          'diaspora-project-test/getSymbolMembers-ApplicationController-true',
-          'gitlab-project-test/getSymbolMembers-ApplicationController-false',
-          'gitlab-project-test/getSymbolMembers-ApplicationController-true',
-          'redmine-project-test/getSymbolMembers-ApplicationController-false',
-          'redmine-project-test/getSymbolMembers-ApplicationController-true',
+          'diaspora-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'diaspora-project-test/getSymbolMembers-ApplicationController-cold-cache',
+          'gitlab-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'gitlab-project-test/getSymbolMembers-ApplicationController-cold-cache',
+          'redmine-project-test/getSymbolMembers-ApplicationController-hot-cache',
+          'redmine-project-test/getSymbolMembers-ApplicationController-cold-cache',
         ]"
         :aliases="[
-          'ApplicationController (DI)',
-          'ApplicationController (DI, no caches)',
-          'ApplicationController (GL)',
-          'ApplicationController (GL, no caches)',
-          'ApplicationController (RM)',
-          'ApplicationController (RM, no caches)',
+          'ApplicationController (DI, hot cache)',
+          'ApplicationController (DI, cold cache)',
+          'ApplicationController (GL, hot cache)',
+          'ApplicationController (GL, cold cache)',
+          'ApplicationController (RM, hot cache)',
+          'ApplicationController (RM, cold cache)',
         ]"
       />
     </section>

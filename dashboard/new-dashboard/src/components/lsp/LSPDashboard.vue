@@ -28,27 +28,24 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["diagnostics (dummy files)"],
     measures: ["attempt.mean.ms"],
-    projects: [
-      "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$huge$1.huge",
-      "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$tiny$1.tiny"
-    ]
+    projects: ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$huge$1.huge", "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$tiny$1.tiny"],
   },
   {
     labels: ["diagnostics (real projects)"],
     measures: ["attempt.mean.ms"],
     projects: [
       "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest$diagnostics$1$1$2.diagnostics",
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest$diagnostics$1$1$2.diagnostics"
-    ]
+      "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest$diagnostics$1$1$2.diagnostics",
+    ],
   },
   {
     labels: ["completion"],
     measures: ["attempt.mean.ms"],
     projects: [
       "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest$completion$1$1$2.completion",
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest$completion$1$1$2.completion"
-    ]
-  }
+      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest$completion$1$1$2.completion",
+    ],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

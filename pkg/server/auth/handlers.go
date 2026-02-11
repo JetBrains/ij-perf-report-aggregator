@@ -163,7 +163,7 @@ type hubUser struct {
 
 func (ytAuth *YTAuth) getHubUserId(ctx context.Context, email string) (string, error) {
 	emailEscaped := url.QueryEscape(email)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://hub.jetbrains.com/api/rest/users?fileds=id&query=email:"+emailEscaped, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://hub.jetbrains.com/api/rest/users?fields=id&query=email:"+emailEscaped, http.NoBody)
 	if err != nil {
 		return "", fmt.Errorf("creating request failed: %w", err)
 	}

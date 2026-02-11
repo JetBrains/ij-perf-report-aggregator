@@ -33,18 +33,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["diagnostics (real projects)"],
     measures: ["attempt.mean.ms"],
-    projects: [
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest$diagnostics$1$1$2.diagnostics",
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest$diagnostics$1$1$2.diagnostics",
-    ],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.diagnostics", "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.diagnostics"],
   },
   {
     labels: ["completion"],
     measures: ["attempt.mean.ms"],
-    projects: [
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest$completion$1$1$2.completion",
-      "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest$completion$1$1$2.completion",
-    ],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.PetClinicKotlinPerformanceTest.completion", "com.jetbrains.ls.lsp.performanceTest.PetClinicJavaPerformanceTest.completion"],
   },
 ]
 

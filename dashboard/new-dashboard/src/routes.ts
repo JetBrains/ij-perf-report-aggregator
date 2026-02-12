@@ -2472,7 +2472,7 @@ const kotlinNotebooksRoutes = [
     props: {
       dbName: "perfintDev",
       table: "kotlinNotebooks",
-      initialMachine: MACHINES.HETZNER,
+      initialMachine: MACHINES.AWS_LINUX,
       withInstaller: false,
     },
     meta: { pageTitle: "Kotlin Notebooks Performance tests" },

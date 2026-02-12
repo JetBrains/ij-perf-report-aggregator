@@ -3,7 +3,7 @@
     db-name="perfintDev"
     table="kotlinNotebooks"
     persistent-id="kotlinNotebooks_dashboard"
-    initial-machine="linux-blade-hetzner"
+    initial-machine="Linux EC2 C6id.8xlarge (32 vCPU Xeon, 64 GB)"
     :charts="charts"
     :with-installer="false"
   >

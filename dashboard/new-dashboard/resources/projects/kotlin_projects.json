@@ -225,12 +225,12 @@
     },
     "codeTyping": {
       "kotlinEmpty": [
-        "code_typing/Main_transform_string_explicit_type_with_library_cache",
-        "code_typing/Main_transform_string_implicit_type_with_library_cache"
+        "kotlin_empty/code_typing/Main_transform_string_explicit_type_with_library_cache",
+        "kotlin_empty/code_typing/Main_transform_string_implicit_type_with_library_cache"
       ],
       "kotlinLang": [
-        "code_typing/LLFirBodyLazyResolver_calculate_cfg_explicit_type_with_library_cache",
-        "code_typing/LLFirBodyLazyResolver_calculate_cfg_implicit_type_with_library_cache"
+        "kotlin_lang_1.9.0/code_typing/LLFirBodyLazyResolver_calculate_cfg_explicit_type_with_library_cache",
+        "kotlin_lang_1.9.0/code_typing/LLFirBodyLazyResolver_calculate_cfg_implicit_type_with_library_cache"
       ]
     },
     "optimizeImports": {

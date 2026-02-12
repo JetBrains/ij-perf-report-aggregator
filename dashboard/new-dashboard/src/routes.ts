@@ -50,6 +50,7 @@ const enum ROUTE_PREFIX {
   Diogen = "/diogen",
   Toolbox = "/toolbox",
   LSP = "/lsp",
+  KotlinNotebooks = "/kotlinNotebooks",
 }
 
 const TEST_ROUTE = "tests"
@@ -225,6 +226,8 @@ enum ROUTES {
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
   LSPTests = `${ROUTE_PREFIX.LSP}/${TEST_ROUTE}`,
   LSPDashboard = `${ROUTE_PREFIX.LSP}/${DASHBOARD_ROUTE}`,
+  KotlinNotebooksTests = `${ROUTE_PREFIX.KotlinNotebooks}/${TEST_ROUTE}`,
+  KotlinNotebooksDashboard = `${ROUTE_PREFIX.KotlinNotebooks}/${DASHBOARD_ROUTE}`,
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
@@ -1210,6 +1213,27 @@ const LSP: Product = {
   ],
 }
 
+const KOTLIN_NOTEBOOKS: Product = {
+  url: ROUTE_PREFIX.KotlinNotebooks,
+  label: "Kotlin Notebooks",
+  children: [
+    {
+      url: ROUTE_PREFIX.KotlinNotebooks,
+      label: "",
+      tabs: [
+        {
+          url: ROUTES.KotlinNotebooksDashboard,
+          label: DASHBOARD_LABEL,
+        },
+        {
+          url: ROUTES.KotlinNotebooksTests,
+          label: TESTS_LABEL,
+        },
+      ],
+    },
+  ],
+}
+
 export const PRODUCTS = [
   AIA,
   BAZEL,
@@ -1225,6 +1249,7 @@ export const PRODUCTS = [
   KMT,
   KOTLIN,
   KOTLIN_BUILD_TOOLS,
+  KOTLIN_NOTEBOOKS,
   LSP,
   ML_TESTS,
   PERF_UNIT,
@@ -2440,6 +2465,25 @@ const lspRoutes = [
   },
 ]
 
+const kotlinNotebooksRoutes = [
+  {
+    path: ROUTES.KotlinNotebooksTests,
+    component: COMPONENTS.perfTests,
+    props: {
+      dbName: "perfintDev",
+      table: "kotlinNotebooks",
+      initialMachine: MACHINES.HETZNER,
+      withInstaller: false,
+    },
+    meta: { pageTitle: "Kotlin Notebooks Performance tests" },
+  } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.KotlinNotebooksDashboard,
+    component: () => import("./components/kotlinNotebooks/PerformanceDashboard.vue"),
+    meta: { pageTitle: "Kotlin Notebooks Dashboard" },
+  },
+]
+
 export function getNewDashboardRoutes(): ParentRouteRecord[] {
   return [
     {
@@ -2470,6 +2514,7 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
         ...perfUnitTestsRoutes,
         ...kotlinBuildToolsRoutes,
         ...lspRoutes,
+        ...kotlinNotebooksRoutes,
         {
           path: ROUTES.ReportDegradations,
           component: () => import("./components/degradations/ReportDegradation.vue"),

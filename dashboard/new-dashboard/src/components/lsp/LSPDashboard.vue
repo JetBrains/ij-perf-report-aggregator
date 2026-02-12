@@ -28,7 +28,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["diagnostics (dummy files)"],
     measures: ["attempt.mean.ms"],
-    projects: ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$huge$1.huge", "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest$tiny$1.tiny"],
+    projects: ["com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.huge", "com.jetbrains.ls.lsp.performanceTest.DiagnosticPerformanceTest.tiny"],
   },
   {
     labels: ["diagnostics (real projects)"],

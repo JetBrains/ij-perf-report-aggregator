@@ -35,7 +35,7 @@ func GenerateEditorSettings() []detector.PerformanceSettings {
 							Metric:  metric,
 							Branch:  "master",
 							SlackSettings: detector.SlackSettings{
-								Channel:     "ij-performance-quality-wg",
+								Channel:     "ij-highlighting-wg",
 								ProductLink: "intellij",
 							},
 							AnalysisSettings: detector.AnalysisSettings{

@@ -10,7 +10,7 @@
     "humanize-duration": "3.33.2",
     "p-limit": "^7.3.0",
     "pinia": "^3.0.4",
-    "pragmastat": "7.0.1",
+    "pragmastat": "8.0.0",
     "primevue": "4.5.4",
     "rxjs": "8.0.0-alpha.14",
     "vue": "3.5.28",

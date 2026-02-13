@@ -15,6 +15,7 @@ All changes go in `dashboard/new-dashboard/src/routes.ts` plus one new Vue compo
 In the `ROUTE_PREFIX` enum, add a new entry. Use PascalCase for the key and a lowercase URL path derived from the category name.
 
 Example:
+
 ```typescript
 const enum ROUTE_PREFIX {
   // ... existing entries

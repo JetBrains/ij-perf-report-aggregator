@@ -36,6 +36,7 @@ Use existing label constants when applicable: `TESTS_LABEL`, `DASHBOARD_LABEL`, 
 Add a new entry to the category's existing routes array.
 
 **For a Tests page** (uses the shared `PerformanceTests.vue` component):
+
 ```typescript
 {
   path: ROUTES.MyCategoryNewPage,
@@ -51,6 +52,7 @@ Add a new entry to the category's existing routes array.
 ```
 
 **For a Dashboard page** (custom Vue component):
+
 ```typescript
 {
   path: ROUTES.MyCategoryNewPage,
@@ -60,6 +62,7 @@ Add a new entry to the category's existing routes array.
 ```
 
 **For a Compare Builds page**:
+
 ```typescript
 {
   path: ROUTES.MyCategoryCompare,
@@ -69,6 +72,7 @@ Add a new entry to the category's existing routes array.
 ```
 
 **For a Compare Branches page**:
+
 ```typescript
 {
   path: ROUTES.MyCategoryCompareBranches,

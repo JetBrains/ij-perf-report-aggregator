@@ -31,7 +31,7 @@
   "engines": {
     "pnpm": ">=10"
   },
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.29.3",
   "ignorePatterns": [
     "**/node_modules/**/*.*"
   ]

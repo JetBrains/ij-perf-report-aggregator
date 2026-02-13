@@ -9,7 +9,7 @@ RUN cd /usr/local/bin && \
 
 RUN cd /usr/local && \
   curl -L https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar xz --strip-components=1 node-v$NODE_VERSION-linux-x64/lib node-v$NODE_VERSION-linux-x64/bin node-v$NODE_VERSION-linux-x64/include && \
-  npm install -g pnpm@10.29.3
+  curl -fsSL https://github.com/pnpm/pnpm/releases/download/v10.29.3/pnpm-linux-x64 -o /usr/local/bin/pnpm && chmod +x /usr/local/bin/pnpm
 
 ENV GOPATH /go
 

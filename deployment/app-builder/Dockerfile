@@ -3,6 +3,8 @@ FROM buildpack-deps:curl
 ENV NODE_VERSION 25.6.1
 ENV GOLANG_VERSION 1.26.0
 
+RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*
+
 RUN cd /usr/local/bin && \
   curl -L https://github.com/google/ko/releases/download/v0.18.1/ko_0.18.1_Linux_x86_64.tar.gz | tar xvz ko && \
   curl -L https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz | tar xvz --strip-components=1 linux-amd64/helm

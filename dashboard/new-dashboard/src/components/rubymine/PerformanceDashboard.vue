@@ -186,6 +186,102 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
+        label="Completion Cold Cache (Diaspora)"
+        measure="completion#mean_value"
+        :projects="[
+          'diaspora-project-test/completion/routes-cold-cache',
+          'diaspora-project-test/completion/exceptions-cold-cache',
+          'diaspora-project-test/completion/localization-cold-cache',
+          'diaspora-project-test/completion/constant-cold-cache',
+          'diaspora-project-test/completion/exceptions-prefix-cold-cache',
+          'diaspora-project-test/completion/method-cold-cache',
+          'diaspora-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion Cold Cache (GitLab)"
+        measure="completion#mean_value"
+        :projects="[
+          'gitlab-project-test/completion/routes-cold-cache',
+          'gitlab-project-test/completion/exceptions-cold-cache',
+          'gitlab-project-test/completion/localization-cold-cache',
+          'gitlab-project-test/completion/constant-cold-cache',
+          'gitlab-project-test/completion/exceptions-prefix-cold-cache',
+          'gitlab-project-test/completion/method-cold-cache',
+          'gitlab-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion Cold Cache (Redmine)"
+        measure="completion#mean_value"
+        :projects="[
+          'redmine-project-test/completion/routes-cold-cache',
+          'redmine-project-test/completion/exceptions-cold-cache',
+          'redmine-project-test/completion/localization-cold-cache',
+          'redmine-project-test/completion/constant-cold-cache',
+          'redmine-project-test/completion/exceptions-prefix-cold-cache',
+          'redmine-project-test/completion/method-cold-cache',
+          'redmine-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion Hot Cache (Diaspora)"
+        measure="completion#mean_value"
+        :projects="[
+          'diaspora-project-test/completion/routes-hot-cache',
+          'diaspora-project-test/completion/exceptions-hot-cache',
+          'diaspora-project-test/completion/localization-hot-cache',
+          'diaspora-project-test/completion/constant-hot-cache',
+          'diaspora-project-test/completion/exceptions-prefix-hot-cache',
+          'diaspora-project-test/completion/method-hot-cache',
+          'diaspora-project-test/completion/qualified-hot-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion Hot Cache (GitLab)"
+        measure="completion#mean_value"
+        :projects="[
+          'gitlab-project-test/completion/routes-hot-cache',
+          'gitlab-project-test/completion/exceptions-hot-cache',
+          'gitlab-project-test/completion/localization-hot-cache',
+          'gitlab-project-test/completion/constant-hot-cache',
+          'gitlab-project-test/completion/exceptions-prefix-hot-cache',
+          'gitlab-project-test/completion/method-hot-cache',
+          'gitlab-project-test/completion/qualified-hot-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion Hot Cache (Redmine)"
+        measure="completion#mean_value"
+        :projects="[
+          'redmine-project-test/completion/routes-hot-cache',
+          'redmine-project-test/completion/exceptions-hot-cache',
+          'redmine-project-test/completion/localization-hot-cache',
+          'redmine-project-test/completion/constant-hot-cache',
+          'redmine-project-test/completion/exceptions-prefix-hot-cache',
+          'redmine-project-test/completion/method-hot-cache',
+          'redmine-project-test/completion/qualified-hot-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
         label="Completion First Element (Diaspora)"
         measure="completion#firstElementShown#mean_value"
         :projects="[
@@ -228,6 +324,102 @@
           'redmine-project-test/completion/exceptions-prefix',
           'redmine-project-test/completion/method',
           'redmine-project-test/completion/qualified',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Cold Cache (Diaspora)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'diaspora-project-test/completion/routes-cold-cache',
+          'diaspora-project-test/completion/exceptions-cold-cache',
+          'diaspora-project-test/completion/localization-cold-cache',
+          'diaspora-project-test/completion/constant-cold-cache',
+          'diaspora-project-test/completion/exceptions-prefix-cold-cache',
+          'diaspora-project-test/completion/method-cold-cache',
+          'diaspora-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Cold Cache (GitLab)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'gitlab-project-test/completion/routes-cold-cache',
+          'gitlab-project-test/completion/exceptions-cold-cache',
+          'gitlab-project-test/completion/localization-cold-cache',
+          'gitlab-project-test/completion/constant-cold-cache',
+          'gitlab-project-test/completion/exceptions-prefix-cold-cache',
+          'gitlab-project-test/completion/method-cold-cache',
+          'gitlab-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Cold Cache (Redmine)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'redmine-project-test/completion/routes-cold-cache',
+          'redmine-project-test/completion/exceptions-cold-cache',
+          'redmine-project-test/completion/localization-cold-cache',
+          'redmine-project-test/completion/constant-cold-cache',
+          'redmine-project-test/completion/exceptions-prefix-cold-cache',
+          'redmine-project-test/completion/method-cold-cache',
+          'redmine-project-test/completion/qualified-cold-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Hot Cache (Diaspora)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'diaspora-project-test/completion/routes-hot-cache',
+          'diaspora-project-test/completion/exceptions-hot-cache',
+          'diaspora-project-test/completion/localization-hot-cache',
+          'diaspora-project-test/completion/constant-hot-cache',
+          'diaspora-project-test/completion/exceptions-prefix-hot-cache',
+          'diaspora-project-test/completion/method-hot-cache',
+          'diaspora-project-test/completion/qualified-hot-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Hot Cache (GitLab)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'gitlab-project-test/completion/routes-hot-cache',
+          'gitlab-project-test/completion/exceptions-hot-cache',
+          'gitlab-project-test/completion/localization-hot-cache',
+          'gitlab-project-test/completion/constant-hot-cache',
+          'gitlab-project-test/completion/exceptions-prefix-hot-cache',
+          'gitlab-project-test/completion/method-hot-cache',
+          'gitlab-project-test/completion/qualified-hot-cache',
+        ]"
+        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="Completion First Element Hot Cache (Redmine)"
+        measure="completion#firstElementShown#mean_value"
+        :projects="[
+          'redmine-project-test/completion/routes-hot-cache',
+          'redmine-project-test/completion/exceptions-hot-cache',
+          'redmine-project-test/completion/localization-hot-cache',
+          'redmine-project-test/completion/constant-hot-cache',
+          'redmine-project-test/completion/exceptions-prefix-hot-cache',
+          'redmine-project-test/completion/method-hot-cache',
+          'redmine-project-test/completion/qualified-hot-cache',
         ]"
         :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
       />

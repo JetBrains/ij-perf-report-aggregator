@@ -53,7 +53,7 @@ var teamConfigs = []teamConfig{
 	},
 	{
 		Team:         "datagrip",
-		SlackChannel: "datagrip",
+		SlackChannel: "dbe-failed-tests",
 		Packages: []string{
 			"com.intellij.sql",
 		},

@@ -2,8 +2,10 @@ DROP TABLE IF EXISTS project_owner;
 
 CREATE TABLE project_owner
 (
-  project VARCHAR(255) NOT NULL,
-  owner   VARCHAR(255) NOT NULL,
+  project    VARCHAR(255) NOT NULL,
+  owner      VARCHAR(255) NOT NULL,
+  db_name    VARCHAR(255) NOT NULL,
+  table_name VARCHAR(255) NOT NULL,
   PRIMARY KEY (project)
 );
 

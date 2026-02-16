@@ -358,7 +358,7 @@ func (t *ReportAnalyzer) insert(report *ReportInfo) error {
 		if err != nil {
 			t.logger.Warn("cannot insert project description", "error", err)
 		}
-		err = t.InsertReportManager.insertMetaManager.InsertProjectOwner(r.Project, r.Owner)
+		err = t.InsertReportManager.insertMetaManager.InsertProjectOwner(r.Project, r.Owner, t.InsertReportManager.config.DbName, t.InsertReportManager.TableName)
 		if err != nil {
 			t.logger.Warn("cannot insert project owner", "error", err)
 		}

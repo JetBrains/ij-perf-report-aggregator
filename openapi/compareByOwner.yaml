@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: Compare By Owner API
+  description: API for comparing metric values between two branches for all projects belonging to a given owner.
+  version: 1.0.0
+servers:
+  - url: 'https://ij-perf-api.labs.jb.gg'
+paths:
+  /api/compareByOwner:
+    post:
+      summary: Compare metrics between two branches by owner
+      description: >
+        Looks up all projects belonging to the given owner, queries metric values
+        for both branches across all product tables, computes medians (using change-point
+        detection), and returns the percentage difference. Only items where both branches
+        have data are included in the response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompareByOwnerRequest'
+      responses:
+        '200':
+          description: >
+            Returns an array of comparison items. Each item contains the project,
+            metric name, median values for both branches, and the percentage difference.
+            Returns an empty array if the owner has no projects or no data is found.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComparisonResponseItem'
+        '400':
+          description: >
+            Bad Request. The JSON body is malformed or a required field
+            (owner, baseBranch, compareBranch, machine) is missing.
+        '500':
+          description: Internal Server Error. A database query or other server-side operation failed.
+
+components:
+  schemas:
+    CompareByOwnerRequest:
+      type: object
+      required:
+        - owner
+        - baseBranch
+        - compareBranch
+        - machine
+      properties:
+        owner:
+          type: string
+          description: The owner whose projects should be compared.
+          example: 'IntelliJ Kotlin Plugin'
+        baseBranch:
+          type: string
+          description: The base branch to compare against.
+          example: 'master'
+        compareBranch:
+          type: string
+          description: The branch to compare with the base branch.
+          example: 'feature-x'
+        machine:
+          type: string
+          description: Machine filter (supports SQL LIKE patterns with %).
+          example: 'Linux EC2 C6id.8xlarge%'
+        mode:
+          type: string
+          description: >
+            Test mode filter. Optional, defaults to empty string.
+            The value "default" is normalized to an empty string.
+          default: ''
+          example: ''
+        additionalMetrics:
+          type: array
+          items:
+            type: string
+          description: >
+            Additional metric names to include alongside the default main metrics.
+            Duplicates are removed automatically.
+          example: ['custom_metric_1']
+    ComparisonResponseItem:
+      type: object
+      required:
+        - project
+        - metric
+        - baseBranchValue
+        - compareBranchValue
+        - diff
+      properties:
+        project:
+          type: string
+          description: The project name.
+          example: 'community/indexing'
+        metric:
+          type: string
+          description: The metric name.
+          example: 'indexingTimeWithoutPauses'
+        baseBranchValue:
+          type: number
+          format: double
+          description: Median value of the metric on the base branch.
+          example: 1234.5
+        compareBranchValue:
+          type: number
+          format: double
+          description: Median value of the metric on the compare branch.
+          example: 1300.2
+        diff:
+          type: number
+          format: double
+          description: >
+            Percentage difference: ((compareBranchValue - baseBranchValue) / baseBranchValue) * 100,
+            rounded to 1 decimal place.
+          example: 5.3

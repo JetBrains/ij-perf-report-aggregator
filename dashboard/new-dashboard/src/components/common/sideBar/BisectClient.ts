@@ -4,7 +4,7 @@ interface BisectRequest {
   buildId: string
   changes: string
   buildType: string
-  className: string
+  testPatterns: string
   requester: string
   mode: string
   excludedCommits: string

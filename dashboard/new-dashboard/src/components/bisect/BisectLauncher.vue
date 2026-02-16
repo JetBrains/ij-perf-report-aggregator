@@ -61,11 +61,11 @@
               <div class="mt-6 col-span-4">
                 <FloatLabel class="w-full">
                   <InputText
-                    id="className"
-                    v-model="model.className"
+                    id="testPatterns"
+                    v-model="model.testPatterns"
                     class="w-full"
                   />
-                  <label for="className">Short class name. Example: ArrowKtScriptPerformanceTest</label>
+                  <label for="testPatterns">Test FQN patterns. Example: com.intellij.performance.java.IntelliJSourcesJavaFunctionalityTest</label>
                 </FloatLabel>
               </div>
             </div>
@@ -155,11 +155,11 @@ import { useUserStore } from "../../shared/useUserStore"
 const {
   buildId = "",
   errorMessage = "",
-  className = "",
+  testPatterns = "",
 } = defineProps<{
   buildId?: string
   errorMessage?: string
-  className?: string
+  testPatterns?: string
 }>()
 
 const serverConfigurator = new ServerWithCompressConfigurator("", "")
@@ -172,7 +172,7 @@ const model = reactive({
   buildType: "",
   excludedCommits: "",
   buildId,
-  className,
+  testPatterns,
   targetJpsCompile: false,
 })
 
@@ -196,7 +196,7 @@ async function startBisect() {
       mode: isCommitMode.value ? "commit" : "build",
       errorMessage: model.errorMessage,
       buildType: model.buildType,
-      className: model.className,
+      testPatterns: model.testPatterns,
       excludedCommits: model.excludedCommits
         .split(",")
         .map((commit) => commit.trim())

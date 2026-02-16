@@ -15,7 +15,7 @@ type BisectRequest struct {
 	Test            string `json:"test"`
 	Metric          string `json:"metric"`
 	BuildType       string `json:"buildType"`
-	ClassName       string `json:"className"`
+	TestPatterns    string `json:"testPatterns"`
 	ErrorMessage    string `json:"errorMessage"`
 	ExcludedCommits string `json:"excludedCommits"`
 	JpsCompilation  string `json:"jpsCompilation"`
@@ -24,27 +24,27 @@ type BisectRequest struct {
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
 func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 	return map[string]string{
-		"target.bisect.direction":           bisectReq.Direction,
-		"target.bisected.metric":            bisectReq.Metric,
-		"target.bisected.simple.class":      bisectReq.ClassName,
-		"target.bisected.test":              bisectReq.Test,
-		"target.configuration.id":           bisectReq.BuildType,
-		"target.build.id":                   bisectReq.BuildId,
-		"target.git.commits":                bisectReq.Changes,
-		"target.mode":                       bisectReq.Mode,
-		"target.executor.description":       bisectReq.Requester,
-		"target.value.before.changed.point": bisectReq.TargetValue,
-		"target.perf.messages.mode":         "yes",
-		"target.is.bisect.run":              "true",
-		"target.commits.to.exclude":         bisectReq.ExcludedCommits,
-		"target.jps.compile":                bisectReq.JpsCompilation,
+		"target.bisect.direction":             bisectReq.Direction,
+		"target.bisected.metric":              bisectReq.Metric,
+		"target.intellij.build.test.patterns": bisectReq.TestPatterns,
+		"target.bisected.test":                bisectReq.Test,
+		"target.configuration.id":             bisectReq.BuildType,
+		"target.build.id":                     bisectReq.BuildId,
+		"target.git.commits":                  bisectReq.Changes,
+		"target.mode":                         bisectReq.Mode,
+		"target.executor.description":         bisectReq.Requester,
+		"target.value.before.changed.point":   bisectReq.TargetValue,
+		"target.perf.messages.mode":           "yes",
+		"target.is.bisect.run":                "true",
+		"target.commits.to.exclude":           bisectReq.ExcludedCommits,
+		"target.jps.compile":                  bisectReq.JpsCompilation,
 	}
 }
 
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
 func generateParamsForFunctionalRun(bisectReq BisectRequest) map[string]string {
 	return map[string]string{
-		"target.bisected.simple.class":          bisectReq.ClassName,
+		"target.intellij.build.test.patterns":   bisectReq.TestPatterns,
 		"target.configuration.id":               bisectReq.BuildType,
 		"target.build.id":                       bisectReq.BuildId,
 		"target.git.commits":                    bisectReq.Changes,

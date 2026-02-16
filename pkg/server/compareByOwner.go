@@ -51,10 +51,6 @@ var mainMetrics = []string{
 	"attempt.mean.ms",
 }
 
-var allProductTables = []string{
-	"clion", "goland", "idea", "ijent", "kmt", "kotlin", "kotlinBuildTools", "kotlinNotebooks", "ml", "phpstorm", "pycharm", "ruby", "rust", "swift", "webstorm",
-}
-
 type compareByOwnerRequest struct {
 	Owner             string   `json:"owner"`
 	BaseBranch        string   `json:"baseBranch"`
@@ -79,6 +75,17 @@ type branchMedianItem struct {
 	Median      float64
 }
 
+type projectOwnerEntry struct {
+	Project   string
+	DbName    string
+	TableName string
+}
+
+type dbTableKey struct {
+	DbName    string
+	TableName string
+}
+
 func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, request *http.Request) {
 		var params compareByOwnerRequest
@@ -98,13 +105,13 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 			params.Mode = ""
 		}
 
-		projects, err := getProjectsByOwner(request.Context(), metaDb, params.Owner)
+		entries, err := getProjectsByOwner(request.Context(), metaDb, params.Owner)
 		if err != nil {
 			slog.Error("unable to get projects by owner", "error", err)
 			http.Error(w, "Failed to get projects for owner", http.StatusInternalServerError)
 			return
 		}
-		if len(projects) == 0 {
+		if len(entries) == 0 {
 			w.Header().Set("Content-Type", "application/json")
 			_, _ = w.Write([]byte("[]"))
 			return
@@ -117,12 +124,6 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 			quotedMetrics[i] = "'" + m + "'"
 		}
 		metricsStr := strings.Join(quotedMetrics, ",")
-
-		quotedProjects := make([]string, len(projects))
-		for i, p := range projects {
-			quotedProjects[i] = "'" + p + "'"
-		}
-		projectsStr := strings.Join(quotedProjects, ",")
 
 		db, err := t.openDatabaseConnection()
 		if err != nil {
@@ -138,11 +139,19 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		var allItems []branchMedianItem
 		var wg sync.WaitGroup
 
-		for _, table := range allProductTables {
+		// Group projects by db+table to query only relevant combinations
+		dbTableProjects := make(map[dbTableKey][]string)
+		for _, e := range entries {
+			key := dbTableKey{DbName: e.DbName, TableName: e.TableName}
+			dbTableProjects[key] = append(dbTableProjects[key], e.Project)
+		}
+
+		for key, projects := range dbTableProjects {
+			projectsStr := quoteAndJoin(projects)
 			wg.Go(func() {
-				items, queryErr := queryTableForComparison(request.Context(), db, table, params.BaseBranch, params.CompareBranch, metricsStr, params.Machine, params.Mode, projectsStr)
+				items, queryErr := queryTableForComparison(request.Context(), db, key.DbName, key.TableName, params.BaseBranch, params.CompareBranch, metricsStr, params.Machine, params.Mode, projectsStr)
 				if queryErr != nil {
-					slog.Error("failed to query table", "table", table, "error", queryErr)
+					slog.Error("failed to query table", "db", key.DbName, "table", key.TableName, "error", queryErr)
 					return
 				}
 				mu.Lock()
@@ -165,25 +174,33 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 	}
 }
 
-func getProjectsByOwner(ctx context.Context, metaDb *pgxpool.Pool, owner string) ([]string, error) {
-	rows, err := metaDb.Query(ctx, "SELECT project FROM project_owner WHERE owner=$1", owner)
+func getProjectsByOwner(ctx context.Context, metaDb *pgxpool.Pool, owner string) ([]projectOwnerEntry, error) {
+	rows, err := metaDb.Query(ctx, "SELECT project, db_name, table_name FROM project_owner WHERE owner=$1", owner)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	projects, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (string, error) {
-		var p string
-		err := row.Scan(&p)
-		return p, err
+	entries, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (projectOwnerEntry, error) {
+		var e projectOwnerEntry
+		err := row.Scan(&e.Project, &e.DbName, &e.TableName)
+		return e, err
 	})
 	if err != nil {
 		return nil, err
 	}
-	if projects == nil {
-		projects = []string{}
+	if entries == nil {
+		entries = []projectOwnerEntry{}
 	}
-	return projects, nil
+	return entries, nil
+}
+
+func quoteAndJoin(items []string) string {
+	quoted := make([]string, len(items))
+	for i, s := range items {
+		quoted[i] = "'" + s + "'"
+	}
+	return strings.Join(quoted, ",")
 }
 
 func buildMetricsList(additionalMetrics []string) []string {
@@ -204,13 +221,13 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]branchMedianItem, error) {
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]branchMedianItem, error) {
 	sql := fmt.Sprintf(
 		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, "+
 			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
 			"FROM ("+
 			"SELECT branch, project, measures.name AS measure_name, measures.value AS measure_value "+
-			"FROM perfintDev.%s ARRAY JOIN measures "+
+			"FROM %s.%s ARRAY JOIN measures "+
 			"WHERE branch IN ('%s', '%s') "+
 			"AND measure_name IN (%s) "+
 			"AND machine LIKE '%s' "+
@@ -219,7 +236,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, table, baseBra
 			"ORDER BY generated_time DESC"+
 			") "+
 			"GROUP BY branch, project, measure_name",
-		table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr,
+		dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr,
 	)
 
 	var queryResults []struct {

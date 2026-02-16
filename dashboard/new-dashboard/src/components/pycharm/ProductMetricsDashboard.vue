@@ -47,7 +47,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Completion"],
     measures: ["completion"],
-    projects: ["edx-platform (Django)/completion/model", "edx-platform (Django)/completion/view"],
+    projects: ["edx-platform (Django)/completion/testCompletionInModel/pycharm", "edx-platform (Django)/completion/testCompletionInSettings/pycharm"],
   },
   {
     labels: ["SearchEverywhere"],

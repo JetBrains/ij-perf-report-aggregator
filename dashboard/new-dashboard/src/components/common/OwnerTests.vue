@@ -1,12 +1,14 @@
 <template>
-  <PerformanceTests
-    v-if="dbName && table"
-    :db-name="dbName"
-    :table="table"
-    :initial-machine="machine"
-    :with-installer="withInstaller"
-    :machine-group-filter="machine"
-  />
+  <div class="px-7 py-5">
+    <PerformanceTests
+      v-if="dbName && table"
+      :db-name="dbName"
+      :table="table"
+      :initial-machine="machine"
+      :with-installer="withInstaller"
+      :machine-group-filter="machine"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

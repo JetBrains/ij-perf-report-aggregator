@@ -116,8 +116,6 @@ enum ROUTES {
   KotlinRefactoringDev = `${ROUTE_PREFIX.Kotlin}/refactoringDev`,
   KotlinDebuggerDev = `${ROUTE_PREFIX.Kotlin}/debuggerDev`,
   KotlinScriptDev = `${ROUTE_PREFIX.Kotlin}/scriptDev`,
-  KotlinK1VsK2Comparison = `${ROUTE_PREFIX.Kotlin}/k1VsK2Comparison`,
-  KotlinK1VsK2ComparisonDev = `${ROUTE_PREFIX.Kotlin}/k1VsK2ComparisonDev`,
   KotlinCompare = `${ROUTE_PREFIX.Kotlin}/${COMPARE_ROUTE}`,
   KotlinMemoryDashboard = `${ROUTE_PREFIX.KotlinMemory}/dashboard`,
   KotlinMemoryDashboardDev = `${ROUTE_PREFIX.KotlinMemory}/dashboardDev`,
@@ -520,7 +518,7 @@ const KOTLIN: Product = {
   children: [
     {
       url: ROUTE_PREFIX.Kotlin,
-      label: "K1 vs K2",
+      label: "Performance dashboards",
       tabs: [
         {
           url: ROUTES.KotlinDashboardDev,
@@ -543,14 +541,6 @@ const KOTLIN: Product = {
           label: "Tests (dev)",
         },
         {
-          url: ROUTES.KotlinK1VsK2Comparison,
-          label: "K1 vs. K2",
-        },
-        {
-          url: ROUTES.KotlinK1VsK2ComparisonDev,
-          label: "K1 vs. K2 (dev)",
-        },
-        {
           url: ROUTES.KotlinCompareBranches,
           label: COMPARE_BRANCHES_LABEL,
         },
@@ -566,11 +556,11 @@ const KOTLIN: Product = {
       tabs: [
         {
           url: ROUTES.KotlinMemoryDashboardDev,
-          label: "Memory k1 vs k2 (dev)",
+          label: "Memory (dev)",
         },
         {
           url: ROUTES.KotlinMemoryDashboard,
-          label: "Memory k1 vs k2",
+          label: "Memory",
         },
       ],
     },
@@ -1927,16 +1917,6 @@ const kotlinRoutes = [
     path: ROUTES.KotlinScriptDev,
     component: () => import("./components/kotlin/dev/ScriptDashboard.vue"),
     meta: { pageTitle: "Kts (dev/fast)" },
-  },
-  {
-    path: ROUTES.KotlinK1VsK2Comparison,
-    component: () => import("./components/kotlin/K1VsK2ComparisonDashboard.vue"),
-    meta: { pageTitle: "Kotlin K1 vs. K2" },
-  },
-  {
-    path: ROUTES.KotlinK1VsK2ComparisonDev,
-    component: () => import("./components/kotlin/dev/K1VsK2ComparisonDevDashboard.vue"),
-    meta: { pageTitle: "Kotlin K1 vs. K2 (dev/fast)" },
   },
   {
     path: ROUTES.KotlinCompare,

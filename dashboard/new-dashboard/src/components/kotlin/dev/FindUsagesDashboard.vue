@@ -7,34 +7,23 @@
     initial-machine="linux-blade-hetzner"
     :with-installer="false"
   >
-    <section class="flex gap-6">
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'findUsage\_%'"
-          :aggregated-project="'%\_k1'"
-          :is-like="true"
-          :title="'mean all project findUsages K1'"
-        />
-      </div>
-      <div class="flex-1 min-w-0">
-        <AggregationChart
-          :configurators="averagesConfigurators"
-          :aggregated-measure="'findUsage_%'"
-          :aggregated-project="'%\_k2'"
-          :is-like="true"
-          :title="'mean all project findUsages K2'"
-        />
-      </div>
+    <section class="flex-1 min-w-0">
+      <AggregationChart
+        :configurators="averagesConfigurators"
+        :aggregated-measure="'findUsage_%'"
+        :aggregated-project="'%\_k2'"
+        :is-like="true"
+        :title="'mean all project findUsages'"
+      />
     </section>
 
-    <K1K2DashboardGroupCharts :definitions="findUsagesCharts" />
+    <KotlinDashboardGroupCharts :definitions="findUsagesCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import AggregationChart from "../../charts/AggregationChart.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
-import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
+import KotlinDashboardGroupCharts from "../KotlinDashboardGroupCharts.vue"
 import { findUsagesCharts } from "../projects"
 </script>

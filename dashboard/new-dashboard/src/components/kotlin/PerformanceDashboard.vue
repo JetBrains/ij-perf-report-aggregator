@@ -20,51 +20,51 @@
       title="Completion"
       :description="completionChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="completionCharts" />
+    <KotlinDashboardGroupCharts :definitions="completionCharts" />
     <Divider
       title="Code analysis"
       :description="codeAnalysisChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="codeAnalysisCharts" />
+    <KotlinDashboardGroupCharts :definitions="codeAnalysisCharts" />
     <Divider
       title="Find usages"
       :description="findUsagesChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="findUsagesCharts" />
+    <KotlinDashboardGroupCharts :definitions="findUsagesCharts" />
     <Divider
       title="Debugger"
       :description="evaluateExpressionChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="evaluateExpressionCharts" />
+    <KotlinDashboardGroupCharts :definitions="evaluateExpressionCharts" />
     <Divider
       title="Refactoring"
       :description="refactoringChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="refactoringCharts" />
+    <KotlinDashboardGroupCharts :definitions="refactoringCharts" />
     <Divider
       title="Code Typing"
       :description="codeTypingChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="codeTypingCharts" />
+    <KotlinDashboardGroupCharts :definitions="codeTypingCharts" />
     <Divider
       title="Script"
       :description="scriptChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="scriptCompletionCharts" />
-    <K1K2DashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
-    <K1K2DashboardGroupCharts :definitions="scriptFindUsagesCharts" />
+    <KotlinDashboardGroupCharts :definitions="scriptCompletionCharts" />
+    <KotlinDashboardGroupCharts :definitions="codeAnalysisScriptCharts" />
+    <KotlinDashboardGroupCharts :definitions="scriptFindUsagesCharts" />
     <Divider
       title="Convert Java to Kotlin"
       :description="convertJavaToKotlinProjectsChartsDescription"
     />
-    <K1K2DashboardGroupCharts :definitions="convertJavaToKotlinProjectsCharts" />
+    <KotlinDashboardGroupCharts :definitions="convertJavaToKotlinProjectsCharts" />
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
-import K1K2DashboardGroupCharts from "./K1K2DashboardGroupCharts.vue"
+import KotlinDashboardGroupCharts from "./KotlinDashboardGroupCharts.vue"
 import {
   codeAnalysisCharts,
   codeAnalysisChartsDescription,

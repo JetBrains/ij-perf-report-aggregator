@@ -125,6 +125,8 @@ import { modeSelectLabelFormat } from "../../../shared/labels"
 import DimensionSelect from "../../charts/DimensionSelect.vue"
 import { createTestModeConfigurator } from "../../../configurators/TestModeConfigurator"
 import { DimensionConfigurator } from "../../../configurators/DimensionConfigurator"
+import { DataQuery } from "../dataQuery"
+import type { FilterConfigurator } from "../../../configurators/filter"
 
 interface CompareBranchesProps {
   dbName: string
@@ -160,20 +162,30 @@ const persistentStateManager = new PersistentStateManager(
   router
 )
 
+const recentTimeFilter: FilterConfigurator = {
+  configureFilter(query: DataQuery): boolean {
+    query.addFilter({ f: "generated_time", q: ">subtractMonths(now(),1)" })
+    return true
+  },
+  createObservable() {
+    return null
+  },
+}
+
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", persistentStateManager)
 measureConfigurator.initData(metricsNames)
 const testConfigurator = new SimpleMeasureConfigurator("tests", persistentStateManager)
 
-const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager)
+const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [recentTimeFilter])
 
-const branchConfigurator1 = createBranchConfigurator(serverConfigurator, persistentStateManager, [], "branch1")
-const branchConfigurator2 = createBranchConfigurator(serverConfigurator, persistentStateManager, [], "branch2")
+const branchConfigurator1 = createBranchConfigurator(serverConfigurator, persistentStateManager, [recentTimeFilter], "branch1")
+const branchConfigurator2 = createBranchConfigurator(serverConfigurator, persistentStateManager, [recentTimeFilter], "branch2")
 
 const branch1 = ref<string | null>(null)
 const branch2 = ref<string | null>(null)
 
-const triggeredByConfigurator1 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
-const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1])
+const triggeredByConfigurator1 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1, recentTimeFilter])
+const triggeredByConfigurator2 = privateBuildConfigurator(serverConfigurator, persistentStateManager, [branchConfigurator1, recentTimeFilter])
 
 const releaseConfigurator1 = new ReleaseNightlyConfigurator(persistentStateManager)
 const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManager)
@@ -181,7 +193,7 @@ const releaseConfigurator2 = new ReleaseNightlyConfigurator(persistentStateManag
 const testModeConfigurator = createTestModeConfigurator(
   serverConfigurator,
   persistentStateManager,
-  [branchConfigurator1, machineConfigurator, triggeredByConfigurator1, triggeredByConfigurator2],
+  [branchConfigurator1, machineConfigurator, triggeredByConfigurator1, triggeredByConfigurator2, recentTimeFilter],
   "mode",
   false
 )

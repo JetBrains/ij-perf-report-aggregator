@@ -63,8 +63,10 @@ components:
           example: 'feature-x'
         machine:
           type: string
-          description: Machine filter (supports SQL LIKE patterns with %).
-          example: 'Linux EC2 C6id.8xlarge%'
+          description: >
+            Machine filter. The value is automatically wrapped with % wildcards
+            for SQL LIKE matching (e.g. "linux" becomes "%linux%").
+          example: 'linux'
         mode:
           type: string
           description: >
@@ -88,6 +90,7 @@ components:
         - baseBranchValue
         - compareBranchValue
         - diff
+        - link
       properties:
         project:
           type: string
@@ -114,3 +117,9 @@ components:
             Percentage difference: ((compareBranchValue - baseBranchValue) / baseBranchValue) * 100,
             rounded to 1 decimal place.
           example: 5.3
+        link:
+          type: string
+          description: >
+            Relative URL to the performance tests dashboard page with preselected
+            database, table, machine, branch, test, and metric.
+          example: '/owners/test?branch=master&dbName=perfint&machine=linux&measure=indexingTimeWithoutPauses&project=community%2Findexing&table=idea'

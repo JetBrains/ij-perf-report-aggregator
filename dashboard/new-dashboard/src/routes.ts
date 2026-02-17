@@ -231,6 +231,7 @@ enum ROUTES {
   ReportDegradations = "/degradations/report",
   MetricsDescription = "/metrics/description",
   BisectLauncher = "/bisect/launcher",
+  OwnersTest = "/owners/test",
 }
 
 export interface Tab {
@@ -2535,6 +2536,11 @@ export function getNewDashboardRoutes(): ParentRouteRecord[] {
           component: () => import("./components/bisect/BisectLauncher.vue"),
           meta: { pageTitle: "Bisect launcher" },
           props: (route) => ({ ...route.query }),
+        },
+        {
+          path: ROUTES.OwnersTest,
+          component: () => import("./components/common/OwnerTests.vue"),
+          meta: { pageTitle: "Performance tests" },
         },
       ],
     },

@@ -173,6 +173,7 @@ export interface PerformanceTestsProps {
   releaseConfigurator?: ReleaseType
   branch?: string | null
   withoutAccidents?: boolean
+  machineGroupFilter?: string | null
 }
 
 const {
@@ -184,6 +185,7 @@ const {
   releaseConfigurator = nightly,
   branch = "master",
   withoutAccidents = false,
+  machineGroupFilter = null,
 } = defineProps<PerformanceTestsProps>()
 
 enum TestMetricSwitcher {
@@ -241,6 +243,18 @@ let measureConfigurator = new MeasureConfigurator(serverConfigurator, persistent
 const machineConfigurator = initialMachine == null ? null : new MachineConfigurator(serverConfigurator, persistentStateManager, filters)
 if (initialMachine != null && machineConfigurator?.selected.value.length === 0) {
   machineConfigurator.selected.value = [initialMachine]
+}
+if (machineGroupFilter != null && machineConfigurator != null) {
+  const stopWatch = watch(machineConfigurator.values, (groups) => {
+    if (groups.length > 0) {
+      const filter = machineGroupFilter.toLowerCase()
+      const matching = groups.filter((g) => g.value.toLowerCase().includes(filter)).map((g) => g.value)
+      if (matching.length > 0) {
+        machineConfigurator.selected.value = matching
+        stopWatch()
+      }
+    }
+  }, { immediate: true })
 }
 
 const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeConfigurator, triggeredByConfigurator]

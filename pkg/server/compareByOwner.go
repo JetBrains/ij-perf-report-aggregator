@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"math"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -66,6 +67,7 @@ type comparisonResponseItem struct {
 	BaseBranchValue    float64 `json:"baseBranchValue"`
 	CompareBranchValue float64 `json:"compareBranchValue"`
 	Diff               float64 `json:"diff"`
+	Link               string  `json:"link"`
 }
 
 type branchMedianItem struct {
@@ -73,6 +75,8 @@ type branchMedianItem struct {
 	Project     string
 	MeasureName string
 	Median      float64
+	DbName      string
+	TableName   string
 }
 
 type projectOwnerEntry struct {
@@ -117,6 +121,8 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 			return
 		}
 
+		machineLike := "%" + params.Machine + "%"
+
 		metrics := buildMetricsList(params.AdditionalMetrics)
 
 		quotedMetrics := make([]string, len(metrics))
@@ -149,10 +155,14 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		for key, projects := range dbTableProjects {
 			projectsStr := quoteAndJoin(projects)
 			wg.Go(func() {
-				items, queryErr := queryTableForComparison(request.Context(), db, key.DbName, key.TableName, params.BaseBranch, params.CompareBranch, metricsStr, params.Machine, params.Mode, projectsStr)
+				items, queryErr := queryTableForComparison(request.Context(), db, key.DbName, key.TableName, params.BaseBranch, params.CompareBranch, metricsStr, machineLike, params.Mode, projectsStr)
 				if queryErr != nil {
 					slog.Error("failed to query table", "db", key.DbName, "table", key.TableName, "error", queryErr)
 					return
+				}
+				for i := range items {
+					items[i].DbName = key.DbName
+					items[i].TableName = key.TableName
 				}
 				mu.Lock()
 				allItems = append(allItems, items...)
@@ -161,7 +171,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}
 		wg.Wait()
 
-		response := buildComparisonResponse(allItems, params.BaseBranch, params.CompareBranch)
+		response := buildComparisonResponse(allItems, params.BaseBranch, params.CompareBranch, params.Machine)
 
 		jsonData, err := json.Marshal(response)
 		if err != nil {
@@ -289,7 +299,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 	return items, nil
 }
 
-func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch string) []comparisonResponseItem {
+func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch, machine string) []comparisonResponseItem {
 	type key struct {
 		Project string
 		Metric  string
@@ -297,6 +307,7 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 
 	baseMap := make(map[key]float64)
 	compareMap := make(map[key]float64)
+	projectDbTable := make(map[string]dbTableKey)
 
 	for _, item := range items {
 		k := key{Project: item.Project, Metric: item.MeasureName}
@@ -304,6 +315,9 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 			baseMap[k] = item.Median
 		} else if item.Branch == compareBranch {
 			compareMap[k] = item.Median
+		}
+		if _, exists := projectDbTable[item.Project]; !exists {
+			projectDbTable[item.Project] = dbTableKey{DbName: item.DbName, TableName: item.TableName}
 		}
 	}
 
@@ -319,14 +333,29 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 			diff = math.Round(((compareVal-baseVal)/baseVal)*1000) / 10
 		}
 
+		dt := projectDbTable[k.Project]
+		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, k.Project, k.Metric)
+
 		response = append(response, comparisonResponseItem{
 			Project:            k.Project,
 			Metric:             k.Metric,
 			BaseBranchValue:    baseVal,
 			CompareBranchValue: compareVal,
 			Diff:               diff,
+			Link:               link,
 		})
 	}
 
 	return response
+}
+
+func buildTestLink(dbName, table, machine, branch, project, metric string) string {
+	params := url.Values{}
+	params.Set("dbName", dbName)
+	params.Set("table", table)
+	params.Set("machine", machine)
+	params.Set("branch", branch)
+	params.Set("project", project)
+	params.Set("measure", metric)
+	return "/owners/test?" + params.Encode()
 }

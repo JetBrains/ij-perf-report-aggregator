@@ -233,6 +233,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 			"AND machine LIKE '%s' "+
 			"AND mode = '%s' "+
 			"AND project IN (%s) "+
+			"AND generated_time > now() - interval 1 month "+
 			"ORDER BY generated_time DESC"+
 			") "+
 			"GROUP BY branch, project, measure_name",

@@ -175,6 +175,7 @@ const recentTimeFilter: FilterConfigurator = {
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", persistentStateManager)
 measureConfigurator.initData(metricsNames)
 const testConfigurator = new SimpleMeasureConfigurator("tests", persistentStateManager)
+testConfigurator.state.loading = false
 
 const machineConfigurator = new MachineConfigurator(serverConfigurator, persistentStateManager, [recentTimeFilter])
 

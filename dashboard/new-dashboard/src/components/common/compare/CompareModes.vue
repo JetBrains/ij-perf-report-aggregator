@@ -166,6 +166,7 @@ const machineConfigurator = new MachineConfigurator(serverConfigurator, persiste
 const measureConfigurator = new SimpleMeasureConfigurator("metrics", persistentStateManager)
 measureConfigurator.initData(metricsNames)
 const testConfigurator = new SimpleMeasureConfigurator("tests", persistentStateManager)
+testConfigurator.state.loading = false
 
 const testModeConfigurator1 = createTestModeConfigurator(
   serverConfigurator,

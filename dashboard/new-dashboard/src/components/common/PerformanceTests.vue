@@ -245,16 +245,20 @@ if (initialMachine != null && machineConfigurator?.selected.value.length === 0) 
   machineConfigurator.selected.value = [initialMachine]
 }
 if (machineGroupFilter != null && machineConfigurator != null) {
-  const stopWatch = watch(machineConfigurator.values, (groups) => {
-    if (groups.length > 0) {
-      const filter = machineGroupFilter.toLowerCase()
-      const matching = groups.filter((g) => g.value.toLowerCase().includes(filter)).map((g) => g.value)
-      if (matching.length > 0) {
-        machineConfigurator.selected.value = matching
-        stopWatch()
+  const stopWatch = watch(
+    machineConfigurator.values,
+    (groups) => {
+      if (groups.length > 0) {
+        const filter = machineGroupFilter.toLowerCase()
+        const matching = groups.filter((g) => g.value.toLowerCase().includes(filter)).map((g) => g.value)
+        if (matching.length > 0) {
+          machineConfigurator.selected.value = matching
+          stopWatch()
+        }
       }
-    }
-  }, { immediate: true })
+    },
+    { immediate: true }
+  )
 }
 
 const configurators: DataQueryConfigurator[] = [serverConfigurator, timeRangeConfigurator, triggeredByConfigurator]

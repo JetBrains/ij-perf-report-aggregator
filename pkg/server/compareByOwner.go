@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"math"
 	"net/http"
-	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -350,13 +349,6 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 }
 
 func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
-	params := url.Values{}
-	params.Set("dbName", dbName)
-	params.Set("table", table)
-	params.Set("machine", machine)
-	params.Add("branch", baseBranch)
-	params.Add("branch", compareBranch)
-	params.Set("project", project)
-	params.Set("measure", metric)
-	return "/owners/test?" + strings.ReplaceAll(params.Encode(), "%2F", "/")
+	return fmt.Sprintf("/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
+		dbName, table, machine, baseBranch, compareBranch, project, metric)
 }

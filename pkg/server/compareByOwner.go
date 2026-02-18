@@ -350,5 +350,5 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 
 func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
 	return fmt.Sprintf("/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
-		dbName, table, machine, baseBranch, compareBranch, project, metric)
+		dbName, table, machine, baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
 }

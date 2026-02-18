@@ -357,5 +357,5 @@ func buildTestLink(dbName, table, machine, branch, project, metric string) strin
 	params.Set("branch", branch)
 	params.Set("project", project)
 	params.Set("measure", metric)
-	return "/owners/test?" + params.Encode()
+	return "/owners/test?" + strings.ReplaceAll(params.Encode(), "%2F", "/")
 }

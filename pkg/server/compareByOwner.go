@@ -334,7 +334,7 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 		}
 
 		dt := projectDbTable[k.Project]
-		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, k.Project, k.Metric)
+		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, k.Project, k.Metric)
 
 		response = append(response, comparisonResponseItem{
 			Project:            k.Project,
@@ -349,12 +349,13 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 	return response
 }
 
-func buildTestLink(dbName, table, machine, branch, project, metric string) string {
+func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
 	params := url.Values{}
 	params.Set("dbName", dbName)
 	params.Set("table", table)
 	params.Set("machine", machine)
-	params.Set("branch", branch)
+	params.Add("branch", baseBranch)
+	params.Add("branch", compareBranch)
 	params.Set("project", project)
 	params.Set("measure", metric)
 	return "/owners/test?" + strings.ReplaceAll(params.Encode(), "%2F", "/")

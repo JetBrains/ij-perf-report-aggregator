@@ -168,7 +168,7 @@ func GetAnalyzer(id string) DatabaseConfiguration {
 			DbName:                      "perfUnitTests",
 			TableName:                   "report",
 			ReportReader:                analyzePerfReport[int32],
-			HasMetaDB:                   false,
+			HasMetaDB:                   true,
 			HasNoInstallerButHasChanges: true,
 			extraFieldCount:             3,
 			insertStatementWriter: func(sb *strings.Builder) {

@@ -201,7 +201,15 @@
         />
       </div>
     </section>
-
+    <section>
+      <div>
+        <GroupProjectsChart
+          label="[Radler] Time to show inline completion"
+          measure="callInlineCompletionOnCompletion"
+          :projects="['radler/fmtlib/completion/if(spec)']"
+        />
+      </div>
+    </section>
     <Divider title="Find Usages" />
 
     <section class="flex gap-x-6 flex-col md:flex-row">

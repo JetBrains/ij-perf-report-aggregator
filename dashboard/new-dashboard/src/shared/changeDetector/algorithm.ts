@@ -1,4 +1,4 @@
-import { avgSpread, center, shift } from "pragmastat"
+import { center, disparity, ratio, shift } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -53,16 +53,23 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     const segmentBefore = dataset.slice(startBefore, endBefore)
     const segmentAfter = dataset.slice(startAfter, endAfter)
 
+    // ratio() requires strictly positive values; clamp zeros to 1
+    const positiveSegmentBefore = segmentBefore.map((v) => Math.max(1, v))
+    const positiveSegmentAfter = segmentAfter.map((v) => Math.max(1, v))
+
     const centerBefore = center(segmentBefore)
-    const centerAfter = center(segmentAfter)
-    const ratioValue = centerAfter / centerBefore
-
-    const percentageDifference = Math.abs((ratioValue - 1) * 100)
-    const absoluteChange = Math.abs(centerAfter - centerBefore)
-
     const shiftValue = shift(segmentAfter, segmentBefore)
-    const avgSpreadValue = avgSpread(segmentBefore, segmentAfter)
-    const effectSize = avgSpreadValue === 0 ? 100 : Math.abs(shiftValue / avgSpreadValue)
+    const ratioValue = ratio(positiveSegmentAfter, positiveSegmentBefore)
+    const percentageDifference = Math.abs((ratioValue - 1) * 100)
+    const absoluteChange = Math.abs(shiftValue)
+    let effectSize: number
+    try {
+      effectSize = Math.abs(disparity(segmentAfter, segmentBefore))
+    } catch {
+      // disparity throws when a segment has zero spread (all identical values);
+      // if there is a shift despite zero spread, it's a clear change
+      effectSize = absoluteChange > 0 ? 100 : 0
+    }
     let classification
 
     if (

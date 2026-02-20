@@ -20,19 +20,19 @@
 
     <div class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-2">
       <p class="mb-2">
-        <span class="font-semibold text-gray-700 dark:text-gray-300">User-group pair</span> — a unique combination of (user, group). Each pair counts once regardless of how many times
-        the user reported. This avoids noise from crash loops and reflects breadth of impact.
+        <span class="font-semibold text-gray-700 dark:text-gray-300">User-group pair</span> — one user affected by one issue. If the same user hits the same issue 50 times, it still
+        counts as one pair. This gives a fair measure of how widespread the pain is, without noise from repeated reports.
       </p>
       <p>
-        <span class="font-semibold text-gray-700 dark:text-gray-300">Distinct group</span> — a group created by a human-written mapping, as opposed to auto-generated groups.
-        Auto-generated groups are created automatically when a report doesn't match any existing mapping — they are unstable and disappear when reports are re-processed. Distinct groups
-        persist across re-processing and represent issues that someone has explicitly identified and classified.
+        <span class="font-semibold text-gray-700 dark:text-gray-300">Distinct group</span> — a meaningful issue identified by a human. When reports come in, some get matched to known
+        issues (via mappings written by engineers), while others fall into auto-generated buckets. Only the known, mapped issues count as distinct groups. More distinct groups means we're
+        tracking more individual problems.
       </p>
     </div>
 
     <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-6">
-      <span class="font-semibold text-gray-700 dark:text-gray-300">Incoming</span> — How much pain are our users experiencing, and how diverse are the problems? Chart going up means
-      more users or more problems; chart going down means fewer.
+      <span class="font-semibold text-gray-700 dark:text-gray-300">Incoming</span> — How much pain are our users experiencing, and how diverse are the problems? Charts going up means
+      more users or more problems; going down means fewer.
     </p>
     <section>
       <GroupProjectsChart
@@ -46,8 +46,8 @@
     </section>
 
     <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-6">
-      <span class="font-semibold text-gray-700 dark:text-gray-300">Sorting</span> — Do we know about the pain? Percent of user-group pairs in groups that have a YT issue attached.
-      Chart going up — we know about more of the pain. Chart going down — more pain is going unnoticed.
+      <span class="font-semibold text-gray-700 dark:text-gray-300">Sorting</span> — Do we know about the pain? Shows what percent of reported problems has a tracked issue in YouTrack. Going
+      up — we're aware of more problems. Going down — more pain is slipping through unnoticed.
     </p>
     <section>
       <GroupProjectsChart
@@ -61,9 +61,9 @@
     </section>
 
     <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-6">
-      <span class="font-semibold text-gray-700 dark:text-gray-300">Fixing</span> — Did we resolve the pain? Percent of user-group pairs and groups with a fixed YT issue. Compare
-      the two charts: high fixed user-group pairs + low fixed groups = good prioritization (few fixes, many users helped). Low fixed user-group pairs + high fixed groups = poor
-      prioritization (many fixes, low impact).
+      <span class="font-semibold text-gray-700 dark:text-gray-300">Fixing</span> — Are we resolving the pain? Shows what percent of reported problems and known issues have been fixed. Compare
+      the two charts: high fixed pairs + low fixed groups means good prioritization — few fixes but many users helped. The opposite means we're fixing many small issues without much
+      impact.
     </p>
     <section>
       <GroupProjectsChart

@@ -221,6 +221,7 @@ enum ROUTES {
   KMTIntegrationTests = `${ROUTE_PREFIX.KMT}/${DEV_TEST_ROUTE}`,
   KMTDashboard = `${ROUTE_PREFIX.KMT}/${DASHBOARD_ROUTE}`,
   DiogenTests = `${ROUTE_PREFIX.Diogen}/${TEST_ROUTE}`,
+  DiogenDashboard = `${ROUTE_PREFIX.Diogen}/${DASHBOARD_ROUTE}`,
   ToolboxTests = `${ROUTE_PREFIX.Toolbox}/${TEST_ROUTE}`,
   KotlinBuildToolsTests = `${ROUTE_PREFIX.KotlinBuildTools}/${TEST_ROUTE}`,
   ToolboxTestsGwDeployDashboard = `${ROUTE_PREFIX.Toolbox}/gw-deploy`,
@@ -1146,6 +1147,10 @@ const DIOGEN: Product = {
       url: ROUTE_PREFIX.Diogen,
       label: "",
       tabs: [
+        {
+          url: ROUTES.DiogenDashboard,
+          label: "Pipeline",
+        },
         {
           url: ROUTES.DiogenTests,
           label: "All",
@@ -2416,6 +2421,11 @@ const diogenRoutes = [
     },
     meta: { pageTitle: "Diogen" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
+  {
+    path: ROUTES.DiogenDashboard,
+    component: () => import("./components/diogen/DiogenPipelineDashboard.vue"),
+    meta: { pageTitle: "Diogen Pipeline" },
+  },
 ]
 
 const perfUnitTestsRoutes = [

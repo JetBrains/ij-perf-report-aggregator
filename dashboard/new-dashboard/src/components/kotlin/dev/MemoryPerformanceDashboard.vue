@@ -21,7 +21,7 @@
       title="Completion"
       :description="completionChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="completionCharts"
     />
@@ -29,7 +29,7 @@
       title="Code analysis"
       :description="codeAnalysisChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="codeAnalysisCharts"
     />
@@ -37,7 +37,7 @@
       title="Find usages"
       :description="findUsagesChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="findUsagesCharts"
     />
@@ -45,7 +45,7 @@
       title="Debugger"
       :description="evaluateExpressionChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="evaluateExpressionCharts"
     />
@@ -53,7 +53,7 @@
       title="Refactoring"
       :description="refactoringChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="refactoringCharts"
     />
@@ -61,7 +61,7 @@
       title="Code Typing"
       :description="codeTypingChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="codeTypingCharts"
     />
@@ -69,15 +69,15 @@
       title="Script"
       :description="scriptChartsDescription"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="scriptCompletionCharts"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="scriptFindUsagesCharts"
     />
-    <MemoryK1K2DashboardGroupCharts
+    <MemoryKotlinDashboardGroupCharts
       :metrics="metrics"
       :definitions="codeAnalysisScriptCharts"
     />
@@ -91,7 +91,7 @@ import { metricsSelectLabelFormat } from "../../../shared/labels"
 import MeasureSelect from "../../charts/MeasureSelect.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
 import Divider from "../../common/Divider.vue"
-import MemoryK1K2DashboardGroupCharts from "../MemoryK1K2DashboardGroupCharts.vue"
+import MemoryKotlinDashboardGroupCharts from "../MemoryKotlinDashboardGroupCharts.vue"
 import {
   completionCharts,
   completionChartsDescription,

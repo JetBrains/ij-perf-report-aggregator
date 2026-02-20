@@ -22,13 +22,13 @@
       :key="index"
     >
       <Divider :title="label" />
-      <K1K2DashboardGroupCharts :definitions="Object.values(USER_SCENARIOS).find((d) => d.label == label)!!.charts.value" />
+      <KotlinDashboardGroupCharts :definitions="Object.values(USER_SCENARIOS).find((d) => d.label == label)!!.charts.value" />
     </div>
   </DashboardPage>
 </template>
 
 <script setup lang="ts">
-import K1K2DashboardGroupCharts from "../K1K2DashboardGroupCharts.vue"
+import KotlinDashboardGroupCharts from "../KotlinDashboardGroupCharts.vue"
 import DashboardPage from "../../common/DashboardPage.vue"
 import Divider from "../../common/Divider.vue"
 import { KOTLIN_SCENARIO_CONFIGURATOR, USER_SCENARIOS } from "../projects"

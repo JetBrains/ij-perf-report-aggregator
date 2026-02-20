@@ -49,6 +49,7 @@
     "no-async-endpoint-handlers": "off",
     "no-await-in-loop": "off",
     "no-continue": "off",
+    "no-importing-vitest-globals": "off",
     "no-inferrable-types": "off",
     "no-inline-comments": "off",
     "no-lonely-if": "off",

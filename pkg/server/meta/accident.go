@@ -225,6 +225,25 @@ func CreatePostAccidentRequestHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 			kind = params.Kind
 		}
 
+		// For inferred kinds, check if any accident already exists for this date/test/build
+		// regardless of kind. This prevents duplicates when a user reclassifies an
+		// InferredRegression to Regression and the detector runs again.
+		if kind == "InferredRegression" || kind == "InferredImprovement" {
+			var exists bool
+			err := metaDb.QueryRow(request.Context(),
+				"SELECT EXISTS(SELECT 1 FROM accidents WHERE date = $1 AND affected_test = $2 AND build_number = $3 AND kind <> 'EXCEPTION')",
+				params.Date, params.Test, params.BuildNumber).Scan(&exists)
+			if err != nil {
+				slog.Error("cannot check for existing accident", "error", err)
+				writer.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			if exists {
+				http.Error(writer, "Conflict: Accident already exists", http.StatusConflict)
+				return
+			}
+		}
+
 		var id int
 		idRow := metaDb.QueryRow(request.Context(), "INSERT INTO accidents (date, affected_test, reason, build_number, kind, externalId, stacktrace, user_name) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id", params.Date, params.Test, params.Reason, params.BuildNumber, kind, params.ExternalId, params.Stacktrace, params.UserName)
 		if err = idRow.Scan(&id); err != nil {

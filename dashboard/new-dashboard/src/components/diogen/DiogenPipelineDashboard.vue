@@ -18,9 +18,21 @@
       </MeasureSelect>
     </template>
 
+    <div class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-2">
+      <p class="mb-2">
+        <span class="font-semibold text-gray-700 dark:text-gray-300">User-group pair</span> — a unique combination of (user, group). Each pair counts once regardless of how many times
+        the user reported. This avoids noise from crash loops and reflects breadth of impact.
+      </p>
+      <p>
+        <span class="font-semibold text-gray-700 dark:text-gray-300">Distinct group</span> — a group created by a human-written mapping, as opposed to auto-generated groups.
+        Auto-generated groups are created automatically when a report doesn't match any existing mapping — they are unstable and disappear when reports are re-processed. Distinct groups
+        persist across re-processing and represent issues that someone has explicitly identified and classified.
+      </p>
+    </div>
+
     <p class="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mb-4 mt-6">
-      <span class="font-semibold text-gray-700 dark:text-gray-300">Incoming</span> — How much pain are our users experiencing, and how diverse are the problems? Each unique (user,
-      group) combination counts once — avoids noise from crash loops and reflects breadth of impact. Chart going up means more users or more problems; chart going down means fewer.
+      <span class="font-semibold text-gray-700 dark:text-gray-300">Incoming</span> — How much pain are our users experiencing, and how diverse are the problems? Chart going up means
+      more users or more problems; chart going down means fewer.
     </p>
     <section>
       <GroupProjectsChart

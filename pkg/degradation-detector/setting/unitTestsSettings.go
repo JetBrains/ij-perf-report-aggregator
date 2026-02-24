@@ -16,6 +16,18 @@ type teamConfig struct {
 	AnalysisSettings *detector.AnalysisSettings
 }
 
+var defaultUnitTestAnalysisSettings = detector.AnalysisSettings{
+	MinimumSegmentLength:      30,
+	MedianDifferenceThreshold: 20,
+	EffectSizeThreshold:       2,
+}
+
+func degradationOnlyAnalysisSettings() *detector.AnalysisSettings {
+	s := defaultUnitTestAnalysisSettings
+	s.ReportType = detector.DegradationEvent
+	return &s
+}
+
 var teamConfigs = []teamConfig{
 	{
 		Team:         "ultimate",
@@ -81,6 +93,7 @@ var teamConfigs = []teamConfig{
 		Packages: []string{
 			"org.jetbrains.plugins.ruby",
 		},
+		AnalysisSettings: degradationOnlyAnalysisSettings(),
 	},
 	{
 		Team:         "lsp",
@@ -134,15 +147,11 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 			Db:      mainSettings.Db,
 			Table:   mainSettings.Table,
 			BaseSettings: detector.BaseSettings{
-				Branch:        mainSettings.Branch,
-				Machine:       mainSettings.Machine,
-				Metric:        mainSettings.Metric,
-				SlackSettings: defaultSlackSettings,
-				AnalysisSettings: detector.AnalysisSettings{
-					MinimumSegmentLength:      30,
-					MedianDifferenceThreshold: 20,
-					EffectSizeThreshold:       2,
-				},
+				Branch:           mainSettings.Branch,
+				Machine:          mainSettings.Machine,
+				Metric:           mainSettings.Metric,
+				SlackSettings:    defaultSlackSettings,
+				AnalysisSettings: defaultUnitTestAnalysisSettings,
 			},
 		})
 	}
@@ -160,11 +169,7 @@ func generateProductTestsSettings(
 
 	// Set default AnalysisSettings if nil
 	if config.AnalysisSettings == nil {
-		config.AnalysisSettings = &detector.AnalysisSettings{
-			MinimumSegmentLength:      30,
-			MedianDifferenceThreshold: 20,
-			EffectSizeThreshold:       2,
-		}
+		config.AnalysisSettings = &defaultUnitTestAnalysisSettings
 	}
 
 	slackSettings := detector.SlackSettings{

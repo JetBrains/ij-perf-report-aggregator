@@ -203,31 +203,22 @@ combineLatest([testModeConfigurator1.createObservable(), testModeConfigurator2.c
     mode1.value = Array.isArray(mode1SelectedValue) ? mode1SelectedValue[0] : mode1SelectedValue
     mode2.value = Array.isArray(mode2SelectedValue) ? mode2SelectedValue[0] : mode2SelectedValue
 
-    combineLatest([getAllMetricsFromMode(machineConfigurator, mode1.value, metricsNames), getAllMetricsFromMode(machineConfigurator, mode2.value, metricsNames)]).subscribe(
-      (data: Result[][]) => {
-        const firstModeResults = data[0]
-        const secondModeResults = data[1]
-        const tests = new Set<string>()
-        const table: TableRow[] = []
-        for (const r1 of firstModeResults) {
-          const r2 = secondModeResults.find((value) => {
-            return value.Project == r1.Project && value.MeasureName == r1.MeasureName
-          })
-          if (
-            r2 != undefined &&
-            (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
-            !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
-          ) {
-            const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
-            tests.add(r1.Project)
-            table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
-          }
+    compareModes(machineConfigurator, mode1.value, mode2.value, metricsNames).subscribe((results: ComparisonResult[]) => {
+      const tests = new Set<string>()
+      const table: TableRow[] = []
+      for (const r of results) {
+        if (
+          (r.Median1 != 0 || r.Median2 != 0) && //don't add metrics that are zero
+          !/.*_\d+(#.*)?$/.test(r.MeasureName) //don't add metrics like foo_1
+        ) {
+          tests.add(r.Project)
+          table.push({ test: r.Project, metric: r.MeasureName, build1: r.Median1, build2: r.Median2, difference: r.Diff })
         }
-        testConfigurator.initData([...tests])
-        fetchedData.value = table
-        tableData.value = table
       }
-    )
+      testConfigurator.initData([...tests])
+      fetchedData.value = table
+      tableData.value = table
+    })
   })
 
 watch(
@@ -245,11 +236,13 @@ watch(
   { immediate: true }
 )
 
-class Result {
+class ComparisonResult {
   public constructor(
     readonly Project: string,
     readonly MeasureName: string,
-    readonly Median: number
+    readonly Median1: number,
+    readonly Median2: number,
+    readonly Diff: number
   ) {}
 }
 
@@ -262,19 +255,30 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromMode(machineConfigurator: MachineConfigurator, mode: string | null, metricNames: string[]): Observable<Result[]> {
-  if (mode == "default") {
-    mode = ""
+function compareModes(
+  machineConfigurator: MachineConfigurator,
+  mode1Value: string | null,
+  mode2Value: string | null,
+  metricNames: string[]
+): Observable<ComparisonResult[]> {
+  let m1 = mode1Value
+  let m2 = mode2Value
+  if (m1 == "default") {
+    m1 = ""
+  }
+  if (m2 == "default") {
+    m2 = ""
   }
   const params = {
-    mode,
+    mode1: m1,
+    mode2: m2,
     branch: branchConfigurator.selected.value,
     table: dbName + "." + table,
     measure_names: metricNames,
     machine: machineConfigurator.getMergedValue(),
   }
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
-  return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareModes/" + compressedParams)
+  return fromFetchWithRetryAndErrorHandling<ComparisonResult[]>(serverConfigurator.serverUrl + "/api/compareModes/" + compressedParams)
 }
 
 function handleNavigateToTest(project: string, metric: string) {

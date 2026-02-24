@@ -48,17 +48,20 @@ func toJSONBuffer(data any) (*bytebufferpool.ByteBuffer, error) {
 	return buffer, nil
 }
 
-type responseItem struct {
+type branchComparisonResponseItem struct {
 	Project     string
 	MeasureName string
-	Median      float64
+	Median1     float64
+	Median2     float64
+	Diff        float64
 }
 
 func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	type requestParams struct {
 		Table        string   `json:"table"`
 		MeasureNames []string `json:"measure_names"`
-		Branch       string   `json:"branch"`
+		Branch1      string   `json:"branch1"`
+		Branch2      string   `json:"branch2"`
 		Machine      string   `json:"machine"`
 		Mode         string   `json:"mode"`
 	}
@@ -84,7 +87,15 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		mode = ""
 	}
 
-	sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE branch = '%s' AND measure_name in (%s) AND machine like '%s' and mode = '%s' AND generated_time > subtractMonths(now(), 1) ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Branch, measureNamesString, params.Machine, mode)
+	sql := fmt.Sprintf(
+		"SELECT branch as Branch, project as Project, measure_name as MeasureName, "+
+			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
+			"FROM (SELECT branch, project, measures.name as measure_name, measures.value as measure_value "+
+			"FROM %s ARRAY JOIN measures "+
+			"WHERE branch IN ('%s', '%s') AND measure_name in (%s) AND machine like '%s' and mode = '%s' "+
+			"AND generated_time > subtractMonths(now(), 1) ORDER BY generated_time DESC) "+
+			"GROUP BY branch, project, measure_name",
+		params.Table, params.Branch1, params.Branch2, measureNamesString, params.Machine, mode)
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -94,6 +105,7 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 	}
 
 	var queryResults []struct {
+		Branch        string
 		Project       string
 		MeasureName   string
 		MeasureValues []int
@@ -104,9 +116,104 @@ func (t *StatsServer) getBranchComparison(request *http.Request) (*bytebufferpoo
 		return nil, false, err
 	}
 
-	response := getMedianValues(queryResults)
+	response := buildBranchComparisonResponse(queryResults, params.Branch1, params.Branch2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
+}
+
+func buildBranchComparisonResponse(queryResults []struct {
+	Branch        string
+	Project       string
+	MeasureName   string
+	MeasureValues []int
+}, branch1, branch2 string,
+) []branchComparisonResponseItem {
+	type key struct {
+		Project     string
+		MeasureName string
+	}
+
+	branch1Map := make(map[key][]int)
+	branch2Map := make(map[key][]int)
+
+	var wg sync.WaitGroup
+	type filteredResult struct {
+		Branch      string
+		Project     string
+		MeasureName string
+		Values      []int
+	}
+	resultChan := make(chan filteredResult, len(queryResults))
+
+	for _, result := range queryResults {
+		wg.Go(func() {
+			values := make([]int, len(result.MeasureValues))
+			copy(values, result.MeasureValues)
+			slices.Reverse(values)
+			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
+			validIndexes := filterValidChangePoints(values, indexes, 3.0, 3.0)
+			var filtered []int
+			if len(validIndexes) == 0 {
+				filtered = values
+			} else {
+				lastIndex := validIndexes[len(validIndexes)-1]
+				filtered = values[lastIndex:]
+			}
+			resultChan <- filteredResult{
+				Branch:      result.Branch,
+				Project:     result.Project,
+				MeasureName: result.MeasureName,
+				Values:      filtered,
+			}
+		})
+	}
+
+	go func() {
+		wg.Wait()
+		close(resultChan)
+	}()
+
+	for item := range resultChan {
+		k := key{Project: item.Project, MeasureName: item.MeasureName}
+		if item.Branch == branch1 {
+			branch1Map[k] = item.Values
+		} else if item.Branch == branch2 {
+			branch2Map[k] = item.Values
+		}
+	}
+
+	response := make([]branchComparisonResponseItem, 0)
+	for k, values1 := range branch1Map {
+		values2, ok := branch2Map[k]
+		if !ok {
+			continue
+		}
+
+		center1, err := pragmastat.Center(values1)
+		if err != nil {
+			continue
+		}
+		center2, err := pragmastat.Center(values2)
+		if err != nil {
+			continue
+		}
+
+		var diff float64
+		ratio, err := pragmastat.Ratio(values2, values1)
+		if err == nil {
+			diff = math.Round((ratio-1)*1000) / 10
+		}
+
+		response = append(response, branchComparisonResponseItem{
+			Project:     k.Project,
+			MeasureName: k.MeasureName,
+			Median1:     center1,
+			Median2:     center2,
+			Diff:        diff,
+		})
+	}
+
+	return response
 }
 
 func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
@@ -115,7 +222,8 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		MeasureNames []string `json:"measure_names"`
 		Branch       string   `json:"branch"`
 		Machine      string   `json:"machine"`
-		Mode         string   `json:"mode"`
+		Mode1        string   `json:"mode1"`
+		Mode2        string   `json:"mode2"`
 	}
 
 	var params requestParams
@@ -134,7 +242,24 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 	}
 	measureNamesString := strings.Join(quotedMeasureNames, ",")
 
-	sql := fmt.Sprintf("SELECT project as Project, measure_name as MeasureName, arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues FROM (SELECT project, measures.name as measure_name, measures.value as measure_value FROM %s ARRAY JOIN measures WHERE mode = '%s' AND branch = '%s' AND measure_name in (%s) AND machine like '%s' AND generated_time >subtractMonths(now(),1) ORDER BY generated_time DESC)GROUP BY project, measure_name;", params.Table, params.Mode, params.Branch, measureNamesString, params.Machine)
+	mode1 := params.Mode1
+	if mode1 == "default" {
+		mode1 = ""
+	}
+	mode2 := params.Mode2
+	if mode2 == "default" {
+		mode2 = ""
+	}
+
+	sql := fmt.Sprintf(
+		"SELECT mode as Branch, project as Project, measure_name as MeasureName, "+
+			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
+			"FROM (SELECT mode, project, measures.name as measure_name, measures.value as measure_value "+
+			"FROM %s ARRAY JOIN measures "+
+			"WHERE mode IN ('%s', '%s') AND branch = '%s' AND measure_name in (%s) AND machine like '%s' "+
+			"AND generated_time > subtractMonths(now(),1) ORDER BY generated_time DESC) "+
+			"GROUP BY mode, project, measure_name",
+		params.Table, mode1, mode2, params.Branch, measureNamesString, params.Machine)
 	db, err := t.openDatabaseConnection()
 	defer func(db driver.Conn) {
 		_ = db.Close()
@@ -144,6 +269,7 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 	}
 
 	var queryResults []struct {
+		Branch        string
 		Project       string
 		MeasureName   string
 		MeasureValues []int
@@ -154,56 +280,11 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 		return nil, false, err
 	}
 
-	response := getMedianValues(queryResults)
+	response := buildBranchComparisonResponse(queryResults, mode1, mode2)
 	buffer, err := toJSONBuffer(response)
 	return buffer, true, err
 }
 
-func getMedianValues(queryResults []struct {
-	Project       string
-	MeasureName   string
-	MeasureValues []int
-},
-) []responseItem {
-	responseChan := make(chan responseItem, len(queryResults))
-	var wg sync.WaitGroup
-	for _, result := range queryResults {
-		wg.Go(func() {
-			values := result.MeasureValues
-			slices.Reverse(values)
-			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
-			validIndexes := filterValidChangePoints(values, indexes, 3.0, 5.0)
-			var valuesAfterLastChangePoint []int
-			if len(validIndexes) == 0 {
-				valuesAfterLastChangePoint = values
-			} else {
-				lastIndex := validIndexes[len(validIndexes)-1]
-				valuesAfterLastChangePoint = values[lastIndex:]
-			}
-			center, err := pragmastat.Center(valuesAfterLastChangePoint)
-			if err != nil {
-				return
-			}
-
-			responseChan <- responseItem{
-				Project:     result.Project,
-				MeasureName: result.MeasureName,
-				Median:      center,
-			}
-		})
-	}
-
-	go func() {
-		wg.Wait()
-		close(responseChan)
-	}()
-
-	response := make([]responseItem, 0, len(queryResults))
-	for item := range responseChan {
-		response = append(response, item)
-	}
-	return response
-}
 
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	db, err := t.openDatabaseConnection()

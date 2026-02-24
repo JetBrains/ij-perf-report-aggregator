@@ -222,26 +222,16 @@ combineLatest([
     branch1.value = Array.isArray(branch1SelectedValue) ? branch1SelectedValue[0] : branch1SelectedValue
     branch2.value = Array.isArray(branch2SelectedValue) ? branch2SelectedValue[0] : branch2SelectedValue
 
-    combineLatest([
-      getAllMetricsFromBranch(machineConfigurator, branch1.value, metricsNames, testModeConfigurator),
-      getAllMetricsFromBranch(machineConfigurator, branch2.value, metricsNames, testModeConfigurator),
-    ]).subscribe((data: Result[][]) => {
-      const firstBranchResults = data[0]
-      const secondBranchResults = data[1]
+    compareBranches(machineConfigurator, branch1.value, branch2.value, metricsNames, testModeConfigurator).subscribe((results: ComparisonResult[]) => {
       const tests = new Set<string>()
       const table: TableRow[] = []
-      for (const r1 of firstBranchResults) {
-        const r2 = secondBranchResults.find((value) => {
-          return value.Project == r1.Project && value.MeasureName == r1.MeasureName
-        })
+      for (const r of results) {
         if (
-          r2 != undefined &&
-          (r1.Median != 0 || r2.Median != 0) && //don't add metrics that are zero
-          !/.*_\d+(#.*)?$/.test(r1.MeasureName) //don't add metrics like foo_1
+          (r.Median1 != 0 || r.Median2 != 0) && //don't add metrics that are zero
+          !/.*_\d+(#.*)?$/.test(r.MeasureName) //don't add metrics like foo_1
         ) {
-          const difference = Number((((r2.Median - r1.Median) / r1.Median) * 100).toFixed(1))
-          tests.add(r1.Project)
-          table.push({ test: r1.Project, metric: r1.MeasureName, build1: r1.Median, build2: r2.Median, difference })
+          tests.add(r.Project)
+          table.push({ test: r.Project, metric: r.MeasureName, build1: r.Median1, build2: r.Median2, difference: r.Diff })
         }
       }
       testConfigurator.initData([...tests])
@@ -265,11 +255,13 @@ watch(
   { immediate: true }
 )
 
-class Result {
+class ComparisonResult {
   public constructor(
     readonly Project: string,
     readonly MeasureName: string,
-    readonly Median: number
+    readonly Median1: number,
+    readonly Median2: number,
+    readonly Diff: number
   ) {}
 }
 
@@ -282,21 +274,23 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function getAllMetricsFromBranch(
+function compareBranches(
   machineConfigurator: MachineConfigurator,
-  branch: string | null,
+  branch1Value: string | null,
+  branch2Value: string | null,
   metricNames: string[],
   testModeConfigurator: DimensionConfigurator
-): Observable<Result[]> {
+): Observable<ComparisonResult[]> {
   const params = {
-    branch,
+    branch1: branch1Value,
+    branch2: branch2Value,
     table: dbName + "." + table,
     measure_names: metricNames,
     machine: machineConfigurator.getMergedValue(),
     mode: testModeConfigurator.selected.value,
   }
   const compressedParams = serverConfigurator.compressString(JSON.stringify(params))
-  return fromFetchWithRetryAndErrorHandling<Result[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
+  return fromFetchWithRetryAndErrorHandling<ComparisonResult[]>(serverConfigurator.serverUrl + "/api/compareBranches/" + compressedParams)
 }
 
 function handleNavigateToTest(project: string, metric: string) {

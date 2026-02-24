@@ -5,15 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log/slog"
-	"math"
 	"net/http"
-	"slices"
 	"strings"
 	"sync"
 
-	"github.com/AndreyAkinshin/pragmastat/go/v4"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
-	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -69,14 +65,6 @@ type comparisonResponseItem struct {
 	Link               string  `json:"link"`
 }
 
-type branchValuesItem struct {
-	Branch      string
-	Project     string
-	MeasureName string
-	Values      []int
-	DbName      string
-	TableName   string
-}
 
 type projectOwnerEntry struct {
 	Project   string
@@ -141,14 +129,16 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}(db)
 
 		var mu sync.Mutex
-		var allItems []branchValuesItem
+		var allItems []filteredValues
 		var wg sync.WaitGroup
 
 		// Group projects by db+table to query only relevant combinations
 		dbTableProjects := make(map[dbTableKey][]string)
+		projectDbTable := make(map[string]dbTableKey)
 		for _, e := range entries {
 			key := dbTableKey{DbName: e.DbName, TableName: e.TableName}
 			dbTableProjects[key] = append(dbTableProjects[key], e.Project)
+			projectDbTable[e.Project] = key
 		}
 
 		for key, projects := range dbTableProjects {
@@ -159,10 +149,6 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 					slog.Error("failed to query table", "db", key.DbName, "table", key.TableName, "error", queryErr)
 					return
 				}
-				for i := range items {
-					items[i].DbName = key.DbName
-					items[i].TableName = key.TableName
-				}
 				mu.Lock()
 				allItems = append(allItems, items...)
 				mu.Unlock()
@@ -170,7 +156,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}
 		wg.Wait()
 
-		response := buildComparisonResponse(allItems, params.BaseBranch, params.CompareBranch, params.Machine)
+		response := buildComparisonResponse(allItems, projectDbTable, params.BaseBranch, params.CompareBranch, params.Machine)
 
 		jsonData, err := json.Marshal(response)
 		if err != nil {
@@ -230,7 +216,7 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]branchValuesItem, error) {
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]filteredValues, error) {
 	sql := fmt.Sprintf(
 		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, "+
 			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
@@ -260,97 +246,23 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 		return nil, err
 	}
 
-	resultChan := make(chan branchValuesItem, len(queryResults))
-	var wg sync.WaitGroup
-	for _, result := range queryResults {
-		wg.Go(func() {
-			values := make([]int, len(result.MeasureValues))
-			copy(values, result.MeasureValues)
-			slices.Reverse(values)
-			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
-			validIndexes := filterValidChangePoints(values, indexes, 3.0, 3.0)
-			var filtered []int
-			if len(validIndexes) == 0 {
-				filtered = values
-			} else {
-				lastIndex := validIndexes[len(validIndexes)-1]
-				filtered = values[lastIndex:]
-			}
-
-			resultChan <- branchValuesItem{
-				Branch:      result.Branch,
-				Project:     result.Project,
-				MeasureName: result.MeasureName,
-				Values:      filtered,
-			}
-		})
-	}
-
-	go func() {
-		wg.Wait()
-		close(resultChan)
-	}()
-
-	items := make([]branchValuesItem, 0, len(queryResults))
-	for item := range resultChan {
-		items = append(items, item)
-	}
-	return items, nil
+	return filterQueryResults(queryResults), nil
 }
 
-func buildComparisonResponse(items []branchValuesItem, baseBranch, compareBranch, machine string) []comparisonResponseItem {
-	type key struct {
-		Project string
-		Metric  string
-	}
+func buildComparisonResponse(items []filteredValues, dbTableMap map[string]dbTableKey, baseBranch, compareBranch, machine string) []comparisonResponseItem {
+	compared := buildBranchComparisonResponse(items, baseBranch, compareBranch)
 
-	baseMap := make(map[key][]int)
-	compareMap := make(map[key][]int)
-	projectDbTable := make(map[string]dbTableKey)
-
-	for _, item := range items {
-		k := key{Project: item.Project, Metric: item.MeasureName}
-		if item.Branch == baseBranch {
-			baseMap[k] = item.Values
-		} else if item.Branch == compareBranch {
-			compareMap[k] = item.Values
-		}
-		if _, exists := projectDbTable[item.Project]; !exists {
-			projectDbTable[item.Project] = dbTableKey{DbName: item.DbName, TableName: item.TableName}
-		}
-	}
-
-	response := make([]comparisonResponseItem, 0)
-	for k, baseValues := range baseMap {
-		compareValues, ok := compareMap[k]
-		if !ok {
-			continue
-		}
-
-		baseCenter, err := pragmastat.Center(baseValues)
-		if err != nil {
-			continue
-		}
-		compareCenter, err := pragmastat.Center(compareValues)
-		if err != nil {
-			continue
-		}
-
-		var diff float64
-		ratio, err := pragmastat.Ratio(compareValues, baseValues)
-		if err == nil {
-			diff = math.Round((ratio-1)*1000) / 10
-		}
-
-		dt := projectDbTable[k.Project]
-		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, k.Project, k.Metric)
+	response := make([]comparisonResponseItem, 0, len(compared))
+	for _, item := range compared {
+		dt := dbTableMap[item.Project]
+		link := buildTestLink(dt.DbName, dt.TableName, machine, baseBranch, compareBranch, item.Project, item.MeasureName)
 
 		response = append(response, comparisonResponseItem{
-			Project:            k.Project,
-			Metric:             k.Metric,
-			BaseBranchValue:    baseCenter,
-			CompareBranchValue: compareCenter,
-			Diff:               diff,
+			Project:            item.Project,
+			Metric:             item.MeasureName,
+			BaseBranchValue:    item.Median1,
+			CompareBranchValue: item.Median2,
+			Diff:               item.Diff,
 			Link:               link,
 		})
 	}

@@ -171,8 +171,8 @@ func getMedianValues(queryResults []struct {
 		wg.Go(func() {
 			values := result.MeasureValues
 			slices.Reverse(values)
-			indexes := statistic.GetChangePointIndexes(values, 1)
-			validIndexes := filterValidChangePoints(values, indexes, 10.0, 2.0)
+			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
+			validIndexes := filterValidChangePoints(values, indexes, 3.0, 5.0)
 			var valuesAfterLastChangePoint []int
 			if len(validIndexes) == 0 {
 				valuesAfterLastChangePoint = values

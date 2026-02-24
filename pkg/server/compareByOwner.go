@@ -267,8 +267,8 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 			values := make([]int, len(result.MeasureValues))
 			copy(values, result.MeasureValues)
 			slices.Reverse(values)
-			indexes := statistic.GetChangePointIndexes(values, 1)
-			validIndexes := filterValidChangePoints(values, indexes, 10.0, 2.0)
+			indexes := statistic.GetChangePointIndexes(values, min(5, len(values)/2))
+			validIndexes := filterValidChangePoints(values, indexes, 3.0, 3.0)
 			var filtered []int
 			if len(validIndexes) == 0 {
 				filtered = values

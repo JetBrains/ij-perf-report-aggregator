@@ -183,6 +183,8 @@ async function createTicket() {
       dashboardLink: `${window.location.origin}${getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator)}`,
       affectedMetric,
       delta: data.deltaPrevious?.replaceAll(/[+-]/g, (match) => (match === "+" ? "-" : "+")) ?? "",
+      currentValue: data.formattedCurrentValue ?? "",
+      previousValue: data.formattedPreviousValue ?? "",
       testType: dbTypeStore().dbType,
     }
 

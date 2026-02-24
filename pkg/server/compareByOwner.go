@@ -44,7 +44,6 @@ var mainMetrics = []string{
 	"showQuickFixes",
 	"createJavaFile",
 	"typingCodeAnalyzing",
-	"test#max_awt_delay",
 	"MatchedRatio",
 	"SyntaxErrorsSessionRatio",
 	"EditSimilarity",

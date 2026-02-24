@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/AndreyAkinshin/pragmastat/go/v3"
+	"github.com/AndreyAkinshin/pragmastat/go/v4"
 	"github.com/ClickHouse/clickhouse-go/v2"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	degradation_detector "github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector"
@@ -180,12 +180,15 @@ func getMedianValues(queryResults []struct {
 				lastIndex := validIndexes[len(validIndexes)-1]
 				valuesAfterLastChangePoint = values[lastIndex:]
 			}
-			median := statistic.Median(valuesAfterLastChangePoint)
+			center, err := pragmastat.Center(valuesAfterLastChangePoint)
+			if err != nil {
+				return
+			}
 
 			responseChan <- responseItem{
 				Project:     result.Project,
 				MeasureName: result.MeasureName,
-				Median:      median,
+				Median:      center,
 			}
 		})
 	}

@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"math"
 
-	"github.com/AndreyAkinshin/pragmastat/go/v3"
+	"github.com/AndreyAkinshin/pragmastat/go/v4"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 )
 

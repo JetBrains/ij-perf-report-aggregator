@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/Altinity/clickhouse-backup v1.6.3-0.20230612080849-d0f5b1987694
-	github.com/AndreyAkinshin/pragmastat/go/v3 v3.2.4
+	github.com/AndreyAkinshin/pragmastat/go/v4 v4.0.3
 	github.com/ClickHouse/ch-go v0.71.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
 	github.com/VictoriaMetrics/fastcache v1.13.3

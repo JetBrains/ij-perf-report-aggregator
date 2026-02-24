@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/AndreyAkinshin/pragmastat/go/v4"
 	"github.com/ClickHouse/clickhouse-go/v2/lib/driver"
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/degradation-detector/statistic"
 	"github.com/jackc/pgx/v5"
@@ -68,11 +69,11 @@ type comparisonResponseItem struct {
 	Link               string  `json:"link"`
 }
 
-type branchMedianItem struct {
+type branchValuesItem struct {
 	Branch      string
 	Project     string
 	MeasureName string
-	Median      float64
+	Values      []int
 	DbName      string
 	TableName   string
 }
@@ -140,7 +141,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 		}(db)
 
 		var mu sync.Mutex
-		var allItems []branchMedianItem
+		var allItems []branchValuesItem
 		var wg sync.WaitGroup
 
 		// Group projects by db+table to query only relevant combinations
@@ -229,7 +230,7 @@ func buildMetricsList(additionalMetrics []string) []string {
 	return result
 }
 
-func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]branchMedianItem, error) {
+func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table, baseBranch, compareBranch, metricsStr, machine, mode, projectsStr string) ([]branchValuesItem, error) {
 	sql := fmt.Sprintf(
 		"SELECT branch AS Branch, project AS Project, measure_name AS MeasureName, "+
 			"arraySlice(groupArray(measure_value), 1, 50) AS MeasureValues "+
@@ -259,7 +260,7 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 		return nil, err
 	}
 
-	resultChan := make(chan branchMedianItem, len(queryResults))
+	resultChan := make(chan branchValuesItem, len(queryResults))
 	var wg sync.WaitGroup
 	for _, result := range queryResults {
 		wg.Go(func() {
@@ -268,20 +269,19 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 			slices.Reverse(values)
 			indexes := statistic.GetChangePointIndexes(values, 1)
 			validIndexes := filterValidChangePoints(values, indexes, 10.0, 2.0)
-			var valuesAfterLastChangePoint []int
+			var filtered []int
 			if len(validIndexes) == 0 {
-				valuesAfterLastChangePoint = values
+				filtered = values
 			} else {
 				lastIndex := validIndexes[len(validIndexes)-1]
-				valuesAfterLastChangePoint = values[lastIndex:]
+				filtered = values[lastIndex:]
 			}
-			median := statistic.Median(valuesAfterLastChangePoint)
 
-			resultChan <- branchMedianItem{
+			resultChan <- branchValuesItem{
 				Branch:      result.Branch,
 				Project:     result.Project,
 				MeasureName: result.MeasureName,
-				Median:      median,
+				Values:      filtered,
 			}
 		})
 	}
@@ -291,29 +291,29 @@ func queryTableForComparison(ctx context.Context, db driver.Conn, dbName, table,
 		close(resultChan)
 	}()
 
-	items := make([]branchMedianItem, 0, len(queryResults))
+	items := make([]branchValuesItem, 0, len(queryResults))
 	for item := range resultChan {
 		items = append(items, item)
 	}
 	return items, nil
 }
 
-func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch, machine string) []comparisonResponseItem {
+func buildComparisonResponse(items []branchValuesItem, baseBranch, compareBranch, machine string) []comparisonResponseItem {
 	type key struct {
 		Project string
 		Metric  string
 	}
 
-	baseMap := make(map[key]float64)
-	compareMap := make(map[key]float64)
+	baseMap := make(map[key][]int)
+	compareMap := make(map[key][]int)
 	projectDbTable := make(map[string]dbTableKey)
 
 	for _, item := range items {
 		k := key{Project: item.Project, Metric: item.MeasureName}
 		if item.Branch == baseBranch {
-			baseMap[k] = item.Median
+			baseMap[k] = item.Values
 		} else if item.Branch == compareBranch {
-			compareMap[k] = item.Median
+			compareMap[k] = item.Values
 		}
 		if _, exists := projectDbTable[item.Project]; !exists {
 			projectDbTable[item.Project] = dbTableKey{DbName: item.DbName, TableName: item.TableName}
@@ -321,15 +321,25 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 	}
 
 	response := make([]comparisonResponseItem, 0)
-	for k, baseVal := range baseMap {
-		compareVal, ok := compareMap[k]
+	for k, baseValues := range baseMap {
+		compareValues, ok := compareMap[k]
 		if !ok {
 			continue
 		}
 
+		baseCenter, err := pragmastat.Center(baseValues)
+		if err != nil {
+			continue
+		}
+		compareCenter, err := pragmastat.Center(compareValues)
+		if err != nil {
+			continue
+		}
+
 		var diff float64
-		if baseVal != 0 {
-			diff = math.Round(((compareVal-baseVal)/baseVal)*1000) / 10
+		ratio, err := pragmastat.Ratio(compareValues, baseValues)
+		if err == nil {
+			diff = math.Round((ratio-1)*1000) / 10
 		}
 
 		dt := projectDbTable[k.Project]
@@ -338,8 +348,8 @@ func buildComparisonResponse(items []branchMedianItem, baseBranch, compareBranch
 		response = append(response, comparisonResponseItem{
 			Project:            k.Project,
 			Metric:             k.Metric,
-			BaseBranchValue:    baseVal,
-			CompareBranchValue: compareVal,
+			BaseBranchValue:    baseCenter,
+			CompareBranchValue: compareCenter,
 			Diff:               diff,
 			Link:               link,
 		})

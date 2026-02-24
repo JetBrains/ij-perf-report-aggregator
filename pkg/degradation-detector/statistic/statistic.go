@@ -4,7 +4,7 @@ import (
 	"math"
 	"slices"
 
-	"github.com/AndreyAkinshin/pragmastat/go/v3"
+	"github.com/AndreyAkinshin/pragmastat/go/v4"
 )
 
 func MedianF(nums []float64) float64 {

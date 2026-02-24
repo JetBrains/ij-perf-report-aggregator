@@ -65,7 +65,6 @@ type comparisonResponseItem struct {
 	Link               string  `json:"link"`
 }
 
-
 type projectOwnerEntry struct {
 	Project   string
 	DbName    string

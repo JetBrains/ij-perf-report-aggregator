@@ -180,7 +180,6 @@ func (t *StatsServer) getModeComparison(request *http.Request) (*bytebufferpool.
 	return buffer, true, err
 }
 
-
 func (t *StatsServer) getDistinctHighlightingPasses(request *http.Request) (*bytebufferpool.ByteBuffer, bool, error) {
 	db, err := t.openDatabaseConnection()
 	if err != nil {
@@ -354,4 +353,3 @@ func mapProductToTable(product string) string {
 		return ""
 	}
 }
-

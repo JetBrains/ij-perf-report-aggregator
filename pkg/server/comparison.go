@@ -30,7 +30,8 @@ func filterQueryResults(queryResults []struct {
 	Project       string
 	MeasureName   string
 	MeasureValues []int
-}) []filteredValues {
+},
+) []filteredValues {
 	resultChan := make(chan filteredValues, len(queryResults))
 	var wg sync.WaitGroup
 

@@ -255,12 +255,7 @@ function getColorForBuild(build1: number, build2: number) {
   ]
 }
 
-function compareModes(
-  machineConfigurator: MachineConfigurator,
-  mode1Value: string | null,
-  mode2Value: string | null,
-  metricNames: string[]
-): Observable<ComparisonResult[]> {
+function compareModes(machineConfigurator: MachineConfigurator, mode1Value: string | null, mode2Value: string | null, metricNames: string[]): Observable<ComparisonResult[]> {
   let m1 = mode1Value
   let m2 = mode2Value
   if (m1 == "default") {

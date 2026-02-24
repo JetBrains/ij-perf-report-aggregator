@@ -74,6 +74,34 @@ func (client *TeamCityClient) makeRequest(ctx context.Context, endpoint string, 
 	return resp, nil
 }
 
+func (client *TeamCityClient) hasArtifacts(ctx context.Context, buildID string) (bool, error) {
+	endpoint := fmt.Sprintf("/app/rest/builds/id:%s/artifacts/children/", buildID)
+	resp, err := client.makeRequest(ctx, endpoint, nil)
+	if err != nil {
+		if resp != nil {
+			resp.Body.Close()
+			if resp.StatusCode == http.StatusNotFound {
+				return false, nil
+			}
+		}
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+
+	var files Files
+	err = xml.Unmarshal(body, &files)
+	if err != nil {
+		return false, err
+	}
+
+	return len(files.Files) > 0, nil
+}
+
 func (client *TeamCityClient) getArtifactChildren(ctx context.Context, buildId int, testName string) ([]string, error) {
 	endpoint := fmt.Sprintf("/app/rest/builds/id:%d/artifacts/children/%s", buildId, testName)
 	resp, err := client.makeRequest(ctx, endpoint, nil)

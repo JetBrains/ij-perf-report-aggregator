@@ -223,7 +223,9 @@
           Changes
         </a>
         <a
-          class="flex gap-1.5 items-center transition duration-150 ease-out hover:text-darker cursor-pointer"
+          v-tooltip.bottom="artifactsExist === false ? 'Artifacts are not available for this build' : null"
+          class="flex gap-1.5 items-center transition duration-150 ease-out"
+          :class="artifactsExist === false ? 'opacity-50 cursor-not-allowed line-through' : 'hover:text-darker cursor-pointer'"
           @click="async () => openArtifactsUrl(vm.data.value)"
           @click.middle="async () => openArtifactsUrl(vm.data.value)"
         >
@@ -299,7 +301,7 @@ import { Accident, AccidentKind } from "../../../configurators/accidents/Acciden
 import { injectOrError, injectOrNull } from "../../../shared/injectionKeys"
 import { accidentsConfiguratorKey, serverConfiguratorKey, sidebarVmKey, youtrackClientKey } from "../../../shared/keys"
 import { getMetricDescription } from "../../../shared/metricsDescription"
-import { getTeamcityBuildCounter, getTeamcityBuildType } from "../../../util/artifacts"
+import { checkTeamcityArtifactsExist, getTeamcityBuildCounter, getTeamcityBuildType } from "../../../util/artifacts"
 import { replaceToLink } from "../../../util/linkReplacer"
 import BranchIcon from "../BranchIcon.vue"
 import SpaceIcon from "../SpaceIcon.vue"
@@ -332,6 +334,14 @@ const buildCounter = computedAsync(async () => {
   const buildId = vm.data.value?.buildId
   if (buildId) {
     return await getTeamcityBuildCounter(buildId)
+  }
+  return null
+}, null)
+
+const artifactsExist = computedAsync(async () => {
+  const buildId = vm.data.value?.buildId
+  if (buildId) {
+    return await checkTeamcityArtifactsExist(buildId)
   }
   return null
 }, null)
@@ -383,6 +393,7 @@ async function getChangesUrl() {
 }
 
 async function openArtifactsUrl(data: InfoData | null) {
+  if (artifactsExist.value === false) return
   window.open(await getArtifactsUrl(data, serverConfigurator))
 }
 

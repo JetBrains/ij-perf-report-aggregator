@@ -123,6 +123,8 @@ export interface CreateIssueRequest {
   dashboardLink: string
   affectedMetric: string
   delta: string
+  currentValue: string
+  previousValue: string
   testMethodName: string | undefined
   testType: string
 }

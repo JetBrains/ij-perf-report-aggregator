@@ -33,6 +33,8 @@ export interface InfoData {
   buildIdPrevious: number | undefined
   buildIdNext: number | undefined
   mode: string | undefined
+  formattedCurrentValue: string | undefined
+  formattedPreviousValue: string | undefined
 }
 
 class Description {

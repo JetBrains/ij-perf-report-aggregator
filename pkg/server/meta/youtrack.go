@@ -28,6 +28,8 @@ type YoutrackCreateIssueRequest struct {
 	DashboardLink  string        `json:"dashboardLink"`
 	AffectedMetric string        `json:"affectedMetric"`
 	Delta          string        `json:"delta"`
+	CurrentValue   string        `json:"currentValue"`
+	PreviousValue  string        `json:"previousValue"`
 	TestMethodName *string       `json:"testMethodName"`
 	TestType       string        `json:"testType"`
 	CurrentBuildId *int          `json:"currentBuildId"`
@@ -46,6 +48,8 @@ type GenerateDescriptionData struct {
 	AffectedTest   string
 	AffectedMetric string
 	Delta          string
+	CurrentValue   string
+	PreviousValue  string
 	StackTrace     string
 	BuildLink      string
 	Changes        string
@@ -132,6 +136,8 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			AffectedTest:   affectedTest,
 			AffectedMetric: affectedMetric,
 			Delta:          params.Delta,
+			CurrentValue:   params.CurrentValue,
+			PreviousValue:  params.PreviousValue,
 			StackTrace:     relatedAccident.Stacktrace,
 			BuildLink:      params.BuildLink,
 			Changes:        params.ChangesLink,
@@ -404,7 +410,11 @@ func generateDescription(generateDescriptorData GenerateDescriptionData) string 
 
 	// Metric
 	if generateDescriptorData.AffectedMetric != "" && generateDescriptorData.Delta != "" {
-		parts = append(parts, fmt.Sprintf("**Metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta))
+		metricSection := fmt.Sprintf("**Metric:**\n%s (Delta: %s)", generateDescriptorData.AffectedMetric, generateDescriptorData.Delta)
+		if generateDescriptorData.PreviousValue != "" && generateDescriptorData.CurrentValue != "" {
+			metricSection += fmt.Sprintf("\n- Value before: %s\n- Value after: %s", generateDescriptorData.PreviousValue, generateDescriptorData.CurrentValue)
+		}
+		parts = append(parts, metricSection)
 	}
 
 	// Test

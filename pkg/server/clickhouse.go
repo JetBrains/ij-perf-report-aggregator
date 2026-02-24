@@ -172,11 +172,12 @@ func getMedianValues(queryResults []struct {
 			values := result.MeasureValues
 			slices.Reverse(values)
 			indexes := statistic.GetChangePointIndexes(values, 1)
+			validIndexes := filterValidChangePoints(values, indexes, 10.0, 2.0)
 			var valuesAfterLastChangePoint []int
-			if len(indexes) == 0 {
+			if len(validIndexes) == 0 {
 				valuesAfterLastChangePoint = values
 			} else {
-				lastIndex := indexes[len(indexes)-1]
+				lastIndex := validIndexes[len(validIndexes)-1]
 				valuesAfterLastChangePoint = values[lastIndex:]
 			}
 			median := statistic.Median(valuesAfterLastChangePoint)

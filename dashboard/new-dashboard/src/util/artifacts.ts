@@ -19,6 +19,21 @@ export async function getTeamcityBuildCounter(buildId: number): Promise<string |
   }
 }
 
+export async function checkTeamcityArtifactsExist(buildId: number): Promise<boolean | null> {
+  try {
+    const response = await fetch(`${ServerWithCompressConfigurator.DEFAULT_SERVER_URL}/api/meta/teamcity/artifactsExist?buildId=${encodeURIComponent(buildId.toString())}`)
+    if (!response.ok) {
+      console.log(`Failed to check artifacts existence: ${response.status} - ${await response.text()}`)
+      return null
+    }
+    const data = (await response.json()) as { hasArtifacts: boolean }
+    return data.hasArtifacts
+  } catch (error) {
+    console.log("Error checking artifacts existence:", error)
+    return null
+  }
+}
+
 export function getTeamcityBuildType(db: string, table: string, id: number): Promise<string | null> {
   return new Promise((resolve, _) => {
     const serverUrlObservable = refToObservable(shallowRef(ServerWithCompressConfigurator.DEFAULT_SERVER_URL))

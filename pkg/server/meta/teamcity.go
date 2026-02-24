@@ -127,6 +127,29 @@ func HandleGetTeamCityBuildCounter() http.HandlerFunc {
 	}
 }
 
+func HandleGetTeamCityArtifactsExist() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		buildID := r.URL.Query().Get("buildId")
+		if buildID == "" {
+			http.Error(w, "buildId parameter is required", http.StatusBadRequest)
+			return
+		}
+
+		hasArtifacts, err := teamCityClient.hasArtifacts(r.Context(), buildID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(map[string]bool{"hasArtifacts": hasArtifacts})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func HandleGetTeamCityBuildInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		buildID := r.URL.Query().Get("buildId")

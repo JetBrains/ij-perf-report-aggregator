@@ -113,6 +113,7 @@ func Serve(dbUrl string, natsUrl string) error {
 			r.Get("/buildType", meta.HandleGetTeamCityBuildType())
 			r.Get("/buildCounter", meta.HandleGetTeamCityBuildCounter())
 			r.Get("/buildInfo", meta.HandleGetTeamCityBuildInfo())
+			r.Get("/artifactsExist", meta.HandleGetTeamCityArtifactsExist())
 		})
 	})
 

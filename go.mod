@@ -7,7 +7,7 @@ require (
 	github.com/AndreyAkinshin/pragmastat/go/v3 v3.2.4
 	github.com/ClickHouse/ch-go v0.71.0
 	github.com/ClickHouse/clickhouse-go/v2 v2.43.0
-	github.com/VictoriaMetrics/fastcache v1.13.2
+	github.com/VictoriaMetrics/fastcache v1.13.3
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alitto/pond v1.9.2
 	github.com/andybalholm/brotli v1.2.0
@@ -20,18 +20,18 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/klauspost/compress v1.18.4
 	github.com/mcuadros/go-version v0.0.0-20190830083331-035f6764e8d2
-	github.com/nats-io/nats.go v1.48.0
+	github.com/nats-io/nats.go v1.49.0
 	github.com/rs/cors v1.11.1
 	github.com/sakura-internet/go-rison/v4 v4.0.0
-	github.com/slack-go/slack v0.17.3
+	github.com/slack-go/slack v0.18.0
 	github.com/stretchr/testify v1.11.1
 	github.com/valyala/bytebufferpool v1.0.0
-	github.com/valyala/fastjson v1.6.7
+	github.com/valyala/fastjson v1.6.10
 	github.com/valyala/quicktemplate v1.8.0
 	github.com/zeebo/xxh3 v1.1.0
 	go.deanishe.net/env v0.5.1
 	go.uber.org/atomic v1.11.0
-	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a
+	golang.org/x/exp v0.0.0-20260218203240-3dfff04db8fa
 	golang.org/x/sync v0.19.0
 	golang.org/x/tools v0.42.0
 )

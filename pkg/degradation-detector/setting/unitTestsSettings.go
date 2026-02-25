@@ -64,6 +64,13 @@ var teamConfigs = []teamConfig{
 		},
 	},
 	{
+		Team:         "cloudsAndDeployment",
+		SlackChannel: "ij-clouds-team-performance-issues-check",
+		Packages: []string{
+			"com.intellij.performance.json",
+		},
+	},
+	{
 		Team:         "datagrip",
 		SlackChannel: "dbe-failed-tests",
 		Packages: []string{

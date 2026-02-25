@@ -35,6 +35,9 @@ func GenerateRubyPerfSettings(backendUrl string, client *http.Client) []detector
 						if metric == "gcPause" || metric == "freedMemoryByGC" {
 							medianThreshold = 20
 						}
+						if strings.Contains(metric, "#number#mean_value") {
+							medianThreshold = 10
+						}
 						settings = append(settings, detector.PerformanceSettings{
 							Db:      baseSettings.Db,
 							Table:   baseSettings.Table,
@@ -79,7 +82,7 @@ func getRubyMetricFromTestName(test string) []string {
 		return []string{"firstCodeAnalysis", "test#average_awt_delay", "typing#median_value"}
 	}
 	if strings.Contains(test, "/completion") {
-		return []string{"firstCodeAnalysis", "completion", "completion#firstElementShown#mean_value"}
+		return []string{"firstCodeAnalysis#mean_value", "completion#mean_value", "completion#firstElementShown#mean_value", "completion#number#mean_value"}
 	}
 	if strings.Contains(test, "/getSymbolMembers") {
 		return []string{"getSymbolMembers#mean_value", "getSymbolMembers#number#mean_value"}

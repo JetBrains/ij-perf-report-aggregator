@@ -109,7 +109,7 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateAIATestTokenSettings(),
 		setting.GenerateKotlinBuildToolsSettings(backendUrl, client),
 		setting.GenerateKotlinMultiplatformToolingSettings(backendUrl, client),
-		setting.GenerateUISettings(),
+		//setting.GenerateUISettings(), // TODO remove in a few months
 		setting.GenerateEditorSettings(),
 	)
 }

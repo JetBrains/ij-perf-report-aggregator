@@ -168,19 +168,23 @@
   </Dialog>
 </template>
 <script setup lang="ts">
-import { InfoData } from "./InfoSidebar"
+import { getNavigateToTestUrl, InfoData } from "./InfoSidebar"
 import { getTeamcityBuildType } from "../../../util/artifacts"
 import { injectOrError } from "../../../shared/injectionKeys"
 import { serverConfiguratorKey } from "../../../shared/keys"
 import { computedAsync } from "@vueuse/core"
-import { computed, Ref, ref } from "vue"
+import { computed, onMounted, Ref, ref } from "vue"
 import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { BisectClient } from "./BisectClient"
 import { useUserStore } from "../../../shared/useUserStore"
 import { calculateChanges } from "../../../util/changes"
+import { getPersistentLink } from "../../settings/CopyLink"
+import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
+import { useRouter } from "vue-router"
 
-const { data } = defineProps<{
+const { data, timerangeConfigurator } = defineProps<{
   data: InfoData
+  timerangeConfigurator: TimeRangeConfigurator
 }>()
 
 const serverConfigurator = injectOrError(serverConfiguratorKey)
@@ -212,7 +216,13 @@ if (Array.isArray(changesUnmerged)) {
   lastCommit.value = changesUnmerged[0] ?? null
 }
 
+const router = useRouter()
 const bisectClient = new BisectClient(serverConfigurator)
+const dashboardLink = computed(() => window.location.origin + getPersistentLink(getNavigateToTestUrl(data, router), timerangeConfigurator))
+
+onMounted(() => {
+  console.log("IJ Perf link for bisect:", dashboardLink.value)
+})
 
 const error = ref<string | null>(null)
 const loading = ref(false)
@@ -254,6 +264,7 @@ async function startBisect() {
         .filter((commit) => commit !== "")
         .join(","),
       jpsCompilation: targetJpsCompile.value ? "true" : "false",
+      dashboardLink: dashboardLink.value,
     })
     showDialog.value = false // Close dialog on success
     window.open(weburl, "_blank")

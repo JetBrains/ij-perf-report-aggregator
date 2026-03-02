@@ -292,6 +292,7 @@
       v-if="showBisectDialog"
       v-model:show-dialog="showBisectDialog"
       :data="data!!"
+      :timerange-configurator="timerangeConfigurator"
     />
   </Suspense>
 </template>

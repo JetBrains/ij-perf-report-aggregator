@@ -9,6 +9,7 @@ interface BisectRequest {
   mode: string
   excludedCommits: string
   jpsCompilation: string
+  dashboardLink?: string
 }
 
 interface PerformanceBisectRequest extends BisectRequest {

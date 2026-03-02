@@ -19,6 +19,7 @@ type BisectRequest struct {
 	ErrorMessage    string `json:"errorMessage"`
 	ExcludedCommits string `json:"excludedCommits"`
 	JpsCompilation  string `json:"jpsCompilation"`
+	DashboardLink   string `json:"dashboardLink"`
 }
 
 // https://youtrack.jetbrains.com/articles/IJPL-A-201/Bisecting-integration-tests-on-TC
@@ -38,6 +39,7 @@ func generateParamsForPerfRun(bisectReq BisectRequest) map[string]string {
 		"target.is.bisect.run":                "true",
 		"target.commits.to.exclude":           bisectReq.ExcludedCommits,
 		"target.jps.compile":                  bisectReq.JpsCompilation,
+		"target.ij.perf.url":                  bisectReq.DashboardLink,
 	}
 }
 

@@ -99,13 +99,6 @@
 
     <section>
       <CLionVsRadlerIndexingChart
-        label="Index project (50k sources, 10k headers)"
-        project="big_project_50k_10k/indexing"
-      />
-    </section>
-
-    <section>
-      <CLionVsRadlerIndexingChart
         label="Index project (OpenCV)"
         project="opencv/indexing"
       />
@@ -116,6 +109,18 @@
         label="Index project (curl)"
         project="curl/indexing"
       />
+    </section>
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <section>
+          <GroupProjectsChart
+            :label="`[Radler] Index project (50k sources, 10k headers, many symbols)`"
+            :measure="['backendIndexingTimeMs']"
+            :projects="['radler/big_project_50k_10k/indexing', 'radler/big_project_50k_10k_many_symbols/indexing']"
+          />
+        </section>
+      </div>
     </section>
 
     <Divider title="Inspection" />

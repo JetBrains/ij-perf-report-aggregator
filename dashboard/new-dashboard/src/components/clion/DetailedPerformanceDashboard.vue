@@ -475,6 +475,13 @@
           project="llvm/showPopupMenu/MultipleSelection"
         />
       </div>
+      <div class="flex-1 min-w-0">
+        <CLionVsRadlerGroupProjectsChart
+          label="Time to Show Context menu in Project View for multiple files during indexing"
+          measure="fus_popup_latency_ms"
+          project="llvm/showPopupMenu/MultipleSelectionDuringIndexing"
+        />
+      </div>
     </section>
 
     <Divider title="Debugger" />

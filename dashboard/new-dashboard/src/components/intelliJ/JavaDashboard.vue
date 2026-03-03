@@ -43,12 +43,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Inspection", "Inspection (Full GC Pause)", "Inspection (JVM GC collection times)"],
     measures: ["globalInspections", "fullGCPause", "JVM.GC.collectionTimesMs"],
-    projects: ["java/inspection", "grails/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "intellij_commit/jvm-inspection"],
+    projects: ["java/inspection", "spring_boot_maven/inspection", "spring_boot/inspection", "intellij_commit/jvm-inspection"],
   },
   {
     labels: ["Completion", "Completion 90p", "Completion time to show 90p"],
     measures: ["completion", "fus_completion_duration_90p", "fus_time_to_show_90p"],
-    projects: ["grails/completion/groovy_file", "grails/completion/java_file", "intellij_commit/completion/java_file"],
+    projects: ["intellij_commit/completion/java_file"],
   },
   {
     labels: ["FindUsages (all usages)", "FindUsages (first usage)", "FindUsages (Full GC Pause)", "FindUsages (JVM GC collection times)"],
@@ -58,7 +58,7 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)", "Show quick fixes"],
     measures: ["test#average_awt_delay", "AWTEventQueue.dispatchTimeTotal", "showQuickFixes"],
-    projects: ["grails/showIntentions/Find cause", "spring_boot/showIntentions"],
+    projects: ["spring_boot/showIntentions"],
   },
   {
     labels: ["Creating a new JAVA file"],

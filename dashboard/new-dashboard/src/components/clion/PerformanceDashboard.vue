@@ -167,10 +167,10 @@
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <section>
-        <CLionVsRadlerIndexingChart
-          label="Index zephyr project (Zephyr Bap Broadcast Sink)"
-          project="zephyr_bap_broadcast_sink/indexing"
-        />
+          <CLionVsRadlerIndexingChart
+            label="Index zephyr project (Zephyr Bap Broadcast Sink)"
+            project="zephyr_bap_broadcast_sink/indexing"
+          />
         </section>
       </div>
     </section>

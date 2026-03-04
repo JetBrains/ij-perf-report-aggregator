@@ -28,8 +28,8 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["backendIndexingTimeMs"],
-    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing"],
-    aliases: ["LLVM", "OpenCV", "cURL"],
+    projects: ["radler/llvm/indexing", "radler/opencv/indexing", "radler/curl/indexing", "radler/zephyr_bap_broadcast_sink/indexing"],
+    aliases: ["LLVM", "OpenCV", "cURL", "Zephyr Bap Broadcast Sink"],
   },
   {
     labels: ["First Code Analysis", "File Openings: code loaded", "File Openings: tab shown"],

@@ -15,6 +15,14 @@
         :measure="chart.definition.measure"
         :projects="chart.projects"
       />
+      <Divider title="Lagging during zephyr project indexing" />
+      <GroupProjectsChart
+        v-for="chart in laggingZephyrIndexingChartsCombined"
+        :key="chart.definition.label"
+        :label="chart.definition.label"
+        :measure="chart.definition.measure"
+        :projects="chart.projects"
+      />
       <Divider title="Lagging during completion" />
       <GroupProjectsChart
         v-for="chart in laggingCompletionChartsCombined"
@@ -57,8 +65,8 @@ import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 import Divider from "../common/Divider.vue"
 
-const indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
-const indexingAliases = ["LLVM", "OpenCV", "Big Project", "Big Project Many Symbols"]
+const indexingProjects = ["radler/llvm/indexing", "radler/opencv/indexing", "radler/big_project_50k_10k_many_symbols/indexing"]
+const indexingAliases = ["LLVM", "OpenCV", "Big Project Many Symbols"]
 
 const laggingIndexingCharts: ChartDefinition[] = [
   {
@@ -84,6 +92,36 @@ const laggingIndexingCharts: ChartDefinition[] = [
     measures: [["ui.lagging#percentage_share"]],
     projects: indexingProjects,
     aliases: indexingAliases,
+  },
+]
+
+const zephyrIndexingProjects = ["radler/zephyr_bap_broadcast_sink/indexing"]
+const zephyrIndexingAliases = ["Zephyr Bap Broadcast Sink"]
+
+const laggingZephyrIndexingCharts: ChartDefinition[] = [
+  {
+    labels: ["Lagging during indexing - average, max"],
+    measures: [["ui.lagging#average", "ui.lagging#max"]],
+    projects: zephyrIndexingProjects,
+    aliases: zephyrIndexingAliases,
+  },
+  {
+    labels: ["Lagging during indexing - sum"],
+    measures: ["ui.lagging#sum"],
+    projects: zephyrIndexingProjects,
+    aliases: zephyrIndexingAliases,
+  },
+  {
+    labels: ["Lagging during indexing - count"],
+    measures: ["ui.lagging#count"],
+    projects: zephyrIndexingProjects,
+    aliases: zephyrIndexingAliases,
+  },
+  {
+    labels: ["Lagging during indexing - percentage share"],
+    measures: [["ui.lagging#percentage_share"]],
+    projects: zephyrIndexingProjects,
+    aliases: zephyrIndexingAliases,
   },
 ]
 
@@ -200,6 +238,7 @@ const laggingDebuggingCharts: ChartDefinition[] = [
 ]
 
 const laggingIndexingChartsCombined = combineCharts(laggingIndexingCharts)
+const laggingZephyrIndexingChartsCombined = combineCharts(laggingZephyrIndexingCharts)
 const laggingCompletionChartsCombined = combineCharts(laggingCompletionCharts)
 const laggingNavigationChartsCombined = combineCharts(laggingNavigationCharts)
 const laggingHighlightingChartsCombined = combineCharts(laggingHighlightingCharts)

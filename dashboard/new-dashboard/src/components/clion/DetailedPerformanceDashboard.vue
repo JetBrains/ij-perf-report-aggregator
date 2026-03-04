@@ -111,6 +111,13 @@
       />
     </section>
 
+    <section>
+      <CLionVsRadlerIndexingChart
+        label="Index project (Zephyr Bap Broadcast Sink)"
+        project="zephyr_bap_broadcast_sink/indexing"
+      />
+    </section>
+
     <section class="flex gap-x-6 flex-col md:flex-row">
       <div class="flex-1 min-w-0">
         <section>

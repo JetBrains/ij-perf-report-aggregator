@@ -48,6 +48,14 @@
       />
     </section>
 
+    <section>
+      <CLionVsRadlerMemoryUsageChart
+        label="Zephyr Bap Broadcast Sink - After Indexing"
+        measure="afterIndexing"
+        project="zephyr_bap_broadcast_sink/indexing"
+      />
+    </section>
+
     <Divider title="Resolving References" />
 
     <section>

@@ -161,6 +161,19 @@
         />
       </div>
     </section>
+
+    <Divider title="Embedded" />
+
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div class="flex-1 min-w-0">
+        <section>
+        <CLionVsRadlerIndexingChart
+          label="Index project (LLVM)"
+          project="zephyr_bap_broadcast_sink/indexing"
+        />
+        </section>
+      </div>
+    </section>
   </DashboardPage>
 </template>
 

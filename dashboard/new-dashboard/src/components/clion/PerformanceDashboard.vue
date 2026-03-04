@@ -168,7 +168,7 @@
       <div class="flex-1 min-w-0">
         <section>
         <CLionVsRadlerIndexingChart
-          label="Index project (LLVM)"
+          label="Index zephyr project (Zephyr Bap Broadcast Sink)"
           project="zephyr_bap_broadcast_sink/indexing"
         />
         </section>

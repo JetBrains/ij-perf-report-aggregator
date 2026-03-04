@@ -37,6 +37,14 @@ const chartsDeclaration: ChartDefinition[] = [
     projects: ["radler/fmtlib/typing/simple (4 lines)"],
     aliases: ["{fmt}"],
   },
+
+  {
+    labels: ["Typing latency"],
+    measures: ["typing#latency#mean_value"],
+    projects: ["radler/fmtlib/typing/simple (4 lines)"],
+    aliases: ["{fmt}"],
+  },
+
   {
     labels: ["Completion"],
     measures: ["fus_time_to_show_90p"],
@@ -60,16 +68,9 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["Typing AWT Delay"],
-    measures: ["test#max_awt_delay"],
-    projects: ["radler/fmtlib/typing/simple (4 lines)"],
-    aliases: ["{fmt}"],
-  },
-  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
-    // TODO: remove radler/fmtlib/inspection
-    projects: ["radler/fmtlib/inspection", "radler/fmtlib/globalInspection"],
+    projects: ["radler/fmtlib/globalInspection"],
     aliases: ["{fmt}"],
   },
 ]

@@ -371,6 +371,46 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["EXPERIMENT: Cold Search Everywhere Lucene Files (slow typing)", "EXPERIMENT: Cold SE First Element Lucene Files (slow typing)"],
+    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
+    projects: [
+      "community/go-to-lucene-files/Editor/typingLetterByLetter",
+      "community/go-to-lucene-files/Kotlin/typingLetterByLetter",
+      "community/go-to-lucene-files/Runtime/typingLetterByLetter",
+      "community/go-to-lucene-files-finished-embeddings/Runtime/typingLetterByLetter",
+      "java/go-to-lucene-files/Runtime/typingLetterByLetter",
+
+      "intellij_commit/go-to-lucene-files/Kotlin/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files/Editor/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files-finished-embeddings/Runtime/typingLetterByLetter",
+
+      "intellij_commit/new-se-go-to-lucene-files/Kotlin/typingLetterByLetter",
+      "intellij_commit/new-se-go-to-lucene-files/Editor/typingLetterByLetter",
+      "intellij_commit/new-se-go-to-lucene-files/Runtime/typingLetterByLetter",
+    ],
+  },
+  {
+    labels: ["EXPERIMENT: Warm Search Everywhere Lucene Files (slow typing)", "EXPERIMENT: Warm SE First Element Lucene Files (slow typing)"],
+    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
+    projects: [
+      "community/go-to-lucene-files-with-warmup/Editor/typingLetterByLetter",
+      "community/go-to-lucene-files-with-warmup/Kotlin/typingLetterByLetter",
+      "community/go-to-lucene-files-with-warmup/Runtime/typingLetterByLetter",
+      "community/go-to-lucene-files-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+      "java/go-to-lucene-files-with-warmup/Runtime/typingLetterByLetter",
+
+      "intellij_commit/go-to-lucene-files-with-warmup/Kotlin/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files-with-warmup/Editor/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files-with-warmup/Runtime/typingLetterByLetter",
+      "intellij_commit/go-to-lucene-files-with-warmup-finished-embeddings/Runtime/typingLetterByLetter",
+
+      "intellij_commit/new-se-go-to-lucene-files-with-warmup/Kotlin/typingLetterByLetter",
+      "intellij_commit/new-se-go-to-lucene-files-with-warmup/Editor/typingLetterByLetter",
+      "intellij_commit/new-se-go-to-lucene-files-with-warmup/Runtime/typingLetterByLetter",
+    ],
+  },
+  {
     labels: ["performance.ui.lagging", "performance.ui.latency", "performance.popup.latency"],
     measures: ["ui.lagging#max_value", "ui.latency#max_value", "popup.latency#max_value"],
     projects: [

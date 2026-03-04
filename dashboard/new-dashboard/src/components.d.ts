@@ -17,6 +17,8 @@ declare module 'vue' {
     AccordionPanel: typeof import('primevue/accordionpanel')['default']
     Button: typeof import('primevue/button')['default']
     Checkbox: typeof import('primevue/checkbox')['default']
+    Column: typeof import('primevue/column')['default']
+    DataTable: typeof import('primevue/datatable')['default']
     DatePicker: typeof import('primevue/datepicker')['default']
     DeferredContent: typeof import('primevue/deferredcontent')['default']
     Dialog: typeof import('primevue/dialog')['default']

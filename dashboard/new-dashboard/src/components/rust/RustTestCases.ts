@@ -184,3 +184,7 @@ export const rustLocalInspectionCases = [
   "syn/local-inspection/tests/common/eq.rs",
   "clippy/local-inspection/clippy_lints/src/write/empty_string.rs",
 ]
+export const rustDebuggerTestCases = [
+  "hello-world/Debugger performance test",
+  "bevy-application/Debugger performance test",
+]

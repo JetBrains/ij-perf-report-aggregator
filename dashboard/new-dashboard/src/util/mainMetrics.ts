@@ -32,4 +32,7 @@ export const MAIN_METRICS: string[] = [
   "EditSimilarity",
   "SyntaxErrorsSessionRatio",
   "attempt.mean.ms",
+  "freedMemory",
+  "fullGCPause",
+  "gcPause",
 ]

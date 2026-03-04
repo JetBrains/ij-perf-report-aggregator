@@ -149,15 +149,22 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		accessToken := request.Header.Get("X-Auth-Request-Access-Token")
-		user, err := auth.FetchUserInfo(request.Context(), accessToken)
-		if err != nil {
-			slog.Warn("cannot fetch user info", "error", err)
-		}
-
-		userId, err := ytAuth.GetUser(request.Context(), user.Email)
-		if err != nil {
-			slog.Warn("error getting user id:", "error", err)
-			userId = nil
+		var userId *auth.YTUser
+		if accessToken == "" {
+			slog.Warn("cannot fetch user info: X-Auth-Request-Access-Token header is missing")
+		} else {
+			user, err := auth.FetchUserInfo(request.Context(), accessToken)
+			switch {
+			case err != nil:
+				slog.Warn("cannot fetch user info", "error", err)
+			case user.Email == "":
+				slog.Warn("cannot fetch user info: email is empty in Google response")
+			default:
+				userId, err = ytAuth.GetUser(request.Context(), user.Email)
+				if err != nil {
+					slog.Warn("error getting user id", "email", user.Email, "error", err)
+				}
+			}
 		}
 		issueInfo := CreateIssueInfo{
 			Summary:     params.TicketLabel,

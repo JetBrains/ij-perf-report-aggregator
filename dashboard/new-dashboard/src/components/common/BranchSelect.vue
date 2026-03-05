@@ -74,6 +74,17 @@
             </span>
             <span class="pi pi-angle-right ml-[auto]" />
           </li>
+          <li
+            v-if="groupableBranchConfigurator && groupableBranchConfigurator.hasGroupableBranches.value"
+            class="p-multiselect-option flex items-center justify-between gap-2"
+            @click.stop
+          >
+            <span v-tooltip.left="'Group weekly branches 261.xxxx under a stable branch 261'">Group weekly into major</span>
+            <ToggleSwitch
+              v-model="groupableBranchConfigurator.groupBranches.value"
+              class="ml-4"
+            />
+          </li>
         </ul>
 
         <div
@@ -142,14 +153,15 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from "@heroicons/vue/20/solid"
 import { computed, ref, toValue } from "vue"
-import { sortBranches } from "../../configurators/BranchConfigurator"
+import { BranchConfigurator, sortBranches } from "../../configurators/BranchConfigurator"
 import { DimensionConfigurator } from "../../configurators/DimensionConfigurator"
 import { branchesSelectLabelFormat } from "../../shared/labels"
 import { usePlaceholder } from "../charts/placeholder"
 import BranchIcon from "./BranchIcon.vue"
+import ToggleSwitch from "primevue/toggleswitch"
 
 interface Props {
-  branchConfigurator: DimensionConfigurator
+  branchConfigurator: DimensionConfigurator | BranchConfigurator
   releaseConfigurator?: DimensionConfigurator
   triggeredByConfigurator?: DimensionConfigurator
 
@@ -242,6 +254,10 @@ const placeholder = usePlaceholder(
 
 const hasManyElements = computed(() => {
   return branchItems.value.length > 4
+})
+
+const groupableBranchConfigurator = computed(() => {
+  return branchConfigurator instanceof BranchConfigurator ? branchConfigurator : null
 })
 </script>
 <style>

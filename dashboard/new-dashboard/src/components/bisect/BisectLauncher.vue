@@ -218,7 +218,8 @@ onMounted(async () => {
     const changes = await bisectClient.fetchTeamCityChanges(buildId)
     model.firstCommit = changes.firstCommit
     model.lastCommit = changes.lastCommit
-    model.buildType = await bisectClient.fetchBuildType(buildId)
+    const fetchedBuildType = await bisectClient.fetchBuildType(buildId)
+    model.buildType = model.testPatterns ? fetchedBuildType.replace(/_\d+$/, "_1") : fetchedBuildType
 
     const buildInfo = await bisectClient.fetchBuildInfo(buildId)
     if (buildInfo !== null) {

@@ -198,7 +198,10 @@ const metric = ref(data.series[0].metricName ?? "")
 const test = ref(data.projectName)
 const isDegradation = data.deltaPrevious?.includes("-") ?? false
 const direction = ref(isDegradation ? "DEGRADATION" : "OPTIMIZATION")
-const buildType = computedAsync(async () => await getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId), null)
+const buildType = computedAsync(
+  () => getTeamcityBuildType(serverConfigurator.db, serverConfigurator.table, data.buildId).then((bt) => (fullClassName && bt ? bt.replace(/_\d+$/, "_1") : bt)),
+  null
+)
 const buildId = ref(data.buildId.toString())
 const requester = ref(useUserStore().user?.email)
 const methodName = data.description.value?.methodName ?? ""

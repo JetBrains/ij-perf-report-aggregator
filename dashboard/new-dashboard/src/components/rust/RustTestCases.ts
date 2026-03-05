@@ -187,4 +187,5 @@ export const rustLocalInspectionCases = [
 export const rustDebuggerTestCases = [
   "hello-world/Debugger performance test",
   "bevy-application/Debugger performance test",
+  "hello-world-async/Debugger performance test"
 ]

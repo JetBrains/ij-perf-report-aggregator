@@ -134,6 +134,7 @@ const groups = [
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
       "vue-naive-ui-admin/localInspection/inspections",
+      "typescript/localInspection/checker.ts",
     ],
   },
   {
@@ -147,6 +148,7 @@ const groups = [
       "allure-js/inspection/whole-project",
       "axios/inspection/",
       "gitlab/inspection/appDir",
+      "typescript/inspection/src",
     ],
   },
   {

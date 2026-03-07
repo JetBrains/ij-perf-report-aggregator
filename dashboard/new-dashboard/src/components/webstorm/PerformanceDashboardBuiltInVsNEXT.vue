@@ -111,6 +111,7 @@ const groups = [
       "kibana/localInspection/project_navigation.ts",
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
+      "typescript/localInspection/checker.ts",
     ],
   },
   {

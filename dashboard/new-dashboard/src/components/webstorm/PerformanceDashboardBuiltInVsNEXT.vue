@@ -159,7 +159,7 @@ const groups = [
   },
   {
     label: "Code Vision",
-    measure: "JSReferencesCodeVisionProvider",
+    measure: "codeVision",
     projects: [
       "aws_cdk/localInspection/logging",
       "WEB_5976/localInspection/react_mui",
@@ -170,6 +170,7 @@ const groups = [
       "material-ui-react-admin/localInspection/PostEdit.tsx",
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
+      "typescript/localInspection/checker.ts",
     ],
   },
   {

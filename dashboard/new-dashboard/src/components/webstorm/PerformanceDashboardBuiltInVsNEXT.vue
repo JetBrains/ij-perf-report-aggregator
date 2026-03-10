@@ -49,7 +49,7 @@ import { groupBy3 } from "./utils"
 const variantOptions = [
   { label: "Built-in", value: "" },
   { label: "NEXT", value: "NEXT" },
-  { label: "TSGO_COMBINED", value: "TSGO_COMBINED" }
+  { label: "TSGO_COMBINED", value: "TSGO_COMBINED" },
 ]
 
 const allProjectVariants = variantOptions.map((option) => option.value)
@@ -88,8 +88,8 @@ const groups = [
       "backstage/completion/completion",
       "backstage/completion/component",
       "vue-naive-ui-admin/completion/built-in-completion",
-      "vue-naive-ui-admin/completion/completion"
-    ]
+      "vue-naive-ui-admin/completion/completion",
+    ],
   },
   {
     label: "FirstCodeAnalysis",
@@ -111,8 +111,8 @@ const groups = [
       "kibana/localInspection/project_navigation.ts",
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
-      "typescript/localInspection/checker.ts"
-    ]
+      "typescript/localInspection/checker.ts",
+    ],
   },
   {
     label: "Local inspections",
@@ -135,8 +135,8 @@ const groups = [
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
       "vue-naive-ui-admin/localInspection/inspections",
-      "typescript/localInspection/checker.ts"
-    ]
+      "typescript/localInspection/checker.ts",
+    ],
   },
   {
     label: "Global inspections",
@@ -149,13 +149,13 @@ const groups = [
       "allure-js/inspection/whole-project",
       "axios/inspection/",
       "gitlab/inspection/appDir",
-      "typescript/inspection/src"
-    ]
+      "typescript/inspection/src",
+    ],
   },
   {
     label: "Typing",
     measure: "typing",
-    projects: ["eslint-plugin-jest/typing/eslintPluginJest", "axios/typing/axios", "toh-pt6/typing/toh-pt6", "react-todo-js/typing/react-todo", "vue-template/typing/vue-template"]
+    projects: ["eslint-plugin-jest/typing/eslintPluginJest", "axios/typing/axios", "toh-pt6/typing/toh-pt6", "react-todo-js/typing/react-todo", "vue-template/typing/vue-template"],
   },
   {
     label: "Code Vision",
@@ -170,8 +170,8 @@ const groups = [
       "material-ui-react-admin/localInspection/PostEdit.tsx",
       "fp-ts/localInspection/eq",
       "backstage/localInspection/UserProfileCard.tsx",
-      "typescript/localInspection/checker.ts"
-    ]
+      "typescript/localInspection/checker.ts",
+    ],
   },
   {
     label: "Completion First Element",
@@ -182,8 +182,8 @@ const groups = [
       "pancake-frontend/completion/attribute",
       "eslint-plugin-jest/completion/types",
       "axios/completion/functions",
-      "backstage/completion/completion"
-    ]
+      "backstage/completion/completion",
+    ],
   },
   {
     label: "Highlighting - remove symbol",
@@ -194,8 +194,8 @@ const groups = [
       "kibana/alerts_grouping.tsxHighlighting",
       "kibana/project_navigation.tsHighlighting",
       "fp-ts/Foldable.tsHighlighting",
-      "backstage/UserProfileCard.tsxHighlighting"
-    ]
+      "backstage/UserProfileCard.tsxHighlighting",
+    ],
   },
   {
     label: "Highlighting - type symbol",
@@ -206,13 +206,13 @@ const groups = [
       "kibana/alerts_grouping.tsxHighlighting",
       "kibana/project_navigation.tsHighlighting",
       "fp-ts/Foldable.tsHighlighting",
-      "backstage/UserProfileCard.tsxHighlighting"
-    ]
+      "backstage/UserProfileCard.tsxHighlighting",
+    ],
   },
   {
     label: "Find Usages",
     measure: "findUsages",
-    projects: ["pancake-frontend/findUsages/Modal.tsx", "backstage/findUsages/types.ts", "kibana/findUsages/navLinks.ts"]
-  }
+    projects: ["pancake-frontend/findUsages/Modal.tsx", "backstage/findUsages/types.ts", "kibana/findUsages/navLinks.ts"],
+  },
 ]
 </script>

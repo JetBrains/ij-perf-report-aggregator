@@ -75,14 +75,17 @@ func getRubyMetricFromTestName(test string) []string {
 			"gcPause", "freedMemoryByGC",
 		}
 	}
+	if strings.Contains(test, "/firstCodeAnalysis") {
+		return []string{"firstCodeAnalysis#mean_value"}
+	}
 	if strings.Contains(test, "inspections-test/") {
 		return []string{"globalInspections", "gcPause", "freedMemoryByGC"}
 	}
 	if strings.Contains(test, "/typing") {
-		return []string{"firstCodeAnalysis", "test#average_awt_delay", "typing#median_value"}
+		return []string{"test#average_awt_delay", "typing#median_value"}
 	}
 	if strings.Contains(test, "/completion") {
-		return []string{"firstCodeAnalysis#mean_value", "completion#mean_value", "completion#firstElementShown#mean_value", "completion#number#mean_value"}
+		return []string{"completion#mean_value", "completion#firstElementShown#mean_value", "completion#number#mean_value"}
 	}
 	if strings.Contains(test, "/getSymbolMembers") {
 		return []string{"getSymbolMembers#mean_value", "getSymbolMembers#number#mean_value"}

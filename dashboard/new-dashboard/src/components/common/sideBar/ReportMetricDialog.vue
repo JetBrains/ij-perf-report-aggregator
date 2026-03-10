@@ -167,7 +167,22 @@ watch(
   }
 )
 
-const reason = ref(accidentToEdit.value?.reason ?? "")
+function generateReason(): string {
+  if (data == null) return ""
+  if (accidentToEdit.value?.reason) return accidentToEdit.value.reason
+  const parts: string[] = []
+  if (data.date) {
+    const date = new Date(data.date)
+    parts.push(date.toLocaleDateString("en-US", { month: "long", day: "numeric" }))
+  }
+  if (data.projectName) parts.push(data.projectName)
+  const metricName = data.series[0]?.metricName
+  if (metricName) parts.push(metricName)
+  if (data.mode) parts.push(data.mode + " mode")
+  return parts.join(" - ")
+}
+
+const reason = ref(generateReason())
 const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 
 const build = computed(() => data?.build ?? data?.buildId.toString())

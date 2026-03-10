@@ -139,54 +139,6 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
-        label="Completion (Diaspora)"
-        measure="completion#mean_value"
-        :projects="[
-          'diaspora-project-test/completion/routes',
-          'diaspora-project-test/completion/exceptions',
-          'diaspora-project-test/completion/localization',
-          'diaspora-project-test/completion/constant',
-          'diaspora-project-test/completion/exceptions-prefix',
-          'diaspora-project-test/completion/method',
-          'diaspora-project-test/completion/qualified',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Completion (GitLab)"
-        measure="completion#mean_value"
-        :projects="[
-          'gitlab-project-test/completion/routes',
-          'gitlab-project-test/completion/exceptions',
-          'gitlab-project-test/completion/localization',
-          'gitlab-project-test/completion/constant',
-          'gitlab-project-test/completion/exceptions-prefix',
-          'gitlab-project-test/completion/method',
-          'gitlab-project-test/completion/qualified',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Completion (Redmine)"
-        measure="completion#mean_value"
-        :projects="[
-          'redmine-project-test/completion/routes',
-          'redmine-project-test/completion/exceptions',
-          'redmine-project-test/completion/localization',
-          'redmine-project-test/completion/constant',
-          'redmine-project-test/completion/exceptions-prefix',
-          'redmine-project-test/completion/method',
-          'redmine-project-test/completion/qualified',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
         label="Completion Cold Cache (Diaspora)"
         measure="completion#mean_value"
         :projects="[
@@ -277,54 +229,6 @@
           'redmine-project-test/completion/exceptions-prefix-hot-cache',
           'redmine-project-test/completion/method-hot-cache',
           'redmine-project-test/completion/qualified-hot-cache',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Completion First Element (Diaspora)"
-        measure="completion#firstElementShown#mean_value"
-        :projects="[
-          'diaspora-project-test/completion/routes',
-          'diaspora-project-test/completion/exceptions',
-          'diaspora-project-test/completion/localization',
-          'diaspora-project-test/completion/constant',
-          'diaspora-project-test/completion/exceptions-prefix',
-          'diaspora-project-test/completion/method',
-          'diaspora-project-test/completion/qualified',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Completion First Element (GitLab)"
-        measure="completion#firstElementShown#mean_value"
-        :projects="[
-          'gitlab-project-test/completion/routes',
-          'gitlab-project-test/completion/exceptions',
-          'gitlab-project-test/completion/localization',
-          'gitlab-project-test/completion/constant',
-          'gitlab-project-test/completion/exceptions-prefix',
-          'gitlab-project-test/completion/method',
-          'gitlab-project-test/completion/qualified',
-        ]"
-        :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
-      />
-    </section>
-    <section>
-      <GroupProjectsWithClientChart
-        label="Completion First Element (Redmine)"
-        measure="completion#firstElementShown#mean_value"
-        :projects="[
-          'redmine-project-test/completion/routes',
-          'redmine-project-test/completion/exceptions',
-          'redmine-project-test/completion/localization',
-          'redmine-project-test/completion/constant',
-          'redmine-project-test/completion/exceptions-prefix',
-          'redmine-project-test/completion/method',
-          'redmine-project-test/completion/qualified',
         ]"
         :aliases="['Routes', 'Exceptions', 'I18n#t', 'Constant', 'Exceptions (prefix)', 'Method', 'Qualified']"
       />

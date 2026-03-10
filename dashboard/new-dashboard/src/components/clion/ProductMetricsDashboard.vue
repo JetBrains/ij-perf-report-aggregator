@@ -56,8 +56,20 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["SearchEverywhere"],
+    labels: ["SearchEverywhere - Wait Until Full or Done"],
     measures: ["searchEverywhere"],
+    projects: [
+      "radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter",
+      "radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter",
+      "radler/luau/go-to-file-with-warmup/TableShape.cpp/typingLetterByLetter",
+      "radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter",
+      "radler/luau/go-to-action-with-warmup/RCP/typingLetterByLetter",
+      "radler/luau/go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter",
+    ],
+  },
+  {
+    labels: ["SearchEverywhere - First Elements Added"],
+    measures: ["searchEverywhere_first_elements_added"],
     projects: [
       "radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter",
       "radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter",

@@ -15,7 +15,6 @@ func GenerateEditorSettings() []detector.PerformanceSettings {
 		{test: []string{"intellij_commit/editor-highlighting"}, metric: []string{"typing_}_duration", "typing_EditorBackSpace_duration"}},
 		{test: []string{"kotlin_coroutines/localInspection"}, metric: []string{"localInspections", "firstCodeAnalysis"}},
 		{test: []string{"intellij_commit/editor-kotlin-highlighting"}, metric: []string{"typing_}_duration", "typing_EditorBackSpace_duration"}},
-		{test: []string{"typingInKotlinFile_4Threads/typing"}, metric: []string{"editor.typing.latency#90"}},
 		{test: []string{
 			"keycloak_release_20/typing/ClientEntity",
 			"typingInJavaFile_16Threads/typing",

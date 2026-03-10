@@ -205,7 +205,7 @@ const buildType = computedAsync(
 const buildId = ref(data.buildId.toString())
 const requester = ref(useUserStore().user?.email)
 const methodName = data.description.value?.methodName ?? ""
-const fullClassName = methodName.slice(0, Math.max(0, methodName.lastIndexOf("#")))
+const fullClassName = ref(methodName.slice(0, Math.max(0, methodName.lastIndexOf("#"))))
 const targetValue: Ref<string | null> = ref(null)
 const excludedCommits = ref("")
 const targetJpsCompile = ref(data.branch === "master" && new Date(data.date) <= new Date("2025-10-19T23:59:59.999Z"))
@@ -260,7 +260,7 @@ async function startBisect() {
       test: test.value,
       metric: metric.value,
       buildType: buildType.value as string,
-      testPatterns: fullClassName,
+      testPatterns: fullClassName.value,
       excludedCommits: excludedCommits.value
         .split(",")
         .map((commit) => commit.trim())

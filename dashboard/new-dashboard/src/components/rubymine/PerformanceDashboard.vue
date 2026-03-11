@@ -26,6 +26,90 @@
     </section>
     <section>
       <GroupProjectsWithClientChart
+        label="First Code Analysis (GitLab)"
+        measure="firstCodeAnalysis#mean_value"
+        :projects="[
+          'GitLab/firstCodeAnalysis/app_models_user_rb',
+          'GitLab/firstCodeAnalysis/app_models_project_rb',
+          'GitLab/firstCodeAnalysis/db_structure_sql',
+          'GitLab/firstCodeAnalysis/spec_models_project_spec_rb',
+          'GitLab/firstCodeAnalysis/app_views_users_show_html_haml',
+          'GitLab/firstCodeAnalysis/fixtures_emojis_index_json',
+          'GitLab/firstCodeAnalysis/ruby27_parser_rb',
+          'GitLab/firstCodeAnalysis/app_controllers_projects_controller_rb',
+          'GitLab/firstCodeAnalysis/app_mailers_emails_merge_requests_rb',
+          'GitLab/firstCodeAnalysis/config_routes_project_rb',
+          'gitlab-project-test/firstCodeAnalysis/ee_app_graphql_mutations_boards_epic_boards_epic_move_list_rb',
+          'gitlab-project-test/firstCodeAnalysis/ee_app_serializers_clusters_environment_entity_rb',
+          'gitlab-project-test/firstCodeAnalysis/app_controllers_clusters_clusters_controller_rb',
+          'gitlab-project-test/firstCodeAnalysis/app_views_admin_locale_html_haml',
+          'gitlab-project-test/firstCodeAnalysis/app_controllers_admin_application_controller_rb',
+          'gitlab-project-test/firstCodeAnalysis/app_models_ci_build_trace_chunk_rb',
+        ]"
+        :aliases="[
+          'User Model',
+          'Project Model',
+          'structure.sql',
+          'Project Spec',
+          'Users View Haml',
+          'Emojis JSON',
+          'Ruby Parser',
+          'Projects Controller',
+          'MR Mail',
+          'Routes Project',
+          'Epic Move List',
+          'Environment Entity',
+          'Clusters Controller',
+          'Locale Haml',
+          'Admin App Controller',
+          'Build Trace Chunk',
+        ]"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="First Code Analysis (Diaspora)"
+        measure="firstCodeAnalysis#mean_value"
+        :projects="[
+          'diaspora-project-test/firstCodeAnalysis/app_models_conversation_visibility_rb',
+          'diaspora-project-test/firstCodeAnalysis/spec_integration_api_contacts_controller_spec_rb',
+          'diaspora-project-test/firstCodeAnalysis/app_models_message_rb',
+          'diaspora-project-test/firstCodeAnalysis/app_views_admins_pods_html_haml',
+          'diaspora-project-test/firstCodeAnalysis/app_controllers_admins_controller_rb',
+          'diaspora-project-test/firstCodeAnalysis/app_workers_process_photo_rb',
+        ]"
+        :aliases="['Conversation Visibility', 'Contacts Controller Spec', 'Message', 'Admin Pods Haml', 'Admins Controller', 'Process Photo']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="First Code Analysis (Redmine)"
+        measure="firstCodeAnalysis#mean_value"
+        :projects="[
+          'redmine-project-test/firstCodeAnalysis/app_controllers_auto_completes_controller_rb',
+          'redmine-project-test/firstCodeAnalysis/app_views_admin_info_html_erb',
+          'redmine-project-test/firstCodeAnalysis/app_models_time_entry_activity_rb',
+          'redmine-project-test/firstCodeAnalysis/app_views_imports__time_entries_saved_objects_html_erb',
+          'redmine-project-test/firstCodeAnalysis/app_controllers_account_controller_rb',
+          'redmine-project-test/firstCodeAnalysis/app_controllers_application_controller_rb',
+        ]"
+        :aliases="['Auto Completes Controller', 'Admin Info Erb', 'Time Entry Activity', 'Time Entries Import Erb', 'Account Controller', 'Application Controller']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
+        label="First Code Analysis (Rest)"
+        measure="firstCodeAnalysis#mean_value"
+        :projects="[
+          'RUBY-26170/firstCodeAnalysis/swagger_helper_rb',
+          'RBSCollection/firstCodeAnalysis/gems_activerecord_6_0_activerecord-generated_rbs',
+          'SampleRailsApp/firstCodeAnalysis/spec_models_user_model_spec_rb',
+        ]"
+        :aliases="['swagger_helper.rb (RUBY-26170)', 'activerecord-generated.rbs (RBSCollection)', 'User Model Spec (SampleRailsApp)']"
+      />
+    </section>
+    <section>
+      <GroupProjectsWithClientChart
         label="Find Usages: Execution Time"
         :measure="['findUsages', 'findUsagesInToolWindow']"
         :projects="[

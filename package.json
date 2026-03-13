@@ -15,6 +15,7 @@
     "@tailwindcss/vite": "^4.2.1",
     "@vitejs/plugin-vue": "^6.0.5",
     "isoworker": "^0.2.4",
+    "jsdom": "^28.1.0",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.55.0",
     "oxlint-tsgolint": "^0.16.0",

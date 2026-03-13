@@ -173,6 +173,15 @@ const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 const build = computed(() => data?.build ?? data?.buildId.toString())
 
 async function reportRegression() {
+  if (reason.value.trim().length < 5) {
+    toast.add({
+      severity: "error",
+      summary: "Validation Error",
+      detail: "Reason must be at least 5 characters long",
+      life: 5000,
+    })
+    return
+  }
   const value = data
   if (value != null && build.value != null) {
     const metricName = value.series[0].metricName

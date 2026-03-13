@@ -61,6 +61,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
+import { useToast } from "primevue/usetoast"
 import { AccidentKind, AccidentsConfigurator } from "../../configurators/accidents/AccidentsConfigurator"
 import { ServerWithCompressConfigurator } from "../../configurators/ServerWithCompressConfigurator"
 
@@ -98,7 +99,17 @@ class AccidentReporter extends AccidentsConfigurator {
 
 const accidentReporter = new AccidentReporter()
 const reported = ref(false)
+const toast = useToast()
 async function reportRegression() {
+  if (reason.value.trim().length < 5) {
+    toast.add({
+      severity: "error",
+      summary: "Validation Error",
+      detail: "Reason must be at least 5 characters long",
+      life: 5000,
+    })
+    return
+  }
   for (const test of testsArray.value) {
     await accidentReporter.writeAccidentToMetaDb(dateFormatted.value, test, reason.value, build, accidentType.value)
   }

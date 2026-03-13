@@ -164,6 +164,15 @@ const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
 
 async function createTicket() {
+  if (label.value.trim().length < 5) {
+    toast.add({
+      severity: "error",
+      summary: "Validation Error",
+      detail: "Label must be at least 5 characters long",
+      life: 5000,
+    })
+    return
+  }
   try {
     if (data == null) throw new Error("There is no info data")
     if (accident == null) throw new Error("There is no accident")

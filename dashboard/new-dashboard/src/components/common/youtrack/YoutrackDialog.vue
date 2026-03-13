@@ -159,9 +159,25 @@ const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
 const downloadState = ref(DownloadState.NOT_STARTED)
-const label = ref(accident?.reason ?? "")
+const label = ref(generateLabel())
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr)
+  return date.toLocaleDateString("en-US", { month: "long", day: "numeric" })
+}
+
+function generateLabel(): string {
+  if (data == null || accident == null) return ""
+  const parts: string[] = []
+  parts.push("Degradation" + (data.date ? " " + formatDate(data.date) : ""))
+  if (data.projectName) parts.push(data.projectName)
+  const metricName = data.series[0]?.metricName
+  if (metricName) parts.push(metricName)
+  if (data.mode) parts.push(data.mode + " mode")
+  return parts.join(" - ")
+}
 
 async function createTicket() {
   try {

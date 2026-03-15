@@ -80,6 +80,14 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
+    labels: ["SearchEverywhere - New vs Old"],
+    measures: ["searchEverywhere"],
+    projects: [
+      "radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter",
+      "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter",
+    ],
+  },
+  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
     projects: ["radler/fmtlib/globalInspection"],

@@ -2,6 +2,10 @@
   <configuration default="false" name="serve" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="report-aggregator" />
     <working_directory value="$PROJECT_DIR$" />
+    <envs>
+      <env name="CLICKHOUSE" value="127.0.0.1:9000" />
+      <env name="DATABASE_URL" value="postgres://user:password@localhost:5432/ij_perf_meta" />
+    </envs>
     <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/main.go" />
     <package value="$PROJECT_DIR$/cmd/report-aggregator" />

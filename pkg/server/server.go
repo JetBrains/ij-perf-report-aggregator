@@ -91,6 +91,8 @@ func Serve(dbUrl string, natsUrl string) error {
 	router.Use(middleware.Heartbeat("/health-check"))
 	router.Use(middleware.Recoverer)
 
+	router.Get("/api/meta/degradations", CreateGetDegradationsHandler(dbpool))
+
 	router.Route("/api/meta", func(r chi.Router) {
 		r.Route("/accidents", func(r chi.Router) {
 			r.Post("/*", meta.CreatePostAccidentRequestHandler(dbpool))

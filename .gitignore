@@ -4,6 +4,7 @@
 .idea/shelf/
 .idea/dataSources.local.xml
 http-client.env.json
+.env
 
 /deployment/overlays/
 

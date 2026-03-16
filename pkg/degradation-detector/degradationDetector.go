@@ -36,6 +36,18 @@ func (v CenterValues) PercentageChange() float64 {
 	return math.Abs((v.newValue - v.previousValue) / v.previousValue * 100)
 }
 
+// Timestamp returns the Unix-millisecond timestamp of the degradation.
+func (d Degradation) Timestamp() int64 { return d.timestamp }
+
+// PreviousValue returns the median of the segment before the change point.
+func (d Degradation) PreviousValue() float64 { return d.medianValues.previousValue }
+
+// NewValue returns the median of the segment after the change point.
+func (d Degradation) NewValue() float64 { return d.medianValues.newValue }
+
+// PercentageChange returns the absolute percentage change between the two medians.
+func (d Degradation) PercentageChange() float64 { return d.medianValues.PercentageChange() }
+
 func detectDegradations(values []int, builds []string, timestamps []int64, analysisSettings analysisSettings) []Degradation {
 	degradations := make([]Degradation, 0)
 

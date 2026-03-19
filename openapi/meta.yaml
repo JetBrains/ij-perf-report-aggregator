@@ -57,21 +57,74 @@ paths:
                   $ref: '#/components/schemas/Accident'
         '500':
           description: Bad Request. The JSON is malformed or missing required fields.
-  /api/meta/projectsByOwner:
+  /api/meta/degradations:
     get:
-      summary: Get projects by owner
-      description: Returns all projects belonging to a given owner.
+      summary: Get degradations by owner and date range
+      description: >
+        Returns accidents (degradations) from the meta DB for one or more owners within a date range.
+        Empty owner values are ignored; if all are empty or none are provided, returns 400.
       parameters:
         - name: owner
           in: query
           required: true
           schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: One or more owners to filter by (repeat the parameter for multiple values).
+          example: ['Java', 'Editor & Highlighting']
+        - name: from
+          in: query
+          required: true
+          schema:
             type: string
-          example: 'IntelliJ Kotlin Plugin'
-          description: The owner to filter projects by
+            format: date
+          description: Start of date range, inclusive.
+          example: '2024-01-01'
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End of date range, inclusive.
+          example: '2024-03-31'
       responses:
         '200':
-          description: Returns a list of projects for the given owner
+          description: Returns a list of degradation entries, ordered by date descending.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DegradationReportEntry'
+        '400':
+          description: Bad Request. One or more required query parameters are missing.
+        '500':
+          description: Internal Server Error. A database query failed.
+  /api/meta/projectsByOwner:
+    get:
+      summary: Get projects by owner
+      description: >
+        Returns all projects belonging to one or more owners.
+        Empty owner values are ignored; if all are empty or none are provided, returns 400.
+      parameters:
+        - name: owner
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: One or more owners to filter by (repeat the parameter for multiple values).
+          example: ['IntelliJ Kotlin Plugin', 'Java']
+      responses:
+        '200':
+          description: Returns a list of projects for the given owners.
           content:
             application/json:
               schema:
@@ -85,7 +138,7 @@ paths:
                       type: string
                     example: ['kotlin-highlights', 'kotlin-inspections']
         '400':
-          description: Bad Request. The owner query parameter is missing.
+          description: Bad Request. The owner query parameter is missing or all values are empty.
         '500':
           description: Internal Server Error. An error occurred on the server.
   /api/meta/ownerByProject:
@@ -162,6 +215,39 @@ components:
           type: string
           example: 'ext-1001'
           required: false
+    DegradationReportEntry:
+      type: object
+      required:
+        - date
+        - affectedTest
+        - buildNumber
+        - reason
+        - kind
+        - userName
+      properties:
+        date:
+          type: string
+          format: date
+          description: Date of the degradation.
+          example: '2024-03-15'
+        affectedTest:
+          type: string
+          description: The test that had the degradation.
+          example: 'community/indexing'
+        buildNumber:
+          type: string
+          description: Build number associated with the degradation.
+          example: '241.12345'
+        reason:
+          type: string
+          description: Reason for the degradation.
+          example: 'Known regression due to IDEA-1232'
+        kind:
+          $ref: '#/components/schemas/KindType'
+        userName:
+          type: string
+          description: User who reported the degradation.
+          example: 'Jane Doe'
     Accident:
       type: object
       required:

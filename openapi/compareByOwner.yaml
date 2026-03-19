@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Compare By Owner API
-  description: API for comparing metric values between two branches for all projects belonging to a given owner.
+  description: API for comparing metric values between two branches for all projects belonging to one or more owners.
   version: 1.0.0
 servers:
   - url: 'https://ij-perf-api.labs.jb.gg'
@@ -10,7 +10,7 @@ paths:
     post:
       summary: Compare metrics between two branches by owner
       description: >
-        Looks up all projects belonging to the given owner, queries metric values
+        Looks up all projects belonging to the given owners, queries metric values
         for both branches across all product tables, computes medians (using change-point
         detection), and returns the percentage difference. Only items where both branches
         have data are included in the response.
@@ -25,7 +25,7 @@ paths:
           description: >
             Returns an array of comparison items. Each item contains the project,
             metric name, median values for both branches, and the percentage difference.
-            Returns an empty array if the owner has no projects or no data is found.
+            Returns an empty array if the owners have no projects or no data is found.
           content:
             application/json:
               schema:
@@ -34,8 +34,8 @@ paths:
                   $ref: '#/components/schemas/ComparisonResponseItem'
         '400':
           description: >
-            Bad Request. The JSON body is malformed or a required field
-            (owners, baseBranch, compareBranch, machine) is missing.
+            Bad Request. The JSON body is malformed, a required field
+            (owners, baseBranch, compareBranch, machine) is missing, or all owner values are empty strings.
         '500':
           description: Internal Server Error. A database query or other server-side operation failed.
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 
@@ -48,7 +49,7 @@ var mainMetrics = []string{
 }
 
 type compareByOwnerRequest struct {
-	Owner             string   `json:"owner"`
+	Owners            []string `json:"owners"`
 	BaseBranch        string   `json:"baseBranch"`
 	CompareBranch     string   `json:"compareBranch"`
 	Machine           string   `json:"machine"`
@@ -86,8 +87,9 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 			return
 		}
 
-		if params.Owner == "" || params.BaseBranch == "" || params.CompareBranch == "" || params.Machine == "" {
-			http.Error(w, "owner, baseBranch, compareBranch, and machine are required", http.StatusBadRequest)
+		params.Owners = slices.DeleteFunc(params.Owners, func(s string) bool { return s == "" })
+		if len(params.Owners) == 0 || params.BaseBranch == "" || params.CompareBranch == "" || params.Machine == "" {
+			http.Error(w, "owners, baseBranch, compareBranch, and machine are required", http.StatusBadRequest)
 			return
 		}
 
@@ -95,7 +97,7 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 			params.Mode = ""
 		}
 
-		entries, err := getProjectsByOwner(request.Context(), metaDb, params.Owner)
+		entries, err := getProjectsByOwner(request.Context(), metaDb, params.Owners)
 		if err != nil {
 			slog.Error("unable to get projects by owner", "error", err)
 			http.Error(w, "Failed to get projects for owner", http.StatusInternalServerError)
@@ -168,8 +170,8 @@ func (t *StatsServer) CreateCompareByOwnerHandler(metaDb *pgxpool.Pool) http.Han
 	}
 }
 
-func getProjectsByOwner(ctx context.Context, metaDb *pgxpool.Pool, owner string) ([]projectOwnerEntry, error) {
-	rows, err := metaDb.Query(ctx, "SELECT project, db_name, table_name FROM project_owner WHERE owner=$1", owner)
+func getProjectsByOwner(ctx context.Context, metaDb *pgxpool.Pool, owners []string) ([]projectOwnerEntry, error) {
+	rows, err := metaDb.Query(ctx, "SELECT project, db_name, table_name FROM project_owner WHERE owner=ANY($1)", owners)
 	if err != nil {
 		return nil, err
 	}

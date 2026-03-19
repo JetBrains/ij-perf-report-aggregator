@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"slices"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -56,13 +57,13 @@ func CreateGetOwnerByProjectHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 
 func CreateGetProjectsByOwnerHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		owner := request.URL.Query().Get("owner")
-		if owner == "" {
+		owners := slices.DeleteFunc(request.URL.Query()["owner"], func(s string) bool { return s == "" })
+		if len(owners) == 0 {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		rows, err := metaDb.Query(request.Context(), "SELECT project FROM project_owner WHERE owner=$1", owner)
+		rows, err := metaDb.Query(request.Context(), "SELECT project FROM project_owner WHERE owner=ANY($1)", owners)
 		if err != nil {
 			slog.Error("unable to execute the query", "error", err)
 			writer.WriteHeader(http.StatusInternalServerError)

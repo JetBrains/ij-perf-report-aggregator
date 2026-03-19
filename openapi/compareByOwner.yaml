@@ -35,7 +35,7 @@ paths:
         '400':
           description: >
             Bad Request. The JSON body is malformed or a required field
-            (owner, baseBranch, compareBranch, machine) is missing.
+            (owners, baseBranch, compareBranch, machine) is missing.
         '500':
           description: Internal Server Error. A database query or other server-side operation failed.
 
@@ -44,15 +44,17 @@ components:
     CompareByOwnerRequest:
       type: object
       required:
-        - owner
+        - owners
         - baseBranch
         - compareBranch
         - machine
       properties:
-        owner:
-          type: string
-          description: The owner whose projects should be compared.
-          example: 'IntelliJ Kotlin Plugin'
+        owners:
+          type: array
+          items:
+            type: string
+          description: One or more owners whose projects should be compared.
+          example: ['Java', 'IntelliJ Kotlin Plugin']
         baseBranch:
           type: string
           description: The base branch to compare against.

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"slices"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -20,24 +21,24 @@ type degradationReportEntry struct {
 }
 
 // CreateGetDegradationsHandler returns a GET handler that fetches pre-computed
-// degradations (accidents) from the meta DB for a specific owner and date range.
+// degradations (accidents) from the meta DB for one or more owners and a date range.
 //
 // Query parameters (all required):
 //
-//	owner  – value matched against project_owner.owner
+//	owner  – one or more values matched against project_owner.owner (repeat param for multiple)
 //	from   – start of date range, inclusive (ISO date, e.g. "2024-01-01")
 //	to     – end   of date range, inclusive (ISO date, e.g. "2024-03-31")
 //
 // Example:
 //
-//	GET /api/meta/degradations?owner=kotlin-team&from=2024-01-01&to=2024-03-31
+//	GET /api/meta/degradations?owner=Java&owner=IntelliJ+Kotlin+Plugin&from=2024-01-01&to=2024-03-31
 func CreateGetDegradationsHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		owner := r.URL.Query().Get("owner")
+		owners := slices.DeleteFunc(r.URL.Query()["owner"], func(s string) bool { return s == "" })
 		from := r.URL.Query().Get("from")
 		to := r.URL.Query().Get("to")
 
-		if owner == "" || from == "" || to == "" {
+		if len(owners) == 0 || from == "" || to == "" {
 			http.Error(w, `query parameters "owner", "from", and "to" are all required`, http.StatusBadRequest)
 			return
 		}
@@ -51,14 +52,14 @@ func CreateGetDegradationsHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 			       ac.user_name
 			FROM   accidents ac
 			JOIN   project_owner po ON ac.affected_test = po.project
-			WHERE  po.owner      = $1
+			WHERE  po.owner      = ANY($1)
 			  AND  ac.date      >= $2::date
 			  AND  ac.date      <= $3::date
 			ORDER BY ac.date DESC, ac.affected_test, ac.build_number`
 
-		rows, err := metaDb.Query(r.Context(), query, owner, from, to)
+		rows, err := metaDb.Query(r.Context(), query, owners, from, to)
 		if err != nil {
-			slog.Error("degradations: query failed", "error", err, "owner", owner, "from", from, "to", to)
+			slog.Error("degradations: query failed", "error", err, "owners", owners, "from", from, "to", to)
 			http.Error(w, "query failed", http.StatusInternalServerError)
 			return
 		}

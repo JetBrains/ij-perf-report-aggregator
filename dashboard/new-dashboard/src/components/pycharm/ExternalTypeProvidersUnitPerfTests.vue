@@ -10,7 +10,10 @@
       <GroupProjectsWithClientChart
         label="Big pandas file"
         measure="attempt.median.ms"
-        :projects="['com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.testBigPandasFile - Pyrefly', 'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.testBigPandasFile - PyCharm']"
+        :projects="[
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.testBigPandasFile - Pyrefly',
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.testBigPandasFile - PyCharm',
+        ]"
         :legend-formatter="legendFormatter"
       />
     </section>
@@ -19,7 +22,10 @@
       <GroupProjectsWithClientChart
         label="Pandas DataFrame.mean() method"
         measure="attempt.median.ms"
-        :projects="['com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.complex type inference performance - Pyrefly', 'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.complex type inference performance - PyCharm']"
+        :projects="[
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.complex type inference performance - Pyrefly',
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.complex type inference performance - PyCharm',
+        ]"
         :legend-formatter="legendFormatter"
       />
     </section>
@@ -28,7 +34,10 @@
       <GroupProjectsWithClientChart
         label="Pandas DataFrame class"
         measure="attempt.median.ms"
-        :projects="['com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.data frame type inference performance - Pyrefly', 'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.data frame type inference performance - PyCharm']"
+        :projects="[
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.data frame type inference performance - Pyrefly',
+          'com.intellij.python.junit5Tests.performance.typeEngine.PyTypeEnginePerformanceTest.data frame type inference performance - PyCharm',
+        ]"
         :legend-formatter="legendFormatter"
       />
     </section>

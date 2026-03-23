@@ -15,6 +15,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+const ijPerfBaseURL = "https://ij-perf.labs.jb.gg"
+
 var mainMetrics = []string{
 	"indexingTimeWithoutPauses",
 	"scanningTimeWithoutPauses",
@@ -272,6 +274,6 @@ func buildComparisonResponse(items []filteredValues, dbTableMap map[string]dbTab
 }
 
 func buildTestLink(dbName, table, machine, baseBranch, compareBranch, project, metric string) string {
-	return fmt.Sprintf("/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
-		dbName, table, machine, baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
+	return fmt.Sprintf("%s/owners/test?dbName=%s&table=%s&machine=%s&branch=%s&branch=%s&project=%s&measure=%s",
+		ijPerfBaseURL, dbName, table, machine, baseBranch, compareBranch, project, strings.ReplaceAll(metric, "#", "%23"))
 }

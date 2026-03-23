@@ -9,12 +9,26 @@
   >
     <section>
       <GroupProjectsChart
-        v-for="chart in charts"
+        v-for="chart in mainCharts"
         :key="chart.definition.label"
         :label="chart.definition.label"
         :measure="chart.definition.measure"
         :projects="chart.projects"
       />
+    </section>
+    <Divider title="SearchEverywhere - New vs Old" />
+    <section class="flex gap-x-6 flex-col md:flex-row">
+      <div
+        v-for="chart in seNewVsOldCharts"
+        :key="chart.definition.label"
+        class="flex-1 min-w-0"
+      >
+        <GroupProjectsChart
+          :label="chart.definition.label"
+          :measure="chart.definition.measure"
+          :projects="chart.projects"
+        />
+      </div>
     </section>
   </DashboardPage>
 </template>
@@ -23,8 +37,9 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
+import Divider from "../common/Divider.vue"
 
-const chartsDeclaration: ChartDefinition[] = [
+const mainChartsDeclaration: ChartDefinition[] = [
   {
     labels: ["Indexing"],
     measures: ["backendIndexingTimeMs"],
@@ -80,11 +95,6 @@ const chartsDeclaration: ChartDefinition[] = [
     ],
   },
   {
-    labels: ["SearchEverywhere - New vs Old"],
-    measures: ["searchEverywhere"],
-    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
-  },
-  {
     labels: ["Inspections"],
     measures: ["globalInspections"],
     projects: ["radler/fmtlib/globalInspection"],
@@ -92,5 +102,25 @@ const chartsDeclaration: ChartDefinition[] = [
   },
 ]
 
-const charts = combineCharts(chartsDeclaration)
+const seNewVsOldChartsDeclaration: ChartDefinition[] = [
+  {
+    labels: ["SearchEverywhere - New vs Old - All"],
+    measures: ["searchEverywhere"],
+    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere - New vs Old - Symbol"],
+    measures: ["searchEverywhere"],
+    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere - New vs Old - Class"],
+    measures: ["searchEverywhere"],
+    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
+  },
+]
+
+const mainCharts = combineCharts(mainChartsDeclaration)
+const seNewVsOldCharts = combineCharts(seNewVsOldChartsDeclaration)
+const charts = combineCharts([...mainChartsDeclaration, ...seNewVsOldChartsDeclaration])
 </script>

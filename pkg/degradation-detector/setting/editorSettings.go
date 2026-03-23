@@ -9,11 +9,18 @@ type testEditorMetricDef struct {
 
 func GenerateEditorSettings() []detector.PerformanceSettings {
 	testMetrics := []testEditorMetricDef{
-		{test: []string{"intellij_commit/localInspection/java_file"}, metric: []string{"firstCodeAnalysis"}},
+		{test: []string{}, metric: []string{"firstCodeAnalysis"}},
 		{test: []string{"toolbox_enterprise/ultimateCase/SecurityTests"}, metric: []string{"typingCodeAnalyzing"}},
 		{test: []string{"spring_boot_maven/inspection"}, metric: []string{"globalInspections"}},
 		{test: []string{"intellij_commit/editor-highlighting"}, metric: []string{"typing_}_duration", "typing_EditorBackSpace_duration"}},
-		{test: []string{"kotlin_coroutines/localInspection"}, metric: []string{"localInspections", "firstCodeAnalysis"}},
+		{test: []string{"kotlin_coroutines/localInspection", "intellij_commit/localInspection/java_file"}, metric: []string{"localInspections", "firstCodeAnalysis"}},
+		{test: []string{
+			"intellij_commit/localInspection/java_file_ContentManagerImpl",
+			"json_schema_modes_comparison/localInspection/NewSchema",
+			"keycloak_release_20/localInspection/ClientEntity",
+			"kotlin/localInspection",
+			"toolbox_enterprise/ultimateCase/ToolService",
+		}, metric: []string{"localInspections"}},
 		{test: []string{"intellij_commit/editor-kotlin-highlighting"}, metric: []string{"typing_}_duration", "typing_EditorBackSpace_duration"}},
 		{test: []string{
 			"keycloak_release_20/typing/ClientEntity",

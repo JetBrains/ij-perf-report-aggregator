@@ -83,7 +83,7 @@
       <label
         for="createIssue"
         class="ml-2"
-        >Create YouTrack Issue</label
+        >Create YouTrack issue</label
       >
     </div>
     <RelatedAccidents
@@ -167,7 +167,15 @@ watch(
   }
 )
 
-const reason = ref(accidentToEdit.value?.reason ?? "")
+function generateReason(): string {
+  if (data == null) return ""
+  if (accidentToEdit.value?.reason) return accidentToEdit.value.reason
+  const date = data.date ? new Date(data.date).toISOString().slice(0, 10).replaceAll("-", ".") : ""
+  const metricName = data.series[0]?.metricName
+  return date + " " + (data.projectName ?? "") + " - " + metricName
+}
+
+const reason = ref(generateReason())
 const stacktrace = ref(accidentToEdit.value?.stacktrace ?? "")
 
 const build = computed(() => data?.build ?? data?.buildId.toString())

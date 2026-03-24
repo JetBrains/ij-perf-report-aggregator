@@ -17,11 +17,11 @@
       />
     </section>
     <Divider title="SearchEverywhere - New vs Old" />
-    <section class="flex gap-x-6 flex-col md:flex-row">
+    <section class="flex gap-6 flex-col md:flex-row md:flex-wrap">
       <div
         v-for="chart in seNewVsOldCharts"
         :key="chart.definition.label"
-        class="flex-1 min-w-0"
+        class="min-w-0 md:basis-[calc(33.333%-1rem)] md:flex-none flex-1"
       >
         <GroupProjectsChart
           :label="chart.definition.label"
@@ -104,18 +104,33 @@ const mainChartsDeclaration: ChartDefinition[] = [
 
 const seNewVsOldChartsDeclaration: ChartDefinition[] = [
   {
-    labels: ["SearchEverywhere - New vs Old - All"],
+    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - All"],
     measures: ["searchEverywhere"],
     projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
   },
   {
-    labels: ["SearchEverywhere - New vs Old - Symbol"],
+    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - Symbol"],
     measures: ["searchEverywhere"],
     projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
   },
   {
-    labels: ["SearchEverywhere - New vs Old - Class"],
+    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - Class"],
     measures: ["searchEverywhere"],
+    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere First Elements Added - New vs Old - All"],
+    measures: ["searchEverywhere_first_elements_added"],
+    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere First Elements Added - New vs Old - Symbol"],
+    measures: ["searchEverywhere_first_elements_added"],
+    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere First Elements Added - New vs Old - Class"],
+    measures: ["searchEverywhere_first_elements_added"],
     projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
   },
 ]

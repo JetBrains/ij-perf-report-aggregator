@@ -91,6 +91,24 @@ paths:
             format: date
           description: End of date range, inclusive.
           example: '2024-03-31'
+        - name: inferredEvents
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: Include inferred regressions/improvements (detected by R2D2). Excluded by default.
+        - name: additionalMetric
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+          style: form
+          explode: true
+          description: Extra metric names to include beyond the default main metrics list (repeat for multiple).
+          example: ['myCustomMetric']
       responses:
         '200':
           description: Returns a list of degradation entries, ordered by date descending.
@@ -224,6 +242,7 @@ components:
         - reason
         - kind
         - userName
+        - link
       properties:
         date:
           type: string
@@ -248,6 +267,12 @@ components:
           type: string
           description: User who reported the degradation.
           example: 'Jane Doe'
+        link:
+          type: string
+          description: >
+            A full URL to the relevant resource. Either an ij-perf chart link with the project and
+            measure pre-selected, or a YouTrack issue URL when no metric is available.
+          example: 'https://ij-perf.labs.jb.gg/owners/test?dbName=perfintDev&table=idea&project=spring_boot&measure=indexing&timeRange=custom&customRange=2024-3-1%3A2024-3-29'
     Accident:
       type: object
       required:

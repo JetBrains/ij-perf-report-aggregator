@@ -38,88 +38,36 @@ function seProjects(tab: string): string[] {
   ]
 }
 
-const chartsDeclaration: ChartDefinition[] = [
-  {
-    labels: ["Cold Search Everywhere Action (slow typing)", "Cold SE First Element Added Action (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-action"),
-  },
-  {
-    labels: ["Warm Search Everywhere Action (slow typing)", "Warm SE First Element Added Action (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-action-with-warmup"),
-  },
-  {
-    labels: ["Cold Search Everywhere Class (slow typing)", "Cold SE First Element Added Class (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-class"),
-  },
-  {
-    labels: ["Warm Search Everywhere Class (slow typing)", "Warm SE First Element Added Class (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-class-with-warmup"),
-  },
-  {
-    labels: ["Cold Search Everywhere File (slow typing)", "Cold SE First Element Added File(slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-file"),
-  },
-  {
-    labels: ["Warm Search Everywhere File (slow typing)", "Warm SE First Element Added File(slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-file-with-warmup"),
-  },
-  {
-    labels: ["Cold Search Everywhere All (slow typing)", "Cold SE First Element Added All(slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-all"),
-  },
-  {
-    labels: ["Warm Search Everywhere All (slow typing)", "Warm SE First Element Added All(slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-all-with-warmup"),
-  },
-  {
-    labels: ["Cold Search Everywhere Symbol (slow typing)", "Cold SE First Element Symbol (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-symbol"),
-  },
-  {
-    labels: ["Warm Search Everywhere Symbol (slow typing)", "Warm SE First Element Symbol (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-symbol-with-warmup"),
-  },
-  {
-    labels: ["Cold Search Everywhere Text (slow typing)", "Cold SE First Element Text (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-text"),
-  },
-  {
-    labels: ["Warm Search Everywhere Text (slow typing)", "Warm SE First Element Text (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-text-with-warmup"),
-  },
-  {
-    labels: ["EXPERIMENT: Cold Search Everywhere Lucene Files (slow typing)", "EXPERIMENT: Cold SE First Element Lucene Files (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-lucene-files"),
-  },
-  {
-    labels: ["EXPERIMENT: Warm Search Everywhere Lucene Files (slow typing)", "EXPERIMENT: Warm SE First Element Lucene Files (slow typing)"],
-    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
-    projects: seProjects("go-to-lucene-files-with-warmup"),
-  },
-  {
-    labels: ["performance.ui.lagging", "performance.ui.latency", "performance.popup.latency"],
-    measures: ["ui.lagging#max_value", "ui.latency#max_value", "popup.latency#max_value"],
-    projects: [
-      "popups-performance-test/test-popups",
-      "typingInJavaFile_16Threads/typing",
-      "typingInJavaFile_4Threads/typing",
-      "typingInKotlinFile_16Threads/typing",
-      "typingInKotlinFile_4Threads/typing",
+function seCharts(tabName: string, projectPrefix: string): ChartDefinition[] {
+  const seMeasures: string[] = [
+    "searchEverywhere_first_elements_added",
+    "searchEverywhere_elements_added_5",
+    "searchEverywhere_elements_added_10",
+    "searchEverywhere_elements_added_15",
+    "searchEverywhere",
+  ]
+
+  return ["Cold", "Warm"].map((temp) => ({
+    labels: [
+      `${temp} SE Elements Added ${tabName} (slow typing) - 1`,
+      `${temp} SE Elements Added ${tabName} (slow typing) - 5`,
+      `${temp} SE Elements Added ${tabName} (slow typing) - 10`,
+      `${temp} SE Elements Added ${tabName} (slow typing) - 15`,
+      `${temp} SE Elements Added ${tabName} (slow typing) - ALL`,
     ],
-  },
+    measures: seMeasures,
+    projects: seProjects(`go-to-${projectPrefix}${temp === "Warm" ? "-with-warmup" : ""}`),
+  }))
+}
+
+const chartsDeclaration: ChartDefinition[] = [
+  ...seCharts("Action", "action"),
+  ...seCharts("Class", "class"),
+  ...seCharts("File", "file"),
+  ...seCharts("All", "all"),
+  ...seCharts("Symbol", "symbol"),
+  ...seCharts("Text", "text"),
+  ...seCharts("Lucene Files", "lucene-files"),
 ]
 
 const charts = combineCharts(chartsDeclaration)

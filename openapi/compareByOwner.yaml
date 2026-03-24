@@ -122,6 +122,6 @@ components:
         link:
           type: string
           description: >
-            Relative URL to the performance tests dashboard page with preselected
+            Full URL to the performance tests dashboard page with preselected
             database, table, machine, branch, test, and metric.
-          example: '/owners/test?branch=master&dbName=perfint&machine=linux&measure=indexingTimeWithoutPauses&project=community%2Findexing&table=idea'
+          example: 'https://ij-perf.labs.jb.gg/owners/test?branch=master&dbName=perfint&machine=linux&measure=indexingTimeWithoutPauses&project=community%2Findexing&table=idea'

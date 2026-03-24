@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"regexp"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -74,9 +75,10 @@ func CreateGetDegradationsHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 			) po ON true
 			WHERE  ac.date      >= $2::date
 			  AND  ac.date      <= $3::date
+			  AND  ($4 OR ac.kind NOT IN ('InferredRegression', 'InferredImprovement'))
 			ORDER BY ac.date DESC, ac.affected_test, ac.build_number`
 
-		rows, err := metaDb.Query(r.Context(), query, owners, from, to)
+		rows, err := metaDb.Query(r.Context(), query, owners, from, to, includeInferred)
 		if err != nil {
 			slog.Error("degradations: query failed", "error", err, "owners", owners, "from", from, "to", to)
 			http.Error(w, "query failed", http.StatusInternalServerError)
@@ -97,14 +99,10 @@ func CreateGetDegradationsHandler(metaDb *pgxpool.Pool) http.HandlerFunc {
 				return
 			}
 
-			// Derive the metric: if affected_test differs from po.project, the suffix is the metric.
-			metric := ""
-			if affectedTest != poProject {
-				metric = affectedTest[len(poProject)+1:]
-			}
-
-			if !includeInferred && (kind == "InferredRegression" || kind == "InferredImprovement") {
-				continue
+			// Derive the metric: if affected_test has po.project as a prefix, the remainder is the metric.
+			metric, hasMetric := strings.CutPrefix(affectedTest, poProject+"/")
+			if !hasMetric {
+				metric = ""
 			}
 
 			// When a metric is present, skip entries not in the allowed metrics list.

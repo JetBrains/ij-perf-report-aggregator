@@ -126,6 +126,7 @@
 import { Ref, ref } from "vue"
 import { useToast } from "primevue/usetoast"
 import { getNavigateToTestUrl, getSpaceUrl, InfoData } from "../sideBar/InfoSidebar"
+import { generateDefaultReason } from "../sideBar/AccidentUtils"
 import { CreateIssueRequest, IssueResponse, Project, UploadAttachmentsRequest } from "./YoutrackClient"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { serverConfiguratorKey, youtrackClientKey } from "../../../shared/keys"
@@ -159,7 +160,14 @@ const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
 const downloadState = ref(DownloadState.NOT_STARTED)
-const label = ref(accident?.reason ?? "")
+const label = ref(generateLabel())
+
+function generateLabel(): string {
+  if (data == null || accident == null) return ""
+  const defaultReason = generateDefaultReason(data)
+  if (accident.reason !== defaultReason) return accident.reason
+  return `${accident.kind} ${defaultReason} ${data.mode ? `on ${data.mode} mode` : ""}`
+}
 const projects: Ref<Project[]> = ref(youtrackClient.getProjects())
 const project = ref(projects.value[0])
 

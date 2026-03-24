@@ -141,6 +141,7 @@ import { computed, ref, watch } from "vue"
 import { useToast } from "primevue/usetoast"
 import { Accident, AccidentKind, AccidentsConfigurator } from "../../../configurators/accidents/AccidentsConfigurator"
 import { InfoData } from "./InfoSidebar"
+import { generateDefaultReason } from "./AccidentUtils"
 import RelatedAccidents from "./RelatedAccidents.vue"
 import { useStorage } from "@vueuse/core"
 
@@ -170,9 +171,7 @@ watch(
 function generateReason(): string {
   if (data == null) return ""
   if (accidentToEdit.value?.reason) return accidentToEdit.value.reason
-  const date = data.date ? new Date(data.date).toISOString().slice(0, 10).replaceAll("-", ".") : ""
-  const metricName = data.series[0]?.metricName
-  return date + " " + (data.projectName ?? "") + " - " + metricName
+  return generateDefaultReason(data)
 }
 
 const reason = ref(generateReason())

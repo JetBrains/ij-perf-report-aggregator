@@ -108,7 +108,12 @@ const chartsDeclaration: ChartDefinition[] = [
   {
     labels: ["FileStructurePopup"],
     measures: ["FileStructurePopup"],
-    projects: ["intellij_commit/FileStructureDialog/java_file", "intellij_commit/FileStructureDialog/kotlin_file"],
+    projects: [
+      "intellij_commit/FileStructureDialog/java_file",
+      "intellij_commit/FileStructureDialog/kotlin_file",
+      "intellij_commit/SplitFileStructureDialog/java_file",
+      "intellij_commit/SplitFileStructureDialog/kotlin_file",
+    ],
   },
   {
     labels: ["ShowQuickFixes", "Show Intentions (average awt delay)", "Show Intentions (awt dispatch time)"],

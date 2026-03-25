@@ -133,6 +133,21 @@ const seNewVsOldChartsDeclaration: ChartDefinition[] = [
     measures: ["searchEverywhere_first_elements_added"],
     projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
   },
+  {
+    labels: ["SearchEverywhere 10 Elements Added - New vs Old - All"],
+    measures: ["searchEverywhere_elements_added_10"],
+    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere 10 Elements Added - New vs Old - Symbol"],
+    measures: ["searchEverywhere_elements_added_10"],
+    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
+  },
+  {
+    labels: ["SearchEverywhere 10 Elements Added - New vs Old - Class"],
+    measures: ["searchEverywhere_elements_added_10"],
+    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
+  },
 ]
 
 const mainCharts = combineCharts(mainChartsDeclaration)

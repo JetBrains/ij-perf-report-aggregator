@@ -9,35 +9,35 @@
     <section>
       <GroupProjectsChart
         label="Launch Debug"
-        measure="debugRunConfiguration"
+        measure="debugRunConfiguration#mean_value"
         :projects="rustDebuggerTestCases"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Into"
-        measure="debugStep_into"
+        measure="debugStep_into#mean_value"
         :projects="rustDebuggerTestCases"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Out"
-        measure="debugStep_out"
+        measure="debugStep_out#mean_value"
         :projects="rustDebuggerTestCases"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Over"
-        measure="debugStep_over"
+        measure="debugStep_over#mean_value"
         :projects="rustDebuggerTestCases"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Evaluate Expression"
-        measure="evaluateExpression"
+        measure="evaluateExpression#mean_value"
         :projects="rustDebuggerTestCases"
       />
     </section>

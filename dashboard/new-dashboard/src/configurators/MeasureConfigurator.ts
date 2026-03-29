@@ -570,6 +570,15 @@ async function configureChart(
             color: getSelectedPointColor(),
           },
         },
+        ...(settings.fadeOnHover
+          ? {
+              emphasis: { focus: "series" },
+              blur: {
+                lineStyle: { opacity: 0.2 },
+                itemStyle: { opacity: 0.2 },
+              },
+            }
+          : {}),
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
         name: seriesName,
@@ -614,7 +623,7 @@ async function configureChart(
           { name: seriesName, type: "int" },
         ],
         itemStyle: getItemStyleForSeries(accidentsConfigurator, detectedChanges),
-      })
+      } as LineSeriesOption)
       if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)

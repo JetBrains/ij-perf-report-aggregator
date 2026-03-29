@@ -316,9 +316,26 @@ export class LineChartVM {
       )
     }
 
+    // Watch for fadeOnHover toggle and update series emphasis/blur without re-fetching data
+    const fadeUnwatch = watch(
+      () => this.settings.fadeOnHover,
+      (fadeOnHover) => {
+        const option = this.eChart.chart.getOption() as { series?: { id?: string }[] }
+        if (option.series) {
+          const updatedSeries = option.series.map((s) => ({
+            id: s.id,
+            emphasis: fadeOnHover ? { focus: "series" } : { focus: "none" },
+            blur: fadeOnHover ? { lineStyle: { opacity: 0.2 }, itemStyle: { opacity: 0.2 } } : { lineStyle: { opacity: 1 }, itemStyle: { opacity: 1 } },
+          }))
+          this.eChart.chart.setOption({ series: updatedSeries })
+        }
+      }
+    )
+
     return () => {
       dataUnsubscribe()
       accidentsUnwatch?.()
+      fadeUnwatch()
     }
   }
 

@@ -13,7 +13,8 @@
     <ScalingSwitch class="mb-2" />
     <DetectChangesSwitch class="mb-2" />
     <FlexibleZeroOnYAxis class="mb-2" />
-    <RemoveOutliersSwitch />
+    <RemoveOutliersSwitch class="mb-2" />
+    <FadeOnHoverSwitch />
   </Popover>
 </template>
 
@@ -28,6 +29,7 @@ import SmoothingSwitch from "./SmoothingSwitch.vue"
 import FlexibleZeroOnYAxis from "./FlexibleYZeroSwitch.vue"
 import { FlexibleZeroOnYAxisConfigurator } from "./configurators/FlexibleZeroOnYAxisConfigurator"
 import RemoveOutliersSwitch from "./RemoveOutliersSwitch.vue"
+import FadeOnHoverSwitch from "./FadeOnHoverSwitch.vue"
 import { RemoveOutliersConfigurator } from "./configurators/RemoveOutliersConfigurator"
 import { useSettingsStore } from "./settingsStore"
 import { storeToRefs } from "pinia"

@@ -194,6 +194,7 @@ enum ROUTES {
   ClionMemoryDashboard = `${ROUTE_PREFIX.Clion}/memoryDashboard`,
   ClionProjectModelDashboard = `${ROUTE_PREFIX.Clion}/projectModelDashboard`,
   ClionLaggingLatencyDashboard = `${ROUTE_PREFIX.Clion}/laggingLatencyDashboard`,
+  CLionOldVsNewSeDashboard = `${ROUTE_PREFIX.Clion}/oldVsNewSeDashboard`,
   ClionCompareBranches = `${ROUTE_PREFIX.Clion}/${COMPARE_BRANCHES_ROUTE}`,
   VcsIdeaDashboard = `${ROUTE_PREFIX.Vcs}/idea`,
   VcsSpaceDashboard = `${ROUTE_PREFIX.Vcs}/space`,
@@ -972,6 +973,10 @@ const CLION: Product = {
         {
           url: ROUTES.ClionLaggingLatencyDashboard,
           label: "Lagging/Latency",
+        },
+        {
+          url: ROUTES.CLionOldVsNewSeDashboard,
+          label: "Old vs New SE",
         },
         {
           url: ROUTES.ClionTest,
@@ -2201,6 +2206,11 @@ const clionRoutes = [
     path: ROUTES.ClionLaggingLatencyDashboard,
     component: () => import("./components/clion/CLionLaggingLatencyDashboard.vue"),
     meta: { pageTitle: "CLion Lagging/Latency Dashboard" },
+  },
+  {
+    path: ROUTES.CLionOldVsNewSeDashboard,
+    component: () => import("./components/clion/oldVsNewSeDashboard.vue"),
+    meta: { pageTitle: "CLion Old vs New  SE Dashboard" },
   },
   {
     path: ROUTES.ClionCompareBranches,

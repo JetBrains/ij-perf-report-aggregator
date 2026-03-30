@@ -1,4 +1,4 @@
-import { center, disparity, ratio, shift } from "pragmastat"
+import { center, disparity, ratio, shift, Sample } from "pragmastat"
 
 export enum ChangePointClassification {
   DEGRADATION = "Degradation",
@@ -57,14 +57,19 @@ export const classifyChangePoint = (changePointIndexes: number[], dataset: numbe
     const positiveSegmentBefore = segmentBefore.map((v) => Math.max(1, v))
     const positiveSegmentAfter = segmentAfter.map((v) => Math.max(1, v))
 
-    const centerBefore = center(segmentBefore)
-    const shiftValue = shift(segmentAfter, segmentBefore)
-    const ratioValue = ratio(positiveSegmentAfter, positiveSegmentBefore)
+    const sampleBefore = Sample.of(segmentBefore)
+    const sampleAfter = Sample.of(segmentAfter)
+    const positiveSampleBefore = Sample.of(positiveSegmentBefore)
+    const positiveSampleAfter = Sample.of(positiveSegmentAfter)
+
+    const centerBefore = center(sampleBefore).value
+    const shiftValue = shift(sampleAfter, sampleBefore).value
+    const ratioValue = ratio(positiveSampleAfter, positiveSampleBefore).value
     const percentageDifference = Math.abs((ratioValue - 1) * 100)
     const absoluteChange = Math.abs(shiftValue)
     let effectSize: number
     try {
-      effectSize = Math.abs(disparity(segmentAfter, segmentBefore))
+      effectSize = Math.abs(disparity(sampleAfter, sampleBefore).value)
     } catch {
       // disparity throws when a segment has zero spread (all identical values);
       // if there is a shift despite zero spread, it's a clear change

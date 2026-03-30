@@ -117,8 +117,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(typescript@6.0.2)(vue@3.5.31(typescript@6.0.2))
       pragmastat:
-        specifier: 10.0.6
-        version: 10.0.6
+        specifier: 12.0.1
+        version: 12.0.1
       primevue:
         specifier: 4.5.4
         version: 4.5.4(vue@3.5.31(typescript@6.0.2))
@@ -1720,8 +1720,8 @@ packages:
     resolution: {integrity: sha512-OW/rX8O/jXnm82Ey1k44pObPtdblfiuWnrd8X7GJ7emImCOstunGbXUpp7HdBrFQX6rJzn3sPT397Wp5aCwCHg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  pragmastat@10.0.6:
-    resolution: {integrity: sha512-XMwLRiO/LnGv0LBGmNkiU1LVrzBGhEOhBjRDFb9vbupwsIdwpM3sHKloUOaNsVnFzyBNWz5MTQQy1vhw9HcKCA==}
+  pragmastat@12.0.1:
+    resolution: {integrity: sha512-R2lB1Iwf27lMPdsIQMBETNjkrYl8g1gbVEt+INbPAOPml/3H8bqot/xLrXCITC4kLch8PBEfXzLcnl1gJR3tJg==}
 
   primevue@4.5.4:
     resolution: {integrity: sha512-nTyEohZABFJhVIpeUxgP0EJ8vKcJAhD+Z7DYj95e7ie/MNUCjRNcGjqmE1cXtXi4z54qDfTSI9h2uJ51qz2DIw==}
@@ -3433,7 +3433,7 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  pragmastat@10.0.6: {}
+  pragmastat@12.0.1: {}
 
   primevue@4.5.4(vue@3.5.31(typescript@6.0.2)):
     dependencies:

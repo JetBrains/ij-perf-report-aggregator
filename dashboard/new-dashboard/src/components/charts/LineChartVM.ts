@@ -16,6 +16,7 @@ import { getFullBuildId, getInfoDataFrom } from "../common/sideBar/InfoSidebarPe
 import { useSettingsStore } from "../settings/settingsStore"
 import { ChartManager } from "./ChartManager"
 import { useDarkModeStore } from "../../shared/useDarkModeStore"
+import { HoverFadeController } from "./hoverFade"
 
 class ClickedValue {
   constructor(
@@ -31,6 +32,7 @@ export class LineChartVM {
   private hasDataCallback?: (hasData: boolean) => void
   // Track if data has been loaded (for accident marker refresh)
   private lastData: DataQueryResult | null = null
+  private hoverFade?: HoverFadeController
 
   private getFormatter(isMs: boolean) {
     return (params: CallbackDataParams[] | CallbackDataParams) => {
@@ -284,8 +286,8 @@ export class LineChartVM {
   }
 
   subscribe(): () => void {
+    const chart = this.eChart.chart
     const dataUnsubscribe = this.dataQuery.subscribe((data: DataQueryResult | null, configuration: DataQueryExecutorConfiguration, isLoading) => {
-      const chart = this.eChart.chart
       if (isLoading || data == null) {
         chart.showLoading("default", useDarkModeStore().darkMode ? { maskColor: "#121212", showSpinner: false, textColor: "#D1D5DB" } : { showSpinner: false })
         return
@@ -316,26 +318,12 @@ export class LineChartVM {
       )
     }
 
-    // Watch for fadeOnHover toggle and update series emphasis/blur without re-fetching data
-    const fadeUnwatch = watch(
-      () => this.settings.fadeOnHover,
-      (fadeOnHover) => {
-        const option = this.eChart.chart.getOption() as { series?: { id?: string }[] }
-        if (option.series) {
-          const updatedSeries = option.series.map((s) => ({
-            id: s.id,
-            emphasis: fadeOnHover ? { focus: "series" } : { focus: "none" },
-            blur: fadeOnHover ? { lineStyle: { opacity: 0.2 }, itemStyle: { opacity: 0.2 } } : { lineStyle: { opacity: 1 }, itemStyle: { opacity: 1 } },
-          }))
-          this.eChart.chart.setOption({ series: updatedSeries })
-        }
-      }
-    )
+    this.hoverFade = new HoverFadeController(this.eChart)
 
     return () => {
       dataUnsubscribe()
       accidentsUnwatch?.()
-      fadeUnwatch()
+      this.hoverFade?.dispose()
     }
   }
 
@@ -382,10 +370,12 @@ export class LineChartVM {
       }
     )
 
-    for (const it of configuration.getChartConfigurators()) {
-      it.configureChart(data, configuration)
+    for (const configurator of configuration.getChartConfigurators()) {
+      configurator
+        .configureChart(data, configuration)
         .then((options) => {
           this.eChart.updateChart(options)
+          this.hoverFade?.reapply()
         })
         .catch((error: unknown) => {
           console.error(error)
@@ -394,6 +384,7 @@ export class LineChartVM {
   }
 
   dispose(): void {
+    this.hoverFade?.dispose()
     this.eChart.dispose()
   }
 }

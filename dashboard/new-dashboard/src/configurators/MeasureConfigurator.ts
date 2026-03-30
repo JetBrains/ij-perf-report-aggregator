@@ -38,6 +38,8 @@ import { getBasicInfo, getBuildId } from "../components/common/sideBar/InfoSideb
 import { useDarkModeStore } from "../shared/useDarkModeStore"
 import { useSelectedPointStore } from "../shared/selectedPointStore"
 
+export const SMOOTHED_SERIES_SUFFIX = "smoothed"
+
 export type TooltipTrigger = "item" | "axis" | "none"
 
 export class MeasureConfigurator implements DataQueryConfigurator, ChartConfigurator, FilterConfigurator {
@@ -570,15 +572,6 @@ async function configureChart(
             color: getSelectedPointColor(),
           },
         },
-        ...(settings.fadeOnHover
-          ? {
-              emphasis: { focus: "series" },
-              blur: {
-                lineStyle: { opacity: 0.2 },
-                itemStyle: { opacity: 0.2 },
-              },
-            }
-          : {}),
         // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
         id: measureName === seriesName ? seriesName : `${measureName}@${seriesName}`,
         name: seriesName,
@@ -627,7 +620,7 @@ async function configureChart(
       if (settings.smoothing) {
         series.push({
           // formatter is detected by measure name - that's why series id is specified (see usages of seriesId)
-          id: (measureName === seriesName ? seriesName : `${measureName}@${seriesName}`) + "smoothed",
+          id: (measureName === seriesName ? seriesName : `${measureName}@${seriesName}`) + SMOOTHED_SERIES_SUFFIX,
           name: seriesName,
           type: "line",
           symbol: "none",

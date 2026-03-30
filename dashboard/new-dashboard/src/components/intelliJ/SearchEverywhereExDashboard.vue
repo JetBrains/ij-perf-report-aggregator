@@ -24,8 +24,7 @@ import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
 
-function seProjects(tab: string): string[] {
-  const patterns = ["Kotlin", "Editor", "Runtime"]
+function seProjects(tab: string, patterns: string[]): string[] {
   return [
     ...patterns.map((pattern) => `community/${tab}/${pattern}/typingLetterByLetter`),
     `community/${tab}-finished-embeddings/Runtime/typingLetterByLetter`,
@@ -38,36 +37,39 @@ function seProjects(tab: string): string[] {
   ]
 }
 
-function seCharts(tabName: string, projectPrefix: string): ChartDefinition[] {
-  const seMeasures: string[] = [
-    "searchEverywhere_first_elements_added",
-    "searchEverywhere_elements_added_5",
-    "searchEverywhere_elements_added_10",
-    "searchEverywhere_elements_added_15",
-    "searchEverywhere",
-  ]
+function seChartsCustom(tabName: string, projectPrefix: string, patterns: string[], customLabel: string): ChartDefinition[] {
+  const seMeasures: string[] = ["searchEverywhere_first_elements_added", "searchEverywhere_elements_added_10", "searchEverywhere"]
+
+  const customLabelFixed = customLabel === "" ? "" : ` - ${customLabel}`
 
   return ["Cold", "Warm"].map((temp) => ({
     labels: [
-      `${temp} SE Elements Added ${tabName} (slow typing) - 1`,
-      `${temp} SE Elements Added ${tabName} (slow typing) - 5`,
-      `${temp} SE Elements Added ${tabName} (slow typing) - 10`,
-      `${temp} SE Elements Added ${tabName} (slow typing) - 15`,
-      `${temp} SE Elements Added ${tabName} (slow typing) - ALL`,
+      `${tabName}${customLabelFixed} - 1 element - ${temp}`,
+      `${tabName}${customLabelFixed} - 10 elements - ${temp}`,
+      `${tabName}${customLabelFixed} - All elements - ${temp}`,
     ],
     measures: seMeasures,
-    projects: seProjects(`go-to-${projectPrefix}${temp === "Warm" ? "-with-warmup" : ""}`),
+    projects: seProjects(`go-to-${projectPrefix}${temp === "Warm" ? "-with-warmup" : ""}${customLabel === "" ? "" : `-${customLabel}`}`, patterns),
   }))
 }
 
+function seCharts(tabName: string, projectPrefix: string): ChartDefinition[] {
+  const patterns = ["Kotlin", "Editor", "Runtime"]
+  return seChartsCustom(tabName, projectPrefix, patterns, "")
+}
+
+// Intentional misspellings for fuzzy search testing
+const fuzzyFilesPatterns: string[] = ["Kotlin", "Editor", "Runtime", "Kutlin", "Edetor", "Rantime"]
+
 const chartsDeclaration: ChartDefinition[] = [
-  ...seCharts("Action", "action"),
-  ...seCharts("Class", "class"),
-  ...seCharts("File", "file"),
   ...seCharts("All", "all"),
-  ...seCharts("Symbol", "symbol"),
+  ...seCharts("Action", "action"),
   ...seCharts("Text", "text"),
+  ...seCharts("Class", "class"),
+  ...seCharts("Symbol", "symbol"),
+  ...seCharts("File", "file"),
   ...seCharts("Lucene Files", "lucene-files"),
+  ...seChartsCustom("File", "file", fuzzyFilesPatterns, "fuzzy"),
 ]
 
 const charts = combineCharts(chartsDeclaration)

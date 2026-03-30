@@ -174,7 +174,7 @@ const allResultsDeclaration: ChartDefinition[] = [
     labels: ["Wait Until Full or Done - Text"],
     measures: ["searchEverywhere"],
     projects: ["radler/luau/go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter", "radler/luau/new-se-go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter"],
-  }
+  },
 ]
 
 const tenResultsDeclaration: ChartDefinition[] = [
@@ -207,7 +207,7 @@ const tenResultsDeclaration: ChartDefinition[] = [
     labels: ["10 Elements Added - Text"],
     measures: ["searchEverywhere_elements_added_10"],
     projects: ["radler/luau/go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter", "radler/luau/new-se-go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter"],
-  }
+  },
 ]
 
 const firstResultsDeclaration: ChartDefinition[] = [
@@ -240,7 +240,7 @@ const firstResultsDeclaration: ChartDefinition[] = [
     labels: ["First Elements Added - Text"],
     measures: ["searchEverywhere_first_elements_added"],
     projects: ["radler/luau/go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter", "radler/luau/new-se-go-to-text-with-warmup/LUAU_BUILD_TESTS/typingLetterByLetter"],
-  }
+  },
 ]
 
 const wholeWordAllResultsDeclaration: ChartDefinition[] = [
@@ -263,7 +263,7 @@ const wholeWordAllResultsDeclaration: ChartDefinition[] = [
     labels: ["Wait Until Full or Done - Type - a lot of results"],
     measures: ["searchEverywhere"],
     projects: ["radler/luau/go-to-symbol-with-warmup/Type/insertingTheWholeWord", "radler/luau/new-se-go-to-symbol-with-warmup/Type/insertingTheWholeWord"],
-  }
+  },
 ]
 
 const wholeWordTenResultsDeclaration: ChartDefinition[] = [
@@ -286,7 +286,7 @@ const wholeWordTenResultsDeclaration: ChartDefinition[] = [
     labels: ["10 Elements Added - Type - a lot of results"],
     measures: ["searchEverywhere_elements_added_10"],
     projects: ["radler/luau/go-to-symbol-with-warmup/Type/insertingTheWholeWord", "radler/luau/new-se-go-to-symbol-with-warmup/Type/insertingTheWholeWord"],
-  }
+  },
 ]
 
 const wholeWordFirstResultsDeclaration: ChartDefinition[] = [
@@ -309,7 +309,7 @@ const wholeWordFirstResultsDeclaration: ChartDefinition[] = [
     labels: ["First Elements Added - Type - a lot of results"],
     measures: ["searchEverywhere_first_elements_added"],
     projects: ["radler/luau/go-to-symbol-with-warmup/Type/insertingTheWholeWord", "radler/luau/new-se-go-to-symbol-with-warmup/Type/insertingTheWholeWord"],
-  }
+  },
 ]
 
 const noWarmupAllResultsDeclaration: ChartDefinition[] = [

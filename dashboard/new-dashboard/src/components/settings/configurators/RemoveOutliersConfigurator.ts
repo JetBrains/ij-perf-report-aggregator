@@ -7,7 +7,7 @@ import { refToObservable } from "../../../configurators/rxjs"
 import { rollingMad } from "../../../shared/changeDetector/statistic"
 
 export class RemoveOutliersConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  private settingsStore = useSettingsStore()
+  private readonly settingsStore = useSettingsStore()
   readonly value = ref(this.settingsStore.removeOutliers)
 
   constructor() {

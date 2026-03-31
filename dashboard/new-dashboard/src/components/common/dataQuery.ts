@@ -159,7 +159,7 @@ export class DataQueryExecutorConfiguration {
 
   readonly queryProducers: QueryProducer[] = []
 
-  private chartConfigurator: ChartConfigurator[] = []
+  private readonly chartConfigurator: ChartConfigurator[] = []
 
   public getChartConfigurators(): ChartConfigurator[] {
     return this.chartConfigurator

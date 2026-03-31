@@ -8,8 +8,8 @@ import { Accident, AccidentKind, AccidentsConfigurator } from "./AccidentsConfig
 
 export class AccidentsConfiguratorForStartup extends AccidentsConfigurator {
   constructor(
-    private serverUrl: string,
-    private product: Ref<string | string[] | null>,
+    private readonly serverUrl: string,
+    private readonly product: Ref<string | string[] | null>,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
     timeRangeConfigurator: TimeRangeConfigurator

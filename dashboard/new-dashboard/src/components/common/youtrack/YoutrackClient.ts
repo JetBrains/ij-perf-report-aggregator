@@ -1,7 +1,7 @@
 import { ServerConfigurator } from "../dataQuery"
 
 export class YoutrackClient {
-  private commonProjects: Project[] = [
+  private readonly commonProjects: Project[] = [
     { name: "IntelliJ Platform", id: "22-619" },
     { name: "Automation Testing", id: "22-570" },
   ]

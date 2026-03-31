@@ -1,6 +1,6 @@
 export function replaceToLink(reason: string) {
   const ytRegexWithDescription = /https:\/\/youtrack.jetbrains.com\/issue\/(\w{2,}-\d{2,})\/(\S*)/
-  const matchYT = reason.match(ytRegexWithDescription)
+  const matchYT = ytRegexWithDescription.exec(reason)
   let result = reason
   if (matchYT && matchYT.length > 2) {
     result = matchYT[1] + " " + matchYT[2].replaceAll("-", " ")
@@ -20,7 +20,7 @@ export function replaceToLink(reason: string) {
   }
 
   const commit = /https:\/\/jetbrains.team\/p\/(\w+)\/repositories\/(\w+)\/revision\/(\w+)/
-  const matchCommit = result.match(commit)
+  const matchCommit = commit.exec(result)
   if (matchCommit && matchCommit.length > 2) {
     result = result.replace(commit, `<a ${style} href="${matchCommit[0]}">${matchCommit[3]}</a>`)
   } else {

@@ -28,7 +28,7 @@ export class AggregationChartVM {
 
   constructor(
     private readonly query: DataQueryExecutor,
-    private valueUnit: ValueUnit = "ms"
+    private readonly valueUnit: ValueUnit = "ms"
   ) {}
 
   initChart(element: HTMLElement, resizeContainer?: HTMLElement | null): () => void {

@@ -94,7 +94,7 @@ export function createBranchConfigurator(
       ? [
           ...new Set(
             data.map((value) => {
-              const match = value.match(/^(\d+)\.\d+$/)
+              const match = /^(\d+)\.\d+$/.exec(value)
               return match ? match[1] : value
             })
           ),

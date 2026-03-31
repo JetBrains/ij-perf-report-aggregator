@@ -26,10 +26,10 @@ class ClickedValue {
 }
 
 export class LineChartVM {
-  private settings = useSettingsStore()
+  private readonly settings = useSettingsStore()
   private lastParams: CallbackDataParams[] | CallbackDataParams | null = null
-  private lastClickedValue = new Map<string, ClickedValue>()
-  private hasDataCallback?: (hasData: boolean) => void
+  private readonly lastClickedValue = new Map<string, ClickedValue>()
+  private readonly hasDataCallback?: (hasData: boolean) => void
   // Track if data has been loaded (for accident marker refresh)
   private lastData: DataQueryResult | null = null
   private hoverFade?: HoverFadeController
@@ -154,7 +154,7 @@ export class LineChartVM {
       : "Known " + accident.kind.toLowerCase() + ": " + accident.reason
   }
 
-  private accidentsConfigurator: AccidentsConfigurator | null
+  private readonly accidentsConfigurator: AccidentsConfigurator | null
 
   constructor(
     private readonly eChart: ChartManager,

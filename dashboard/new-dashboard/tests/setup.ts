@@ -1,5 +1,5 @@
 class LocalStorageMock implements Storage {
-  private data = new Map<string, string>()
+  private readonly data = new Map<string, string>()
 
   getItem(key: string): string | null {
     return this.data.get(key) ?? null

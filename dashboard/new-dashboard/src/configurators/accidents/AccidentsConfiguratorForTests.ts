@@ -7,7 +7,7 @@ import { AccidentsConfigurator } from "./AccidentsConfigurator"
 
 export class AccidentsConfiguratorForTests extends AccidentsConfigurator {
   constructor(
-    private serverUrl: string,
+    private readonly serverUrl: string,
     projects: Ref<string | string[] | null>,
     metrics: Ref<string[] | string | null>,
     timeRangeConfigurator: TimeRangeConfigurator

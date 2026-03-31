@@ -144,7 +144,7 @@ function metricInfo(description: string, url?: string): MetricInfo {
 
 function extractMainPrefix(inputString: string): string {
   const regex = /^(\w+#).*/
-  const match = inputString.match(regex)
+  const match = regex.exec(inputString)
   return match ? match[1] : "non-matching"
 }
 

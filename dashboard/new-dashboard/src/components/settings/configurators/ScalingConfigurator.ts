@@ -7,7 +7,7 @@ import { FilterConfigurator } from "../../../configurators/filter"
 import { refToObservable } from "../../../configurators/rxjs"
 
 export class ScalingConfigurator implements DataQueryConfigurator, FilterConfigurator {
-  private settingsStore = useSettingsStore()
+  private readonly settingsStore = useSettingsStore()
   readonly value = ref(this.settingsStore.scaling)
 
   constructor() {

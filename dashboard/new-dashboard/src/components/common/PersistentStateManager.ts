@@ -13,7 +13,7 @@ export class PersistentStateManager {
   private readonly saveSubject = new Subject<null>()
   private readonly updateUrlSubject = new Subject<null>()
 
-  private MAX_ARRAY_SIZE = 30
+  private readonly MAX_ARRAY_SIZE = 30
 
   private readonly route: RouteLocationNormalizedLoaded | null
 

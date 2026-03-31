@@ -428,7 +428,7 @@ export function getMachineGroupName(machine: string): string {
     groupName = "Mac Mini M2 Pro (10 vCPU, 32 GB)"
   } else if (machine.startsWith("intellij-windows-aws-i")) {
     groupName = "windows aws"
-  } else if (machine.match("ij-w.*-azr.*")) {
+  } else if (/ij-w.*-azr.*/.test(machine)) {
     groupName = "windows-azure"
   } else if (machine.startsWith("intellij-windows-hw-de-unit")) {
     groupName = "Windows Munich i7-13700, 64 Gb"

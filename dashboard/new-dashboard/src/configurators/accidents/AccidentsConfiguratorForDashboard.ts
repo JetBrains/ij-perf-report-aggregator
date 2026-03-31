@@ -6,7 +6,7 @@ import { AccidentsConfigurator } from "./AccidentsConfigurator"
 
 export class AccidentsConfiguratorForDashboard extends AccidentsConfigurator {
   constructor(
-    private serverUrl: string,
+    private readonly serverUrl: string,
     charts: Chart[] | null,
     timeRangeConfigurator: TimeRangeConfigurator
   ) {

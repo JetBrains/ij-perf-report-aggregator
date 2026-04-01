@@ -10,7 +10,7 @@ export type ReleaseType = typeof eap | typeof nightly
 
 export class ReleaseNightlyConfigurator extends DimensionConfigurator {
   declare readonly selected: ShallowRef<ReleaseType | ReleaseType[] | null>
-  readonly values: ShallowRef<ReleaseType[]> = ref<ReleaseType[]>([eap, nightly])
+  readonly values: ShallowRef<ReleaseType[]> = ref([eap, nightly])
 
   constructor(persistentStateManager: PersistentStateManager | null) {
     super("releaseConfigurator", true)

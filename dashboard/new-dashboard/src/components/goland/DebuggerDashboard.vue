@@ -23,14 +23,14 @@
     <section>
       <GroupProjectsChart
         label="Step Out"
-        measure="debugStep_into"
+        measure="debugStep_out"
         :projects="['river/debug', 'trufflehog/debug']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Step Over"
-        measure="debugStep_into"
+        measure="debugStep_over"
         :projects="['river/debug', 'trufflehog/debug']"
       />
     </section>

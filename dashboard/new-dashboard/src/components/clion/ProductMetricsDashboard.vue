@@ -16,20 +16,6 @@
         :projects="chart.projects"
       />
     </section>
-    <Divider title="SearchEverywhere - New vs Old" />
-    <section class="flex gap-6 flex-col md:flex-row md:flex-wrap">
-      <div
-        v-for="chart in seNewVsOldCharts"
-        :key="chart.definition.label"
-        class="min-w-0 md:basis-[calc(33.333%-1rem)] md:flex-none flex-1"
-      >
-        <GroupProjectsChart
-          :label="chart.definition.label"
-          :measure="chart.definition.measure"
-          :projects="chart.projects"
-        />
-      </div>
-    </section>
   </DashboardPage>
 </template>
 
@@ -37,7 +23,6 @@
 import { ChartDefinition, combineCharts } from "../charts/DashboardCharts"
 import GroupProjectsChart from "../charts/GroupProjectsChart.vue"
 import DashboardPage from "../common/DashboardPage.vue"
-import Divider from "../common/Divider.vue"
 
 const mainChartsDeclaration: ChartDefinition[] = [
   {
@@ -102,55 +87,6 @@ const mainChartsDeclaration: ChartDefinition[] = [
   },
 ]
 
-const seNewVsOldChartsDeclaration: ChartDefinition[] = [
-  {
-    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - All"],
-    measures: ["searchEverywhere"],
-    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - Symbol"],
-    measures: ["searchEverywhere"],
-    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere Wait Until Full or Done - New vs Old - Class"],
-    measures: ["searchEverywhere"],
-    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere First Elements Added - New vs Old - All"],
-    measures: ["searchEverywhere_first_elements_added"],
-    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere First Elements Added - New vs Old - Symbol"],
-    measures: ["searchEverywhere_first_elements_added"],
-    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere First Elements Added - New vs Old - Class"],
-    measures: ["searchEverywhere_first_elements_added"],
-    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere 10 Elements Added - New vs Old - All"],
-    measures: ["searchEverywhere_elements_added_10"],
-    projects: ["radler/luau/go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter", "radler/luau/new-se-go-to-all-with-warmup/AstJsonEncoder/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere 10 Elements Added - New vs Old - Symbol"],
-    measures: ["searchEverywhere_elements_added_10"],
-    projects: ["radler/luau/go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter", "radler/luau/new-se-go-to-symbol-with-warmup/Type_Boolean/typingLetterByLetter"],
-  },
-  {
-    labels: ["SearchEverywhere 10 Elements Added - New vs Old - Class"],
-    measures: ["searchEverywhere_elements_added_10"],
-    projects: ["radler/luau/go-to-class-with-warmup/CompileOptions/typingLetterByLetter", "radler/luau/new-se-go-to-class-with-warmup/CompileOptions/typingLetterByLetter"],
-  },
-]
-
 const mainCharts = combineCharts(mainChartsDeclaration)
-const seNewVsOldCharts = combineCharts(seNewVsOldChartsDeclaration)
-const charts = combineCharts([...mainChartsDeclaration, ...seNewVsOldChartsDeclaration])
+const charts = combineCharts([...mainChartsDeclaration])
 </script>

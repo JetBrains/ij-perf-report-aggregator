@@ -42,14 +42,14 @@
       <GroupProjectsChart
         label="File Analysis on Open (golangci-lint)"
         measure="firstCodeAnalysis"
-        :projects="['volcano-golinter-local-with-linter', 'volcano-golinter-local-without-linter']"
+        :projects="['volcano-golinter-local-with-linter/inspection', 'volcano-golinter-local-without-linter/inspection']"
       />
     </section>
     <section>
       <GroupProjectsChart
         label="Global Inspections (golangci-lint)"
         measure="globalInspections"
-        :projects="['volcano-golinter-global-with-linter', 'volcano-golinter-global-without-linter']"
+        :projects="['volcano-golinter-global-with-linter/inspection', 'volcano-golinter-global-without-linter/inspection']"
       />
     </section>
     <section>

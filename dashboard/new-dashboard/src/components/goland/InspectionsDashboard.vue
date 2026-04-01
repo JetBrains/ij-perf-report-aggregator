@@ -40,9 +40,9 @@
     </section>
     <section>
       <GroupProjectsChart
-        label="File Analysis on Open (golangci-lint)"
-        measure="firstCodeAnalysis"
-        :projects="['volcano-golinter-local-with-linter/inspection', 'volcano-golinter-local-without-linter/inspection']"
+        label="Local Inspections (golangci-lint)"
+        measure="localInspections"
+        :projects="['volcano-golinter-local-without-linter/localInspection/scheduler.go', 'volcano-golinter-local-with-linter/localInspection/scheduler.go']"
       />
     </section>
     <section>

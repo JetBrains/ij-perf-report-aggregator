@@ -185,3 +185,34 @@ export const rustLocalInspectionCases = [
   "clippy/local-inspection/clippy_lints/src/write/empty_string.rs",
 ]
 export const rustDebuggerTestCases = ["hello-world/Debugger performance test", "hello-world-async/Debugger performance test", "bevy-application/Debugger performance test"]
+export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
+  {
+    label: "Find Usages",
+    projects: ["org.rust.ide.search.RsFindUsagesPerformanceTest.test trait method find usages with many impls - find usages of a trait method with many impls"],
+  },
+  {
+    label: "Completion",
+    projects: [
+      "org.rust.lang.core.completion.RsCompletionPerfTest.test completion with stdlib - completion_with_stdlib",
+      "org.rust.lang.core.completion.RsCompletionPerfTest.test completion - completion",
+    ],
+  },
+  {
+    label: "Parser",
+    projects: [
+      "org.rust.lang.core.parser.RsParserPerformanceTest.test broken quote before many regex strings - broken_quote_before_many_regex_strings",
+      "org.rust.lang.core.parser.RsParserPerformanceTest.test stdlib source - stdlib_source",
+    ],
+  },
+  {
+    label: "Crates Local Index",
+    projects: ["org.rust.toml.crates.local.CratesLocalIndexPerformanceTest.test CratesLocalIndexUpdateTask incremental performance - CratesLocalIndexUpdateTask"],
+  },
+  {
+    label: "TOML JSON Schema Inspection",
+    projects: [
+      "org.rust.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test bevy - bevy",
+      "org.rust.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test generated keys - generated_keys",
+    ],
+  },
+]

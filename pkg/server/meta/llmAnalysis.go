@@ -7,7 +7,6 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	AccidentId      string  `json:"accidentId"`
 	CurrentBuildId  string  `json:"currentBuildId"`
 	AffectedMetric  string  `json:"affectedMetric"`
 	CurrentValue    *string `json:"currentValue"`

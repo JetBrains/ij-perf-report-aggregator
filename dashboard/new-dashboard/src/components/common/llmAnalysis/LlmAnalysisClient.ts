@@ -1,7 +1,6 @@
 import { ServerConfigurator } from "../dataQuery"
 
 export interface LlmAnalysisRequest {
-  accidentId: string
   currentBuildId: string
   currentValue: string | undefined
   previousValue: string | undefined

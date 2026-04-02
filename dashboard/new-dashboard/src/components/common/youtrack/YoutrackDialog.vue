@@ -324,7 +324,6 @@ async function createTicket() {
     if (accident.kind === AccidentKind.Regression) {
       try {
         const llmAnalysisRequest: LlmAnalysisRequest = {
-          accidentId: `${accident.id}`,
           currentBuildId: `${data.buildId}`,
           currentValue: data.formattedCurrentValue || undefined,
           previousValue: data.formattedPreviousValue || undefined,

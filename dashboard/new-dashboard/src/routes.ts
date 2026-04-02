@@ -165,6 +165,7 @@ enum ROUTES {
   RustRoverProductMetricsDashboardDev = `${ROUTE_PREFIX.Rust}/${PRODUCT_METRICS_ROUTE}Dev`,
   RustRoverFirstStartupDashboardDev = `${ROUTE_PREFIX.Rust}/rustRoverFirstStartupDashboardDev`,
   RustRoverDebuggerDashboardDev = `${ROUTE_PREFIX.Rust}/debuggerDashboardDev`,
+  RustRoverUnitTestsDashboardDev = `${ROUTE_PREFIX.Rust}/unitTestsDashboardDev`,
   RustTestsDev = `${ROUTE_PREFIX.Rust}/${TEST_ROUTE}Dev`,
   RustCompareBranchesDev = `${ROUTE_PREFIX.Rust}/${COMPARE_BRANCHES_ROUTE}Dev`,
   ScalaTests = `${ROUTE_PREFIX.Scala}/${TEST_ROUTE}`,
@@ -790,6 +791,10 @@ const RUST: Product = {
         {
           url: ROUTES.RustRoverDebuggerDashboardDev,
           label: "Debugger",
+        },
+        {
+          url: ROUTES.RustRoverUnitTestsDashboardDev,
+          label: "Unit Tests",
         },
         {
           url: ROUTES.RustTestsDev,
@@ -1869,6 +1874,11 @@ const rustRoutes = [
     path: ROUTES.RustRoverDebuggerDashboardDev,
     component: () => import("./components/rust/DebuggerDashboard.vue"),
     meta: { pageTitle: "RustRover Debugger dashboard" },
+  },
+  {
+    path: ROUTES.RustRoverUnitTestsDashboardDev,
+    component: () => import("./components/rust/UnitTestsDashboard.vue"),
+    meta: { pageTitle: "Rust Unit Tests dashboard" },
   },
   {
     path: ROUTES.RustTestsDev,

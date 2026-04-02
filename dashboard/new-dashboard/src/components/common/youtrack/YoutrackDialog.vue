@@ -118,6 +118,25 @@
             <span class="tooltip-text">Ticket was not created. See console for details</span>
           </div>
         </div>
+        <div
+          v-if="llmAnalysisBuildUrl.length > 0"
+          class="flex justify-between items-center mt-10"
+        >
+          <div>
+            LLM Analysis was launched:
+            <a
+              target="_blank"
+              class="link-like-text"
+              :href="llmAnalysisBuildUrl"
+            >
+              View TC Build
+            </a>
+          </div>
+          <div class="icon-wrapper">
+            <i class="pi pi-verified"></i>
+            <span class="tooltip-text">Experimental feature, the results will be published to YT ticket</span>
+          </div>
+        </div>
       </div>
     </template>
   </Dialog>
@@ -136,6 +155,7 @@ import { ChevronDownIcon } from "@heroicons/vue/20/solid/index"
 import { getPersistentLink } from "../../settings/CopyLink"
 import { TimeRangeConfigurator } from "../../../configurators/TimeRangeConfigurator"
 import { dbTypeStore } from "../../../shared/dbTypes"
+import { LlmAnalysisClient, LlmAnalysisRequest } from "../llmAnalysis/LlmAnalysisClient"
 
 enum DownloadState {
   NOT_STARTED,
@@ -154,11 +174,13 @@ const { data, accident, accidentConfigurator, timerangeConfigurator } = definePr
 
 const youtrackClient = injectOrError(youtrackClientKey)
 const serverConfigurator = injectOrError(serverConfiguratorKey)
+const llmAnalysisClient = new LlmAnalysisClient(serverConfigurator)
 const toast = useToast()
 const showYoutrackDialog = defineModel<boolean>()
 const createdTicket = ref("")
 const createException = ref(false)
 const attachmentException = ref(false)
+const llmAnalysisBuildUrl = ref("")
 const downloadState = ref(DownloadState.NOT_STARTED)
 const label = ref(generateLabel())
 
@@ -297,6 +319,23 @@ async function createTicket() {
         life: 8000,
       })
       attachmentException.value = true
+    }
+
+    if (accident.kind === AccidentKind.Regression) {
+      try {
+        const llmAnalysisRequest: LlmAnalysisRequest = {
+          accidentId: `${accident.id}`,
+          currentBuildId: `${data.buildId}`,
+          currentValue: data.formattedCurrentValue || undefined,
+          previousValue: data.formattedPreviousValue || undefined,
+          affectedMetric: affectedMetric,
+          testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
+          youtrackIssueId: issueResponse.issue.idReadable,
+        }
+        llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
+      } catch (error: unknown) {
+        console.error(error)
+      }
     }
   } finally {
     downloadState.value = DownloadState.FINISHED

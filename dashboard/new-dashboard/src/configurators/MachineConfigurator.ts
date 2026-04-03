@@ -360,7 +360,7 @@ export function getMachineGroupName(machine: string): string {
   } else if (machine.startsWith("intellij-linux-performance-tiny-aws-i-")) {
     // https://aws.amazon.com/ec2/instance-types/c6i/
     // noinspection SpellCheckingInspection
-    groupName = "Linux EC2 C6id.large (2 vCPU Xeon, 4 GB)"
+    groupName = "Linux EC2 C6id.xlarge (4 vCPU Xeon, 8 GB)"
   } else if (machine.startsWith("default-linux-aws-large-disk-")) {
     // https://aws.amazon.com/ec2/instance-types/m5/
     // noinspection SpellCheckingInspection

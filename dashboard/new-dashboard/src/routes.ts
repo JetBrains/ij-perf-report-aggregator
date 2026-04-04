@@ -187,7 +187,7 @@ enum ROUTES {
   BazelTest = `${ROUTE_PREFIX.Bazel}/${TEST_ROUTE}`,
   BazelPluginDashboard = `${ROUTE_PREFIX.Bazel}/BazelPluginDashboard`,
   QodanaTest = `${ROUTE_PREFIX.Qodana}/${TEST_ROUTE}`,
-  ClionClassicStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
+  ClionStartupDashboard = `${ROUTE_PREFIX.Clion}/${STARTUP_ROUTE}`,
   ClionProductMetricsDashboard = `${ROUTE_PREFIX.Clion}/${PRODUCT_METRICS_ROUTE}`,
   ClionTest = `${ROUTE_PREFIX.Clion}/${DEV_TEST_ROUTE}`,
   ClionPerfDashboard = `${ROUTE_PREFIX.Clion}/perfDashboard`,
@@ -952,7 +952,7 @@ const CLION: Product = {
       label: "",
       tabs: [
         {
-          url: ROUTES.ClionClassicStartupDashboard,
+          url: ROUTES.ClionStartupDashboard,
           label: "CLion Startup",
         },
         {
@@ -2167,11 +2167,11 @@ const clionRoutes = [
     meta: { pageTitle: "CLion tests" },
   } satisfies TypedRouteRecord<PerformanceTestsProps>,
   {
-    path: ROUTES.ClionClassicStartupDashboard,
+    path: ROUTES.ClionStartupDashboard,
     component: COMPONENTS.startupDashboard,
     props: {
       table: "clion",
-      defaultProject: "radler/clion/cmake",
+      defaultProject: "radler/radler/cmake",
     },
     meta: { pageTitle: "CLion Startup dashboard" },
   },
@@ -2215,12 +2215,12 @@ const clionRoutes = [
   {
     path: ROUTES.ClionLaggingLatencyDashboard,
     component: () => import("./components/clion/CLionLaggingLatencyDashboard.vue"),
-    meta: { pageTitle: "CLion Lagging/Latency Dashboard" },
+    meta: { pageTitle: "CLion Lagging/Latency dashboard" },
   },
   {
     path: ROUTES.CLionOldVsNewSeDashboard,
     component: () => import("./components/clion/oldVsNewSeDashboard.vue"),
-    meta: { pageTitle: "CLion Old vs New  SE Dashboard" },
+    meta: { pageTitle: "CLion Old vs New SE dashboard" },
   },
   {
     path: ROUTES.ClionCompareBranches,

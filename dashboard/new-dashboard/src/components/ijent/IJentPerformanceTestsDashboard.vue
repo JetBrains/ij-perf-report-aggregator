@@ -117,13 +117,14 @@ const projects = [
   "ijent-build-intellij-Docker",
   "ijent-build-intellij-WSL",
 
-  "ijent-import-intellij-Local",
+  "nio_default-import-intellij-Local",
+  "ijent-import-intellij",
   "ijent-import-intellij-Docker",
-  "ijent-import-intellij-WSL",
+  "wsl-import-intellij-WSL",
 
   "ijent-import-jps-1000-modules-Local",
   "ijent-import-jps-1000-modules-Docker",
-  "nio-default-import-jps-1000-modules-Local",
+  "nio_default-import-jps-1000-modules-Local",
   "wsl-import-jps-1000-modules-WSL",
 ]
 

@@ -635,6 +635,12 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 		})
 	}
 
+	tags = append(tags, Tag{
+		Name: "created-by-ij-perf",
+		ID:   "68-523929",
+		Type: "Tag",
+	})
+
 	issueInfo.Tags = tags
 }
 

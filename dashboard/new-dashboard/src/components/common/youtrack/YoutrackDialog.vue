@@ -327,7 +327,7 @@ async function createTicket() {
           currentBuildId: `${data.buildId}`,
           currentValue: data.formattedCurrentValue || undefined,
           previousValue: data.formattedPreviousValue || undefined,
-          affectedMetric: affectedMetric,
+          affectedMetric,
           testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
           youtrackIssueId: issueResponse.issue.idReadable,
         }

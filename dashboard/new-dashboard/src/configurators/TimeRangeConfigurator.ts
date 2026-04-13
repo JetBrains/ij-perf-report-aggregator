@@ -212,15 +212,8 @@ function getStartTime(range: TimeRange): Date | null {
 }
 
 function getEndTime(range: TimeRange): Date | null {
-  switch (range) {
-    case "1w":
-    case "2w":
-    case "1M":
-    case "3M":
-    case "1y":
-    case "all":
-      return new Date()
-    case "custom":
-      return null //don't set end time for custom range
+  if (range === "custom") {
+    return null //don't set end time for custom range
   }
+  return new Date()
 }

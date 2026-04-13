@@ -70,6 +70,25 @@ const chartsDeclaration: ChartDefinition[] = [
   ...seCharts("File", "file"),
   ...seCharts("Lucene Files", "lucene-files"),
   ...seChartsCustom("File", "file", fuzzyFilesPatterns, "fuzzy"),
+  {
+    labels: ["Warm Search Everywhere Insert", "Warm SE First Element Insert"],
+    measures: ["searchEverywhere", "searchEverywhere_first_elements_added"],
+    projects: [
+      "intellij_commit/go-to-all-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/go-to-file-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/go-to-class-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/go-to-symbol-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/go-to-action-with-warmup/CollectLogsAndDiagnosticData/insertingTheWholeWord",
+      "intellij_commit/go-to-text-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+
+      "intellij_commit/new-se-go-to-all-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/new-se-go-to-file-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/new-se-go-to-class-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/new-se-go-to-symbol-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+      "intellij_commit/new-se-go-to-action-with-warmup/CollectLogsAndDiagnosticData/insertingTheWholeWord",
+      "intellij_commit/new-se-go-to-text-with-warmup/AppServerIntegrationsManagerImpl/insertingTheWholeWord",
+    ],
+  },
 ]
 
 const charts = combineCharts(chartsDeclaration)

@@ -14,6 +14,9 @@ type teamConfig struct {
 	Packages         []string
 	SlackChannel     string
 	AnalysisSettings *detector.AnalysisSettings
+	// AdditionalTestMetrics maps a test class name to extra metrics to assert alongside the
+	// default attempt.mean.ms. Values may be SQL LIKE patterns (e.g. "%.expected.%").
+	AdditionalTestMetrics map[string][]string
 }
 
 var defaultUnitTestAnalysisSettings = detector.AnalysisSettings{
@@ -115,6 +118,10 @@ var teamConfigs = []teamConfig{
 		Packages: []string{
 			"com.intellij.debugger", "org.jetbrains.kotlin.idea.k2.debugger",
 		},
+		AdditionalTestMetrics: map[string][]string{
+			"com.intellij.debugger.impl.PacketsNumberTest":                                                      {"%.expected.%"},
+			"org.jetbrains.kotlin.idea.k2.debugger.test.performance.K2IdeK2CodeKotlinSteppingPacketsNumberTest": {"%.expected.%"},
+		},
 	},
 }
 
@@ -143,6 +150,8 @@ func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []dete
 			tests,
 			mainSettings,
 			config,
+			backendUrl,
+			client,
 		)
 		settings = append(settings, teamSettings...)
 	}
@@ -177,6 +186,8 @@ func generateProductTestsSettings(
 	allTests []string,
 	mainSettings detector.PerformanceSettings,
 	config teamConfig,
+	backendUrl string,
+	client *http.Client,
 ) []detector.PerformanceSettings {
 	// Filter tests for the team
 	teamTests := filterTests(allTests, config.Packages, true)
@@ -193,21 +204,44 @@ func generateProductTestsSettings(
 
 	settings := make([]detector.PerformanceSettings, 0, len(teamTests))
 	for _, test := range teamTests {
-		settings = append(settings, detector.PerformanceSettings{
-			Project: test,
-			Db:      mainSettings.Db,
-			Table:   mainSettings.Table,
-			BaseSettings: detector.BaseSettings{
-				Branch:           mainSettings.Branch,
-				Machine:          mainSettings.Machine,
-				Metric:           mainSettings.Metric,
-				SlackSettings:    slackSettings,
-				AnalysisSettings: *config.AnalysisSettings,
-			},
-		})
+		metrics := append([]string{mainSettings.Metric}, expandAdditionalMetrics(backendUrl, client, mainSettings, test, config.AdditionalTestMetrics)...)
+		for _, metric := range metrics {
+			settings = append(settings, detector.PerformanceSettings{
+				Project: test,
+				Db:      mainSettings.Db,
+				Table:   mainSettings.Table,
+				BaseSettings: detector.BaseSettings{
+					Branch:           mainSettings.Branch,
+					Machine:          mainSettings.Machine,
+					Metric:           metric,
+					SlackSettings:    slackSettings,
+					AnalysisSettings: *config.AnalysisSettings,
+				},
+			})
+		}
 	}
 
 	return settings
+}
+
+func expandAdditionalMetrics(backendUrl string, client *http.Client, mainSettings detector.PerformanceSettings, test string, additionalMetrics map[string][]string) []string {
+	probeSettings := mainSettings
+	probeSettings.Project = test
+	var expanded []string
+	for testPrefix, patterns := range additionalMetrics {
+		if !strings.HasPrefix(test, testPrefix) {
+			continue
+		}
+		for _, pattern := range patterns {
+			metrics, err := detector.FetchMetricNamesByPattern(backendUrl, client, probeSettings, pattern)
+			if err != nil {
+				slog.Error("error while fetching metric names by pattern", "error", err, "test", test, "pattern", pattern)
+				continue
+			}
+			expanded = append(expanded, metrics...)
+		}
+	}
+	return expanded
 }
 
 // filterTests returns a new slice of tests based on inclusion or exclusion of packages.

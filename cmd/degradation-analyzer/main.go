@@ -111,5 +111,6 @@ func generatePerformanceSettings(backendUrl string, client *http.Client) []detec
 		setting.GenerateKotlinMultiplatformToolingSettings(backendUrl, client),
 		// setting.GenerateUISettings(), // TODO remove in a few months
 		setting.GenerateEditorSettings(),
+		setting.GenerateWebStormSettings(backendUrl, client),
 	)
 }

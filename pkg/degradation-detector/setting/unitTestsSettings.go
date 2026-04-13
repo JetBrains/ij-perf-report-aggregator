@@ -109,6 +109,13 @@ var teamConfigs = []teamConfig{
 			"com.jetbrains.ls",
 		},
 	},
+	{
+		Team:         "debugger",
+		SlackChannel: "debugger-perf-tests",
+		Packages: []string{
+			"com.intellij.debugger", "org.jetbrains.kotlin.idea.k2.debugger",
+		},
+	},
 }
 
 func GenerateAllUnitTestsSettings(backendUrl string, client *http.Client) []detector.PerformanceSettings {

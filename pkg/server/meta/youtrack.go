@@ -71,6 +71,18 @@ type VersionResponse struct {
 	} `json:"values"`
 }
 
+const (
+	IJPL  = "22-22"
+	IDEA  = "22-619"
+	KTIJ  = "22-414"
+	WEB   = "22-96"
+	WI    = "22-19"
+	KT    = "22-68"
+	CLION = "22-139"
+	GO    = "22-211"
+	RUBY  = "22-25"
+)
+
 var (
 	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
 	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
@@ -192,11 +204,12 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 		setSubsystems(params, &issueInfo)
 
 		projectsToSetVersionsFor := []string{
-			"22-22",  // IJPL
-			"22-619", // IDEA
-			// 			"22-25",  // RUBY
-			"22-414", // KTIJ
-			"22-96",  // WEB,
+			IJPL,
+			IDEA,
+			// RUBY,
+			KTIJ,
+			WEB,
+			WI,
 		}
 
 		if slices.Contains(projectsToSetVersionsFor, params.ProjectId) {
@@ -548,7 +561,7 @@ func marshalAndWriteIssueResponse(writer http.ResponseWriter, response any) erro
 }
 
 func setSubsystems(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
-	if params.ProjectId == "22-414" { // If project ID is KTIJ set subsystem as they require it
+	if params.ProjectId == KTIJ { // KTIJ requires subsystem to be set
 		subsystemsCustomField := CustomField{
 			Name: "Subsystems",
 			Type: "MultiOwnedIssueCustomField",
@@ -582,9 +595,9 @@ func setPriority(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) 
 	var priorityFieldName string
 
 	switch params.ProjectId {
-	case "22-68": // KT have their own priority field with unique values
+	case KT: // KT has its own priority field with unique values
 		return
-	case "22-139": // The field is called Severity in CLion
+	case CLION: // The field is called Severity in CLion
 		priorityFieldName = "Severity"
 	default:
 		priorityFieldName = "Priority"
@@ -605,9 +618,7 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 	var tags []Tag
 
 	switch params.ProjectId {
-	case
-		"22-68",  // KT
-		"22-414": // KTIJ
+	case KT, KTIJ:
 		tags = append(tags, Tag{
 			Name: "kotlin-regression",
 			ID:   "68-78861",
@@ -618,12 +629,12 @@ func setTags(params YoutrackCreateIssueRequest, issueInfo *CreateIssueInfo) {
 			Type: "Tag",
 		})
 	case
-		"22-22",  // IJPL
-		"22-619", // IDEA
-		// 		"22-25",  // RUBY
-		"22-96",  // WEB
-		"22-19",  // WI
-		"22-211": // GO
+		IJPL,
+		IDEA,
+		// RUBY,
+		WEB,
+		WI,
+		GO:
 		tags = append(tags, Tag{
 			Name: "Regression",
 			ID:   "68-3044",

@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia"
-import { expect, beforeEach, describe, test } from "vitest"
+import { expect, beforeEach, describe, it } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { MeasureConfigurator } from "../../src/configurators/MeasureConfigurator"
 import { PrivateBuildConfigurator, privateBuildConfigurator } from "../../src/configurators/PrivateBuildConfigurator"
@@ -26,13 +26,13 @@ describe("Private build configurator", () => {
       dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, configurator, measureConfigurator])
     })
 
-    test("Valid query on configurator init", () => {
+    it("valid query on configurator init", () => {
       expect(data.fetchMock).toHaveBeenCalledTimes(2)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"triggeredBy","sql":"distinct triggeredBy"}],"order":"triggeredBy","flat":true}`
       expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
-    test("Valid query with default selected value", async () => {
+    it("valid query with default selected value", async () => {
       await new Promise<void>((resolve) => {
         dataQueryExecutor.subscribe(() => {
           resolve()
@@ -42,7 +42,7 @@ describe("Private build configurator", () => {
       expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
     })
 
-    test("Valid query when edit selected single value", async () => {
+    it("valid query when edit selected single value", async () => {
       configurator.selected.value = "b2"
       await new Promise<void>((resolve) => {
         dataQueryExecutor.subscribe(() => {

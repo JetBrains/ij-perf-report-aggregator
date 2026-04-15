@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia"
-import { expect, beforeEach, describe, test } from "vitest"
+import { expect, beforeEach, describe, it } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { dimensionConfigurator } from "../../src/configurators/DimensionConfigurator"
 import { MeasureConfigurator } from "../../src/configurators/MeasureConfigurator"
@@ -20,19 +20,19 @@ describe("Release Nightly configurator", () => {
       configurator = new ReleaseNightlyConfigurator(data.persistenceForDashboard)
     })
 
-    test("Valid initial configuration", () => {
+    it("valid initial configuration", () => {
       expect(configurator.values.value).toStrictEqual(["EAP / Release", "Nightly"])
       expect(configurator.selected.value).toBe("Nightly")
     })
 
-    test("Valid filter for other configurators", () => {
+    it("valid filter for other configurators", () => {
       dimensionConfigurator("project", data.serverConfigurator, data.persistenceForDashboard, false, [configurator])
       expect(data.fetchMock).toHaveBeenCalledTimes(1)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"project","sql":"distinct project"}],"filters":[{"f":"build_c3","v":0,"o":"="}],"order":"project","flat":true}`
       expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
-    test("Valid filter query with Nightly", async () => {
+    it("valid filter query with Nightly", async () => {
       const measureConfigurator = new MeasureConfigurator(data.serverConfigurator, data.persistenceForDashboard, [], false)
       measureConfigurator.setSelected("b1")
       const dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, configurator, measureConfigurator])
@@ -43,7 +43,7 @@ describe("Release Nightly configurator", () => {
       expect(data.fetchMock.mock.calls[1][0]).toBe(expectedValue)
     })
 
-    test("Valid filter query with Release", async () => {
+    it("valid filter query with Release", async () => {
       const measureConfigurator = new MeasureConfigurator(data.serverConfigurator, data.persistenceForDashboard, [], false)
       measureConfigurator.setSelected("b1")
       const dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, configurator, measureConfigurator])

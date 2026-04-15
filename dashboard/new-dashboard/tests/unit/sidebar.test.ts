@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia"
-import { expect, test, describe, beforeEach } from "vitest"
+import { expect, it, describe, beforeEach } from "vitest"
 import { timeFormatWithoutSeconds } from "../../src/components/common/formatter"
 import { getInfoDataFrom } from "../../src/components/common/sideBar/InfoSidebarPerformance"
 import { dbTypeStore } from "../../src/shared/dbTypes"
@@ -10,7 +10,7 @@ describe("InfoSideBar Test", () => {
     setActivePinia(createPinia())
   })
 
-  test("JBR", () => {
+  it("parses JBR data", () => {
     dbTypeStore().setDbType("jbr", "report")
     const result = getInfoDataFrom(
       {
@@ -35,18 +35,20 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("241")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-macos-hw-munit-713")
-    expect(result.build).toEqual("1136.1")
-    expect(result.buildId).toEqual(419534345)
-    expect(result.deltaNext).toEqual("+23 (+0.8%)")
-    expect(result.deltaPrevious).toEqual("+62 (+2.1%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1702766751000))
-    expect(result.projectName).toEqual("DaCapo_MacOS12x86_64OGL")
+    expect(result).toMatchObject({
+      branch: "241",
+      seriesName: "test",
+      machineName: "intellij-macos-hw-munit-713",
+      build: "1136.1",
+      buildId: 419534345,
+      deltaNext: "+23 (+0.8%)",
+      deltaPrevious: "+62 (+2.1%)",
+      date: timeFormatWithoutSeconds.format(1702766751000),
+      projectName: "DaCapo_MacOS12x86_64OGL",
+    })
   })
 
-  test("IntelliJ", () => {
+  it("parses IntelliJ data", () => {
     dbTypeStore().setDbType("perfint", "ruby")
     const result = getInfoDataFrom(
       {
@@ -74,19 +76,21 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("233")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-performance-aws-i-0bfabf7ea619cf696")
-    expect(result.build).toEqual("233.14283")
-    expect(result.buildId).toEqual(437084149)
-    expect(result.installerId).toEqual(437052912)
-    expect(result.deltaNext).toEqual("-736 ms (-11.2%)")
-    expect(result.deltaPrevious).toEqual("-469 ms (-7.1%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706228613000))
-    expect(result.projectName).toEqual("intellij_sources/vfsRefresh/with-1-thread(s)")
+    expect(result).toMatchObject({
+      branch: "233",
+      seriesName: "test",
+      machineName: "intellij-linux-performance-aws-i-0bfabf7ea619cf696",
+      build: "233.14283",
+      buildId: 437084149,
+      installerId: 437052912,
+      deltaNext: "-736 ms (-11.2%)",
+      deltaPrevious: "-469 ms (-7.1%)",
+      date: timeFormatWithoutSeconds.format(1706228613000),
+      projectName: "intellij_sources/vfsRefresh/with-1-thread(s)",
+    })
   })
 
-  test("IntelliJ Dev", () => {
+  it("parses IntelliJ Dev data", () => {
     dbTypeStore().setDbType("perfintDev", "ruby")
     const result = getInfoDataFrom(
       {
@@ -110,17 +114,19 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-performance-aws-i-0ed95da6a22b126e5")
-    expect(result.buildId).toEqual(465279364)
-    expect(result.deltaNext).toEqual("-59 s, 422 ms (-97.0%)")
-    expect(result.deltaPrevious).toEqual("-50 s, 701 ms (-82.8%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1710347658000))
-    expect(result.projectName).toEqual("intellij_commit/vfsRefresh/git-status")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "intellij-linux-performance-aws-i-0ed95da6a22b126e5",
+      buildId: 465279364,
+      deltaNext: "-59 s, 422 ms (-97.0%)",
+      deltaPrevious: "-50 s, 701 ms (-82.8%)",
+      date: timeFormatWithoutSeconds.format(1710347658000),
+      projectName: "intellij_commit/vfsRefresh/git-status",
+    })
   })
 
-  test("IntelliJ Startup", () => {
+  it("parses IntelliJ Startup data", () => {
     dbTypeStore().setDbType("ij", "report")
     const result = getInfoDataFrom(
       {
@@ -147,19 +153,21 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-hw-munit-095")
-    expect(result.buildId).toEqual(440736226)
-    expect(result.installerId).toEqual(440729452)
-    expect(result.build).toEqual("241.11368")
-    expect(result.deltaNext).toEqual("-161 ms (-2.4%)")
-    expect(result.deltaPrevious).toEqual("+60 ms (+0.9%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706864572000))
-    expect(result.projectName).toEqual("simple for IJ")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "intellij-linux-hw-munit-095",
+      buildId: 440736226,
+      installerId: 440729452,
+      build: "241.11368",
+      deltaNext: "-161 ms (-2.4%)",
+      deltaPrevious: "+60 ms (+0.9%)",
+      date: timeFormatWithoutSeconds.format(1706864572000),
+      projectName: "simple for IJ",
+    })
   })
 
-  test("IntelliJ Startup Dev", () => {
+  it("parses IntelliJ Startup Dev data", () => {
     dbTypeStore().setDbType("ijDev", "report")
     const result = getInfoDataFrom(
       {
@@ -182,17 +190,19 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-hw-munit-095")
-    expect(result.buildId).toEqual(443891895)
-    expect(result.deltaNext).toEqual("-1 s, 27 ms (-35.8%)")
-    expect(result.deltaPrevious).toEqual("-937 ms (-32.6%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1707405609000))
-    expect(result.projectName).toEqual("simple for alfio")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "intellij-linux-hw-munit-095",
+      buildId: 443891895,
+      deltaNext: "-1 s, 27 ms (-35.8%)",
+      deltaPrevious: "-937 ms (-32.6%)",
+      date: timeFormatWithoutSeconds.format(1707405609000),
+      projectName: "simple for alfio",
+    })
   })
 
-  test("Bazel", () => {
+  it("parses Bazel data", () => {
     dbTypeStore().setDbType("bazel", "report")
     const result = getInfoDataFrom(
       {
@@ -216,17 +226,19 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("default-linux-aws-large-disk-A-i-007485cabc9cfacef")
-    expect(result.buildId).toEqual(429902567)
-    expect(result.deltaNext).toEqual("0 (0.0%)")
-    expect(result.deltaPrevious).toEqual("+14 (+6.5%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1705108226000))
-    expect(result.projectName).toEqual("Synthetic 20000 project")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "default-linux-aws-large-disk-A-i-007485cabc9cfacef",
+      buildId: 429902567,
+      deltaNext: "0 (0.0%)",
+      deltaPrevious: "+14 (+6.5%)",
+      date: timeFormatWithoutSeconds.format(1705108226000),
+      projectName: "Synthetic 20000 project",
+    })
   })
 
-  test("Qodana", () => {
+  it("parses Qodana data", () => {
     dbTypeStore().setDbType("qodana", "report")
     const result = getInfoDataFrom(
       {
@@ -250,17 +262,19 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("qodana-jvm:2023.2-nightly")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("qodana-linux-amd64-xl1-A-i-0147baff0a791a4ea")
-    expect(result.buildId).toEqual(466545404)
-    expect(result.deltaNext).toEqual("-96 ms (-14.8%)")
-    expect(result.deltaPrevious).toEqual("+18 ms (+2.8%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1710484278000))
-    expect(result.projectName).toEqual("Byte_Buddy")
+    expect(result).toMatchObject({
+      branch: "qodana-jvm:2023.2-nightly",
+      seriesName: "test",
+      machineName: "qodana-linux-amd64-xl1-A-i-0147baff0a791a4ea",
+      buildId: 466545404,
+      deltaNext: "-96 ms (-14.8%)",
+      deltaPrevious: "+18 ms (+2.8%)",
+      date: timeFormatWithoutSeconds.format(1710484278000),
+      projectName: "Byte_Buddy",
+    })
   })
 
-  test("Unit Test", () => {
+  it("parses unit test data", () => {
     dbTypeStore().setDbType("perfUnitTests", "report")
     const result = getInfoDataFrom(
       {
@@ -284,17 +298,19 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-hw-hetzner-agent-17")
-    expect(result.buildId).toEqual(458553579)
-    expect(result.deltaNext).toEqual("0 (0.0%)")
-    expect(result.deltaPrevious).toEqual("0 (0.0%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1709480472000))
-    expect(result.projectName).toEqual("com.intellij.codeInsight.JavaCommentByLineTest.testUncommentLargeFilePerformance - Uncommenting large file")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "intellij-linux-hw-hetzner-agent-17",
+      buildId: 458553579,
+      deltaNext: "0 (0.0%)",
+      deltaPrevious: "0 (0.0%)",
+      date: timeFormatWithoutSeconds.format(1709480472000),
+      projectName: "com.intellij.codeInsight.JavaCommentByLineTest.testUncommentLargeFilePerformance - Uncommenting large file",
+    })
   })
 
-  test("Fleet Startup", () => {
+  it("parses Fleet Startup data", () => {
     dbTypeStore().setDbType("fleet", "report")
     const result = getInfoDataFrom(
       {
@@ -321,15 +337,17 @@ describe("InfoSideBar Test", () => {
       null,
       ""
     )
-    expect(result.branch).toEqual("master")
-    expect(result.seriesName).toEqual("test")
-    expect(result.machineName).toEqual("intellij-linux-hw-munit-095")
-    expect(result.buildId).toEqual(435764822)
-    expect(result.installerId).toEqual(435755382)
-    expect(result.build).toEqual("1.31.4")
-    expect(result.deltaNext).toEqual("-1 s, 280 ms (-22.6%)")
-    expect(result.deltaPrevious).toEqual("0 (0.0%)")
-    expect(result.date).toEqual(timeFormatWithoutSeconds.format(1706075619000))
-    expect(result.projectName).toEqual("fleet")
+    expect(result).toMatchObject({
+      branch: "master",
+      seriesName: "test",
+      machineName: "intellij-linux-hw-munit-095",
+      buildId: 435764822,
+      installerId: 435755382,
+      build: "1.31.4",
+      deltaNext: "-1 s, 280 ms (-22.6%)",
+      deltaPrevious: "0 (0.0%)",
+      date: timeFormatWithoutSeconds.format(1706075619000),
+      projectName: "fleet",
+    })
   })
 })

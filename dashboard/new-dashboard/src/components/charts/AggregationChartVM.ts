@@ -91,8 +91,9 @@ export class AggregationChartVM {
         return
       }
       this.chartManager?.chart.hideLoading()
-      for (const it of configuration.getChartConfigurators()) {
-        it.configureChart(data, configuration)
+      for (const chartConfigurator of configuration.getChartConfigurators()) {
+        chartConfigurator
+          .configureChart(data, configuration)
           .then((options) => {
             this.updateChartData(options)
           })

@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw"
 import { setupServer } from "msw/node"
 import { createPinia, setActivePinia } from "pinia"
-import { expect, beforeAll, afterAll, describe, test, afterEach } from "vitest"
+import { expect, beforeAll, afterAll, describe, it, afterEach } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
@@ -29,7 +29,7 @@ describe("Branch configurator", () => {
     server.close()
   })
 
-  test("Valid query to create accident for startup", async () => {
+  it("valid query to create accident for startup", async () => {
     const serverUrl = "http://localhost:7474"
     let receivedBody: unknown
     const testPromise = new Promise<void>((resolve) => {
@@ -56,7 +56,7 @@ describe("Branch configurator", () => {
     })
   })
 
-  test("Valid query to create accident with stacktrace for startup", async () => {
+  it("valid query to create accident with stacktrace for startup", async () => {
     const serverUrl = "http://localhost:7474"
     let receivedBody: unknown
     const testPromise = new Promise<void>((resolve) => {

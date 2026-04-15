@@ -1,4 +1,4 @@
-import { assert, beforeEach, describe, test } from "vitest"
+import { expect, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { BranchConfigurator, createBranchConfigurator } from "../../src/configurators/BranchConfigurator"
 import { TestMeasureConfigurator } from "../dummy/TestMeasureConfigurator"
@@ -22,16 +22,16 @@ describe("Branch configurator", () => {
     })
 
     test("Valid query on configurator init", () => {
-      assert.equal(data.fetchMock.mock.calls.length, 1)
+      expect(data.fetchMock).toHaveBeenCalledTimes(1)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"branch","sql":"distinct branch"}],"order":"branch","flat":true}`
-      assert.equal(data.fetchMock.mock.calls[0][0], expectedValue)
+      expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
     test("Valid query with default selected value", async () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
       const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"}]}]`
-      assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
+      expect(data.fetchMock.mock.calls[1][0]).toBe(expectedValue)
     })
 
     test("Valid query when edit selected single value", async () => {
@@ -41,12 +41,12 @@ describe("Branch configurator", () => {
       let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2"}]}]`
       branchConfigurator.selected.value = "b2"
       await awaitMockCallsCount(data.fetchMock, 3)
-      assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
+      expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
 
       expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"}]}]`
       branchConfigurator.selected.value = "b1"
       await awaitMockCallsCount(data.fetchMock, 4)
-      assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
+      expect(data.fetchMock.mock.calls[3][0]).toBe(expectedValue)
     })
 
     test("Valid query when edit selected multiple value", async () => {
@@ -56,10 +56,9 @@ describe("Branch configurator", () => {
 
       branchConfigurator.selected.value = values
       await awaitMockCallsCount(data.fetchMock, 4)
-      for (const [index, value] of values.entries()) {
-        const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"${value}"}]}]`
-        assert.equal(data.fetchMock.mock.calls[index + 2][0], expectedValue)
-      }
+      const actual = values.map((_, index) => data.fetchMock.mock.calls[index + 2][0] as string)
+      const expected = values.map((value) => `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"${value}"}]}]`)
+      expect(actual).toStrictEqual(expected)
     })
   })
 
@@ -72,16 +71,16 @@ describe("Branch configurator", () => {
     })
 
     test("Valid query on configurator init", () => {
-      assert.equal(data.fetchMock.mock.calls.length, 1)
+      expect(data.fetchMock).toHaveBeenCalledTimes(1)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"branch","sql":"distinct branch"}],"filters":[{"f":"generated_time","q":">subtractMonths(now(),1)"}],"order":"branch","flat":true}`
-      assert.equal(data.fetchMock.mock.calls[0][0], expectedValue)
+      expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
     test("Valid query with default selected value", async () => {
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
       const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
-      assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
+      expect(data.fetchMock.mock.calls[1][0]).toBe(expectedValue)
     })
 
     test("Valid query when edit selected single value", async () => {
@@ -91,12 +90,12 @@ describe("Branch configurator", () => {
       let expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b2"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       branchConfigurator.selected.value = "b2"
       await awaitMockCallsCount(data.fetchMock, 3)
-      assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
+      expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
 
       expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[],"filters":[{"f":"branch","v":"b1"},{"f":"generated_time","q":">subtractMonths(now(),1)"}]}]`
       branchConfigurator.selected.value = "b1"
       await awaitMockCallsCount(data.fetchMock, 4)
-      assert.equal(data.fetchMock.mock.calls[3][0], expectedValue)
+      expect(data.fetchMock.mock.calls[3][0]).toBe(expectedValue)
     })
   })
 })

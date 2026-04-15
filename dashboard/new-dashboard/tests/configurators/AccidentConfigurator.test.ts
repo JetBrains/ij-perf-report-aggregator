@@ -1,7 +1,7 @@
 import { http, HttpResponse } from "msw"
 import { setupServer } from "msw/node"
 import { createPinia, setActivePinia } from "pinia"
-import { assert, beforeAll, afterAll, describe, test, afterEach } from "vitest"
+import { expect, beforeAll, afterAll, describe, test, afterEach } from "vitest"
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { PersistentStateManager } from "../../src/components/common/PersistentStateManager"
@@ -31,24 +31,12 @@ describe("Branch configurator", () => {
 
   test("Valid query to create accident for startup", async () => {
     const serverUrl = "http://localhost:7474"
-    const testPromise = new Promise<void>((resolve, reject) => {
+    let receivedBody: unknown
+    const testPromise = new Promise<void>((resolve) => {
       server.use(
         http.post(serverUrl + "/api/meta/accidents/", async (req) => {
-          try {
-            const text = await req.request.json()
-            assert.deepEqual(text, {
-              date: "Dec 17, 2023, 5:53 AM",
-              affected_test: "RM/diaspora",
-              reason: "test",
-              build_number: "241.120",
-              kind: "Regression",
-              stacktrace: "",
-              user_name: "",
-            })
-            resolve()
-          } catch (error) {
-            reject(error as Error)
-          }
+          receivedBody = await req.request.json()
+          resolve()
           return HttpResponse.json({})
         })
       )
@@ -56,29 +44,26 @@ describe("Branch configurator", () => {
 
     const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     await configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Regression)
-    return testPromise
+    await testPromise
+    expect(receivedBody).toStrictEqual({
+      date: "Dec 17, 2023, 5:53 AM",
+      affected_test: "RM/diaspora",
+      reason: "test",
+      build_number: "241.120",
+      kind: "Regression",
+      stacktrace: "",
+      user_name: "",
+    })
   })
 
   test("Valid query to create accident with stacktrace for startup", async () => {
     const serverUrl = "http://localhost:7474"
-    const testPromise = new Promise<void>((resolve, reject) => {
+    let receivedBody: unknown
+    const testPromise = new Promise<void>((resolve) => {
       server.use(
         http.post(serverUrl + "/api/meta/accidents/", async (req) => {
-          try {
-            const text = await req.request.json()
-            assert.deepEqual(text, {
-              date: "Dec 17, 2023, 5:53 AM",
-              affected_test: "RM/diaspora",
-              reason: "test",
-              build_number: "241.120",
-              kind: "Exception",
-              stacktrace: "some trace",
-              user_name: "",
-            })
-            resolve()
-          } catch (error) {
-            reject(error as Error)
-          }
+          receivedBody = await req.request.json()
+          resolve()
           return HttpResponse.json({})
         })
       )
@@ -86,6 +71,15 @@ describe("Branch configurator", () => {
 
     const configurator = new AccidentsConfiguratorForStartup(serverUrl, ref("RM"), ref(null), ref(null), timeRangeConfigurator)
     await configurator.writeAccidentToMetaDb("Dec 17, 2023, 5:53 AM", "diaspora", "test", "241.120", AccidentKind.Exception, "some trace")
-    return testPromise
+    await testPromise
+    expect(receivedBody).toStrictEqual({
+      date: "Dec 17, 2023, 5:53 AM",
+      affected_test: "RM/diaspora",
+      reason: "test",
+      build_number: "241.120",
+      kind: "Exception",
+      stacktrace: "some trace",
+      user_name: "",
+    })
   })
 })

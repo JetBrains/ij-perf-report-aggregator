@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia"
-import { assert, beforeEach, describe, test } from "vitest"
+import { expect, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { MeasureConfigurator } from "../../src/configurators/MeasureConfigurator"
 import { PrivateBuildConfigurator, privateBuildConfigurator } from "../../src/configurators/PrivateBuildConfigurator"
@@ -27,9 +27,9 @@ describe("Private build configurator", () => {
     })
 
     test("Valid query on configurator init", () => {
-      assert.equal(data.fetchMock.mock.calls.length, 2)
+      expect(data.fetchMock).toHaveBeenCalledTimes(2)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"triggeredBy","sql":"distinct triggeredBy"}],"order":"triggeredBy","flat":true}`
-      assert.equal(data.fetchMock.mock.calls[0][0], expectedValue)
+      expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
     test("Valid query with default selected value", async () => {
@@ -39,7 +39,7 @@ describe("Private build configurator", () => {
         })
       })
       const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
-      assert.equal(data.fetchMock.mock.calls[2][0], expectedValue)
+      expect(data.fetchMock.mock.calls[2][0]).toBe(expectedValue)
     })
 
     test("Valid query when edit selected single value", async () => {
@@ -49,12 +49,10 @@ describe("Private build configurator", () => {
           resolve()
         })
       })
-      assert.equal(
-        data.fetchMock.mock.calls[2][0],
+      expect(data.fetchMock.mock.calls[2][0]).toBe(
         `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":""},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       )
-      assert.equal(
-        data.fetchMock.mock.calls[3][0],
+      expect(data.fetchMock.mock.calls[3][0]).toBe(
         `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"triggeredBy","v":"b2"},{"f":"measures.name","v":"b1"}],"order":"t"}]`
       )
     })

@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from "pinia"
-import { assert, beforeEach, describe, test } from "vitest"
+import { expect, beforeEach, describe, test } from "vitest"
 import { DataQueryExecutor } from "../../src/components/common/DataQueryExecutor"
 import { dimensionConfigurator } from "../../src/configurators/DimensionConfigurator"
 import { MeasureConfigurator } from "../../src/configurators/MeasureConfigurator"
@@ -21,15 +21,15 @@ describe("Release Nightly configurator", () => {
     })
 
     test("Valid initial configuration", () => {
-      assert.deepEqual(configurator.values.value, ["EAP / Release", "Nightly"])
-      assert.equal(configurator.selected.value, "Nightly")
+      expect(configurator.values.value).toStrictEqual(["EAP / Release", "Nightly"])
+      expect(configurator.selected.value).toBe("Nightly")
     })
 
     test("Valid filter for other configurators", () => {
       dimensionConfigurator("project", data.serverConfigurator, data.persistenceForDashboard, false, [configurator])
-      assert.equal(data.fetchMock.mock.calls.length, 1)
+      expect(data.fetchMock).toHaveBeenCalledTimes(1)
       const expectedValue = `${data.serverUrl}{"db":"test","table":"test","fields":[{"n":"project","sql":"distinct project"}],"filters":[{"f":"build_c3","v":0,"o":"="}],"order":"project","flat":true}`
-      assert.equal(data.fetchMock.mock.calls[0][0], expectedValue)
+      expect(data.fetchMock.mock.calls[0][0]).toBe(expectedValue)
     })
 
     test("Valid filter query with Nightly", async () => {
@@ -38,9 +38,9 @@ describe("Release Nightly configurator", () => {
       const dataQueryExecutor = new DataQueryExecutor([data.serverConfigurator, configurator, measureConfigurator])
       dataQueryExecutor.subscribe(() => {})
       await awaitMockCallsCount(data.fetchMock, 2)
-      assert.equal(data.fetchMock.mock.calls.length, 2)
+      expect(data.fetchMock).toHaveBeenCalledTimes(2)
       const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"build_c3","v":0,"o":"="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
-      assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
+      expect(data.fetchMock.mock.calls[1][0]).toBe(expectedValue)
     })
 
     test("Valid filter query with Release", async () => {
@@ -50,10 +50,9 @@ describe("Release Nightly configurator", () => {
       dataQueryExecutor.subscribe(() => {})
       configurator.selected.value = "EAP / Release"
       await awaitMockCallsCount(data.fetchMock, 2)
-      assert.equal(data.fetchMock.mock.calls.length, 2)
+      expect(data.fetchMock).toHaveBeenCalledTimes(2)
       const expectedValue = `${data.serverUrl}[{"db":"test","table":"test","fields":[{"n":"t","sql":"toUnixTimestamp(generated_time)*1000"},{"n":"measures","subName":"value"},{"n":"measures","subName":"name"},{"n":"measures","subName":"type"}],"filters":[{"f":"build_c3","v":0,"o":"!="},{"f":"measures.name","v":"b1"}],"order":"t"}]`
-      assert.equal(data.fetchMock.mock.calls[1][0], expectedValue)
-      configurator.selected.value = "Nightly"
+      expect(data.fetchMock.mock.calls[1][0]).toBe(expectedValue)
     })
   })
 })

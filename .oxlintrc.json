@@ -29,14 +29,8 @@
     "id-length": "off",
     "import/prefer-default-export": "off",
     "init-declarations": "off",
-    "jest/consistent-test-it": "off",
-    "jest/max-expects": "off",
     "jest/no-hooks": "off",
-    "jest/prefer-each": "off",
-    "jest/prefer-lowercase-title": "off",
-    "jest/prefer-strict-equal": "off",
-    "jest/prefer-to-be": "off",
-    "jest/require-top-level-describe": "off",
+    "jest/prefer-lowercase-title": ["error", { "ignore": ["describe"] }],
     "max-classes-per-file": "off",
     "max-dependencies": "off",
     "max-depth": "off",
@@ -74,6 +68,7 @@
     "prefer-await-to-then": "off",
     "prefer-destructuring": "off",
     "prefer-enum-initializers": "off",
+    "prefer-readonly-parameter-types": "off",
     "prefer-template": "off",
     "prefer-top-level-await": "off",
     "require-hook": "off",
@@ -91,7 +86,8 @@
     "unicorn/numeric-separators-style": "off",
     "unicorn/prefer-global-this": "off",
     "unicorn/require-post-message-target-origin": "off",
-    "unicorn/switch-case-braces": "off"
+    "unicorn/switch-case-braces": "off",
+    "vitest/prefer-called-once": "off"
   },
   "ignorePatterns": [
     "**/zstd-module.ts",

@@ -188,31 +188,31 @@ export const rustDebuggerTestCases = ["hello-world/Debugger performance test", "
 export const rustUnitTestGroups: { label: string; projects: string[] }[] = [
   {
     label: "Find Usages",
-    projects: ["org.rust.ide.search.RsFindUsagesPerformanceTest.test trait method find usages with many impls - find usages of a trait method with many impls"],
+    projects: ["org.rust.benchmarks.ide.search.RsFindUsagesPerformanceTest.test trait method find usages with many impls - find usages of a trait method with many impls"],
   },
   {
     label: "Completion",
     projects: [
-      "org.rust.lang.core.completion.RsCompletionPerfTest.test completion with stdlib - completion_with_stdlib",
-      "org.rust.lang.core.completion.RsCompletionPerfTest.test completion - completion",
+      "org.rust.benchmarks.lang.core.completion.RsCompletionPerfTest.test completion with stdlib - completion_with_stdlib",
+      "org.rust.benchmarks.lang.core.completion.RsCompletionPerfTest.test completion - completion",
     ],
   },
   {
     label: "Parser",
     projects: [
-      "org.rust.lang.core.parser.RsParserPerformanceTest.test broken quote before many regex strings - broken_quote_before_many_regex_strings",
-      "org.rust.lang.core.parser.RsParserPerformanceTest.test stdlib source - stdlib_source",
+      "org.rust.benchmarks.lang.core.parser.RsParserPerformanceTest.test broken quote before many regex strings - broken_quote_before_many_regex_strings",
+      "org.rust.benchmarks.lang.core.parser.RsParserPerformanceTest.test stdlib source - stdlib_source",
     ],
   },
   {
     label: "Crates Local Index",
-    projects: ["org.rust.toml.crates.local.CratesLocalIndexPerformanceTest.test CratesLocalIndexUpdateTask incremental performance - CratesLocalIndexUpdateTask"],
+    projects: ["org.rust.benchmarks.toml.crates.local.CratesLocalIndexPerformanceTest.test CratesLocalIndexUpdateTask incremental performance - CratesLocalIndexUpdateTask"],
   },
   {
     label: "TOML JSON Schema Inspection",
     projects: [
-      "org.rust.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test bevy - bevy",
-      "org.rust.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test generated keys - generated_keys",
+      "org.rust.benchmarks.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test bevy - bevy",
+      "org.rust.benchmarks.toml.jsonSchema.RsTomlJsonSchemaInspectionPerformanceTest.test generated keys - generated_keys",
     ],
   },
 ]

@@ -464,12 +464,10 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 		zipData, err := createZipArchive(filesToZip)
 		if err != nil {
 			slog.Error("Failed to create zip archive", "error", err)
-			errCh <- err
 		} else {
 			err = spacePackagesClient.UploadFile(request.Context(), "platform-test-automation", "performance-regression-llm-analysis", "analyses", params.IssueId+".zip", zipData)
 			if err != nil {
 				slog.Error("Failed to upload zip archive to space", "error", err)
-				errCh <- err
 			}
 		}
 

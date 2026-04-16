@@ -1,7 +1,10 @@
 package meta
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -13,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/JetBrains/ij-perf-report-aggregator/pkg/server/auth"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -84,9 +88,10 @@ const (
 )
 
 var (
-	teamCityClient = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
-	youtrackClient = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
-	ytAuth         = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	teamCityClient      = NewTeamCityClient("https://buildserver.labs.intellij.net", os.Getenv("TEAMCITY_TOKEN"))
+	youtrackClient      = NewYoutrackClient("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	ytAuth              = auth.NewYTAuth("https://youtrack.jetbrains.com", os.Getenv("YOUTRACK_TOKEN"))
+	spacePackagesClient = NewSpacePackagesClient("https://packages.jetbrains.team", os.Getenv("SPACE_TOKEN"))
 )
 
 func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
@@ -314,6 +319,49 @@ func getArtifactCollector(testType string) artifactCollector {
 	}
 }
 
+func createZipArchive(files *sync.Map) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	zipWriter := zip.NewWriter(buf)
+
+	var zipErr error
+	files.Range(func(key, value any) bool {
+		name, ok := key.(string)
+		if !ok {
+			zipErr = errors.New("invalid key type: expected string")
+			return false
+		}
+		data, ok := value.([]byte)
+		if !ok {
+			zipErr = errors.New("invalid value type: expected []byte")
+			return false
+		}
+
+		header := &zip.FileHeader{
+			Name:     name,
+			Method:   zip.Deflate,
+			Modified: time.Now(),
+		}
+		writer, err := zipWriter.CreateHeader(header)
+		if err != nil {
+			zipErr = err
+			return false
+		}
+		if _, err := writer.Write(data); err != nil {
+			zipErr = err
+			return false
+		}
+		return true
+	})
+
+	if zipErr != nil {
+		return nil, zipErr
+	}
+	if err := zipWriter.Close(); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
+
 func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		type Exceptions struct {
@@ -339,6 +387,8 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 		}
 
 		errCh := make(chan error, 10)
+		// for upload to space
+		filesToZip := &sync.Map{}
 
 		builds := []int{params.TeamCityAttachmentInfo.CurrentBuildId}
 		if params.TeamCityAttachmentInfo.PreviousBuildId != nil {
@@ -351,6 +401,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 				slog.Error("Failed to upload dashboard attachment to youtrack", "error", err)
 				errCh <- err
 			}
+			filesToZip.Store("dashboard.png", *params.ChartPng)
 		}
 
 		collector := getArtifactCollector(params.TestType)
@@ -400,6 +451,7 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 								errCh <- err
 								return
 							}
+							filesToZip.Store(attachmentName, artifact)
 						})
 					}
 					childWg.Wait()
@@ -407,6 +459,20 @@ func CreatePostUploadAttachmentsToIssue() http.HandlerFunc {
 			}
 			wg.Wait()
 		}
+
+		// Create ZIP archive and upload to Space Packages
+		zipData, err := createZipArchive(filesToZip)
+		if err != nil {
+			slog.Error("Failed to create zip archive", "error", err)
+			errCh <- err
+		} else {
+			err = spacePackagesClient.UploadFile(request.Context(), "platform-test-automation", "performance-regression-llm-analysis", "analyses", params.IssueId+".zip", zipData)
+			if err != nil {
+				slog.Error("Failed to upload zip archive to space", "error", err)
+				errCh <- err
+			}
+		}
+
 		close(errCh)
 
 		for err := range errCh {

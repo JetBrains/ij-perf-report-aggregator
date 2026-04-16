@@ -190,7 +190,7 @@ func CreatePostCreateIssueByAccident(metaDb *pgxpool.Pool) http.HandlerFunc {
 			Reporter:    userId,
 			Visibility: Visibility{
 				PermittedGroups: []auth.YTUser{{ID: "10-3"}},
-				PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}, {ID: "11-1294858"}},
+				PermittedUsers:  []auth.YTUser{{ID: "11-1539792"}},
 				Type:            "LimitedVisibility",
 			},
 			CustomFields: []CustomField{

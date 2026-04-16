@@ -329,7 +329,8 @@ async function createTicket() {
           previousValue: data.formattedPreviousValue || undefined,
           affectedMetric,
           testMethodName: data.description.value?.methodName?.replaceAll("#", "."),
-          youtrackIssueId: issueResponse.issue.idReadable,
+          youtrackIssueReadableId: issueResponse.issue.idReadable,
+          youtrackIssueId: issueResponse.issue.id,
         }
         llmAnalysisBuildUrl.value = await llmAnalysisClient.sendLlmAnalysisRequest(llmAnalysisRequest)
       } catch (error: unknown) {

@@ -6,6 +6,7 @@ export interface LlmAnalysisRequest {
   previousValue: string | undefined
   affectedMetric: string
   testMethodName: string | undefined
+  youtrackIssueReadableId: string
   youtrackIssueId: string
 }
 

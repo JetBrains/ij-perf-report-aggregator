@@ -7,12 +7,13 @@ import (
 )
 
 type LLMAnalysisRequest struct {
-	CurrentBuildId  string  `json:"currentBuildId"`
-	AffectedMetric  string  `json:"affectedMetric"`
-	CurrentValue    *string `json:"currentValue"`
-	PreviousValue   *string `json:"previousValue"`
-	TestMethodName  *string `json:"testMethodName"`
-	YoutrackIssueId string  `json:"youtrackIssueId"`
+	CurrentBuildId          string  `json:"currentBuildId"`
+	AffectedMetric          string  `json:"affectedMetric"`
+	CurrentValue            *string `json:"currentValue"`
+	PreviousValue           *string `json:"previousValue"`
+	TestMethodName          *string `json:"testMethodName"`
+	YoutrackIssueReadableId string  `json:"youtrackIssueReadableId"`
+	YoutrackIssueId         string  `json:"youtrackIssueId"`
 }
 
 type DegradationData struct {
@@ -72,8 +73,9 @@ func CreatePostStartLlmAnalysis() http.HandlerFunc {
 		}
 
 		buildParams := map[string]string{
-			"degradation.data":  string(degradationDataJSON),
-			"youtrack.issue.id": llmAnalysisRequest.YoutrackIssueId,
+			"degradation.data":           string(degradationDataJSON),
+			"youtrack.issue.readable.id": llmAnalysisRequest.YoutrackIssueReadableId,
+			"youtrack.issue.id":          llmAnalysisRequest.YoutrackIssueId,
 		}
 
 		weburlPtr, err := teamCityClient.startBuild(request.Context(), "ijplatform_master_PerformanceDegradationAnalyzer", buildParams)

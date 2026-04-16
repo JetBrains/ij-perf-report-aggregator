@@ -37,6 +37,11 @@ spec:
                   key: token
             - name: YOUTRACK_TOKEN
               value: {{ .Values.youtrack.token | quote }}
+            - name: SPACE_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ij-perf-space-token
+                  key: token
           resources:
             requests:
               cpu: "0.5"
